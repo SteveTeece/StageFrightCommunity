@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StageFright.UI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3434a5adf3e2436d00b365640be2655d3480803c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c08cbe0c230d8a498a7fa73be69573f2f2e43cbc")]
 [assembly: System.Reflection.AssemblyProductAttribute("StageFright.UI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StageFright.UI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
