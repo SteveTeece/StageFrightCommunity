@@ -843,7 +843,7 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 ### Session 2026-05-15 (Clarification Pass #3)
 
-This session clarified 7 CRITICAL and HIGH ambiguities identified by artifact consistency analysis (3 new + 4 prior):
+This session clarified 8 CRITICAL and HIGH ambiguities identified by artifact consistency analysis (4 new + 4 prior):
 
 - **Q1: Attendance Fee Creation & Payment Status (HIGH)** → **A: Option A with payment status default**
   - **Decision**: Attendance fees are automatically created when attendance is recorded (Option A).
@@ -901,7 +901,23 @@ This session clarified 7 CRITICAL and HIGH ambiguities identified by artifact co
   - **Spec Updates Needed**: FR-023 (effective dates documentation) clarifies that AuditTrail logs status transitions; no additional fields on Member entity.
   - **Task Updates Needed**: T-059 (MemberService status update) creates AuditTrail entry on Status change; test T-076 verifies audit trail entries created correctly.
 
-- **Q4: Financial Record Soft-Delete Field Design (CRITICAL)** → **A: Option B - Remove soft-delete fields entirely**
+- **Q4: Attendance Fee Override UI Behavior (MEDIUM)** → **A: Option A - Checkbox "Mark as unpaid" (unchecked by default)**
+  - **Decision**: When coordinator records attendance for a member, UI displays a single checkbox: **"Mark as unpaid"** (unchecked by default).
+    - Unchecked (default) → Fee created with `PaidAtCreation=true` (paid)
+    - Checked → Fee created with `PaidAtCreation=false` (unpaid)
+  - **UI Placement**: Checkbox appears on the attendance recording form, alongside member name, date, and other attendance fields. Single step to record attendance and override fee status if needed.
+  - **Rationale**: Simplest UX for common case (paid fees); checkbox provides optional override without extra steps or dropdowns. Single form submission captures attendance + fee status together. Aligns with Q1 decision (paid is default, unpaid is exception).
+  - **Coordinator Experience**: 
+    1. Coordinator opens rehearsal attendance recording form
+    2. Selects members present; default unchecked "Mark as unpaid"
+    3. For most attendees, leaves checkbox unchecked (creates paid fees)
+    4. For any attendees needing unpaid fees, checks the box before saving
+    5. Saves attendance for all; fees created with appropriate status
+  - **Alt workflow (if needed)**: If coordinator needs to change fee status after recording attendance, they can edit Fee in Finance module (per Q1 - Fee removal/GL reversal when attendance cleared, or manual fee edit in Finance if status change needed without clearing attendance).
+  - **Spec Updates Needed**: FR-005 updated with UI checkbox detail; FR-028 (Fee creation) specifies that AttendanceService receives paid/unpaid flag from UI checkbox.
+  - **Task Updates Needed**: T-078 (Attendance Recording UI) includes checkbox "Mark as unpaid"; T-054 (AttendanceService) accepts paid/unpaid parameter from UI.
+
+- **Q5: Financial Record Soft-Delete Field Design (CRITICAL)** → **A: Option B - Remove soft-delete fields entirely**
   - **Decision**: Transaction, Payment, and Fee entities will have NO soft-delete fields (`IsDeleted`, `DeletedAt`, `DeletedBy`)
   - **Rationale**: Constitution §3.4 states financial records are "EXEMPT from soft-delete pattern"; interpreted as the pattern does not apply at all. Removing fields entirely prevents accidental misuse and simplifies schema.
   - **Impact on FR-024**: Reactivation logic uses GL reversing transactions (already specified in FR-24) without soft-deleting original Fee records. Fee records remain immutable once created; GL write-offs provide full audit trail of debt forgiveness.
@@ -909,7 +925,7 @@ This session clarified 7 CRITICAL and HIGH ambiguities identified by artifact co
   - **Spec Updates Needed**: FR-024 reworded to remove soft-delete references; updated schema documentation.
   - **Task Updates Needed**: T-032, T-033 (entity definitions) corrected to exclude soft-delete fields from financial entities.
 
-- **Q5: GL Account Assignment Algorithm (HIGH)** → **A: Type-Prefixed Numbering Scheme**
+- **Q6: GL Account Assignment Algorithm (HIGH)** → **A: Type-Prefixed Numbering Scheme**
   - **Decision**: GL accounts use type-prefixed scheme:
     - **Asset Accounts**: GL#01xx (GL#0100=Cash, GL#0101=MemberReceivable)
     - **Income Categories**: GL#10xx (GL#1000 for first income category, GL#1001 for second, etc.)
@@ -924,7 +940,7 @@ This session clarified 7 CRITICAL and HIGH ambiguities identified by artifact co
   - **Spec Updates Needed**: FR-032 updated with specific GL account ranges and numbering algorithm; Category schema documents glAccount auto-assignment.
   - **Task Updates Needed**: New task T-034b "Implement GLAccountAssignmentService with sequential numbering per category type"; T-034 updated to reference this service.
 
-- **Q6: Committee Annual Reset Trigger Mechanism (HIGH)** → **A: Configurable Committee Renewal Month with Startup Check**
+- **Q7: Committee Annual Reset Trigger Mechanism (HIGH)** → **A: Configurable Committee Renewal Month with Startup Check**
   - **Decision**: Add user-configurable "Committee Renewal Month" setting (distinct from Membership Renewal Month):
     - **Setting Name**: CommitteeRenewalMonth (integer 1-12, default 1 for January)
     - **Trigger**: On application startup, system compares current month/year against `Settings.LastCommitteeResetYear`
@@ -940,7 +956,7 @@ This session clarified 7 CRITICAL and HIGH ambiguities identified by artifact co
   - **Schema Updates Needed**: Settings entity adds: (1) `CommitteeRenewalMonth` field (int 1-12, default 1); (2) `LastCommitteeResetYear` field (int, default current year - 1).
   - **Task Updates Needed**: T-030 (Settings entity definition) adds two fields; T-167 (Committee annual reset) documents startup check logic with month comparison and guard against duplicate resets.
 
-- **Q7: Payment Field Immutability Specification (HIGH)** → **A: Single UpdatedAt Timestamp**
+- **Q8: Payment Field Immutability Specification (HIGH)** → **A: Single UpdatedAt Timestamp**
   - **Decision**: Payment entity includes both `CreatedAt` and `UpdatedAt` timestamps:
     - `UpdatedAt` field updates ONLY when Notes field changes
     - Amount, Date, PaymentMethod, PaymentType, Category fields remain strictly immutable after payment creation
