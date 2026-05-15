@@ -28,7 +28,7 @@ The MVP establishes the foundation for extensibility through a plugin architectu
 - **Rehearsals Module**: Schedule rehearsals, record attendance, and track per-rehearsal attendance fees
 - **Events Module**: Schedule performances/events, track participation, and manage event types
 - **Settings Module**: Organization settings, annual fee configuration, renewal-month management, and category/event-type administration
-- **Finance Module**: Track annual membership fees, attendance fees, income/expense categories, and generate basic financial reports
+- **Finance Module**: Control all financial transactions (membership fees, payments, income/expenses), user-defined categories, accounting compliance, and generation of standard accounting reports (Income Statement, Trial Balance, Account Register, Member Account Summary) with print capability (PDF + physical printer) and CSV export
 - **Theme Management**: Dark/light theme toggle with persisted user preference
 
 **Core Features:**
@@ -37,6 +37,7 @@ The MVP establishes the foundation for extensibility through a plugin architectu
 - Annual membership fee application with batch processing
 - Outstanding balance tracking (annual + attendance fees combined)
 - Member lifecycle management (Active/Inactive/Archived states)
+- Committee membership tracking with per-year assignments and historical records
 - Audit trail logging (12-month retention with startup purge)
 - Pre-import backup checkpoint with user confirmation
 - Atomic import/export with schema version validation
@@ -85,11 +86,11 @@ A new user launches StageFright Community for the first time. The system present
 
 ### User Story 2 - Member Registration and Management (Priority: P1)
 
-A group coordinator registers new members into the system. The system records member name, contact information, and date of joining. Members can be marked as Active or Inactive. The coordinator can view a list of all members, filter by status, and edit member details.
+A group coordinator registers new members into the system. The system records member name, contact information, and date of joining. Members can be marked as Active or Inactive. The coordinator can view a list of all members, filter by status, and edit member details. Additionally, the coordinator can track which members serve on the committee each year and record their position/role on the committee. Committee membership history is preserved across years.
 
-**Why this priority**: Member management is foundational—all other features (rehearsals, events, fees) depend on having registered members.
+**Why this priority**: Member management is foundational—all other features (rehearsals, events, fees) depend on having registered members. Committee tracking is essential for governance and organizational transparency.
 
-**Independent Test**: Can be fully tested by creating members, listing them, editing details, and toggling inactive status independently of other modules.
+**Independent Test**: Can be fully tested by creating members, listing them, editing details, toggling inactive status, marking committee membership, and viewing committee history independently of other modules.
 
 **Acceptance Scenarios**:
 
@@ -98,6 +99,11 @@ A group coordinator registers new members into the system. The system records me
 3. **Given** an active member is listed, **When** the user clicks to mark them Inactive, **Then** the member is hidden from the default active list but remains in the database
 4. **Given** an inactive member exists, **When** the user reactivates them, **Then** the member is returned to the active list and prior year unpaid fee status is cleared (fresh-start behavior)
 5. **Given** a member is listed, **When** the user clicks Edit, **Then** all fields are editable and changes are persisted
+6. **Given** a member edit form is displayed, **When** the user checks "Committee Member" checkbox, **Then** a position field becomes required and editable
+7. **Given** a member is marked as committee member with position entered, **When** the user saves, **Then** the member is recorded as committee member for the current year
+8. **Given** a member detail screen is displayed, **When** the member has committee history, **Then** a "Committee History" section shows all years of service with positions, with current year visually distinct from historical records
+9. **Given** a member detail screen for someone with no committee history, **When** I view the page, **Then** no committee section is displayed or shows "No committee history"
+10. **Given** calendar year advances to a new year, **When** I view a member who was on committee previous year, **Then** that historical record is preserved and new committee status can be assigned for the current year independently
 
 ---
 
@@ -153,18 +159,43 @@ A group coordinator schedules upcoming performances and records participation. E
 
 ### User Story 6 - Finance Tracking and Outstanding Balance Visibility (Priority: P1)
 
-The Finance module displays the total outstanding balance (annual fees + attendance fees combined). The coordinator can view individual member balances, payment history, and apply payments. Financial data is categorized (income/expense types) and can be reported on.
+The Finance module displays the total outstanding balance (annual fees + attendance fees combined). The coordinator can view individual member balances, payment history, and apply payments. Financial data is categorized (income/expense types) and can be reported on. All financial transactions follow accounting standards and best practices including accurate transaction dating, categorization, and audit trails.
 
-**Why this priority**: Financial visibility is essential for group administration. Accurate balance tracking enables informed decision-making.
+**Why this priority**: Financial visibility is essential for group administration. Accurate balance tracking and accounting compliance enable informed decision-making and meet legal/governance requirements.
 
-**Independent Test**: Can be fully tested by creating fees, applying payments, and verifying balance calculations independently.
+**Independent Test**: Can be fully tested by creating fees, applying payments, viewing categorized transactions, verifying balance calculations, and generating accounting reports independently.
 
 **Acceptance Scenarios**:
 
 1. **Given** annual and attendance fees have been recorded, **When** the user views the Finance tile, **Then** total outstanding balance is displayed as the sum of all unpaid annual + attendance fees with muted Green (positive balance/surplus) or muted Red (negative balance/deficit) color coding
-2. **Given** the Finance module is open, **When** the user views member balances, **Then** each member's outstanding fees are displayed
-3. **Given** outstanding fees exist, **When** the user applies a payment, **Then** a payment record is created with date, amount, payment method (Cash, Check, Card, etc.), and optional notes
-4. **Given** a payment is applied, **When** the user views the balance, **Then** outstanding fees are reduced accordingly
+2. **Given** the Finance module is open, **When** the user views member balances, **Then** each member's outstanding fees are displayed with individual annual and attendance fee breakdowns
+3. **Given** outstanding fees exist, **When** the user applies a payment, **Then** a payment record is created with date, amount, payment method (Cash, Check, Card, etc.), category, and optional notes
+4. **Given** a payment is applied, **When** the user views the balance, **Then** outstanding fees are reduced accordingly and transaction history is updated
+5. **Given** a financial transaction is recorded, **When** the user views transaction details, **Then** all accounting information is visible: transaction date, amount, category, description, member (if applicable), and accounting status (income/expense)
+6. **Given** the Finance module is open, **When** the user views categorized transactions, **Then** transactions are grouped by category (income categories and expense categories) with running totals
+
+---
+
+### User Story 6a - Accounting Reports and Financial Statements (Priority: P1)
+
+The Finance module generates standard accounting reports viewable on screen with print capability. Reports include Income Statement (revenues and expenses by category with subtotals), Trial Balance (all account balances for verification), Account Register (detailed transaction list by account/category with running balance), and Member Account Summary (individual member balances with transaction history). All reports follow accounting standards with proper date ranges, categorization, subtotals, and totals. Reports can be printed to PDF or physical printer.
+
+**Why this priority**: Accounting reports are essential for financial management, audit trails, and group governance. Non-negotiable requirement per constitutional mandate.
+
+**Independent Test**: Can be fully tested by creating transactions across multiple categories, generating each report type, verifying accuracy and totals, and testing print functionality independently.
+
+**Acceptance Scenarios**:
+
+1. **Given** the Finance module is open, **When** the user accesses Reports, **Then** a Report Selection interface displays available reports: Income Statement, Trial Balance, Account Register, and Member Account Summary
+2. **Given** a report is selected, **When** the user specifies date range and other filters (category, member), **Then** the report is generated and displayed with all data populated correctly
+3. **Given** an Income Statement report is displayed, **When** reviewing the data, **Then** income categories are listed with subtotal, expense categories are listed with subtotal, and net income/loss is calculated and displayed
+4. **Given** a Trial Balance report is displayed, **When** reviewing the data, **Then** all account balances are shown with debit/credit columns and totals verify to zero (accounting fundamental)
+5. **Given** an Account Register report is displayed, **When** reviewing transactions, **Then** transactions are sorted chronologically by date with running balance updated after each transaction
+6. **Given** a Member Account Summary report is displayed, **When** reviewing member balances, **Then** each member shows opening balance, transactions for period, and closing balance with aging of outstanding fees (current/30/60/90+ days)
+7. **Given** a report is displayed on screen, **When** the user clicks Print, **Then** a print dialog appears allowing user to print to PDF or physical printer with professional formatting
+8. **Given** a report is printed, **When** the output is reviewed, **Then** all headers, column labels, subtotals, and grand totals are properly formatted and clearly readable
+9. **Given** a report is displayed on screen, **When** the user clicks Export to CSV, **Then** a CSV file is generated with all column headers and data rows with proper comma-escaping and quote-escaping for special characters
+10. **Given** a CSV export is downloaded, **When** the file is opened in a spreadsheet application, **Then** all columns are properly aligned and all data is readable with headers intact
 
 ---
 
@@ -234,6 +265,27 @@ The user can toggle between dark and light themes. The theme preference is persi
 
 ---
 
+### User Story 11 - Reports Menu and Shared Report Viewing/Printing Infrastructure (Priority: P1)
+
+The application provides a "Reports" root menu item that aggregates reports from all MVP modules and plugins. Members module contributes member-focused reports; Finance module contributes accounting reports. Each module is responsible for generating report data and rendering the report view. A shared, common report viewing and printing infrastructure handles display, PDF export, and CSV export capabilities that any module can use. Reports are printed to PDF through the common infrastructure.
+
+**Why this priority**: Centralized reporting enables consistent user experience and extensibility for future modules. Common report infrastructure eliminates code duplication and ensures all modules follow the same print/export patterns.
+
+**Independent Test**: Can be fully tested by registering reports from multiple modules (Members, Finance), viewing each report, printing to PDF, and exporting to CSV independently.
+
+**Acceptance Scenarios**:
+
+1. **Given** the application is running, **When** the user clicks the Reports menu, **Then** a Reports root menu item is displayed with submenus from all modules that contribute reports
+2. **Given** the Reports menu is expanded, **When** the user views available reports, **Then** Member reports are listed (e.g., "Member List", "Committee Report") and Finance reports are listed (e.g., "Income Statement", "Trial Balance", "Account Register", "Member Account Summary")
+3. **Given** a report is selected from the menu, **When** the report is clicked, **Then** the report is generated and displayed in a common report viewer component with print and export buttons
+4. **Given** a report is displayed in the viewer, **When** the user clicks Print, **Then** the report is exported to PDF and a print dialog appears
+5. **Given** a report is displayed in the viewer, **When** the user clicks Export to CSV, **Then** the CSV file is generated and downloaded
+6. **Given** a plugin module is loaded, **When** the plugin registers a report via `IReportProvider` contract, **Then** the plugin report is added to the Reports menu under the plugin module's section
+7. **Given** a report is loading data, **When** the module is processing report logic, **Then** the common report viewer displays a loading indicator while the report data is being prepared
+8. **Given** a report generation fails, **When** the error occurs, **Then** the common report viewer displays a user-friendly error message explaining the failure and recovery options
+
+---
+
 ### Edge Cases
 
 - What happens when the application is launched with a corrupted database file? → Graceful error handling with recovery options
@@ -244,6 +296,7 @@ The user can toggle between dark and light themes. The theme preference is persi
 - How does the system handle plugin assembly loading failures? → Log structured error, skip failed plugin, continue startup with available plugins
 - What happens when a Settings tab provider (from a plugin) fails? → Skip failed tab, render other tabs, log structured error
 - How does the system handle member reactivation when prior unpaid fees from different years exist? → Keep historical records; reactivation clears current-year fee status only
+- What happens when a report provider (from a plugin) fails to register or render? → Log structured error, skip failed report, render other reports in Reports menu, display error message
 
 ---
 
@@ -303,7 +356,55 @@ The user can toggle between dark and light themes. The theme preference is persi
 
 **FR-026**: System MUST define and use custom exceptions for domain/application/infrastructure failures; raw framework exceptions MUST be translated before crossing boundaries.
 
-**FR-027**: System MUST include automated tests proving coverage of all reachable code paths for each implemented requirement; all user-facing workflows MUST have corresponding UI integration tests.
+**FR-027**: System MUST track committee membership for each member on a per-calendar-year basis. Member edit form MUST include a "Committee Member" checkbox and a "Position" text field (max 100 characters). If checkbox is marked, Position field MUST be required. If checkbox is unchecked, no position is recorded.
+
+**FR-028**: System MUST preserve committee membership history across calendar years. Each year's committee assignment is independent; members can have different positions in different years or no position in some years.
+
+**FR-029**: System MUST display committee history on the member detail screen showing all years in which the member served on committee with their corresponding positions. Current year MUST be visually distinct from historical records. Members with no committee history MUST have no committee section displayed.
+
+**FR-030**: System MUST include automated tests proving coverage of all reachable code paths for committee membership operations (add/update/remove/query); all committee-related workflows MUST have corresponding UI integration tests.
+
+**FR-031**: System MUST require current year committee membership to be reassigned each year; historical records from previous years MUST be automatically preserved and displayed when the calendar year advances.
+
+**FR-032**: System MUST implement accounting compliance by ensuring all financial transactions are recorded with: transaction date (required), category (required, selected from user-defined categories), amount (required), member reference (when applicable), payment method (required for payments), and description/notes (optional). All transactions MUST follow the categorization as either income or expense.
+
+**FR-033**: System MUST generate an Income Statement report showing revenue (income categories with amounts) and expenses (expense categories with amounts) organized by category with subtotals for each section and net income/loss calculation. Report MUST allow date range filtering.
+
+**FR-034**: System MUST generate a Trial Balance report displaying all accounts with their balances organized as income accounts and expense accounts. Debit and credit columns MUST be shown with totals verifying to equal amounts (fundamental accounting principle). Report MUST include date as of which the trial balance is calculated.
+
+**FR-035**: System MUST generate an Account Register report showing all transactions in chronological order by date within selected categories. Each transaction MUST display: date, description, category, debit amount (for expenses), credit amount (for income), and running balance. Running balance MUST update correctly after each transaction.
+
+**FR-036**: System MUST generate a Member Account Summary report showing each member with opening balance (beginning of period), all transactions affecting that member during the period (fees, payments, adjustments), and closing balance (end of period). Outstanding fees MUST be aged showing current, 30-day, 60-day, and 90+ day categories.
+
+**FR-037**: System MUST provide print capability for all financial reports allowing users to print to PDF or physical printer. Printed reports MUST include: title, date range, generation date, all column headers, all data rows with proper alignment, subtotals, and grand totals. Printed format MUST be professional and clearly readable.
+
+**FR-038**: System MUST ensure all financial transaction amounts are stored with proper precision (minimum 2 decimal places); all calculations MUST maintain precision without rounding errors throughout arithmetic operations.
+
+**FR-039**: System MUST enforce accounting transaction integrity: every debit MUST have corresponding credit (balanced entry principle). When a payment is recorded, income account is credited and cash/receivable is debited. When a fee is assigned, expense/receivable account is debited and income account is credited.
+
+**FR-040**: System MUST include automated tests proving coverage of all reachable code paths for Finance module operations (payments, reporting, categorization); all financial workflows MUST have corresponding UI integration tests verifying report accuracy.
+
+**FR-041**: System MUST provide CSV export capability for all financial reports (Income Statement, Trial Balance, Account Register, Member Account Summary). Exported CSV files MUST include all column headers as the first row and all data rows with proper CSV formatting (comma-separated values, quote-escaping for special characters, comma-escaping for field values containing commas).
+
+**FR-042**: System MUST implement a centralized, extensible base data access layer (DAL) that owns all MVP module data access (Members, Rehearsals, Events, Finance, Settings, Categories, Audit Trail). The DAL MUST use Entity Framework Core with SQLite and provide repository contracts for each entity type. DAL MUST support schema migration-based extensibility allowing plugins to define their own entities and create corresponding database tables through code-first migrations without modifying core DAL code.
+
+**FR-043**: System MUST provide a plugin data access contract allowing plugins to register custom entity types and repository implementations with the base DAL. Plugins MUST be able to define new database entities, create tables, and provide repository implementations for their own data without modifying core MVP module data access. Plugin data MUST be persisted to the same SQLite database with automatic schema migration support.
+
+**FR-044**: System MUST include automated tests proving coverage of all reachable code paths for data access layer operations (CRUD, transactions, migrations); all data persistence workflows MUST have corresponding integration tests verifying data integrity and schema correctness.
+
+**FR-045**: System MUST implement a Reports root menu item in the main navigation that aggregates all available reports from all modules (MVP and plugins). Reports MUST be organized by module name with submenus for each module's reports. Reports menu organization MUST follow the module order: Members reports, then Finance reports, then plugin reports alphabetically by module name.
+
+**FR-046**: System MUST provide a report provider contract (`IReportProvider`) allowing MVP modules and plugins to register custom reports. Each report provider MUST specify: report name, report ID, module name, display order within module, and a method to generate report data. Module providers MUST generate report data; the report infrastructure MUST handle display, printing, and exporting.
+
+**FR-047**: System MUST implement a shared common report viewer component that all modules use for displaying reports. The report viewer MUST support: displaying report data on screen, printing to PDF through a print dialog, exporting to CSV, and displaying loading indicators while report data is being generated. The viewer MUST have consistent UI/UX across all modules.
+
+**FR-048**: System MUST support report data generation abstraction where each module provides the report data (structured as rows/columns with headers) and the common viewer handles rendering, print-to-PDF, and CSV export. Modules MUST NOT implement their own print or export logic; all modules MUST use the common infrastructure.
+
+**FR-049**: System MUST include error handling for report providers: if a report provider fails to register or fails to generate report data, the system MUST log a structured error, skip the failed report, continue rendering other reports in the Reports menu, and display a user-friendly error message in the report viewer if the user attempts to view the failed report.
+
+**FR-050**: System MUST support the following MVP module reports: Member module reports (Member List, Committee Report) and Finance module reports (Income Statement, Trial Balance, Account Register, Member Account Summary). All reports MUST be accessible through the Reports menu.
+
+**FR-051**: System MUST include automated tests proving coverage of all reachable code paths for report provider registration, report data generation, common report viewer rendering, print-to-PDF, and CSV export functionality; all report workflows MUST have corresponding UI integration tests.
 
 ---
 
@@ -337,18 +438,27 @@ The user can toggle between dark and light themes. The theme preference is persi
 
 **NFR-014**: **Data Protection**: MVP uses OS/device-level protection; app-level database encryption is deferred to Phase 2+. No formal external regulatory/compliance framework is required for MVP.
 
+**NFR-015**: **Accounting Compliance**: Finance module MUST follow double-entry accounting principles with debits equaling credits for all transactions. Transaction integrity MUST be enforced at database level with constraints. All reports MUST calculate and display accurate totals and subtotals. Decimal precision MUST be maintained at 2+ decimal places for all monetary amounts throughout all calculations.
+
+**NFR-016**: **Financial Reporting**: Finance module MUST generate all required reports with professional formatting suitable for screen display, printing, and CSV export. Reports MUST be generated in-memory and rendered on-screen with print-to-PDF capability and CSV export functionality. All reports MUST include proper headers, date ranges, categories, subtotals, and grand totals.
+
+**NFR-017**: **Data Access Layer Architecture**: System MUST implement a centralized, extensible base data access layer using Entity Framework Core with SQLite. All MVP module data access (Members, Rehearsals, Events, Finance, Settings, Categories, Audit Trail) MUST be consolidated in the base DAL with repository contracts. Plugin architecture MUST support data access extensibility through entity registration and code-first migrations without requiring core code modifications. Plugin entities MUST be persisted to the shared SQLite database with automatic schema migration.
+
+**NFR-018**: **Reports Infrastructure**: System MUST implement a shared, common reports infrastructure providing consistent report viewing, printing, and exporting capabilities across all modules (MVP and plugins). Each module is responsible for generating report data (structured rows/columns with headers); the common infrastructure handles all display, PDF printing, and CSV exporting. Report provider auto-discovery MUST follow the same pattern as dashboard tiles and settings tabs with graceful error handling for failed providers.
+
 ---
 
 ### Responsibilities
 
 **Feature Responsibilities (MVP Core)**:
 - Dashboard module owns dashboard tile aggregation and progressive loading
-- Members module owns member CRUD, lifecycle management, and fee status tracking
+- Members module owns member CRUD, lifecycle management, committee membership tracking, fee status tracking, and generation of member-focused reports (Member List, Committee Report) via report provider contract
 - Rehearsals module owns scheduling, attendance capture, and attendance fee accrual
 - Events module owns performance scheduling, participation tracking, and event type management
-- Finance module owns balance tracking, payment recording, and financial reporting
-- Settings module owns organization configuration, category management, theme persistence, and backup/restore
-- Plugin architecture owns assembly discovery, tile registration, and settings tab provider contracts
+- Finance module owns all financial transactions, category management, balance tracking, payment recording, accounting compliance (double-entry principles), and generation of accounting report data (Income Statement, Trial Balance, Account Register, Member Account Summary) via report provider contract
+- Settings module owns organization configuration, user-defined category definitions, theme persistence, and backup/restore
+- Reports infrastructure module owns common report viewing, PDF printing, and CSV export capabilities shared across all MVP and plugin modules
+- Plugin architecture owns assembly discovery, tile registration, settings tab provider contracts, and report provider contracts
 
 **Non-Responsibilities (Deferred)**:
 - Authentication and authorization (Phase 2+)
@@ -389,12 +499,14 @@ The user can toggle between dark and light themes. The theme preference is persi
 ### Dependencies
 
 **Internal Dependencies**:
-- SQLite entity framework data access
+- Entity Framework Core (EF Core) with SQLite provider for all data access
+- Base data access layer (DAL) with repository contracts for all MVP entities
 - Blazor Hybrid UI framework (MAUI BlazorWebView)
 - Bootstrap 5 CSS framework
 - Custom domain exception types
 - Audit trail logging service
 - Plugin assembly loader and reflection utilities
+- Plugin data access provider contract and auto-discovery
 
 **External Dependencies**:
 - .NET 8+ runtime
@@ -410,10 +522,24 @@ The user can toggle between dark and light themes. The theme preference is persi
 - Dashboard tile provider registration: plugins implement `IDashboardTileProvider` and register via assembly discovery in `Plugins` directory
 - Settings tab provider registration: plugins implement `ISettingsTabProvider` and contribute tabs to Settings module
 - Settings tabs display order: core tabs use range 0-99, contributed tabs use range 100+; duplicate keys are skipped with logging
+- Data access provider registration: plugins implement `IDataAccessProvider` and register custom entity types with the base DAL. Plugins provide DbContext with custom entities and repository implementations. Base DAL MUST auto-discover and integrate plugin entities during startup with code-first migration execution.
 
 **Menu Extensibility**:
 - Plugins can contribute menu entries via module-level menu provider contract
 - Deep-linking to function tabs via route query keys (e.g., `?tab=plugin-feature`)
+
+**Database Extensibility**:
+- Plugins can define custom entities and register them with the base DAL
+- Plugin entities are persisted to the shared SQLite database via EF Core migrations
+- Plugin repositories are auto-discovered and injected into DI container for plugin modules
+
+**Reports Extensibility**:
+- MVP modules and plugins implement `IReportProvider` to register and provide reports
+- Report provider auto-discovery via assembly scanning in `Plugins` directory for plugins, core assemblies for MVP modules
+- Each report provider specifies: report ID, report name, module name, display order, and report data generation method
+- Module generates structured report data (rows/columns with headers); common infrastructure handles rendering, printing, and exporting
+- MVP modules (Members, Finance) use report provider contract to register their reports with the Reports menu
+- Plugin modules can register custom reports through `IReportProvider` without modifying core Reports infrastructure
 
 ---
 
@@ -500,7 +626,14 @@ The user can toggle between dark and light themes. The theme preference is persi
 - Activation/inactivation effective dates (for historical active-member computation)
 - Outstanding annual fee balance (current year)
 - Outstanding attendance fee balance
-- Relationships: registrations, payment records, attendance records
+- Relationships: registrations, payment records, attendance records, committee memberships
+
+**CommitteeMembership**:
+- Unique identifier, member reference (FK to Member), calendar year, position (role/title)
+- Creation and modification timestamps
+- Soft-delete flag (IsDeleted) for archive operations
+- Unique constraint: Member + Year (one committee membership per member per year)
+- Relationships: member details
 
 **Rehearsal**:
 - Unique identifier, date, time, optional notes
@@ -519,6 +652,18 @@ The user can toggle between dark and light themes. The theme preference is persi
 - Member reference
 - Optional notes (editable with audit trail; amount/date/category locked)
 - Relationships: audit trail entries
+
+**Transaction** (General Ledger Entry):
+- Unique identifier, transaction date (required), category (required, FK to Category)
+- Transaction type (Fee/Payment/Adjustment)
+- Debit amount (for expenses, fees)
+- Credit amount (for income, payments)
+- Member reference (when applicable)
+- Description/notes
+- Created and modified timestamps
+- Soft-delete flag (IsDeleted) for archive operations
+- Relationships: category, member, audit trail entries
+- Constraint: Debit + Credit amounts MUST balance for each transaction
 
 **Category**:
 - Unique identifier, name, type (Income or Expense)
@@ -549,6 +694,22 @@ The user can toggle between dark and light themes. The theme preference is persi
 
 - Q: For the first-run setup wizard, should it allow users to skip any fields or all fields are mandatory? → A: All fields are mandatory for first-run setup (organization name, annual fee, attendance fee, renewal month).
 
+- Q: What accounting standards should the Finance module follow? → A: Double-entry accounting principles (all debits = credits) MUST be enforced. General ledger entries MUST be balanced. Reports MUST follow standard formats (Income Statement, Trial Balance, Account Register, Member Summary) with proper subtotals and grand totals.
+
+- Q: Should the application support inventory or asset tracking? → A: No. MVP Finance module focuses exclusively on member fees, payments, and category-based income/expense tracking. Inventory and fixed asset accounting deferred to Phase 2+.
+
+- Q: What decimal precision is required for financial amounts? → A: Minimum 2 decimal places (e.g., $12.50) MUST be maintained throughout all calculations. No rounding errors permitted.
+
+- Q: Should financial reports be generated by external tools or within the application? → A: Reports MUST be generated in-memory by the Finance module with screen display and print-to-PDF capability. No external tools required.
+
+- Q: What date basis should reports use (fiscal year vs calendar year)? → A: Calendar year basis (January 1 - December 31). Users can select custom date ranges for reports.
+
+- Q: Should each MVP module have its own data access layer, or should there be a centralized DAL? → A: Centralized base data access layer (DAL) MUST own all MVP module data access. All repositories (Member, Rehearsal, Event, Finance, Category, Settings, Audit Trail, CommitteeMembership) MUST be in the base DAL with consistent contracts. This ensures maintainability and provides foundation for plugin extensibility.
+
+- Q: How should plugins extend the data access layer to create their own tables? → A: Plugins register custom entities and repositories through `IDataAccessProvider` contract. Base DAL auto-discovers plugin DbContext extensions and executes EF Core migrations for plugin entities. Plugin repositories are injected into DI for plugin modules to use. Shared SQLite database stores all MVP and plugin data.
+
+- Q: Should each module implement its own report viewing and printing, or should there be a common infrastructure? → A: Common, shared report infrastructure MUST be used across all modules. Each module generates report data (structured rows/columns with headers) via `IReportProvider` contract; the common Reports infrastructure handles all display rendering, PDF printing, and CSV exporting. This eliminates code duplication, ensures consistent UI/UX, and enables future plugins to reuse the same infrastructure without implementing their own print/export logic.
+
 ---
 
 ## 6. Acceptance Criteria *(mandatory)*
@@ -561,16 +722,28 @@ The user can toggle between dark and light themes. The theme preference is persi
 - [ ] UI/UX requirements (Bootstrap 5, color palette, theme support) are specified
 
 **Technical Specification**:
-- [ ] Plugin architecture contracts (`IDashboardTileProvider`, `ISettingsTabProvider`) are documented
+- [ ] Plugin architecture contracts (`IDashboardTileProvider`, `ISettingsTabProvider`, `IDataAccessProvider`) are documented
 - [ ] Database schema entities and relationships are defined
+- [ ] Base data access layer (DAL) centralizes all MVP module data access with repository contracts
+- [ ] Plugin data access extensibility contract and auto-discovery mechanism documented
+- [ ] EF Core migrations support for plugin entity registration and schema extension documented
 - [ ] Error taxonomy and boundary translation rules are explicit
 - [ ] Audit trail logging requirements are complete (what to log, retention, purge policy)
 - [ ] Data preservation rules align with Constitution §6.7
+- [ ] Reports infrastructure contracts (`IReportProvider`) for module report registration documented
+- [ ] Common report viewer component design and capabilities documented (display, print-to-PDF, CSV export)
+- [ ] Report provider auto-discovery and error handling (graceful failure, error messages) documented
+- [ ] MVP module reports (Members, Finance) are mapped to IReportProvider contract
 
 **Testing Coverage**:
 - [ ] Each user story has corresponding UI integration test scenarios
+- [ ] All data access layer operations (CRUD, transactions, migrations) have integration test coverage
+- [ ] Plugin data access registration and entity schema migration are testable scenarios
+- [ ] Report provider registration, report data generation, and common viewer rendering have test coverage
+- [ ] Report print-to-PDF and CSV export functionality has integration test coverage
+- [ ] Report provider error handling and graceful failure scenarios are testable
 - [ ] Edge cases are explicitly tested
-- [ ] Error paths (validation failure, business logic violation, technical failure) are covered
+- [ ] Error paths (validation failure, business logic violation, technical failure, data access errors, report generation errors) are covered
 - [ ] Theme support compliance (WCAG contrast, dark/light rendering) is testable
 - [ ] Plugin loading and graceful failure scenarios are testable
 
@@ -583,7 +756,9 @@ The user can toggle between dark and light themes. The theme preference is persi
 
 **MVP Scope Validation**:
 - [ ] All core modules (Dashboard, Members, Rehearsals, Events, Settings, Finance) are included
-- [ ] Plugin architecture enables future extensibility
+- [ ] Reports menu with member and finance reports is implemented with common report infrastructure
+- [ ] Common report viewing, printing (PDF), and CSV exporting available to all modules
+- [ ] Plugin architecture enables future extensibility (reports and data access)
 - [ ] No cloud, multi-user, or authentication requirements leak into MVP
 - [ ] Backup/restore with atomic import and schema versioning is fully specified
 - [ ] Theme support is complete and accessible
@@ -616,6 +791,21 @@ The user can toggle between dark and light themes. The theme preference is persi
 
 - **SC-011**: First-run users can navigate to all core modules (Dashboard, Members, Rehearsals, Events, Settings, Finance) and understand the purpose of each module without documentation.
 
+- **SC-012**: All financial reports (Income Statement, Trial Balance, Account Register, Member Account Summary) generate with 100% accuracy; report totals match source transaction data within 0.01 (accounting compliance verification).
+
+- **SC-013**: Trial Balance reports verify that total debits equal total credits within 0.01 (fundamental double-entry accounting principle); any imbalance triggers an error preventing report generation.
+
+- **SC-014**: Financial transaction decimal precision is maintained at 2+ decimal places throughout all calculations; no rounding errors occur in balance computations or report generation.
+
+- **SC-015**: All four accounting report types can be printed to PDF with professional formatting (headers, columns properly aligned, subtotals, grand totals clearly visible); printed output is readable and suitable for archival.
+
+- **SC-016**: Users can define and manage custom income and expense categories within Settings without requiring database modifications; categories immediately reflect in Finance module transaction categorization.
+- **SC-017**: All four accounting reports can be exported to CSV format with column headers as first row; exported files open correctly in spreadsheet applications with proper column alignment and readable data.
+
+- **SC-018**: Base data access layer successfully isolates all MVP module data access through centralized repository contracts; plugin system successfully registers custom entities and creates new database tables via EF Core migrations without modifying core DAL code.
+
+- **SC-019**: Reports menu successfully displays reports from all MVP modules (Members: Member List, Committee Report; Finance: Income Statement, Trial Balance, Account Register, Member Account Summary) and plugin modules. All reports are viewable, printable to PDF, and exportable to CSV through the common report infrastructure with consistent UI/UX.
+
 ---
 
 ## 8. Implementation Notes
@@ -623,6 +813,12 @@ The user can toggle between dark and light themes. The theme preference is persi
 **Constitutional Alignment**: This MVP specification is governed by Spec Kit Constitution v2.1.1. Cross-cutting policies (architecture, error handling, data preservation, testing standards, JavaScript prohibition) are authoritative and referenced in this spec. Any approved deviations must be documented as constitution amendments and referenced here.
 
 **Referenced Core Spec**: This MVP specification is derived from the comprehensive StageFright Community Core Application Specification (core-spec.md). Design decisions documented in that spec's clarification sessions (2026-02-04 through 2026-04-03) remain authoritative for MVP scope and are assumed to carry forward unless explicitly overridden by this MVP spec or future session clarifications.
+
+**Financial Accounting Compliance**: Finance module implementation MUST strictly adhere to double-entry accounting principles with debits equaling credits. All reports MUST be independently verifiable against source transaction data. Decimal precision MUST be maintained throughout all calculations. These are non-negotiable requirements per user mandate.
+
+**Data Access Layer Architecture**: Base DAL MUST be the single authoritative location for all MVP module data access. All entity repositories (Member, Rehearsal, Event, Payment, Category, Transaction, Settings, Audit Trail, CommitteeMembership) MUST be defined in the centralized DAL with consistent repository contracts. Plugin extensibility MUST support custom entity registration and automatic schema migration through `IDataAccessProvider` contract without core DAL modifications. This architectural pattern ensures maintainability, testability, and clean separation of concerns across MVP modules and future plugin additions.
+
+**Reports Infrastructure Architecture**: MVP modules and plugins MUST use shared, common report infrastructure for all viewing, printing, and exporting functionality. Each module is responsible for generating report data (structured rows/columns with headers) and implementing a report provider (`IReportProvider`) contract. The Reports infrastructure module provides the common report viewer component, PDF printing, and CSV export capabilities that all modules use. This pattern eliminates code duplication, ensures consistent UI/UX across all reports, and allows plugins to register custom reports without implementing their own print/export logic. Reports are organized in a root "Reports" menu with submenus by module.
 
 **Release Gate**: This MVP specification serves as the acceptance gate for the initial release. All user stories must be implemented, all acceptance scenarios must pass, and all measurable outcomes must be verified before MVP release to production.
 
