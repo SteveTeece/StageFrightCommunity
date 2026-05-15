@@ -1,26 +1,46 @@
 # Feature Specification: [FEATURE NAME]
 
-**Feature Branch**: `[###-feature-name]`
-
-**Created**: [DATE]
-
-**Status**: Draft
-
+**Template-Version**: 2.1.0
+**Required-Constitution-Version**: 2.1.0
+**Last-Updated**: 2026-04-01
+**Feature Branch**: `[###-feature-name]`  
+**Created**: [DATE]  
+**Status**: Draft  
 **Input**: User description: "$ARGUMENTS"
 
-## User Scenarios & Testing *(mandatory)*
+## 1. Purpose *(mandatory)*
+
+[Describe what problem this feature solves and why it is needed.]
+
+## 2. Scope *(mandatory)*
+
+### 2.1 In Scope
+
+- [List what this feature includes.]
+
+### 2.2 Out of Scope
+
+- [List what this feature explicitly does not include.]
+
+## 3. User Scenarios & Testing *(mandatory)*
+
+All user stories MUST define tests that cover every reachable code path:
+success, validation failure, exception/error handling, boundary inputs, and
+state-transition outcomes.
 
 <!--
   IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.
   Each user story/journey must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,
   you should still have a viable MVP (Minimum Viable Product) that delivers value.
-
+  
   Assign priorities (P1, P2, P3, etc.) to each story, where P1 is the most critical.
   Think of each story as a standalone slice of functionality that can be:
   - Developed independently
   - Tested independently
   - Deployed independently
   - Demonstrated to users independently
+
+  **All user stories must have corresponding UI integration tests that exercise the full user journey through the UI, including navigation, input, validation, and error handling.**
 -->
 
 ### User Story 1 - [Brief Title] (Priority: P1)
@@ -77,8 +97,9 @@
 
 - What happens when [boundary condition]?
 - How does system handle [error scenario]?
+- How does UI recover from [recoverable failure scenario]?
 
-## Requirements *(mandatory)*
+## 4. Requirements *(mandatory)*
 
 <!--
   ACTION REQUIRED: The content in this section represents placeholders.
@@ -88,22 +109,79 @@
 ### Functional Requirements
 
 - **FR-001**: System MUST [specific capability, e.g., "allow users to create accounts"]
-- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]
+- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]  
 - **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
 - **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
 - **FR-005**: System MUST [behavior, e.g., "log all security events"]
+- **FR-006**: System MUST define and use custom exceptions for domain/application/infrastructure failures; raw framework exceptions MUST be translated before crossing boundaries.
+- **FR-007**: System MUST include automated tests proving coverage of all reachable code paths for each implemented requirement.
 
 *Example of marking unclear requirements:*
 
-- **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+- **FR-008**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
+- **FR-009**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+
+### Non-Functional Requirements *(mandatory)*
+
+- **NFR-001**: Architecture constraints and layering expectations.
+- **NFR-002**: Performance targets and limits.
+- **NFR-003**: Reliability/availability requirements.
+- **NFR-004**: Testing and merge-gate requirements.
+- **NFR-005**: Observability/logging/tracing requirements.
+- **NFR-006**: Compliance or governance constraints.
+
+### Responsibilities *(mandatory)*
+
+- **Feature Responsibilities**: [What this feature owns]
+- **Non-Responsibilities**: [What adjacent features own]
+
+### Interfaces / Contracts *(mandatory)*
+
+- [Inbound contracts, APIs, handlers, events, commands]
+- [Outbound dependencies and adapter contracts]
+
+### Dependencies *(mandatory)*
+
+- [Internal dependencies]
+- [External dependencies]
+
+### Extension Points *(mandatory where applicable)*
+
+- [Plugin points, provider contracts, registration model]
+
+### Error Handling Requirements *(mandatory)*
+
+- [Exception taxonomy for this feature]
+- [Boundary translation rules across layers]
+- [User-facing error behavior and recovery]
+
+### Observability Requirements *(mandatory)*
+
+- [Required logs]
+- [Required traces/metrics]
+- [Failure telemetry expectations]
+
+### Constraints *(mandatory)*
+
+- [Platform, language, policy, security, or governance constraints]
 
 ### Key Entities *(include if feature involves data)*
 
 - **[Entity 1]**: [What it represents, key attributes without implementation]
 - **[Entity 2]**: [What it represents, relationships to other entities]
 
-## Success Criteria *(mandatory)*
+## 5. Clarifications (optional but recommended)
+
+### Session [YYYY-MM-DD]
+
+- Q: [Question] -> A: [Decision]
+
+## 6. Acceptance Criteria *(mandatory)*
+
+- [List explicit acceptance checks tied to requirements and stories]
+- [Include UI integration coverage expectations for user-facing workflows]
+
+## 7. Success Criteria *(mandatory)*
 
 <!--
   ACTION REQUIRED: Define measurable success criteria.
@@ -116,16 +194,4 @@
 - **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
 - **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
 - **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
-
-## Assumptions
-
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right assumptions based on reasonable defaults
-  chosen when the feature description did not specify certain details.
--->
-
-- [Assumption about target users, e.g., "Users have stable internet connectivity"]
-- [Assumption about scope boundaries, e.g., "Mobile support is out of scope for v1"]
-- [Assumption about data/environment, e.g., "Existing authentication system will be reused"]
-- [Dependency on existing system/service, e.g., "Requires access to the existing user profile API"]
+- **SC-005**: All UI functions have passing integration tests covering primary and edge-case user journeys.

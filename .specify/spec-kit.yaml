@@ -1,0 +1,156 @@
+governance:
+  - id: enforce-copilot-instructions
+    title: Enforce Copilot Instructions
+    description: >
+      Spec‑Kit must strictly enforce all rules defined in copilot-instructions.md.
+      No task, plan, or generated artifact may violate these rules.
+    sources:
+      - copilot-instructions.md
+    enforcement: strict
+    actions:
+      onViolation:
+        - failTask
+        - blockExecution
+        - reportViolation
+
+  - id: no-pull-requests
+    title: Disallow Pull Requests by Agents
+    description: >
+      Agents (including Copilot and Autopilot) must never create, open, draft,
+      or propose pull requests.
+    enforcement: strict
+    rules:
+      - Never run commands or use APIs that create or modify pull requests.
+      - Never suggest creating a pull request as part of the workflow.
+    actions:
+      onViolation:
+        - failTask
+        - blockExecution
+        - reportViolation
+
+  - id: branch-protection
+    title: Branch Protection Policy
+    description: >
+      Agents must not create, delete, or rename branches, and must not force-push.
+      All work must occur on the currently checked-out branch unless explicitly
+      instructed otherwise by a human.
+    enforcement: strict
+    rules:
+      - Do not create new branches.
+      - Do not delete branches.
+      - Do not force-push or rewrite history.
+    actions:
+      onViolation:
+        - failTask
+        - blockExecution
+        - reportViolation
+
+  - id: file-modification-policy
+    title: File Modification Policy
+    description: >
+      Agents may only modify files that are directly relevant to the current
+      task or spec. Configuration, infrastructure, and governance files must
+      not be changed unless explicitly requested.
+    enforcement: strict
+    rules:
+      - Do not modify spec-kit.yaml unless explicitly instructed.
+      - Do not modify copilot-instructions.md unless explicitly instructed.
+      - Do not modify CI/CD, deployment, or infra files unless the task
+        explicitly targets them.
+    actions:
+      onViolation:
+        - failTask
+        - blockExecution
+        - reportViolation
+
+  - id: command-execution-policy
+    title: Command Execution Policy
+    description: >
+      Agents must run only the minimum necessary commands, and must not execute
+      destructive or irreversible operations.
+    enforcement: strict
+    rules:
+      - Do not run commands that drop databases, delete data, or reset environments.
+      - Do not run commands that modify global system configuration.
+      - Prefer dry-run or check modes where available.
+    actions:
+      onViolation:
+        - failTask
+        - blockExecution
+        - reportViolation
+
+  - id: secrets-and-credentials
+    title: Secrets and Credentials Policy
+    description: >
+      Agents must never create, expose, log, or hard-code secrets, credentials,
+      tokens, or private keys.
+    enforcement: strict
+    rules:
+      - Do not add secrets to source files, configs, or logs.
+      - Do not print environment variables that may contain secrets.
+      - Use placeholders and documented secret management mechanisms instead.
+    actions:
+      onViolation:
+        - failTask
+        - blockExecution
+        - reportViolation
+
+  - id: testing-and-validation
+    title: Testing and Validation Policy
+    description: >
+      All non-trivial code changes must be accompanied by appropriate tests or
+      updates to existing tests, and tests must be runnable.
+    enforcement: strict
+    rules:
+      - When adding or changing behaviour, add or update tests.
+      - Prefer fast, local test suites where available.
+      - Do not disable or remove tests to make a change pass.
+    actions:
+      onViolation:
+        - failTask
+        - blockExecution
+        - reportViolation
+
+  - id: formatting-and-style
+    title: Formatting and Style Policy
+    description: >
+      Agents must respect the existing formatting, linting, and style
+      configuration of the repository.
+    enforcement: strict
+    rules:
+      - Use existing formatters and linters (e.g., via config files) instead of ad-hoc style.
+      - Do not introduce new style tools without explicit instruction.
+      - Do not reformat unrelated files.
+    actions:
+      onViolation:
+        - failTask
+        - blockExecution
+        - reportViolation
+
+  - id: documentation-and-traceability
+    title: Documentation and Traceability Policy
+    description: >
+      Significant changes must be documented in the appropriate location
+      (CHANGELOG, docs, or spec files) to maintain traceability.
+    enforcement: strict
+    rules:
+      - Update relevant specs or docs when behaviour changes.
+      - Maintain clear, concise change descriptions.
+    actions:
+      onViolation:
+        - failTask
+        - blockExecution
+        - reportViolation
+tasks:
+  - id: load-governance-rules
+    title: Load governance rules
+    description: >
+      Load and apply all governance rules before executing any other tasks.
+      This task must run first.
+    labels: [governance]
+    inputs:
+      - copilot-instructions.md
+  - id: implement-feature
+    title: Implement feature
+    dependsOn: [load-governance-rules]
+
