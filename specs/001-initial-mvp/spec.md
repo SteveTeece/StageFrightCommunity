@@ -843,7 +843,7 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 ### Session 2026-05-15 (Clarification Pass #3)
 
-This session clarified 6 CRITICAL and HIGH ambiguities identified by artifact consistency analysis:
+This session clarified 7 CRITICAL and HIGH ambiguities identified by artifact consistency analysis (3 new + 4 prior):
 
 - **Q1: Attendance Fee Creation & Payment Status (HIGH)** → **A: Option A with payment status default**
   - **Decision**: Attendance fees are automatically created when attendance is recorded (Option A).
@@ -886,7 +886,22 @@ This session clarified 6 CRITICAL and HIGH ambiguities identified by artifact co
   - **Spec Updates Needed**: FR-028 (Fee entity definition) adds `PaidAtCreation` field as immutable boolean; updated schema documentation to clarify GL as payment truth.
   - **Task Updates Needed**: T-033 (Fee entity) includes `PaidAtCreation` field with immutability constraint; T-054 (AttendanceService) passes PaidAtCreation=true; T-106 (PaymentService) does not modify Fee, only creates GL pairs.
 
-- **Q3: Financial Record Soft-Delete Field Design (CRITICAL)** → **A: Option B - Remove soft-delete fields entirely**
+- **Q3: Member Status Change Audit Trail & Visibility (MEDIUM)** → **A: Option A - Automatic audit entry only**
+  - **Decision**: Status changes (Active ↔ Inactive) create AuditTrail entries automatically:
+    - EntityType='Member', EntityId=memberId, Action='Update'
+    - OldValue="Active" or "Inactive", NewValue="Active" or "Inactive"
+    - Timestamp, User='system' (per NFR-013 single-user scope)
+    - No explicit reason/explanation field in Member entity or AuditTrail
+  - **Rationale**: MVP is single-user ("system"), so reason tracking less critical at launch. AuditTrail satisfies "who, what, when" compliance requirement. Reason tracking (why member inactivated) can be added in Phase 2+ if needed. Keeps MVP scope tight, Member entity simple, no UI friction for data entry.
+  - **Coordinator Experience**: When coordinator clicks status toggle (Active → Inactive), system immediately creates AuditTrail entry without prompting for reason. Action is logged for compliance. If multi-user system added later, reason collection can be introduced.
+  - **Impact on Queries & Reports**: 
+    - Committee Report shows current-year status (Active/Inactive) for each member
+    - Member Account Summary shows account age "aged as of" current date, using current status
+    - Historical queries can reconstruct status as of date using ActivateDate/InactivateDate and AuditTrail timestamp ordering
+  - **Spec Updates Needed**: FR-023 (effective dates documentation) clarifies that AuditTrail logs status transitions; no additional fields on Member entity.
+  - **Task Updates Needed**: T-059 (MemberService status update) creates AuditTrail entry on Status change; test T-076 verifies audit trail entries created correctly.
+
+- **Q4: Financial Record Soft-Delete Field Design (CRITICAL)** → **A: Option B - Remove soft-delete fields entirely**
   - **Decision**: Transaction, Payment, and Fee entities will have NO soft-delete fields (`IsDeleted`, `DeletedAt`, `DeletedBy`)
   - **Rationale**: Constitution §3.4 states financial records are "EXEMPT from soft-delete pattern"; interpreted as the pattern does not apply at all. Removing fields entirely prevents accidental misuse and simplifies schema.
   - **Impact on FR-024**: Reactivation logic uses GL reversing transactions (already specified in FR-24) without soft-deleting original Fee records. Fee records remain immutable once created; GL write-offs provide full audit trail of debt forgiveness.
@@ -894,7 +909,7 @@ This session clarified 6 CRITICAL and HIGH ambiguities identified by artifact co
   - **Spec Updates Needed**: FR-024 reworded to remove soft-delete references; updated schema documentation.
   - **Task Updates Needed**: T-032, T-033 (entity definitions) corrected to exclude soft-delete fields from financial entities.
 
-- **Q4: GL Account Assignment Algorithm (HIGH)** → **A: Type-Prefixed Numbering Scheme**
+- **Q5: GL Account Assignment Algorithm (HIGH)** → **A: Type-Prefixed Numbering Scheme**
   - **Decision**: GL accounts use type-prefixed scheme:
     - **Asset Accounts**: GL#01xx (GL#0100=Cash, GL#0101=MemberReceivable)
     - **Income Categories**: GL#10xx (GL#1000 for first income category, GL#1001 for second, etc.)
@@ -909,7 +924,7 @@ This session clarified 6 CRITICAL and HIGH ambiguities identified by artifact co
   - **Spec Updates Needed**: FR-032 updated with specific GL account ranges and numbering algorithm; Category schema documents glAccount auto-assignment.
   - **Task Updates Needed**: New task T-034b "Implement GLAccountAssignmentService with sequential numbering per category type"; T-034 updated to reference this service.
 
-- **Q5: Committee Annual Reset Trigger Mechanism (HIGH)** → **A: Configurable Committee Renewal Month with Startup Check**
+- **Q6: Committee Annual Reset Trigger Mechanism (HIGH)** → **A: Configurable Committee Renewal Month with Startup Check**
   - **Decision**: Add user-configurable "Committee Renewal Month" setting (distinct from Membership Renewal Month):
     - **Setting Name**: CommitteeRenewalMonth (integer 1-12, default 1 for January)
     - **Trigger**: On application startup, system compares current month/year against `Settings.LastCommitteeResetYear`
@@ -925,7 +940,7 @@ This session clarified 6 CRITICAL and HIGH ambiguities identified by artifact co
   - **Schema Updates Needed**: Settings entity adds: (1) `CommitteeRenewalMonth` field (int 1-12, default 1); (2) `LastCommitteeResetYear` field (int, default current year - 1).
   - **Task Updates Needed**: T-030 (Settings entity definition) adds two fields; T-167 (Committee annual reset) documents startup check logic with month comparison and guard against duplicate resets.
 
-- **Q6: Payment Field Immutability Specification (HIGH)** → **A: Single UpdatedAt Timestamp**
+- **Q7: Payment Field Immutability Specification (HIGH)** → **A: Single UpdatedAt Timestamp**
   - **Decision**: Payment entity includes both `CreatedAt` and `UpdatedAt` timestamps:
     - `UpdatedAt` field updates ONLY when Notes field changes
     - Amount, Date, PaymentMethod, PaymentType, Category fields remain strictly immutable after payment creation
