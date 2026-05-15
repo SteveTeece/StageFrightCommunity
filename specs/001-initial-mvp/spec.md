@@ -956,6 +956,40 @@ This session clarified 8 CRITICAL and HIGH ambiguities identified by artifact co
   - **Schema Updates Needed**: Settings entity adds: (1) `CommitteeRenewalMonth` field (int 1-12, default 1); (2) `LastCommitteeResetYear` field (int, default current year - 1).
   - **Task Updates Needed**: T-030 (Settings entity definition) adds two fields; T-167 (Committee annual reset) documents startup check logic with month comparison and guard against duplicate resets.
 
+- **Q5: GL Transaction Recording Timing (CRITICAL)** → **A: Option A - Atomic transaction, Fee-first**
+  - **Decision**: All Fee/Payment + GL transaction operations execute within a single ACID database transaction:
+    1. Begin transaction
+    2. Create Fee or Payment record (primary financial record)
+    3. Create paired GL Transaction records (debits and credits)
+    4. Verify GL balance (total debits = total credits for the operation)
+    5. Commit all changes atomically
+    6. On any failure: rollback entire transaction (all-or-nothing)
+  - **GL Verification**: After creating GL pairs, system verifies: `sum(debits) = sum(credits)`. If unbalanced, transaction rolls back with error: "GL transaction pair imbalanced; operation cancelled."
+  - **Error Handling**:
+    - If Fee creation fails → rollback (GL never created)
+    - If GL creation fails → rollback (Fee never created)
+    - If GL balance verification fails → rollback (all reverted)
+    - User sees single error message; no partial data persisted
+  - **Rationale**: Financial accuracy critical per NFR-015 (double-entry accounting integrity MUST be enforced). Single ACID transaction guarantees consistency. GL always balanced. No inconsistency windows. Prevents data corruption if system crashes mid-operation. Transaction rollback ensures all-or-nothing atomicity. Aligns with Constitution §3.5 data preservation principle (financial records are permanent, immutable; correct from creation).
+  - **Implementation Pattern**:
+    ```
+    using (var transaction = dbContext.Database.BeginTransaction())
+    {
+        try {
+            var fee = await FeeRepository.CreateAsync(feeData);
+            var glTransactions = await GLRepository.CreatePairAsync(fee.Amount, fee.Category);
+            if (!GLRepository.IsBalanced(glTransactions)) throw new BalanceException();
+            await transaction.CommitAsync();
+        } catch (Exception ex) {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+    ```
+  - **Impact on Outstanding Balance Calculation**: Because GL and Fee are always consistent (atomic commit), Member balance queries can rely on either source (both point to same truth). Recommendation: Query GL as primary source-of-truth (GL is the ledger); use Fee.PaidAtCreation as supplementary metadata only.
+  - **Spec Updates Needed**: FR-016 (Payment GL recording), FR-028 (Fee GL recording), and FR-039 (accounting transaction integrity) all specify atomic transaction requirement.
+  - **Task Updates Needed**: T-106 (PaymentService implementation) wraps Fee + GL creation in transaction; T-108 (GLRepository) includes balance verification; T-107 (FeeRepository) documents transaction participation.
+
 - **Q8: Payment Field Immutability Specification (HIGH)** → **A: Single UpdatedAt Timestamp**
   - **Decision**: Payment entity includes both `CreatedAt` and `UpdatedAt` timestamps:
     - `UpdatedAt` field updates ONLY when Notes field changes
