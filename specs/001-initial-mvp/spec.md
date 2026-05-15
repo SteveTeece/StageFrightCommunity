@@ -70,40 +70,47 @@ The MVP establishes the foundation for extensibility through a plugin architectu
 
 ### User Story 1 - First-Run Setup (Priority: P1)
 
-A new user launches StageFright Community for the first time. The system presents a setup wizard allowing the user to configure their organization (name, annual membership fee, attendance fee per rehearsal, and membership renewal month). Upon completion, the system initializes the database and presents an empty dashboard ready for use.
+A new user launches StageFright Community for the first time. The system presents a setup wizard allowing the user to configure their organization (name, annual membership fee, attendance fee per rehearsal, and membership renewal month). Upon completion, the system initializes the database schema and Settings, and presents an empty dashboard ready for use. No fees are automatically created during setup.
 
 **Why this priority**: Without first-run setup, users cannot get started. This is the on-ramp that enables all downstream functionality.
 
-**Independent Test**: Can be fully tested by launching the application with an empty database, completing the setup wizard, and verifying organization data is persisted.
+**Independent Test**: Can be fully tested by launching the application with an empty database, completing the setup wizard, verifying organization data is persisted, and confirming no fees are present in the database after setup completion.
 
 **Acceptance Scenarios**:
 
 1. **Given** a fresh installation, **When** the application launches, **Then** a setup wizard is displayed with fields for organization name, annual fee, attendance fee, and renewal month
-2. **Given** the setup wizard is displayed, **When** the user enters valid data and clicks Save, **Then** organization settings are persisted and the dashboard is displayed
+2. **Given** the setup wizard is displayed, **When** the user enters valid data and clicks Save, **Then** organization settings are persisted, database schema is initialized, and the dashboard is displayed with no fees present
 3. **Given** the dashboard is displayed after setup, **When** the user navigates to Settings, **Then** the previously entered organization settings are shown
+4. **Given** setup has been completed, **When** I check the database for any Fee records, **Then** no fees exist (fees are created only via manual "Apply Annual Fees" or attendance recording)
 
 ---
 
 ### User Story 2 - Member Registration and Management (Priority: P1)
 
-A group coordinator registers new members into the system. The system records member name, contact information, and date of joining. Members can be marked as Active or Inactive. The coordinator can view a list of all members, filter by status, and edit member details. Additionally, the coordinator can track which members serve on the committee each year and record their position/role on the committee. Committee membership history is preserved across years.
+A group coordinator registers new members into the system. The system records member name, contact information (street address, optional phone, optional email), join date, and optional date of birth. Members can be marked as Active or Inactive. The coordinator can view a list of all members, filter by status, and edit member details. The system displays the member's calculated age if date of birth is provided. Additionally, the coordinator can track which members serve on the committee each year and record their position/role on the committee. Committee membership history is preserved across years.
 
 **Why this priority**: Member management is foundational—all other features (rehearsals, events, fees) depend on having registered members. Committee tracking is essential for governance and organizational transparency.
 
-**Independent Test**: Can be fully tested by creating members, listing them, editing details, toggling inactive status, marking committee membership, and viewing committee history independently of other modules.
+**Independent Test**: Can be fully tested by creating members, listing them, editing details, toggling inactive status, marking committee membership, viewing committee history, and verifying age calculation independently of other modules.
 
 **Acceptance Scenarios**:
 
-1. **Given** the Members module is open, **When** the user clicks "Add Member", **Then** a form is displayed with fields for name, phone, email, and join date
-2. **Given** a member form is displayed, **When** the user enters valid data and clicks Save, **Then** the member is created and listed in the active members view
-3. **Given** an active member is listed, **When** the user clicks to mark them Inactive, **Then** the member is hidden from the default active list but remains in the database
-4. **Given** an inactive member exists, **When** the user reactivates them, **Then** the member is returned to the active list and prior year unpaid fee status is cleared (fresh-start behavior)
-5. **Given** a member is listed, **When** the user clicks Edit, **Then** all fields are editable and changes are persisted
-6. **Given** a member edit form is displayed, **When** the user checks "Committee Member" checkbox, **Then** a position field becomes required and editable
-7. **Given** a member is marked as committee member with position entered, **When** the user saves, **Then** the member is recorded as committee member for the current year
-8. **Given** a member detail screen is displayed, **When** the member has committee history, **Then** a "Committee History" section shows all years of service with positions, with current year visually distinct from historical records
-9. **Given** a member detail screen for someone with no committee history, **When** I view the page, **Then** no committee section is displayed or shows "No committee history"
-10. **Given** calendar year advances to a new year, **When** I view a member who was on committee previous year, **Then** that historical record is preserved and new committee status can be assigned for the current year independently
+1. **Given** the Members module is open, **When** the user clicks "Add Member", **Then** a form is displayed with fields for name (required), street address (required), phone (optional), email (optional), join date (required), and date of birth (optional)
+2. **Given** a member form is displayed with only required fields, **When** the user enters valid name, address, and join date (no phone, email, or date of birth) and clicks Save, **Then** the member is created and listed in the active members view without phone/email/age visible
+3. **Given** a member form is displayed, **When** the user enters a valid date of birth and saves, **Then** the member's age is calculated and displayed on the member profile; if no date of birth is entered, no age field is visible
+4. **Given** a member profile shows a calculated age, **When** the user views the profile on their next birthday, **Then** the age increments by 1
+5. **Given** an invalid email format is entered, **When** the user attempts to save, **Then** a validation error is displayed and the form is not submitted
+6. **Given** an invalid phone format is entered, **When** the user attempts to save, **Then** a validation error is displayed and the form is not submitted
+7. **Given** a future date is entered for date of birth, **When** the user attempts to save, **Then** a validation error is displayed
+8. **Given** an organization has a Minimum Member Age of 18 years configured in Settings, **When** the user attempts to register a member with calculated age 15 years, **Then** a validation error is displayed: "Member age (15 years) must be at least 18 years old"
+9. **Given** an active member is listed, **When** the user clicks to mark them Inactive, **Then** the member is hidden from the default active list but remains in the database
+9. **Given** an inactive member exists, **When** the user reactivates them, **Then** the member is returned to the active list and prior year unpaid fee status is cleared (fresh-start behavior)
+10. **Given** a member is listed, **When** the user clicks Edit, **Then** all fields are editable and changes are persisted
+11. **Given** a member edit form is displayed, **When** the user checks "Committee Member" checkbox, **Then** a position field becomes required and editable
+12. **Given** a member is marked as committee member with position entered, **When** the user saves, **Then** the member is recorded as committee member for the current year
+13. **Given** a member detail screen is displayed, **When** the member has committee history, **Then** a "Committee History" section shows all years of service with positions, with current year visually distinct from historical records
+14. **Given** a member detail screen for someone with no committee history, **When** I view the page, **Then** no committee section is displayed or shows "No committee history"
+15. **Given** calendar year advances to a new year, **When** I view a member who was on committee previous year, **Then** that historical record is preserved and new committee status can be assigned for the current year independently
 
 ---
 
@@ -126,17 +133,18 @@ A group coordinator schedules upcoming rehearsals and records member attendance.
 
 ### User Story 4 - Annual Membership Fee Application (Priority: P1)
 
-At the configured renewal month, a group coordinator applies annual membership fees to all active members. The system checks for unpaid fees from the current year and skips members who already have an outstanding fee. A batch processing dialog shows progress and allows the user to confirm before applying.
+At the configured renewal month, a group coordinator applies annual membership fees to all active members. The system checks for unpaid fees from the current year, skips inactive members, and skips active members who already have an outstanding annual fee. A batch processing dialog shows progress and allows the user to confirm before applying.
 
 **Why this priority**: Automated fee application reduces manual administrative work and ensures consistent billing practices.
 
-**Independent Test**: Can be fully tested by setting the renewal month, adding active members, and executing the fee application batch process.
+**Independent Test**: Can be fully tested by setting the renewal month, adding active and inactive members, and executing the fee application batch process.
 
 **Acceptance Scenarios**:
 
-1. **Given** active members exist and the renewal month arrives, **When** the user clicks "Apply Annual Fees", **Then** a confirmation dialog is displayed showing the number of members to be charged
-2. **Given** the confirmation dialog is displayed, **When** the user confirms, **Then** annual fee records are created for all eligible members (excluding those with existing unpaid fees for the current year)
+1. **Given** active members exist, inactive members exist, and the renewal month arrives, **When** the user clicks "Apply Annual Fees", **Then** a confirmation dialog is displayed showing the number of active members to be charged (excluding inactive members)
+2. **Given** the confirmation dialog is displayed, **When** the user confirms, **Then** annual fee records are created for all eligible active members (excluding inactive members and those with existing unpaid fees for the current year)
 3. **Given** annual fees have been applied, **When** the user views the Finance tile, **Then** outstanding annual fees are visible in the total outstanding balance
+4. **Given** an inactive member exists, **When** the annual fee application is executed, **Then** no fee is applied to the inactive member
 
 ---
 
@@ -189,7 +197,8 @@ The Finance module generates standard accounting reports viewable on screen with
 1. **Given** the Finance module is open, **When** the user accesses Reports, **Then** a Report Selection interface displays available reports: Income Statement, Trial Balance, Account Register, and Member Account Summary
 2. **Given** a report is selected, **When** the user specifies date range and other filters (category, member), **Then** the report is generated and displayed with all data populated correctly
 3. **Given** an Income Statement report is displayed, **When** reviewing the data, **Then** income categories are listed with subtotal, expense categories are listed with subtotal, and net income/loss is calculated and displayed
-4. **Given** a Trial Balance report is displayed, **When** reviewing the data, **Then** all account balances are shown with debit/credit columns and totals verify to zero (accounting fundamental)
+4. **Given** a Trial Balance report is displayed, **When** reviewing the data, **Then** accounts are organized in three sections (Assets, Income, Expenses) with Account Name | Debit Amount | Credit Amount columns; each account shows its balance in the appropriate column and zero in the other
+5. **Given** a Trial Balance report is generated, **When** the report data has been calculated, **Then** Total Debits row and Total Credits row are displayed at the bottom; both totals MUST be equal within 0.01 (fundamental accounting principle) or report generation fails with error message "GL Balance Verification Failed: Total Debits ($X.XX) ≠ Total Credits ($Y.YY). Please review and correct GL entries."
 5. **Given** an Account Register report is displayed, **When** reviewing transactions, **Then** transactions are sorted chronologically by date with running balance updated after each transaction
 6. **Given** a Member Account Summary report is displayed, **When** reviewing member balances, **Then** each member shows opening balance, transactions for period, and closing balance with aging of outstanding fees (current/30/60/90+ days)
 7. **Given** a report is displayed on screen, **When** the user clicks Print, **Then** a print dialog appears allowing user to print to PDF or physical printer with professional formatting
@@ -235,17 +244,18 @@ The dashboard displays four core tiles: Members (count of active/inactive), Rehe
 
 ### User Story 9 - Backup and Restore (Priority: P2)
 
-The user can manually trigger a backup of all application data (members, rehearsals, events, financial records, settings, categories). The system exports data in a versioned schema format. The user can restore from a previous backup. Before any import, the system requires an explicit pre-import backup checkpoint and user confirmation.
+The user can manually trigger a backup of all application data (members, rehearsals, events, financial records, settings, categories, committee history, audit trails). The system exports data in a versioned schema format. The user can restore from a previous backup. Before any import, the system requires an explicit pre-import backup checkpoint and user confirmation. Import strictly validates that all required entity types are present; incomplete backups are rejected.
 
-**Why this priority**: Data protection and disaster recovery are essential. Backup enables non-destructive import workflows.
+**Why this priority**: Data protection and disaster recovery are essential. Backup enables non-destructive import workflows. Strict validation prevents corrupted partial restores.
 
-**Independent Test**: Can be fully tested by creating data, backing up, clearing the database, and restoring independently.
+**Independent Test**: Can be fully tested by creating data, backing up, clearing the database, and restoring independently. Can be tested by attempting to restore an incomplete backup file (missing entity types) and verifying rejection.
 
 **Acceptance Scenarios**:
 
-1. **Given** the Settings module is open, **When** the user clicks "Backup", **Then** a backup file is created with a timestamp and schema version metadata
-2. **Given** a backup file exists, **When** the user clicks "Restore", **Then** a confirmation dialog is displayed with pre-import backup creation and user acknowledgment required
-3. **Given** the user confirms restore, **When** the restore completes, **Then** all data is restored and the system displays a success message
+1. **Given** the Settings module is open, **When** the user clicks "Backup", **Then** a backup file is created with a timestamp, schema version metadata, and all operational entities included
+2. **Given** a backup file exists, **When** the user clicks "Restore", **Then** a confirmation dialog is displayed with pre-import backup creation, entity type validation, and user acknowledgment required
+3. **Given** the user confirms restore, **When** the restore completes with valid complete backup data, **Then** all data is restored and the system displays a success message
+4. **Given** a backup file is missing required entity types (e.g., Categories missing), **When** the user attempts to restore, **Then** import validation fails and displays error: "Import file incomplete: missing Categories. Restore from complete backup."
 
 ---
 
@@ -304,19 +314,21 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 ### Functional Requirements
 
-**FR-001**: System MUST display a first-run setup wizard that captures organization name, annual membership fee, attendance fee per rehearsal, and membership renewal month (1-12) and persists these to the Settings database record.
+**FR-001**: System MUST display a first-run setup wizard that captures organization name, annual membership fee, attendance fee per rehearsal, and membership renewal month (1-12) and persists these to the Settings database record. Setup wizard MUST NOT automatically apply any fees; it initializes the database schema and Settings only. Fees are created only when: (1) annual fee application is manually triggered by coordinator, or (2) attendance is recorded for members.
 
-**FR-002**: System MUST provide a Members module enabling user to create, edit, list, and filter members by Active/Inactive status; members MUST include name, phone, email, and join date fields.
+**FR-002**: System MUST provide a Members module enabling user to create, edit, list, and filter members by Active/Inactive status; members MUST include: name (required), street address (required), phone (optional), email (optional), join date (required), and optional date of birth fields. System MUST validate email and phone formats when provided. When a new member is created via the "Add Member" form, the default Status is Active with ActivateDate set to today. Coordinator may immediately inactivate a member if needed.
+
+**FR-002a**: System MUST calculate and display member age in years based on date of birth. Age MUST only display when date of birth is provided; the age field MUST not be visible if date of birth is empty/null. Age calculation MUST be performed server-side to ensure consistency using formula: `floor((today - DOB) / 365.25)`. System MUST validate: (1) date of birth MUST be in the past (before today; today's date rejected), (2) date of birth MUST be within 150 years of today (configurable in Settings), (3) calculated age MUST be >= configured Minimum Member Age in Settings (default 0, no minimum). Validation error messages MUST be specific: "Date of birth cannot be today or in the future", "Date of birth must be within 150 years", "Member age ({age} years) must be at least {minimum_age} years old".
 
 **FR-003**: System MUST support member lifecycle states: Active (participating), Inactive (not participating but not deleted), and Archived (soft-deleted). Marking a member Inactive MUST NOT set soft-delete fields (`IsDeleted`/`DeletedAt`/`DeletedBy`); archival is a separate explicit action.
 
-**FR-004**: System MUST automatically apply annual membership fees to all active members at the configured renewal month, skipping members with existing unpaid fees for the current year, and display a batch processing confirmation dialog.
+**FR-004**: System MUST automatically apply annual membership fees to all active members (Status='Active') at the configured renewal month, skipping: (1) inactive members (Status='Inactive'), and (2) active members with existing unpaid annual fees for the current year. Display a batch processing confirmation dialog showing the number of members to be charged.
 
-**FR-005**: System MUST provide a Rehearsals module enabling the user to schedule rehearsals (date, time, optional notes) and record attendance. Recording attendance MUST automatically create attendance fee records marked as unpaid by default.
+**FR-005**: System MUST provide a Rehearsals module enabling the user to schedule rehearsals (date, time, optional notes) and record attendance. Recording attendance for active members (Status='Active') MUST automatically create unpaid attendance fee records. Recording attendance for inactive members (Status='Inactive') is allowed for historical tracking but MUST NOT create fee records. Once attendance is recorded, historical data is preserved and immutable.
 
 **FR-006**: System MUST provide an Events module enabling the user to schedule performances/events (date, event type, optional notes) and record participation. Event types MUST be configurable in Settings with defaults: Performance, Eisteddfod, Fund raiser, Promotional.
 
-**FR-007**: System MUST track and display historical attendance rate (members present / members active on that date × 100%) for the most recent past rehearsal and participation rate for the most recent past event.
+**FR-007**: System MUST track and display historical attendance rate (members present / members active on that date × 100%) for the most recent past rehearsal and participation rate for the most recent past event. "Members active on that date" is calculated using the member's historical Status as of the event date using effective dates: `WHERE Status='Active' AND ActivateDate <= event_date AND (InactivateDate IS NULL OR InactivateDate > event_date) AND IsDeleted=false`. Archived members (IsDeleted=true) are ALWAYS excluded from the denominator, regardless of effective dates. For dashboard display and historical reports, use this same calculation to reconstruct accurate historical metrics reflecting actual membership on the event date. Historical reports (Member Account Summary with aging) MUST include archived members' past transaction data (GL transactions, payments) to preserve complete financial history and enable accurate aging analysis, but archived members are excluded from participation rate denominators.
 
 **FR-008**: System MUST track outstanding balances combining annual membership fees and per-rehearsal attendance fees, displaying total outstanding balance on the Finance tile with muted Green for positive balance (income > expenses) and muted Red for negative balance (expenses > income).
 
@@ -326,19 +338,19 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 **FR-011**: System MUST display dashboard tiles progressively and degrade gracefully if a tile provider fails or is slow; failed providers MUST log structured errors and not block dashboard render.
 
-**FR-012**: System MUST provide Backup functionality exporting all application data (members, rehearsals, events, financial records, settings, categories, relationships) in a versioned schema format with metadata including `schemaVersion`, generation timestamp, and entities map.
+**FR-012**: System MUST provide Backup functionality exporting all application data (members, rehearsals, events, financial records (fees, payments, GL transactions, categories), settings (organization config, theme preference), committee membership history, and audit trail logs) in a versioned schema format with metadata including `schemaVersion`, generation timestamp, and complete entities map.
 
 **FR-013**: System MUST require a pre-import backup checkpoint and explicit user confirmation before any import writes data; import MUST be atomic (validate full payload first, then commit all changes in one transaction).
 
-**FR-014**: System MUST validate import schema version and reject unsupported major versions with clear upgrade guidance to the user.
+**FR-014**: System MUST validate import schema version and entity completeness. Import MUST reject unsupported major versions with clear upgrade guidance. Import MUST ALSO verify all required entity types are present in the import source (Members, Rehearsals, Events, Fees, Payments, Transactions, Categories, Settings, CommitteeMembership, AuditTrail). If any required entity type is missing, reject the import with error: "Import file incomplete: missing {entity_type}. Restore from complete backup."
 
-**FR-015**: System MUST use non-destructive import mode (upsert): existing records are updated, missing records are inserted, and local records not present in the source remain unchanged.
+**FR-015**: System MUST use non-destructive import mode (upsert): existing records are updated by primary key/natural key matching, missing records are inserted, and local records not present in the source remain unchanged. However, ALL required entity types MUST be present in the import source (per FR-014); selective data exports are not supported. Upon successful validation, import MUST be atomic (all-or-nothing within a single transaction).
 
-**FR-016**: System MUST support payment recording with date, amount, payment method (Cash, Check, Card, etc.), and optional notes; payments reduce outstanding balances accordingly.
+**FR-016**: System MUST support payment recording that creates GL transaction pairs for accounting integrity. When payment is recorded with date, amount, payment method (Cash, Check, Card, etc.), payment type (Annual/Attendance/Other), and optional notes, the system MUST: (1) Create Payment record for audit trail with fields: date, amount, payment method, payment type, category, member reference, notes; (2) Create two GL Transaction records: Debit=$amount on CashReceived account + Credit=$amount on MemberReceivable account, linked to Payment record. Payments MUST reduce outstanding balances using FIFO (First-In-First-Out) allocation: oldest unpaid fees satisfied first (e.g., 2024 annual fee before 2025 annual fee before 2025 attendance fees). System MUST automatically calculate GL transaction dates and link Payment to created Transactions for audit trail. PaymentType field is metadata and distinct from GL Category (used for reporting/filtering).
 
 **FR-017**: System MUST allow Notes field editing on financial records with audit trail logging (who changed what when); Amount, Date, and Category fields MUST remain locked after creation.
 
-**FR-018**: System MUST provide a Settings module with tabs: General Settings (organization + fees), Categories, Event Types, Backup, and Restore. Plugin modules may contribute additional Settings tabs via tab provider contract.
+**FR-018**: System MUST provide a Settings module with tabs: General Settings (organization name, annual fee, attendance fee, renewal month, date of birth maximum age range, minimum member age), Categories, Event Types, Backup, and Restore. Plugin modules may contribute additional Settings tabs via tab provider contract. General Settings MUST include fields: (1) Organization Name, (2) Annual Membership Fee, (3) Attendance Fee per Rehearsal, (4) Membership Renewal Month (1-12), (5) Maximum Age Range (in years, default 150), (6) Minimum Member Age (in years, default 0, optional enforcement).
 
 **FR-019**: System MUST support dark and light theme toggle with persisted preference in the Settings database record; all UI surfaces MUST comply with WCAG AA contrast requirements in both themes.
 
@@ -350,9 +362,9 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 **FR-023**: System MUST maintain member activation/inactivation effective dates to enable historical active-member count computation based on the rehearsal/event date (not current date).
 
-**FR-024**: System MUST reset member fee status to current year upon reactivation (Inactive→Active); prior unpaid fees from other years remain in historical records but are not actively owed unless explicitly restored.
+**FR-024**: System MUST implement automatic member reactivation debt forgiveness using GL write-offs with audit trail. When a coordinator marks an Inactive member as Active (reactivation), the system MUST automatically (no coordinator choice): (1) Identify ALL outstanding fees from prior years; (2) Create GL reversing Transaction pairs for each outstanding fee (debit MemberReceivable, credit BadDebtExpense/WriteOff category) to zero-out prior balances; (3) Soft-delete original Fee records (IsDeleted=true, DeletedAt=now, DeletedBy=userId) to preserve audit trail; (4) Reset member's payable balance to $0.00. Reactivated member has clean financial slate. Current-year membership fee remains payable (will be applied per annual fee application process). Prior unpaid fees are permanently forgiven with full GL and soft-delete audit trails preserving complete history.
 
-**FR-025**: System MUST handle payment method as required field on Payment records, defaulting to `Cash` when not explicitly selected; PaymentType remains separate representing fee type (Annual/Attendance).
+**FR-025**: System MUST store payment method as required field on Payment records (enum: Cash, Check, Card, Electronic Transfer, Other), defaulting to `Cash` when not explicitly selected. System MUST store payment type as required field on Payment records (enum: Annual, Attendance, Other). PaymentType is metadata used for reporting and filtering; it is separate from GL Category (which is used for accounting categorization). Both PaymentMethod and PaymentType fields are immutable after payment creation (for audit integrity).
 
 **FR-026**: System MUST define and use custom exceptions for domain/application/infrastructure failures; raw framework exceptions MUST be translated before crossing boundaries.
 
@@ -360,27 +372,27 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 **FR-028**: System MUST preserve committee membership history across calendar years. Each year's committee assignment is independent; members can have different positions in different years or no position in some years.
 
-**FR-029**: System MUST display committee history on the member detail screen showing all years in which the member served on committee with their corresponding positions. Current year MUST be visually distinct from historical records. Members with no committee history MUST have no committee section displayed.
+**FR-029**: System MUST display committee history on the member detail screen showing all years in which the member served on committee with their corresponding positions. Current year MUST be visually distinct from historical records using the following mechanism: Current year entry is rendered in bold with a small "Current" badge (e.g., "**2026 (Current) - Treasurer**"), while historical years display in normal text weight (e.g., "2025 - Secretary"). This provides clear visual distinction with accessibility compliance (text + visual indicator readable by screen readers). Members with no committee history MUST have no committee section displayed.
 
 **FR-030**: System MUST include automated tests proving coverage of all reachable code paths for committee membership operations (add/update/remove/query); all committee-related workflows MUST have corresponding UI integration tests.
 
-**FR-031**: System MUST require current year committee membership to be reassigned each year; historical records from previous years MUST be automatically preserved and displayed when the calendar year advances.
+**FR-031**: System MUST require current year committee membership to be reassigned each year. When the calendar year advances (Jan 1 midnight), all members' current-year committee status MUST be cleared (set to not-committee). Prior years' committee records MUST be automatically preserved and displayed as read-only history. Coordinators MUST explicitly re-enter committee members and positions for the new year through the member edit form. This ensures annual governance review and prevents stale privilege carryover.
 
-**FR-032**: System MUST implement accounting compliance by ensuring all financial transactions are recorded with: transaction date (required), category (required, selected from user-defined categories), amount (required), member reference (when applicable), payment method (required for payments), and description/notes (optional). All transactions MUST follow the categorization as either income or expense.
+**FR-032**: System MUST implement accounting compliance using a **General Ledger (GL) paired transaction model** with simple account structure: (1) **Asset Accounts**: Cash, MemberReceivable; (2) **Revenue Accounts**: mapped from user-defined income categories; (3) **Expense Accounts**: mapped from user-defined expense categories. All financial events MUST be recorded as exactly TWO Transaction records (one debit, one credit) with equal amounts. GL account is **derived deterministically from Category type** (Income categories → Revenue GL; Expense categories → Expense GL; Cash/MemberReceivable are fixed Asset GL). Each Transaction MUST include: transaction date (required), debit or credit amount (decimal, 2+ places), category (required, FK to Category, which implies GL account), member reference (when applicable), and description/notes (optional). All transactions MUST be categorized as either income or expense per user-defined categories.
 
 **FR-033**: System MUST generate an Income Statement report showing revenue (income categories with amounts) and expenses (expense categories with amounts) organized by category with subtotals for each section and net income/loss calculation. Report MUST allow date range filtering.
 
-**FR-034**: System MUST generate a Trial Balance report displaying all accounts with their balances organized as income accounts and expense accounts. Debit and credit columns MUST be shown with totals verifying to equal amounts (fundamental accounting principle). Report MUST include date as of which the trial balance is calculated.
+**FR-034**: System MUST generate a Trial Balance report displaying all accounts organized in three sections: (1) Asset Accounts (Cash, MemberReceivable); (2) Income Accounts (user-defined revenue categories); (3) Expense Accounts (user-defined expense categories). Each account MUST display: Account Name | Debit Amount | Credit Amount (each account row shows its balance in Debit or Credit column as appropriate, zero in the other). Subtotals MUST be shown after each section. Grand total row at end MUST show: Total Debits | Total Credits. The report MUST verify that Total Debits = Total Credits (within 0.01 for decimal precision); if totals do not equal, the system MUST reject report generation and display error: "GL Balance Verification Failed: Total Debits ($X.XX) ≠ Total Credits ($Y.YY). Please review and correct GL entries." Report MUST include date as of which the trial balance is calculated.
 
 **FR-035**: System MUST generate an Account Register report showing all transactions in chronological order by date within selected categories. Each transaction MUST display: date, description, category, debit amount (for expenses), credit amount (for income), and running balance. Running balance MUST update correctly after each transaction.
 
-**FR-036**: System MUST generate a Member Account Summary report showing each member with opening balance (beginning of period), all transactions affecting that member during the period (fees, payments, adjustments), and closing balance (end of period). Outstanding fees MUST be aged showing current, 30-day, 60-day, and 90+ day categories.
+**FR-036**: System MUST generate a Member Account Summary report showing each member (including archived members for historical completeness) with opening balance (beginning of period), all transactions affecting that member during the period (fees, payments, adjustments), and closing balance (end of period). Outstanding fees MUST be aged showing current, 30-day, 60-day, and 90+ day categories. Archived members' historical transaction data MUST be included to enable complete financial analysis and accurate aging calculations.
 
 **FR-037**: System MUST provide print capability for all financial reports allowing users to print to PDF or physical printer. Printed reports MUST include: title, date range, generation date, all column headers, all data rows with proper alignment, subtotals, and grand totals. Printed format MUST be professional and clearly readable.
 
 **FR-038**: System MUST ensure all financial transaction amounts are stored with proper precision (minimum 2 decimal places); all calculations MUST maintain precision without rounding errors throughout arithmetic operations.
 
-**FR-039**: System MUST enforce accounting transaction integrity: every debit MUST have corresponding credit (balanced entry principle). When a payment is recorded, income account is credited and cash/receivable is debited. When a fee is assigned, expense/receivable account is debited and income account is credited.
+**FR-039**: System MUST enforce **accounting transaction integrity using paired GL entries**: every debit MUST have exactly one corresponding credit entry, and vice versa. All Transactions on any given date MUST sum to zero (total debits = total credits). GL accounts are derived from Category type at transaction record creation time; no runtime lookup needed. When a payment is recorded, the system MUST create two Transaction records: (1) Debit=$amount on Cash account (Category='CashReceived' or similar Asset category, GL effect: organization receives cash); (2) Credit=$amount on MemberReceivable account (Category='MemberReceivable' or similar Asset category, GL effect: member's outstanding balance decreases). When a fee is assigned to a member, the system MUST create two Transaction records: (1) Debit=$amount on MemberReceivable (Category='MemberReceivable', GL effect: member owes organization); (2) Credit=$amount on the applicable Income category (Category FK to user-defined Income category, GL effect: organization recognizes income). System MUST validate GL balance (sum of all debits = sum of all credits) before generating reports or ending transactions.
 
 **FR-040**: System MUST include automated tests proving coverage of all reachable code paths for Finance module operations (payments, reporting, categorization); all financial workflows MUST have corresponding UI integration tests verifying report accuracy.
 
@@ -392,11 +404,11 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 **FR-044**: System MUST include automated tests proving coverage of all reachable code paths for data access layer operations (CRUD, transactions, migrations); all data persistence workflows MUST have corresponding integration tests verifying data integrity and schema correctness.
 
-**FR-045**: System MUST implement a Reports root menu item in the main navigation that aggregates all available reports from all modules (MVP and plugins). Reports MUST be organized by module name with submenus for each module's reports. Reports menu organization MUST follow the module order: Members reports, then Finance reports, then plugin reports alphabetically by module name.
+**FR-045**: System MUST implement a Reports root menu item in the main navigation that aggregates all available reports from all modules (MVP and plugins). Reports MUST be organized by module with submenus for each module's reports. Reports menu structure: (1) MVP module sections (Members section, Finance section) with reports nested under each; (2) Plugin sections (alphabetically by plugin module name) with each plugin module as a section header and its reports nested under it. Example structure: "Members" > "Member List", "Committee Report"; "Finance" > "Income Statement"; "Attendance Analytics" > "Monthly Summary" (plugin). Reports menu organization follows module order: Members, Finance, then plugins alphabetically.
 
-**FR-046**: System MUST provide a report provider contract (`IReportProvider`) allowing MVP modules and plugins to register custom reports. Each report provider MUST specify: report name, report ID, module name, display order within module, and a method to generate report data. Module providers MUST generate report data; the report infrastructure MUST handle display, printing, and exporting.
+**FR-046**: System MUST provide a report provider contract (`IReportProvider`) allowing MVP modules and plugins to register custom reports. Each report provider MUST specify: report name, report ID, module name, display order within module, and a method to generate report data. Each module (MVP or plugin) is responsible for: (1) specifying its module name (e.g., "Members", "Finance", "Attendance Analytics"), (2) providing all its reports with unique report IDs and display orders. The Reports infrastructure auto-discovers providers, organizes reports into module sections in the Reports menu, and renders each module's section as a submenu. Module providers MUST generate report data; the report infrastructure MUST handle display, printing, and exporting.
 
-**FR-047**: System MUST implement a shared common report viewer component that all modules use for displaying reports. The report viewer MUST support: displaying report data on screen, printing to PDF through a print dialog, exporting to CSV, and displaying loading indicators while report data is being generated. The viewer MUST have consistent UI/UX across all modules.
+**FR-047**: System MUST implement a shared common report viewer component that all modules use for displaying reports. Report generation MUST be synchronous; when user selects a report, the system blocks UI while report data is generated, then displays the report in the common viewer. The report viewer MUST support: displaying report data on screen, printing to PDF through a print dialog, exporting to CSV, and displaying a "Generating report..." loading message while report data is being prepared. Report data is regenerated fresh each time the user selects the report, prints, or exports (no caching between actions). If report generation exceeds 5 seconds, the loading message MUST include an option to cancel and return to the Reports menu. The viewer MUST have consistent UI/UX across all modules.
 
 **FR-048**: System MUST support report data generation abstraction where each module provides the report data (structured as rows/columns with headers) and the common viewer handles rendering, print-to-PDF, and CSV export. Modules MUST NOT implement their own print or export logic; all modules MUST use the common infrastructure.
 
@@ -445,6 +457,8 @@ The application provides a "Reports" root menu item that aggregates reports from
 **NFR-017**: **Data Access Layer Architecture**: System MUST implement a centralized, extensible base data access layer using Entity Framework Core with SQLite. All MVP module data access (Members, Rehearsals, Events, Finance, Settings, Categories, Audit Trail) MUST be consolidated in the base DAL with repository contracts. Plugin architecture MUST support data access extensibility through entity registration and code-first migrations without requiring core code modifications. Plugin entities MUST be persisted to the shared SQLite database with automatic schema migration.
 
 **NFR-018**: **Reports Infrastructure**: System MUST implement a shared, common reports infrastructure providing consistent report viewing, printing, and exporting capabilities across all modules (MVP and plugins). Each module is responsible for generating report data (structured rows/columns with headers); the common infrastructure handles all display, PDF printing, and CSV exporting. Report provider auto-discovery MUST follow the same pattern as dashboard tiles and settings tabs with graceful error handling for failed providers.
+
+**NFR-019**: **Report Generation Performance**: Report generation MUST be synchronous and blocking; user selects report, waits for data generation and display within common report viewer. No concurrent report generation. No caching between report selection, print, or export actions; each action triggers fresh data generation. Performance target: reports MUST generate and display within 5 seconds for typical organizations (≤500 members, ≤3 years of historical data). For longer-running reports, UI MUST display "Generating report..." message with optional cancel button to allow user to return to menu.
 
 ---
 
@@ -621,12 +635,14 @@ The application provides a "Reports" root menu item that aggregates reports from
 ### Key Entities
 
 **Member**:
-- Unique identifier, name, phone, email, join date
-- Status: Active, Inactive, or Archived (soft-deleted)
-- Activation/inactivation effective dates (for historical active-member computation)
-- Outstanding annual fee balance (current year)
-- Outstanding attendance fee balance
-- Relationships: registrations, payment records, attendance records, committee memberships
+- Unique identifier, name, street address (required), phone (optional), email (optional), join date, optional date of birth
+- **Age**: Calculated property derived from DateOfBirth; only displayed if DateOfBirth is provided; not persisted separately; calculated server-side for consistency
+- **Status**: Enum {Active, Inactive} — independent from archive state; inactivation changes Status only
+- **Soft-Delete Fields**: IsDeleted (boolean), DeletedAt (DateTime?), DeletedBy (string?) — set only on explicit archival, NOT on inactivation
+- **Effective Dates**: ActivateDate (DateTime, nullable) set when member transitions Inactive→Active; InactivateDate (DateTime, nullable) set when member transitions Active→Inactive. Both recorded as system date (today) when status change occurs. Effective dates are immutable (not editable). Used for historical active-member computation in attendance/participation rate calculations.
+- Relationships: payments, GL transactions (via member reference), attendance records, committee memberships, fees
+- **Validation**: Email format validated if provided; phone format validated if provided; DateOfBirth validated to not be in future and within reasonable range (≤150 years ago)
+- **Query Pattern**: Active members = `Status='Active' AND IsDeleted=false`; Inactive members = `Status='Inactive' AND IsDeleted=false`; Archived members = `IsDeleted=true`. Historical active-member status AS OF event date = `Status='Active' AND ActivateDate <= event_date AND (InactivateDate IS NULL OR InactivateDate > event_date) AND IsDeleted=false` (archived members always excluded)
 
 **CommitteeMembership**:
 - Unique identifier, member reference (FK to Member), calendar year, position (role/title)
@@ -651,19 +667,36 @@ The application provides a "Reports" root menu item that aggregates reports from
 - Payment type (Annual membership or Attendance fee)
 - Member reference
 - Optional notes (editable with audit trail; amount/date/category locked)
-- Relationships: audit trail entries
+- **Relationships**: Links to GL Transaction pairs (one Payment may create multiple Transaction pairs via FIFO allocation); audit trail entries
+- **Purpose**: Metadata and audit trail for WHO paid WHAT. Actual GL entries (debit/credit pairs) are recorded in Transaction table. Payment.Amount must equal sum of related Transaction.CreditAmount values.
 
-**Transaction** (General Ledger Entry):
+**Fee** (Immutable Financial Obligation Record):
+- Unique identifier, member reference (FK), fee type enum {Annual, Attendance, Other}
+- Amount (decimal, 2+ places)
+- Fee Date (date when fee was generated/applies to) — for annual fees = Jan 1 of year; for attendance fees = rehearsal/event date
+- DueDate (date by which fee should be paid) — for annual fees defaults to Dec 31 of year; for attendance fees = event date; configurable per Settings
+- CreatedAt timestamp (creation timestamp for FIFO tiebreaker ordering)
+- IsDeleted soft-delete flag (NEVER set to true per Constitution §3.4; fees are immutable and permanent)
+- **Immutability**: Fee Amount, Date, Type, DueDate locked after creation; no edits permitted in UI. New GL reversals and adjustments create new GL transactions; original fees remain unchanged.
+- Relationships: member, GL transaction(s) representing the fee entry and any subsequent reversals/write-offs
+- **Purpose**: Immutable, permanent record of financial obligations. Fees are created when earned (annual fee application, attendance recording) and remain unchanged. Payments reduce member liability via GL transactions, not by modifying Fee records. Write-offs also use GL reversals, not Fee deletion.
+- **Query Pattern**: Outstanding fees for member X = `SELECT * FROM Fee WHERE Member=X AND IsDeleted=false AND Amount > sum(GL Credits for this Fee)` (fees less paid amounts)
+
+**Transaction** (General Ledger Entry — Immutable Paired Entries):
 - Unique identifier, transaction date (required), category (required, FK to Category)
-- Transaction type (Fee/Payment/Adjustment)
-- Debit amount (for expenses, fees)
-- Credit amount (for income, payments)
-- Member reference (when applicable)
+- **Debit Amount** (decimal, 2+ places) — for expenses/receivables
+- **Credit Amount** (decimal, 2+ places) — for income/cash
+- **GL Account** (derived deterministically from Category type at record creation) — Income categories → Revenue GL; Expense categories → Expense GL; Special categories (Cash, MemberReceivable) → Asset GL. No runtime lookup needed; GL account is implied.
+- Member reference (FK, when applicable) — e.g., annual fee transaction linked to member
+- Payment reference (FK, when applicable) — links payment to GL entries it created
 - Description/notes
 - Created and modified timestamps
-- Soft-delete flag (IsDeleted) for archive operations
-- Relationships: category, member, audit trail entries
-- Constraint: Debit + Credit amounts MUST balance for each transaction
+- **Soft-delete flag (IsDeleted)**: NEVER TRUE for financial records per Constitution §3.4 (Financial Transactions exempt). Transaction is immutable and permanent.
+- Relationships: category, member, payment (metadata link), audit trail entries
+- **Paired Entry Constraint**: Every financial event creates exactly TWO Transaction records: (1) Debit entry + (2) Credit entry. Debit.Amount = Credit.Amount. Total debits must equal total credits on any query date.
+- **Example (Member pays $50 cash toward membership fee)**:
+  - Transaction 1: Date=2026-05-15, Debit=$50, Credit=$0, Category='CashReceived' (Asset GL), Member=John, Payment.id=123
+  - Transaction 2: Date=2026-05-15, Debit=$0, Credit=$50, Category='MemberReceivable' (Asset GL), Member=John, Payment.id=123
 
 **Category**:
 - Unique identifier, name, type (Income or Expense)
@@ -710,6 +743,68 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 - Q: Should each module implement its own report viewing and printing, or should there be a common infrastructure? → A: Common, shared report infrastructure MUST be used across all modules. Each module generates report data (structured rows/columns with headers) via `IReportProvider` contract; the common Reports infrastructure handles all display rendering, PDF printing, and CSV exporting. This eliminates code duplication, ensures consistent UI/UX, and enables future plugins to reuse the same infrastructure without implementing their own print/export logic.
 
+- Q: Should report generation be synchronous (UI blocks while report generates) or asynchronous (background generation with polling/notification)? → A: Synchronous, blocking report generation. User clicks report menu item, waits for data generation and display, then can print or export. No concurrent report generation. Simpler implementation aligned with MVP scope. Performance target: reports generate within 5 seconds for typical organizations (≤500 members, ≤3 years of data). If reports exceed 5 seconds, show "Generating report..." message with cancel option.
+
+- Q: When a member has multiple outstanding fees (2024 annual, 2025 annual, 2025 attendance) and makes a single payment, which fees should be reduced first? → A: FIFO (First-In-First-Out) allocation. Oldest unpaid fees are satisfied first (chronological fee creation order: 2024 annual → 2025 annual → 2025 attendance). This is standard accounting practice, enables proper aging analysis in Member Account Summary reports, and ensures consistent reduction of oldest debt first.
+
+- Q: Should archived members appear in current metrics (attendance/participation rates) and historical reports? → A: Exclude from current, include in historical. Archived members are excluded from current attendance/participation rate calculations (dashboard tiles) to show only active group metrics. However, archived members' historical transaction data MUST be included in aged reports (Member Account Summary) to preserve complete financial history, enable accurate aging analysis, and comply with data preservation requirements.
+
+- Q: How should the system represent member lifecycle states (Active/Inactive/Archived) in the database? → A: **Dual Model**: Member has two independent attributes: (1) `Status` enum field = {Active, Inactive} representing participation state; (2) `IsDeleted` boolean field (+ `DeletedAt`, `DeletedBy` timestamps) representing archival/soft-delete state. When user inactivates a member, set `Status='Inactive'` but keep `IsDeleted=false`. When user archives a member, set `IsDeleted=true` (do NOT change Status). Reactivating an archived member restores `IsDeleted=false`. This design separates administrative state (Active/Inactive) from data preservation state (archived), enabling proper filtering and audit trails. Query patterns: Active members = `WHERE Status='Active' AND IsDeleted=false`; Inactive members = `WHERE Status='Inactive' AND IsDeleted=false`; Archived members = `WHERE IsDeleted=true` (status ignored).
+
+- Q: How should the system implement double-entry accounting for financial transactions? → A: **Paired GL Entries**: Every financial event creates exactly TWO `Transaction` records: one debit entry and one credit entry with equal amounts. The `Transaction` table is the general ledger; this is the source-of-truth for all financial data. Example: When a member pays $50 toward their membership fee, the system creates: (1) Transaction with Debit=$50 on GLAccount='CashReceived'; (2) Transaction with Credit=$50 on GLAccount='MemberReceivable'. Both linked to the same Payment.id for audit trail. The `Payment` entity is metadata only—it records WHO paid WHAT and WHEN, but the actual GL is in the `Transaction` table. Member balances are calculated by querying Transactions: `sum(debits where member=X) - sum(credits where member=X)`. Trial Balance reports verify `sum(all debits) = sum(all credits)`. Income Statement sums by category. This ensures accounting integrity and enables proper aging analysis via GL date ordering.
+
+- Q: How should payment allocation work when a member has multiple outstanding fees and makes a partial payment? → A: **GL-Centric Allocation (FIFO via GL)**: When payment recorded, system creates GL Transaction pairs in chronological order of fees (FIFO). Allocation emerges naturally from GL structure—no separate PaymentAllocation table needed. Example: Member owes $100 (2024 annual) + $100 (2025 annual) + $50 (attendance) = $250 total, and pays $200. System creates GL Transaction pairs for the $200 payment in chronological GL order. When Member Account Summary report generates, it reconstructs member balance by walking GL Transactions in date order (FIFO), showing: (1) 2024 annual $100 paid; (2) 2025 annual $100 paid; (3) 2025 attendance $0 paid (payment exhausted). Aging calculation uses GL transaction dates. This model is immutable per Constitution §3.4 (GL is permanent; never deleted). To reverse/correct payments, create reversing GL entries, not delete.
+
+- Q: When a member has multiple unpaid fees with the same date field (e.g., two 2024 annual fees both with date 2024-01-01 but created on different days), what FIFO tiebreaker should apply? → A: Use transaction creation timestamp as tiebreaker (Fee.CreatedAt). When two fees share the same date, the fee created first (earlier CreatedAt timestamp) is satisfied first in payment allocation. This ensures deterministic, non-arbitrary FIFO ordering aligned with standard accounting practice of GL entry sequence.
+
+- Q: Should annual membership fee application be automatic (system auto-applies on day 1 of renewal month) or manual (user clicks "Apply Annual Fees" button)? → A: Manual trigger via "Apply Annual Fees" button in Finance module. System does NOT automatically apply fees on month arrival. User can click the button any time during or after the configured renewal month. Button is enabled only if the renewal month has arrived (current month >= configured renewal month) OR if user is re-applying after a prior application. This gives coordinators explicit control, reduces charging risks, and aligns with MVP single-user design (no background jobs).
+
+- Q: What are the exact HSL color values for the muted Green and muted Red used to display positive and negative outstanding balances on the Finance tile? → A: **Muted Green** (positive balance): HSL(120°, 35%, 70%). **Muted Red** (negative balance): HSL(0°, 35%, 70%). Balance = $0.00 displays in neutral gray: HSL(0°, 0%, 60%). These values satisfy the "muted" requirement (saturation <50%, lightness 60–80%) and provide consistent, non-arbitrary color choices across all deployments. If balance is exactly $0.00, display in neutral gray instead of green or red.
+
+- Q: When calculating attendance/participation rates for past rehearsals/events, should the system use member's current Status or their Status AS OF the rehearsal/event date (based on effective dates)? → A: Use member Status AS OF the rehearsal/event date using effective dates (Option B). For a rehearsal on 2026-02-01, include a member in the denominator if Status=Active on that date, even if the member is now Inactive. Query logic: `WHERE Status='Active' AND ActivateDate <= rehearsal_date AND (InactivateDate IS NULL OR InactivateDate > rehearsal_date)`. This ensures historical attendance rates reflect the actual membership on the date the event occurred, not current status. Archived members (IsDeleted=true) are ALWAYS excluded from the denominator, regardless of effective dates.
+
+- Q: What are the exact date of birth validation rules, particularly for edge cases like today's date and the "reasonable range" upper bound? → A: **Option C with modification**: DOB MUST be < today (reject today's date; age 0 not allowed). Range is configurable in Settings (default 150 years). Age calculation: `floor((today - DOB) / 365.25)` using current date, updates daily at midnight. **New requirement**: Add optional "Minimum Member Age" field in Settings > General Settings tab (default: 0, no minimum). If set, system rejects DOB entries that would result in age < minimum (e.g., if Minimum Age = 18 and today is 2026-05-15, reject DOBs after 2008-05-15). Validation error message: "Member age ({calculated_age}) must be at least {minimum_age} years old."
+
+- Q: What is the GL account structure for double-entry accounting? → A: **Simple GL Account Structure** with three account categories: (1) **Asset Accounts**: Cash, MemberReceivable; (2) **Revenue Accounts**: mapped from user-defined income categories; (3) **Expense Accounts**: mapped from user-defined expense categories. Each `Transaction` record implies its GL Account based on (Category + TransactionType). Example: When a member pays $50 in cash, create Debit=$50 on CashReceived (Asset) and Credit=$50 on MemberReceivable (Asset). When annual fee is applied, create Debit=$50 on MemberReceivable (Asset) and Credit=$50 on the applicable Income category (Revenue). When an expense is recorded, create Debit=$50 on the expense category (Expense) and Credit=$50 on Cash (Asset). This minimalist approach maintains accounting integrity while MVP scope stays simple. Chart-of-accounts complexity deferred to Phase 2+.
+
+- Q: How should committee membership transition when the calendar year advances? → A: **Clear and Re-enter Model** (Option A). When the calendar year advances (Jan 1 midnight), the system: (1) Preserves all prior-year committee records as read-only history in the Committee History section; (2) Clears current-year committee flags (set Committee Status = "Not Committee" for all members for new year); (3) Coordinators must explicitly re-enter committee members and positions for the new year by editing member profiles. This ensures conscious, intentional assignments annually, prevents stale privilege carryover, and guarantees governance review each year.
+
+- Q: Should inactive members be charged annual membership fees and attendance fees? → A: **Option A: Exclude Inactive from All Fee Charging**. When applying annual membership fees, skip all members where Status='Inactive'. When recording rehearsal attendance, allow attendance entry for inactive members (for historical completeness and potential reactivation scenarios), but do NOT automatically create unpaid attendance fee records for inactive members. Inactive members retain existing outstanding fees from when they were active and may pay to clear them, but they incur NO new charges. This aligns with the semantic meaning of "Inactive" (temporarily not participating), prevents unintended billing, and keeps financial ledger clean.
+
+- Q: What entities and data should be included in backup/restore? What import validation rules apply? → A: **Option A: Comprehensive Backup with Strict Import Validation**. Backup MUST include ALL operational entities: (1) Members + all attributes; (2) Rehearsals + attendance records; (3) Events + participation records; (4) Financial records (Fees, Payments, GL Transactions, Categories); (5) Settings (organization config, theme preference); (6) Committee membership history; (7) Audit trail logs (all retained records). Import validation MUST verify that ALL entity types are present in the import source. If any required entity type is completely missing, reject the import with error message: "Import file incomplete: missing {entity_type}. Restore from complete backup." This ensures data integrity and prevents partial/corrupted restores. Selective exports are not supported in MVP; users must backup/restore complete datasets.
+
+- Q: Should member reactivation automatically forgive all prior outstanding fees or give coordinator choice? → A: **Option A: Automatic Debt Forgiveness on Reactivation**. When a coordinator marks an Inactive member as Active (reactivation), the system automatically and unconditionally: (1) Forgives ALL outstanding fees from prior years; (2) Creates GL write-off Transaction pairs for each forgiven fee with BadDebtExpense category; (3) Soft-deletes original Fee records for audit trail; (4) Resets member's payable balance to $0 (fresh start). Coordinator has NO choice—reactivation always triggers automatic forgiveness. Current-year annual fee will be applied per normal fee application process if renewal month arrives after reactivation. This prevents debt from becoming barrier to reactivation and ensures clean financial state for reactivated members.
+
+- Q: When a member is reactivated (Inactive→Active), which unpaid fees should be cleared and what record should be maintained? → A: **Write-Off with Audit Trail**: Upon reactivation, system MUST: (1) Write off (forgive) all prior-period unpaid fees by creating GL reversing entries (debit on MemberReceivable, credit on BadDebtExpense/WriteOff category) to reverse previous fee transactions; (2) Soft-delete the original Fee records (IsDeleted=true, DeletedAt=now, DeletedBy=userId); (3) Member's payable balance resets to $0 and previous period outstanding balances are forgiven; (4) Current-year membership fee is payable - the annual fee application process will generate a fresh current-year fee when applicable. Prior fees are NOT deleted but marked as written-off via GL reversals and soft-delete flags, ensuring: historical record preserved, member starts fresh with clean slate, complete governance audit trail maintained showing write-offs and reasons.
+
+- Q: Where should PaymentType (Annual/Attendance/Other) be stored, and how does it relate to GL Category? → A: **Option A - Explicit Payment Record Field**: PaymentType is stored as an explicit enum field on the Payment record (Payment.PaymentType = {Annual, Attendance, Other}). PaymentType is metadata used for reporting, filtering, and audit trails. GL Category (on Transaction records) is separate and used for accounting categorization/classification. When a payment is recorded: Payment record stores PaymentType explicitly; GL Transaction entries store Category (e.g., "MembershipPayment", "AttendanceFee"). Both fields are immutable after payment creation. This enables: clear reporting by payment type, operational filtering in Finance UI, distinct accounting categories, and full audit trail without reverse-engineering GL entries.
+
+- Q: For backup/restore upsert operations, how should the system match existing records to determine whether to insert or update? → A: **Option A - Primary Key Only**: All entity types match by database Primary Key (ID field) during import. If source PK exists in target database, UPDATE all non-key fields with source values. If source PK does NOT exist in target database, INSERT the record. This is standard database upsert behavior, preserves backup integrity (exact IDs maintained), avoids complex business-key matching, and aligns with schema versioning. Users needing to modify business keys should use full export/re-import workflows after key changes are made locally.
+
+- Q: When a member is archived, what happens to their committee role assignments (e.g., Treasurer, Secretary)? → A: **Option B - Soft-Delete Memberships**: When a member is archived (member status → Inactive), all active committee assignments held by that member are automatically soft-deleted in parallel (IsDeleted=true, DeletedAt=archive date, DeletedBy=user performing archive). Soft-delete flags and audit trail preserved enable historical reconstruction. Archived members no longer appear in active committee lists or permission grants. This ensures: consistent archival pattern (member and roles both soft-deleted), prevents archived inactive members from retaining active permissions, maintains full audit trail via soft-delete metadata, and aligns with Constitution §6.7 (data preservation via soft-delete).
+
+- Q: For the Aging & Collections Report (FR-012), should fee aging be calculated from invoice date or due date? → A: **Option B - Due Date Field**: Fee entity MUST include a `DueDate` field (separate from CreatedAt). Aging calculation for reports uses `today - Fee.DueDate` to determine aging bucket (current, 30, 60, 90+ days). For annual fees: DueDate defaults to Dec 31 of the year they cover (or configurable via Settings). For attendance fees: DueDate equals event date. For other fees: DueDate defaults to 30 days from CreatedAt unless manually specified. This aligns with standard accounting practices for aging reports, enables accurate collections workflows, and provides meaningful "days past due" semantics. Fee.DueDate is immutable after fee creation (like other fee metadata).
+
+- Q: What should the Fee entity structure include, and are fees mutable after creation? → A: **Option A: Formal Fee Entity with DueDate; Immutable After Creation**. Fee entity MUST include: (1) Unique ID; (2) Member FK; (3) Fee Type enum {Annual, Attendance, Other}; (4) Amount (decimal, 2+ places); (5) Fee Date (when fee applies: Jan 1 for annual fees, event date for attendance); (6) DueDate field (separate from CreatedAt; defaults per type); (7) CreatedAt timestamp (for FIFO tiebreaker); (8) IsDeleted soft-delete flag (NEVER set to true per Constitution §3.4). Fees are IMMUTABLE after creation—Amount, Date, Type, DueDate locked in UI, no edits allowed. Payments reduce member liability via GL Transaction pairs, not by modifying Fee records. Write-offs and adjustments also use GL reversals, not Fee deletion. This makes financial obligations explicit, immutable, and auditable.
+
+- Q: Should first-run setup automatically apply annual membership fees or only initialize settings? → A: **Option A: Settings Initialization Only; No Automatic Fee Application**. Setup wizard ONLY initializes Settings record (organization name, annual fee amount, attendance fee amount, renewal month) and creates empty database schema. Upon setup completion, system presents empty dashboard with no fees created. Coordinator must: (1) Register members first via Members module; (2) Manually trigger "Apply Annual Fees" button in Finance module to create fees. This gives coordinators explicit control over billing start date, prevents premature charging before roster is verified, and aligns with manual fee application principle.
+
+- Q: How should member activation/inactivation effective dates be recorded? Can coordinators backdate status changes? → A: **Option A: System-Assigned Effective Dates; No Backdating**. Member status transitions (Active↔Inactive) are recorded with TODAY'S DATE as the effective date at the moment coordinator clicks the status toggle button. Member entity includes: (1) `ActivateDate` (DateTime, nullable) - set when member transitions Inactive→Active; (2) `InactivateDate` (DateTime, nullable) - set when member transitions Active→Inactive. Effective dates are immutable after status change (not editable in UI). Status changes are immediate (no future/scheduled status changes). This ensures: transparent audit trail (action date = effective date), prevents historical manipulation, simplifies implementation. Query logic for historical attendance rates uses these dates: `WHERE Status='Active' AND ActivateDate <= event_date AND (InactivateDate IS NULL OR InactivateDate > event_date)`.
+
+- Q: What is the default member status when a coordinator creates a new member? → A: **Option A: Default to Active Status**. When coordinator creates a new member via "Add Member" form and saves, if no explicit Status is selected, member defaults to Status='Active' with ActivateDate=today. Newly-created members are presumed to be joining to participate; coordinator can immediately inactivate if needed. This reduces friction for the common case (most new registrants are active participants) and aligns with optimistic UI design.
+
+- Q: How should the Trial Balance report format accounts and organize debit/credit columns? → A: **Option A: Standard 3-Section GL Format with Separate Debit/Credit Columns**. Trial Balance report MUST display: (1) **Asset Accounts section** (Cash, MemberReceivable) with columns: Account | Debit | Credit | Balance (each account row shows its amount in Debit or Credit column as appropriate, zero in the other); (2) **Income Accounts section** (user-defined revenue categories) with same three columns; (3) **Expense Accounts section** (user-defined expense categories) with same three columns. Subtotals after each section. Grand total row at end: Total Debits | Total Credits (MUST be equal; if not equal, error prevents report generation). This follows standard accounting GL conventions, is immediately familiar to accounting users, and enables easy verification of GL balance.
+
+- Q: How does the system determine which GL Account to use when recording transactions? → A: **Option A - Derived from Category Type**: GL accounts are derived deterministically from the Category type (Income vs Expense). When recording a transaction with a Category marked as "Income", system creates: Debit on MemberReceivable (Asset) → Credit on that Income category (Revenue GL). When Category is marked as "Expense": Debit on that Expense category (Expense GL) → Credit on Cash (Asset). For member payments: Debit on Cash (Asset) → Credit on MemberReceivable (Asset). No explicit GL Account lookup, user field, or lookup table needed during transaction recording. Mapping is implicit and deterministic based solely on Category type. This simplifies implementation, eliminates configuration errors, and ensures consistent GL structure across all transactions.
+
+- Q: When a user displays a report, prints it, and then exports it to CSV within the same viewing session, should the system regenerate report data each time or cache it? → A: **Option A - No Caching**: Report data is generated fresh each time the user selects a report, and regenerated if the user prints or exports after display. Each action (select, print, export) triggers fresh data generation. This ensures: (1) Always-current data (no stale report values), (2) Simple implementation (no cache invalidation logic), (3) Transparent behavior (user sees "Generating report..." message each time), (4) Aligned with MVP scope. No cross-action caching; no session-level or view-level caches for report data.
+
+- Q: When a third-party plugin registers a custom report, where should the plugin's report appear in the Reports menu hierarchy? → A: **Option B - Plugin Module Sections**: Each plugin module gets its own submenu section with the plugin module name as the section header. Plugin reports are nested under their plugin module name (e.g., "Attendance Analytics" plugin contributes reports under "Attendance Analytics" > "Monthly Summary"). This provides: (1) Clear ownership (users see which module provides each report), (2) Scalability (unlimited plugins, each with its own namespace), (3) Consistency (mirrors dashboard tile organization and Settings tab provider pattern), (4) Extensibility (plugins control their reports without modifying core menu structure). Reports menu structure: Members section, Finance section, then plugin sections (alphabetically by plugin module name).
+
+- Q: When calculating historical attendance/participation rates for past rehearsals/events, how should the system identify "members active on that date"? → A: **Option A - Status + Effective Dates (AS OF calculation)**: For any historical event (rehearsal/event on date D), include a member in the denominator if: (1) Status='Active' on date D (not current), (2) ActivateDate <= D, (3) InactivateDate IS NULL OR InactivateDate > D, (4) IsDeleted=false (archived members always excluded). Query logic: `WHERE Status='Active' AND ActivateDate <= event_date AND (InactivateDate IS NULL OR InactivateDate > event_date) AND IsDeleted=false`. This reconstructs the historical active membership as it existed on that date, produces accurate historical metrics, and aligns with the effective dates model. Archived members are ALWAYS excluded from the denominator regardless of effective dates. Historical attendance rates thus represent the actual participation percentage of members who were active on that date.
+
+- Q: How should the system visually distinguish the current year committee assignment from historical committee assignments on the member detail screen? → A: **Option A - Bold Current Year + "Current" Badge**: Current year committee entry displays in bold text with a small Bootstrap badge labeled "Current" (e.g., "**2026 (Current) - Treasurer**"). Historical years display in normal text weight without badge (e.g., "2025 - Secretary", "2024 - Treasurer"). This provides: (1) Immediate visual scanning (bold draws attention), (2) Clear accessibility (text + visual; screen readers read both bold tag and "Current" label), (3) Bootstrap styling consistency (uses badge component), (4) Sufficient contrast per WCAG AA. Implementation: Render current year's CommitteeMembership with `<strong>` tag wrapping year and position, plus `<span class="badge bg-light">Current</span>` for the badge label.
+
 ---
 
 ## 6. Acceptance Criteria *(mandatory)*
@@ -724,6 +819,10 @@ The application provides a "Reports" root menu item that aggregates reports from
 **Technical Specification**:
 - [ ] Plugin architecture contracts (`IDashboardTileProvider`, `ISettingsTabProvider`, `IDataAccessProvider`) are documented
 - [ ] Database schema entities and relationships are defined
+- [ ] Member lifecycle model documented (Status enum independent from IsDeleted flag; query patterns defined)
+- [ ] GL transaction paired entry model documented (every financial event creates debit + credit pair)
+- [ ] Member balance calculation formula documented (sum of GL debits where member=X minus sum of GL credits where member=X)
+- [ ] Payment allocation model documented (GL-centric, FIFO ordering via GL date)
 - [ ] Base data access layer (DAL) centralizes all MVP module data access with repository contracts
 - [ ] Plugin data access extensibility contract and auto-discovery mechanism documented
 - [ ] EF Core migrations support for plugin entity registration and schema extension documented
@@ -738,6 +837,9 @@ The application provides a "Reports" root menu item that aggregates reports from
 **Testing Coverage**:
 - [ ] Each user story has corresponding UI integration test scenarios
 - [ ] All data access layer operations (CRUD, transactions, migrations) have integration test coverage
+- [ ] GL transaction pair creation and GL balance validation have unit and integration test coverage
+- [ ] Member lifecycle state transitions (Active ↔ Inactive, Active ↔ Archived) have test coverage with correct Status + IsDeleted combinations
+- [ ] Payment allocation FIFO ordering and member balance calculation from GL have test coverage
 - [ ] Plugin data access registration and entity schema migration are testable scenarios
 - [ ] Report provider registration, report data generation, and common viewer rendering have test coverage
 - [ ] Report print-to-PDF and CSV export functionality has integration test coverage
