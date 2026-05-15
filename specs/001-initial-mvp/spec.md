@@ -843,7 +843,7 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 ### Session 2026-05-15 (Clarification Pass #3)
 
-This session clarified 5 CRITICAL and HIGH ambiguities identified by artifact consistency analysis:
+This session clarified 6 CRITICAL and HIGH ambiguities identified by artifact consistency analysis:
 
 - **Q1: Attendance Fee Creation & Payment Status (HIGH)** → **A: Option A with payment status default**
   - **Decision**: Attendance fees are automatically created when attendance is recorded (Option A).
@@ -863,10 +863,30 @@ This session clarified 5 CRITICAL and HIGH ambiguities identified by artifact co
     - FR-005: Updated to specify automatic creation AND default-paid status
     - FR-008: Outstanding balance reports exclude soft-deleted fees per soft-delete query filters
     - FR-016: GL Transactions created for both paid AND unpaid fees; paid fees create GL pairs immediately; unpaid fees also create GL pairs (status is metadata, not GL driver)
-  - **Schema Updates Needed**: Fee entity Status field or similar mechanism to track payment status; AttendanceService includes payment status parameter
+  - **Schema Updates Needed**: Fee entity includes `PaidAtCreation` boolean field (immutable after creation); AttendanceService passes payment status at Fee creation
   - **Task Updates Needed**: T-054 (AttendanceService) implements fee creation with payment status default and removal logic; T-076 (test AttendanceService) includes test cases for fee creation/removal and payment status defaults
 
-- **Q2: Financial Record Soft-Delete Field Design (CRITICAL)** → **A: Option B - Remove soft-delete fields entirely**
+- **Q2: Fee Payment Status Field Design (MEDIUM)** → **A: Option D - Single immutable status at creation**
+  - **Decision**: Fee entity includes `PaidAtCreation` boolean field (immutable after Fee creation):
+    - When Fee is created, `PaidAtCreation` is set based on payment status at creation time
+    - For attendance fees: `PaidAtCreation` defaults to **true** (paid by default per Q1)
+    - For annual fees: `PaidAtCreation` defaults to **false** (unpaid, awaiting payment)
+    - For other fees: coordinator specifies when creating fee
+    - After Fee creation, `PaidAtCreation` value is immutable (no updates allowed)
+  - **Payment Tracking Mechanism**: GL transactions (not Fee status updates) provide audit trail of actual payments and GL reversals. Member balance calculated from GL, not from Fee status. Fee.PaidAtCreation is metadata only, indicating financial obligation at creation; GL provides transaction history.
+  - **Rationale**: Fee is immutable financial record per Constitution §3.4; status at creation is metadata for reporting/aging. Subsequent GL transactions provide full audit trail without modifying Fee. Aging calculations can use Fee.PaidAtCreation + GL query for accurate aged balances. Simpler than PartiallyPaid enum or derived GL queries.
+  - **Example Flow**: 
+    1. Attendance recorded → Fee created with Amount=$50, FeeDate=today, PaidAtCreation=true
+    2. Later, coordinator learns attendance was error, clears attendance → Fee soft-deleted, GL reversing entries created
+    3. Or: Fee created with PaidAtCreation=true, but 30 days later no actual payment received → Member Account Summary shows fee with aging "overdue" based on GL transactions, regardless of PaidAtCreation value
+  - **Impact on Outstanding Balance Calculation**: 
+    - `Outstanding = sum(GL debits for member) - sum(GL credits for member)`
+    - GL transactions are the source-of-truth, not Fee.PaidAtCreation
+    - Fee.PaidAtCreation is informational (for historical "was this fee expected to be paid at creation?" queries only)
+  - **Spec Updates Needed**: FR-028 (Fee entity definition) adds `PaidAtCreation` field as immutable boolean; updated schema documentation to clarify GL as payment truth.
+  - **Task Updates Needed**: T-033 (Fee entity) includes `PaidAtCreation` field with immutability constraint; T-054 (AttendanceService) passes PaidAtCreation=true; T-106 (PaymentService) does not modify Fee, only creates GL pairs.
+
+- **Q3: Financial Record Soft-Delete Field Design (CRITICAL)** → **A: Option B - Remove soft-delete fields entirely**
   - **Decision**: Transaction, Payment, and Fee entities will have NO soft-delete fields (`IsDeleted`, `DeletedAt`, `DeletedBy`)
   - **Rationale**: Constitution §3.4 states financial records are "EXEMPT from soft-delete pattern"; interpreted as the pattern does not apply at all. Removing fields entirely prevents accidental misuse and simplifies schema.
   - **Impact on FR-024**: Reactivation logic uses GL reversing transactions (already specified in FR-24) without soft-deleting original Fee records. Fee records remain immutable once created; GL write-offs provide full audit trail of debt forgiveness.
@@ -874,7 +894,7 @@ This session clarified 5 CRITICAL and HIGH ambiguities identified by artifact co
   - **Spec Updates Needed**: FR-024 reworded to remove soft-delete references; updated schema documentation.
   - **Task Updates Needed**: T-032, T-033 (entity definitions) corrected to exclude soft-delete fields from financial entities.
 
-- **Q3: GL Account Assignment Algorithm (HIGH)** → **A: Option B - Type-Prefixed Numbering Scheme**
+- **Q4: GL Account Assignment Algorithm (HIGH)** → **A: Type-Prefixed Numbering Scheme**
   - **Decision**: GL accounts use type-prefixed scheme:
     - **Asset Accounts**: GL#01xx (GL#0100=Cash, GL#0101=MemberReceivable)
     - **Income Categories**: GL#10xx (GL#1000 for first income category, GL#1001 for second, etc.)
@@ -889,7 +909,7 @@ This session clarified 5 CRITICAL and HIGH ambiguities identified by artifact co
   - **Spec Updates Needed**: FR-032 updated with specific GL account ranges and numbering algorithm; Category schema documents glAccount auto-assignment.
   - **Task Updates Needed**: New task T-034b "Implement GLAccountAssignmentService with sequential numbering per category type"; T-034 updated to reference this service.
 
-- **Q4: Committee Annual Reset Trigger Mechanism (HIGH)** → **A: Custom - Configurable Committee Renewal Month with Startup Check**
+- **Q5: Committee Annual Reset Trigger Mechanism (HIGH)** → **A: Configurable Committee Renewal Month with Startup Check**
   - **Decision**: Add user-configurable "Committee Renewal Month" setting (distinct from Membership Renewal Month):
     - **Setting Name**: CommitteeRenewalMonth (integer 1-12, default 1 for January)
     - **Trigger**: On application startup, system compares current month/year against `Settings.LastCommitteeResetYear`
@@ -905,7 +925,7 @@ This session clarified 5 CRITICAL and HIGH ambiguities identified by artifact co
   - **Schema Updates Needed**: Settings entity adds: (1) `CommitteeRenewalMonth` field (int 1-12, default 1); (2) `LastCommitteeResetYear` field (int, default current year - 1).
   - **Task Updates Needed**: T-030 (Settings entity definition) adds two fields; T-167 (Committee annual reset) documents startup check logic with month comparison and guard against duplicate resets.
 
-- **Q5: Payment Field Immutability Specification (HIGH)** → **A: Option A - Single UpdatedAt Timestamp**
+- **Q6: Payment Field Immutability Specification (HIGH)** → **A: Single UpdatedAt Timestamp**
   - **Decision**: Payment entity includes both `CreatedAt` and `UpdatedAt` timestamps:
     - `UpdatedAt` field updates ONLY when Notes field changes
     - Amount, Date, PaymentMethod, PaymentType, Category fields remain strictly immutable after payment creation
