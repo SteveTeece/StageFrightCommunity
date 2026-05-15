@@ -1,8 +1,8 @@
 # Implementation Plan: [FEATURE]
 
-**Template-Version**: 2.1.0
-**Required-Constitution-Version**: 2.1.0
-**Last-Updated**: 2026-04-01
+**Template-Version**: 2.2.0
+**Required-Constitution-Version**: 2.2.0
+**Last-Updated**: 2026-05-15
 **Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
 **Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
 
@@ -40,6 +40,22 @@
 | [risk-1] | [H/M/L] | [H/M/L] | [mitigation] | [name/role] |
 | [risk-2] | [H/M/L] | [H/M/L] | [mitigation] | [name/role] |
 
+## Module Structure & Dashboard Tile Plan *(mandatory if new feature module)*
+
+<!-- 
+  Constitution §4.1 (Vertical Slice Module Architecture) requires:
+  - Each feature organized as a vertical slice in its own folder
+  - No MediaTr or CQRS; use direct service injection
+  - Each module defines dashboard tiles (§4.2)
+  
+  Fill this section if this feature is a new module.
+-->
+
+- **Module Folder**: [e.g., `src/Features/Members/` or `Features/FinancialAuditing/`]
+- **Vertical Slice Ownership**: [entities, services, repositories, UI, tests all scoped to this module]
+- **Dashboard Tile(s)**: [describe tile(s) this module exposes: name, content type (summary/chart/action), data requirements]
+- **No MediaTr/CQRS**: [confirm direct service injection and standard repository patterns]
+
 ## Exception Taxonomy & Boundary Translation Plan *(mandatory)*
 
 - [List feature-specific custom exceptions]
@@ -61,6 +77,7 @@
 - No UI function may be considered complete without full integration test coverage.
 - No implementation may be considered complete without tests for all reachable code paths in changed behavior.
 - No feature may pass gate without documented custom exception taxonomy and boundary translation handling.
+- All new modules must follow vertical slice architecture (§4.1) and define dashboard tiles (§4.2).
 
 ## Layer Mapping *(mandatory)*
 
@@ -90,6 +107,16 @@ specs/[###-feature]/
   for this feature. Delete unused options and expand the chosen structure with
   real paths (e.g., apps/admin, packages/something). The delivered plan must
   not include Option labels.
+  
+  For new feature modules, use the vertical slice pattern (Constitution §4.1):
+  
+  src/Features/[ModuleName]/
+  ├── Domain/              # Entities, value objects, contracts
+  ├── Application/         # Services, handlers, orchestration
+  ├── Infrastructure/      # Repositories, external integrations
+  ├── UI/                  # Blazor components, pages
+  ├── Tests/               # Unit and integration tests
+  └── DashboardTile.cs     # Tile provider implementation
 -->
 
 ```text
@@ -105,7 +132,20 @@ tests/
 ├── integration/
 └── unit/
 
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
+# [REMOVE IF UNUSED] Option 2: Feature Modules (Vertical Slice - Constitution §4.1)
+src/Features/
+├── [ModuleName]/
+│   ├── Domain/
+│   ├── Application/
+│   ├── Infrastructure/
+│   ├── UI/
+│   ├── Tests/
+│   └── DashboardTile.cs
+├── [AnotherModule]/
+│   └── [same structure]
+└── Shared/              # Shared contracts and utilities
+
+# [REMOVE IF UNUSED] Option 3: Web application (when "frontend" + "backend" detected)
 backend/
 ├── src/
 │   ├── models/
@@ -120,7 +160,7 @@ frontend/
 │   └── services/
 └── tests/
 
-# [REMOVE IF UNUSED] Option 3: Desktop App + API (when "Windows/macOS" detected)
+# [REMOVE IF UNUSED] Option 4: Desktop App + API (when "Windows/macOS" detected)
 api/
 └── [same as backend above]
 
@@ -140,6 +180,7 @@ directories captured above]
 
 - [Align data model, contracts, and quickstart with spec]
 - [Ensure plugin boundaries and exception strategy are explicit]
+- [Confirm module structure and dashboard tile design (if applicable)]
 
 ## Re-check Constitution Gate (Post-Design)
 

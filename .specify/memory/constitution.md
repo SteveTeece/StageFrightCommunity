@@ -1,40 +1,44 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version Change: 2.1.0 → 2.1.1
+Version Change: 2.2.0 → 2.2.1
 
 Modified Principles:
-- 3.4 Soft Delete Pattern (clarified: soft-delete REQUIRED for all application data; exception for log records)
-- 3.5 Member and Financial Data Preservation (updated member deletion policy to require soft-delete rather than forbidding it)
+- 4.0 Architectural Identity (added Settings System)
+- Renumbered: 4.3 UI Design Principles → 4.4 UI Design Principles
 
 Added Sections:
-- None
+- 4.3 Settings System (tabbed interface with module-specific tabs and application settings)
 
 Removed Sections:
 - None
 
 Templates Requiring Updates:
-- ✅ updated: .specify/templates/plan-template.md
-- ✅ updated: .specify/templates/spec-template.md
-- ✅ updated: .specify/templates/tasks-template.md
+- ✅ already done: .specify/templates/plan-template.md
+- ✅ already done: .specify/templates/spec-template.md
+- ✅ already done: .specify/templates/tasks-template.md
 
 Runtime Guidance Docs:
-- ✅ updated: CONTRIBUTING.md
-- ✅ updated: specs/001-create-initial-app/quickstart.md
+- ⚠ pending: CONTRIBUTING.md (add settings tab implementation guide)
+- ⚠ pending: ARCHITECTURE.md (add Settings System architecture section)
+- ⚠ pending: UI_COMPONENT_STYLE_GUIDE.md (add settings form patterns)
+- ⚠ pending: README.md (reference settings configuration)
 
 Follow-up TODOs:
-- None
+- Document Application Settings data model for organization, fees, membership rules
+- Create settings validation patterns
+- Document module settings tab registration
 
 Version Bump Rationale: PATCH
-- Clarification and reconciliation: resolves an internal constitution conflict by aligning member deletion policy with the global soft-delete requirement and documenting a narrow exception for hard-deleting error log records under an explicit retention policy.
+- Adds tabbed settings architecture with module extensibility. Non-breaking change; affects UI organization and new module onboarding.
 -->
 
 # Spec Kit Constitution  
 *A guiding document for clean, modular, extensible software development*
 
-**Version**: 2.1.1  
+**Version**: 2.2.1  
 **Ratification Date**: 2025-01-01  
-**Last Amended**: 2026-04-03
+**Last Amended**: 2026-05-15
 
 ---
 
@@ -152,7 +156,11 @@ All specifications and implementations must follow these architectural principle
 - Clean, intention‑revealing code  
 - SOLID design  
 - Strict separation of concerns  
-- Plug‑in architecture with extension points  
+- Vertical Slice module architecture (see §4.1)  
+- Dashboard tile system for feature exposure (see §4.2)  
+- Settings system with module-specific tabs (see §4.3)  
+- Navigation menu system with module-defined items (see §4.5)  
+- Plug‑in architecture with extension points (see §8)  
 - Composition over inheritance  
 - Testability of all core logic  
 - Test isolation from external dependencies  
@@ -162,6 +170,391 @@ All specifications and implementations must follow these architectural principle
 - Exhaustive test coverage for all reachable code paths  
 - Soft delete pattern for all data removal operations  
 - Members and financial data are NEVER HARD deleted  
+- Clean, simple, modern UI design with minimal whitespace (see §4.4)  
+
+### 4.1 Vertical Slice Module Architecture
+
+Each feature or functional domain must be organized as a self-contained vertical slice with its own dedicated folder. This pattern promotes modularity, independent development, and clear separation of concerns.
+
+**Module Structure Requirements:**
+
+- **One Module Per Folder**: Each feature or functional domain gets its own folder at the appropriate level in the project hierarchy.  
+- **No MediaTr or CQRS**: Vertical slices must NOT use MediaTr for command/query dispatch or implement CQRS patterns. Instead, use:  
+  - Direct service injection and method calls  
+  - Dependency-injected handlers for business logic  
+  - Clear, explicit request/response models  
+  - Standard repository and service patterns  
+- **Ownership**: Each module owns its own:  
+  - Domain entities and value objects  
+  - Application services and handlers  
+  - Infrastructure adapters (repositories, external service clients)  
+  - UI components (pages, forms, shared controls scoped to this module)  
+  - Unit and integration tests  
+  - Dashboard tile definitions (§4.2)  
+- **Folder Naming**: Module folders should use domain language (e.g., `Members`, `FinancialAuditing`, `EventScheduling`) and follow naming conventions consistent with project structure.  
+- **Internal Structure**: Within each module folder:  
+  ```
+  ModuleName/
+  ├── Domain/              # Entities, value objects, contracts
+  ├── Application/         # Services, handlers, orchestration
+  ├── Infrastructure/      # Repositories, external integrations
+  ├── UI/                  # Blazor components, pages (if applicable)
+  ├── Tests/               # Unit and integration tests scoped to this module
+  └── DashboardTile.cs     # Tile provider implementation (see §4.2)
+  ```
+- **No Cross-Module Dependencies**: Modules must NOT import from sibling modules' private implementation details. Modules communicate through:  
+  - Dependency injection of published interfaces  
+  - Event-driven patterns for decoupled pub/sub  
+  - Shared contracts defined at the application or domain level  
+- **Testing Isolation**: Each module's tests must be independently executable and isolated from other modules.  
+
+### 4.2 Dashboard Tile System
+
+The dashboard is the primary user-facing interface for feature discovery and interaction. Each module exposes its functionality through dashboard tiles. Tiles are extensible, composable, and support rich content.
+
+**Tile Requirements:**
+
+- **Tile Definition**: Each module MUST define one or more dashboard tiles through an implementation of a well-defined tile provider contract.  
+- **Tile Content**: Tiles MAY contain:  
+  - Summary information or metrics (e.g., count of active members, outstanding fees)  
+  - Charts and graphs (e.g., revenue trends, attendance distribution)  
+  - Quick-action buttons (e.g., "Add Member", "Record Payment")  
+  - Recent activity feeds (e.g., last 5 scheduled events)  
+  - Status indicators  
+- **Tile Characteristics**:  
+  - Self-contained rendering (tile handles its own data loading and rendering)  
+  - No inter-tile dependencies  
+  - Consistent sizing and layout within dashboard grid  
+  - Responsive to user interactions without leaving the dashboard  
+- **Multiple Tiles per Module**: A module MAY define multiple tiles to represent different aspects (e.g., "Members Overview" and "Member Onboarding Quick Action").  
+- **Tile Registration**: Tiles are registered with the dashboard system via DI or a tile discovery mechanism; no hardcoding of tile instances.  
+- **Failure Isolation**: If a tile fails to load or render, it must gracefully degrade without breaking the entire dashboard.  
+
+### 4.3 Settings System
+
+The Settings page is a core application feature where configuration and preferences are managed. The settings architecture uses a **tabbed interface** where each module provides its own settings tab, and the core application provides an "Application Settings" tab.
+
+**Settings Architecture:**
+
+- **Settings Page**: A base application page with tabbed interface at `/settings`
+- **Module Settings Tabs**: Each module MAY define a settings tab through an `ISettingsTabProvider` contract
+- **Tab Registry**: Settings tabs are discovered and registered at application startup via DI
+- **Application Settings Tab**: Core application settings (built-in, not from a module)
+
+**Module Settings Tab Requirements:**
+
+- **Tab Definition**: Modules that have configurable settings MUST implement `ISettingsTabProvider` to define their settings tab
+- **Tab Interface**: Each provider specifies:
+  - Tab title and icon
+  - Display order (tabs ordered by priority)
+  - Blazor component for settings content
+  - Validation and persistence logic
+- **Tab Content**: Modules own the layout and content of their settings tab:
+  - Form fields, controls, and validation
+  - Save/cancel buttons
+  - Error handling and user feedback
+- **Isolation**: Each module's settings are independent; changes to one tab don't affect others
+- **Persistence**: Module settings are persisted through the module's infrastructure layer
+- **Validation**: Settings validation happens at module level; custom exceptions used for validation errors
+
+**Application Settings Tab** (Core Application):
+
+The base application provides a built-in "Application Settings" tab containing:
+
+- **Organization Information**:
+  - Organization/Group Name
+  - Contact information (if applicable)
+- **Financial Configuration**:
+  - Annual Membership Fee amount
+  - Rehearsal/Event Fee amount
+  - Currency (if multi-currency support needed)
+- **Membership Rules**:
+  - Membership Renewal Due Date (month and day, e.g., "September 1")
+  - Grace period for renewal (days before/after due date)
+- **Fee Application Periods**:
+  - Fee renewal frequency (annual, per-season, etc.)
+  - Auto-renewal configuration
+
+**Settings Tab Structure**:
+
+```csharp
+public interface ISettingsTabProvider
+{
+    string TabTitle { get; }
+    string TabIcon { get; }
+    int DisplayOrder { get; }
+    
+    Type SettingsComponentType { get; } // Blazor component
+    
+    Task<ISettingsTab> GetSettingsAsync();
+    Task<ValidationResult> ValidateAsync(ISettingsTab settings);
+    Task SaveAsync(ISettingsTab settings);
+}
+
+// Example: Members module settings
+public class MembersSettingsTabProvider : ISettingsTabProvider
+{
+    public string TabTitle => "Members";
+    public string TabIcon => "users";
+    public int DisplayOrder => 2;
+    
+    public Type SettingsComponentType => typeof(MembersSettingsTab);
+    
+    public async Task<ISettingsTab> GetSettingsAsync()
+    {
+        return new MembersSettings
+        {
+            DefaultMemberStatus = "Active",
+            AutoArchiveInactiveDays = 365
+        };
+    }
+}
+```
+
+**Settings Page Layout**:
+
+```
+┌─────────────────────────────────────────────────┐
+│  Settings                                       │
+├─────────────────────────────────────────────────┤
+│ [Application] [Members] [Events] [Finances] ... │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│  Application Settings Content                  │
+│  - Organization Name                           │
+│  - Annual Fee                                  │
+│  - Rehearsal Fee                               │
+│  - Membership Renewal Due Date                 │
+│                                                 │
+│  [Cancel] [Save Settings]                      │
+│                                                 │
+└─────────────────────────────────────────────────┘
+```
+
+### 4.4 UI Design Principles
+
+The user interface must embody simplicity, clarity, and modern design principles. Every screen and component must prioritize usability and visual efficiency.
+
+**UI Design Standards:**
+
+- **Clean and Simple**: Interfaces must be free of unnecessary visual clutter. Remove elements that do not directly contribute to user goals.  
+- **Minimal Whitespace**: Use whitespace purposefully but economically. Compact layouts should be the default; information density must be optimized without sacrificing readability.  
+- **Modern Aesthetics**: Use contemporary design patterns:  
+  - Subtle, professional color palettes  
+  - Smooth transitions and animations (where purposeful)  
+  - Consistent typography and spacing scales  
+  - Clear visual hierarchy  
+- **Component Consistency**: All UI components must follow a unified design language across the application.  
+- **Accessibility**: Clean design must not sacrifice accessibility; all interactive elements must be keyboard-navigable and screen-reader compatible.  
+- **Responsive and Performant**: UI must respond immediately to user input; avoid blocking operations on the UI thread.  
+
+### 4.5 Navigation Menu System
+
+The application provides a hierarchical navigation menu where each module defines its own menu items and sub-items. The menu system is modular, extensible, and always displays Settings as the final menu item.
+
+**Menu Architecture**:
+
+- **Menu Items**: Each module can define primary menu items and optional sub-items
+- **Optional Icons**: Menu items may include icons to visually represent functionality
+- **Module Order**: Modules contribute menu items in a customizable order
+- **Settings Always Last**: The Settings menu item is reserved for the core application and appears last
+- **Sub-menus**: Each menu item may have child items for feature grouping
+
+**Menu Item Structure**:
+
+```csharp
+public interface IMenuItemProvider
+{
+    IReadOnlyList<MenuItem> GetMenuItems();
+    string ModuleName { get; }
+    int DisplayOrder { get; }
+}
+
+public class MenuItem
+{
+    public string Title { get; set; }              // Display title
+    public string Route { get; set; }             // Navigation route (e.g., "/members/list")
+    public string Icon { get; set; }              // Optional icon (e.g., "users", "calendar")
+    public int DisplayOrder { get; set; }         // Order within module
+    public List<MenuItem> SubItems { get; set; }  // Optional sub-menu items
+    public string BadgeText { get; set; }         // Optional badge (e.g., count)
+    public bool IsActive { get; set; }            // Current page indicator
+}
+
+// Example: Members module menu
+public class MembersMenuItemProvider : IMenuItemProvider
+{
+    public string ModuleName => "Members";
+    public int DisplayOrder => 1;
+    
+    public IReadOnlyList<MenuItem> GetMenuItems()
+    {
+        return new List<MenuItem>
+        {
+            new()
+            {
+                Title = "Members",
+                Route = "/members",
+                Icon = "users",
+                DisplayOrder = 1,
+                SubItems = new List<MenuItem>
+                {
+                    new() { Title = "Active Members", Route = "/members/list", DisplayOrder = 1 },
+                    new() { Title = "Pending Approval", Route = "/members/pending", DisplayOrder = 2 },
+                    new() { Title = "Add Member", Route = "/members/new", DisplayOrder = 3 }
+                }
+            }
+        };
+    }
+}
+
+// Example: Finances module menu
+public class FinancesMenuItemProvider : IMenuItemProvider
+{
+    public string ModuleName => "Finances";
+    public int DisplayOrder => 3;
+    
+    public IReadOnlyList<MenuItem> GetMenuItems()
+    {
+        return new List<MenuItem>
+        {
+            new()
+            {
+                Title = "Finances",
+                Route = "/finances",
+                Icon = "dollar-sign",
+                DisplayOrder = 1,
+                SubItems = new List<MenuItem>
+                {
+                    new() { Title = "Transactions", Route = "/finances/transactions", DisplayOrder = 1 },
+                    new() { Title = "Reports", Route = "/finances/reports", DisplayOrder = 2 },
+                    new() { Title = "Invoices", Route = "/finances/invoices", DisplayOrder = 3 }
+                }
+            }
+        };
+    }
+}
+```
+
+**Menu Rendering Order**:
+
+```
+├── Dashboard (Core)                        // Always first
+├── [Module 1 items by DisplayOrder]        // e.g., Members (order 1)
+├── [Module 2 items by DisplayOrder]        // e.g., Events (order 2)
+├── [Module 3 items by DisplayOrder]        // e.g., Finances (order 3)
+├── ... [other modules] ...
+└── Settings (Core)                         // Always last
+```
+
+**Menu Item Characteristics**:
+
+- **Title**: User-facing text displayed in the menu
+- **Route**: Target URL when menu item is clicked
+- **Icon**: Optional icon name for visual identification (from icon set)
+- **DisplayOrder**: Order within the module (lower numbers first)
+- **SubItems**: Optional child menu items for grouping related features
+- **BadgeText**: Optional notification badge (e.g., "5" for pending items)
+- **IsActive**: Computed property indicating current page
+
+**Menu Registration**:
+
+Modules register menu items through dependency injection:
+
+```csharp
+// Features/Members/DependencyInjection.cs
+public static IServiceCollection AddMembersModule(this IServiceCollection services)
+{
+    services.AddScoped<IMemberService, MemberService>();
+    services.AddScoped<IMenuItemProvider, MembersMenuItemProvider>();
+    
+    return services;
+}
+
+// Program.cs - Auto-discover all IMenuItemProvider implementations
+builder.Services.Scan(scan => scan
+    .FromAssemblies(typeof(Program).Assembly)
+    .AddClasses(classes => classes.AssignableTo(typeof(IMenuItemProvider)))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
+```
+
+**Menu Component Usage**:
+
+The application's main layout component discovers and renders all menu items:
+
+```razor
+@* App/Layout/MainLayout.razor *@
+@using StageFright.Application.Navigation
+
+<nav class="main-navigation">
+    <div class="nav-brand">
+        <img src="logo.svg" alt="StageFright" />
+        <span>StageFright</span>
+    </div>
+    
+    <ul class="nav-menu">
+        @* Dashboard always first *@
+        <li class="nav-item">
+            <a href="/dashboard" class="nav-link">
+                <i class="icon icon-home"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        
+        @* Module menu items sorted by DisplayOrder *@
+        @foreach (var provider in MenuProviders.OrderBy(p => p.DisplayOrder))
+        {
+            @foreach (var item in provider.GetMenuItems().OrderBy(m => m.DisplayOrder))
+            {
+                <li class="nav-item">
+                    <a href="@item.Route" class="nav-link @(item.IsActive ? "active" : "")">
+                        @if (!string.IsNullOrEmpty(item.Icon))
+                        {
+                            <i class="icon icon-@item.Icon"></i>
+                        }
+                        <span>@item.Title</span>
+                        @if (!string.IsNullOrEmpty(item.BadgeText))
+                        {
+                            <span class="badge">@item.BadgeText</span>
+                        }
+                    </a>
+                    
+                    @* Render sub-items if present *@
+                    @if (item.SubItems?.Count > 0)
+                    {
+                        <ul class="nav-submenu">
+                            @foreach (var subItem in item.SubItems.OrderBy(s => s.DisplayOrder))
+                            {
+                                <li class="nav-subitem">
+                                    <a href="@subItem.Route" class="nav-sublink @(subItem.IsActive ? "active" : "")">
+                                        @subItem.Title
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </li>
+            }
+        }
+        
+        @* Settings always last *@
+        <li class="nav-item nav-settings">
+            <a href="/settings" class="nav-link">
+                <i class="icon icon-cog"></i>
+                <span>Settings</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+```
+
+**Menu Isolation Rules**:
+
+- Modules MUST NOT depend on menu items from other modules
+- Menu items MUST be independent and self-contained
+- Route conflicts MUST be avoided (each module owns its route prefix)
+- Menu item state (active, badge count) MUST be computed dynamically
 
 ---
 
@@ -259,10 +652,37 @@ All caught exceptions must be logged using Serilog.
 ---
 
 ## 8. Plug‑In Architecture
+
+### 8.1 Architecture Model
 - Core system defines contracts and extension points  
 - Plug‑ins implement contracts and are discovered at runtime  
 - Plug‑ins must be isolated and independently testable  
 - No plug‑in may depend on another unless explicitly defined  
+
+### 8.2 MVP Modules vs. Extensible Plugins
+
+The application distinguishes between MVP (Minimum Viable Product) modules and future extensible plugins:
+
+**MVP Modules**:
+- Core features included directly in the main application (not in a separate plugins folder)  
+- MVP modules are built as vertical slices (§4.1) with defined dashboard tiles (§4.2)  
+- MVP modules are organized at the application root or within a feature-organized modules folder  
+- Examples: Members, Financial Tracking, Event Scheduling, Attendance  
+- MVP modules do NOT require external loading or registration mechanisms  
+- MVP modules are part of the shipped application and follow the standard vertical slice pattern  
+
+**Extensible Plugins** (Future Pattern):
+- Third-party or optional community-specific extensions developed outside the core  
+- Plugins follow the vertical slice pattern (§4.1) and define dashboard tiles (§4.2)  
+- Plugins are physically located in a dedicated `Plugins/` folder or loaded from external assemblies  
+- Plugins are discovered and registered at runtime  
+- Plugins implement well-defined contracts and extension points  
+- Plugins maintain backward compatibility with core contracts  
+- Plugins are independently distributable and versioned  
+
+**Transition Strategy**:
+- MVP modules may be refactored into discoverable plugins after initial release if needed  
+- Plugin infrastructure should be designed with future extensibility in mind, even if initial plugins are bundled  
 
 ---
 

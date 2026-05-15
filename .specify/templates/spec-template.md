@@ -1,8 +1,8 @@
 # Feature Specification: [FEATURE NAME]
 
-**Template-Version**: 2.1.0
-**Required-Constitution-Version**: 2.1.0
-**Last-Updated**: 2026-04-01
+**Template-Version**: 2.2.0
+**Required-Constitution-Version**: 2.2.0
+**Last-Updated**: 2026-05-15
 **Feature Branch**: `[###-feature-name]`  
 **Created**: [DATE]  
 **Status**: Draft  
@@ -22,7 +22,36 @@
 
 - [List what this feature explicitly does not include.]
 
-## 3. User Scenarios & Testing *(mandatory)*
+## 3. Module Structure & Dashboard Tiles *(mandatory if new module)*
+
+<!--
+  Constitution §4.1 (Vertical Slice Module Architecture) and §4.2 (Dashboard Tile System)
+  require that each new feature module define its dashboard exposure.
+  
+  Fill this section if this feature is a new module.
+-->
+
+### Module Folder
+
+- **Folder Path**: [e.g., `src/Features/Members/` or feature organization of choice]
+- **Ownership Scope**: [entities, services, repositories, UI, tests all scoped to this module]
+- **No MediaTr/CQRS**: [confirm no use of MediaTr or CQRS; use direct service injection and standard patterns]
+
+### Dashboard Tile(s)
+
+- **Tile 1 Name**: [e.g., "Members Overview"]
+  - **Content Type**: [summary/chart/action/feed/hybrid]
+  - **Data**: [e.g., active member count, recent additions]
+  - **Interactions**: [e.g., quick-add member button]
+  
+- **Tile 2 Name**: [if applicable, e.g., "Member Onboarding"]
+  - **Content Type**: [summary/chart/action/feed/hybrid]
+  - **Data**: [e.g., pending onboarding tasks]
+  - **Interactions**: [e.g., start onboarding button]
+
+---
+
+## 4. User Scenarios & Testing *(mandatory)*
 
 All user stories MUST define tests that cover every reachable code path:
 success, validation failure, exception/error handling, boundary inputs, and
@@ -99,7 +128,7 @@ state-transition outcomes.
 - How does system handle [error scenario]?
 - How does UI recover from [recoverable failure scenario]?
 
-## 4. Requirements *(mandatory)*
+## 5. Requirements *(mandatory)*
 
 <!--
   ACTION REQUIRED: The content in this section represents placeholders.
@@ -115,11 +144,12 @@ state-transition outcomes.
 - **FR-005**: System MUST [behavior, e.g., "log all security events"]
 - **FR-006**: System MUST define and use custom exceptions for domain/application/infrastructure failures; raw framework exceptions MUST be translated before crossing boundaries.
 - **FR-007**: System MUST include automated tests proving coverage of all reachable code paths for each implemented requirement.
+- **FR-008**: UI must follow Constitution §4.3 UI Design Principles: clean, simple, modern, minimal whitespace, compact design.
 
 *Example of marking unclear requirements:*
 
-- **FR-008**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-009**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+- **FR-009**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
+- **FR-010**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
 
 ### Non-Functional Requirements *(mandatory)*
 
@@ -170,18 +200,18 @@ state-transition outcomes.
 - **[Entity 1]**: [What it represents, key attributes without implementation]
 - **[Entity 2]**: [What it represents, relationships to other entities]
 
-## 5. Clarifications (optional but recommended)
+## 6. Clarifications (optional but recommended)
 
 ### Session [YYYY-MM-DD]
 
 - Q: [Question] -> A: [Decision]
 
-## 6. Acceptance Criteria *(mandatory)*
+## 7. Acceptance Criteria *(mandatory)*
 
 - [List explicit acceptance checks tied to requirements and stories]
 - [Include UI integration coverage expectations for user-facing workflows]
 
-## 7. Success Criteria *(mandatory)*
+## 8. Success Criteria *(mandatory)*
 
 <!--
   ACTION REQUIRED: Define measurable success criteria.

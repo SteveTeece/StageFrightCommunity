@@ -5,9 +5,9 @@ description: "Task list template for feature implementation"
 
 # Tasks: [FEATURE NAME]
 
-**Template-Version**: 2.1.0
-**Required-Constitution-Version**: 2.1.0
-**Last-Updated**: 2026-04-01
+**Template-Version**: 2.2.0
+**Required-Constitution-Version**: 2.2.0
+**Last-Updated**: 2026-05-15
 
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
@@ -15,6 +15,8 @@ description: "Task list template for feature implementation"
 **Tests**: Tests are MANDATORY. Every feature must include tasks that prove
 coverage of all reachable code paths (success, validation failure, exception,
 boundary, and state-transition paths).
+
+**Module & Dashboard Tiles** (Constitution §4.1–4.2): If this feature is a new module, include tasks for module folder structure setup and dashboard tile implementation. All tiles must support graphs/charts and other content types.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
@@ -27,8 +29,10 @@ boundary, and state-transition paths).
 ## Path Conventions
 
 - **Single project**: `src/`, `tests/` at repository root
+- **Feature Modules (Vertical Slice)**: `src/Features/[ModuleName]/Domain/`, `src/Features/[ModuleName]/Application/`, etc. (Constitution §4.1)
 - **Web app**: `backend/src/`, `frontend/src/`
 - **Desktop**: `api/src/`, `desktop/src/` or `apps/desktop/`
+- **Dashboard Tiles**: `src/Features/[ModuleName]/DashboardTile.cs` (Constitution §4.2)
 - Paths shown below assume single project - adjust based on plan.md structure
 
 <!-- 
