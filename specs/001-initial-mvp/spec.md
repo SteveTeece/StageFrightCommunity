@@ -324,7 +324,7 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 **FR-004**: System MUST automatically apply annual membership fees to all active members (Status='Active') at the configured renewal month, skipping: (1) inactive members (Status='Inactive'), and (2) active members with existing unpaid annual fees for the current year. Display a batch processing confirmation dialog showing the number of members to be charged.
 
-**FR-005**: System MUST provide a Rehearsals module enabling the user to schedule rehearsals (date, time, optional notes) and record attendance. Recording attendance for active members (Status='Active') MUST automatically create unpaid attendance fee records. Recording attendance for inactive members (Status='Inactive') is allowed for historical tracking but MUST NOT create fee records. Once attendance is recorded, historical data is preserved and immutable.
+**FR-005**: System MUST provide a Rehearsals module enabling the user to schedule rehearsals (date, time, optional notes) and record attendance. Recording attendance for active members (Status='Active') MUST automatically create attendance fee records with payment status defaulting to **PAID** (coordinator may override to unpaid if needed). Recording attendance for inactive members (Status='Inactive') is allowed for historical tracking but MUST NOT create fee records. If attendance flag is subsequently cleared for a member on a specific rehearsal, the corresponding attendance fee for that rehearsal MUST be automatically removed (soft-deleted with GL reversing entries). Once attendance is recorded, historical data is preserved and immutable until explicitly cleared.
 
 **FR-006**: System MUST provide an Events module enabling the user to schedule performances/events (date, event type, optional notes) and record participation. Event types MUST be configurable in Settings with defaults: Performance, Eisteddfod, Fund raiser, Promotional.
 
@@ -843,9 +843,30 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 ### Session 2026-05-15 (Clarification Pass #3)
 
-This session clarified 4 CRITICAL and HIGH ambiguities identified by artifact consistency analysis:
+This session clarified 5 CRITICAL and HIGH ambiguities identified by artifact consistency analysis:
 
-- **Q1: Financial Record Soft-Delete Field Design (CRITICAL)** → **A: Option B - Remove soft-delete fields entirely**
+- **Q1: Attendance Fee Creation & Payment Status (HIGH)** → **A: Option A with payment status default**
+  - **Decision**: Attendance fees are automatically created when attendance is recorded (Option A).
+  - **Payment Status Default**: Attendance fees default to **PAID** (PaymentStatus='Paid' or similar) when attendance is recorded
+  - **Operator Override**: Coordinator can override default to mark as unpaid if needed (e.g., if attendance was recorded in error)
+  - **Fee Removal on Attendance Clear**: If attendance flag is cleared for a member on a rehearsal, the corresponding attendance fee for that rehearsal is automatically removed
+  - **Rationale**: Aligns with typical performing arts practice (attendance = payment received); simplifies workflow (coordinator doesn't need to record both); reduces manual data entry; still allows corrections if needed
+  - **Implementation Details**:
+    - When AttendanceService.RecordAttendance(member, rehearsal) is called:
+      1. Check if Fee already exists for this member+rehearsal; if yes, skip creation (idempotent)
+      2. Create Fee with Amount=Settings.AttendanceFee, FeeDate=rehearsal.Date, Status='Paid'
+    - When attendance is cleared: AttendanceService.ClearAttendance(member, rehearsal)
+      1. Find Fee(MemberId=member, FeeDate=rehearsal.Date, FeeType='Attendance')
+      2. Soft-delete the Fee (set IsDeleted=true, DeletedAt=now, DeletedBy='system')
+      3. Create GL reversing transaction pair to zero out GL entries
+  - **Impact on Functional Requirements**:
+    - FR-005: Updated to specify automatic creation AND default-paid status
+    - FR-008: Outstanding balance reports exclude soft-deleted fees per soft-delete query filters
+    - FR-016: GL Transactions created for both paid AND unpaid fees; paid fees create GL pairs immediately; unpaid fees also create GL pairs (status is metadata, not GL driver)
+  - **Schema Updates Needed**: Fee entity Status field or similar mechanism to track payment status; AttendanceService includes payment status parameter
+  - **Task Updates Needed**: T-054 (AttendanceService) implements fee creation with payment status default and removal logic; T-076 (test AttendanceService) includes test cases for fee creation/removal and payment status defaults
+
+- **Q2: Financial Record Soft-Delete Field Design (CRITICAL)** → **A: Option B - Remove soft-delete fields entirely**
   - **Decision**: Transaction, Payment, and Fee entities will have NO soft-delete fields (`IsDeleted`, `DeletedAt`, `DeletedBy`)
   - **Rationale**: Constitution §3.4 states financial records are "EXEMPT from soft-delete pattern"; interpreted as the pattern does not apply at all. Removing fields entirely prevents accidental misuse and simplifies schema.
   - **Impact on FR-024**: Reactivation logic uses GL reversing transactions (already specified in FR-24) without soft-deleting original Fee records. Fee records remain immutable once created; GL write-offs provide full audit trail of debt forgiveness.
@@ -853,7 +874,7 @@ This session clarified 4 CRITICAL and HIGH ambiguities identified by artifact co
   - **Spec Updates Needed**: FR-024 reworded to remove soft-delete references; updated schema documentation.
   - **Task Updates Needed**: T-032, T-033 (entity definitions) corrected to exclude soft-delete fields from financial entities.
 
-- **Q2: GL Account Assignment Algorithm (HIGH)** → **A: Option B - Type-Prefixed Numbering Scheme**
+- **Q3: GL Account Assignment Algorithm (HIGH)** → **A: Option B - Type-Prefixed Numbering Scheme**
   - **Decision**: GL accounts use type-prefixed scheme:
     - **Asset Accounts**: GL#01xx (GL#0100=Cash, GL#0101=MemberReceivable)
     - **Income Categories**: GL#10xx (GL#1000 for first income category, GL#1001 for second, etc.)
@@ -868,7 +889,7 @@ This session clarified 4 CRITICAL and HIGH ambiguities identified by artifact co
   - **Spec Updates Needed**: FR-032 updated with specific GL account ranges and numbering algorithm; Category schema documents glAccount auto-assignment.
   - **Task Updates Needed**: New task T-034b "Implement GLAccountAssignmentService with sequential numbering per category type"; T-034 updated to reference this service.
 
-- **Q3: Committee Annual Reset Trigger Mechanism (HIGH)** → **A: Custom - Configurable Committee Renewal Month with Startup Check**
+- **Q4: Committee Annual Reset Trigger Mechanism (HIGH)** → **A: Custom - Configurable Committee Renewal Month with Startup Check**
   - **Decision**: Add user-configurable "Committee Renewal Month" setting (distinct from Membership Renewal Month):
     - **Setting Name**: CommitteeRenewalMonth (integer 1-12, default 1 for January)
     - **Trigger**: On application startup, system compares current month/year against `Settings.LastCommitteeResetYear`
@@ -884,7 +905,7 @@ This session clarified 4 CRITICAL and HIGH ambiguities identified by artifact co
   - **Schema Updates Needed**: Settings entity adds: (1) `CommitteeRenewalMonth` field (int 1-12, default 1); (2) `LastCommitteeResetYear` field (int, default current year - 1).
   - **Task Updates Needed**: T-030 (Settings entity definition) adds two fields; T-167 (Committee annual reset) documents startup check logic with month comparison and guard against duplicate resets.
 
-- **Q4: Payment Field Immutability Specification (HIGH)** → **A: Option A - Single UpdatedAt Timestamp**
+- **Q5: Payment Field Immutability Specification (HIGH)** → **A: Option A - Single UpdatedAt Timestamp**
   - **Decision**: Payment entity includes both `CreatedAt` and `UpdatedAt` timestamps:
     - `UpdatedAt` field updates ONLY when Notes field changes
     - Amount, Date, PaymentMethod, PaymentType, Category fields remain strictly immutable after payment creation
