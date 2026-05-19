@@ -37,25 +37,23 @@ public static class MauiProgram
 				{
 					fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 					fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-				})
-				.ConfigureServices(services =>
-				{
-					// Register configuration
-					services.AddSingleton<IConfiguration>(config);
-
-					// Register logging
-					services.AddLogging(loggingBuilder =>
-					{
-						loggingBuilder.ClearProviders();
-						loggingBuilder.AddSerilog();
-#if DEBUG
-						loggingBuilder.AddDebug();
-#endif
-					});
-
-					// Register other services here as they are created
-					// (will be populated in future tasks)
 				});
+
+			// Register configuration
+			builder.Services.AddSingleton<IConfiguration>(config);
+
+			// Register logging
+			builder.Services.AddLogging(loggingBuilder =>
+			{
+				loggingBuilder.ClearProviders();
+				loggingBuilder.AddSerilog();
+#if DEBUG
+				loggingBuilder.AddDebug();
+#endif
+			});
+
+			// Register other services here as they are created
+			// (will be populated in future tasks)
 
 #if DEBUG
 			builder.Logging.AddDebug();

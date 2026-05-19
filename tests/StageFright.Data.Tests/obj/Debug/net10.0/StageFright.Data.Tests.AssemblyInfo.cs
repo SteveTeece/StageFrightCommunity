@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StageFright.Data.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+db5029f43df3242ea03d9f8753113d455eebf512")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1c5328d60ee0a8e225905a4beceae6aa30def247")]
 [assembly: System.Reflection.AssemblyProductAttribute("StageFright.Data.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StageFright.Data.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
