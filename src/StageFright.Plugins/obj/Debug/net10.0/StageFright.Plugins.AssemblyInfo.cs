@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StageFright.Plugins")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1c5328d60ee0a8e225905a4beceae6aa30def247")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4f0bce5ac1c47e53734177a150988b3074ae17e0")]
 [assembly: System.Reflection.AssemblyProductAttribute("StageFright.Plugins")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StageFright.Plugins")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
