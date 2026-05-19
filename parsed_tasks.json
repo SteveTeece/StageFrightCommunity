@@ -1,0 +1,1137 @@
+[
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-001",
+    "Description": "Create MAUI project with BlazorWebView support in src/StageFright.Maui/ targeting Windows 10.0.19041.0+ and macOS 10.15+ (Mac Catalyst) only—no mobile (Android/iOS) or Linux platforms"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-002",
+    "Description": "Install NuGet dependencies: Microsoft.Maui, Microsoft.AspNetCore.Components.WebView.Maui, EntityFrameworkCore.Sqlite, EntityFrameworkCore.Tools, Serilog, Google.Protobuf in src/StageFright.Maui/"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-003",
+    "Description": "Create StageFright.Core class library for domain entities in src/StageFright.Core/"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-004",
+    "Description": "Create StageFright.Data class library for data access layer in src/StageFright.Data/"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-005",
+    "Description": "Create StageFright.UI Blazor component library in src/StageFright.UI/"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-006",
+    "Description": "Create StageFright.Plugins library for plugin contracts in src/StageFright.Plugins/"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-007",
+    "Description": "Create StageFright.Reports library for reporting infrastructure in src/StageFright.Reports/"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-008",
+    "Description": "Create StageFright.Proto protobuf definitions directory in src/StageFright.Proto/"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-009",
+    "Description": "Create test projects: tests/StageFright.Core.Tests/, tests/StageFright.Data.Tests/, tests/StageFright.UI.Tests/, tests/StageFright.Integration.Tests/"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-010",
+    "Description": "Configure dependency injection container in src/StageFright.Maui/MauiProgram.cs with Microsoft.Extensions.DependencyInjection"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-011",
+    "Description": "Setup Serilog logging configuration in src/StageFright.Maui/MauiProgram.cs with console and file sinks"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-012",
+    "Description": "Define custom exception hierarchy in src/StageFright.Core/Exceptions/: ValidationException, DataAccessException, PluginException, ReportGenerationException"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-013",
+    "Description": "Create appsettings.json in src/StageFright.Maui/ with database connection string and plugin configuration per section 5.4 of plan.md"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-014",
+    "Description": "Create Entity Framework DbContext in src/StageFright.Data/Context/StageFrightContext.cs with skeleton entity mapping (no data yet)"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-015",
+    "Description": "Create base repository interface in src/StageFright.Data/Repositories/IRepository.cs with CRUD contract"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-016",
+    "Description": "Create sample repository implementation in src/StageFright.Data/Repositories/BaseRepository.cs for soft-delete pattern"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-017",
+    "Description": "Configure EF Core migrations in src/StageFright.Data/Context/ with StageFrightContext and migration factory"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-018",
+    "Description": "Create initial migration infrastructure test in tests/StageFright.Data.Tests/MigrationTests.cs verifying DbContext creation and first migration"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-019",
+    "Description": "Create unit test infrastructure in test projects with xUnit, Moq, FluentAssertions configuration"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-020",
+    "Description": "Create CI/CD pipeline configuration in .github/workflows/ for building and running tests on all PRs"
+  },
+  {
+    "Phase": "Phase 0: Project Setup & Infrastructure\r",
+    "Id": "T-021",
+    "Description": "Document project structure and setup instructions in docs/SETUP.md"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-022",
+    "Description": "Define Member entity in src/StageFright.Core/Entities/Member.cs with properties: Id, Name, StreetAddress, Phone, Email, JoinDate, DateOfBirth, Status, ActivateDate, InactivateDate, IsDeleted, DeletedAt, DeletedBy per section 3.1 schema"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-023",
+    "Description": "Define Rehearsal entity in src/StageFright.Core/Entities/Rehearsal.cs with properties: Id, Date, Time, Notes"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-024",
+    "Description": "Define Event entity in src/StageFright.Core/Entities/Event.cs with properties: Id, Date, EventType, Notes"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-025",
+    "Description": "Define Attendance entity in src/StageFright.Core/Entities/Attendance.cs with properties: Id, RehearsalId, MemberId, RecordedAt, unique constraint (RehearsalId, MemberId)"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-026",
+    "Description": "Define Participation entity in src/StageFright.Core/Entities/Participation.cs with properties: Id, EventId, MemberId, RecordedAt, unique constraint (EventId, MemberId)"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-027",
+    "Description": "Define Category entity in src/StageFright.Core/Entities/Category.cs with properties: Id, Name, Type (Income|Expense), SortOrder, IsArchived, GlAccount per section 3.1 schema"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-028",
+    "Description": "Define Fee entity in src/StageFright.Core/Entities/Fee.cs (immutable after creation, NO soft-delete fields per Constitution §3.4) with properties: Id, MemberId, FeeType (Annual|Attendance|Other), Amount, FeeDate, DueDate, CreatedAt"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-029",
+    "Description": "Define CommitteeMembership entity in src/StageFright.Core/Entities/CommitteeMembership.cs with properties: Id, MemberId, Year, Position, IsDeleted, CreatedAt, ModifiedAt, unique constraint (MemberId, Year)"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-030",
+    "Description": "Define Settings entity in src/StageFright.Core/Entities/Settings.cs (singleton) with properties: Id, OrganizationName, AnnualFee, AttendanceFee, RenewalMonth (1-12, for annual fee application), CommitteeRenewalMonth (1-12, default 1, for committee annual reset), LastCommitteeResetYear (int, default current year - 1, for reset guard), MaxAgeRange (default 150), MinimumMemberAge (default 0), Theme (Dark|Light), CreatedAt, ModifiedAt"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-031",
+    "Description": "Define AuditTrail entity in src/StageFright.Core/Entities/AuditTrail.cs with properties: Id, EntityType, EntityId, Action (Create|Update|Delete), UserId, Timestamp, OldValue, NewValue"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-032",
+    "Description": "Define Transaction entity in src/StageFright.Core/Entities/Transaction.cs (GL paired, immutable, NO soft-delete fields per Constitution §3.4) with properties: Id, Date, Category, DebitAmount, CreditAmount, MemberId (nullable), PaymentId (nullable), Description, CreatedAt, ModifiedAt"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-033",
+    "Description": "Define Payment entity in src/StageFright.Core/Entities/Payment.cs (Amount/Date/Category locked after creation) with properties: Id, Date (immutable), Amount (immutable), PaymentMethod (Cash|Check|Card|Electronic Transfer|Other; immutable, default Cash), PaymentType (Annual|Attendance|Other; immutable), MemberId, Category (immutable), Notes (editable), CreatedAt, UpdatedAt (updates ONLY when Notes changes)"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-034",
+    "Description": "Configure all entities in src/StageFright.Data/Context/StageFrightContext.cs with appropriate relationships, constraints, and indexes per ERD section 3.1; configure Category.GlAccount as read-only after creation"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-035",
+    "Description": "Implement global soft-delete query filters in StageFrightContext.OnModelCreating() to automatically exclude IsDeleted=true records from all queries"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-036",
+    "Description": "Create initial schema migration in src/StageFright.Data/Migrations/Migration_20260515_001_InitialSchema.cs with all entities, relationships, and constraints"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-037",
+    "Description": "Verify migration integrity test in tests/StageFright.Data.Tests/SchemaTests.cs confirming all tables, columns, and constraints created correctly"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-038",
+    "Description": "Create IMemberRepository interface in src/StageFright.Data/Repositories/IMemberRepository.cs with methods: GetByIdAsync, GetActiveMembersAsync, GetHistoricalActiveMembersAsync, GetInactiveMembersAsync, CreateAsync, UpdateAsync, SoftDeleteAsync, RestoreAsync per plan.md section 1.4"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-039",
+    "Description": "Implement MemberRepository in src/StageFright.Data/Repositories/MemberRepository.cs with CRUD operations, status filtering, and effective date queries"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-040",
+    "Description": "Create IRehearsalRepository interface in src/StageFright.Data/Repositories/IRehearsalRepository.cs with methods: GetByIdAsync, GetAllAsync, GetByDateRangeAsync, CreateAsync, GetMostRecentAsync"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-041",
+    "Description": "Implement RehearsalRepository in src/StageFright.Data/Repositories/RehearsalRepository.cs with scheduling and date range queries"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-042",
+    "Description": "Create IEventRepository interface in src/StageFright.Data/Repositories/IEventRepository.cs with methods: GetByIdAsync, GetAllAsync, GetByDateRangeAsync, CreateAsync, GetMostRecentAsync"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-043",
+    "Description": "Implement EventRepository in src/StageFright.Data/Repositories/EventRepository.cs with event scheduling and date range queries"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-044",
+    "Description": "Create IAttendanceRepository interface in src/StageFright.Data/Repositories/IAttendanceRepository.cs with methods: RecordAsync, GetByRehearsalAsync, GetByMemberAsync, GetAttendanceRateAsync"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-045",
+    "Description": "Implement AttendanceRepository in src/StageFright.Data/Repositories/AttendanceRepository.cs with attendance recording and historical calculation"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-046",
+    "Description": "Create IParticipationRepository interface in src/StageFright.Data/Repositories/IParticipationRepository.cs with methods: RecordAsync, GetByEventAsync, GetByMemberAsync, GetParticipationRateAsync"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-047",
+    "Description": "Implement ParticipationRepository in src/StageFright.Data/Repositories/ParticipationRepository.cs with participation tracking and rate calculation"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-048",
+    "Description": "Create ICategoryRepository interface in src/StageFright.Data/Repositories/ICategoryRepository.cs with methods: GetByIdAsync, GetAllAsync, CreateAsync, UpdateAsync, ArchiveAsync, RestoreAsync, ValidateArchivalAsync"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-049",
+    "Description": "Implement CategoryRepository in src/StageFright.Data/Repositories/CategoryRepository.cs with category management and archival validation"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-050",
+    "Description": "Create ISettingsRepository interface in src/StageFright.Data/Repositories/ISettingsRepository.cs with methods: GetSettingsAsync, UpdateSettingsAsync (singleton pattern)"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-051",
+    "Description": "Implement SettingsRepository in src/StageFright.Data/Repositories/SettingsRepository.cs with singleton settings persistence"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-052",
+    "Description": "Create ICommitteeMembershipRepository interface in src/StageFright.Data/Repositories/ICommitteeMembershipRepository.cs with methods: GetByMemberAsync, GetByYearAsync, RecordAsync, UpdateAsync, ClearYearAsync, GetHistoryAsync"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-053",
+    "Description": "Implement CommitteeMembershipRepository in src/StageFright.Data/Repositories/CommitteeMembershipRepository.cs with year-based committee tracking"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-054",
+    "Description": "Create IAuditTrailRepository interface in src/StageFright.Data/Repositories/IAuditTrailRepository.cs with methods: LogAsync, GetByEntityAsync, PurgeExpiredAsync (12-month retention)"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-055",
+    "Description": "Implement AuditTrailRepository in src/StageFright.Data/Repositories/AuditTrailRepository.cs with audit logging and cleanup"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-056",
+    "Description": "Create data access layer test suite in tests/StageFright.Data.Tests/RepositoryTests.cs with comprehensive CRUD tests for all repositories"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-057",
+    "Description": "Test soft-delete behavior and query filtering in tests/StageFright.Data.Tests/SoftDeleteTests.cs verifying exclusion of deleted records from default queries"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-058",
+    "Description": "Test historical active-member calculation in tests/StageFright.Data.Tests/HistoricalMemberTests.cs with effective date scenarios: reactivation, inactivation, archive"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-059",
+    "Description": "Test attendance rate calculation in tests/StageFright.Data.Tests/AttendanceRateTests.cs using formula: members_present / members_active_on_date * 100%"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-060",
+    "Description": "Test participation rate calculation in tests/StageFright.Data.Tests/ParticipationRateTests.cs using formula: members_participated / members_active_on_date * 100%"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-061",
+    "Description": "Create shell layout component in src/StageFright.UI/Shared/ShellLayout.razor with dark brand strip (purple StageFright wordmark), white navigation bar, and module menu structure per section 1.3 architecture"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-062",
+    "Description": "Create MainLayout component in src/StageFright.UI/Shared/MainLayout.razor with two-column card layout and placeholder dashboard"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-063",
+    "Description": "Create Settings module page in src/StageFright.UI/Pages/Settings/Settings.razor with tabbed interface for General, Categories, Event Types, Backup, Restore tabs"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-064",
+    "Description": "Create General Settings tab component in src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor with form fields: Organization Name, Annual Fee, Attendance Fee, Renewal Month, Max Age Range, Minimum Member Age per FR-018"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-065",
+    "Description": "Create Categories tab component in src/StageFright.UI/Pages/Settings/CategoriesTab.razor with create/edit/archive/restore/reorder operations"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-066",
+    "Description": "Create Event Types tab component in src/StageFright.UI/Pages/Settings/EventTypesTab.razor with default types (Performance, Eisteddfod, Fund raiser, Promotional) and edit capability"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-067",
+    "Description": "Create first-run setup wizard component in src/StageFright.UI/Pages/Setup/SetupWizard.razor with form to capture organization name, annual fee, attendance fee, renewal month, and initialize database per FR-001"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-068",
+    "Description": "Implement setup wizard logic in src/StageFright.Core/Services/SetupService.cs to create Settings record and initialize database schema"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-069",
+    "Description": "Create Members module page in src/StageFright.UI/Pages/Members/Members.razor with member list, filter by Active/Inactive status, and action buttons (Add, Edit, Delete)"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-070",
+    "Description": "Create Add Member form component in src/StageFright.UI/Pages/Members/AddMemberForm.razor with fields: Name (required), Street Address (required), Phone (optional), Email (optional), Join Date (required), Date of Birth (optional) per FR-002"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-071",
+    "Description": "Implement member validation service in src/StageFright.Core/Services/MemberValidationService.cs with email format, phone format, DOB past validation per FR-002a"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-072",
+    "Description": "Implement age calculation service in src/StageFright.Core/Services/AgeCalculationService.cs with server-side calculation: floor((today - DOB) / 365.25) and 150-year range + minimum age validation per FR-002a"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-073",
+    "Description": "Create Edit Member form component in src/StageFright.UI/Pages/Members/EditMemberForm.razor with editable fields and Committee Member checkbox + Position field"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-074",
+    "Description": "Create Committee History section in src/StageFright.UI/Pages/Members/CommitteeHistorySection.razor displaying year-based committee assignments with visual distinction (bold + \"Current\" badge for current year, normal text for historical) per FR-029"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-075",
+    "Description": "Create Members module service in src/StageFright.Core/Services/MemberService.cs with CRUD operations, lifecycle management (Active/Inactive), age display logic"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-076",
+    "Description": "Implement committee membership service in src/StageFright.Core/Services/CommitteeMembershipService.cs with per-year tracking, history preservation, and annual reset logic per FR-031"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-077",
+    "Description": "Create Rehearsals module page in src/StageFright.UI/Pages/Rehearsals/Rehearsals.razor with schedule form, attendance recording, and historical list"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-078",
+    "Description": "Create Schedule Rehearsal form component in src/StageFright.UI/Pages/Rehearsals/ScheduleRehearsalForm.razor with date, time, optional notes fields"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-079",
+    "Description": "Create Attendance Recording component in src/StageFright.UI/Pages/Rehearsals/AttendanceRecorder.razor with member list checkboxes for presence/absence selection and submit"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-080",
+    "Description": "Create Rehearsal service in src/StageFright.Core/Services/RehearsalService.cs with scheduling, attendance recording, and fee accrual on attendance per FR-005"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-081",
+    "Description": "Create Events module page in src/StageFright.UI/Pages/Events/Events.razor with event scheduling form, participation recording, and historical list"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-082",
+    "Description": "Create Schedule Event form component in src/StageFright.UI/Pages/Events/ScheduleEventForm.razor with date, event type dropdown, optional notes fields"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-083",
+    "Description": "Create Participation Recording component in src/StageFright.UI/Pages/Events/ParticipationRecorder.razor with member list checkboxes for participation selection"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-084",
+    "Description": "Create Event service in src/StageFright.Core/Services/EventService.cs with event scheduling and participation tracking"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-085",
+    "Description": "Create Dashboard tile component infrastructure in src/StageFright.UI/Shared/DashboardTile.razor for progressive loading, timeout handling, and graceful degradation"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-086",
+    "Description": "Create Members tile component in src/StageFright.UI/Pages/Dashboard/MembersDashboardTile.razor displaying active count + inactive count"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-087",
+    "Description": "Create Rehearsals tile component in src/StageFright.UI/Pages/Dashboard/RehearsalsDashboardTile.razor displaying most recent rehearsal date + attendance rate (%)"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-088",
+    "Description": "Create Events tile component in src/StageFright.UI/Pages/Dashboard/EventsDashboardTile.razor displaying most recent event date + participation rate (%)"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-089",
+    "Description": "Create Finance tile placeholder component in src/StageFright.UI/Pages/Dashboard/FinanceDashboardTile.razor for total outstanding balance (to be fully implemented in Phase 2)"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-090",
+    "Description": "Create Dashboard page in src/StageFright.UI/Pages/Dashboard/Dashboard.razor aggregating all tiles with progressive loading and error handling per FR-010, FR-011"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-091",
+    "Description": "Implement plugin discovery and dashboard tile registration in src/StageFright.Plugins/Discovery/PluginLoader.cs with assembly reflection and DI registration"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-092",
+    "Description": "Create IDashboardTileProvider contract in src/StageFright.Plugins/Contracts/IDashboardTileProvider.cs per section 4.1 of plan.md"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-093",
+    "Description": "Implement core tile providers for Members, Rehearsals, Events, Finance tiles in src/StageFright.Plugins/Providers/ adhering to IDashboardTileProvider"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-094",
+    "Description": "Create navigation menu service in src/StageFright.Core/Services/NavigationService.cs to manage module links and enforce NavigateTo-only navigation per NFR-001"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-095",
+    "Description": "Implement theme toggle component in src/StageFright.UI/Shared/ThemeToggle.razor with light/dark mode switch and Settings persistence per FR-019"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-096",
+    "Description": "Create theme CSS variables in src/StageFright.UI/Styles/themes.css with light and dark theme definitions (HSL lightness 60–80%, saturation <50%) per FR-020"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-097",
+    "Description": "Create directory auto-creation service in src/StageFright.Core/Services/DirectoryService.cs to auto-create Plugins directory on startup per FR-021"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-098",
+    "Description": "Create acceptance tests for User Story 1 (First-Run Setup) in tests/StageFright.UI.Tests/SetupWizardTests.cs verifying all acceptance scenarios from spec"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-099",
+    "Description": "Create acceptance tests for User Story 2 (Member Management) in tests/StageFright.UI.Tests/MemberModuleTests.cs verifying CRUD, filtering, age calculation, validation"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-100",
+    "Description": "Create acceptance tests for User Story 3 (Rehearsal Scheduling) in tests/StageFright.UI.Tests/RehearsalModuleTests.cs verifying scheduling, attendance recording, fee accrual"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-101",
+    "Description": "Create acceptance tests for User Story 4 (Annual Fee Application) in tests/StageFright.UI.Tests/AnnualFeeApplicationTests.cs verifying batch processing, inactive member exclusion, duplicate prevention"
+  },
+  {
+    "Phase": "Phase 1: Core Modules & Data Model\r",
+    "Id": "T-102",
+    "Description": "Create acceptance tests for User Story 8 (Dashboard) in tests/StageFright.UI.Tests/DashboardTests.cs verifying tile rendering, progressive loading, error degradation"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-103",
+    "Description": "Create IFeeRepository interface in src/StageFright.Data/Repositories/IFeeRepository.cs with methods: GetByIdAsync, GetByMemberAsync, GetUnpaidAsync, GetByYearAsync, CreateAsync, preventing updates (immutable per FR-016)"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-104",
+    "Description": "Implement FeeRepository in src/StageFright.Data/Repositories/FeeRepository.cs with immutability enforcement (no Update method) and unpaid fee queries"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-105",
+    "Description": "Create IPaymentRepository interface in src/StageFright.Data/Repositories/IPaymentRepository.cs with methods: GetByIdAsync, GetByMemberAsync, CreateAsync, UpdateNotesAsync (only notes editable), GetPaymentHistoryAsync"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-106",
+    "Description": "Implement PaymentRepository in src/StageFright.Data/Repositories/IPaymentRepository.cs with payment recording, FIFO allocation, field-level immutability enforcement (reject updates to Amount/Date/PaymentMethod/PaymentType/Category with error message), and Notes-only editing with UpdatedAt timestamp update per FR-017, FR-025"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-107",
+    "Description": "Create ITransactionRepository interface in src/StageFright.Data/Repositories/ITransactionRepository.cs with methods: GetByIdAsync, GetByCategoryAsync, GetByMemberAsync, GetByDateRangeAsync, CreatePairAsync (double-entry), ValidateGLBalanceAsync"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-108",
+    "Description": "Implement TransactionRepository in src/StageFright.Data/Repositories/TransactionRepository.cs with paired GL transaction creation, immutability, balance validation per FR-039"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-109",
+    "Description": "Create GL paired transaction service in src/StageFright.Core/Services/GlTransactionService.cs ensuring debits = credits, GL account mapping from Category, transaction pair creation atomic operation"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-110",
+    "Description": "Implement GL balance validation in src/StageFright.Core/Services/GlBalanceValidationService.cs with method: ValidateGLBalanceAsync() returning true if total debits = total credits within 0.01 precision per FR-034"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-111",
+    "Description": "Create payment allocation service in src/StageFright.Core/Services/PaymentAllocationService.cs implementing FIFO (First-In-First-Out) algorithm: oldest unpaid fees satisfied first per FR-016"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-112",
+    "Description": "Create member balance calculation service in src/StageFright.Core/Services/MemberBalanceService.cs with method: GetMemberBalanceAsync(Guid memberId) summing unpaid annual + attendance fees"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-113",
+    "Description": "Create integration tests for GL integrity in tests/StageFright.Integration.Tests/GlIntegrityTests.cs verifying paired transactions, balance validation, FIFO allocation"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-114",
+    "Description": "Create integration tests for payment recording in tests/StageFright.Integration.Tests/PaymentRecordingTests.cs verifying GL transaction pair creation, member balance updates, audit trail"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-115",
+    "Description": "Create Finance module page in src/StageFright.UI/Pages/Finance/Finance.razor with tabs: Payments, Member Balances, Categories, Annual Fee Application"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-116",
+    "Description": "Create Payment Recording form component in src/StageFright.UI/Pages/Finance/PaymentRecordingForm.razor with fields: Date, Amount, Payment Method (Cash|Check|Card|Electronic Transfer|Other), Payment Type (Annual|Attendance|Other), Category, Optional Notes per FR-025"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-117",
+    "Description": "Create Member Balance viewer component in src/StageFright.UI/Pages/Finance/MemberBalanceViewer.razor displaying each member's outstanding balance with annual fee + attendance fee breakdown"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-118",
+    "Description": "Create Category Management component in src/StageFright.UI/Pages/Finance/CategoryManagement.razor with create/edit/archive/restore/reorder operations and archival validation (prevent archiving if referenced by transactions)"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-119",
+    "Description": "Create Annual Fee Application confirmation dialog component in src/StageFright.UI/Pages/Finance/AnnualFeeApplicationDialog.razor showing number of active members to be charged with confirmation button per FR-004"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-120",
+    "Description": "Create Finance service in src/StageFright.Core/Services/FinanceService.cs with payment recording, balance calculation, annual fee batch application"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-121",
+    "Description": "Implement annual fee application logic in src/StageFright.Core/Services/AnnualFeeApplicationService.cs with batch processing: skip inactive members, skip existing unpaid annual fees, atomic transaction per FR-004"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-122",
+    "Description": "Update Finance tile in src/StageFright.UI/Pages/Dashboard/FinanceDashboardTile.razor to display total outstanding balance with muted Green (positive/surplus) or muted Red (negative/deficit) color coding per FR-008"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-123",
+    "Description": "Create acceptance tests for User Story 6 (Finance Tracking) in tests/StageFright.UI.Tests/FinanceModuleTests.cs verifying payment recording, balance calculation, categorization, GL pairs"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-124",
+    "Description": "Create acceptance tests for User Story 7 (Category Management) in tests/StageFright.UI.Tests/CategoryManagementTests.cs verifying create/edit/archive/restore with validation"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-125",
+    "Description": "Create IReportProvider contract in src/StageFright.Plugins/Contracts/IReportProvider.cs with methods per section 4.2 of plan.md: ModuleName, ReportId, ReportName, DisplayOrder, GenerateAsync(ReportFilter)"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-126",
+    "Description": "Create ReportData and ReportFilter classes in src/StageFright.Reports/Models/ with properties: ColumnHeaders, Rows, Summaries, DateFrom, DateTo, CategoryFilter, MemberStatusFilter, CustomFilters per section 4.2 of plan.md"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-127",
+    "Description": "Create common report viewer component in src/StageFright.UI/Pages/Reports/ReportViewer.razor displaying report title, headers, rows, subtotals, grand totals with print and export buttons"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-128",
+    "Description": "Create report loading indicator component in src/StageFright.UI/Shared/ReportLoadingIndicator.razor with spinner and progress messaging"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-129",
+    "Description": "Create report error handler component in src/StageFright.UI/Shared/ReportErrorHandler.razor displaying user-friendly error messages with recovery options per FR-011"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-130",
+    "Description": "Create report aggregation service in src/StageFright.Reports/Services/ReportAggregationService.cs discovering and registering all IReportProvider implementations via plugin discovery"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-131",
+    "Description": "Create report menu structure service in src/StageFright.Reports/Services/ReportMenuService.cs organizing reports by module (Members, Finance, etc.) for display in Reports menu per FR-011"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-132",
+    "Description": "Create PDF export service in src/StageFright.Reports/Exporters/PdfExporter.cs using iTextSharp or similar to generate PDF with professional formatting per FR-037"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-133",
+    "Description": "Create CSV export service in src/StageFright.Reports/Exporters/CsvExporter.cs generating CSV with proper escaping and comma-handling per FR-041"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-134",
+    "Description": "Create Reports page in src/StageFright.UI/Pages/Reports/Reports.razor with report selection menu and report viewer component integration"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-135",
+    "Description": "Create integration tests for report infrastructure in tests/StageFright.Integration.Tests/ReportInfrastructureTests.cs verifying report provider discovery, aggregation, data structure"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-136",
+    "Description": "Create Income Statement report provider in src/StageFright.Reports/Providers/IncomeStatementReportProvider.cs implementing IReportProvider with revenue categories, expense categories, subtotals, net income per FR-033"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-137",
+    "Description": "Implement Income Statement data generation in src/StageFright.Reports/Providers/IncomeStatementReportProvider.cs with date range filtering, category organization, calculation accuracy per FR-033"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-138",
+    "Description": "Create Trial Balance report provider in src/StageFright.Reports/Providers/TrialBalanceReportProvider.cs implementing IReportProvider with Asset/Income/Expense sections, GL balance verification per FR-034"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-139",
+    "Description": "Implement Trial Balance validation in src/StageFright.Reports/Providers/TrialBalanceReportProvider.cs rejecting if Total Debits ≠ Total Credits with error message: \"GL Balance Verification Failed: Total Debits ($X.XX) ≠ Total Credits ($Y.YY). Please review and correct GL entries.\" per FR-034"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-140",
+    "Description": "Create Account Register report provider in src/StageFright.Reports/Providers/AccountRegisterReportProvider.cs implementing IReportProvider with chronological transaction list, running balance per FR-035"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-141",
+    "Description": "Implement Account Register running balance calculation in src/StageFright.Reports/Providers/AccountRegisterReportProvider.cs with date range filtering and category filtering per FR-035"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-142",
+    "Description": "Create Member Account Summary report provider in src/StageFright.Reports/Providers/MemberAccountSummaryReportProvider.cs implementing IReportProvider with opening balance, transactions, closing balance, aging buckets (current/30/60/90+) including archived members per FR-036"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-143",
+    "Description": "Implement Member Account Summary aging calculation in src/StageFright.Reports/Providers/MemberAccountSummaryReportProvider.cs with configurable date ranges and current date as reference per FR-036"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-144",
+    "Description": "Register Member List report provider in src/StageFright.Reports/Providers/MemberListReportProvider.cs (Members module) with columns: Name, Address, Phone, Email, Join Date, Age, Status per section 4.2 of plan.md"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-145",
+    "Description": "Register Committee Report provider in src/StageFright.Reports/Providers/CommitteeReportProvider.cs (Members module) with columns: Member Name, Year, Position organized by year per section 4.2 of plan.md"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-146",
+    "Description": "Create acceptance tests for Income Statement in tests/StageFright.Integration.Tests/IncomeStatementReportTests.cs verifying accuracy, date range filtering, category organization"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-147",
+    "Description": "Create acceptance tests for Trial Balance in tests/StageFright.Integration.Tests/TrialBalanceReportTests.cs verifying GL balance validation, account organization, GL balance verification"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-148",
+    "Description": "Create acceptance tests for Account Register in tests/StageFright.Integration.Tests/AccountRegisterReportTests.cs verifying transaction order, running balance accuracy, date range filtering"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-149",
+    "Description": "Create acceptance tests for Member Account Summary in tests/StageFright.Integration.Tests/MemberAccountSummaryReportTests.cs verifying aging accuracy, archived member inclusion, date range filtering"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-150",
+    "Description": "Create print functionality tests in tests/StageFright.UI.Tests/ReportPrintingTests.cs verifying PDF generation, formatting, all headers/totals rendered"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-151",
+    "Description": "Create CSV export tests in tests/StageFright.UI.Tests/ReportExportTests.cs verifying proper escaping, quote-handling, header row, data alignment"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-152",
+    "Description": "Create protobuf schema definitions in src/StageFright.Proto/stagefright.proto for all entities: Member, Rehearsal, Event, Fee, Payment, Transaction, Category, Settings, CommitteeMembership, AuditTrail with version metadata"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-153",
+    "Description": "Generate C# code from .proto files in src/StageFright.Proto/Generated/ using protoc compiler"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-154",
+    "Description": "Create IBackupService interface in src/StageFright.Core/Services/IBackupService.cs with methods: BackupAsync(filepath), RestoreAsync(filepath) with schema version validation"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-155",
+    "Description": "Implement ProtobufBackupService in src/StageFright.Core/Services/ProtobufBackupService.cs with backup export to binary format including schema version, generation timestamp, all entities"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-156",
+    "Description": "Implement ProtobufRestoreService in src/StageFright.Core/Services/ProtobufRestoreService.cs with import validation: schema version check, entity completeness check (all required entity types present), atomic transaction per FR-013, FR-014"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-157",
+    "Description": "Create pre-import backup checkpoint service in src/StageFright.Core/Services/BackupCheckpointService.cs creating automatic backup before any import begins per FR-013"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-158",
+    "Description": "Create Backup tab component in src/StageFright.UI/Pages/Settings/BackupTab.razor with button to trigger backup with file save dialog"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-159",
+    "Description": "Create Restore tab component in src/StageFright.UI/Pages/Settings/RestoreTab.razor with file picker, pre-import backup checkpoint creation, import confirmation dialog, entity validation per FR-014, FR-015"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-160",
+    "Description": "Implement non-destructive upsert import mode in src/StageFright.Core/Services/ProtobufRestoreService.cs matching records by primary key, updating existing, inserting missing, preserving local records not in source per FR-015"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-161",
+    "Description": "Create integration tests for backup/restore in tests/StageFright.Integration.Tests/BackupRestoreTests.cs verifying complete data preservation, schema version validation, entity completeness"
+  },
+  {
+    "Phase": "Phase 2: Financial & Reporting Infrastructure\r",
+    "Id": "T-162",
+    "Description": "Create integration tests for incomplete backup rejection in tests/StageFright.Integration.Tests/IncompleteBackupRejectionTests.cs verifying missing entity type detection and error message per FR-014"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-163",
+    "Description": "Create member reactivation service in src/StageFright.Core/Services/MemberReactivationService.cs implementing automatic debt forgiveness: identify outstanding fees, create GL reversing transaction pairs for each fee, soft-delete original fees, reset balance to $0.00 per FR-024"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-164",
+    "Description": "Implement member reactivation GL write-off logic in src/StageFright.Core/Services/MemberReactivationService.cs creating GL pairs: Debit=MemberReceivable, Credit=BadDebtExpense/WriteOff with full audit trail per FR-024"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-165",
+    "Description": "Create member reactivation UI component in src/StageFright.UI/Pages/Members/MemberReactivationDialog.razor showing confirmation of prior year fees to be forgiven with OK/Cancel buttons"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-166",
+    "Description": "Create committee membership annual reset service in src/StageFright.Core/Services/CommitteeAnnualResetService.cs triggered on Jan 1 midnight clearing all current-year committee status per FR-031"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-167",
+    "Description": "Implement committee membership annual reset logic in startup check in src/StageFright.Maui/App.xaml.cs: on app startup, compare current month/year against Settings.LastCommitteeResetYear; if (CurrentMonth >= CommitteeRenewalMonth AND LastResetYear < CurrentYear), invoke CommitteeAnnualResetService synchronously before dashboard displays, clearing all members' current-year committee status, preserving history, updating LastCommitteeResetYear = CurrentYear per FR-031"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-168",
+    "Description": "Create acceptance tests for member reactivation in tests/StageFright.Integration.Tests/MemberReactivationTests.cs verifying GL write-offs, fee soft-deletion, balance reset, audit trail"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-169",
+    "Description": "Create acceptance tests for committee annual reset in tests/StageFright.Integration.Tests/CommitteeAnnualResetTests.cs verifying prior year preservation, current year clear, no data loss"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-170",
+    "Description": "Create audit trail logging middleware in src/StageFright.Core/Services/AuditTrailService.cs intercepting all Create/Update/Delete operations with entity type, ID, action, user (fixed \"system\" in MVP), timestamp, old value, new value per FR-022"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-171",
+    "Description": "Implement audit log purge service in src/StageFright.Core/Services/AuditLogPurgeService.cs deleting logs older than 12 months, triggered on application startup only per FR-022"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-172",
+    "Description": "Integrate audit trail logging into all repository Update/Create/Delete methods via AuditTrailService dependency injection"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-173",
+    "Description": "Create structured logging for all application failures in src/StageFright.Core/Services/ErrorLoggingService.cs using Serilog with error context, stack traces, user context"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-174",
+    "Description": "Create integration tests for audit trail in tests/StageFright.Integration.Tests/AuditTrailTests.cs verifying logging of all modifications, 12-month retention, startup purge"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-175",
+    "Description": "Create startup purge edge case test in tests/StageFright.Integration.Tests/AuditLogPurgeEdgeCaseTests.cs verifying graceful handling if purge fails (log error, continue startup)"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-176",
+    "Description": "Create user-friendly error component in src/StageFright.UI/Shared/ErrorBoundary.razor catching unhandled exceptions and displaying graceful error messages"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-177",
+    "Description": "Create error message constants in src/StageFright.Core/Constants/ErrorMessages.cs with standardized messages for all common error scenarios"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-178",
+    "Description": "Create validation error handler in src/StageFright.UI/Shared/ValidationErrorDisplay.razor displaying field-level validation errors in forms"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-179",
+    "Description": "Create edge case handlers for: corrupted database (offer recovery options), missing plugin directory (auto-create), plugin load failures (skip with logging), failed dashboard tiles (skip with logging)"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-180",
+    "Description": "Implement graceful degradation for dashboard in src/StageFright.UI/Pages/Dashboard/Dashboard.razor with tile timeout handling (5-second limit) and error tile rendering per FR-011"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-181",
+    "Description": "Create failed tile error component in src/StageFright.UI/Pages/Dashboard/FailedTileComponent.razor displaying error message with retry button"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-182",
+    "Description": "Create loading indicators for long-running operations: report generation, backup/restore, annual fee application"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-183",
+    "Description": "Create integration tests for error handling in tests/StageFright.Integration.Tests/ErrorHandlingTests.cs verifying graceful degradation, user-friendly messages, logging"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-184",
+    "Description": "Create edge case tests in tests/StageFright.Integration.Tests/EdgeCaseTests.cs for: corrupted database, missing directories, plugin failures, timeout scenarios, payment allocation edge cases"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-185",
+    "Description": "Create WCAG AA contrast validation service in src/StageFright.Core/Services/ContrastValidationService.cs calculating WCAG contrast ratios for all UI colors"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-186",
+    "Description": "Create theme CSS validation in src/StageFright.UI/Styles/ verifying HSL lightness (60–80%), saturation (<50%) and WCAG AA contrast compliance for both light and dark themes"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-187",
+    "Description": "Implement semantic HTML accessibility in all Blazor components: proper heading hierarchy (h1-h6), ARIA labels, role attributes, tab order per WCAG standards"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-188",
+    "Description": "Add accessibility testing to src/StageFright.UI/Shared/ components: tab controls with WCAG semantic markup, button roles, navigation landmarks"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-189",
+    "Description": "Create dark theme CSS in src/StageFright.UI/Styles/dark-theme.css with WCAG AA compliant colors"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-190",
+    "Description": "Create light theme CSS in src/StageFright.UI/Styles/light-theme.css with WCAG AA compliant colors"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-191",
+    "Description": "Create automated contrast ratio test in tests/StageFright.UI.Tests/AccessibilityTests.cs verifying all text/UI elements meet WCAG AA (4.5:1 for text, 3:1 for UI components)"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-192",
+    "Description": "Create screen reader compatibility test in tests/StageFright.UI.Tests/ScreenReaderTests.cs verifying semantic HTML, ARIA labels, navigation"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-193",
+    "Description": "Create keyboard navigation test in tests/StageFright.UI.Tests/KeyboardNavigationTests.cs verifying all functionality accessible via keyboard (no mouse required)"
+  },
+  {
+    "Phase": "Phase 3: Advanced Features & Polish\r",
+    "Id": "T-194",
+    "Description": "Create theme toggle acceptance test in tests/StageFright.UI.Tests/ThemeToggleTests.cs verifying dark/light switching, persistence, contrast compliance in both"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-195",
+    "Description": "Create comprehensive unit test suite for all business logic in src/StageFright.Core/ with ≥90% coverage"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-196",
+    "Description": "Create comprehensive integration test suite for all repository operations in tests/StageFright.Data.Tests/ with ≥80% coverage"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-197",
+    "Description": "Validate all acceptance scenarios from spec.md User Stories 1-11 with UI integration tests in tests/StageFright.UI.Tests/"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-198",
+    "Description": "Create plugin integration tests in tests/StageFright.Integration.Tests/PluginIntegrationTests.cs verifying discovery, loading, error handling, DI registration"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-199",
+    "Description": "Create end-to-end workflow tests covering: first-run setup → member registration → rehearsal scheduling → attendance recording → fee application → payment recording → report generation"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-200",
+    "Description": "Create performance benchmark suite in tests/StageFright.Integration.Tests/PerformanceBenchmarks.cs measuring: member list load time, attendance recording time, report generation time, GL validation time (advisory)"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-201",
+    "Description": "Create test coverage report generation in CI/CD pipeline using OpenCover or similar, publishing coverage to repository wiki"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-202",
+    "Description": "Create smoke test suite in tests/StageFright.Integration.Tests/SmokeTests.cs for rapid validation of critical paths"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-203",
+    "Description": "Create Architecture Documentation in docs/ARCHITECTURE.md with: layered architecture diagram, module responsibilities, data flow, plugin architecture, DI setup"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-204",
+    "Description": "Create Plugin Development Guide in docs/PLUGIN_DEVELOPMENT.md with: contract specifications, example plugin (dashboard tile), discovery mechanism, DI registration, testing plugins"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-205",
+    "Description": "Create API Reference Documentation in docs/API_REFERENCE.md with: all public interfaces, repository contracts, service interfaces, provider contracts with usage examples"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-206",
+    "Description": "Create Setup & Installation Guide in docs/SETUP.md with: system requirements, build instructions, database setup, first-run instructions, configuration options"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-207",
+    "Description": "Create Testing Guide in docs/TESTING.md with: unit test structure, integration test setup, acceptance test patterns, running test suite, coverage reporting"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-208",
+    "Description": "Create Data Model Documentation in docs/DATA_MODEL.md with: ERD diagram, entity descriptions, relationships, key constraints, soft-delete behavior"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-209",
+    "Description": "Create Accounting & GL Documentation in docs/ACCOUNTING.md with: GL pair transaction model, account structure, FIFO allocation algorithm, GL balance validation, example transactions"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-210",
+    "Description": "Create User Guide for group coordinators in docs/USER_GUIDE.md with: screenshots, workflow walkthroughs, common tasks, troubleshooting"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-211",
+    "Description": "Create Contribution Guidelines in CONTRIBUTING.md with: code standards, PR process, test coverage requirements, documentation expectations"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-212",
+    "Description": "Generate API documentation from code comments using DocFX or similar in docs/API/ with all public types and methods"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-213",
+    "Description": "Create build pipeline in .github/workflows/build.yml compiling solution on all PRs/commits, running on Windows/macOS targets"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-214",
+    "Description": "Create test automation pipeline in .github/workflows/test.yml running full test suite (unit + integration + UI) with coverage report"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-215",
+    "Description": "Create code quality pipeline in .github/workflows/quality.yml running code analysis (SonarQube or similar), detecting regressions"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-216",
+    "Description": "Create documentation validation in .github/workflows/docs.yml building documentation and validating links/formatting"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-217",
+    "Description": "Create release preparation checklist in .github/RELEASE_CHECKLIST.md with: version bumping, release notes, asset building, tag creation"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-218",
+    "Description": "Create deployment guide in docs/DEPLOYMENT.md with: building installers (.msi for Windows, .dmg for macOS), digital signing, distribution options"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-219",
+    "Description": "Create issue templates in .github/ISSUE_TEMPLATE/ for bug reports, feature requests, documentation improvements"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-220",
+    "Description": "Create PR template in .github/pull_request_template.md with: PR description format, linked issues, testing instructions, checklist"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-221",
+    "Description": "**Double-Entry Accounting Validation**: Implement GL balance verification before every report generation (T-110) + comprehensive GL transaction tests (T-113, T-147)"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-222",
+    "Description": "**Plugin Architecture Stability**: Implement exception handling at plugin boundaries (T-091) + plugin integration tests (T-198) + failed tile graceful degradation (T-180)"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-223",
+    "Description": "**Financial Data Safety**: Implement immutable Fee/Transaction design (T-103, T-107) + atomic backup/restore (T-156) + pre-import backups (T-157)"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-224",
+    "Description": "**Member Historical Accuracy**: Implement effective date fields (T-022) + historical query tests (T-058) + edge case scenarios (T-184)"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-225",
+    "Description": "**Theme & Accessibility**: Implement WCAG AA validation (T-185) + contrast testing (T-191) + screen reader tests (T-192)"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-226",
+    "Description": "**Payment Allocation Accuracy**: Implement FIFO algorithm with comprehensive tests (T-111, T-184) + manual aging verification procedures documented"
+  },
+  {
+    "Phase": "Phase 4: Testing & Documentation\r",
+    "Id": "T-227",
+    "Description": "**Performance & Responsiveness**: Implement 5-second report timeout (T-127) + dashboard tile timeout (T-180) + performance benchmarks (T-200)"
+  }
+]
