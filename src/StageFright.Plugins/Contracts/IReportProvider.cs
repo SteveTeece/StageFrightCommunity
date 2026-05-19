@@ -1,5 +1,8 @@
 namespace StageFright.Plugins.Contracts;
 
+using System;
+using System.Threading.Tasks;
+
 /// <summary>
 /// Contract for report providers.
 /// Plugins implement this to contribute custom reports.
@@ -22,22 +25,3 @@ public interface IReportProvider
 	Task<ReportData> GenerateAsync(ReportFilter? filter = null);
 }
 
-/// <summary>Filter criteria for report generation.</summary>
-public class ReportFilter
-{
-	public DateTime? DateFrom { get; set; }
-	public DateTime? DateTo { get; set; }
-	public string? CategoryFilter { get; set; }
-	public string? MemberStatusFilter { get; set; }
-	public Dictionary<string, object> CustomFilters { get; set; } = new();
-}
-
-/// <summary>Report data structure.</summary>
-public class ReportData
-{
-	public string ReportTitle { get; set; } = string.Empty;
-	public string[] ColumnHeaders { get; set; } = Array.Empty<string>();
-	public string[][] Rows { get; set; } = Array.Empty<string[]>();
-	public Dictionary<string, string>? Summaries { get; set; }
-	public DateTime GeneratedAt { get; set; } = DateTime.UtcNow;
-}

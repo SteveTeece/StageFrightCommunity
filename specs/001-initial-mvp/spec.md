@@ -722,7 +722,43 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 ---
 
-## 5. Clarifications *(optional but recommended)*
+## 5. Technical Standards *(mandatory)*
+
+### Code Organization: One Class Per File
+
+The codebase enforces **one public class/interface per file**. This organizational standard:
+
+- **Improves Maintainability**: Each file has a single, clear purpose and responsibility
+- **Enables Faster Navigation**: Developers locate classes through filenames rather than searching within large aggregate files
+- **Reduces Merge Conflicts**: Multiple developers working on different classes avoid file contention and integration friction
+- **Supports IDE Tooling**: VS Code and Visual Studio optimize refactoring, navigation, and find-all-references operations when files follow this pattern
+- **Simplifies Code Review**: Reviewers focus on logic and design rather than file organization, reducing cognitive load
+
+**Exceptions**:
+- Interfaces without implementations may be grouped only when they are small, tightly related, and rarely extended
+- Once an implementation is added to an interface file, implementations MUST be split into separate files
+
+**File Naming Conventions**:
+- Class names MUST match filenames exactly (e.g., `public class MemberRepository` lives in `MemberRepository.cs`)
+- Data model classes: `Member.cs`, `Rehearsal.cs`, `Fee.cs`
+- Interfaces: `IMemberRepository.cs`, `IRepository.cs`
+- Support/Data Transfer Objects (DTOs): `ReportFilter.cs`, `TileData.cs`
+- Services: `AgeCalculationService.cs`, `MemberValidationService.cs`
+
+**Namespace Organization**:
+- **Entities**: `StageFright.Core.Entities` (domain models, value objects)
+- **Services**: `StageFright.Core.Services` (business logic, calculations, validation)
+- **Exceptions**: `StageFright.Core.Exceptions` (custom exception types)
+- **Repositories**: `StageFright.Data.Repositories` (data access, repository implementations)
+- **Plugin Contracts**: `StageFright.Plugins.Contracts` (plugin extension points, provider interfaces)
+- **Reports**: `StageFright.Reports.Models`, `StageFright.Reports.Providers` (report data structures, report generators)
+- **UI Components**: `StageFright.UI.Pages`, `StageFright.UI.Shared`, `StageFright.UI.Styles` (Blazor pages, shared components)
+
+**Impact**: Code organization by file encourages SRP (Single Responsibility Principle), reduces cognitive load during code review, and provides consistent structure across the codebase for rapid developer onboarding.
+
+---
+
+## 6. Clarifications *(optional but recommended)*
 
 ### Session 2026-05-15 (MVP Specification Session)
 
@@ -1009,7 +1045,7 @@ This session clarified 8 CRITICAL and HIGH ambiguities identified by artifact co
 
 ---
 
-## 6. Acceptance Criteria *(mandatory)*
+## 7. Acceptance Criteria *(mandatory)*
 
 **Specification Completeness**:
 - [ ] All user stories have defined acceptance scenarios covering primary and edge-case flows
@@ -1069,7 +1105,7 @@ This session clarified 8 CRITICAL and HIGH ambiguities identified by artifact co
 
 ---
 
-## 7. Success Criteria *(mandatory)*
+## 8. Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
 
@@ -1112,7 +1148,7 @@ This session clarified 8 CRITICAL and HIGH ambiguities identified by artifact co
 
 ---
 
-## 8. Implementation Notes
+## 9. Implementation Notes
 
 **Constitutional Alignment**: This MVP specification is governed by Spec Kit Constitution v2.1.1. Cross-cutting policies (architecture, error handling, data preservation, testing standards, JavaScript prohibition) are authoritative and referenced in this spec. Any approved deviations must be documented as constitution amendments and referenced here.
 

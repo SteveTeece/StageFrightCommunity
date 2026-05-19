@@ -144,6 +144,31 @@ public interface ITransactionRepository
 | **Data Access Layer** | Entity Framework context, repositories, migrations, queries |
 | **Audit Trail** | Logging all data modifications, 12-month retention, startup purge |
 
+### 1.7 Code Organization Standards
+
+**One Class Per File**: The codebase enforces **one public class/interface per file**. This principle:
+- **Improves maintainability**: Each file has a single, clear purpose
+- **Enables faster navigation**: Developers find classes through filenames rather than searching within large files
+- **Reduces merge conflicts**: Multiple developers working on different classes avoid file contention
+- **Supports IDE tooling**: VS Code and Visual Studio optimize refactoring, navigation, and search when files follow this pattern
+- **Exception**: Interfaces without implementations may be grouped (e.g., multiple small related interfaces), but once implementation is added, split into separate files
+
+**File Naming Convention**: Class names match filenames exactly.
+- Example: `public class MemberRepository` lives in `MemberRepository.cs`
+- Data model classes: `Member.cs`, `Rehearsal.cs`, `Fee.cs`, etc.
+- Interfaces: `IMemberRepository.cs`, `IRepository.cs`, etc.
+- Support/DTO classes: `ReportFilter.cs`, `TileData.cs`, etc.
+
+**Namespace Organization**:
+- Entities: `StageFright.Core.Entities`
+- Services: `StageFright.Core.Services`
+- Repositories: `StageFright.Data.Repositories`
+- Plugin Contracts: `StageFright.Plugins.Contracts`
+- Reports/Models: `StageFright.Reports.Models`
+- UI Components: `StageFright.UI.Pages`, `StageFright.UI.Shared`, etc.
+
+**Impact on Code Review**: Code reviews focus on logic, design, and testing rather than file organization, reducing reviewer cognitive load.
+
 ---
 
 ## 2. Implementation Phases

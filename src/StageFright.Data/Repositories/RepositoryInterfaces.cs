@@ -5,6 +5,51 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+/// <summary>Repository interface for Fee operations (immutable).</summary>
+public interface IFeeRepository : IRepository<Fee>
+{
+	/// <summary>Gets all fees for a member.</summary>
+	Task<IEnumerable<Fee>> GetByMemberAsync(Guid memberId);
+
+	/// <summary>Gets unpaid fees for a member.</summary>
+	Task<IEnumerable<Fee>> GetUnpaidAsync(Guid memberId);
+
+	/// <summary>Gets fees for a specific year.</summary>
+	Task<IEnumerable<Fee>> GetByYearAsync(int year);
+}
+
+/// <summary>Repository interface for Payment operations.</summary>
+public interface IPaymentRepository : IRepository<Payment>
+{
+	/// <summary>Gets all payments for a member.</summary>
+	Task<IEnumerable<Payment>> GetByMemberAsync(Guid memberId);
+
+	/// <summary>Gets payment history for a member within date range.</summary>
+	Task<IEnumerable<Payment>> GetPaymentHistoryAsync(Guid memberId, DateTime fromDate, DateTime toDate);
+
+	/// <summary>Updates only the Notes field (other fields are immutable).</summary>
+	Task UpdateNotesAsync(Guid paymentId, string notes);
+}
+
+/// <summary>Repository interface for Transaction operations (GL paired, immutable).</summary>
+public interface ITransactionRepository : IRepository<Transaction>
+{
+	/// <summary>Gets transactions by category.</summary>
+	Task<IEnumerable<Transaction>> GetByCategoryAsync(string category);
+
+	/// <summary>Gets transactions for a member.</summary>
+	Task<IEnumerable<Transaction>> GetByMemberAsync(Guid memberId);
+
+	/// <summary>Gets transactions within date range.</summary>
+	Task<IEnumerable<Transaction>> GetByDateRangeAsync(DateTime fromDate, DateTime toDate);
+
+	/// <summary>Creates a paired GL transaction (debit and credit).</summary>
+	Task CreatePairAsync(Transaction debit, Transaction credit);
+
+	/// <summary>Validates GL balance (total debits = total credits).</summary>
+	Task<bool> ValidateGLBalanceAsync();
+}
+
 /// <summary>Repository interface for Rehearsal operations.</summary>
 public interface IRehearsalRepository : IRepository<Rehearsal>
 {
