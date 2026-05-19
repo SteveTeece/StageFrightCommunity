@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "FCpYMa72abs=",
+  "dgSpecHash": "NY9TPtuJeRQ=",
   "success": true,
   "projectFilePath": "C:\\SourceCode\\StageFrightCommunity\\src\\StageFright.Core\\StageFright.Core.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\sgtee\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.0\\microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\sgtee\\.nuget\\packages\\serilog\\4.1.0\\serilog.4.1.0.nupkg.sha512"
+  ],
   "logs": []
 }

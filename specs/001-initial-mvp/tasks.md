@@ -39,7 +39,7 @@
 
 ### Setup Tasks
 
-- [ ] T-001 Create MAUI project with BlazorWebView support in `src/StageFright.Maui/` per project structure spec
+- [ ] T-001 Create MAUI project with BlazorWebView support in `src/StageFright.Maui/` targeting Windows 10.0.19041.0+ and macOS 10.15+ (Mac Catalyst) only—no mobile (Android/iOS) or Linux platforms
 - [ ] T-002 [P] Install NuGet dependencies: `Microsoft.Maui`, `Microsoft.AspNetCore.Components.WebView.Maui`, `EntityFrameworkCore.Sqlite`, `EntityFrameworkCore.Tools`, `Serilog`, `Google.Protobuf` in `src/StageFright.Maui/`
 - [ ] T-003 [P] Create `StageFright.Core` class library for domain entities in `src/StageFright.Core/`
 - [ ] T-004 [P] Create `StageFright.Data` class library for data access layer in `src/StageFright.Data/`

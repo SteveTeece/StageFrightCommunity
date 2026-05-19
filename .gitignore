@@ -1,0 +1,98 @@
+# Visual Studio
+.vs/
+.vscode/
+*.sln.iml
+
+# Build results
+bin/
+obj/
+.ntvs_analysis_dat
+*.plg
+*.VC.db
+*.ipch
+
+# Visual Studio cache/options
+.vs/
+.idea/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Test Results
+TestResults/
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+project.lock.json
+project.fragments.lock.json
+packages/
+
+# Local Database
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+logs/
+*.log
+*.txt
+
+# IDE
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.exe
+*.dll
+*.pdb
+
+# ReSharper
+.idea/
+*.DotSettings.user
+
+# Rider
+.idea/
+*.sln.iml
+*.sw?
+
+# dotnet
+.dotnet/
+
+# User settings
+appsettings.local.json
+appsettings.*.json
+!appsettings.json
+
+# Coverage reports
+coverage/
+*.opencover.xml
+*.codecov.xml
+
+# Report files
+reports/
+*.pdf
+*.csv
+
+# Temporary files
+.tmp/
+tmp/
+temp/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db

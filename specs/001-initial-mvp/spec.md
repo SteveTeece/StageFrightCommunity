@@ -12,7 +12,7 @@
 
 ## 1. Purpose *(mandatory)*
 
-StageFright Community MVP is a desktop application that provides small performing arts groups with a unified tool to manage core operations: member registration, rehearsal attendance, performance scheduling, and basic financial tracking. This MVP replaces manual spreadsheet-based workflows with an intuitive, modern interface supporting Windows and macOS, emphasizing reliability, simplicity, and modularity for long-term maintainability.
+StageFright Community MVP is a desktop application that provides small performing arts groups with a unified tool to manage core operations: member registration, rehearsal attendance, performance scheduling, and basic financial tracking. This MVP replaces manual spreadsheet-based workflows with an intuitive, modern interface supporting Windows and macOS via native desktop shell with Blazor web components, emphasizing reliability, simplicity, and modularity for long-term maintainability. The application targets desktop platforms only; no mobile or tablet versions are planned for MVP.
 
 The MVP establishes the foundation for extensibility through a plugin architecture while delivering immediate value through essential operational features.
 
@@ -59,10 +59,10 @@ The MVP establishes the foundation for extensibility through a plugin architectu
 - Multi-user authentication and role-based access control
 - Online payments and payment processing
 - Public-facing features (websites, ticketing, marketing)
-- Handheld and tablet device versions
+- Mobile and tablet device versions (no iOS, Android)
 - Real-time collaboration
 - Enterprise features (advanced reporting, data warehousing)
-- Non-desktop operating system variants
+- Non-desktop operating systems
 
 ---
 
@@ -484,7 +484,7 @@ The application provides a "Reports" root menu item that aggregates reports from
 - Multi-user support (Phase 2+)
 - Advanced reporting and data warehousing (Phase 2+)
 - Online payments (Phase 2+)
-- Mobile/tablet variants (Phase 2+)
+- Mobile/tablet support (not planned)
 
 ---
 
@@ -527,8 +527,8 @@ The application provides a "Reports" root menu item that aggregates reports from
 - Plugin data access provider contract and auto-discovery
 
 **External Dependencies**:
-- .NET 8+ runtime
-- Windows and macOS native APIs (via MAUI)
+- .NET 10.0 runtime
+- Windows 10.0.19041.0+ and macOS 10.15+ (via MAUI BlazorWebView on Windows and Mac Catalyst)
 - SQLite database engine
 - Bootstrap 5 library
 
@@ -615,8 +615,9 @@ The application provides a "Reports" root menu item that aggregates reports from
 ### Constraints
 
 **Platform Constraints**:
-- Windows and macOS desktop only
-- .NET 8+ and MAUI requirement
+- Windows 10.0.19041.0+ and macOS 10.15+ (Mac Catalyst) only
+- MAUI BlazorWebView single-view application (no mobile, iOS, Android, or Linux)
+- .NET 10.0 runtime requirement
 - Single-user application (no multi-user auth)
 
 **Policy Constraints**:

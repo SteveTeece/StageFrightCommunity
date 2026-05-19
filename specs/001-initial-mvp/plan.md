@@ -52,8 +52,9 @@ The architecture follows **SOLID principles** and **clean code standards** per C
 
 ### 1.3 Blazor Hybrid MAUI Architecture
 
-- **Framework**: MAUI (Multi-platform App UI) with BlazorWebView
-- **Single-View Pattern**: All UI rendered through Blazor components in one BlazorWebView
+- **Framework**: MAUI (Multi-platform App UI) with BlazorWebView for Windows and macOS desktop only
+- **Target Platforms**: Windows 10.0.19041+ and macOS 10.15+ via Mac Catalyst (no mobile, iOS, Android, or Linux)
+- **Single-View Pattern**: MAUI shell contains single BlazorWebView; all UI rendered through Blazor components
 - **Navigation**: All route transitions via `NavigationManager.NavigateTo(...)` (NavigateTo-only enforcement per NFR-001)
 - **Styling**: Bootstrap 5 with custom CSS for pastel/muted color palette (HSL lightness 60–80%, saturation <50%)
 - **Desktop Shell**: 
@@ -62,7 +63,7 @@ The architecture follows **SOLID principles** and **clean code standards** per C
   - Two-column dashboard card layout (default)
   - Tabbed interfaces for multi-function modules (using Blazor tab controls with WCAG semantics)
 
-**Justification**: MAUI + Blazor provides native Windows/macOS support with modern web UI capabilities. Single BlazorWebView simplifies navigation, state management, and deployment. BlazorWebView integrates with native APIs while leveraging web technologies for UI.
+**Justification**: MAUI + Blazor provides native Windows and macOS desktop support with modern web UI capabilities. Single BlazorWebView simplifies navigation, state management, and deployment. BlazorWebView integrates with native desktop APIs while leveraging web technologies for UI. Desktop-only targeting eliminates mobile complexity and reduces platform-specific dependencies.
 
 ### 1.4 Centralized Data Access Layer (DAL)
 
