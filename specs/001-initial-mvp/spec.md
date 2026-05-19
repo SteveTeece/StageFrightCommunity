@@ -756,6 +756,181 @@ The codebase enforces **one public class/interface per file**. This organization
 
 **Impact**: Code organization by file encourages SRP (Single Responsibility Principle), reduces cognitive load during code review, and provides consistent structure across the codebase for rapid developer onboarding.
 
+### XML Documentation: Mandatory Code Comments
+
+The codebase enforces **comprehensive XML documentation (triple-slash comments) on all public types and members**. XML documentation enables IntelliSense support in IDEs, generates external documentation, and provides inline context for developers during code review and maintenance.
+
+**Scope - MANDATORY XML Comments Required For**:
+- All public classes and structs (type-level summary)
+- All public interfaces (type-level summary)
+- All public enums and enum values (type and member-level summaries)
+- All public methods and constructors (summary, parameter descriptions, return value description, exception documentation)
+- All public properties and indexers (summary for get/set behavior)
+- All public delegates and events (summary)
+- All public constants (summary)
+
+**Scope - OPTIONAL XML Comments (Recommended but Not Enforced)**:
+- Internal (non-public) members — recommended for complex logic but not required
+- Private methods — recommended for maintainability but not required
+- Test code — required in test classes (public test methods need summary) but implementation-only comments for test setup/arrange/act/assert blocks are optional
+- Auto-properties with obvious names — XML summary may be minimal if purpose is self-evident (e.g., `public string Name { get; set; }` may use simple summary "Gets or sets the name" without elaborate examples)
+
+**Scope - NOT DOCUMENTED (No XML Comments Required)**:
+- Method bodies, local variables, inline implementation logic — use regular `//` comments sparingly for complex algorithms
+- Compiler-generated code (`partial` auto-implementations, code-behind files) — XML comments not applicable
+
+**XML Comment Format and Content**:
+
+**Classes and Structs**:
+```csharp
+/// <summary>
+/// Brief description of the class purpose (one sentence).
+/// Provide context on when/why to use this class.
+/// If the class has a significant responsibility per SOLID principles, describe it clearly.
+/// </summary>
+/// <remarks>
+/// Optional: Extended explanation, usage patterns, or implementation notes.
+/// Use sparingly; most explanation should be in summary.
+/// </remarks>
+public class MemberRepository : BaseRepository<Member>, IMemberRepository
+{
+}
+```
+
+**Interfaces**:
+```csharp
+/// <summary>
+/// Brief description of the interface contract (one sentence).
+/// Explain what implementers are responsible for.
+/// </summary>
+/// <remarks>
+/// Optional: Usage patterns, common implementations, or architectural role.
+/// </remarks>
+public interface IMemberRepository : IRepository<Member>
+{
+}
+```
+
+**Methods and Constructors**:
+```csharp
+/// <summary>
+/// Brief description of what the method does (verb phrase).
+/// Include outcome/return value overview if not obvious from name.
+/// </summary>
+/// <param name="memberId">Description of the parameter.</param>
+/// <param name="fromDate">Start date of the query range (inclusive).</param>
+/// <returns>Description of return value including null/empty cases.</returns>
+/// <exception cref="ArgumentNullException">Thrown when memberId is null.</exception>
+/// <exception cref="DataAccessException">Thrown when database query fails.</exception>
+/// <remarks>
+/// Optional: Implementation notes, performance characteristics, or side effects.
+/// Example usage patterns can be mentioned here if helpful.
+/// </remarks>
+public async Task<IEnumerable<Payment>> GetPaymentHistoryAsync(Guid memberId, DateTime fromDate, DateTime toDate)
+{
+}
+```
+
+**Properties**:
+```csharp
+/// <summary>
+/// Gets or sets the member's full name (required, max 255 characters).
+/// </summary>
+/// <value>
+/// The member's name. Must not be null or whitespace when entity is persisted.
+/// </value>
+public string Name { get; set; } = string.Empty;
+
+/// <summary>
+/// Gets the member's calculated age in years based on DateOfBirth.
+/// Returns null if DateOfBirth is not set.
+/// </summary>
+public int? Age => DateOfBirth.HasValue ? CalculateAge(DateOfBirth.Value) : null;
+```
+
+**Enums and Enum Values**:
+```csharp
+/// <summary>
+/// Membership status indicating whether a member is actively participating.
+/// </summary>
+public enum MemberStatus
+{
+    /// <summary>Member is actively participating; fees apply.</summary>
+    Active,
+
+    /// <summary>Member exists but is not participating; no fees accrue.</summary>
+    Inactive
+}
+```
+
+**Constants**:
+```csharp
+/// <summary>Default maximum age range (in years) for member age validation.</summary>
+private const int DefaultMaxAge = 150;
+```
+
+**XML Comment Best Practices**:
+
+1. **Completeness**: Document the "why" as well as "what". A good summary explains purpose and context, not just a mechanical description.
+   - ❌ Bad: `/// <summary>Gets fees for a member.</summary>`
+   - ✅ Good: `/// <summary>Retrieves all unpaid fees for a specific member, ordered by due date (oldest first).</summary>`
+
+2. **Accuracy**: Ensure documentation matches current implementation. Stale comments are worse than no comments; they mislead developers.
+
+3. **Parameters**: Every `<param>` and `<typeparam>` must be documented unless the meaning is absolutely obvious (rare).
+   - ✅ Good: `/// <param name="fromDate">Start of date range (inclusive).</param>`
+   - ✅ Acceptable (obvious): `/// <param name="id">Entity identifier.</param>`
+
+4. **Return Values**: Document return value semantics including null/empty cases.
+   - ✅ Good: `/// <returns>Enumerable of matching payments, or empty collection if none found.</returns>`
+
+5. **Exceptions**: Document all exceptions that can be thrown, not just implementation details.
+   - ✅ Good: `/// <exception cref="ValidationException">Thrown when member age is below minimum allowed age.</exception>`
+
+6. **Links and References**: Use `<see cref=""/>` or `<seealso cref=""/>` to link related types/methods. IDE IntelliSense will create clickable links.
+   - ✅ Good: `/// <see cref="IMemberRepository.GetByIdAsync"/>` links to related method.
+
+7. **Code Examples**: Use `<example>` blocks for complex or non-obvious APIs. Keep examples concise and runnable.
+   - ✅ Good: Include example for service methods with non-obvious calling patterns.
+
+8. **Generic Parameters**: Document `<typeparam>` for generic methods and classes.
+   ```csharp
+   /// <typeparam name="TEntity">The domain entity type managed by this repository.</typeparam>
+   public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
+   {
+   }
+   ```
+
+9. **Remarks vs. Summary**: Use `<summary>` for a one-sentence overview and `<remarks>` for extended explanation only if needed.
+   - Most documentation should fit in the summary
+   - `<remarks>` is optional and should not repeat the summary
+
+10. **Inheritance**: When overriding a method, document the override-specific behavior. If behavior is identical to base class, use `<inheritdoc />` shorthand.
+    ```csharp
+    /// <inheritdoc />
+    public override async Task UpdateAsync(Member entity)
+    {
+        // Implementation
+    }
+    ```
+
+**Integration with Code Review**:
+- Code review checklist MUST include verification that all public types/methods have XML documentation
+- CI/CD build MUST NOT fail due to missing XML comments (documentation is separate from compilation)
+- XML documentation generation tools MUST be configured to warn on missing documentation for public APIs
+- Pull requests must not merge without XML comments on new public APIs
+
+**Documentation Generation**:
+- XML documentation can be extracted and converted to external documentation (Markdown, HTML, Docusaurus, etc.) using tools like `docfx`
+- XML comments enable IDE-level IntelliSense and Go-to-Definition functionality
+- Documentation tools are configured in the project build process; developers commit XML comments, tools generate external docs on demand
+
+**Scope Enforcement (Optional for MVP)**:
+- XML documentation is MANDATORY for all public APIs
+- Missing documentation on public types/methods MUST be addressed in code review before merge
+- Compliance can be checked via StyleCop analyzers or similar tooling configured in the project
+- Build tooling may be configured to warn on missing documentation (but not fail the build)
+
 ---
 
 ## 6. Clarifications *(optional but recommended)*

@@ -169,6 +169,42 @@ public interface ITransactionRepository
 
 **Impact on Code Review**: Code reviews focus on logic, design, and testing rather than file organization, reducing reviewer cognitive load.
 
+### 1.8 XML Documentation (Mandatory Code Comments)
+
+**Comprehensive XML Documentation on All Public APIs**: The codebase enforces **XML documentation comments (triple-slash `///`) on all public types and members**. This enables IntelliSense support, generates external documentation, and provides critical context during code review and maintenance.
+
+**MANDATORY XML Documentation (Required)**:
+- All public classes and structs with summary of purpose
+- All public interfaces with contract description
+- All public enums and enum values
+- All public methods and constructors with parameter, return value, and exception documentation
+- All public properties and indexers with get/set semantics described
+- All public delegates and events
+- All public constants
+
+**Example - Annotated Method**:
+```csharp
+/// <summary>
+/// Retrieves all unpaid fees for a specific member, ordered by fee date (oldest first).
+/// </summary>
+/// <param name="memberId">The member's unique identifier.</param>
+/// <returns>Enumerable of unpaid Fee records, or empty collection if none found.</returns>
+/// <exception cref="ArgumentNullException">Thrown when memberId is null or empty.</exception>
+/// <exception cref="DataAccessException">Thrown when database query fails.</exception>
+public async Task<IEnumerable<Fee>> GetUnpaidAsync(Guid memberId)
+{
+    // Implementation
+}
+```
+
+**OPTIONAL XML Documentation (Recommended but Not Enforced)**:
+- Internal/private methods (recommended for complex logic but not required)
+- Test code (test class public methods should have summary; test implementation details do not require XML comments)
+
+**Code Review Verification**: All pull requests must include XML documentation on new public APIs. Missing documentation on public types/methods must be addressed before code review approval.
+
+**Documentation Generation**: XML comments can be extracted and converted to external documentation (Markdown, HTML, etc.) using tools like `docfx`. Documentation tools are configured in the project build process.
+
 ---
 
 ## 2. Implementation Phases
