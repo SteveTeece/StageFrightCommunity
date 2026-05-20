@@ -39,27 +39,27 @@
 
 ### Setup Tasks
 
-- [ ] T-001 Create MAUI project with BlazorWebView support in `src/StageFright.Maui/` targeting Windows 10.0.19041.0+ and macOS 10.15+ (Mac Catalyst) only—no mobile (Android/iOS) or Linux platforms
-- [ ] T-002 [P] Install NuGet dependencies: `Microsoft.Maui`, `Microsoft.AspNetCore.Components.WebView.Maui`, `EntityFrameworkCore.Sqlite`, `EntityFrameworkCore.Tools`, `Serilog`, `Google.Protobuf` in `src/StageFright.Maui/`
-- [ ] T-003 [P] Create `StageFright.Core` class library for domain entities in `src/StageFright.Core/`
-- [ ] T-004 [P] Create `StageFright.Data` class library for data access layer in `src/StageFright.Data/`
-- [ ] T-005 [P] Create `StageFright.UI` Blazor component library in `src/StageFright.UI/`
-- [ ] T-006 [P] Create `StageFright.Plugins` library for plugin contracts in `src/StageFright.Plugins/`
-- [ ] T-007 [P] Create `StageFright.Reports` library for reporting infrastructure in `src/StageFright.Reports/`
-- [ ] T-008 [P] Create `StageFright.Proto` protobuf definitions directory in `src/StageFright.Proto/`
-- [ ] T-009 [P] Create test projects: `tests/StageFright.Core.Tests/`, `tests/StageFright.Data.Tests/`, `tests/StageFright.UI.Tests/`, `tests/StageFright.Integration.Tests/`
-- [ ] T-010 Configure dependency injection container in `src/StageFright.Maui/MauiProgram.cs` with Microsoft.Extensions.DependencyInjection
-- [ ] T-011 [P] Setup Serilog logging configuration in `src/StageFright.Maui/MauiProgram.cs` with console and file sinks
-- [ ] T-012 Define custom exception hierarchy in `src/StageFright.Core/Exceptions/`: `ValidationException`, `DataAccessException`, `PluginException`, `ReportGenerationException`
-- [ ] T-013 Create `appsettings.json` in `src/StageFright.Maui/` with database connection string and plugin configuration per section 5.4 of plan.md
-- [ ] T-014 Create Entity Framework DbContext in `src/StageFright.Data/Context/StageFrightContext.cs` with skeleton entity mapping (no data yet)
-- [ ] T-015 Create base repository interface in `src/StageFright.Data/Repositories/IRepository.cs` with CRUD contract
-- [ ] T-016 Create sample repository implementation in `src/StageFright.Data/Repositories/BaseRepository.cs` for soft-delete pattern
-- [ ] T-017 Configure EF Core migrations in `src/StageFright.Data/Context/` with `StageFrightContext` and migration factory
-- [ ] T-018 Create initial migration infrastructure test in `tests/StageFright.Data.Tests/MigrationTests.cs` verifying DbContext creation and first migration
-- [ ] T-019 [P] Create unit test infrastructure in test projects with xUnit, Moq, FluentAssertions configuration
-- [ ] T-020 Create CI/CD pipeline configuration in `.github/workflows/` for building and running tests on all PRs
-- [ ] T-021 Document project structure and setup instructions in `docs/SETUP.md`
+- [X] T-001 Create MAUI project with BlazorWebView support in `src/StageFright.Maui/` targeting Windows 10.0.19041.0+ and macOS 10.15+ (Mac Catalyst) only—no mobile (Android/iOS) or Linux platforms
+- [X] T-002 [P] Install NuGet dependencies: `Microsoft.Maui`, `Microsoft.AspNetCore.Components.WebView.Maui`, `EntityFrameworkCore.Sqlite`, `EntityFrameworkCore.Tools`, `Serilog`, `Google.Protobuf` in `src/StageFright.Maui/`
+- [X] T-003 [P] Create `StageFright.Core` class library for domain entities in `src/StageFright.Core/`
+- [X] T-004 [P] Create `StageFright.Data` class library for data access layer in `src/StageFright.Data/`
+- [X] T-005 [P] Create `StageFright.UI` Blazor component library in `src/StageFright.UI/`
+- [X] T-006 [P] Create `StageFright.Plugins` library for plugin contracts in `src/StageFright.Plugins/`
+- [X] T-007 [P] Create `StageFright.Reports` library for reporting infrastructure in `src/StageFright.Reports/`
+- [X] T-008 [P] Create `StageFright.Proto` protobuf definitions directory in `src/StageFright.Proto/`
+- [X] T-009 [P] Create test projects: `tests/StageFright.Core.Tests/`, `tests/StageFright.Data.Tests/`, `tests/StageFright.UI.Tests/`, `tests/StageFright.Integration.Tests/`
+- [X] T-010 Configure dependency injection container in `src/StageFright.Maui/MauiProgram.cs` with Microsoft.Extensions.DependencyInjection
+- [X] T-011 [P] Setup Serilog logging configuration in `src/StageFright.Maui/MauiProgram.cs` with console and file sinks
+- [X] T-012 Define custom exception hierarchy in `src/StageFright.Core/Exceptions/`: `ValidationException`, `DataAccessException`, `PluginException`, `ReportGenerationException`
+- [X] T-013 Create `appsettings.json` in `src/StageFright.Maui/` with database connection string and plugin configuration per section 5.4 of plan.md
+- [X] T-014 Create Entity Framework DbContext in `src/StageFright.Data/Context/StageFrightContext.cs` with skeleton entity mapping (no data yet)
+- [X] T-015 Create base repository interface in `src/StageFright.Data/Repositories/IRepository.cs` with CRUD contract
+- [X] T-016 Create sample repository implementation in `src/StageFright.Data/Repositories/BaseRepository.cs` for soft-delete pattern
+- [X] T-017 Configure EF Core migrations in `src/StageFright.Data/Context/` with `StageFrightContext` and migration factory
+- [X] T-018 Create initial migration infrastructure test in `tests/StageFright.Data.Tests/MigrationTests.cs` verifying DbContext creation and first migration
+- [X] T-019 [P] Create unit test infrastructure in test projects with xUnit, Moq, FluentAssertions configuration
+- [X] T-020 Create CI/CD pipeline configuration in `.github/workflows/` for building and running tests on all PRs
+- [X] T-021 Document project structure and setup instructions in `docs/SETUP.md`
 
 **Dependencies**: None (Phase 0 is foundational)
 
