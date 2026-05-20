@@ -13,13 +13,14 @@ public class AttendanceRepository : BaseRepository<Attendance>, IAttendanceRepos
 {
 	public AttendanceRepository(StageFrightContext context) : base(context) { }
 
-	public async Task RecordAsync(Guid rehearsalId, Guid memberId)
+	public async Task RecordAsync(Guid rehearsalId, Guid memberId, string? paidStatus = null)
 	{
 		var attendance = new Attendance
 		{
 			RehearsalId = rehearsalId,
 			MemberId = memberId,
-			RecordedAt = DateTime.UtcNow
+			RecordedAt = DateTime.UtcNow,
+			PaidStatus = paidStatus ?? "Paid"
 		};
 		await CreateAsync(attendance);
 	}

@@ -216,7 +216,8 @@ public class DatabaseSeeder : IDatabaseSeeder
 					Id = Guid.NewGuid(),
 					RehearsalId = rehearsal.Id,
 					MemberId = member.Id,
-					RecordedAt = rehearsal.Date.AddHours(1) // Recorded an hour after rehearsal
+					RecordedAt = rehearsal.Date.AddHours(1), // Recorded an hour after rehearsal
+					PaidStatus = "Paid" // All members in test data have paid
 				};
 				context.Attendances.Add(attendance);
 			}

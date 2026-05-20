@@ -5,6 +5,7 @@ using Serilog;
 using StageFright.Maui;
 using StageFright.Maui.Services;
 using StageFright.Data.Context;
+using StageFright.Data.Repositories;
 
 namespace StageFright.Maui;
 
@@ -63,6 +64,20 @@ public static class MauiProgram
 			// Register database initialization and seeding services
 			builder.Services.AddTransient<IDatabaseSeeder, DatabaseSeeder>();
 			builder.Services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
+
+			// Register repositories (scoped lifetime for data access)
+			builder.Services.AddScoped<IMemberRepository, MemberRepository>();
+			builder.Services.AddScoped<IRehearsalRepository, RehearsalRepository>();
+			builder.Services.AddScoped<IEventRepository, EventRepository>();
+			builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+			builder.Services.AddScoped<IParticipationRepository, ParticipationRepository>();
+			builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+			builder.Services.AddScoped<IFeeRepository, FeeRepository>();
+			builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+			builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+			builder.Services.AddScoped<ICommitteeMembershipRepository, CommitteeMembershipRepository>();
+			builder.Services.AddScoped<ISettingsRepository, SettingsRepository>();
+			builder.Services.AddScoped<IAuditTrailRepository, AuditTrailRepository>();
 
 			// Register other services here as they are created
 			// (will be populated in future tasks)

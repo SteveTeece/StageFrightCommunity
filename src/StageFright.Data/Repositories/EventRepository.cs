@@ -28,4 +28,14 @@ public class EventRepository : BaseRepository<Event>, IEventRepository
 			.OrderByDescending(e => e.Date)
 			.FirstOrDefaultAsync();
 	}
+
+	public async Task UpdateStoredParticipationRateAsync(Guid eventId, decimal participationRate)
+	{
+		var ev = await GetByIdAsync(eventId);
+		if (ev == null)
+			throw new InvalidOperationException($"Event with ID {eventId} not found.");
+
+		ev.StoredParticipationRate = Math.Min(Math.Max(participationRate, 0), 100); // Clamp to 0-100
+		await UpdateAsync(ev);
+	}
 }

@@ -63,6 +63,7 @@ public class StageFrightContext : DbContext
 			entity.Property(r => r.Date).IsRequired();
 			entity.Property(r => r.Time).IsRequired();
 			entity.Property(r => r.Notes).HasMaxLength(1024);
+			entity.Property(r => r.StoredAttendanceRate).HasColumnType("decimal(5,2)").HasDefaultValue(0m); // 0-100%, immutable
 			entity.Property(r => r.IsDeleted).HasDefaultValue(false);
 
 			// Indexes
@@ -77,6 +78,7 @@ public class StageFrightContext : DbContext
 			entity.Property(e => e.Date).IsRequired();
 			entity.Property(e => e.EventType).IsRequired().HasMaxLength(100);
 			entity.Property(e => e.Notes).HasMaxLength(1024);
+			entity.Property(e => e.StoredParticipationRate).HasColumnType("decimal(5,2)").HasDefaultValue(0m); // 0-100%, immutable
 			entity.Property(e => e.IsDeleted).HasDefaultValue(false);
 
 			// Indexes
@@ -84,13 +86,14 @@ public class StageFrightContext : DbContext
 			entity.HasIndex(e => e.IsDeleted);
 		});
 
-		// Configure Attendance entity (junction table)
+		// Configure Attendance entity (junction table, immutable)
 		modelBuilder.Entity<Attendance>(entity =>
 		{
 			entity.HasKey(a => a.Id);
 			entity.Property(a => a.RehearsalId).IsRequired();
 			entity.Property(a => a.MemberId).IsRequired();
 			entity.Property(a => a.RecordedAt).IsRequired();
+			entity.Property(a => a.PaidStatus).IsRequired().HasMaxLength(20).HasDefaultValue("Paid"); // Paid|Unpaid, set at recording time, immutable
 
 			// Unique constraint: only one attendance record per member per rehearsal
 			entity.HasIndex(a => new { a.RehearsalId, a.MemberId }).IsUnique();

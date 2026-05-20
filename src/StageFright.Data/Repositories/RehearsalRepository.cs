@@ -28,4 +28,14 @@ public class RehearsalRepository : BaseRepository<Rehearsal>, IRehearsalReposito
 			.OrderByDescending(r => r.Date)
 			.FirstOrDefaultAsync();
 	}
+
+	public async Task UpdateStoredAttendanceRateAsync(Guid rehearsalId, decimal attendanceRate)
+	{
+		var rehearsal = await GetByIdAsync(rehearsalId);
+		if (rehearsal == null)
+			throw new InvalidOperationException($"Rehearsal with ID {rehearsalId} not found.");
+
+		rehearsal.StoredAttendanceRate = Math.Min(Math.Max(attendanceRate, 0), 100); // Clamp to 0-100
+		await UpdateAsync(rehearsal);
+	}
 }

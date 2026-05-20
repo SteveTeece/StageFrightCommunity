@@ -82,23 +82,23 @@
 
 **User Story**: US1 (First-Run Setup), US2 (Member Management)
 
-- [ ] T-022 Define Member entity in `src/StageFright.Core/Entities/Member.cs` with properties: Id, Name, StreetAddress, Phone, Email, JoinDate, DateOfBirth, Status, ActivateDate, InactivateDate, IsDeleted, DeletedAt, DeletedBy per section 3.1 schema
-- [ ] T-023 [P] Define Rehearsal entity in `src/StageFright.Core/Entities/Rehearsal.cs` with properties: Id, Date, Time, Notes, **StoredAttendanceRate (decimal %, immutable, calculated at recording time)**
-- [ ] T-024 [P] Define Event entity in `src/StageFright.Core/Entities/Event.cs` with properties: Id, Date, EventType, Notes, **StoredParticipationRate (decimal %, immutable, calculated at recording time)**
-- [ ] T-025 [P] Define Attendance entity in `src/StageFright.Core/Entities/Attendance.cs` with properties: Id, RehearsalId, MemberId, RecordedAt, **PaidStatus (Paid|Unpaid)**, unique constraint (RehearsalId, MemberId), **NO soft-delete fields (immutable)**
-- [ ] T-026 [P] Define Participation entity in `src/StageFright.Core/Entities/Participation.cs` with properties: Id, EventId, MemberId, RecordedAt, unique constraint (EventId, MemberId)
-- [ ] T-027 [P] Define Category entity in `src/StageFright.Core/Entities/Category.cs` with properties: Id, Name, Type (Income|Expense), SortOrder, IsArchived, GlAccount per section 3.1 schema
-- [ ] T-028 [P] Define Fee entity in `src/StageFright.Core/Entities/Fee.cs` (immutable after creation, NO soft-delete fields per Constitution §3.4) with properties: Id, MemberId, FeeType (Annual|Attendance|Other), Amount, FeeDate, DueDate, CreatedAt
-- [ ] T-029 [P] Define CommitteeMembership entity in `src/StageFright.Core/Entities/CommitteeMembership.cs` with properties: Id, MemberId, Year, Position, IsDeleted, CreatedAt, ModifiedAt, unique constraint (MemberId, Year)
-- [ ] T-030 [P] Define Settings entity in `src/StageFright.Core/Entities/Settings.cs` (singleton) with properties: Id, OrganizationName, AnnualFee, AttendanceFee, RenewalMonth (1-12, for annual fee application), CommitteeRenewalMonth (1-12, default 1, for committee annual reset), LastCommitteeResetYear (int, default current year - 1, for reset guard), MaxAgeRange (default 150), MinimumMemberAge (default 0), Theme (Dark|Light), CreatedAt, ModifiedAt
-- [ ] T-031 [P] Define AuditTrail entity in `src/StageFright.Core/Entities/AuditTrail.cs` with properties: Id, EntityType, EntityId, Action (Create|Update|Delete), UserId, Timestamp, OldValue, NewValue
-- [ ] T-032 [P] Define Transaction entity in `src/StageFright.Core/Entities/Transaction.cs` (GL paired, immutable, NO soft-delete fields per Constitution §3.4) with properties: Id, Date, Category, DebitAmount, CreditAmount, MemberId (nullable), PaymentId (nullable), Description, CreatedAt, ModifiedAt
-- [ ] T-033 [P] Define Payment entity in `src/StageFright.Core/Entities/Payment.cs` (Amount/Date/Category locked after creation) with properties: Id, Date (immutable), Amount (immutable), PaymentMethod (Cash|Check|Card|Electronic Transfer|Other; immutable, default Cash), PaymentType (Annual|Attendance|Other; immutable), MemberId, Category (immutable), Notes (editable), CreatedAt, UpdatedAt (updates ONLY when Notes changes)
-- [ ] T-034 Configure all entities in `src/StageFright.Data/Context/StageFrightContext.cs` with appropriate relationships, constraints, and indexes per ERD section 3.1; configure Category.GlAccount as read-only after creation
-- [ ] T-034b Implement GLAccountAssignmentService in `src/StageFright.Core/Services/GLAccountAssignmentService.cs` with sequential GL account numbering: Asset GL#01xx (0100/0101 fixed), Income GL#10xx, Expense GL#20xx, BadDebtExpense GL#9900 fixed. Service assigns next available GL account number based on category type when coordinator creates new category (called from CategoryRepository.CreateAsync before category persisted)
-- [ ] T-035 [P] Implement global soft-delete query filters in `StageFrightContext.OnModelCreating()` to automatically exclude IsDeleted=true records from all queries
-- [ ] T-036 Create initial schema migration in `src/StageFright.Data/Migrations/Migration_20260515_001_InitialSchema.cs` with all entities, relationships, and constraints
-- [ ] T-037 Verify migration integrity test in `tests/StageFright.Data.Tests/SchemaTests.cs` confirming all tables, columns, and constraints created correctly
+- [X] T-022 Define Member entity in `src/StageFright.Core/Entities/Member.cs` with properties: Id, Name, StreetAddress, Phone, Email, JoinDate, DateOfBirth, Status, ActivateDate, InactivateDate, IsDeleted, DeletedAt, DeletedBy per section 3.1 schema
+- [X] T-023 [P] Define Rehearsal entity in `src/StageFright.Core/Entities/Rehearsal.cs` with properties: Id, Date, Time, Notes, **StoredAttendanceRate (decimal %, immutable, calculated at recording time)**
+- [X] T-024 [P] Define Event entity in `src/StageFright.Core/Entities/Event.cs` with properties: Id, Date, EventType, Notes, **StoredParticipationRate (decimal %, immutable, calculated at recording time)**
+- [X] T-025 [P] Define Attendance entity in `src/StageFright.Core/Entities/Attendance.cs` with properties: Id, RehearsalId, MemberId, RecordedAt, **PaidStatus (Paid|Unpaid)**, unique constraint (RehearsalId, MemberId), **NO soft-delete fields (immutable)**
+- [X] T-026 [P] Define Participation entity in `src/StageFright.Core/Entities/Participation.cs` with properties: Id, EventId, MemberId, RecordedAt, unique constraint (EventId, MemberId)
+- [X] T-027 [P] Define Category entity in `src/StageFright.Core/Entities/Category.cs` with properties: Id, Name, Type (Income|Expense), SortOrder, IsArchived, GlAccount per section 3.1 schema
+- [X] T-028 [P] Define Fee entity in `src/StageFright.Core/Entities/Fee.cs` (immutable after creation, NO soft-delete fields per Constitution §3.4) with properties: Id, MemberId, FeeType (Annual|Attendance|Other), Amount, FeeDate, DueDate, CreatedAt
+- [X] T-029 [P] Define CommitteeMembership entity in `src/StageFright.Core/Entities/CommitteeMembership.cs` with properties: Id, MemberId, Year, Position, IsDeleted, CreatedAt, ModifiedAt, unique constraint (MemberId, Year)
+- [X] T-030 [P] Define Settings entity in `src/StageFright.Core/Entities/Settings.cs` (singleton) with properties: Id, OrganizationName, AnnualFee, AttendanceFee, RenewalMonth (1-12, for annual fee application), CommitteeRenewalMonth (1-12, default 1, for committee annual reset), LastCommitteeResetYear (int, default current year - 1, for reset guard), MaxAgeRange (default 150), MinimumMemberAge (default 0), Theme (Dark|Light), CreatedAt, ModifiedAt
+- [X] T-031 [P] Define AuditTrail entity in `src/StageFright.Core/Entities/AuditTrail.cs` with properties: Id, EntityType, EntityId, Action (Create|Update|Delete), UserId, Timestamp, OldValue, NewValue
+- [X] T-032 [P] Define Transaction entity in `src/StageFright.Core/Entities/Transaction.cs` (GL paired, immutable, NO soft-delete fields per Constitution §3.4) with properties: Id, Date, Category, DebitAmount, CreditAmount, MemberId (nullable), PaymentId (nullable), Description, CreatedAt, ModifiedAt
+- [X] T-033 [P] Define Payment entity in `src/StageFright.Core/Entities/Payment.cs` (Amount/Date/Category locked after creation) with properties: Id, Date (immutable), Amount (immutable), PaymentMethod (Cash|Check|Card|Electronic Transfer|Other; immutable, default Cash), PaymentType (Annual|Attendance|Other; immutable), MemberId, Category (immutable), Notes (editable), CreatedAt, UpdatedAt (updates ONLY when Notes changes)
+- [X] T-034 Configure all entities in `src/StageFright.Data/Context/StageFrightContext.cs` with appropriate relationships, constraints, and indexes per ERD section 3.1; configure Category.GlAccount as read-only after creation
+- [X] T-034b Implement GLAccountAssignmentService in `src/StageFright.Core/Services/GLAccountAssignmentService.cs` with sequential GL account numbering: Asset GL#01xx (0100/0101 fixed), Income GL#10xx, Expense GL#20xx, BadDebtExpense GL#9900 fixed. Service assigns next available GL account number based on category type when coordinator creates new category (called from CategoryRepository.CreateAsync before category persisted)
+- [X] T-035 [P] Implement global soft-delete query filters in `StageFrightContext.OnModelCreating()` to automatically exclude IsDeleted=true records from all queries
+- [X] T-036 Create initial schema migration in `src/StageFright.Data/Migrations/Migration_20260515_001_InitialSchema.cs` with all entities, relationships, and constraints
+- [X] T-037 Verify migration integrity test in `tests/StageFright.Data.Tests/SchemaTests.cs` confirming all tables, columns, and constraints created correctly
 
 **Dependencies**: T-014, T-016, T-017
 
@@ -106,29 +106,29 @@
 
 **User Story**: US1, US2, US3, US4
 
-- [ ] T-038 Create IMemberRepository interface in `src/StageFright.Data/Repositories/IMemberRepository.cs` with methods: GetByIdAsync, GetActiveMembersAsync, GetHistoricalActiveMembersAsync, GetInactiveMembersAsync, CreateAsync, UpdateAsync, SoftDeleteAsync, RestoreAsync per plan.md section 1.4
-- [ ] T-039 Implement MemberRepository in `src/StageFright.Data/Repositories/MemberRepository.cs` with CRUD operations, status filtering, and effective date queries
-- [ ] T-040 [P] Create IRehearsalRepository interface in `src/StageFright.Data/Repositories/IRehearsalRepository.cs` with methods: GetByIdAsync, GetAllAsync, GetByDateRangeAsync, CreateAsync, GetMostRecentAsync
-- [ ] T-041 [P] Implement RehearsalRepository in `src/StageFright.Data/Repositories/RehearsalRepository.cs` with scheduling and date range queries
-- [ ] T-042 [P] Create IEventRepository interface in `src/StageFright.Data/Repositories/IEventRepository.cs` with methods: GetByIdAsync, GetAllAsync, GetByDateRangeAsync, CreateAsync, GetMostRecentAsync
-- [ ] T-043 [P] Implement EventRepository in `src/StageFright.Data/Repositories/EventRepository.cs` with event scheduling and date range queries
-- [ ] T-044 [P] Create IAttendanceRepository interface in `src/StageFright.Data/Repositories/IAttendanceRepository.cs` with methods: RecordAsync, GetByRehearsalAsync, GetByMemberAsync, GetAttendanceRateAsync
-- [ ] T-045 [P] Implement AttendanceRepository in `src/StageFright.Data/Repositories/AttendanceRepository.cs` with attendance recording and historical calculation
-- [ ] T-046 [P] Create IParticipationRepository interface in `src/StageFright.Data/Repositories/IParticipationRepository.cs` with methods: RecordAsync, GetByEventAsync, GetByMemberAsync, GetParticipationRateAsync
-- [ ] T-047 [P] Implement ParticipationRepository in `src/StageFright.Data/Repositories/ParticipationRepository.cs` with participation tracking and rate calculation
-- [ ] T-048 [P] Create ICategoryRepository interface in `src/StageFright.Data/Repositories/ICategoryRepository.cs` with methods: GetByIdAsync, GetAllAsync, CreateAsync, UpdateAsync, ArchiveAsync, RestoreAsync, ValidateArchivalAsync
-- [ ] T-049 [P] Implement CategoryRepository in `src/StageFright.Data/Repositories/CategoryRepository.cs` with category management and archival validation
-- [ ] T-050 [P] Create ISettingsRepository interface in `src/StageFright.Data/Repositories/ISettingsRepository.cs` with methods: GetSettingsAsync, UpdateSettingsAsync (singleton pattern)
-- [ ] T-051 [P] Implement SettingsRepository in `src/StageFright.Data/Repositories/SettingsRepository.cs` with singleton settings persistence
-- [ ] T-052 [P] Create ICommitteeMembershipRepository interface in `src/StageFright.Data/Repositories/ICommitteeMembershipRepository.cs` with methods: GetByMemberAsync, GetByYearAsync, RecordAsync, UpdateAsync, ClearYearAsync, GetHistoryAsync
-- [ ] T-053 [P] Implement CommitteeMembershipRepository in `src/StageFright.Data/Repositories/CommitteeMembershipRepository.cs` with year-based committee tracking
-- [ ] T-054 [P] Create IAuditTrailRepository interface in `src/StageFright.Data/Repositories/IAuditTrailRepository.cs` with methods: LogAsync, GetByEntityAsync, PurgeExpiredAsync (12-month retention)
-- [ ] T-055 [P] Implement AuditTrailRepository in `src/StageFright.Data/Repositories/AuditTrailRepository.cs` with audit logging and cleanup
-- [ ] T-056 Create data access layer test suite in `tests/StageFright.Data.Tests/RepositoryTests.cs` with comprehensive CRUD tests for all repositories
-- [ ] T-057 Test soft-delete behavior and query filtering in `tests/StageFright.Data.Tests/SoftDeleteTests.cs` verifying exclusion of deleted records from default queries
-- [ ] T-058 Test historical active-member calculation in `tests/StageFright.Data.Tests/HistoricalMemberTests.cs` with effective date scenarios: reactivation, inactivation, archive
-- [ ] T-059 Test **immutable stored attendance rate** calculation in `tests/StageFright.Data.Tests/AttendanceRateTests.cs` verifying: (1) Rate calculated at recording time using member statuses as-of that date; (2) Rate stored immutably in Rehearsal.StoredAttendanceRate; (3) Post-event archival does NOT retroactively change stored rates; (4) Archive affects only future rate calculations (for events after archival date); (5) Formula: `members_present / members_active_on_date * 100%`
-- [ ] T-060 Test **immutable stored participation rate** calculation in `tests/StageFright.Data.Tests/ParticipationRateTests.cs` verifying: (1) Rate calculated at recording time using member statuses as-of that date; (2) Rate stored immutably in Event.StoredParticipationRate; (3) Post-event archival does NOT retroactively change stored rates; (4) Archive affects only future rate calculations; (5) Formula: `members_participated / members_active_on_date * 100%`
+- [X] T-038 Create IMemberRepository interface in `src/StageFright.Data/Repositories/IMemberRepository.cs` with methods: GetByIdAsync, GetActiveMembersAsync, GetHistoricalActiveMembersAsync, GetInactiveMembersAsync, CreateAsync, UpdateAsync, SoftDeleteAsync, RestoreAsync per plan.md section 1.4
+- [X] T-039 Implement MemberRepository in `src/StageFright.Data/Repositories/MemberRepository.cs` with CRUD operations, status filtering, and effective date queries
+- [X] T-040 [P] Create IRehearsalRepository interface in `src/StageFright.Data/Repositories/IRehearsalRepository.cs` with methods: GetByIdAsync, GetAllAsync, GetByDateRangeAsync, CreateAsync, GetMostRecentAsync, UpdateStoredAttendanceRateAsync
+- [X] T-041 [P] Implement RehearsalRepository in `src/StageFright.Data/Repositories/RehearsalRepository.cs` with scheduling and date range queries
+- [X] T-042 [P] Create IEventRepository interface in `src/StageFright.Data/Repositories/IEventRepository.cs` with methods: GetByIdAsync, GetAllAsync, GetByDateRangeAsync, CreateAsync, GetMostRecentAsync, UpdateStoredParticipationRateAsync
+- [X] T-043 [P] Implement EventRepository in `src/StageFright.Data/Repositories/EventRepository.cs` with event scheduling and date range queries
+- [X] T-044 [P] Create IAttendanceRepository interface in `src/StageFright.Data/Repositories/IAttendanceRepository.cs` with methods: RecordAsync(with PaidStatus), GetByRehearsalAsync, GetByMemberAsync, GetAttendanceRateAsync
+- [X] T-045 [P] Implement AttendanceRepository in `src/StageFright.Data/Repositories/AttendanceRepository.cs` with attendance recording and historical calculation
+- [X] T-046 [P] Create IParticipationRepository interface in `src/StageFright.Data/Repositories/IParticipationRepository.cs` with methods: RecordAsync, GetByEventAsync, GetByMemberAsync, GetParticipationRateAsync
+- [X] T-047 [P] Implement ParticipationRepository in `src/StageFright.Data/Repositories/ParticipationRepository.cs` with participation tracking and rate calculation
+- [X] T-048 [P] Create ICategoryRepository interface in `src/StageFright.Data/Repositories/ICategoryRepository.cs` with methods: GetByIdAsync, GetAllAsync, CreateAsync, UpdateAsync, ArchiveAsync, RestoreAsync, ValidateArchivalAsync
+- [X] T-049 [P] Implement CategoryRepository in `src/StageFright.Data/Repositories/CategoryRepository.cs` with category management and archival validation
+- [X] T-050 [P] Create ISettingsRepository interface in `src/StageFright.Data/Repositories/ISettingsRepository.cs` with methods: GetSettingsAsync, UpdateSettingsAsync (singleton pattern)
+- [X] T-051 [P] Implement SettingsRepository in `src/StageFright.Data/Repositories/SettingsRepository.cs` with singleton settings persistence
+- [X] T-052 [P] Create ICommitteeMembershipRepository interface in `src/StageFright.Data/Repositories/ICommitteeMembershipRepository.cs` with methods: GetByMemberAsync, GetByYearAsync, RecordAsync, UpdateAsync, ClearYearAsync, GetHistoryAsync
+- [X] T-053 [P] Implement CommitteeMembershipRepository in `src/StageFright.Data/Repositories/CommitteeMembershipRepository.cs` with year-based committee tracking
+- [X] T-054 [P] Create IAuditTrailRepository interface in `src/StageFright.Data/Repositories/IAuditTrailRepository.cs` with methods: LogAsync, GetByEntityAsync, PurgeExpiredAsync (12-month retention)
+- [X] T-055 [P] Implement AuditTrailRepository in `src/StageFright.Data/Repositories/AuditTrailRepository.cs` with audit logging and cleanup
+- [X] T-056 Create data access layer test suite in `tests/StageFright.Data.Tests/RepositoryTests.cs` with comprehensive CRUD tests for all repositories
+- [X] T-057 Test soft-delete behavior and query filtering in `tests/StageFright.Data.Tests/SoftDeleteTests.cs` verifying exclusion of deleted records from default queries
+- [X] T-058 Test historical active-member calculation in `tests/StageFright.Data.Tests/HistoricalMemberTests.cs` with effective date scenarios: reactivation, inactivation, archive
+- [X] T-059 Test **immutable stored attendance rate** calculation in `tests/StageFright.Data.Tests/AttendanceRateTests.cs` verifying: (1) Rate calculated at recording time using member statuses as-of that date; (2) Rate stored immutably in Rehearsal.StoredAttendanceRate; (3) Post-event archival does NOT retroactively change stored rates; (4) Archive affects only future rate calculations (for events after archival date); (5) Formula: `members_present / members_active_on_date * 100%`
+- [X] T-060 Test **immutable stored participation rate** calculation in `tests/StageFright.Data.Tests/ParticipationRateTests.cs` verifying: (1) Rate calculated at recording time using member statuses as-of that date; (2) Rate stored immutably in Event.StoredParticipationRate; (3) Post-event archival does NOT retroactively change stored rates; (4) Archive affects only future rate calculations; (5) Formula: `members_participated / members_active_on_date * 100%`
 
 **Dependencies**: T-034, T-036
 

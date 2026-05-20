@@ -58,6 +58,9 @@ public interface IRehearsalRepository : IRepository<Rehearsal>
 
 	/// <summary>Gets the most recent rehearsal.</summary>
 	Task<Rehearsal?> GetMostRecentAsync();
+
+	/// <summary>Updates the stored attendance rate for a rehearsal.</summary>
+	Task UpdateStoredAttendanceRateAsync(Guid rehearsalId, decimal attendanceRate);
 }
 
 /// <summary>Repository interface for Event operations.</summary>
@@ -68,13 +71,16 @@ public interface IEventRepository : IRepository<Event>
 
 	/// <summary>Gets the most recent event.</summary>
 	Task<Event?> GetMostRecentAsync();
+
+	/// <summary>Updates the stored participation rate for an event.</summary>
+	Task UpdateStoredParticipationRateAsync(Guid eventId, decimal participationRate);
 }
 
 /// <summary>Repository interface for Attendance operations.</summary>
 public interface IAttendanceRepository : IRepository<Attendance>
 {
 	/// <summary>Records attendance for a member at a rehearsal.</summary>
-	Task RecordAsync(Guid rehearsalId, Guid memberId);
+	Task RecordAsync(Guid rehearsalId, Guid memberId, string? paidStatus = null);
 
 	/// <summary>Gets all attendance records for a rehearsal.</summary>
 	Task<IEnumerable<Attendance>> GetByRehearsalAsync(Guid rehearsalId);

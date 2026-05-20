@@ -37,7 +37,14 @@ public class MemberRepository : BaseRepository<Member>, IMemberRepository
 		return await _dbSet
 			.Where(m => 
 				m.JoinDate <= asOfDate && 
-				(m.InactivateDate == null || m.InactivateDate > asOfDate) &&
+				(
+					// Never inactivated
+					m.InactivateDate == null || 
+					// Inactivated after asOfDate (still active on asOfDate)
+					m.InactivateDate > asOfDate ||
+					// Inactivated before asOfDate but reactivated on or before asOfDate
+					(m.InactivateDate <= asOfDate && m.ActivateDate != null && m.ActivateDate <= asOfDate)
+				) &&
 				!m.IsDeleted)
 			.ToListAsync();
 	}
