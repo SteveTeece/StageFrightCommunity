@@ -25,6 +25,7 @@ obj/
 
 # Test Results
 TestResults/
+TestData/
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 *.trx

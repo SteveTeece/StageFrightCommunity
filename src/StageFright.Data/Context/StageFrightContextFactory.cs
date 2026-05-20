@@ -13,8 +13,8 @@ public class StageFrightContextFactory : IDesignTimeDbContextFactory<StageFright
 	{
 		var optionsBuilder = new DbContextOptionsBuilder<StageFrightContext>();
 
-		// Default to SQLite with local database file
-		var connectionString = "Data Source=stagefright.db";
+		// Default to SQLite with local database file in TestData folder
+		var connectionString = "Data Source=TestData/stagefright.db";
 
 		// Allow command-line override for database path
 		if (args.Length > 0)

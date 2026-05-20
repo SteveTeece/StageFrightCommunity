@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using StageFright.Maui;
+using StageFright.Maui.Services;
+using StageFright.Data.Context;
 
 namespace StageFright.Maui;
 
@@ -51,6 +54,15 @@ public static class MauiProgram
 				loggingBuilder.AddDebug();
 #endif
 			});
+
+			// Register database context
+			var connectionString = config.GetConnectionString("DefaultConnection");
+			builder.Services.AddDbContext<StageFrightContext>(options =>
+				options.UseSqlite(connectionString));
+
+			// Register database initialization and seeding services
+			builder.Services.AddTransient<IDatabaseSeeder, DatabaseSeeder>();
+			builder.Services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
 
 			// Register other services here as they are created
 			// (will be populated in future tasks)
