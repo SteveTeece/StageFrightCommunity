@@ -148,6 +148,22 @@ Special rules apply to members and financial data to ensure permanent preservati
   - If legacy debt must be reactivated, it must be reinstated through an explicit,
     auditable financial adjustment workflow (e.g., reversing transaction).  
 
+### 3.6 Financial Corrections Pattern
+All financial transactions must use a reversing transaction pattern for corrections:
+
+- **No Direct Edits:** Original financial records (Fees, Payments, GL Transactions) MUST NEVER be edited after creation.
+- **No Deletions:** Original financial records MUST NEVER be deleted (soft or hard).
+- **Corrections via Reversals:** To correct errors or reverse operational impacts, create new reversing GL transaction pairs:
+  - Reversing transactions are new GL entries with opposite signs (debit becomes credit, credit becomes debit)
+  - Link reversing transactions to original transaction via audit trail for traceability
+  - Example: If $100 Income fee created in error, create reversing GL pair: Debit $100 (Income), Credit $100 (Receivable) to net the original impact
+  - Example: If member attendance cleared, create GL reversals to negate fee impact while preserving original Fee record immutability
+- **Operational vs. Error Reversals:** Reversals are created for both:
+  - **Error Corrections:** User or system corrected a mistake in a prior transaction
+  - **Operational Reversals:** Normal business process (e.g., attendance flag cleared, fee reconsidered) requiring financial impact reversal
+- **Audit Trail:** All reversals must include explicit reference to what was reversed and why (via GL Transaction notes/description field)
+- **Balance Preservation:** Original balance history remains intact; reversals offset impacts in current calculations but do not rewrite history
+
 ---
 
 ## 4. Architectural Identity

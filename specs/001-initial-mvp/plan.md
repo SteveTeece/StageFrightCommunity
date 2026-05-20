@@ -272,11 +272,11 @@ public async Task<IEnumerable<Fee>> GetUnpaidAsync(Guid memberId)
 7. Verify soft-delete behavior and historical queries
 
 **Subphase 1c: UI & Modules** (2 weeks)
-1. Build Settings module (tabs: General, Categories, Event Types)
+1. Build Settings module (tabs: General, Categories, Event Types, Backup, Restore)
 2. Implement first-run setup wizard
 3. Build Members module (list, add, edit, filter by status, committee tracking)
-4. Build Rehearsals module (schedule, record attendance)
-5. Build Events module (schedule, record participation)
+4. Build Rehearsals module with **batch attendance interface per rehearsal**: Member Name | [Attended ☐] | [Paid ☐] checkboxes for all active members, with Save/OK for atomic record creation; override checkbox for marking fees as unpaid at creation time
+5. Build Events module (schedule, record participation) — Events do NOT create fees; AGM event type with no fee impact
 6. Implement dashboard shell (brand strip, nav bar, card layout)
 7. Add theme toggle and persistence
 8. Implement placeholder tiles
@@ -375,11 +375,11 @@ public async Task<IEnumerable<Fee>> GetUnpaidAsync(Guid memberId)
 
 **Subphase 3b: Committee & Member Lifecycle** (1 week)
 1. Implement committee membership tracking (year-based)
-2. Build committee history display on member detail screen
-3. Implement automatic committee status clearing on calendar year change
-4. Build member reactivation GL write-off logic
-5. Implement debt forgiveness workflow
-6. Write acceptance tests for committee operations
+2. Build committee history display on member detail screen with **semantic HTML + ARIA**: current year as `<strong>2026 <span role="status">Current</span> - Treasurer</strong>`, historical as plain `<span>2025 - Secretary</span>`, badge with pastel background color (WCAG AA contrast compliant)
+3. Implement **manual committee reset trigger** (Settings > General tab button "Reset Committee for New Year") with confirmation dialog; add AGM reminder logic (banner if AGM event exists and reset not completed 7 days post-AGM)
+4. Build member reactivation GL write-off logic with **fee override capability**: dialog shows fees by year (prior years pre-checked, current year optional); coordinator can override to forgive current-year fees case-by-case
+5. Implement debt forgiveness workflow with GL reversals per selected fees
+6. Write acceptance tests for committee operations, manual reset, AGM reminder, reactivation with override
 7. Add audit trail entries for all member lifecycle events
 
 **Subphase 3c: Polish & Error Handling** (1 week)
@@ -474,6 +474,7 @@ Rehearsal
 ├── date
 ├── time
 ├── notes (optional)
+├── storedAttendanceRate (decimal %, immutable; calculated at recording time)
 ├── 1:N → Attendance
 └── 1:N → Fee (attendance fees)
 
@@ -482,6 +483,7 @@ Event
 ├── date
 ├── eventType (FK)
 ├── notes (optional)
+├── storedParticipationRate (decimal %, immutable; calculated at recording time)
 ├── 1:N → Participation
 └── (no direct fees; participation tracked only)
 
@@ -582,11 +584,20 @@ AuditTrail
 - Member includes `ActivateDate`, `InactivateDate` (immutable after set)
 - Enable accurate historical active-member counts for attendance/participation rates
 - Query pattern: `WHERE Status='Active' AND ActivateDate <= event_date AND (InactivateDate IS NULL OR InactivateDate > event_date)`
+- **Stored Rates**: Rehearsal and Event entities include `StoredAttendanceRate` and `StoredParticipationRate` (decimal, immutable) calculated at event recording time; rates are frozen in history and never recalculated; archival does NOT retroactively change past rates; archive date affects only future rate calculations
+
+**Attendance Immutability**:
+- Attendance records are **immutable after creation**; recorded via batch interface per rehearsal (Member Name | [Attended ☐] | [Paid ☐] checkboxes)
+- Attendance fees default to PAID; override checkbox "Mark fee as unpaid (override)" available at creation time only (during batch recording)
+- After Save/OK, records locked (no clearing, no editing, no deletion in UI)
+- If coordinator needs to correct attendance error post-save, must use manual GL reversals via Finance module (debit MemberReceivable + credit Income category)
+- Attendance records remain permanent in database
 
 **Financial Immutability** (Constitution §3.5):
-- Fee records: Immutable after creation; Amount, Date, Type, DueDate locked; no edits in UI
+- Fee records: Immutable after creation; Amount, Date, Type, DueDate locked; no edits in UI; fee state (PAID/UNPAID) locked at creation
 - Transaction records: Immutable; paired debit/credit entries; no deletions
 - Payment records: Amount/Date/Category locked; only Notes editable with audit trail
+- Member Reactivation: GL write-offs for selected fees (prior-year default; current-year optional override per coordinator selection)
 - Corrections via reversing transactions (GL pairs), not deletions
 
 **GL Pair Structure**:
@@ -598,6 +609,23 @@ AuditTrail
   - **Expense Accounts**: GL#20xx range — Auto-assigned sequentially (first expense category GL#2000, second GL#2001, etc.)
   - **Write-off Account**: GL#9900 (BadDebtExpense) — Fixed for reactivation debt forgiveness
 - GL account assigned automatically via GLAccountAssignmentService when coordinator creates a new category (no user input needed)
+- **GLAccountAssignmentService.AssignGLAccountAsync(Category category) Algorithm**:
+  ```
+  AssignGLAccountAsync(category):
+  - If category.Type == Income:
+    a. Query all Income categories where IsArchived=false AND IsDeleted=false, 
+       ordered by: CreatedAt ASC (oldest first), then Id ASC (GUID comparison for determinism)
+    b. Count matching categories = N
+    c. Assign GL# = 1000 + N (e.g., first income = GL#1000, second = GL#1001, etc.)
+    d. Max GL# for Income = 1099 (100 categories max per type)
+    e. If N >= 100, reject with error: "Cannot create category: maximum 100 income 
+       categories already defined. Please archive unused categories first."
+  - If category.Type == Expense:
+    a. Same logic: GL# = 2000 + N (max 2099)
+  - Timestamp tiebreaker: If multiple categories have identical CreatedAt (rare), use Id ascending 
+    (deterministic GUID comparison) for stable, consistent ordering
+  - Storage: Persist GL# to Category.GlAccount field (nullable string, e.g., "1000")
+  ```
 - GL account derived deterministically from Category type at creation time; no runtime GL lookups needed
 - Example: Payment of $100 Cash creates: Debit $100 on GL#0100 (Cash) + Credit $100 on GL#0101 (MemberReceivable)
 - Example: Fee creation creates: Debit $50 on GL#0101 (MemberReceivable) + Credit $50 on GL#1000 (first income category)
@@ -605,10 +633,10 @@ AuditTrail
 **Committee Membership**:
 - CommitteeMembership entity with year-based unique constraint (Member + Year)
 - Annual reset based on configurable CommitteeRenewalMonth setting (default January=1, distinct from membership renewal month)
-- On application startup, system compares current month/year against Settings.LastCommitteeResetYear
-- If (CurrentMonth >= CommitteeRenewalMonth AND LastResetYear < CurrentYear): invoke CommitteeAnnualResetService synchronously before dashboard displays, clearing all current-year committee status, preserving prior-year history, updating LastCommitteeResetYear
-- Reset ensures exactly once per committee year; coordinators manually re-enter committee assignments via member edit form
-- Historical records preserved as read-only in Committee History section with current-year entry visually distinct (bold + "Current" badge)
+- **Manual trigger only**: Coordinator clicks "Reset Committee for New Year" button in Settings > General tab; system displays confirmation dialog then clears all current-year committee status (CommitteeMembership records with Year = current year); preserves prior-year history as read-only; updates Settings.LastCommitteeResetYear
+- **AGM Reminder Logic**: On app startup, system checks if AGM event exists in current year and LastCommitteeResetYear < current year; if AGM date is >7 days ago, displays banner on Settings page: "⚠️ Committee membership has not been reset for [current year]. AGM was [N days ago]. [Click to reset]"; banner remains until reset completed
+- Reset ensures exactly once per committee year (guarded by LastCommitteeResetYear); coordinators manually re-enter committee assignments via member edit form
+- Historical records preserved as read-only in Committee History section with **current-year entry visually distinct using semantic HTML**: `<strong>2026 <span role="status" aria-label="Current year">Current</span> - Position</strong>` (current year renders bold with badge; historical as plain text); badge uses pastel background color (light theme: hsl(120, 40%, 70%), dark theme: hsl(120, 35%, 55%)) with WCAG AA contrast compliance
 
 ---
 

@@ -18,6 +18,48 @@ The MVP establishes the foundation for extensibility through a plugin architectu
 
 ---
 
+## 1.1 Clarifications *(Session 2026-05-20)*
+
+This section documents clarifications requested during specification review to resolve critical ambiguities and high-priority underspecifications.
+
+### Clarification Q1: Attendance Fee Default State
+**Issue**: FR-005 ambiguity on whether attendance fees default to PAID or UNPAID.
+**Resolution**: Attendance fees default to **PAID** when member attends. Coordinator has checkbox override available **at creation time only** ("Mark fee as unpaid") to override default. After creation, fee state is immutable per Constitution §3.4. If state must be changed post-creation, use GL reversing transaction pairs.
+
+### Clarification Q2: Report Generation Timeout SLA
+**Issue**: Conflict between NFR-003 ("no mandatory SLAs") and NFR-019 ("5-second timeout").
+**Resolution**: 5-second timeout is an **advisory target, NOT a hard SLA**. Reports generate synchronously with UI displaying modal "Generating report..." dialog until completion. No timeout enforced; if report takes >5 seconds, dialog continues waiting indefinitely. Aligns with NFR-003 (no mandated SLAs).
+
+### Clarification Q3: Attendance Modification & Reversal
+**Issue**: FR-005 references clearing attendance flags but does not specify UI mechanism or GL reversal timing.
+**Resolution**: **Attendance records are immutable after creation.** No UI mechanism for clearing attendance post-recording. Attendance recording is a batch operation: Coordinator views screen with Member Name | [Attended ☐] | [Paid ☐] checkboxes for all active members on rehearsal date, then clicks Save/OK for atomic record creation. If correction needed post-save, coordinator uses manual GL reversals via Finance module (not automatic).
+
+### Clarification Q4: Member Reactivation Fee Scope
+**Issue**: FR-024 ambiguity on which years' fees are forgiven during reactivation.
+**Resolution**: **Default scope**: Reactivation forgives fees from calendar years < current year only. **Override capability**: Reactivation screen shows checkboxes for fees by year (prior years pre-checked, current year optional); coordinator can override to forgive current-year fees on case-by-case basis.
+
+### Clarification Q5: Historical Rate Immutability
+**Issue**: FR-007 ambiguity on whether attendance/participation rates are immutable or recalculated.
+**Resolution**: **Rates are immutable and stored at event recording time.** Rehearsal and Event entities include StoredAttendanceRate / StoredParticipationRate fields (decimal, calculated at recording time). Archival does NOT retroactively change past rates; archive date affects only future rate calculations (for events after archival).
+
+### Clarification Q6: Committee Annual Reset
+**Issue**: FR-031 ambiguity on automatic vs manual reset, and failure handling.
+**Resolution**: **Manual trigger only** — No automatic startup reset. Coordinator clicks "Reset Committee for New Year" button in Settings > General tab. **AGM Reminder**: If AGM event exists in current year and CommitteeResetYear < current year, system displays banner on Settings page 7 days after AGM: "⚠️ Committee membership has not been reset. AGM was [N days ago]. Click here to reset." **AGM Event Type**: Add "Annual General Meeting" to default Event Types; AGM is recorded as an Event (not Rehearsal) with NO attendance fees created.
+
+### Clarification Q7: Committee History Visual Distinction
+**Issue**: FR-029 ambiguity on visual distinction implementation (Markdown vs Blazor markup) and accessibility.
+**Resolution**: Current-year committee entries rendered with semantic HTML + ARIA for accessibility:
+```html
+<strong>
+  2026 
+  <span role="status" aria-label="Current year">Current</span> 
+  - Treasurer
+</strong>
+```
+Historical entries: `<span>2025 - Secretary</span>`. Badge styled with pastel background color per theme (light: hsl(120, 40%, 70%); dark: hsl(120, 35%, 55%)) with WCAG AA contrast compliance.
+
+---
+
 ## 2. Scope *(mandatory)*
 
 ### 2.1 In Scope
@@ -318,17 +360,35 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 **FR-002**: System MUST provide a Members module enabling user to create, edit, list, and filter members by Active/Inactive status; members MUST include: name (required), street address (required), phone (optional), email (optional), join date (required), and optional date of birth fields. System MUST validate email and phone formats when provided. When a new member is created via the "Add Member" form, the default Status is Active with ActivateDate set to today. Coordinator may immediately inactivate a member if needed.
 
-**FR-002a**: System MUST calculate and display member age in years based on date of birth. Age MUST only display when date of birth is provided; the age field MUST not be visible if date of birth is empty/null. Age calculation MUST be performed server-side to ensure consistency using formula: `floor((today - DOB) / 365.25)`. System MUST validate: (1) date of birth MUST be in the past (before today; today's date rejected), (2) date of birth MUST be within 150 years of today (configurable in Settings), (3) calculated age MUST be >= configured Minimum Member Age in Settings (default 0, no minimum). Validation error messages MUST be specific: "Date of birth cannot be today or in the future", "Date of birth must be within 150 years", "Member age ({age} years) must be at least {minimum_age} years old".
+**FR-002a**: System MUST calculate and display member age in years based on date of birth using a precise, leap-year-aware algorithm. Age MUST only display when date of birth is provided; the age field MUST not be visible if date of birth is empty/null. Age calculation MUST be performed server-side using UTC timezone for consistency:
+```
+Age Calculation Algorithm (UTC-based):
+- Input: DateOfBirth (stored as UTC date without time)
+- Reference Date: DateTime.UtcNow.Date (today, UTC timezone, no time component)
+- Algorithm:
+  age = referenceDate.Year - dob.Year
+  if (referenceDate.Month < dob.Month) OR 
+     (referenceDate.Month == dob.Month AND referenceDate.Day < dob.Day):
+    age = age - 1
+  return age
+- Result: Age in completed years (member becomes older on their birthday, not before)
+- Examples:
+  * DOB = 1990-02-28, Today = 2026-02-27: Age = 35 (birthday tomorrow)
+  * DOB = 1990-02-28, Today = 2026-02-28: Age = 36 (birthday today)
+  * DOB = 1992-02-29 (leap year), Today = 2026-02-28: Age = 33 (birthday tomorrow, observed Feb 28 in non-leap years)
+  * DOB = 1992-02-29 (leap year), Today = 2026-03-01: Age = 34 (birthday was yesterday)
+```
+System MUST validate: (1) date of birth MUST be in the past (before today UTC; today's date rejected), (2) date of birth MUST be within 150 years of today (configurable in Settings), (3) calculated age MUST be >= configured Minimum Member Age in Settings (default 0, no minimum). Validation error messages MUST be specific: "Date of birth cannot be today or in the future", "Date of birth must be within 150 years", "Member age ({age} years) must be at least {minimum_age} years old". Timezone handling: All DOB comparisons use `DateTime.UtcNow.Date` for deterministic, consistent results regardless of server/user timezone.
 
 **FR-003**: System MUST support member lifecycle through two orthogonal mechanisms: (1) **Status field** with two values: Active (member participates in events; fees apply) and Inactive (member exists but does not participate; no fees accrue). Marking a member Inactive MUST NOT set soft-delete fields; Status is a participation indicator only. (2) **Soft-Delete (Archival)** via IsDeleted/DeletedAt/DeletedBy fields: when a member is archived (soft-deleted), IsDeleted is set to true and the member is hidden from default views but remains in database for historical reporting. Both Active and Inactive members can be archived. This separates participation status (Status field) from data visibility/deletion (IsDeleted flag) per Constitution §3.5. Queries filtering non-archived members use: `WHERE IsDeleted=false`; queries filtering active participants use: `WHERE Status='Active' AND IsDeleted=false`.
 
 **FR-004**: System MUST automatically apply annual membership fees to all active members (Status='Active') at the configured renewal month, skipping: (1) inactive members (Status='Inactive'), and (2) active members with existing unpaid annual fees for the current year. Display a batch processing confirmation dialog showing the number of members to be charged.
 
-**FR-005**: System MUST provide a Rehearsals module enabling the user to schedule rehearsals (date, time, optional notes) and record attendance. Recording attendance for active members (Status='Active') MUST automatically create attendance fee records with payment status defaulting to **PAID** (coordinator may override to unpaid if needed). Recording attendance for inactive members (Status='Inactive') is allowed for historical tracking but MUST NOT create fee records. If attendance flag is subsequently cleared for a member on a specific rehearsal, the corresponding attendance fee for that rehearsal MUST be automatically removed (soft-deleted with GL reversing entries). Once attendance is recorded, historical data is preserved and immutable until explicitly cleared.
+**FR-005**: System MUST provide a Rehearsals module enabling the user to schedule rehearsals (date, time, optional notes) and record attendance using a **batch interface per rehearsal**. Attendance recording screen displays: Member Name | [Attended ☐] | [Paid ☐] checkboxes for all active members on the rehearsal date, plus fee amount. Coordinator completes checkboxes for all members, then clicks Save/OK to atomically create all records. Recording attendance for active members (Status='Active') MUST automatically create attendance fee records with payment status defaulting to **PAID**. Override checkbox available at creation time: "Mark fee as unpaid (override)" allows coordinator to create fee record as UNPAID. Recording attendance for inactive members (Status='Inactive') is allowed for historical tracking but MUST NOT create fee records. After Save/OK, attendance records are **immutable** (Constitution §3.4) — no clearing or modification allowed in UI. If coordinator needs to correct a recorded attendance, they must use manual GL reversals via Finance module (debit MemberReceivable + credit to applicable Income category). Attendance records remain immutable and permanent in database.
 
-**FR-006**: System MUST provide an Events module enabling the user to schedule performances/events (date, event type, optional notes) and record participation. Event types MUST be configurable in Settings with defaults: Performance, Eisteddfod, Fund raiser, Promotional.
+**FR-006**: System MUST provide an Events module enabling the user to schedule performances/events (date, event type, optional notes) and record participation. Event types MUST be configurable in Settings with defaults: Performance, Eisteddfod, Fund raiser, Promotional, Annual General Meeting. **Event participation recording does NOT automatically create fee records** (only rehearsal attendance creates fees per FR-005). Events are participation-only, tracked for historical and reporting purposes without financial impact.
 
-**FR-007**: System MUST track and display historical attendance rate (members present / members active on that date × 100%) for the most recent past rehearsal and participation rate for the most recent past event. "Members active on that date" is calculated using the member's historical Status as of the event date using effective dates: `WHERE Status='Active' AND ActivateDate <= event_date AND (InactivateDate IS NULL OR InactivateDate > event_date) AND IsDeleted=false`. For historical rate calculations, use the member's actual status **as of the event date**, not their current status. If a member was active on rehearsal date X but later archived, they are still counted in the denominator for that historical rehearsal (event-date-based calculation). Archival only affects future rate calculations (for events after archival date). Archived members are excluded from the participation rate denominator only for events occurring after their archival date. This ensures historical accuracy for reporting and audit trail integrity.
+**FR-007**: System MUST track and display historical attendance rate (members present / members active on that date × 100%) for the most recent past rehearsal and participation rate for the most recent past event. **Rates are immutable and calculated at event recording time.** When attendance/participation is recorded, the system calculates the rate immediately using member statuses as-of that date and stores it with the Rehearsal/Event record (StoredAttendanceRate / StoredParticipationRate fields). "Members active on that date" is calculated using the member's historical Status as of the event date using effective dates: `WHERE Status='Active' AND ActivateDate <= event_date AND (InactivateDate IS NULL OR InactivateDate > event_date) AND IsDeleted=false`. Stored rates are never recalculated; they remain frozen in history. **Archival does NOT retroactively affect past rates** — if a member was active on rehearsal date X but later archived, the stored rate for that rehearsal remains unchanged. Archive date affects only future rate calculations (for events recorded after archival date). Historical rate queries use stored rates from Rehearsal/Event records; future rates are calculated using current member statuses.
 
 **FR-008**: System MUST track outstanding balances combining annual membership fees and per-rehearsal attendance fees, displaying total outstanding balance on the Finance tile with muted Green for positive balance (income > expenses) and muted Red for negative balance (expenses > income).
 
@@ -346,7 +406,30 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 **FR-015**: System MUST use non-destructive import mode (upsert): existing records are updated by primary key/natural key matching, missing records are inserted, and local records not present in the source remain unchanged. However, ALL required entity types MUST be present in the import source (per FR-014); selective data exports are not supported. Upon successful validation, import MUST be atomic (all-or-nothing within a single transaction).
 
-**FR-016**: System MUST support payment recording that creates GL transaction pairs for accounting integrity. When payment is recorded with date, amount, payment method (Cash, Check, Card, etc.), payment type (Annual/Attendance/Other), and optional notes, the system MUST: (1) Create Payment record for audit trail with fields: date, amount, payment method, payment type, category, member reference, notes; (2) Create two GL Transaction records: Debit=$amount on CashReceived account + Credit=$amount on MemberReceivable account, linked to Payment record. Payments MUST reduce outstanding balances using FIFO (First-In-First-Out) allocation: oldest unpaid fees satisfied first (e.g., 2024 annual fee before 2025 annual fee before 2025 attendance fees). System MUST automatically calculate GL transaction dates and link Payment to created Transactions for audit trail. PaymentType field is metadata and distinct from GL Category (used for reporting/filtering).
+**FR-016**: System MUST support payment recording that creates GL transaction pairs for accounting integrity. When payment is recorded with date, amount, payment method (Cash, Check, Card, etc.), payment type (Annual/Attendance/Other), and optional notes, the system MUST: (1) Create Payment record for audit trail with fields: date, amount, payment method, payment type, category, member reference, notes; (2) Create two GL Transaction records: Debit=$amount on CashReceived account + Credit=$amount on MemberReceivable account, linked to Payment record. Payments MUST reduce outstanding balances using FIFO (First-In-First-Out) allocation:
+```
+FIFO Payment Allocation Algorithm:
+1. Query all unpaid fees for member ordered by: FeeDate ASC (oldest first), then Fee.CreatedAt ASC, then Fee.Id ASC (tiebreaker)
+2. For each unpaid fee, starting with oldest:
+   a. If payment_remaining >= fee_amount:
+      - Mark fee as fully paid
+      - Reduce payment_remaining by fee_amount
+      - Create GL allocation record
+   b. If payment_remaining < fee_amount:
+      - Mark fee as partially paid with remaining_balance = fee_amount - payment_remaining
+      - Create GL allocation record for partial allocation
+      - Payment exhausted, stop processing
+   c. If payment_remaining <= 0:
+      - Stop processing, all fees satisfied
+
+Edge Cases:
+- Partial Payment: Remaining fee balance tracked separately; Payment.Amount records actual payment amount, not fee amount
+- Overpayment: If payment exceeds total outstanding, all fees marked as paid + create member credit (GL debit MemberReceivable, credit to CashReceived/Overpayment GL account)
+- Bulk Annual Fees: When batch applied, fees created near-simultaneously; tiebreaker: Fee.Id ascending if CreatedAt identical
+
+GL Transaction Recording: For each payment allocation to a fee, create debit-credit GL pair: (1) Debit=$allocation_amount on CashReceived (GL#0100), (2) Credit=$allocation_amount on MemberReceivable (GL#0101). Link both GL Transactions to Payment record for audit trail.
+```
+System MUST automatically calculate GL transaction dates and link Payment to created Transactions for audit trail. PaymentType field is metadata and distinct from GL Category (used for reporting/filtering).
 
 **FR-017**: System MUST allow Notes field editing on Payment records with audit trail logging (who changed what when); Amount, Date, PaymentMethod, PaymentType, and Category fields MUST remain locked after creation. Payment entity includes `UpdatedAt` timestamp that updates ONLY when Notes changes; if `UpdatedAt` differs from `CreatedAt`, only Notes was modified. Database constraint or application validation enforces field-level immutability on Amount, Date, PaymentMethod, PaymentType, Category (reject update attempts on these fields).
 
@@ -362,7 +445,7 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 **FR-023**: System MUST maintain member activation/inactivation effective dates to enable historical active-member count computation based on the rehearsal/event date (not current date).
 
-**FR-024**: System MUST implement automatic member reactivation debt forgiveness using GL write-offs with audit trail. When a coordinator marks an Inactive member as Active (reactivation), the system MUST automatically (no coordinator choice): (1) Identify ALL outstanding fees from prior years; (2) Create GL reversing Transaction pairs for each outstanding fee (debit MemberReceivable, credit BadDebtExpense/WriteOff category) to zero-out prior balances; (3) Log audit trail entries for debt forgiveness; (4) Reset member's payable balance to $0.00. Reactivated member has clean financial slate. Current-year membership fee remains payable (will be applied per annual fee application process). Prior unpaid fees are permanently forgiven with full GL audit trails preserving complete history. Original Fee records remain in database immutable (no soft-delete); GL reversing transactions provide audit trail of forgiveness. **NOTE**: Reactivation affects **only financial balances (fees)**; committee history is unaffected and remains independent (see FR-028/FR-029).
+**FR-024**: System MUST implement automatic member reactivation debt forgiveness using GL write-offs with audit trail. When a coordinator marks an Inactive member as Active (reactivation), the system displays a Reactivation Forgiveness dialog showing fees organized by year with checkboxes for selection. **Default scope**: Fees from calendar years < current year (prior years) are pre-checked for forgiveness (automatic). **Override capability**: Current-year fees are shown as unchecked; coordinator can manually check current-year fees on a case-by-case basis if needed. Upon confirmation, the system MUST: (1) Identify selected outstanding fees (per checkbox selection); (2) Create GL reversing Transaction pairs for each selected fee (debit MemberReceivable, credit BadDebtExpense/WriteOff category GL#9900) to zero-out selected balances; (3) Log audit trail entries documenting which fees were forgiven and whether via default or override; (4) Update member's payable balance to reflect only non-forgiven fees. Reactivated member has clean financial slate for default scope; current-year fees remain if coordinator does not override. Prior unpaid fees are permanently forgiven with full GL audit trails preserving complete history. Original Fee records remain in database immutable (no soft-delete); GL reversing transactions provide audit trail of forgiveness.
 
 **FR-025**: System MUST store payment method as required field on Payment records (enum: Cash, Check, Card, Electronic Transfer, Other), defaulting to `Cash` when not explicitly selected. System MUST store payment type as required field on Payment records (enum: Annual, Attendance, Other). PaymentType is metadata used for reporting and filtering; it is separate from GL Category (which is used for accounting categorization). Both PaymentMethod and PaymentType fields are immutable after payment creation (for audit integrity).
 
@@ -372,11 +455,11 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 **FR-028**: System MUST preserve committee membership history across calendar years. Each year's committee assignment is independent; members can have different positions in different years or no position in some years.
 
-**FR-029**: System MUST display committee history on the member detail screen showing all years in which the member served on committee with their corresponding positions. Current year MUST be visually distinct from historical records using the following mechanism: Current year entry is rendered in bold with a small "Current" badge (e.g., "**2026 (Current) - Treasurer**"), while historical years display in normal text weight (e.g., "2025 - Secretary"). This provides clear visual distinction with accessibility compliance (text + visual indicator readable by screen readers). Members with no committee history MUST have no committee section displayed.
+**FR-029**: System MUST display committee history on the member detail screen showing all years in which the member served on committee with their corresponding positions. **Current year MUST be visually and semantically distinct** from historical records using semantic HTML + ARIA: Current year entry rendered as `<strong>2026 <span role="status" aria-label="Current year">Current</span> - Treasurer</strong>`. Historical years rendered as `<span>2025 - Secretary</span>`. The "Current" badge MUST use pastel background color (light theme: hsl(120, 40%, 70%); dark theme: hsl(120, 35%, 55%)) with WCAG AA contrast-compliant text color and rounded corners (4px). Members with no committee history MUST have no committee section displayed. Screen readers announce the badge via `role="status"` ARIA attribute, ensuring accessibility without relying on visual formatting alone.
 
 **FR-030**: System MUST include automated tests proving coverage of all reachable code paths for committee membership operations (add/update/remove/query); all committee-related workflows MUST have corresponding UI integration tests.
 
-**FR-031**: System MUST require current year committee membership to be reassigned each year based on a configurable "Committee Renewal Month" setting (distinct from membership renewal month). Committee renewal month is user-configurable in Settings (range 1-12, default January=1). On application startup, system uses system local time (DateTime.Now) to compare current calendar month/year against `Settings.LastCommitteeResetYear`. If (CurrentMonth >= CommitteeRenewalMonth AND LastResetYear < CurrentYear), system automatically invokes CommitteeAnnualResetService synchronously before dashboard displays, clearing all members' current-year committee status (set to not-committee), preserving prior years' records as read-only history, and updating `LastCommitteeResetYear = CurrentYear`. Idempotency is guaranteed by the LastResetYear field: if the application is restarted multiple times on the same calendar date after the first reset, the condition (LastResetYear < CurrentYear) evaluates to false, preventing duplicate resets. This ensures annual governance review happens once per committee year on startup, and prevents stale privilege carryover. Coordinators MUST explicitly re-enter committee members and positions for the new year through the member edit form.
+**FR-031**: System MUST require current year committee membership to be reassigned each year based on a configurable "Committee Renewal Month" setting (distinct from membership renewal month). Committee renewal month is user-configurable in Settings (range 1-12, default January=1). **Manual Reset Trigger**: Committee reset is triggered manually by coordinator clicking "Reset Committee for New Year" button in Settings > General tab (no automatic startup reset). When clicked, system displays confirmation dialog: "This will clear committee assignments for all members for [current year]. Historical records will be preserved. Continue?" On confirmation, CommitteeAnnualResetService runs synchronously: (1) Clear all members' current-year committee status (CommitteeMembership records with Year = current year); (2) Update Settings.LastCommitteeResetYear = current year; (3) Preserve archived members' historical committee records as read-only; (4) Log audit trail entry. **AGM Reminder**: System checks on app startup if AGM event exists in current year and if LastCommitteeResetYear < current year. If both true, and AGM date is >7 days ago, display banner on Settings page: "⚠️ Committee membership has not been reset for [current year]. AGM was [N days ago]. [Click to reset]". Banner remains until reset is completed, then disappears. **AGM Event Type**: Add "Annual General Meeting" to default Event Types in FR-006. AGM is recorded as an Event (not Rehearsal) with NO attendance fees created; participation only for tracking purposes.
 
 **FR-032**: System MUST implement accounting compliance using a **General Ledger (GL) paired transaction model** with simple account structure: (1) **Asset Accounts**: Fixed GL#0100 (Cash), GL#0101 (MemberReceivable); (2) **Revenue Accounts**: Income categories assigned GL#10xx range (GL#1000 for first income category, GL#1001 for second, etc.); (3) **Expense Accounts**: Expense categories assigned GL#20xx range (GL#2000 for first expense category, GL#2001 for second, etc.); (4) **Writeoff Account**: Fixed GL#9900 (BadDebtExpense for reactivation debt forgiveness). All financial events MUST be recorded as exactly TWO Transaction records (one debit, one credit) with equal amounts. GL account is **derived deterministically from Category type** — each Category has an auto-assigned GL account number based on its type (type is set at category creation): Income categories → GL#10xx sequential; Expense categories → GL#20xx sequential. GL accounts are assigned in **creation order (by CreatedAt timestamp, ascending)**; the first income category created receives GL#1000, the second GL#1001, etc. This ordering is deterministic and stable across backups and restores. Each Transaction MUST include: transaction date (required), debit or credit amount (decimal, 2+ places), category (required, FK to Category, which implies GL account), member reference (when applicable), and description/notes (optional). All transactions MUST be categorized as either income or expense per user-defined categories. When coordinator creates a new category, system auto-assigns a unique GL account number without user input using GLAccountAssignmentService (sequential numbering within type range, assigned in creation order).
 
@@ -430,7 +513,7 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 **NFR-002**: **Data Storage**: System MUST use local SQLite database for all data persistence; schema versioning MUST follow semver notation (major.minor.patch); import/export manifests MUST include `schemaVersion`.
 
-**NFR-003**: **Performance**: Performance testing is not required for MVP acceptance; teams may profile and record advisory benchmarks for their environment but no numeric SLAs are mandated.
+**NFR-003**: **Performance**: Performance testing is not required for MVP acceptance; no numeric SLAs are mandated. The 5-second report generation target (NFR-019) is an **advisory benchmark**, not a hard requirement. Teams may profile and record advisory benchmarks for their environment but no enforcement gates exist.
 
 **NFR-004**: **Accessibility**: All UI elements MUST comply with WCAG AA contrast requirements. All user-facing error messages MUST be validated in user testing for clarity (≥90% of users understand the message without assistance).
 
@@ -462,7 +545,7 @@ The application provides a "Reports" root menu item that aggregates reports from
 
 **NFR-018**: **Reports Infrastructure**: System MUST implement a shared, common reports infrastructure providing consistent report viewing, printing, and exporting capabilities across all modules (MVP and plugins). Each module is responsible for generating report data (structured rows/columns with headers); the common infrastructure handles all display, PDF printing, and CSV exporting. Report provider auto-discovery MUST follow the same pattern as dashboard tiles and settings tabs with graceful error handling for failed providers.
 
-**NFR-019**: **Report Generation Performance**: Report generation MUST be synchronous and blocking; user selects report, waits for data generation and display within common report viewer. No concurrent report generation. No caching between report selection, print, or export actions; each action triggers fresh data generation. Performance target: reports MUST generate and display within 5 seconds for typical organizations (≤500 members, ≤3 years of historical data). For longer-running reports, UI MUST display "Generating report..." message with optional cancel button to allow user to return to menu.
+**NFR-019**: **Report Generation Performance**: Report generation MUST be synchronous and blocking; user selects report, waits for data generation and display within common report viewer. UI displays modal dialog "Generating report..." with spinner throughout entire generation duration (modal always displayed, not conditional on timeout). No concurrent report generation. No caching between report selection, print, or export actions; each action triggers fresh data generation. No timeout enforced; if report takes >5 seconds, modal continues waiting indefinitely (no cancel button). **5-second target is advisory only** (see NFR-003) — reports may take longer for large datasets; system waits without limit. Common report viewer displays modal until report data is ready, then modal closes and report displays.
 
 ---
 

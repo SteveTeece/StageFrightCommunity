@@ -83,9 +83,9 @@
 **User Story**: US1 (First-Run Setup), US2 (Member Management)
 
 - [ ] T-022 Define Member entity in `src/StageFright.Core/Entities/Member.cs` with properties: Id, Name, StreetAddress, Phone, Email, JoinDate, DateOfBirth, Status, ActivateDate, InactivateDate, IsDeleted, DeletedAt, DeletedBy per section 3.1 schema
-- [ ] T-023 [P] Define Rehearsal entity in `src/StageFright.Core/Entities/Rehearsal.cs` with properties: Id, Date, Time, Notes
-- [ ] T-024 [P] Define Event entity in `src/StageFright.Core/Entities/Event.cs` with properties: Id, Date, EventType, Notes
-- [ ] T-025 [P] Define Attendance entity in `src/StageFright.Core/Entities/Attendance.cs` with properties: Id, RehearsalId, MemberId, RecordedAt, unique constraint (RehearsalId, MemberId)
+- [ ] T-023 [P] Define Rehearsal entity in `src/StageFright.Core/Entities/Rehearsal.cs` with properties: Id, Date, Time, Notes, **StoredAttendanceRate (decimal %, immutable, calculated at recording time)**
+- [ ] T-024 [P] Define Event entity in `src/StageFright.Core/Entities/Event.cs` with properties: Id, Date, EventType, Notes, **StoredParticipationRate (decimal %, immutable, calculated at recording time)**
+- [ ] T-025 [P] Define Attendance entity in `src/StageFright.Core/Entities/Attendance.cs` with properties: Id, RehearsalId, MemberId, RecordedAt, **PaidStatus (Paid|Unpaid)**, unique constraint (RehearsalId, MemberId), **NO soft-delete fields (immutable)**
 - [ ] T-026 [P] Define Participation entity in `src/StageFright.Core/Entities/Participation.cs` with properties: Id, EventId, MemberId, RecordedAt, unique constraint (EventId, MemberId)
 - [ ] T-027 [P] Define Category entity in `src/StageFright.Core/Entities/Category.cs` with properties: Id, Name, Type (Income|Expense), SortOrder, IsArchived, GlAccount per section 3.1 schema
 - [ ] T-028 [P] Define Fee entity in `src/StageFright.Core/Entities/Fee.cs` (immutable after creation, NO soft-delete fields per Constitution §3.4) with properties: Id, MemberId, FeeType (Annual|Attendance|Other), Amount, FeeDate, DueDate, CreatedAt
@@ -127,8 +127,8 @@
 - [ ] T-056 Create data access layer test suite in `tests/StageFright.Data.Tests/RepositoryTests.cs` with comprehensive CRUD tests for all repositories
 - [ ] T-057 Test soft-delete behavior and query filtering in `tests/StageFright.Data.Tests/SoftDeleteTests.cs` verifying exclusion of deleted records from default queries
 - [ ] T-058 Test historical active-member calculation in `tests/StageFright.Data.Tests/HistoricalMemberTests.cs` with effective date scenarios: reactivation, inactivation, archive
-- [ ] T-059 Test attendance rate calculation in `tests/StageFright.Data.Tests/AttendanceRateTests.cs` using formula: `members_present / members_active_on_date * 100%`
-- [ ] T-060 Test participation rate calculation in `tests/StageFright.Data.Tests/ParticipationRateTests.cs` using formula: `members_participated / members_active_on_date * 100%`
+- [ ] T-059 Test **immutable stored attendance rate** calculation in `tests/StageFright.Data.Tests/AttendanceRateTests.cs` verifying: (1) Rate calculated at recording time using member statuses as-of that date; (2) Rate stored immutably in Rehearsal.StoredAttendanceRate; (3) Post-event archival does NOT retroactively change stored rates; (4) Archive affects only future rate calculations (for events after archival date); (5) Formula: `members_present / members_active_on_date * 100%`
+- [ ] T-060 Test **immutable stored participation rate** calculation in `tests/StageFright.Data.Tests/ParticipationRateTests.cs` verifying: (1) Rate calculated at recording time using member statuses as-of that date; (2) Rate stored immutably in Event.StoredParticipationRate; (3) Post-event archival does NOT retroactively change stored rates; (4) Archive affects only future rate calculations; (5) Formula: `members_participated / members_active_on_date * 100%`
 
 **Dependencies**: T-034, T-036
 
@@ -141,7 +141,7 @@
 - [ ] T-063 [P] Create Settings module page in `src/StageFright.UI/Pages/Settings/Settings.razor` with tabbed interface for General, Categories, Event Types, Backup, Restore tabs
 - [ ] T-064 [P] Create General Settings tab component in `src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor` with form fields: Organization Name, Annual Fee, Attendance Fee, Renewal Month, Max Age Range, Minimum Member Age per FR-018
 - [ ] T-065 [P] Create Categories tab component in `src/StageFright.UI/Pages/Settings/CategoriesTab.razor` with create/edit/archive/restore/reorder operations
-- [ ] T-066 [P] Create Event Types tab component in `src/StageFright.UI/Pages/Settings/EventTypesTab.razor` with default types (Performance, Eisteddfod, Fund raiser, Promotional) and edit capability
+- [ ] T-066 [P] Create Event Types tab component in `src/StageFright.UI/Pages/Settings/EventTypesTab.razor` with default types **(Performance, Eisteddfod, Fund raiser, Promotional, Annual General Meeting)** and edit capability
 - [ ] T-067 Create first-run setup wizard component in `src/StageFright.UI/Pages/Setup/SetupWizard.razor` with form to capture organization name, annual fee, attendance fee, renewal month, and initialize database per FR-001
 - [ ] T-068 Implement setup wizard logic in `src/StageFright.Core/Services/SetupService.cs` to create Settings record and initialize database schema
 - [ ] T-069 Create Members module page in `src/StageFright.UI/Pages/Members/Members.razor` with member list, filter by Active/Inactive status, and action buttons (Add, Edit, Delete)
@@ -149,21 +149,21 @@
 - [ ] T-071 Implement member validation service in `src/StageFright.Core/Services/MemberValidationService.cs` with email format, phone format, DOB past validation per FR-002a
 - [ ] T-072 Implement age calculation service in `src/StageFright.Core/Services/AgeCalculationService.cs` with server-side calculation: `floor((today - DOB) / 365.25)` and 150-year range + minimum age validation per FR-002a
 - [ ] T-073 Create Edit Member form component in `src/StageFright.UI/Pages/Members/EditMemberForm.razor` with editable fields and Committee Member checkbox + Position field
-- [ ] T-074 Create Committee History section in `src/StageFright.UI/Pages/Members/CommitteeHistorySection.razor` displaying year-based committee assignments with visual distinction (bold + "Current" badge for current year, normal text for historical) per FR-029
+- [ ] T-074 Create Committee History section in `src/StageFright.UI/Pages/Members/CommitteeHistorySection.razor` displaying year-based committee assignments with **semantic HTML + ARIA for accessibility**: Current year entry `<strong>2026 <span role="status" aria-label="Current year">Current</span> - Treasurer</strong>`; Historical entries `<span>2025 - Secretary</span>`. Badge styled with pastel background color (light: hsl(120, 40%, 70%); dark: hsl(120, 35%, 55%)) + padding + rounded corners (4px), WCAG AA contrast compliant text color per FR-029 and Clarification Q7
 - [ ] T-075 Create Members module service in `src/StageFright.Core/Services/MemberService.cs` with CRUD operations, lifecycle management (Active/Inactive), age display logic
 - [ ] T-076 Implement committee membership service in `src/StageFright.Core/Services/CommitteeMembershipService.cs` with per-year tracking, history preservation, and annual reset logic per FR-031
-- [ ] T-077 Create Rehearsals module page in `src/StageFright.UI/Pages/Rehearsals/Rehearsals.razor` with schedule form, attendance recording, and historical list
+- [ ] T-077 Create Rehearsals module page in `src/StageFright.UI/Pages/Rehearsals/Rehearsals.razor` with: (1) Schedule rehearsal form (date, time, optional notes); (2) **Batch attendance recording screen per rehearsal showing Member Name | [Attended ☐] | [Paid ☐] checkboxes for all active members**; (3) Historical rehearsal list
 - [ ] T-078 Create Schedule Rehearsal form component in `src/StageFright.UI/Pages/Rehearsals/ScheduleRehearsalForm.razor` with date, time, optional notes fields
-- [ ] T-079 Create Attendance Recording component in `src/StageFright.UI/Pages/Rehearsals/AttendanceRecorder.razor` with member list checkboxes for presence/absence selection and submit
-- [ ] T-080 Create Rehearsal service in `src/StageFright.Core/Services/RehearsalService.cs` with scheduling, attendance recording, and fee accrual on attendance per FR-005
+- [ ] T-079 Create **Batch Attendance Recording component** in `src/StageFright.UI/Pages/Rehearsals/BatchAttendanceRecorder.razor` with: (1) Rehearsal date display; (2) Member list with columns: Name | [Attended ☐] | [Paid ☐ (override checkbox)] | Amount; (3) All active members on rehearsal date pre-populated; (4) Attended + Paid both checked (default) = PAID fee created; Attended checked + Paid unchecked (override) = UNPAID fee created; (5) Attended unchecked = no fee created; (6) Save/OK button for atomic record creation; (7) **No clearing/editing mechanism post-save (immutable)**
+- [ ] T-080 Create Rehearsal service in `src/StageFright.Core/Services/RehearsalService.cs` with: (1) Scheduling; (2) **Batch attendance recording with atomic transaction: create all Attendance + Fee records in single transaction**; (3) Calculate and store attendance rate: `StoredAttendanceRate = members_present / members_active_on_date * 100%` (immutable field on Rehearsal); (4) **Fee override logic: honor PaidStatus from attendance batch (PAID default or UNPAID if override checkbox checked at creation time)**
 - [ ] T-081 Create Events module page in `src/StageFright.UI/Pages/Events/Events.razor` with event scheduling form, participation recording, and historical list
 - [ ] T-082 Create Schedule Event form component in `src/StageFright.UI/Pages/Events/ScheduleEventForm.razor` with date, event type dropdown, optional notes fields
 - [ ] T-083 Create Participation Recording component in `src/StageFright.UI/Pages/Events/ParticipationRecorder.razor` with member list checkboxes for participation selection
 - [ ] T-084 Create Event service in `src/StageFright.Core/Services/EventService.cs` with event scheduling and participation tracking
 - [ ] T-085 Create Dashboard tile component infrastructure in `src/StageFright.UI/Shared/DashboardTile.razor` for progressive loading, timeout handling, and graceful degradation
 - [ ] T-086 Create Members tile component in `src/StageFright.UI/Pages/Dashboard/MembersDashboardTile.razor` displaying active count + inactive count
-- [ ] T-087 Create Rehearsals tile component in `src/StageFright.UI/Pages/Dashboard/RehearsalsDashboardTile.razor` displaying most recent rehearsal date + attendance rate (%)
-- [ ] T-088 Create Events tile component in `src/StageFright.UI/Pages/Dashboard/EventsDashboardTile.razor` displaying most recent event date + participation rate (%)
+- [ ] T-087 Create Rehearsals tile component in `src/StageFright.UI/Pages/Dashboard/RehearsalsDashboardTile.razor` displaying: (1) Most recent past rehearsal date; (2) **Stored attendance rate (%) from StoredAttendanceRate field** (immutable, frozen at recording time); (3) Running count of total rehearsals recorded
+- [ ] T-088 Create Events tile component in `src/StageFright.UI/Pages/Dashboard/EventsDashboardTile.razor` displaying: (1) Most recent past event date; (2) **Stored participation rate (%) from StoredParticipationRate field** (immutable, frozen at recording time); (3) Running count of total events recorded
 - [ ] T-089 Create Finance tile placeholder component in `src/StageFright.UI/Pages/Dashboard/FinanceDashboardTile.razor` for total outstanding balance (to be fully implemented in Phase 2)
 - [ ] T-090 Create Dashboard page in `src/StageFright.UI/Pages/Dashboard/Dashboard.razor` aggregating all tiles with progressive loading and error handling per FR-010, FR-011
 - [ ] T-091 Implement plugin discovery and dashboard tile registration in `src/StageFright.Plugins/Discovery/PluginLoader.cs` with assembly reflection and DI registration
@@ -175,7 +175,7 @@
 - [ ] T-097 Create directory auto-creation service in `src/StageFright.Core/Services/DirectoryService.cs` to auto-create Plugins directory on startup per FR-021
 - [ ] T-098 Create acceptance tests for User Story 1 (First-Run Setup) in `tests/StageFright.UI.Tests/SetupWizardTests.cs` verifying all acceptance scenarios from spec
 - [ ] T-099 Create acceptance tests for User Story 2 (Member Management) in `tests/StageFright.UI.Tests/MemberModuleTests.cs` verifying CRUD, filtering, age calculation, validation
-- [ ] T-100 Create acceptance tests for User Story 3 (Rehearsal Scheduling) in `tests/StageFright.UI.Tests/RehearsalModuleTests.cs` verifying scheduling, attendance recording, fee accrual
+- [ ] T-100 Create acceptance tests for User Story 3 (Rehearsal Scheduling) in `tests/StageFright.UI.Tests/RehearsalModuleTests.cs` verifying: (1) **Batch attendance recording with atomic save**; (2) Override checkbox for UNPAID fee creation; (3) Immutability — no post-save clearing or editing; (4) StoredAttendanceRate correctly calculated and stored; (5) Error scenarios (missing active members, failed save, etc.)
 - [ ] T-101 Create acceptance tests for User Story 4 (Annual Fee Application) in `tests/StageFright.UI.Tests/AnnualFeeApplicationTests.cs` verifying batch processing, inactive member exclusion, duplicate prevention
 - [ ] T-102 Create acceptance tests for User Story 8 (Dashboard) in `tests/StageFright.UI.Tests/DashboardTests.cs` verifying tile rendering, progressive loading, error degradation
 
@@ -212,6 +212,8 @@
 - [ ] T-112 Create member balance calculation service in `src/StageFright.Core/Services/MemberBalanceService.cs` with method: `GetMemberBalanceAsync(Guid memberId)` summing unpaid annual + attendance fees
 - [ ] T-113 Create integration tests for GL integrity in `tests/StageFright.Integration.Tests/GlIntegrityTests.cs` verifying paired transactions, balance validation, FIFO allocation
 - [ ] T-114 Create integration tests for payment recording in `tests/StageFright.Integration.Tests/PaymentRecordingTests.cs` verifying GL transaction pair creation, member balance updates, audit trail
+- [ ] T-114b **[CRITICAL TEST COVERAGE]** Create comprehensive integration test for FIFO payment allocation in `tests/StageFright.Integration.Tests/FifoPaymentAllocationTests.cs` with test cases: (1) Simple FIFO—$75 payment against 2024 $50 annual, 2025 $50 annual, 2025 $10 attendance; verify 2024 fully paid, 2025 annual fully paid, 2025 attendance remains $10 unpaid; (2) Partial payment—$40 payment against $50 annual fee; verify partial balance tracking; (3) Overpayment—$150 payment against $100 total; verify member credit created; (4) Bulk annual fees—verify tiebreaker ordering (CreatedAt, then Id) for simultaneous fee creation
+- [ ] T-113b **[CRITICAL TEST COVERAGE]** Create integration test for GL balance validation failure scenario in `tests/StageFright.Integration.Tests/GlBalanceValidationTests.cs` verifying that report generation (Trial Balance, Income Statement) fails with error message "GL Balance Verification Failed: Total Debits ($X.XX) ≠ Total Credits ($Y.YY)" when GL is out of balance, and displays clear user guidance to review GL entries before retrying
 
 **Dependencies**: T-054, T-055, T-059
 
@@ -229,6 +231,7 @@
 - [ ] T-122 Update Finance tile in `src/StageFright.UI/Pages/Dashboard/FinanceDashboardTile.razor` to display total outstanding balance with muted Green (positive/surplus) or muted Red (negative/deficit) color coding per FR-008
 - [ ] T-123 Create acceptance tests for User Story 6 (Finance Tracking) in `tests/StageFright.UI.Tests/FinanceModuleTests.cs` verifying payment recording, balance calculation, categorization, GL pairs
 - [ ] T-124 Create acceptance tests for User Story 7 (Category Management) in `tests/StageFright.UI.Tests/CategoryManagementTests.cs` verifying create/edit/archive/restore with validation
+- [ ] T-106b **[CRITICAL TEST COVERAGE]** Create UI test for Payment Recording form read-only field enforcement in `tests/StageFright.UI.Tests/PaymentFormFieldImmutabilityTests.cs` verifying that Amount, Date, PaymentMethod, PaymentType, and Category fields are read-only/disabled after initial creation (prevent accidental modification), while Notes field remains editable with UpdatedAt timestamp on changes per FR-017, FR-025
 
 **Dependencies**: T-104, T-106, T-108, T-075, T-089
 
@@ -239,7 +242,7 @@
 - [ ] T-125 Create IReportProvider contract in `src/StageFright.Plugins/Contracts/IReportProvider.cs` with methods per section 4.2 of plan.md: ModuleName, ReportId, ReportName, DisplayOrder, GenerateAsync(ReportFilter)
 - [ ] T-126 Create ReportData and ReportFilter classes in `src/StageFright.Reports/Models/` with properties: ColumnHeaders, Rows, Summaries, DateFrom, DateTo, CategoryFilter, MemberStatusFilter, CustomFilters per section 4.2 of plan.md
 - [ ] T-127 Create common report viewer component in `src/StageFright.UI/Pages/Reports/ReportViewer.razor` displaying report title, headers, rows, subtotals, grand totals with print and export buttons
-- [ ] T-128 Create report loading indicator component in `src/StageFright.UI/Shared/ReportLoadingIndicator.razor` with spinner and progress messaging
+- [ ] T-128 Create report loading indicator component in `src/StageFright.UI/Shared/ReportLoadingIndicator.razor` with **modal dialog (always displayed throughout generation, no timeout, no cancel button)** showing spinner and "Generating report..." message per Clarification Q2
 - [ ] T-129 Create report error handler component in `src/StageFright.UI/Shared/ReportErrorHandler.razor` displaying user-friendly error messages with recovery options per FR-011
 - [ ] T-130 Create report aggregation service in `src/StageFright.Reports/Services/ReportAggregationService.cs` discovering and registering all IReportProvider implementations via plugin discovery
 - [ ] T-131 Create report menu structure service in `src/StageFright.Reports/Services/ReportMenuService.cs` organizing reports by module (Members, Finance, etc.) for display in Reports menu per FR-011
@@ -264,6 +267,7 @@
 - [ ] T-143 Implement Member Account Summary aging calculation in `src/StageFright.Reports/Providers/MemberAccountSummaryReportProvider.cs` with configurable date ranges and current date as reference per FR-036
 - [ ] T-144 Register Member List report provider in `src/StageFright.Reports/Providers/MemberListReportProvider.cs` (Members module) with columns: Name, Address, Phone, Email, Join Date, Age, Status per section 4.2 of plan.md
 - [ ] T-145 Register Committee Report provider in `src/StageFright.Reports/Providers/CommitteeReportProvider.cs` (Members module) with columns: Member Name, Year, Position organized by year per section 4.2 of plan.md
+- [ ] T-144b **[CRITICAL TEST COVERAGE]** Create UI test for Member List Report filter persistence in `tests/StageFright.UI.Tests/ReportFilterPersistenceTests.cs` verifying that user-applied report filters (Status filter, date range, category selection) are preserved across: (1) Print action, (2) PDF export, (3) CSV export, (4) Page navigation and return, with appropriate loading indicators and success confirmations per FR-037, FR-041
 - [ ] T-146 Create acceptance tests for Income Statement in `tests/StageFright.Integration.Tests/IncomeStatementReportTests.cs` verifying accuracy, date range filtering, category organization
 - [ ] T-147 Create acceptance tests for Trial Balance in `tests/StageFright.Integration.Tests/TrialBalanceReportTests.cs` verifying GL balance validation, account organization, GL balance verification
 - [ ] T-148 Create acceptance tests for Account Register in `tests/StageFright.Integration.Tests/AccountRegisterReportTests.cs` verifying transaction order, running balance accuracy, date range filtering
@@ -310,13 +314,13 @@
 
 **User Story**: US2, US5 (partial)
 
-- [ ] T-163 Create member reactivation service in `src/StageFright.Core/Services/MemberReactivationService.cs` implementing automatic debt forgiveness: identify outstanding fees, create GL reversing transaction pairs for each fee, soft-delete original fees, reset balance to $0.00 per FR-024
+- [ ] T-166 Create member reactivation screen in `src/StageFright.UI/Pages/Members/MemberReactivationDialog.razor` showing **Fees to Forgive on Reactivation dialog** with checkboxes: (1) Prior-year fees (pre-checked, default forgiveness); (2) Current-year fees (unchecked, coordinator can override); (3) Estimated GL impact; (4) Confirm/Cancel buttons per Clarification Q4
 - [ ] T-164 Implement member reactivation GL write-off logic in `src/StageFright.Core/Services/MemberReactivationService.cs` creating GL pairs: Debit=MemberReceivable, Credit=BadDebtExpense/WriteOff with full audit trail per FR-024
 - [ ] T-165 Create member reactivation UI component in `src/StageFright.UI/Pages/Members/MemberReactivationDialog.razor` showing confirmation of prior year fees to be forgiven with OK/Cancel buttons
 - [ ] T-166 Create committee membership annual reset service in `src/StageFright.Core/Services/CommitteeAnnualResetService.cs` triggered on Jan 1 midnight clearing all current-year committee status per FR-031
 - [ ] T-167 Implement committee membership annual reset logic in startup check in `src/StageFright.Maui/App.xaml.cs`: on app startup, compare current month/year against Settings.LastCommitteeResetYear; if (CurrentMonth >= CommitteeRenewalMonth AND LastResetYear < CurrentYear), invoke CommitteeAnnualResetService synchronously before dashboard displays, clearing all members' current-year committee status, preserving history, updating LastCommitteeResetYear = CurrentYear per FR-031
 - [ ] T-168 Create acceptance tests for member reactivation in `tests/StageFright.Integration.Tests/MemberReactivationTests.cs` verifying GL write-offs, fee soft-deletion, balance reset, audit trail
-- [ ] T-169 Create acceptance tests for committee annual reset in `tests/StageFright.Integration.Tests/CommitteeAnnualResetTests.cs` verifying prior year preservation, current year clear, no data loss
+- [ ] T-169 Create acceptance tests for committee annual reset in `tests/StageFright.Integration.Tests/CommitteeAnnualResetTests.cs` verifying: (1) Manual trigger (button click) clears current-year status; (2) Prior-year preservation; (3) AGM reminder logic (7-day post-AGM check); (4) Idempotency (LastCommitteeResetYear guard prevents duplicate resets); (5) Audit trail for reset action
 
 **Dependencies**: T-053, T-109
 
