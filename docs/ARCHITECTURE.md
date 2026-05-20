@@ -652,6 +652,52 @@ public class MemberDto
 
 ---
 
+## Core Project Structure
+
+### StageFright.Core Organization
+
+The **Core project** (`StageFright.Core`) contains foundational, cross-cutting types that are shared across all features and modules:
+
+```
+StageFright.Core/
+├── Entities/          # Core domain entities (Member, Event, Payment, etc.)
+│   └── [Entity].cs
+├── Enums/             # Common enumeration types
+│   ├── MemberStatus.cs        # Active/Inactive
+│   ├── CategoryType.cs        # Income/Expense
+│   ├── FeeType.cs             # Annual/Attendance/Other
+│   ├── PaymentMethod.cs       # Cash/Check/Card/ElectronicTransfer/Other
+│   ├── PaymentType.cs         # Annual/Attendance/Other
+│   ├── Theme.cs               # Dark/Light
+│   └── AuditAction.cs         # Create/Update/Delete
+├── Exceptions/        # Custom exception hierarchy
+│   ├── EntityNotFoundException.cs
+│   ├── PersistenceException.cs
+│   └── [CustomException].cs
+└── Services/          # Core business services
+    └── [Service].cs
+```
+
+### Enum Placement Rules
+
+**All common enums belong in `StageFright.Core.Enums`**. An enum is "common" if it:
+- Is used by multiple entities (e.g., `MemberStatus` used by `Member`)
+- Is referenced across features (e.g., `PaymentMethod` used by Financial Tracking and Reports)
+- Represents a foundational domain concept (e.g., `AuditAction` for audit trails)
+
+**When to create a new enum in Core**:
+1. ✅ Enum values are stable and unlikely to change per-feature
+2. ✅ Enum is part of the core business model
+3. ✅ Multiple modules need to reference the same enum values
+4. ✅ Enum appears in entity definitions
+
+**When NOT to use Core enums**:
+1. ❌ Feature-specific enums that only one module uses
+2. ❌ Temporary or UI-only enums (use strings or class constants)
+3. ❌ Volatile enums that vary by feature or configuration
+
+---
+
 ## Testing Strategy
 
 ### Unit Tests (Single Layer)

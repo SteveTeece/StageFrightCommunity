@@ -161,6 +161,7 @@ public interface ITransactionRepository
 
 **Namespace Organization**:
 - Entities: `StageFright.Core.Entities`
+- Enums: `StageFright.Core.Enums`
 - Services: `StageFright.Core.Services`
 - Repositories: `StageFright.Data.Repositories`
 - Plugin Contracts: `StageFright.Plugins.Contracts`

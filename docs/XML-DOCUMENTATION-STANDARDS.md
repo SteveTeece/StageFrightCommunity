@@ -18,6 +18,22 @@ This document establishes mandatory XML documentation (triple-slash comments: `/
 - **Code Review Clarity**: Reviewers understand intent without reading implementation details
 - **Maintenance**: Future developers understand purpose, parameters, and expected behavior
 
+## Enum Organization
+
+**Enum Placement**: All common enums (used across features or core business logic) belong in `StageFright.Core.Enums`. Enums are considered foundational, cross-cutting types like entities and should be centralized to:
+- Prevent duplication and inconsistency
+- Enable easy import across the application
+- Establish a single source of truth for all enumeration types
+
+**Current Core Enums**:
+- `MemberStatus` — Active/Inactive participation status
+- `CategoryType` — Income/Expense classification
+- `FeeType` — Annual/Attendance/Other
+- `PaymentMethod` — Cash/Check/Card/ElectronicTransfer/Other
+- `PaymentType` — Annual/Attendance/Other
+- `Theme` — Dark/Light UI theme
+- `AuditAction` — Create/Update/Delete audit actions
+
 ## Mandatory Requirements
 
 ### Scope: ALWAYS Document These
