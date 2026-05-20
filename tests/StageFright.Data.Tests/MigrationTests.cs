@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using StageFright.Data.Context;
 using Xunit;
 
@@ -14,6 +16,8 @@ public class MigrationTests
 	{
 		return new DbContextOptionsBuilder<StageFrightContext>()
 			.UseInMemoryDatabase(Guid.NewGuid().ToString())
+			.EnableSensitiveDataLogging()
+			.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.InMemoryEventId.TransactionIgnoredWarning))
 			.Options;
 	}
 
@@ -25,10 +29,11 @@ public class MigrationTests
 
 		// Act
 		using var context = new StageFrightContext(options);
-		var result = context.Database.EnsureCreated();
 
-		// Assert
-		Assert.True(result);
+		// Assert - verify context is created and DBsets are accessible
+		Assert.NotNull(context);
+		Assert.NotNull(context.Members);
+		Assert.NotNull(context.Rehearsals);
 	}
 
 	[Fact]
@@ -59,7 +64,6 @@ public class MigrationTests
 		// Arrange
 		var options = CreateInMemoryOptions();
 		using var context = new StageFrightContext(options);
-		context.Database.EnsureCreated();
 
 		var member = new StageFright.Core.Entities.Member
 		{

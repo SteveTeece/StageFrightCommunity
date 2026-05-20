@@ -46,7 +46,7 @@ public class StageFrightContext : DbContext
 			entity.Property(m => m.StreetAddress).IsRequired().HasMaxLength(512);
 			entity.Property(m => m.Phone).HasMaxLength(20);
 			entity.Property(m => m.Email).HasMaxLength(256);
-			entity.Property(m => m.Status).HasConversion(new EnumToStringConverter<MemberStatus>());
+			entity.Property(m => m.Status).IsRequired().HasMaxLength(50); // Status stored as string: "Active" or "Inactive"
 			entity.Property(m => m.IsDeleted).HasDefaultValue(false);
 			entity.Property(m => m.JoinDate).IsRequired();
 
@@ -129,7 +129,7 @@ public class StageFrightContext : DbContext
 		{
 			entity.HasKey(c => c.Id);
 			entity.Property(c => c.Name).IsRequired().HasMaxLength(256);
-			entity.Property(c => c.Type).HasConversion(new EnumToStringConverter<CategoryType>()).IsRequired();
+			entity.Property(c => c.Type).IsRequired().HasMaxLength(50); // Stored as string: "Income" or "Expense"
 			entity.Property(c => c.SortOrder).IsRequired();
 			entity.Property(c => c.IsArchived).HasDefaultValue(false);
 			entity.Property(c => c.GlAccount).HasMaxLength(10);
@@ -146,7 +146,7 @@ public class StageFrightContext : DbContext
 		{
 			entity.HasKey(f => f.Id);
 			entity.Property(f => f.MemberId).IsRequired();
-			entity.Property(f => f.FeeType).HasConversion(new EnumToStringConverter<FeeType>()).IsRequired();
+			entity.Property(f => f.FeeType).IsRequired().HasMaxLength(50); // Stored as string
 			entity.Property(f => f.Amount).IsRequired().HasColumnType("decimal(10,2)");
 			entity.Property(f => f.FeeDate).IsRequired();
 			entity.Property(f => f.DueDate).IsRequired();
@@ -167,8 +167,8 @@ public class StageFrightContext : DbContext
 			entity.HasKey(p => p.Id);
 			entity.Property(p => p.Date).IsRequired();
 			entity.Property(p => p.Amount).IsRequired().HasColumnType("decimal(10,2)");
-			entity.Property(p => p.PaymentMethod).HasConversion(new EnumToStringConverter<PaymentMethod>()).IsRequired();
-			entity.Property(p => p.PaymentType).HasConversion(new EnumToStringConverter<PaymentType>()).IsRequired();
+			entity.Property(p => p.PaymentMethod).IsRequired().HasMaxLength(50); // Stored as string
+			entity.Property(p => p.PaymentType).IsRequired().HasMaxLength(50); // Stored as string
 			entity.Property(p => p.MemberId).IsRequired();
 			entity.Property(p => p.Category).IsRequired().HasMaxLength(256);
 			entity.Property(p => p.Notes).HasMaxLength(1024);
@@ -241,7 +241,7 @@ public class StageFrightContext : DbContext
 			entity.Property(s => s.LastCommitteeResetYear).IsRequired();
 			entity.Property(s => s.MaxAgeRange).IsRequired();
 			entity.Property(s => s.MinimumMemberAge).IsRequired();
-			entity.Property(s => s.Theme).HasConversion(new EnumToStringConverter<Theme>()).IsRequired();
+			entity.Property(s => s.Theme).IsRequired().HasMaxLength(50); // Stored as string
 			entity.Property(s => s.CreatedAt).IsRequired();
 			entity.Property(s => s.ModifiedAt).IsRequired();
 		});
@@ -252,7 +252,7 @@ public class StageFrightContext : DbContext
 			entity.HasKey(at => at.Id);
 			entity.Property(at => at.EntityType).IsRequired().HasMaxLength(256);
 			entity.Property(at => at.EntityId).IsRequired();
-			entity.Property(at => at.Action).HasConversion(new EnumToStringConverter<AuditAction>()).IsRequired();
+			entity.Property(at => at.Action).IsRequired().HasMaxLength(50); // Stored as string
 			entity.Property(at => at.UserId).HasMaxLength(256);
 			entity.Property(at => at.Timestamp).IsRequired();
 			entity.Property(at => at.OldValue).HasMaxLength(4000);
@@ -266,13 +266,16 @@ public class StageFrightContext : DbContext
 	}
 }
 
-// Enums used by entities
+/// <summary>
+/// Represents a member's participation status in the organization.
+/// Status is independent from archival (IsDeleted flag) per Constitution §3.5.
+/// </summary>
 public enum MemberStatus
 {
+	/// <summary>Member is actively participating; fees apply.</summary>
 	Active,
-	Inactive,
-	OnLeave,
-	Archived
+	/// <summary>Member exists but is not participating; no fees accrue.</summary>
+	Inactive
 }
 
 public enum CategoryType
