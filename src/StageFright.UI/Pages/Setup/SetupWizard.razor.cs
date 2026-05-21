@@ -77,6 +77,11 @@ public partial class SetupWizard : ComponentBase
         setupComplete = false;
     }
 
+    private void GoToDashboard()
+    {
+        Navigation.NavigateTo("/");
+    }
+
     private string GetMonthName(int month) => month switch
     {
         1 => "January",

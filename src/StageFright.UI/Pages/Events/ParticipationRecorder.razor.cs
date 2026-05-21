@@ -97,15 +97,7 @@ public partial class ParticipationRecorder
             // Record participation for all members
             foreach (var record in ParticipationRecords.Where(p => p.Participated))
             {
-                var participation = new Participation
-                {
-                    Id = Guid.NewGuid(),
-                    EventId = EventId,
-                    MemberId = record.MemberId,
-                    RecordedAt = DateTime.UtcNow
-                };
-
-                await ParticipationRepository.RecordAsync(participation);
+                await ParticipationRepository.RecordAsync(EventId, record.MemberId);
             }
 
             // Update event with stored participation rate

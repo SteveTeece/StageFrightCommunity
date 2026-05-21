@@ -123,16 +123,8 @@ public partial class BatchAttendanceRecorder
             // Create all Attendance and Fee records in atomic transaction
             foreach (var record in AttendanceRecords.Where(a => a.Attended))
             {
-                var attendance = new Attendance
-                {
-                    Id = Guid.NewGuid(),
-                    RehearsalId = RehearsalId,
-                    MemberId = record.MemberId,
-                    RecordedAt = DateTime.UtcNow,
-                    PaidStatus = record.Paid ? "Paid" : "Unpaid"
-                };
-
-                await AttendanceRepository.RecordAsync(attendance);
+                var paidStatus = record.Paid ? "Paid" : null;
+                await AttendanceRepository.RecordAsync(RehearsalId, record.MemberId, paidStatus);
 
                 // Create Fee record if Paid
                 if (record.Paid)

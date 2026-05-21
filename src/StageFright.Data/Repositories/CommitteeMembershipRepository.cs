@@ -57,4 +57,10 @@ public class CommitteeMembershipRepository : BaseRepository<CommitteeMembership>
 			.OrderByDescending(cm => cm.Year)
 			.ToListAsync();
 	}
+
+	public async Task<CommitteeMembership?> GetByMemberAndYearAsync(Guid memberId, int year)
+	{
+		return await _dbSet
+			.FirstOrDefaultAsync(cm => cm.MemberId == memberId && cm.Year == year && !cm.IsDeleted);
+	}
 }

@@ -2,9 +2,9 @@ namespace StageFright.Maui.Services;
 
 using System;
 using System.Threading.Tasks;
-using Core.Services;
-using Entities;
-using Exceptions;
+using StageFright.Core.Services;
+using StageFright.Core.Entities;
+using StageFright.Core.Exceptions;
 
 /// <summary>Service for first-run setup wizard initialization.</summary>
 public class SetupService : ISetupService
@@ -42,80 +42,69 @@ public class SetupService : ISetupService
 			await _categoryService.CreateCategoryAsync(new Category
 			{
 				Name = "Performance",
-				Type = "Income",
-				Description = "Income from performances"
+				Type = "Income"
 			});
 
 			await _categoryService.CreateCategoryAsync(new Category
 			{
 				Name = "Fundraiser",
-				Type = "Income",
-				Description = "Income from fundraiser events"
+				Type = "Income"
 			});
 
 			await _categoryService.CreateCategoryAsync(new Category
 			{
 				Name = "Donation",
-				Type = "Income",
-				Description = "Member donations and other income"
+				Type = "Income"
 			});
 
 			// Create default categories for Expense
 			await _categoryService.CreateCategoryAsync(new Category
 			{
 				Name = "Equipment",
-				Type = "Expense",
-				Description = "Equipment purchases and maintenance"
+				Type = "Expense"
 			});
 
 			await _categoryService.CreateCategoryAsync(new Category
 			{
 				Name = "Facilities",
-				Type = "Expense",
-				Description = "Venue rental and facility costs"
+				Type = "Expense"
 			});
 
 			await _categoryService.CreateCategoryAsync(new Category
 			{
 				Name = "Personnel",
-				Type = "Expense",
-				Description = "Staff and instructor payments"
+				Type = "Expense"
 			});
 
 			// Create default event types - stored as categories
 			await _categoryService.CreateCategoryAsync(new Category
 			{
 				Name = "Performance",
-				Type = "EventType",
-				Description = "Regular performance events"
+				Type = "EventType"
 			});
 
 			await _categoryService.CreateCategoryAsync(new Category
 			{
 				Name = "Eisteddfod",
-				Type = "EventType",
-				Description = "Eisteddfod competition events"
+				Type = "EventType"
 			});
 
 			await _categoryService.CreateCategoryAsync(new Category
 			{
 				Name = "Fundraiser",
-				Type = "EventType",
-				Description = "Fundraiser events"
+				Type = "EventType"
 			});
 
 			await _categoryService.CreateCategoryAsync(new Category
 			{
 				Name = "Promotional",
-				Type = "EventType",
-				Description = "Promotional events"
+				Type = "EventType"
 			});
 
 			await _categoryService.CreateCategoryAsync(new Category
 			{
 				Name = "AGM",
-				Type = "EventType",
-				Description = "Annual General Meeting"
+				Type = "EventType"
 			});
 		}
 		catch (ValidationException)

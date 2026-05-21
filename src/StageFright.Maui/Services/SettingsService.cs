@@ -1,7 +1,8 @@
 namespace StageFright.Maui.Services;
 
-using Entities;
-using Exceptions;
+using StageFright.Core.Entities;
+using StageFright.Core.Exceptions;
+using StageFright.Core.Services;
 using StageFright.Data.Repositories;
 using System;
 using System.Linq;
@@ -40,9 +41,6 @@ public class SettingsService : ISettingsService
 
 		// Preserve immutable fields
 		settings.CreatedAt = existing.CreatedAt;
-		settings.IsDeleted = existing.IsDeleted;
-		settings.DeletedAt = existing.DeletedAt;
-		settings.DeletedBy = existing.DeletedBy;
 
 		await _settingsRepository.UpdateAsync(settings);
 	}
@@ -78,7 +76,7 @@ public class SettingsService : ISettingsService
 			AttendanceFee = attendanceFee,
 			RenewalMonth = renewalMonth,
 			CreatedAt = DateTime.UtcNow,
-			IsDeleted = false
+			ModifiedAt = DateTime.UtcNow
 		};
 
 		await _settingsRepository.CreateAsync(settings);

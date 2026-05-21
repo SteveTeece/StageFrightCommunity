@@ -1,7 +1,8 @@
 namespace StageFright.Maui.Services;
 
-using Entities;
-using Exceptions;
+using StageFright.Core.Entities;
+using StageFright.Core.Exceptions;
+using StageFright.Core.Services;
 using StageFright.Data.Repositories;
 using StageFright.Data.Context;
 using System;

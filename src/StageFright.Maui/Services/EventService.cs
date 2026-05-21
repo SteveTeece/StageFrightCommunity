@@ -1,7 +1,8 @@
 namespace StageFright.Maui.Services;
 
-using Entities;
-using Exceptions;
+using StageFright.Core.Entities;
+using StageFright.Core.Exceptions;
+using StageFright.Core.Services;
 using StageFright.Data.Repositories;
 using StageFright.Data.Context;
 using System;
@@ -41,7 +42,6 @@ public class EventService : IEventService
 		var @event = new Event
 		{
 			Date = date,
-			Time = new TimeSpan(19, 0, 0), // Default to 7 PM
 			EventType = eventType,
 			Notes = notes ?? string.Empty,
 			IsDeleted = false

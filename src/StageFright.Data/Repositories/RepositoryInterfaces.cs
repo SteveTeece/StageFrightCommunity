@@ -146,6 +146,9 @@ public interface ICommitteeMembershipRepository : IRepository<CommitteeMembershi
 	/// <summary>Gets committee memberships for a specific year.</summary>
 	Task<IEnumerable<CommitteeMembership>> GetByYearAsync(int year);
 
+	/// <summary>Gets committee membership for a specific member and year.</summary>
+	Task<CommitteeMembership?> GetByMemberAndYearAsync(Guid memberId, int year);
+
 	/// <summary>Records a committee membership.</summary>
 	Task RecordAsync(Guid memberId, int year, string position);
 

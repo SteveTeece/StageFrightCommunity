@@ -30,12 +30,12 @@
 
         <div class="form-group">
             <label for="joinDate">Join Date (required):</label>
-            <input id="joinDate" type="date" class="form-control" @bind="JoinDateString" required />
+            <input id="joinDate" type="date" class="form-control" value="@JoinDateString" @onchange="@((ChangeEventArgs e) => JoinDateString = e?.Value?.ToString() ?? "")" required />
         </div>
 
         <div class="form-group">
             <label for="dob">Date of Birth (optional):</label>
-            <input id="dob" type="date" class="form-control" @bind="DobString" />
+            <input id="dob" type="date" class="form-control" value="@DobString" @onchange="@((ChangeEventArgs e) => DobString = e?.Value?.ToString() ?? "")" />
         </div>
 
         <div class="form-buttons">

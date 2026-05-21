@@ -1,7 +1,8 @@
 namespace StageFright.Maui.Services;
 
-using Entities;
-using Exceptions;
+using StageFright.Core.Entities;
+using StageFright.Core.Exceptions;
+using StageFright.Core.Services;
 using StageFright.Data.Repositories;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ public class CategoryService : ICategoryService
 			throw new ValidationException("Category type is required.");
 
 		// Assign GL account before persisting
-		category.GLAccount = _glAccountService.AssignGLAccount(category.Type);
+		category.GlAccount = _glAccountService.AssignGLAccount(category.Type);
 		category.IsDeleted = false;
 
 		await _categoryRepository.CreateAsync(category);
@@ -47,7 +48,7 @@ public class CategoryService : ICategoryService
 		if (string.IsNullOrWhiteSpace(type))
 			return await _categoryRepository.GetAllAsync();
 
-		return await _categoryRepository.GetByTypeAsync(type);
+		return await _categoryRepository.FindAsync(c => c.Type == type);
 	}
 
 	public async Task UpdateCategoryAsync(Category category)
@@ -60,8 +61,7 @@ public class CategoryService : ICategoryService
 			throw new EntityNotFoundException($"Category with ID {category.Id} not found.");
 
 		// Preserve immutable fields
-		category.GLAccount = existing.GLAccount;
-		category.CreatedAt = existing.CreatedAt;
+		category.GlAccount = existing.GlAccount;
 		category.IsDeleted = existing.IsDeleted;
 		category.DeletedAt = existing.DeletedAt;
 		category.DeletedBy = existing.DeletedBy;

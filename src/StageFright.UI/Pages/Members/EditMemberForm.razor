@@ -36,7 +36,7 @@
 
             <div class="form-group">
                 <label for="dob">Date of Birth (optional):</label>
-                <input id="dob" type="date" class="form-control" @bind="DobString" />
+                <input id="dob" type="date" class="form-control" value="@DobString" @onchange="@((ChangeEventArgs e) => DobString = e?.Value?.ToString() ?? "")" />
             </div>
 
             <div class="form-group">

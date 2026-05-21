@@ -9,25 +9,8 @@ public partial class BlazorWebViewHost : ContentView
     public BlazorWebViewHost()
     {
         InitializeComponent();
-
-        var blazorWebView = new BlazorWebView();
-        blazorWebView.HostPage = "wwwroot/index.html";
-
-        // Register RootComponents for Blazor
-        var rootComponents = new RootComponentMapping()
-        {
-            Selector = "#app",
-            ComponentType = typeof(App)
-        };
-
-        blazorWebView.RootComponents.Add(rootComponents);
-
-        // Setup services
-        var services = Application.Current?.Handler?.MauiContext?.Services ??
-                      throw new InvalidOperationException("Cannot resolve services");
-
-        blazorWebView.Services = services;
-
-        Content = blazorWebView;
+        
+        // Blazor components are configured in MauiProgram.cs
+        // This host provides the container for the BlazorWebView
     }
 }

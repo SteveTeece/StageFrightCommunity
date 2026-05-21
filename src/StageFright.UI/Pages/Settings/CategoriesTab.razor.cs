@@ -31,8 +31,8 @@ public partial class CategoriesTab
             IsLoading = true;
             ErrorMessage = null;
 
-            var incomeCategories = await CategoryRepository.GetAllAsync(c => c.Type == "Income");
-            var expenseCategories = await CategoryRepository.GetAllAsync(c => c.Type == "Expense");
+            var incomeCategories = await CategoryRepository.GetIncomeCategoriesAsync();
+            var expenseCategories = await CategoryRepository.GetExpenseCategoriesAsync();
 
             IncomeCategories = incomeCategories.ToList();
             ExpenseCategories = expenseCategories.ToList();

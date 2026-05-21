@@ -1,7 +1,8 @@
 namespace StageFright.Maui.Services;
 
-using Entities;
-using Exceptions;
+using StageFright.Core.Entities;
+using StageFright.Core.Exceptions;
+using StageFright.Core.Services;
 using StageFright.Data.Repositories;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ public class CommitteeMembershipService : ICommitteeMembershipService
 		if (member == null)
 			throw new EntityNotFoundException($"Member with ID {memberId} not found.");
 
-		return await _committeeMembershipRepository.GetByMemberIdAsync(memberId);
+		return await _committeeMembershipRepository.GetByMemberAsync(memberId);
 	}
 
 	public async Task<IEnumerable<CommitteeMembership>> GetCommitteeForYearAsync(int year)
@@ -35,7 +36,7 @@ public class CommitteeMembershipService : ICommitteeMembershipService
 		return await _committeeMembershipRepository.GetByYearAsync(year);
 	}
 
-	public async Task<CommitteeMembership> RecordCommitteeMembershipAsync(Guid memberId, int year, string position)
+	public async Task RecordCommitteeMembershipAsync(Guid memberId, int year, string position)
 	{
 		var member = await _memberRepository.GetByIdAsync(memberId);
 		if (member == null)
@@ -61,7 +62,6 @@ public class CommitteeMembershipService : ICommitteeMembershipService
 		};
 
 		await _committeeMembershipRepository.CreateAsync(membership);
-		return membership;
 	}
 
 	public async Task ResetCommitteeYearAsync(int year)
@@ -71,7 +71,6 @@ public class CommitteeMembershipService : ICommitteeMembershipService
 		foreach (var membership in memberships)
 		{
 			membership.IsDeleted = true;
-			membership.DeletedAt = DateTime.UtcNow;
 			await _committeeMembershipRepository.UpdateAsync(membership);
 		}
 	}
