@@ -6,6 +6,7 @@ using StageFright.Maui;
 using StageFright.Maui.Services;
 using StageFright.Data.Context;
 using StageFright.Data.Repositories;
+using StageFright.Core.Services;
 
 namespace StageFright.Maui;
 
@@ -80,7 +81,9 @@ public static class MauiProgram
 			builder.Services.AddScoped<IAuditTrailRepository, AuditTrailRepository>();
 
 			// Register other services here as they are created
-			// (will be populated in future tasks)
+			builder.Services.AddScoped<AgeCalculationService>();
+			builder.Services.AddScoped<MemberValidationService>();
+			builder.Services.AddScoped<GLAccountAssignmentService>();
 
 #if DEBUG
 			builder.Logging.AddDebug();

@@ -1,0 +1,192 @@
+@page "/dashboard"
+@layout MainLayout
+@inject IMemberRepository MemberRepository
+@inject IRehearsalRepository RehearsalRepository
+@inject IEventRepository EventRepository
+@inject ISettingsRepository SettingsRepository
+@using StageFright.Data.Repositories
+@using StageFright.Core.Entities
+
+<div class="dashboard">
+    <h1>Dashboard</h1>
+
+    @if (IsLoading)
+    {
+        <div class="loading">Loading dashboard...</div>
+    }
+    else if (ErrorMessage != null)
+    {
+        <div class="error-message">@ErrorMessage</div>
+    }
+    else
+    {
+        <div class="dashboard-tiles">
+            <!-- Members Tile -->
+            <div class="dashboard-tile">
+                <h3>Members</h3>
+                <div class="tile-content">
+                    <div class="stat">
+                        <span class="label">Active:</span>
+                        <span class="value">@ActiveMembersCount</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Inactive:</span>
+                        <span class="value">@InactiveMembersCount</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rehearsals Tile -->
+            <div class="dashboard-tile">
+                <h3>Rehearsals</h3>
+                <div class="tile-content">
+                    <div class="stat">
+                        <span class="label">Most Recent:</span>
+                        <span class="value">@(MostRecentRehearsal?.Date.ToShortDateString() ?? "No rehearsals")</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Attendance Rate:</span>
+                        <span class="value">@(MostRecentRehearsal?.StoredAttendanceRate.ToString("F1") ?? "N/A")%</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Total Recorded:</span>
+                        <span class="value">@TotalRehearsalsCount</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Tile -->
+            <div class="dashboard-tile">
+                <h3>Events</h3>
+                <div class="tile-content">
+                    <div class="stat">
+                        <span class="label">Most Recent:</span>
+                        <span class="value">@(MostRecentEvent?.Date.ToShortDateString() ?? "No events")</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Participation Rate:</span>
+                        <span class="value">@(MostRecentEvent?.StoredParticipationRate.ToString("F1") ?? "N/A")%</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Total Recorded:</span>
+                        <span class="value">@TotalEventsCount</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Finance Tile -->
+            <div class="dashboard-tile finance-tile">
+                <h3>Finance</h3>
+                <div class="tile-content">
+                    <div class="stat">
+                        <span class="label">Outstanding Balance:</span>
+                        <span class="value @(OutstandingBalance >= 0 ? "positive" : "negative")">
+                            @OutstandingBalance.ToString("C")
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool IsLoading = true;
+    private string? ErrorMessage = null;
+
+    private int ActiveMembersCount = 0;
+    private int InactiveMembersCount = 0;
+    private Rehearsal? MostRecentRehearsal = null;
+    private int TotalRehearsalsCount = 0;
+    private Event? MostRecentEvent = null;
+    private int TotalEventsCount = 0;
+    private decimal OutstandingBalance = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            ErrorMessage = null;
+
+            // Load data in parallel where possible
+            var tasks = new List<Task>
+            {
+                LoadMembersAsync(),
+                LoadRehearsalsAsync(),
+                LoadEventsAsync(),
+                LoadFinanceAsync()
+            };
+
+            await Task.WhenAll(tasks);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error loading dashboard: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Dashboard error: {ex}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task LoadMembersAsync()
+    {
+        try
+        {
+            var activeMembers = await MemberRepository.GetActiveMembersAsync();
+            ActiveMembersCount = activeMembers.Count();
+            
+            var inactiveMembers = await MemberRepository.GetInactiveMembersAsync();
+            InactiveMembersCount = inactiveMembers.Count();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading members: {ex}");
+        }
+    }
+
+    private async Task LoadRehearsalsAsync()
+    {
+        try
+        {
+            var allRehearsals = await RehearsalRepository.GetAllAsync();
+            TotalRehearsalsCount = allRehearsals.Count();
+            
+            MostRecentRehearsal = await RehearsalRepository.GetMostRecentAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading rehearsals: {ex}");
+        }
+    }
+
+    private async Task LoadEventsAsync()
+    {
+        try
+        {
+            var allEvents = await EventRepository.GetAllAsync();
+            TotalEventsCount = allEvents.Count();
+            
+            MostRecentEvent = await EventRepository.GetMostRecentAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading events: {ex}");
+        }
+    }
+
+    private async Task LoadFinanceAsync()
+    {
+        try
+        {
+            // TODO: Implement finance calculations
+            OutstandingBalance = 0;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading finance: {ex}");
+        }
+    }
+}

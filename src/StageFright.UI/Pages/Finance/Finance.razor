@@ -1,0 +1,46 @@
+@page "/finance"
+@layout MainLayout
+
+<div class="finance-module">
+    <div class="module-header">
+        <h1>Finance</h1>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-button @(ActiveTab == "payments" ? "active" : "")" @onclick='() => ActiveTab = "payments"'>
+            Payments
+        </button>
+        <button class="tab-button @(ActiveTab == "balances" ? "active" : "")" @onclick='() => ActiveTab = "balances"'>
+            Member Balances
+        </button>
+        <button class="tab-button @(ActiveTab == "categories" ? "active" : "")" @onclick='() => ActiveTab = "categories"'>
+            Categories
+        </button>
+        <button class="tab-button @(ActiveTab == "annualfee" ? "active" : "")" @onclick='() => ActiveTab = "annualfee"'>
+            Annual Fee Application
+        </button>
+    </div>
+
+    <div class="tab-content">
+        @if (ActiveTab == "payments")
+        {
+            <div><p>Payment Recording - Coming Soon</p></div>
+        }
+        else if (ActiveTab == "balances")
+        {
+            <div><p>Member Balances - Coming Soon</p></div>
+        }
+        else if (ActiveTab == "categories")
+        {
+            <div><p>Category Management - Coming Soon</p></div>
+        }
+        else if (ActiveTab == "annualfee")
+        {
+            <div><p>Annual Fee Application - Coming Soon</p></div>
+        }
+    </div>
+</div>
+
+@code {
+    private string ActiveTab = "payments";
+}

@@ -1,0 +1,54 @@
+@page "/settings"
+@layout MainLayout
+@inject ISettingsRepository SettingsRepository
+@using StageFright.Data.Repositories
+@using StageFright.Core.Entities
+
+<div class="settings-module">
+    <h1>Settings</h1>
+
+    <div class="tabs">
+        <button class="tab-button @(ActiveTab == "general" ? "active" : "")" @onclick='() => ActiveTab = "general"'>
+            General
+        </button>
+        <button class="tab-button @(ActiveTab == "categories" ? "active" : "")" @onclick='() => ActiveTab = "categories"'>
+            Categories
+        </button>
+        <button class="tab-button @(ActiveTab == "eventtypes" ? "active" : "")" @onclick='() => ActiveTab = "eventtypes"'>
+            Event Types
+        </button>
+        <button class="tab-button @(ActiveTab == "backup" ? "active" : "")" @onclick='() => ActiveTab = "backup"'>
+            Backup
+        </button>
+        <button class="tab-button @(ActiveTab == "restore" ? "active" : "")" @onclick='() => ActiveTab = "restore"'>
+            Restore
+        </button>
+    </div>
+
+    <div class="tab-content">
+        @if (ActiveTab == "general")
+        {
+            <GeneralSettingsTab />
+        }
+        else if (ActiveTab == "categories")
+        {
+            <CategoriesTab />
+        }
+        else if (ActiveTab == "eventtypes")
+        {
+            <EventTypesTab />
+        }
+        else if (ActiveTab == "backup")
+        {
+            <BackupTab />
+        }
+        else if (ActiveTab == "restore")
+        {
+            <RestoreTab />
+        }
+    </div>
+</div>
+
+@code {
+    private string ActiveTab = "general";
+}

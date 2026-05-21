@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StageFright.Core\StageFright.Core.csproj" />
+    <ProjectReference Include="..\StageFright.Data\StageFright.Data.csproj" />
     <ProjectReference Include="..\StageFright.Plugins\StageFright.Plugins.csproj" />
   </ItemGroup>
 

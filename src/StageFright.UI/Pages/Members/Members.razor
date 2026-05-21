@@ -1,0 +1,197 @@
+@page "/members"
+@layout MainLayout
+@inject IMemberRepository MemberRepository
+@using StageFright.Data.Repositories
+@using StageFright.Core.Entities
+
+<div class="members-module">
+    <div class="module-header">
+        <h1>Members</h1>
+        <button class="btn btn-primary" @onclick="ShowAddForm">Add Member</button>
+    </div>
+
+    @if (ShowForm)
+    {
+        <AddMemberForm OnSaved="MemberAdded" OnCancelled="HideForm" />
+    }
+
+    @if (IsLoading)
+    {
+        <div class="loading">Loading members...</div>
+    }
+    else if (ErrorMessage != null)
+    {
+        <div class="error-message">@ErrorMessage</div>
+    }
+    else
+    {
+        <div class="members-filters">
+            <button class="filter-btn @(StatusFilter == "Active" ? "active" : "")" @onclick='() => SetStatusFilter("Active")'>
+                Active (@ActiveMembers.Count)
+            </button>
+            <button class="filter-btn @(StatusFilter == "Inactive" ? "active" : "")" @onclick='() => SetStatusFilter("Inactive")'>
+                Inactive (@InactiveMembers.Count)
+            </button>
+        </div>
+
+        <div class="members-list">
+            @if (DisplayedMembers.Count == 0)
+            {
+                <p>No members found.</p>
+            }
+            else
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Join Date</th>
+                            <th>Age</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var member in DisplayedMembers)
+                        {
+                            <tr>
+                                <td>@member.Name</td>
+                                <td>@member.Email</td>
+                                <td>@member.Phone</td>
+                                <td>@member.JoinDate.ToShortDateString()</td>
+                                <td>@GetMemberAge(member)</td>
+                                <td>@member.Status</td>
+                                <td>
+                                    <button class="btn btn-sm btn-secondary" @onclick="() => EditMember(member)">Edit</button>
+                                    @if (member.Status == "Active")
+                                    {
+                                        <button class="btn btn-sm btn-warning" @onclick="() => InactivateMember(member.Id)">Inactivate</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-success" @onclick="() => ActivateMember(member.Id)">Activate</button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<Member> ActiveMembers = new();
+    private List<Member> InactiveMembers = new();
+    private bool IsLoading = true;
+    private bool ShowForm = false;
+    private string StatusFilter = "Active";
+    private string? ErrorMessage = null;
+
+    private List<Member> DisplayedMembers
+    {
+        get
+        {
+            return StatusFilter == "Active" ? ActiveMembers : InactiveMembers;
+        }
+    }
+
+    private AgeCalculationService AgeService = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMembers();
+    }
+
+    private async Task LoadMembers()
+    {
+        try
+        {
+            IsLoading = true;
+            ErrorMessage = null;
+
+            var active = await MemberRepository.GetActiveMembersAsync();
+            var inactive = await MemberRepository.GetInactiveMembersAsync();
+
+            ActiveMembers = active.ToList();
+            InactiveMembers = inactive.ToList();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error loading members: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Error: {ex}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void ShowAddForm() => ShowForm = true;
+
+    private void HideForm()
+    {
+        ShowForm = false;
+        StateHasChanged();
+    }
+
+    private async Task MemberAdded()
+    {
+        HideForm();
+        await LoadMembers();
+    }
+
+    private void EditMember(Member member)
+    {
+        // TODO: Show edit form
+    }
+
+    private async Task InactivateMember(Guid memberId)
+    {
+        try
+        {
+            await MemberRepository.SoftDeleteAsync(memberId, "User");
+            await LoadMembers();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error inactivating member: {ex.Message}";
+        }
+    }
+
+    private async Task ActivateMember(Guid memberId)
+    {
+        try
+        {
+            await MemberRepository.RestoreAsync(memberId);
+            await LoadMembers();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error activating member: {ex.Message}";
+        }
+    }
+
+    private void SetStatusFilter(string status)
+    {
+        StatusFilter = status;
+    }
+
+    private string GetMemberAge(Member member)
+    {
+        if (!member.DateOfBirth.HasValue)
+            return "N/A";
+
+        try
+        {
+            return AgeService.CalculateAge(member.DateOfBirth.Value).ToString();
+        }
+        catch
+        {
+            return "N/A";
+        }
+    }
+}

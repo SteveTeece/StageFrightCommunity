@@ -1,0 +1,126 @@
+@page "/rehearsals"
+@layout MainLayout
+@inject IRehearsalRepository RehearsalRepository
+@inject IMemberRepository MemberRepository
+@using StageFright.Data.Repositories
+@using StageFright.Core.Entities
+
+<div class="rehearsals-module">
+    <div class="module-header">
+        <h1>Rehearsals</h1>
+        <button class="btn btn-primary" @onclick="OpenScheduleForm">Schedule Rehearsal</button>
+    </div>
+
+    @if (ShowScheduleForm)
+    {
+        <ScheduleRehearsalForm OnSaved="RehearsalScheduled" OnCancelled="HideScheduleForm" />
+    }
+
+    @if (ShowAttendanceRecorder)
+    {
+        <BatchAttendanceRecorder RehearsalId="SelectedRehearsalId" OnSaved="AttendanceRecorded" OnCancelled="HideAttendanceRecorder" />
+    }
+
+    @if (IsLoading)
+    {
+        <div class="loading">Loading rehearsals...</div>
+    }
+    else if (ErrorMessage != null)
+    {
+        <div class="error-message">@ErrorMessage</div>
+    }
+    else
+    {
+        <div class="rehearsals-list">
+            <h2>Scheduled Rehearsals</h2>
+            @if (RehearsalList.Count == 0)
+            {
+                <p>No rehearsals scheduled yet.</p>
+            }
+            else
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Attendance Rate</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rehearsal in RehearsalList)
+                        {
+                            <tr>
+                                <td>@rehearsal.Date.ToShortDateString()</td>
+                                <td>@rehearsal.Time.ToString(@"hh\:mm")</td>
+                                <td>@(rehearsal.StoredAttendanceRate > 0 ? rehearsal.StoredAttendanceRate.ToString("F1") + "%" : "Not recorded")</td>
+                                <td>@rehearsal.Notes</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" @onclick="() => RecordAttendance(rehearsal.Id)">Record Attendance</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<Rehearsal> RehearsalList = new();
+    private bool IsLoading = true;
+    private bool ShowScheduleForm = false;
+    private bool ShowAttendanceRecorder = false;
+    private Guid SelectedRehearsalId = Guid.Empty;
+    private string? ErrorMessage = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRehearsals();
+    }
+
+    private async Task LoadRehearsals()
+    {
+        try
+        {
+            IsLoading = true;
+            ErrorMessage = null;
+
+            var rehearsals = await RehearsalRepository.GetAllAsync();
+            RehearsalList = rehearsals.OrderByDescending(r => r.Date).ToList();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error loading rehearsals: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void OpenScheduleForm() => ShowScheduleForm = true;
+    private void HideScheduleForm() => ShowScheduleForm = false;
+    private void HideAttendanceRecorder() => ShowAttendanceRecorder = false;
+
+    private async Task RehearsalScheduled()
+    {
+        HideScheduleForm();
+        await LoadRehearsals();
+    }
+
+    private async Task AttendanceRecorded()
+    {
+        HideAttendanceRecorder();
+        await LoadRehearsals();
+    }
+
+    private void RecordAttendance(Guid rehearsalId)
+    {
+        SelectedRehearsalId = rehearsalId;
+        ShowAttendanceRecorder = true;
+    }
+}

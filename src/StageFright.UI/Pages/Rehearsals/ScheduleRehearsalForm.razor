@@ -1,0 +1,87 @@
+@inject IRehearsalRepository RehearsalRepository
+@using StageFright.Data.Repositories
+@using StageFright.Core.Entities
+
+<div class="schedule-rehearsal-form">
+    @if (ErrorMessage != null)
+    {
+        <div class="error-message">@ErrorMessage</div>
+    }
+
+    <form @onsubmit="ScheduleRehearsal">
+        <div class="form-group">
+            <label for="date">Date (required):</label>
+            <input id="date" type="date" class="form-control" @bind="DateString" required />
+        </div>
+
+        <div class="form-group">
+            <label for="time">Time (required):</label>
+            <input id="time" type="time" class="form-control" @bind="TimeString" required />
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Notes (optional):</label>
+            <textarea id="notes" class="form-control" @bind="Notes" rows="3"></textarea>
+        </div>
+
+        <div class="form-buttons">
+            <button type="submit" class="btn btn-primary">Schedule Rehearsal</button>
+            <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+        </div>
+    </form>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback OnSaved { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancelled { get; set; }
+
+    private string DateString = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
+    private string TimeString = "19:00";
+    private string Notes = "";
+    private string? ErrorMessage = null;
+
+    private async Task ScheduleRehearsal()
+    {
+        try
+        {
+            ErrorMessage = null;
+
+            if (!DateTime.TryParse(DateString, out var date))
+            {
+                ErrorMessage = "Invalid date.";
+                return;
+            }
+
+            if (!TimeSpan.TryParse(TimeString, out var time))
+            {
+                ErrorMessage = "Invalid time.";
+                return;
+            }
+
+            var rehearsal = new Rehearsal
+            {
+                Id = Guid.NewGuid(),
+                Date = date,
+                Time = time,
+                Notes = Notes,
+                StoredAttendanceRate = 0
+            };
+
+            await RehearsalRepository.CreateAsync(rehearsal);
+            await OnSaved.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error scheduling rehearsal: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Error: {ex}");
+        }
+    }
+
+    private async Task Cancel()
+    {
+        await OnCancelled.InvokeAsync();
+    }
+}

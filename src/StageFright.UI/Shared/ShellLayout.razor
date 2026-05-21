@@ -1,0 +1,80 @@
+@implements IAsyncDisposable
+@inject NavigationManager Navigation
+@inject ISettingsRepository SettingsRepository
+@using StageFright.Data.Repositories
+@using StageFright.Core.Entities
+
+<div class="shell-container">
+    <!-- Dark Brand Strip -->
+    <div class="shell-brand-strip">
+        <div class="brand-content">
+            <h1 class="brand-title">StageFright</h1>
+            <span class="org-name">@(Settings?.OrganizationName ?? "Community")</span>
+        </div>
+    </div>
+
+    <!-- White Navigation Bar -->
+    <nav class="shell-navbar">
+        <div class="nav-left">
+            <span class="app-title">StageFright Community</span>
+        </div>
+        <div class="nav-center">
+            <NavLink class="nav-link" href="dashboard" Match="NavLinkMatch.Prefix">
+                Dashboard
+            </NavLink>
+            <NavLink class="nav-link" href="members" Match="NavLinkMatch.Prefix">
+                Members
+            </NavLink>
+            <NavLink class="nav-link" href="rehearsals" Match="NavLinkMatch.Prefix">
+                Rehearsals
+            </NavLink>
+            <NavLink class="nav-link" href="events" Match="NavLinkMatch.Prefix">
+                Events
+            </NavLink>
+            <NavLink class="nav-link" href="finance" Match="NavLinkMatch.Prefix">
+                Finance
+            </NavLink>
+            <NavLink class="nav-link" href="reports" Match="NavLinkMatch.Prefix">
+                Reports
+            </NavLink>
+        </div>
+        <div class="nav-right">
+            <ThemeToggle />
+            <NavLink class="nav-link" href="settings" Match="NavLinkMatch.Prefix">
+                Settings
+            </NavLink>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="shell-content">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private Settings? Settings { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Settings = await SettingsRepository.GetSettingsAsync();
+        }
+        catch (Exception ex)
+        {
+            // Log error, use defaults
+            System.Diagnostics.Debug.WriteLine($"Error loading settings: {ex}");
+            Settings = new Settings { OrganizationName = "Community" };
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        // Cleanup if needed
+        await ValueTask.CompletedTask;
+    }
+}

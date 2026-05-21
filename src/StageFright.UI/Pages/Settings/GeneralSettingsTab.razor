@@ -1,0 +1,109 @@
+@inject ISettingsRepository SettingsRepository
+@using StageFright.Data.Repositories
+@using StageFright.Core.Entities
+
+<div class="general-settings-tab">
+    @if (IsLoading)
+    {
+        <div class="loading">Loading settings...</div>
+    }
+    else if (ErrorMessage != null)
+    {
+        <div class="error-message">@ErrorMessage</div>
+    }
+    else if (Settings != null)
+    {
+        <form @onsubmit="SaveSettings">
+            <div class="form-group">
+                <label for="orgName">Organization Name:</label>
+                <input id="orgName" type="text" class="form-control" @bind="Settings.OrganizationName" required />
+            </div>
+
+            <div class="form-group">
+                <label for="annualFee">Annual Fee:</label>
+                <input id="annualFee" type="number" step="0.01" class="form-control" @bind="Settings.AnnualFee" required />
+            </div>
+
+            <div class="form-group">
+                <label for="attendanceFee">Attendance Fee:</label>
+                <input id="attendanceFee" type="number" step="0.01" class="form-control" @bind="Settings.AttendanceFee" required />
+            </div>
+
+            <div class="form-group">
+                <label for="renewalMonth">Renewal Month (1-12):</label>
+                <input id="renewalMonth" type="number" min="1" max="12" class="form-control" @bind="Settings.RenewalMonth" required />
+            </div>
+
+            <div class="form-group">
+                <label for="commiteeRenewal">Committee Renewal Month (1-12):</label>
+                <input id="commiteeRenewal" type="number" min="1" max="12" class="form-control" @bind="Settings.CommitteeRenewalMonth" required />
+            </div>
+
+            <div class="form-group">
+                <label for="maxAge">Max Age Range:</label>
+                <input id="maxAge" type="number" min="1" class="form-control" @bind="Settings.MaxAgeRange" required />
+            </div>
+
+            <div class="form-group">
+                <label for="minAge">Minimum Member Age:</label>
+                <input id="minAge" type="number" min="0" class="form-control" @bind="Settings.MinimumMemberAge" required />
+            </div>
+
+            <div class="form-group">
+                <label for="theme">Theme:</label>
+                <select id="theme" class="form-control" @bind="Settings.Theme">
+                    <option value="Light">Light</option>
+                    <option value="Dark">Dark</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Settings</button>
+            @if (SuccessMessage != null)
+            {
+                <div class="success-message">@SuccessMessage</div>
+            }
+        </form>
+    }
+</div>
+
+@code {
+    private Settings? Settings { get; set; }
+    private bool IsLoading = true;
+    private string? ErrorMessage = null;
+    private string? SuccessMessage = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Settings = await SettingsRepository.GetSettingsAsync();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error loading settings: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Error: {ex}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task SaveSettings()
+    {
+        if (Settings == null) return;
+
+        try
+        {
+            SuccessMessage = null;
+            ErrorMessage = null;
+            await SettingsRepository.UpdateSettingsAsync(Settings);
+            SuccessMessage = "Settings saved successfully.";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error saving settings: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Error: {ex}");
+        }
+    }
+}

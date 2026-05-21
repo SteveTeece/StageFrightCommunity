@@ -1,0 +1,126 @@
+@page "/events"
+@layout MainLayout
+@inject IEventRepository EventRepository
+@inject IMemberRepository MemberRepository
+@using StageFright.Data.Repositories
+@using StageFright.Core.Entities
+
+<div class="events-module">
+    <div class="module-header">
+        <h1>Events</h1>
+        <button class="btn btn-primary" @onclick="OpenScheduleForm">Schedule Event</button>
+    </div>
+
+    @if (ShowScheduleForm)
+    {
+        <ScheduleEventForm OnSaved="EventScheduled" OnCancelled="HideScheduleForm" />
+    }
+
+    @if (ShowParticipationRecorder)
+    {
+        <ParticipationRecorder EventId="SelectedEventId" OnSaved="ParticipationRecorded" OnCancelled="HideParticipationRecorder" />
+    }
+
+    @if (IsLoading)
+    {
+        <div class="loading">Loading events...</div>
+    }
+    else if (ErrorMessage != null)
+    {
+        <div class="error-message">@ErrorMessage</div>
+    }
+    else
+    {
+        <div class="events-list">
+            <h2>Scheduled Events</h2>
+            @if (EventList.Count == 0)
+            {
+                <p>No events scheduled yet.</p>
+            }
+            else
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Event Type</th>
+                            <th>Participation Rate</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var evt in EventList)
+                        {
+                            <tr>
+                                <td>@evt.Date.ToShortDateString()</td>
+                                <td>@evt.EventType</td>
+                                <td>@(evt.StoredParticipationRate > 0 ? evt.StoredParticipationRate.ToString("F1") + "%" : "Not recorded")</td>
+                                <td>@evt.Notes</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" @onclick="() => RecordParticipation(evt.Id)">Record Participation</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<Event> EventList = new();
+    private bool IsLoading = true;
+    private bool ShowScheduleForm = false;
+    private bool ShowParticipationRecorder = false;
+    private Guid SelectedEventId = Guid.Empty;
+    private string? ErrorMessage = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEvents();
+    }
+
+    private async Task LoadEvents()
+    {
+        try
+        {
+            IsLoading = true;
+            ErrorMessage = null;
+
+            var events = await EventRepository.GetAllAsync();
+            EventList = events.OrderByDescending(e => e.Date).ToList();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error loading events: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void OpenScheduleForm() => ShowScheduleForm = true;
+    private void HideScheduleForm() => ShowScheduleForm = false;
+    private void HideParticipationRecorder() => ShowParticipationRecorder = false;
+
+    private async Task EventScheduled()
+    {
+        HideScheduleForm();
+        await LoadEvents();
+    }
+
+    private async Task ParticipationRecorded()
+    {
+        HideParticipationRecorder();
+        await LoadEvents();
+    }
+
+    private void RecordParticipation(Guid eventId)
+    {
+        SelectedEventId = eventId;
+        ShowParticipationRecorder = true;
+    }
+}

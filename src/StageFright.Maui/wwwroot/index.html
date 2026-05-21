@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StageFright Community</title>
+    <base href="/" />
+    <link href="_framework/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="styles/styles.css" rel="stylesheet" />
+    <style>
+        html, body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        code {
+            color: #c5192d;
+        }
+
+        .btn:focus, .btn:active,
+        button:focus, button:active {
+            outline: none;
+        }
+
+        .loading-progress {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            margin: -50px 0 0 -50px;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid var(--primary-color);
+            animation: spin 1s linear infinite;
+            z-index: 9999;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-progress-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, 50%);
+            text-align: center;
+            z-index: 10000;
+        }
+
+        #blazor-error-ui {
+            background: lightyellow;
+            bottom: 0;
+            box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+            display: none;
+            left: 0;
+            padding: 6px 12px;
+            position: fixed;
+            right: 0;
+            z-index: 1000;
+        }
+
+        #blazor-error-ui .dismiss {
+            cursor: pointer;
+            cursor: hand;
+            font-weight: bold;
+            float: right;
+            color: #4466cc;
+            border-radius: 4px;
+            margin: 0 5px 5px 0;
+        }
+
+        #blazor-error-ui .dismiss:over {
+            color: #1d3dd8;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40" cx="50" cy="50"></circle>
+        </svg>
+        <div class="loading-progress-text">Loading...</div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.web.js"></script>
+    <script>
+        document.querySelector('#blazor-error-ui .dismiss').addEventListener('click', function () {
+            this.closest('#blazor-error-ui').style.display = 'none';
+        });
+
+        window.addEventListener('beforeunload', function () {
+            const token = document.querySelector('meta[name="csrf-token"]');
+        });
+
+        // Apply theme on load
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.classList.remove('light-theme');
+                document.documentElement.classList.add('dark-theme');
+            } else {
+                document.documentElement.classList.remove('dark-theme');
+                document.documentElement.classList.add('light-theme');
+            }
+        }
+
+        // Apply default theme
+        applyTheme('dark');
+    </script>
+</body>
+</html>

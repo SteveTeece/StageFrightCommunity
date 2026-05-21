@@ -1,0 +1,20 @@
+@implements IAsyncDisposable
+@using StageFright.UI.Shared
+
+<div class="main-layout">
+    <ShellLayout>
+        <div class="layout-body">
+            @ChildContent
+        </div>
+    </ShellLayout>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        await ValueTask.CompletedTask;
+    }
+}
