@@ -1,5 +1,3 @@
-@inject ISettingsRepository SettingsRepository
-@inject IJSRuntime JS
 @using StageFright.Data.Repositories
 @using StageFright.Core.Entities
 
@@ -15,38 +13,3 @@
         }
     </button>
 </div>
-
-@code {
-    private bool IsDarkMode { get; set; } = true;
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            var settings = await SettingsRepository.GetSettingsAsync();
-            IsDarkMode = settings?.Theme == "Dark";
-        }
-        catch
-        {
-            IsDarkMode = true; // Default to dark
-        }
-    }
-
-    private async Task ToggleTheme()
-    {
-        try
-        {
-            var settings = await SettingsRepository.GetSettingsAsync();
-            IsDarkMode = !IsDarkMode;
-            settings.Theme = IsDarkMode ? "Dark" : "Light";
-            await SettingsRepository.UpdateSettingsAsync(settings);
-            
-            // Apply theme to document
-            await JS.InvokeVoidAsync("applyTheme", IsDarkMode ? "dark" : "light");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error toggling theme: {ex}");
-        }
-    }
-}

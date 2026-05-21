@@ -1,9 +1,5 @@
 @page "/setup"
 
-@inject NavigationManager Navigation
-@inject ISetupService SetupService
-@inject ILogger<SetupWizard> Logger
-
 <div class="setup-container">
     <div class="setup-card">
         <h1>Organization Setup</h1>
@@ -65,78 +61,6 @@
         }
     </div>
 </div>
-
-@code {
-    private SetupModel setupModel = new();
-    private bool setupComplete = false;
-    private bool isLoading = false;
-    private string errorMessage = string.Empty;
-
-    private class SetupModel
-    {
-        public string OrganizationName { get; set; } = string.Empty;
-        public decimal AnnualFee { get; set; } = 0;
-        public decimal AttendanceFee { get; set; } = 0;
-        public int RenewalMonth { get; set; } = 7;
-    }
-
-    protected override void OnInitialized()
-    {
-        setupModel.RenewalMonth = 7; // Default to July
-    }
-
-    private async Task HandleSetupAsync()
-    {
-        try
-        {
-            isLoading = true;
-            errorMessage = string.Empty;
-
-            await SetupService.InitializeApplicationAsync(
-                setupModel.OrganizationName,
-                setupModel.AnnualFee,
-                setupModel.AttendanceFee,
-                setupModel.RenewalMonth);
-
-            setupComplete = true;
-            isLoading = false;
-
-            // Redirect to dashboard after a brief delay
-            await Task.Delay(2000);
-            Navigation.NavigateTo("/");
-        }
-        catch (Exception ex)
-        {
-            isLoading = false;
-            errorMessage = $"Setup failed: {ex.Message}";
-            Logger.LogError(ex, "Setup initialization failed");
-        }
-    }
-
-    private void ResetForm()
-    {
-        setupModel = new();
-        errorMessage = string.Empty;
-        setupComplete = false;
-    }
-
-    private string GetMonthName(int month) => month switch
-    {
-        1 => "January",
-        2 => "February",
-        3 => "March",
-        4 => "April",
-        5 => "May",
-        6 => "June",
-        7 => "July",
-        8 => "August",
-        9 => "September",
-        10 => "October",
-        11 => "November",
-        12 => "December",
-        _ => "Unknown"
-    };
-}
 
 <style>
     .setup-container {

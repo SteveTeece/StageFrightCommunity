@@ -1,6 +1,5 @@
 @page "/settings"
 @layout MainLayout
-@inject ISettingsRepository SettingsRepository
 @using StageFright.Data.Repositories
 @using StageFright.Core.Entities
 
@@ -48,7 +47,3 @@
         }
     </div>
 </div>
-
-@code {
-    private string ActiveTab = "general";
-}
