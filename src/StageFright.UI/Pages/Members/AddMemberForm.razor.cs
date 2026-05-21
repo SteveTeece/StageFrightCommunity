@@ -1,59 +1,25 @@
-@inject IMemberService MemberService
-@inject MemberValidationService ValidationService
-@inject AgeCalculationService AgeService
-@using StageFright.Core.Services
-@using StageFright.Core.Entities
+using Microsoft.AspNetCore.Components;
+using StageFright.Core.Entities;
+using StageFright.Core.Services;
 
-<div class="add-member-form">
-    @if (ErrorMessage != null)
-    {
-        <div class="error-message">@ErrorMessage</div>
-    }
+namespace StageFright.UI.Pages.Members;
 
-    <form @onsubmit="SaveMember">
-        <div class="form-group">
-            <label for="name">Name (required):</label>
-            <input id="name" type="text" class="form-control" @bind="FormModel.Name" required />
-        </div>
-
-        <div class="form-group">
-            <label for="street">Street Address (required):</label>
-            <input id="street" type="text" class="form-control" @bind="FormModel.StreetAddress" required />
-        </div>
-
-        <div class="form-group">
-            <label for="phone">Phone (optional):</label>
-            <input id="phone" type="tel" class="form-control" @bind="FormModel.Phone" />
-        </div>
-
-        <div class="form-group">
-            <label for="email">Email (optional):</label>
-            <input id="email" type="email" class="form-control" @bind="FormModel.Email" />
-        </div>
-
-        <div class="form-group">
-            <label for="joinDate">Join Date (required):</label>
-            <input id="joinDate" type="date" class="form-control" @bind="JoinDateString" required />
-        </div>
-
-        <div class="form-group">
-            <label for="dob">Date of Birth (optional):</label>
-            <input id="dob" type="date" class="form-control" @bind="DobString" />
-        </div>
-
-        <div class="form-buttons">
-            <button type="submit" class="btn btn-primary">Add Member</button>
-            <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
-        </div>
-    </form>
-</div>
-
-@code {
+public partial class AddMemberForm : ComponentBase
+{
     [Parameter]
-    public EventCallback OnSaved { get; set; }
+    public required EventCallback OnSaved { get; set; }
 
     [Parameter]
-    public EventCallback OnCancelled { get; set; }
+    public required EventCallback OnCancelled { get; set; }
+
+    [Inject]
+    public required IMemberService MemberService { get; set; }
+
+    [Inject]
+    public required MemberValidationService ValidationService { get; set; }
+
+    [Inject]
+    public required AgeCalculationService AgeService { get; set; }
 
     private Member FormModel = new Member();
     private string? ErrorMessage = null;

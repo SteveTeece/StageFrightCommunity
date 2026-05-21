@@ -1,0 +1,179 @@
+@inject ICommitteeMembershipService CommitteeMembershipService
+@using StageFright.Core.Services
+@using StageFright.Core.Entities
+
+<div class="committee-history-section">
+    <h3>Committee History</h3>
+
+    @if (IsLoading)
+    {
+        <div class="loading" role="status" aria-label="Loading committee history">
+            Loading committee history...
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="error-message" role="alert">
+            @ErrorMessage
+        </div>
+    }
+    else if (CommitteeHistory == null || !CommitteeHistory.Any())
+    {
+        <p class="no-data">No committee positions recorded.</p>
+    }
+    else
+    {
+        <ul class="committee-list" role="list" aria-label="Committee membership history">
+            @foreach (var membership in CommitteeHistory.OrderByDescending(m => m.Year))
+            {
+                var isCurrentYear = membership.Year == DateTime.Today.Year;
+                <li role="listitem" class="committee-item @(isCurrentYear ? "current-year" : "")">
+                    @if (isCurrentYear)
+                    {
+                        <strong class="current-year-text">
+                            @membership.Year 
+                            <span class="current-badge" role="status" aria-label="Current year">Current</span> 
+                            - @membership.Position
+                        </strong>
+                    }
+                    else
+                    {
+                        <span>@membership.Year - @membership.Position</span>
+                    }
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid MemberId { get; set; }
+
+    private IEnumerable<CommitteeMembership>? CommitteeHistory { get; set; }
+    private bool IsLoading = true;
+    private string? ErrorMessage = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            CommitteeHistory = await CommitteeMembershipService.GetMemberCommitteeHistoryAsync(MemberId);
+            IsLoading = false;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error loading committee history: {ex.Message}";
+            IsLoading = false;
+        }
+    }
+}
+
+<style>
+    .committee-history-section {
+        margin: 1.5rem 0;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+    }
+
+    .committee-history-section h3 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: #333;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .committee-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .committee-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e0e0e0;
+        font-size: 0.95rem;
+    }
+
+    .committee-item:last-child {
+        border-bottom: none;
+    }
+
+    .committee-item.current-year {
+        padding: 0.75rem;
+        background-color: #e8f5e9;
+        border-radius: 4px;
+        border-left: 4px solid hsl(120, 35%, 55%);
+    }
+
+    .current-year-text {
+        color: #2e7d32;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .current-badge {
+        background-color: hsl(120, 40%, 70%);
+        color: hsl(120, 10%, 25%);
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    /* Dark mode support */
+    @@media (prefers-color-scheme: dark) {
+        .committee-history-section {
+            background-color: #2d2d2d;
+        }
+
+        .committee-history-section h3 {
+            color: #e0e0e0;
+        }
+
+        .committee-item {
+            border-bottom-color: #444;
+            color: #b0b0b0;
+        }
+
+        .committee-item.current-year {
+            background-color: hsl(120, 35%, 25%);
+            border-left-color: hsl(120, 40%, 60%);
+        }
+
+        .current-year-text {
+            color: hsl(120, 40%, 70%);
+        }
+
+        .current-badge {
+            background-color: hsl(120, 35%, 55%);
+            color: hsl(120, 10%, 15%);
+        }
+    }
+
+    .loading {
+        text-align: center;
+        padding: 1rem;
+        color: #999;
+        font-style: italic;
+    }
+
+    .error-message {
+        background-color: #ffebee;
+        border: 1px solid #ef5350;
+        color: #c62828;
+        padding: 0.75rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+
+    .no-data {
+        color: #999;
+        font-style: italic;
+        margin: 0;
+        padding: 1rem 0;
+    }
+</style>

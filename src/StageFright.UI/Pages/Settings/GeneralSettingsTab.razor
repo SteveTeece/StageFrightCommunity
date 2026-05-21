@@ -1,6 +1,7 @@
 @inject ISettingsRepository SettingsRepository
 @using StageFright.Data.Repositories
 @using StageFright.Core.Entities
+@using SettingsEntity = StageFright.Core.Entities.Settings
 
 <div class="general-settings-tab">
     @if (IsLoading)
@@ -67,7 +68,7 @@
 </div>
 
 @code {
-    private Settings? Settings { get; set; }
+    private SettingsEntity? Settings { get; set; }
     private bool IsLoading = true;
     private string? ErrorMessage = null;
     private string? SuccessMessage = null;

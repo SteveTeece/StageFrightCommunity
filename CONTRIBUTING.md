@@ -101,6 +101,44 @@ src/Features/[ModuleName]/
 4. **Service Injection**: Use MAUI DI container for dependency resolution
 5. **Dashboard Tiles**: Each module provides at least one dashboard tile
 
+### File Organization - Single Responsibility (MANDATORY)
+
+**Every class, interface, record, struct, or enum MUST be in its own dedicated file.** This is a non-negotiable requirement enforced at code review and CI/CD.
+
+**Rules**:
+- ✅ One class per file maximum
+- ✅ File name must exactly match the class/interface name (e.g., `MemberService.cs` for `class MemberService`)
+- ✅ Each responsibility level gets separate files:
+  - Services and their interfaces in separate files
+  - DTOs separate from domain entities
+  - Request/response objects in dedicated files
+  - Enums and value objects in their own files
+  
+**Exception**: Private nested types that serve a single purpose within their parent class may remain inline.
+
+**Code Review**: PRs with multiple classes in a single file will be **rejected**. This is a blocking requirement.
+
+**Example Structure**:
+```
+Domain/
+├── Member.cs           # only the Member entity
+├── MemberStatus.cs     # only the MemberStatus enum
+├── MemberEmail.cs      # only the MemberEmail value object
+└── IMemberRepository.cs # only the IMemberRepository interface
+
+Application/
+├── IMemberService.cs   # only the IMemberService interface
+├── MemberService.cs    # only the MemberService class
+├── CreateMemberRequest.cs  # only the CreateMemberRequest DTO
+└── MemberDto.cs        # only the MemberDto
+
+Infrastructure/
+├── MemberRepository.cs # only the MemberRepository class
+└── MemberRepositoryExtensions.cs # only the extensions
+```
+
+This enforces SOLID principles and keeps files focused and maintainable.
+
 ### Module Template
 
 Every new module should include a `README.md`:

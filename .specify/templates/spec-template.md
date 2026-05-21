@@ -1,7 +1,7 @@
 # Feature Specification: [FEATURE NAME]
 
-**Template-Version**: 2.2.0
-**Required-Constitution-Version**: 2.2.0
+**Template-Version**: 2.3.0
+**Required-Constitution-Version**: 2.3.0
 **Last-Updated**: 2026-05-15
 **Feature Branch**: `[###-feature-name]`  
 **Created**: [DATE]  
@@ -51,7 +51,43 @@
 
 ---
 
-## 4. User Scenarios & Testing *(mandatory)*
+## 4. Code Organization Compliance *(mandatory)*
+
+<!--
+  Constitution §3.2.1 and §4.5 enforce MANDATORY file organization rules.
+  Every specification and implementation MUST comply with these rules.
+-->
+
+### Single Responsibility File Organization (Non-Negotiable)
+
+This feature MUST comply with Constitution §3.2.1 and §4.5:
+
+- **One Class Per File**: Every class, interface, record, struct, or enum must be in a dedicated file
+  - Exception: private nested types serving a single purpose within their parent class
+  - Exception: compiler-generated nested types
+  
+- **File Naming**: File name MUST exactly match the type it contains
+  - Example: `MemberService.cs` contains `class MemberService`
+  - Example: `IMemberRepository.cs` contains `interface IMemberRepository`
+  
+- **Responsibility Separation**: No file may contain types that serve different responsibilities
+  - Service and repository in separate files
+  - DTOs separate from domain entities
+  - Request/response objects in separate files
+  - Enums and value objects each in their own file
+  
+- **Folder Structure**: Files organized by responsibility layer:
+  - `Domain/` — entities, value objects, domain contracts/interfaces
+  - `Application/` — application services, handlers, DTOs, requests/responses
+  - `Infrastructure/` — repositories, external integrations
+  - `UI/` — Blazor components (.razor + .razor.cs pairs)
+  - `Tests/` — unit and integration tests
+
+- **Code Review Compliance**: Any PR violating these rules MUST be rejected during review. No exceptions permitted except those listed above.
+
+---
+
+## 5. User Scenarios & Testing *(mandatory)*
 
 All user stories MUST define tests that cover every reachable code path:
 success, validation failure, exception/error handling, boundary inputs, and
@@ -128,7 +164,7 @@ state-transition outcomes.
 - How does system handle [error scenario]?
 - How does UI recover from [recoverable failure scenario]?
 
-## 5. Requirements *(mandatory)*
+## 6. Requirements *(mandatory)*
 
 <!--
   ACTION REQUIRED: The content in this section represents placeholders.
@@ -200,18 +236,18 @@ state-transition outcomes.
 - **[Entity 1]**: [What it represents, key attributes without implementation]
 - **[Entity 2]**: [What it represents, relationships to other entities]
 
-## 6. Clarifications (optional but recommended)
+## 7. Clarifications (optional but recommended)
 
 ### Session [YYYY-MM-DD]
 
 - Q: [Question] -> A: [Decision]
 
-## 7. Acceptance Criteria *(mandatory)*
+## 8. Acceptance Criteria *(mandatory)*
 
 - [List explicit acceptance checks tied to requirements and stories]
 - [Include UI integration coverage expectations for user-facing workflows]
 
-## 8. Success Criteria *(mandatory)*
+## 9. Success Criteria *(mandatory)*
 
 <!--
   ACTION REQUIRED: Define measurable success criteria.

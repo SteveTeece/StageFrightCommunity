@@ -5,8 +5,8 @@ description: "Task list template for feature implementation"
 
 # Tasks: [FEATURE NAME]
 
-**Template-Version**: 2.2.0
-**Required-Constitution-Version**: 2.2.0
+**Template-Version**: 2.3.0
+**Required-Constitution-Version**: 2.3.0
 **Last-Updated**: 2026-05-15
 
 **Input**: Design documents from `/specs/[###-feature-name]/`
@@ -17,6 +17,8 @@ coverage of all reachable code paths (success, validation failure, exception,
 boundary, and state-transition paths).
 
 **Module & Dashboard Tiles** (Constitution §4.1–4.2): If this feature is a new module, include tasks for module folder structure setup and dashboard tile implementation. All tiles must support graphs/charts and other content types.
+
+**Code Organization** (Constitution §3.2.1, §4.5): Every task that produces a class, interface, record, struct, or enum MUST ensure it is placed in its own dedicated file with proper naming alignment. Code review MUST reject any violations. This is non-negotiable.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 

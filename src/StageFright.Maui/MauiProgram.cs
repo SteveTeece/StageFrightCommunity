@@ -80,10 +80,19 @@ public static class MauiProgram
 			builder.Services.AddScoped<ISettingsRepository, SettingsRepository>();
 			builder.Services.AddScoped<IAuditTrailRepository, AuditTrailRepository>();
 
-			// Register other services here as they are created
+			// Register business logic services
 			builder.Services.AddScoped<AgeCalculationService>();
 			builder.Services.AddScoped<MemberValidationService>();
 			builder.Services.AddScoped<GLAccountAssignmentService>();
+
+			// Register application services
+			builder.Services.AddScoped<IMemberService, MemberService>();
+			builder.Services.AddScoped<IRehearsalService, RehearsalService>();
+			builder.Services.AddScoped<IEventService, EventService>();
+			builder.Services.AddScoped<ICategoryService, CategoryService>();
+			builder.Services.AddScoped<ICommitteeMembershipService, CommitteeMembershipService>();
+			builder.Services.AddScoped<ISettingsService, SettingsService>();
+			builder.Services.AddScoped<ISetupService, SetupService>();
 
 #if DEBUG
 			builder.Logging.AddDebug();

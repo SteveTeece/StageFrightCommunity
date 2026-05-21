@@ -698,6 +698,76 @@ StageFright.Core/
 
 ---
 
+## Code Organization and File Structure
+
+**Every class, interface, record, struct, or enum MUST be defined in its own dedicated file.** This is a non-negotiable architectural rule enforced by code review and CI/CD pipeline checks.
+
+### Single Responsibility File Organization Rules
+
+**Mandatory Requirements** (from Constitution §3.2.1 and §4.5):
+
+1. **One Type Per File**: Each file contains at most one public class/interface/record/struct/enum.
+   - **Exception**: Private nested types that serve a single, tightly-scoped purpose within their parent class may be defined inline.
+   - **Exception**: Compiler-generated types (e.g., auto-property backing fields).
+
+2. **File Naming**: File name MUST exactly match the type it contains.
+   ```
+   class MemberService              → MemberService.cs
+   interface IMemberRepository      → IMemberRepository.cs
+   record MemberDto                 → MemberDto.cs
+   enum MemberStatus                → MemberStatus.cs
+   struct MemberEmail               → MemberEmail.cs
+   ```
+
+3. **Responsibility-Based Organization**: Within each layer/responsibility, separate files by their distinct purpose:
+   - `IMemberService.cs` — Service interface (contract)
+   - `MemberService.cs` — Service implementation
+   - `MemberDto.cs` — Data transfer object
+   - `CreateMemberRequest.cs` — Request model
+   - `MemberDto.cs` — Response model
+
+4. **Folder Structure by Responsibility**:
+   ```
+   Features/Members/
+   ├── Domain/
+   │   ├── Member.cs               # only Member entity
+   │   ├── MemberStatus.cs         # only MemberStatus enum
+   │   ├── MemberEmail.cs          # only MemberEmail value object
+   │   └── IMemberRepository.cs    # only IMemberRepository interface
+   │
+   ├── Application/
+   │   ├── IMemberService.cs       # only IMemberService interface
+   │   ├── MemberService.cs        # only MemberService class
+   │   ├── CreateMemberRequest.cs  # only CreateMemberRequest DTO
+   │   └── MemberDto.cs            # only MemberDto
+   │
+   ├── Infrastructure/
+   │   ├── MemberRepository.cs     # only MemberRepository class
+   │   └── MemberRepositoryExtensions.cs  # only extension methods
+   ```
+
+5. **Blazor Components**: Each component consists of two files:
+   - `.razor` — Component markup and directives
+   - `.razor.cs` — Code-behind with logic, event handlers, parameters
+
+### Enforcement and Consequences
+
+- ✅ **Code Review**: PRs with multiple types per file are automatically rejected.
+- ✅ **CI/CD Checks**: Linter/analyzer rules detect multi-type files before merge approval.
+- ✅ **Automated Refactoring**: Consider using Roslyn analyzers or similar tooling to enforce compliance.
+- ❌ **No Exceptions**: This rule is non-negotiable and applies to all new code. Existing violations in the codebase should be refactored as separate technical debt stories.
+
+### Benefits
+
+- 🎯 **Clarity**: File name = type name = clear intent
+- 📍 **Discoverability**: IDE Go-to-Definition navigates intuitively
+- 🔧 **Refactoring**: Extract or rename operations work reliably
+- 📝 **Version Control**: Fewer merge conflicts on multi-type files
+- ✅ **SOLID Compliance**: Enforces Single Responsibility Principle at file level
+- 🧪 **Testing**: Each unit is easily isolated and tested independently
+
+---
+
 ## Testing Strategy
 
 ### Unit Tests (Single Layer)

@@ -1,44 +1,45 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version Change: 2.2.0 → 2.2.1
+Version Change: 2.2.1 → 2.3.0
 
 Modified Principles:
-- 4.0 Architectural Identity (added Settings System)
-- Renumbered: 4.3 UI Design Principles → 4.4 UI Design Principles
+- 3.2 SOLID Design Principles (clarified with new file organization rule)
+- Renumbered: 4.5 Navigation Menu System → 4.6 Navigation Menu System
+- Renumbered: 5.0 Error Handling → 5.1 Error Handling, etc. (cascading)
 
 Added Sections:
-- 4.3 Settings System (tabbed interface with module-specific tabs and application settings)
+- 3.2.1 Single Responsibility Principle - File Organization (MANDATORY: one class per file)
+- 4.5 Code Organization and File Structure (non-negotiable file structure rules)
 
 Removed Sections:
 - None
 
 Templates Requiring Updates:
-- ✅ already done: .specify/templates/plan-template.md
-- ✅ already done: .specify/templates/spec-template.md
-- ✅ already done: .specify/templates/tasks-template.md
+- ⚠ pending: .specify/templates/spec-template.md (add file organization compliance checks)
+- ⚠ pending: .specify/templates/tasks-template.md (add code review task for file organization)
 
 Runtime Guidance Docs:
-- ⚠ pending: CONTRIBUTING.md (add settings tab implementation guide)
-- ⚠ pending: ARCHITECTURE.md (add Settings System architecture section)
-- ⚠ pending: UI_COMPONENT_STYLE_GUIDE.md (add settings form patterns)
-- ⚠ pending: README.md (reference settings configuration)
+- ⚠ pending: CONTRIBUTING.md (add mandatory file organization rules)
+- ⚠ pending: docs/ARCHITECTURE.md (document file organization patterns)
+- ⚠ pending: docs/XML-DOCUMENTATION-STANDARDS.md (align with single-class-per-file)
 
 Follow-up TODOs:
-- Document Application Settings data model for organization, fees, membership rules
-- Create settings validation patterns
-- Document module settings tab registration
+- Review existing codebase for files with multiple classes and plan refactoring
+- Establish code review checklist for file organization compliance
+- Document exceptions (if any) to single-class-per-file rule
 
-Version Bump Rationale: PATCH
-- Adds tabbed settings architecture with module extensibility. Non-breaking change; affects UI organization and new module onboarding.
+Version Bump Rationale: MINOR
+- Adds mandatory code organization principle. Materially expanded guidance on SOLID compliance.
+- Non-breaking: enforces best practices; existing compliant code unaffected.
 -->
 
 # Spec Kit Constitution  
 *A guiding document for clean, modular, extensible software development*
 
-**Version**: 2.2.1  
+**Version**: 2.3.0  
 **Ratification Date**: 2025-01-01  
-**Last Amended**: 2026-05-15
+**Last Amended**: 2026-05-21
 
 ---
 
@@ -87,6 +88,35 @@ All architectural decisions and specifications must adhere to the SOLID principl
 - **Liskov Substitution:** Derived types must be substitutable for their base types.  
 - **Interface Segregation:** Prefer small, specific interfaces over large, general ones.  
 - **Dependency Inversion:** High‑level modules must not depend on low‑level modules; both depend on abstractions.
+
+#### 3.2.1 Single Responsibility Principle – File Organization (NON-NEGOTIABLE)
+
+Adherence to the Single Responsibility Principle through file organization is **mandatory and non-negotiable**.
+
+**Mandatory Rules**:
+
+- **One Class Per File**: Every C# class, interface, record, struct, or enum must be defined in its own dedicated file. No file may contain more than one class/interface/record/struct/enum definition.
+  - **Exception**: Nested types (private nested classes used only within a parent class) may remain in the same file as their parent if they are non-public and serve a single, tightly-scoped purpose within that class.
+  - **Exception**: Compiler-generated nested types (e.g., backing fields, auto-property implementations) are not subject to this rule.
+  
+- **File Naming Convention**: File name must exactly match the class/interface/record name it contains.
+  - Example: Class `MemberService` → file `MemberService.cs`
+  - Example: Interface `IMemberRepository` → file `IMemberRepository.cs`
+  - Example: Record `MemberDto` → file `MemberDto.cs`
+  
+- **Rationale**: Each file containing a single, well-defined type:
+  - Enforces the Single Responsibility Principle at file level
+  - Improves code discoverability and navigation
+  - Reduces cognitive load when reading and maintaining code
+  - Simplifies version control (fewer merge conflicts on multi-type files)
+  - Enables IDE features (Go to Definition, refactoring) to work intuitively
+  
+- **Consequences of Violation**:
+  - Code review **must reject** any pull request with multiple classes in a single file
+  - Refactoring tasks must be created to split violating files before merge
+  - This is a **blocking** requirement; no exceptions permitted except those explicitly listed above
+  
+- **Verification**: Automated tooling (analyzers, linters, CI pipeline checks) should be configured to enforce this rule. Manual review must verify compliance at every code review stage.
 
 ### 3.3 Separation of Concerns
 Specifications must enforce clear boundaries between:
@@ -364,7 +394,7 @@ The user interface must embody simplicity, clarity, and modern design principles
 - **Accessibility**: Clean design must not sacrifice accessibility; all interactive elements must be keyboard-navigable and screen-reader compatible.  
 - **Responsive and Performant**: UI must respond immediately to user input; avoid blocking operations on the UI thread.  
 
-### 4.5 Navigation Menu System
+### 4.6 Navigation Menu System
 
 The application provides a hierarchical navigation menu where each module defines its own menu items and sub-items. The menu system is modular, extensible, and always displays Settings as the final menu item.
 
@@ -571,6 +601,77 @@ The application's main layout component discovers and renders all menu items:
 - Menu items MUST be independent and self-contained
 - Route conflicts MUST be avoided (each module owns its route prefix)
 - Menu item state (active, badge count) MUST be computed dynamically
+
+### 4.5 Code Organization and File Structure
+
+The physical organization of source files directly reflects the Single Responsibility Principle and architectural clarity. All code must follow strict file organization rules to ensure maintainability, discoverability, and consistency.
+
+**Mandatory File Organization Rules**:
+
+- **One Class Per File (Enforced)**: Every public class, interface, record, struct, or enum occupies its own dedicated file. This is **non-negotiable** (see §3.2.1 for exceptions and consequences).
+  
+- **File Naming**: File names must match the type they contain exactly:
+  - `public class MemberService` → file `MemberService.cs`
+  - `public interface IMemberRepository` → file `IMemberRepository.cs`
+  - `public record MemberDto` → file `MemberDto.cs`
+  - `public enum MemberStatus` → file `MemberStatus.cs`
+  
+- **Folder Structure by Responsibility**: Within each module, organize files by responsibility layer:
+  ```
+  ModuleName/
+  ├── Domain/                    # Domain entities, value objects, enums
+  │   ├── Member.cs
+  │   ├── MemberStatus.cs
+  │   ├── MemberEmail.cs
+  │   └── IMemberRepository.cs   # Domain contracts
+  │
+  ├── Application/               # Application services, handlers, DTOs
+  │   ├── IMemberService.cs
+  │   ├── MemberService.cs
+  │   ├── CreateMemberHandler.cs
+  │   ├── MemberDto.cs
+  │   └── CreateMemberRequest.cs
+  │
+  ├── Infrastructure/            # Repositories, external integrations
+  │   ├── MemberRepository.cs
+  │   ├── MemberRepositoryExtensions.cs
+  │   └── ExternalMemberService.cs
+  │
+  ├── UI/                        # Blazor components, pages
+  │   ├── Pages/
+  │   │   ├── MemberList.razor
+  │   │   ├── MemberList.razor.cs
+  │   │   ├── MemberDetail.razor
+  │   │   └── MemberDetail.razor.cs
+  │   └── Shared/
+  │       ├── MemberForm.razor
+  │       └── MemberForm.razor.cs
+  │
+  ├── Tests/                     # Unit and integration tests
+  │   ├── MemberServiceTests.cs
+  │   ├── MemberRepositoryTests.cs
+  │   └── MemberIntegrationTests.cs
+  │
+  └── DashboardTile.cs           # Tile provider
+  ```
+
+- **File Responsibility**: Each file must contain only the types and logic necessary to fulfill one specific responsibility:
+  - A service class and its interface should be in separate files
+  - DTOs should be in separate files from domain entities
+  - Request/response objects should be in separate files
+  - Enums and value objects each get their own file
+  - Extensions should be in separate files (e.g., `MemberRepositoryExtensions.cs`)
+  
+- **Blazor Components**: 
+  - `.razor` component file contains markup and directives
+  - `.razor.cs` code-behind file contains the component logic and event handlers
+  - Each component gets its own pair of files
+  
+- **Verification and Enforcement**:
+  - Code review **must reject** any PR with multiple types in a single file
+  - CI/CD pipeline should run analyzers to detect multi-type files
+  - Refactoring issues must be created for any violations found
+  - No merge approval until compliance is achieved
 
 ---
 

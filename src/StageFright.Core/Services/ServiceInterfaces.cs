@@ -69,3 +69,9 @@ public interface ISettingsService
 	Task UpdateSettingsAsync(Settings settings);
 	Task InitializeDefaultSettingsAsync(string organizationName, decimal annualFee, decimal attendanceFee);
 }
+
+/// <summary>Service for first-run setup.</summary>
+public interface ISetupService
+{
+	Task InitializeApplicationAsync(string organizationName, decimal annualFee, decimal attendanceFee, int renewalMonth);
+}

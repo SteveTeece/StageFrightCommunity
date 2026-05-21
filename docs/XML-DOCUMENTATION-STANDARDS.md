@@ -18,6 +18,27 @@ This document establishes mandatory XML documentation (triple-slash comments: `/
 - **Code Review Clarity**: Reviewers understand intent without reading implementation details
 - **Maintenance**: Future developers understand purpose, parameters, and expected behavior
 
+## File Organization (Constitution §3.2.1, §4.5)
+
+Before writing XML documentation, every new class, interface, record, struct, or enum MUST be placed in its own dedicated file. This is a **mandatory, non-negotiable requirement** (see CONTRIBUTING.md and docs/ARCHITECTURE.md for detailed rules).
+
+**File Organization Rules**:
+- ✅ One type per file (exceptions: private nested types, compiler-generated types)
+- ✅ File name matches type name exactly (e.g., `MemberService.cs` for `class MemberService`)
+- ✅ Types separated by responsibility:
+  - Service interface separate from service implementation
+  - DTOs separate from domain entities
+  - Request/response models in their own files
+  - Enums and value objects in dedicated files
+
+**Why This Matters**:
+- Prevents accidental violations of Single Responsibility Principle
+- Makes XML documentation more meaningful (one type per file = one clear responsibility)
+- Improves IDE navigation (Go to Definition goes to the right file)
+- Reduces merge conflicts in version control
+
+**Code Review Consequence**: Any PR with multiple types in a single file will be rejected during review. This is non-negotiable.
+
 ## Enum Organization
 
 **Enum Placement**: All common enums (used across features or core business logic) belong in `StageFright.Core.Enums`. Enums are considered foundational, cross-cutting types like entities and should be centralized to:
