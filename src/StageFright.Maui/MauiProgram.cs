@@ -7,6 +7,7 @@ using StageFright.Maui.Services;
 using StageFright.Data.Context;
 using StageFright.Data.Repositories;
 using StageFright.Core.Services;
+using StageFright.Plugins.Discovery;
 
 namespace StageFright.Maui;
 
@@ -93,6 +94,17 @@ public static class MauiProgram
 			builder.Services.AddScoped<ICommitteeMembershipService, CommitteeMembershipService>();
 			builder.Services.AddScoped<ISettingsService, SettingsService>();
 			builder.Services.AddScoped<ISetupService, SetupService>();
+
+			// Register navigation and directory services
+			builder.Services.AddSingleton<INavigationService, NavigationService>();
+			builder.Services.AddSingleton<IDirectoryService, DirectoryService>();
+
+			// Register plugin discovery and tile providers
+			builder.Services.AddPlugins();
+			builder.Services.AddScoped<StageFright.Plugins.Providers.MembersDashboardTileProvider>();
+			builder.Services.AddScoped<StageFright.Plugins.Providers.RehearsalsDashboardTileProvider>();
+			builder.Services.AddScoped<StageFright.Plugins.Providers.EventsDashboardTileProvider>();
+			builder.Services.AddScoped<StageFright.Plugins.Providers.FinanceDashboardTileProvider>();
 
 #if DEBUG
 			builder.Logging.AddDebug();

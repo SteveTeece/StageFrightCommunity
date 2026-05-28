@@ -1,0 +1,42 @@
+@using StageFright.Data.Repositories
+
+<DashboardTile Title="Finance" CssClass="finance-tile" IsLoading="IsLoading" ErrorMessage="ErrorMessage">
+    <div class="stat">
+        <span class="label">Outstanding Balance:</span>
+        <span class="value @(OutstandingBalance >= 0 ? "balance-positive" : "balance-negative")">
+            @OutstandingBalance.ToString("C")
+        </span>
+    </div>
+</DashboardTile>
+
+@code {
+    private bool IsLoading = true;
+    private string? ErrorMessage = null;
+    private decimal OutstandingBalance = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            IsLoading = true;
+            ErrorMessage = null;
+
+            // TODO: Implement outstanding balance calculation in Phase 2
+            // For now, placeholder shows 0 balance
+            OutstandingBalance = 0;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to load finance data: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+}

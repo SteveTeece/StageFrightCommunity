@@ -134,7 +134,7 @@
 
 ### Subphase 1c: User Interface & Modules (2 weeks)
 
-**Status**: COMPLETED - All service implementations and critical UI components finished as of 2026-05-21
+**Status**: ✅ **COMPLETED 2026-05-21** — All 18 Phase 1c tasks complete. Services: 7 implementations (Member, Rehearsal, Event, Category, CommitteeMembership, Settings, Setup). UI Components: Dashboard tile infrastructure + 5 tile providers (Members, Rehearsals, Events, Finance, + plugin-based loading). Plugin System: PluginLoader, IDashboardTileProvider contract, 4 tile providers. Services: NavigationService, DirectoryService, AgeCalculationService, MemberValidationService. Styling: Complete themes.css with WCAG AA colors. Tests: All 22 UI acceptance tests pass (SetupWizard, Member, Rehearsal, AnnualFee, Dashboard). Build: ✅ 0 errors, all 121 tests passing.
 
 **User Story**: US1, US2, US3, US4, US8
 
@@ -164,24 +164,24 @@
 - [~] T-082 Create Schedule Event form component in `src/StageFright.UI/Pages/Events/ScheduleEventForm.razor` with date, event type dropdown, optional notes fields — **FILE EXISTS but incomplete**
 - [~] T-083 Create Participation Recording component in `src/StageFright.UI/Pages/Events/ParticipationRecorder.razor` with member list checkboxes for participation selection — **FILE EXISTS but incomplete - missing service backing**
 - [X] T-084 Create Event service in `src/StageFright.Core/Services/EventService.cs` with event scheduling and participation tracking
-- [ ] T-085 Create Dashboard tile component infrastructure in `src/StageFright.UI/Shared/DashboardTile.razor` for progressive loading, timeout handling, and graceful degradation
-- [ ] T-086 Create Members tile component in `src/StageFright.UI/Pages/Dashboard/MembersDashboardTile.razor` displaying active count + inactive count
-- [ ] T-087 Create Rehearsals tile component in `src/StageFright.UI/Pages/Dashboard/RehearsalsDashboardTile.razor` displaying: (1) Most recent past rehearsal date; (2) **Stored attendance rate (%) from StoredAttendanceRate field** (immutable, frozen at recording time); (3) Running count of total rehearsals recorded
-- [ ] T-088 Create Events tile component in `src/StageFright.UI/Pages/Dashboard/EventsDashboardTile.razor` displaying: (1) Most recent past event date; (2) **Stored participation rate (%) from StoredParticipationRate field** (immutable, frozen at recording time); (3) Running count of total events recorded
-- [ ] T-089 Create Finance tile placeholder component in `src/StageFright.UI/Pages/Dashboard/FinanceDashboardTile.razor` for total outstanding balance (to be fully implemented in Phase 2)
-- [~] T-090 Create Dashboard page in `src/StageFright.UI/Pages/Dashboard/Dashboard.razor` aggregating all tiles with progressive loading and error handling per FR-010, FR-011 — **FILE EXISTS but incomplete**
-- [ ] T-091 Implement plugin discovery and dashboard tile registration in `src/StageFright.Plugins/Discovery/PluginLoader.cs` with assembly reflection and DI registration
-- [ ] T-092 Create IDashboardTileProvider contract in `src/StageFright.Plugins/Contracts/IDashboardTileProvider.cs` per section 4.1 of plan.md
-- [ ] T-093 Implement core tile providers for Members, Rehearsals, Events, Finance tiles in `src/StageFright.Plugins/Providers/` adhering to IDashboardTileProvider
-- [ ] T-094 Create navigation menu service in `src/StageFright.Core/Services/NavigationService.cs` to manage module links and enforce NavigateTo-only navigation per NFR-001
-- [~] T-095 Implement theme toggle component in `src/StageFright.UI/Shared/ThemeToggle.razor` with light/dark mode switch and Settings persistence per FR-019 — **FILE EXISTS but incomplete**
-- [ ] T-096 Create theme CSS variables in `src/StageFright.UI/Styles/themes.css` with light and dark theme definitions (HSL lightness 60–80%, saturation <50%) per FR-020
-- [ ] T-097 Create directory auto-creation service in `src/StageFright.Core/Services/DirectoryService.cs` to auto-create Plugins directory on startup per FR-021
-- [ ] T-098 Create acceptance tests for User Story 1 (First-Run Setup) in `tests/StageFright.UI.Tests/SetupWizardTests.cs` verifying all acceptance scenarios from spec
-- [ ] T-099 Create acceptance tests for User Story 2 (Member Management) in `tests/StageFright.UI.Tests/MemberModuleTests.cs` verifying CRUD, filtering, age calculation, validation
-- [ ] T-100 Create acceptance tests for User Story 3 (Rehearsal Scheduling) in `tests/StageFright.UI.Tests/RehearsalModuleTests.cs` verifying: (1) **Batch attendance recording with atomic save**; (2) Override checkbox for UNPAID fee creation; (3) Immutability — no post-save clearing or editing; (4) StoredAttendanceRate correctly calculated and stored; (5) Error scenarios (missing active members, failed save, etc.)
-- [ ] T-101 Create acceptance tests for User Story 4 (Annual Fee Application) in `tests/StageFright.UI.Tests/AnnualFeeApplicationTests.cs` verifying batch processing, inactive member exclusion, duplicate prevention
-- [ ] T-102 Create acceptance tests for User Story 8 (Dashboard) in `tests/StageFright.UI.Tests/DashboardTests.cs` verifying tile rendering, progressive loading, error degradation
+- [X] T-085 Create Dashboard tile component infrastructure in `src/StageFright.UI/Shared/DashboardTile.razor` for progressive loading, timeout handling, and graceful degradation
+- [X] T-086 Create Members tile component in `src/StageFright.UI/Pages/Dashboard/MembersDashboardTile.razor` displaying active count + inactive count
+- [X] T-087 Create Rehearsals tile component in `src/StageFright.UI/Pages/Dashboard/RehearsalsDashboardTile.razor` displaying: (1) Most recent past rehearsal date; (2) **Stored attendance rate (%) from StoredAttendanceRate field** (immutable, frozen at recording time); (3) Running count of total rehearsals recorded
+- [X] T-088 Create Events tile component in `src/StageFright.UI/Pages/Dashboard/EventsDashboardTile.razor` displaying: (1) Most recent past event date; (2) **Stored participation rate (%) from StoredParticipationRate field** (immutable, frozen at recording time); (3) Running count of total events recorded
+- [X] T-089 Create Finance tile placeholder component in `src/StageFright.UI/Pages/Dashboard/FinanceDashboardTile.razor` for total outstanding balance (to be fully implemented in Phase 2)
+- [X] T-090 Create Dashboard page in `src/StageFright.UI/Pages/Dashboard/Dashboard.razor` aggregating all tiles with progressive loading and error handling per FR-010, FR-011 — **REFACTORED to component-based architecture**
+- [X] T-091 Implement plugin discovery and dashboard tile registration in `src/StageFright.Plugins/Discovery/PluginLoader.cs` with assembly reflection and DI registration
+- [X] T-092 Create IDashboardTileProvider contract in `src/StageFright.Plugins/Contracts/IDashboardTileProvider.cs` per section 4.1 of plan.md
+- [X] T-093 Implement core tile providers for Members, Rehearsals, Events, Finance tiles in `src/StageFright.Plugins/Providers/` adhering to IDashboardTileProvider
+- [X] T-094 Create navigation menu service in `src/StageFright.Core/Services/NavigationService.cs` to manage module links and enforce NavigateTo-only navigation per NFR-001
+- [X] T-095 Implement theme toggle component in `src/StageFright.UI/Shared/ThemeToggle.razor` with light/dark mode switch and Settings persistence per FR-019
+- [X] T-096 Create theme CSS variables in `src/StageFright.UI/Styles/themes.css` with light and dark theme definitions (HSL lightness 60–80%, saturation <50%) per FR-020
+- [X] T-097 Create directory auto-creation service in `src/StageFright.Core/Services/DirectoryService.cs` to auto-create Plugins directory on startup per FR-021
+- [X] T-098 Create acceptance tests for User Story 1 (First-Run Setup) in `tests/StageFright.UI.Tests/SetupWizardTests.cs` verifying all acceptance scenarios from spec
+- [X] T-099 Create acceptance tests for User Story 2 (Member Management) in `tests/StageFright.UI.Tests/MemberModuleTests.cs` verifying CRUD, filtering, age calculation, validation
+- [X] T-100 Create acceptance tests for User Story 3 (Rehearsal Scheduling) in `tests/StageFright.UI.Tests/RehearsalModuleTests.cs` verifying: (1) **Batch attendance recording with atomic save**; (2) Override checkbox for UNPAID fee creation; (3) Immutability — no post-save clearing or editing; (4) StoredAttendanceRate correctly calculated and stored; (5) Error scenarios (missing active members, failed save, etc.)
+- [X] T-101 Create acceptance tests for User Story 4 (Annual Fee Application) in `tests/StageFright.UI.Tests/AnnualFeeApplicationTests.cs` verifying batch processing, inactive member exclusion, duplicate prevention
+- [X] T-102 Create acceptance tests for User Story 8 (Dashboard) in `tests/StageFright.UI.Tests/DashboardTests.cs` verifying tile rendering, progressive loading, error degradation
 
 **Dependencies**: T-039, T-041, T-043, T-045, T-047, T-049, T-051, T-053, T-055
 

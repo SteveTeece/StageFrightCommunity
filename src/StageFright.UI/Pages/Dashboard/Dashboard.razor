@@ -17,71 +17,11 @@
     else
     {
         <div class="dashboard-tiles">
-            <!-- Members Tile -->
-            <div class="dashboard-tile">
-                <h3>Members</h3>
-                <div class="tile-content">
-                    <div class="stat">
-                        <span class="label">Active:</span>
-                        <span class="value">@ActiveMembersCount</span>
-                    </div>
-                    <div class="stat">
-                        <span class="label">Inactive:</span>
-                        <span class="value">@InactiveMembersCount</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Rehearsals Tile -->
-            <div class="dashboard-tile">
-                <h3>Rehearsals</h3>
-                <div class="tile-content">
-                    <div class="stat">
-                        <span class="label">Most Recent:</span>
-                        <span class="value">@(MostRecentRehearsal?.Date.ToShortDateString() ?? "No rehearsals")</span>
-                    </div>
-                    <div class="stat">
-                        <span class="label">Attendance Rate:</span>
-                        <span class="value">@(MostRecentRehearsal?.StoredAttendanceRate.ToString("F1") ?? "N/A")%</span>
-                    </div>
-                    <div class="stat">
-                        <span class="label">Total Recorded:</span>
-                        <span class="value">@TotalRehearsalsCount</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Events Tile -->
-            <div class="dashboard-tile">
-                <h3>Events</h3>
-                <div class="tile-content">
-                    <div class="stat">
-                        <span class="label">Most Recent:</span>
-                        <span class="value">@(MostRecentEvent?.Date.ToShortDateString() ?? "No events")</span>
-                    </div>
-                    <div class="stat">
-                        <span class="label">Participation Rate:</span>
-                        <span class="value">@(MostRecentEvent?.StoredParticipationRate.ToString("F1") ?? "N/A")%</span>
-                    </div>
-                    <div class="stat">
-                        <span class="label">Total Recorded:</span>
-                        <span class="value">@TotalEventsCount</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Finance Tile -->
-            <div class="dashboard-tile finance-tile">
-                <h3>Finance</h3>
-                <div class="tile-content">
-                    <div class="stat">
-                        <span class="label">Outstanding Balance:</span>
-                        <span class="value @(OutstandingBalance >= 0 ? "positive" : "negative")">
-                            @OutstandingBalance.ToString("C")
-                        </span>
-                    </div>
-                </div>
-            </div>
+            <MembersDashboardTile />
+            <RehearsalsDashboardTile />
+            <EventsDashboardTile />
+            <FinanceDashboardTile />
         </div>
     }
 </div>
+

@@ -1,0 +1,275 @@
+/* StageFright Theme Variables and Dark/Light Mode Support */
+
+:root {
+    /* Light Theme - Default */
+    --color-primary: hsl(270, 45%, 35%);        /* Dark Purple */
+    --color-primary-light: hsl(270, 40%, 60%);  /* Medium Purple */
+    --color-secondary: hsl(40, 80%, 60%);       /* Golden */
+    
+    /* Backgrounds */
+    --color-bg-primary: hsl(0, 0%, 98%);        /* Almost white */
+    --color-bg-secondary: hsl(0, 0%, 92%);      /* Light gray */
+    --color-bg-tertiary: hsl(0, 0%, 85%);       /* Medium gray */
+    
+    /* Text */
+    --color-text-primary: hsl(0, 0%, 20%);      /* Dark gray (nearly black) */
+    --color-text-secondary: hsl(0, 0%, 40%);    /* Medium gray */
+    --color-text-muted: hsl(0, 0%, 60%);        /* Light gray */
+    
+    /* Status Colors */
+    --color-success: hsl(120, 40%, 70%);        /* Light Green */
+    --color-error: hsl(0, 80%, 65%);            /* Light Red */
+    --color-warning: hsl(40, 100%, 65%);        /* Light Orange */
+    --color-info: hsl(210, 80%, 65%);           /* Light Blue */
+    
+    /* Borders */
+    --color-border: hsl(0, 0%, 80%);            /* Light border */
+    --color-border-focus: hsl(270, 45%, 35%);   /* Primary color for focus */
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Theme */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-primary: hsl(270, 50%, 65%);        /* Light Purple */
+        --color-primary-light: hsl(270, 45%, 75%);  /* Lighter Purple */
+        --color-secondary: hsl(40, 85%, 55%);       /* Golden (adjusted for dark) */
+        
+        /* Backgrounds - Dark */
+        --color-bg-primary: hsl(0, 0%, 12%);        /* Very dark */
+        --color-bg-secondary: hsl(0, 0%, 18%);      /* Dark gray */
+        --color-bg-tertiary: hsl(0, 0%, 25%);       /* Lighter dark gray */
+        
+        /* Text - Light on Dark */
+        --color-text-primary: hsl(0, 0%, 95%);      /* Almost white */
+        --color-text-secondary: hsl(0, 0%, 75%);    /* Light gray */
+        --color-text-muted: hsl(0, 0%, 50%);        /* Medium gray */
+        
+        /* Status Colors - Dark Adjusted */
+        --color-success: hsl(120, 35%, 55%);        /* Darker green */
+        --color-error: hsl(0, 75%, 55%);            /* Darker red */
+        --color-warning: hsl(40, 95%, 55%);         /* Darker orange */
+        --color-info: hsl(210, 75%, 55%);           /* Darker blue */
+        
+        /* Borders - Dark */
+        --color-border: hsl(0, 0%, 30%);            /* Dark border */
+        --color-border-focus: hsl(270, 50%, 65%);   /* Primary color for focus */
+        
+        /* Shadows - Dark Adjusted */
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+    }
+}
+
+/* Explicit Dark Mode Class (for manual toggle) */
+body.dark-mode {
+    --color-primary: hsl(270, 50%, 65%);        /* Light Purple */
+    --color-primary-light: hsl(270, 45%, 75%);  /* Lighter Purple */
+    --color-secondary: hsl(40, 85%, 55%);       /* Golden */
+    
+    --color-bg-primary: hsl(0, 0%, 12%);
+    --color-bg-secondary: hsl(0, 0%, 18%);
+    --color-bg-tertiary: hsl(0, 0%, 25%);
+    
+    --color-text-primary: hsl(0, 0%, 95%);
+    --color-text-secondary: hsl(0, 0%, 75%);
+    --color-text-muted: hsl(0, 0%, 50%);
+    
+    --color-success: hsl(120, 35%, 55%);
+    --color-error: hsl(0, 75%, 55%);
+    --color-warning: hsl(40, 95%, 55%);
+    --color-info: hsl(210, 75%, 55%);
+    
+    --color-border: hsl(0, 0%, 30%);
+    --color-border-focus: hsl(270, 50%, 65%);
+    
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Explicit Light Mode Class (for manual toggle) */
+body.light-mode {
+    --color-primary: hsl(270, 45%, 35%);
+    --color-primary-light: hsl(270, 40%, 60%);
+    --color-secondary: hsl(40, 80%, 60%);
+    
+    --color-bg-primary: hsl(0, 0%, 98%);
+    --color-bg-secondary: hsl(0, 0%, 92%);
+    --color-bg-tertiary: hsl(0, 0%, 85%);
+    
+    --color-text-primary: hsl(0, 0%, 20%);
+    --color-text-secondary: hsl(0, 0%, 40%);
+    --color-text-muted: hsl(0, 0%, 60%);
+    
+    --color-success: hsl(120, 40%, 70%);
+    --color-error: hsl(0, 80%, 65%);
+    --color-warning: hsl(40, 100%, 65%);
+    --color-info: hsl(210, 80%, 65%);
+    
+    --color-border: hsl(0, 0%, 80%);
+    --color-border-focus: hsl(270, 45%, 35%);
+    
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Apply themes to body */
+body {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Balanced Color Palette (Lightness 60-80%, Saturation <50%) */
+.color-success-muted {
+    color: var(--color-success);
+}
+
+.color-error-muted {
+    color: var(--color-error);
+}
+
+.color-warning-muted {
+    color: var(--color-warning);
+}
+
+.color-info-muted {
+    color: var(--color-info);
+}
+
+/* Dashboard Tile Styling */
+.dashboard-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+.dashboard-tile {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+}
+
+.dashboard-tile:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.dashboard-tile .tile-header h3 {
+    margin: 0 0 1rem 0;
+    color: var(--color-text-primary);
+    font-size: 1.25rem;
+}
+
+.dashboard-tile .tile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.dashboard-tile .stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard-tile .stat .label {
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+.dashboard-tile .stat .value {
+    color: var(--color-primary);
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.dashboard-tile .stat .value.balance-positive {
+    color: var(--color-success);
+}
+
+.dashboard-tile .stat .value.balance-negative {
+    color: var(--color-error);
+}
+
+/* Loading and Error States */
+.tile-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.tile-loading .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.tile-error {
+    color: var(--color-error);
+    padding: 1rem;
+    background-color: var(--color-bg-tertiary);
+    border-radius: 4px;
+    text-align: center;
+}
+
+.tile-error .btn-retry {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+
+.tile-error .btn-retry:hover {
+    background-color: var(--color-primary-light);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Accessibility and Utility Classes */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Focus styles for keyboard navigation */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+}

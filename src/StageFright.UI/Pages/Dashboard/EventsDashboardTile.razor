@@ -1,0 +1,59 @@
+@using StageFright.Data.Repositories
+
+<DashboardTile Title="Events" CssClass="events-tile" IsLoading="IsLoading" ErrorMessage="ErrorMessage">
+    <div class="stat">
+        <span class="label">Most Recent:</span>
+        <span class="value">@(MostRecentDate?.ToShortDateString() ?? "No events")</span>
+    </div>
+    <div class="stat">
+        <span class="label">Participation Rate:</span>
+        <span class="value">@(ParticipationRate?.ToString("F1") ?? "N/A")%</span>
+    </div>
+    <div class="stat">
+        <span class="label">Total Recorded:</span>
+        <span class="value">@TotalCount</span>
+    </div>
+</DashboardTile>
+
+@code {
+    [Inject]
+    public required IEventRepository EventRepository { get; set; }
+
+    private bool IsLoading = true;
+    private string? ErrorMessage = null;
+    private DateTime? MostRecentDate = null;
+    private decimal? ParticipationRate = null;
+    private int TotalCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            IsLoading = true;
+            ErrorMessage = null;
+
+            var events = await EventRepository.GetAllAsync();
+            TotalCount = events.Count();
+            
+            var mostRecent = events.OrderByDescending(e => e.Date).FirstOrDefault();
+            if (mostRecent != null)
+            {
+                MostRecentDate = mostRecent.Date;
+                ParticipationRate = mostRecent.StoredParticipationRate;
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to load events: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+}
