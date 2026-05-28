@@ -204,22 +204,24 @@
 
 **User Story**: US6, US6a
 
-- [ ] T-103 Create IFeeRepository interface in `src/StageFright.Data/Repositories/IFeeRepository.cs` with methods: GetByIdAsync, GetByMemberAsync, GetUnpaidAsync, GetByYearAsync, CreateAsync, preventing updates (immutable per FR-016)
-- [ ] T-104 Implement FeeRepository in `src/StageFright.Data/Repositories/FeeRepository.cs` with immutability enforcement (no Update method) and unpaid fee queries
-- [ ] T-105 Create IPaymentRepository interface in `src/StageFright.Data/Repositories/IPaymentRepository.cs` with methods: GetByIdAsync, GetByMemberAsync, CreateAsync, UpdateNotesAsync (only notes editable), GetPaymentHistoryAsync
-- [ ] T-106 Implement PaymentRepository in `src/StageFright.Data/Repositories/IPaymentRepository.cs` with payment recording, FIFO allocation, field-level immutability enforcement (reject updates to Amount/Date/PaymentMethod/PaymentType/Category with error message), and Notes-only editing with UpdatedAt timestamp update per FR-017, FR-025
-- [ ] T-107 Create ITransactionRepository interface in `src/StageFright.Data/Repositories/ITransactionRepository.cs` with methods: GetByIdAsync, GetByCategoryAsync, GetByMemberAsync, GetByDateRangeAsync, CreatePairAsync (double-entry), ValidateGLBalanceAsync
-- [ ] T-108 Implement TransactionRepository in `src/StageFright.Data/Repositories/TransactionRepository.cs` with paired GL transaction creation, immutability, balance validation per FR-039
-- [ ] T-109 Create GL paired transaction service in `src/StageFright.Core/Services/GlTransactionService.cs` ensuring debits = credits, GL account mapping from Category, transaction pair creation atomic operation
-- [ ] T-110 Implement GL balance validation in `src/StageFright.Core/Services/GlBalanceValidationService.cs` with method: `ValidateGLBalanceAsync()` returning true if total debits = total credits within 0.01 precision per FR-034
-- [ ] T-111 Create payment allocation service in `src/StageFright.Core/Services/PaymentAllocationService.cs` implementing FIFO (First-In-First-Out) algorithm: oldest unpaid fees satisfied first per FR-016
-- [ ] T-112 Create member balance calculation service in `src/StageFright.Core/Services/MemberBalanceService.cs` with method: `GetMemberBalanceAsync(Guid memberId)` summing unpaid annual + attendance fees
-- [ ] T-113 Create integration tests for GL integrity in `tests/StageFright.Integration.Tests/GlIntegrityTests.cs` verifying paired transactions, balance validation, FIFO allocation
-- [ ] T-114 Create integration tests for payment recording in `tests/StageFright.Integration.Tests/PaymentRecordingTests.cs` verifying GL transaction pair creation, member balance updates, audit trail
-- [ ] T-114b **[CRITICAL TEST COVERAGE]** Create comprehensive integration test for FIFO payment allocation in `tests/StageFright.Integration.Tests/FifoPaymentAllocationTests.cs` with test cases: (1) Simple FIFO—$75 payment against 2024 $50 annual, 2025 $50 annual, 2025 $10 attendance; verify 2024 fully paid, 2025 annual fully paid, 2025 attendance remains $10 unpaid; (2) Partial payment—$40 payment against $50 annual fee; verify partial balance tracking; (3) Overpayment—$150 payment against $100 total; verify member credit created; (4) Bulk annual fees—verify tiebreaker ordering (CreatedAt, then Id) for simultaneous fee creation
-- [ ] T-113b **[CRITICAL TEST COVERAGE]** Create integration test for GL balance validation failure scenario in `tests/StageFright.Integration.Tests/GlBalanceValidationTests.cs` verifying that report generation (Trial Balance, Income Statement) fails with error message "GL Balance Verification Failed: Total Debits ($X.XX) ≠ Total Credits ($Y.YY)" when GL is out of balance, and displays clear user guidance to review GL entries before retrying
+- [X] T-103 Create IFeeRepository interface in `src/StageFright.Data/Repositories/IFeeRepository.cs` with methods: GetByIdAsync, GetByMemberAsync, GetUnpaidAsync, GetByYearAsync, CreateAsync, preventing updates (immutable per FR-016)
+- [X] T-104 Implement FeeRepository in `src/StageFright.Data/Repositories/FeeRepository.cs` with immutability enforcement (no Update method) and unpaid fee queries
+- [X] T-105 Create IPaymentRepository interface in `src/StageFright.Data/Repositories/IPaymentRepository.cs` with methods: GetByIdAsync, GetByMemberAsync, CreateAsync, UpdateNotesAsync (only notes editable), GetPaymentHistoryAsync
+- [X] T-106 Implement PaymentRepository in `src/StageFright.Data/Repositories/IPaymentRepository.cs` with payment recording, FIFO allocation, field-level immutability enforcement (reject updates to Amount/Date/PaymentMethod/PaymentType/Category with error message), and Notes-only editing with UpdatedAt timestamp update per FR-017, FR-025
+- [X] T-107 Create ITransactionRepository interface in `src/StageFright.Data/Repositories/ITransactionRepository.cs` with methods: GetByIdAsync, GetByCategoryAsync, GetByMemberAsync, GetByDateRangeAsync, CreatePairAsync (double-entry), ValidateGLBalanceAsync
+- [X] T-108 Implement TransactionRepository in `src/StageFright.Data/Repositories/TransactionRepository.cs` with paired GL transaction creation, immutability, balance validation per FR-039
+- [X] T-109 Create GL paired transaction service in `src/StageFright.Data/Services/GlTransactionService.cs` ensuring debits = credits, GL account mapping from Category, transaction pair creation atomic operation
+- [X] T-110 Implement GL balance validation in `src/StageFright.Data/Services/GlBalanceValidationService.cs` with method: `ValidateGLBalanceAsync()` returning true if total debits = total credits within 0.01 precision per FR-034
+- [X] T-111 Create payment allocation service in `src/StageFright.Data/Services/PaymentAllocationService.cs` implementing FIFO (First-In-First-Out) algorithm: oldest unpaid fees satisfied first per FR-016
+- [X] T-112 Create member balance calculation service in `src/StageFright.Data/Services/MemberBalanceService.cs` with method: `GetMemberBalanceAsync(Guid memberId)` summing unpaid annual + attendance fees
+- [X] T-113 Create integration tests for GL integrity in `tests/StageFright.Integration.Tests/GlIntegrityTests.cs` verifying paired transactions, balance validation, FIFO allocation
+- [X] T-114 Create integration tests for payment recording in `tests/StageFright.Integration.Tests/PaymentRecordingTests.cs` verifying GL transaction pair creation, member balance updates, audit trail
+- [X] T-114b **[CRITICAL TEST COVERAGE]** Create comprehensive integration test for FIFO payment allocation in `tests/StageFright.Integration.Tests/FifoPaymentAllocationTests.cs` with test cases: (1) Simple FIFO—$75 payment against 2024 $50 annual, 2025 $50 annual, 2025 $10 attendance; verify 2024 fully paid, 2025 annual fully paid, 2025 attendance remains $10 unpaid; (2) Partial payment—$40 payment against $50 annual fee; verify partial balance tracking; (3) Overpayment—$150 payment against $100 total; verify member credit created; (4) Bulk annual fees—verify tiebreaker ordering (CreatedAt, then Id) for simultaneous fee creation
+- [X] T-113b **[CRITICAL TEST COVERAGE]** Create integration test for GL balance validation failure scenario in `tests/StageFright.Integration.Tests/GlBalanceValidationTests.cs` verifying that report generation (Trial Balance, Income Statement) fails with error message "GL Balance Verification Failed: Total Debits ($X.XX) ≠ Total Credits ($Y.YY)" when GL is out of balance, and displays clear user guidance to review GL entries before retrying
 
 **Dependencies**: T-054, T-055, T-059
+
+**Phase 2a Status**: ✓ COMPLETE
 
 ### Subphase 2b: Finance Module UI (1 week)
 

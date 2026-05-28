@@ -6,6 +6,7 @@ using StageFright.Maui;
 using StageFright.Maui.Services;
 using StageFright.Data.Context;
 using StageFright.Data.Repositories;
+using StageFright.Data.Services;
 using StageFright.Core.Services;
 using StageFright.Plugins.Discovery;
 
@@ -85,6 +86,12 @@ public static class MauiProgram
 			builder.Services.AddScoped<AgeCalculationService>();
 			builder.Services.AddScoped<MemberValidationService>();
 			builder.Services.AddScoped<GLAccountAssignmentService>();
+
+			// Register Phase 2a financial services
+			builder.Services.AddScoped<GlTransactionService>();
+			builder.Services.AddScoped<GlBalanceValidationService>();
+			builder.Services.AddScoped<PaymentAllocationService>();
+			builder.Services.AddScoped<MemberBalanceService>();
 
 			// Register application services
 			builder.Services.AddScoped<IMemberService, MemberService>();
