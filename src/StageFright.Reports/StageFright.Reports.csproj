@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="iText7" Version="9.0.0" />
-    <PackageReference Include="CsvHelper" Version="31.0.3" />
+    <PackageReference Include="iText" Version="8.0.5" />
+    <PackageReference Include="CsvHelper" Version="33.2.0" />
   </ItemGroup>
 
 </Project>

@@ -259,13 +259,58 @@ This document confirms that the StageFright Community specification has been upd
 
 ---
 
+## Blazor-Controlled Navigation Architecture Compliance (NEW - 2026-05-29)
+
+### Navigation Architecture Requirements ✅ MANDATORY
+
+The application MUST implement a single, unified routing system controlled entirely by Blazor, with MAUI serving only as a platform abstraction layer.
+
+#### MAUI Layer (Platform Container Only)
+- ✅ `AppShell`: Minimal shell with single root route (no Shell routing logic)
+- ✅ `MainPage`: Simple ContentPage wrapper (no navigation logic)
+- ✅ `BlazorWebViewHost`: BlazorWebView component (primary UI entry point)
+- ✅ **No MAUI route-based navigation** - Shell routing DISABLED
+- ✅ **Responsibilities**: Window lifecycle, platform initialization only
+
+#### Blazor Layer (Complete UI/Navigation Control) ✅ MANDATORY
+- ✅ `App.razor`: Router component with assembly scan for `@page` directives
+- ✅ `Pages/*.razor`: All pages with `@page "/route"` directives
+- ✅ `Shared/MainLayout.razor`: Layout wrapper for all pages
+- ✅ `Shared/ShellLayout.razor`: Navigation menu using `NavigationManager` (mandatory)
+- ✅ `Pages/Index.razor`: Default "/" route redirecting to "/dashboard"
+- ✅ **All navigation**: Via `NavigationManager.NavigateTo(...)` only
+- ✅ **No alternative navigation methods**: `.GoToAsync()` or Shell navigation prohibited
+
+#### Startup Flow
+1. MAUI creates `Window(AppShell)` → `MainPage`
+2. `MainPage` renders `BlazorWebViewHost`
+3. `BlazorWebViewHost` loads `wwwroot/index.html` with `App.razor`
+4. Blazor Router scans assembly for `@page` directives
+5. All subsequent navigation via `NavigationManager.NavigateTo()`
+
+#### Enforcement & Validation ✅ MANDATORY
+- ✅ No MAUI-based routing methods in codebase
+- ✅ All menu navigation uses Blazor `NavigationManager`
+- ✅ All pages implement `@page "/route"` directive
+- ✅ Single UI entry point: BlazorWebView
+- ✅ MAUI layer contains only platform concerns
+
+### Compliance Alignment
+- **Constitution §3.1** (Clean Architecture): MAUI is thin platform abstraction; business logic entirely in Blazor
+- **Constitution §3.2** (SOLID Principles): Single Responsibility (MAUI: platform; Blazor: app)
+- **NFR-001** (Architecture): Single BlazorWebView, all navigation via `NavigationManager`
+- **NFR-002** (Cross-Platform): Consistent routing across Windows/macOS via Blazor layer
+
+---
+
 ## Document Control
 
 | Version | Date | Author | Status | Notes |
 |---------|------|--------|--------|-------|
 | 1.0 | 2026-02-16 | GitHub Copilot | ACTIVE | Initial compliance documentation |
 | 1.1 | 2026-03-31 | GitHub Copilot | ACTIVE | Aligned to Constitution v2.1.0 (non-negotiable code-path coverage + exception boundary translation) |
+| 1.2 | 2026-05-29 | GitHub Copilot | ACTIVE | Added Blazor-controlled navigation architecture as MANDATORY requirement |
 
 ---
 
-**Approval**: Specification is READY for implementation with full Constitutional compliance.
+**Approval**: Specification is READY for implementation with full Constitutional compliance and mandatory Blazor navigation architecture.

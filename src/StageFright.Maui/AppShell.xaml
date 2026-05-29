@@ -3,12 +3,9 @@
     x:Class="StageFright.Maui.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:StageFright.Maui"
-    Title="StageFright.Maui">
+    xmlns:local="clr-namespace:StageFright.Maui">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <!-- Shell navigation is disabled - all routing/navigation controlled by Blazor -->
+    <ShellContent Route="root" ContentTemplate="{DataTemplate local:MainPage}" />
 
 </Shell>

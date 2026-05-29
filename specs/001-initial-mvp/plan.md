@@ -52,18 +52,52 @@ The architecture follows **SOLID principles** and **clean code standards** per C
 
 ### 1.3 Blazor Hybrid MAUI Architecture
 
-- **Framework**: MAUI (Multi-platform App UI) with BlazorWebView for Windows and macOS desktop only
-- **Target Platforms**: Windows 10.0.19041+ and macOS 10.15+ via Mac Catalyst (no mobile, iOS, Android, or Linux)
-- **Single-View Pattern**: MAUI shell contains single BlazorWebView; all UI rendered through Blazor components
-- **Navigation**: All route transitions via `NavigationManager.NavigateTo(...)` (NavigateTo-only enforcement per NFR-001)
+**MANDATORY: Blazor Controls All UI, Routing, and Navigation**
+
+#### MAUI Layer (Platform Container Only)
+- **Role**: Platform abstraction for Windows and macOS desktop only
+- **Components**:
+  - `AppShell`: Minimal shell container with single root route (no Shell routing logic)
+  - `MainPage`: Simple ContentPage wrapper (no navigation logic)
+  - `BlazorWebViewHost`: BlazorWebView component (primary UI container)
+- **Responsibilities**: Window lifecycle, platform-specific initialization, native API interop
+- **Prohibited**: Shell-based routing, Tab/Flyout navigation, MAUI route-based page management
+
+#### Blazor Layer (Complete UI/Navigation Control) ✅ MANDATORY
+- **Role**: Exclusive control of all UI, routing, and navigation
+- **Components**:
+  - `App.razor`: Router with assembly scan for `@page` directives
+  - `Pages/*.razor`: All pages with `@page` directives (not MAUI routes)
+  - `Shared/MainLayout.razor`: Layout wrapper for all pages
+  - `Shared/ShellLayout.razor`: Navigation menu using Blazor `NavigationManager` (mandatory)
+  - `Pages/Index.razor`: Default "/" route redirecting to "/dashboard"
+- **Navigation**: All transitions via `NavigationManager.NavigateTo(...)` ✅ MANDATORY
 - **Styling**: Bootstrap 5 with custom CSS for pastel/muted color palette (HSL lightness 60–80%, saturation <50%)
-- **Desktop Shell**: 
+- **Shell Navigation**: 
   - Dark brand strip (top) with purple StageFright wordmark
   - White navigation bar with organization title (left) and module links (right)
   - Two-column dashboard card layout (default)
   - Tabbed interfaces for multi-function modules (using Blazor tab controls with WCAG semantics)
 
-**Justification**: MAUI + Blazor provides native Windows and macOS desktop support with modern web UI capabilities. Single BlazorWebView simplifies navigation, state management, and deployment. BlazorWebView integrates with native desktop APIs while leveraging web technologies for UI. Desktop-only targeting eliminates mobile complexity and reduces platform-specific dependencies.
+#### Startup Flow
+1. MAUI creates `Window(AppShell)` → `MainPage`
+2. `MainPage` renders `BlazorWebViewHost`
+3. `BlazorWebViewHost` loads `wwwroot/index.html` with `App.razor` root component
+4. Blazor Router scans `StageFright.UI` assembly for all `@page` directives
+5. Router matches current URL and renders corresponding page component with `MainLayout`
+6. `MainLayout` wraps content with `ShellLayout` containing navigation menu
+7. All subsequent navigation uses `NavigationManager.NavigateTo()` ✅ MANDATORY
+
+#### Architecture Requirements ✅ MANDATORY
+- ✅ MAUI Shell routing **DISABLED** (no route-based pages in MAUI)
+- ✅ Blazor Router handles **ALL** routing (`@page` directives)
+- ✅ `ShellLayout.razor` uses `NavigationManager` for menu navigation (not MAUI navigation)
+- ✅ All pages implement `@page "/route"` directive (Blazor convention)
+- ✅ No navigation via MAUI Shell methods (`.GoToAsync()`, etc.)
+- ✅ Single UI entry point: BlazorWebView renders `App.razor`
+- ✅ MAUI is platform container only; no app logic in MAUI layer
+
+**Justification**: Single, consistent routing system via Blazor Router eliminates conflicts between MAUI Shell routing and Blazor routing. Blazor-controlled UI ensures consistent cross-platform behavior, simplified state management, and maintainability. MAUI abstraction layer provides platform concerns without interfering with application logic. This architecture supports future multi-platform expansion (web, hybrid web-native) without core routing changes.
 
 ### 1.4 Centralized Data Access Layer (DAL)
 

@@ -95,6 +95,15 @@ Historical entries: `<span>2025 - Secretary</span>`. Badge styled with pastel ba
 - Progressive tile loading with graceful degradation for slow/failing tiles
 - Module-contributed menu entries with deep-linking via query parameters
 
+**Navigation Architecture (✅ MANDATORY - Blazor-Controlled):**
+- ✅ **Blazor Router** controls all routing via `@page` directives (not MAUI Shell routing)
+- ✅ **NavigationManager** mandatory for all navigation transitions (no MAUI `.GoToAsync()`)
+- ✅ **ShellLayout.razor** uses Blazor `NavigationManager` for menu navigation
+- ✅ **MAUI Shell routing disabled** - single root route only
+- ✅ **Single UI entry point** - BlazorWebView renders StageFright.UI.App component
+- ✅ **All pages** implement `@page "/route"` Blazor directive
+- ✅ **MAUI layer** is platform-only container; all app logic in Blazor layer
+
 ### 2.2 Out of Scope
 
 - Cloud synchronization and online storage
@@ -509,7 +518,7 @@ System MUST automatically calculate GL transaction dates and link Payment to cre
 
 ### Non-Functional Requirements
 
-**NFR-001**: **Architecture**: System MUST use a modular Blazor Hybrid (MAUI BlazorWebView) architecture; all functional UI MUST be rendered by Blazor components; all route transitions MUST be executed through `NavigationManager.NavigateTo(...)` in a single BlazorWebView. Navigation-policy audit compliance is documented in `CONSTITUTION-COMPLIANCE-UPDATE.md`.
+**NFR-001**: **Architecture (✅ MANDATORY - Blazor-Controlled Navigation)**: System MUST use a modular Blazor Hybrid (MAUI BlazorWebView) architecture with Blazor controlling 100% of UI, routing, and navigation. MAUI serves as platform-only container (window lifecycle, native API interop). All functional UI MUST be rendered by Blazor components; all route transitions MUST be executed through `NavigationManager.NavigateTo(...)` in a single BlazorWebView. MAUI Shell routing MUST be disabled; all pages MUST implement `@page` directives; `ShellLayout.razor` MUST use Blazor `NavigationManager` for menu navigation. Navigation-policy audit compliance is documented in `CONSTITUTION-COMPLIANCE-UPDATE.md` (§ Blazor-Controlled Navigation Architecture Compliance).
 
 **NFR-002**: **Data Storage**: System MUST use local SQLite database for all data persistence; schema versioning MUST follow semver notation (major.minor.patch); import/export manifests MUST include `schemaVersion`.
 

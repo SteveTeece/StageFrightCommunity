@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:StageFright.Maui"
              x:Class="StageFright.Maui.MainPage">
 
+    <!-- BlazorWebViewHost fills entire page - all UI/navigation controlled by Blazor -->
     <local:BlazorWebViewHost />
 
 </ContentPage>

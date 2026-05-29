@@ -1,0 +1,12 @@
+@page "/"
+@inject NavigationManager Navigation
+
+<PageTitle>StageFright Community</PageTitle>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Redirect to dashboard on app startup
+        Navigation.NavigateTo("/dashboard", replace: true);
+    }
+}
