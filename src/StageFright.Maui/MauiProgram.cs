@@ -9,6 +9,8 @@ using StageFright.Data.Repositories;
 using StageFright.Data.Services;
 using StageFright.Core.Services;
 using StageFright.Plugins.Discovery;
+using StageFright.Reports.Services;
+using StageFright.Reports.Exporters;
 
 namespace StageFright.Maui;
 
@@ -117,6 +119,12 @@ public static class MauiProgram
 			builder.Services.AddScoped<StageFright.Plugins.Providers.RehearsalsDashboardTileProvider>();
 			builder.Services.AddScoped<StageFright.Plugins.Providers.EventsDashboardTileProvider>();
 			builder.Services.AddScoped<StageFright.Plugins.Providers.FinanceDashboardTileProvider>();
+
+			// Register report infrastructure services
+			builder.Services.AddScoped<ReportAggregationService>();
+			builder.Services.AddScoped<ReportMenuService>();
+			builder.Services.AddScoped<PdfExporter>();
+			builder.Services.AddScoped<CsvExporter>();
 
 #if DEBUG
 			builder.Logging.AddDebug();

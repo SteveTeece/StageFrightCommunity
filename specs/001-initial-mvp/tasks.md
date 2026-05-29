@@ -245,17 +245,17 @@
 
 **User Story**: US6a, US11
 
-- [ ] T-125 Create IReportProvider contract in `src/StageFright.Plugins/Contracts/IReportProvider.cs` with methods per section 4.2 of plan.md: ModuleName, ReportId, ReportName, DisplayOrder, GenerateAsync(ReportFilter)
-- [ ] T-126 Create ReportData and ReportFilter classes in `src/StageFright.Reports/Models/` with properties: ColumnHeaders, Rows, Summaries, DateFrom, DateTo, CategoryFilter, MemberStatusFilter, CustomFilters per section 4.2 of plan.md
-- [ ] T-127 Create common report viewer component in `src/StageFright.UI/Pages/Reports/ReportViewer.razor` displaying report title, headers, rows, subtotals, grand totals with print and export buttons
-- [ ] T-128 Create report loading indicator component in `src/StageFright.UI/Shared/ReportLoadingIndicator.razor` with **modal dialog (always displayed throughout generation, no timeout, no cancel button)** showing spinner and "Generating report..." message per Clarification Q2
-- [ ] T-129 Create report error handler component in `src/StageFright.UI/Shared/ReportErrorHandler.razor` displaying user-friendly error messages with recovery options per FR-011
-- [ ] T-130 Create report aggregation service in `src/StageFright.Reports/Services/ReportAggregationService.cs` discovering and registering all IReportProvider implementations via plugin discovery
-- [ ] T-131 Create report menu structure service in `src/StageFright.Reports/Services/ReportMenuService.cs` organizing reports by module (Members, Finance, etc.) for display in Reports menu per FR-011
-- [ ] T-132 Create PDF export service in `src/StageFright.Reports/Exporters/PdfExporter.cs` using iTextSharp or similar to generate PDF with professional formatting per FR-037
-- [ ] T-133 Create CSV export service in `src/StageFright.Reports/Exporters/CsvExporter.cs` generating CSV with proper escaping and comma-handling per FR-041
-- [ ] T-134 Create Reports page in `src/StageFright.UI/Pages/Reports/Reports.razor` with report selection menu and report viewer component integration
-- [ ] T-135 Create integration tests for report infrastructure in `tests/StageFright.Integration.Tests/ReportInfrastructureTests.cs` verifying report provider discovery, aggregation, data structure
+- [X] T-125 Create IReportProvider contract in `src/StageFright.Plugins/Contracts/IReportProvider.cs` with methods per section 4.2 of plan.md: ModuleName, ReportId, ReportName, DisplayOrder, GenerateAsync(ReportFilter)
+- [X] T-126 Create ReportData and ReportFilter classes in `src/StageFright.Reports/Models/` with properties: ColumnHeaders, Rows, Summaries, DateFrom, DateTo, CategoryFilter, MemberStatusFilter, CustomFilters per section 4.2 of plan.md
+- [X] T-127 Create common report viewer component in `src/StageFright.UI/Pages/Reports/ReportViewer.razor` displaying report title, headers, rows, subtotals, grand totals with print and export buttons
+- [X] T-128 Create report loading indicator component in `src/StageFright.UI/Shared/ReportLoadingIndicator.razor` with **modal dialog (always displayed throughout generation, no timeout, no cancel button)** showing spinner and "Generating report..." message per Clarification Q2
+- [X] T-129 Create report error handler component in `src/StageFright.UI/Shared/ReportErrorHandler.razor` displaying user-friendly error messages with recovery options per FR-011
+- [X] T-130 Create report aggregation service in `src/StageFright.Reports/Services/ReportAggregationService.cs` discovering and registering all IReportProvider implementations via plugin discovery
+- [X] T-131 Create report menu structure service in `src/StageFright.Reports/Services/ReportMenuService.cs` organizing reports by module (Members, Finance, etc.) for display in Reports menu per FR-011
+- [X] T-132 Create PDF export service in `src/StageFright.Reports/Exporters/PdfExporter.cs` using iTextSharp or similar to generate PDF with professional formatting per FR-037
+- [X] T-133 Create CSV export service in `src/StageFright.Reports/Exporters/CsvExporter.cs` generating CSV with proper escaping and comma-handling per FR-041
+- [X] T-134 Create Reports page in `src/StageFright.UI/Pages/Reports/Reports.razor` with report selection menu and report viewer component integration
+- [X] T-135 Create integration tests for report infrastructure in `tests/StageFright.Integration.Tests/ReportInfrastructureTests.cs` verifying report provider discovery, aggregation, data structure
 
 **Dependencies**: T-092
 
