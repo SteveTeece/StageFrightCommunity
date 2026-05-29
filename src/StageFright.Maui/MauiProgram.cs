@@ -65,8 +65,9 @@ public static class MauiProgram
 			});
 
 			// Register database context
-			// Ensure TestData directory exists and use absolute path
-			var dbDir = Path.Combine(AppContext.BaseDirectory, "TestData");
+			// Ensure TestData directory exists in repo root and use absolute path
+			var repoRoot = FindRepositoryRoot();
+			var dbDir = Path.Combine(repoRoot, "TestData");
 			if (!Directory.Exists(dbDir))
 				Directory.CreateDirectory(dbDir);
 			
@@ -160,5 +161,28 @@ public static class MauiProgram
 			Log.Fatal(ex, "Application start-up failed");
 			throw;
 		}
+	}
+
+	/// <summary>
+	/// Locates the repository root by searching for the solution file or .git directory.
+	/// </summary>
+	private static string FindRepositoryRoot()
+	{
+		var currentDirectory = AppContext.BaseDirectory;
+
+		while (currentDirectory != null)
+		{
+			// Look for .git directory or .sln file to identify repo root
+			if (Directory.Exists(Path.Combine(currentDirectory, ".git")) ||
+				Directory.GetFiles(currentDirectory, "*.sln").Length > 0)
+			{
+				return currentDirectory;
+			}
+
+			currentDirectory = Directory.GetParent(currentDirectory)?.FullName;
+		}
+
+		// Fallback to AppContext.BaseDirectory if repo root not found
+		return AppContext.BaseDirectory;
 	}
 }
