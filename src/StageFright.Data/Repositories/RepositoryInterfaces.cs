@@ -28,7 +28,7 @@ public interface IPaymentRepository : IRepository<Payment>
 	Task<IEnumerable<Payment>> GetPaymentHistoryAsync(Guid memberId, DateTime fromDate, DateTime toDate);
 
 	/// <summary>Updates only the Notes field (other fields are immutable).</summary>
-	Task UpdateNotesAsync(Guid paymentId, string notes);
+	Task UpdateNotesAsync(Guid paymentId, string? notes);
 }
 
 /// <summary>Repository interface for Transaction operations (GL paired, immutable).</summary>

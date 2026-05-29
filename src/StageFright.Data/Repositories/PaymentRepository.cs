@@ -42,7 +42,7 @@ public class PaymentRepository : BaseRepository<Payment>, IPaymentRepository
 			.ToListAsync();
 	}
 
-	public async Task UpdateNotesAsync(Guid paymentId, string notes)
+	public async Task UpdateNotesAsync(Guid paymentId, string? notes)
 	{
 		var payment = await GetByIdAsync(paymentId);
 		if (payment == null)
