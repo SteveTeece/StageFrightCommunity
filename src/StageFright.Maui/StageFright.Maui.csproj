@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
-		<!-- Desktop only: Windows and Mac Catalyst (no mobile, iOS, or Android) -->
-		<TargetFrameworks>net10.0-maccatalyst</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+		<!-- Desktop only: Windows by default. Can build for Mac Catalyst on non-Windows platforms -->
+		<TargetFrameworks>net10.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0-maccatalyst</TargetFrameworks>
 
 		<!-- BlazorWebView configuration -->
 		<BlazorWebAssemblyEnableSatelliteLoadingOnStartup>false</BlazorWebAssemblyEnableSatelliteLoadingOnStartup>

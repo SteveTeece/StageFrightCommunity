@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StageFright.Plugins.Contracts;
 using System.Collections.Generic;
