@@ -9,6 +9,24 @@ public partial class AppShell : Shell
 {
 	public AppShell()
 	{
-		InitializeComponent();
+#if DEBUG
+		System.Diagnostics.Debug.WriteLine("[STARTUP-XAML] AppShell.ctor() called");
+#endif
+		try
+		{
+			InitializeComponent();
+#if DEBUG
+			System.Diagnostics.Debug.WriteLine("[STARTUP-XAML] AppShell.InitializeComponent() completed");
+#endif
+		}
+		catch (Exception ex)
+		{
+#if DEBUG
+			System.Diagnostics.Debug.WriteLine($"[STARTUP-XAML] AppShell.ctor() EXCEPTION: {ex.GetType().Name}: {ex.Message}");
+			if (ex.InnerException != null)
+				System.Diagnostics.Debug.WriteLine($"[STARTUP-XAML] InnerException: {ex.InnerException.GetType().Name}: {ex.InnerException.Message}");
+#endif
+			throw;
+		}
 	}
 }

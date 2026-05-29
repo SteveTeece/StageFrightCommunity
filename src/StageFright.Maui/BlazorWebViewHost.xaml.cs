@@ -13,10 +13,29 @@ public partial class BlazorWebViewHost : ContentView
 {
     public BlazorWebViewHost()
     {
-        InitializeComponent();
-        
-        // Blazor components are configured in MauiProgram.cs
-        // This host provides the container for the BlazorWebView
-        // which renders the full application UI controlled by Blazor
+#if DEBUG
+        System.Diagnostics.Debug.WriteLine("[STARTUP-XAML] BlazorWebViewHost.ctor() called");
+#endif
+        try
+        {
+            InitializeComponent();
+#if DEBUG
+            System.Diagnostics.Debug.WriteLine("[STARTUP-XAML] BlazorWebViewHost.InitializeComponent() completed");
+#endif
+            
+            // Blazor components are configured in MauiProgram.cs
+            // This host provides the container for the BlazorWebView
+            // which renders the full application UI controlled by Blazor
+        }
+        catch (Exception ex)
+        {
+#if DEBUG
+            System.Diagnostics.Debug.WriteLine($"[STARTUP-XAML] BlazorWebViewHost.ctor() EXCEPTION: {ex.GetType().Name}: {ex.Message}");
+            if (ex.InnerException != null)
+                System.Diagnostics.Debug.WriteLine($"[STARTUP-XAML] InnerException: {ex.InnerException.GetType().Name}: {ex.InnerException.Message}");
+            System.Diagnostics.Debug.WriteLine($"[STARTUP-XAML] Stack Trace: {ex.StackTrace}");
+#endif
+            throw;
+        }
     }
 }

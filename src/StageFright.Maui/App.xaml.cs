@@ -19,13 +19,33 @@ public partial class App : Application
 #if DEBUG
 		System.Diagnostics.Debug.WriteLine("[STARTUP] App.CreateWindow() called");
 #endif
-		// Store the service provider for later use
-		_serviceProvider = Handler?.MauiContext?.Services;
+		try
+		{
+			// Store the service provider for later use
+			_serviceProvider = Handler?.MauiContext?.Services;
 #if DEBUG
-		System.Diagnostics.Debug.WriteLine($"[STARTUP] Service provider stored: {(_serviceProvider != null ? "Success" : "Failed")}");
+			System.Diagnostics.Debug.WriteLine($"[STARTUP] Service provider stored: {(_serviceProvider != null ? "Success" : "Failed")}");
 #endif
-		
-		return new Window(new AppShell());
+			
+#if DEBUG
+			System.Diagnostics.Debug.WriteLine("[STARTUP] Creating AppShell instance");
+#endif
+			var window = new Window(new AppShell());
+#if DEBUG
+			System.Diagnostics.Debug.WriteLine("[STARTUP] AppShell instance created, returning Window");
+#endif
+			return window;
+		}
+		catch (Exception ex)
+		{
+#if DEBUG
+			System.Diagnostics.Debug.WriteLine($"[STARTUP] EXCEPTION in CreateWindow: {ex.GetType().Name}: {ex.Message}");
+			if (ex.InnerException != null)
+				System.Diagnostics.Debug.WriteLine($"[STARTUP] InnerException: {ex.InnerException.GetType().Name}: {ex.InnerException.Message}");
+			System.Diagnostics.Debug.WriteLine($"[STARTUP] Stack Trace: {ex.StackTrace}");
+#endif
+			throw;
+		}
 	}
 
 	protected override void OnStart()
