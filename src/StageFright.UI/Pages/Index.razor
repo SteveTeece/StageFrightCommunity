@@ -1,12 +1,50 @@
 @page "/"
+@using StageFright.Core.Services
 @inject NavigationManager Navigation
+@inject IAppInitializationService InitService
 
 <PageTitle>StageFright Community</PageTitle>
 
+@if (InitService.State == AppInitializationState.Complete)
+{
+    <!-- Initialization complete, redirect to dashboard -->
+}
+else if (InitService.State == AppInitializationState.Failed)
+{
+    <div class="initialization-error">
+        <h2>Application Initialization Error</h2>
+        <p>The application could not be initialized properly.</p>
+        <p>Error: @InitService.ErrorMessage</p>
+        <p><button class="btn btn-primary" @onclick="ReloadPage">Reload Application</button></p>
+    </div>
+}
+else
+{
+    <!-- Initialization in progress, show loading screen -->
+    <div class="initialization-loading">
+        <div class="spinner"></div>
+        <h2>Initializing Application...</h2>
+        <p>Setting up database and running migrations.</p>
+        <p>Please wait...</p>
+    </div>
+}
+
 @code {
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        // Redirect to dashboard on app startup
-        Navigation.NavigateTo("/dashboard", replace: true);
+        // Wait for initialization to complete
+        await InitService.WaitForInitializationAsync();
+
+        // If we reach here, initialization is complete
+        if (InitService.State == AppInitializationState.Complete)
+        {
+            // Redirect to dashboard
+            Navigation.NavigateTo("/dashboard", replace: true);
+        }
+    }
+
+    private void ReloadPage()
+    {
+        Navigation.NavigateTo("/", forceLoad: true);
     }
 }

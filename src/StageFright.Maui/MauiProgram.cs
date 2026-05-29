@@ -77,6 +77,9 @@ public static class MauiProgram
 				options.UseSqlite(connectionString, sqlOptions => 
 					sqlOptions.MigrationsAssembly("StageFright.Data")));
 
+			// Register app initialization service
+			builder.Services.AddSingleton<IAppInitializationService, AppInitializationService>();
+
 			// Register database initialization and seeding services
 			builder.Services.AddTransient<IDatabaseSeeder, DatabaseSeeder>();
 			builder.Services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
