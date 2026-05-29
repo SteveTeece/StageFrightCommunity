@@ -54,9 +54,8 @@ public static class MauiProgram
 					fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 				});
 
-			// Register Blazor Web View and Routing
+			// Register Blazor Web View
 			builder.Services.AddBlazorWebView();
-			builder.Services.AddRouting();
 
 			// Register configuration
 			builder.Services.AddSingleton<IConfiguration>(config);
