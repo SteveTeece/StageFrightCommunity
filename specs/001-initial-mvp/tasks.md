@@ -227,17 +227,17 @@
 
 **User Story**: US6, US7
 
-- [ ] T-115 Create Finance module page in `src/StageFright.UI/Pages/Finance/Finance.razor` with tabs: Payments, Member Balances, Categories, Annual Fee Application
-- [ ] T-116 Create Payment Recording form component in `src/StageFright.UI/Pages/Finance/PaymentRecordingForm.razor` with fields: Date, Amount, Payment Method (Cash|Check|Card|Electronic Transfer|Other), Payment Type (Annual|Attendance|Other), Category, Optional Notes per FR-025
-- [ ] T-117 Create Member Balance viewer component in `src/StageFright.UI/Pages/Finance/MemberBalanceViewer.razor` displaying each member's outstanding balance with annual fee + attendance fee breakdown
-- [ ] T-118 Create Category Management component in `src/StageFright.UI/Pages/Finance/CategoryManagement.razor` with create/edit/archive/restore/reorder operations and archival validation (prevent archiving if referenced by transactions)
-- [ ] T-119 Create Annual Fee Application confirmation dialog component in `src/StageFright.UI/Pages/Finance/AnnualFeeApplicationDialog.razor` showing number of active members to be charged with confirmation button per FR-004
-- [ ] T-120 Create Finance service in `src/StageFright.Core/Services/FinanceService.cs` with payment recording, balance calculation, annual fee batch application
-- [ ] T-121 Implement annual fee application logic in `src/StageFright.Core/Services/AnnualFeeApplicationService.cs` with batch processing: skip inactive members, skip existing unpaid annual fees, atomic transaction per FR-004
-- [ ] T-122 Update Finance tile in `src/StageFright.UI/Pages/Dashboard/FinanceDashboardTile.razor` to display total outstanding balance with muted Green (positive/surplus) or muted Red (negative/deficit) color coding per FR-008
-- [ ] T-123 Create acceptance tests for User Story 6 (Finance Tracking) in `tests/StageFright.UI.Tests/FinanceModuleTests.cs` verifying payment recording, balance calculation, categorization, GL pairs
-- [ ] T-124 Create acceptance tests for User Story 7 (Category Management) in `tests/StageFright.UI.Tests/CategoryManagementTests.cs` verifying create/edit/archive/restore with validation
-- [ ] T-106b **[CRITICAL TEST COVERAGE]** Create UI test for Payment Recording form read-only field enforcement in `tests/StageFright.UI.Tests/PaymentFormFieldImmutabilityTests.cs` verifying that Amount, Date, PaymentMethod, PaymentType, and Category fields are read-only/disabled after initial creation (prevent accidental modification), while Notes field remains editable with UpdatedAt timestamp on changes per FR-017, FR-025
+- [X] T-115 Create Finance module page in `src/StageFright.UI/Pages/Finance/Finance.razor` with tabs: Payments, Member Balances, Categories, Annual Fee Application
+- [X] T-116 Create Payment Recording form component in `src/StageFright.UI/Pages/Finance/PaymentRecordingForm.razor` with fields: Date, Amount, Payment Method (Cash|Check|Card|Electronic Transfer|Other), Payment Type (Annual|Attendance|Other), Category, Optional Notes per FR-025
+- [X] T-117 Create Member Balance viewer component in `src/StageFright.UI/Pages/Finance/MemberBalanceViewer.razor` displaying each member's outstanding balance with annual fee + attendance fee breakdown
+- [X] T-118 Create Category Management component in `src/StageFright.UI/Pages/Finance/CategoryManagement.razor` with create/edit/archive/restore/reorder operations and archival validation (prevent archiving if referenced by transactions)
+- [X] T-119 Create Annual Fee Application confirmation dialog component in `src/StageFright.UI/Pages/Finance/AnnualFeeApplicationDialog.razor` showing number of active members to be charged with confirmation button per FR-004
+- [X] T-120 Create Finance service in `src/StageFright.Core/Services/FinanceService.cs` with payment recording, balance calculation, annual fee batch application
+- [X] T-121 Implement annual fee application logic in `src/StageFright.Core/Services/AnnualFeeApplicationService.cs` with batch processing: skip inactive members, skip existing unpaid annual fees, atomic transaction per FR-004
+- [X] T-122 Update Finance tile in `src/StageFright.UI/Pages/Dashboard/FinanceDashboardTile.razor` to display total outstanding balance with muted Green (positive/surplus) or muted Red (negative/deficit) color coding per FR-008
+- [X] T-123 Create acceptance tests for User Story 6 (Finance Tracking) in `tests/StageFright.UI.Tests/FinanceModuleTests.cs` verifying payment recording, balance calculation, categorization, GL pairs
+- [X] T-124 Create acceptance tests for User Story 7 (Category Management) in `tests/StageFright.UI.Tests/CategoryManagementTests.cs` verifying create/edit/archive/restore with validation
+- [X] T-106b **[CRITICAL TEST COVERAGE]** Create UI test for Payment Recording form read-only field enforcement in `tests/StageFright.UI.Tests/PaymentFormFieldImmutabilityTests.cs` verifying that Amount, Date, PaymentMethod, PaymentType, and Category fields are read-only/disabled after initial creation (prevent accidental modification), while Notes field remains editable with UpdatedAt timestamp on changes per FR-017, FR-025
 
 **Dependencies**: T-104, T-106, T-108, T-075, T-089
 

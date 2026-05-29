@@ -112,4 +112,44 @@ public class GlTransactionService
 	{
 		return await _transactionRepository.ValidateGLBalanceAsync();
 	}
+
+	/// <summary>
+	/// Creates GL transaction pair for a payment received.
+	/// Debits Cash/Bank account (asset) and credits the payment category.
+	/// </summary>
+	/// <param name="payment">The payment record to create GL transactions for.</param>
+	/// <param name="paymentCategory">The GL category code for the payment.</param>
+	/// <returns>A task representing the async operation.</returns>
+	/// <exception cref="ArgumentNullException">Thrown when payment is null.</exception>
+	/// <exception cref="DataAccessException">Thrown when the transaction cannot be saved.</exception>
+	public async Task CreatePaymentTransactionAsync(Payment payment, string paymentCategory)
+	{
+		if (payment == null)
+			throw new ArgumentNullException(nameof(payment));
+
+		if (string.IsNullOrWhiteSpace(paymentCategory))
+			throw new ArgumentException("Payment category cannot be null or empty.", nameof(paymentCategory));
+
+		try
+		{
+			// Create paired GL transaction:
+			// Debit: Cash/Bank (Asset GL 0100) - increases cash received
+			// Credit: Payment category (typically Income GL 10xx or reduction of payables)
+			await CreatePairedTransactionAsync(
+				amount: payment.Amount,
+				debitCategory: "GL0100", // Cash/Bank account
+				creditCategory: paymentCategory,
+				description: $"Payment received: {payment.PaymentMethod}",
+				memberId: payment.MemberId,
+				paymentId: payment.Id,
+				transactionDate: payment.Date
+			);
+		}
+		catch (Exception ex) when (!(ex is ArgumentException))
+		{
+			throw new DataAccessException(
+				$"Failed to create GL transaction for payment {payment.Id}.",
+				ex);
+		}
+	}
 }

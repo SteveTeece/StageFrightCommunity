@@ -1,0 +1,128 @@
+@using StageFright.Core.Services
+
+<div class="annual-fee-dialog">
+    @if (ErrorMessage != null)
+    {
+        <div class="error-message">@ErrorMessage</div>
+    }
+
+    @if (!FeesApplied)
+    {
+        <div class="dialog-content">
+            <h2>Apply Annual Fees</h2>
+            
+            @if (LoadingCount)
+            {
+                <p>Loading eligible members count...</p>
+            }
+            else
+            {
+                <p>
+                    This action will apply an annual fee of <strong>${{AnnualFeeAmount:F2}}</strong> to 
+                    <strong>@EligibleMemberCount</strong> eligible member(s).
+                </p>
+
+                <div class="note">
+                    <strong>Note:</strong> Annual fees will only be applied to active members who don't already have 
+                    an unpaid annual fee from the current renewal period.
+                </div>
+
+                <div class="dialog-buttons">
+                    <button class="btn btn-primary" @onclick="ApplyFees" disabled="@IsApplying">
+                        @(IsApplying ? "Applying..." : "Apply Annual Fees")
+                    </button>
+                    <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="success-content">
+            <h2>Success</h2>
+            <p>Annual fees have been applied to @FeesAppliedCount member(s).</p>
+            <button class="btn btn-primary" @onclick="Close">Close</button>
+        </div>
+    }
+</div>
+
+<style>
+    .annual-fee-dialog {
+        background-color: var(--color-background-light);
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .dialog-content h2,
+    .success-content h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: var(--color-text);
+    }
+
+    .dialog-content p,
+    .success-content p {
+        margin: 15px 0;
+        line-height: 1.6;
+    }
+
+    .note {
+        background-color: var(--color-info-bg);
+        border-left: 4px solid var(--color-info);
+        padding: 15px;
+        border-radius: 4px;
+        margin: 20px 0;
+        color: var(--color-text);
+    }
+
+    .error-message {
+        padding: 15px;
+        background-color: var(--color-error-bg);
+        color: var(--color-error);
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
+    .dialog-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        flex: 1;
+        transition: background-color 0.2s;
+    }
+
+    .btn-primary {
+        background-color: var(--color-primary);
+        color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background-color: var(--color-primary-hover);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .btn-secondary {
+        background-color: var(--color-secondary);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: var(--color-secondary-hover);
+    }
+</style>

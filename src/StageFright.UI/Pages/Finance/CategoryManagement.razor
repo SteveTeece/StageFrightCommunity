@@ -1,0 +1,244 @@
+@using StageFright.Core.Services
+
+<div class="category-management">
+    @if (ErrorMessage != null)
+    {
+        <div class="error-message">@ErrorMessage</div>
+    }
+
+    @if (SuccessMessage != null)
+    {
+        <div class="success-message">@SuccessMessage</div>
+    }
+
+    <div class="category-management-header">
+        <h2>Categories</h2>
+        <button class="btn btn-primary" @onclick="ShowAddForm">Add Category</button>
+    </div>
+
+    @if (ShowingAddForm)
+    {
+        <div class="add-category-form">
+            <div class="form-group">
+                <label for="categoryName">Category Name (required):</label>
+                <input id="categoryName" type="text" class="form-control" @bind="NewCategoryName" required />
+            </div>
+
+            <div class="form-group">
+                <label for="categoryType">Category Type (required):</label>
+                <select id="categoryType" class="form-control" @bind="NewCategoryType" required>
+                    <option value="">-- Select Type --</option>
+                    <option value="Income">Income</option>
+                    <option value="Expense">Expense</option>
+                </select>
+            </div>
+
+            <div class="form-buttons">
+                <button type="button" class="btn btn-primary" @onclick="AddCategory">Add</button>
+                <button type="button" class="btn btn-secondary" @onclick="HideAddForm">Cancel</button>
+            </div>
+        </div>
+    }
+
+    @if (Categories.Count == 0)
+    {
+        <div class="empty-message">No categories found.</div>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>GL Account</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in Categories)
+                {
+                    <tr>
+                        <td>
+                            @if (EditingCategoryId == category.Id)
+                            {
+                                <input type="text" class="form-control" @bind="EditingCategoryName" />
+                            }
+                            else
+                            {
+                                <span>@category.Name</span>
+                            }
+                        </td>
+                        <td>@category.Type</td>
+                        <td>@category.GlAccount</td>
+                        <td>@(category.IsArchived ? "Archived" : "Active")</td>
+                        <td>
+                            @if (EditingCategoryId == category.Id)
+                            {
+                                <button class="btn btn-sm btn-primary" @onclick="() => SaveEditCategory(category.Id)">Save</button>
+                                <button class="btn btn-sm btn-secondary" @onclick="CancelEdit">Cancel</button>
+                            }
+                            else
+                            {
+                                @if (!category.IsArchived)
+                                {
+                                    <button class="btn btn-sm btn-secondary" @onclick="() => EditCategory(category)">Edit</button>
+                                    <button class="btn btn-sm btn-danger" @onclick="() => ArchiveCategory(category.Id)">Archive</button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-success" @onclick="() => RestoreCategory(category.Id)">Restore</button>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<style>
+    .category-management {
+        padding: 20px;
+    }
+
+    .category-management-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .category-management-header h2 {
+        margin: 0;
+    }
+
+    .add-category-form {
+        background-color: var(--color-background-light);
+        padding: 20px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--color-border);
+        border-radius: 4px;
+        font-family: inherit;
+        font-size: inherit;
+    }
+
+    .form-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .error-message {
+        padding: 15px;
+        background-color: var(--color-error-bg);
+        color: var(--color-error);
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
+    .success-message {
+        padding: 15px;
+        background-color: var(--color-success-bg);
+        color: var(--color-success);
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
+    .empty-message {
+        padding: 20px;
+        text-align: center;
+        color: var(--color-text-muted);
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table thead th {
+        background-color: var(--color-background-light);
+        border-bottom: 2px solid var(--color-border);
+        padding: 10px;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    .table tbody td {
+        padding: 10px;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .table tbody tr:hover {
+        background-color: var(--color-background-hover);
+    }
+
+    .btn {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background-color 0.2s;
+    }
+
+    .btn-primary {
+        background-color: var(--color-primary);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--color-primary-hover);
+    }
+
+    .btn-secondary {
+        background-color: var(--color-secondary);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: var(--color-secondary-hover);
+    }
+
+    .btn-danger {
+        background-color: var(--color-danger);
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background-color: var(--color-danger-hover);
+    }
+
+    .btn-success {
+        background-color: var(--color-success);
+        color: white;
+    }
+
+    .btn-success:hover {
+        background-color: var(--color-success-hover);
+    }
+
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+</style>

@@ -101,6 +101,8 @@ public static class MauiProgram
 			builder.Services.AddScoped<ICommitteeMembershipService, CommitteeMembershipService>();
 			builder.Services.AddScoped<ISettingsService, SettingsService>();
 			builder.Services.AddScoped<ISetupService, SetupService>();
+			builder.Services.AddScoped<IFinanceService, FinanceService>();
+			builder.Services.AddScoped<IAnnualFeeApplicationService, AnnualFeeApplicationService>();
 
 			// Register navigation and directory services
 			builder.Services.AddSingleton<INavigationService, NavigationService>();
