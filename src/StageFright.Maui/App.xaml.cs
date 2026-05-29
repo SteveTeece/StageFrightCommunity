@@ -7,6 +7,8 @@ namespace StageFright.Maui;
 
 public partial class App : Application
 {
+	private IServiceProvider? _serviceProvider;
+
 	public App()
 	{
 		InitializeComponent();
@@ -14,40 +16,62 @@ public partial class App : Application
 
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
-		// Initialize database and run migrations before showing UI
-		var services = Application.Current?.Handler?.MauiContext?.Services;
-		if (services != null)
+		// Store the service provider for later use
+		_serviceProvider = Handler?.MauiContext?.Services;
+		
+		return new Window(new AppShell());
+	}
+
+	protected override void OnStart()
+	{
+		base.OnStart();
+		// Initialize database after the app has fully started and services are available
+		InitializeDatabaseAsync().Wait();
+	}
+
+	private async Task InitializeDatabaseAsync()
+	{
+		if (_serviceProvider == null)
+		{
+			// Get service provider from the current application
+			_serviceProvider = Application.Current?.Handler?.MauiContext?.Services;
+		}
+
+		if (_serviceProvider == null)
+		{
+			return; // Services not available yet
+		}
+
+		try
+		{
+			using (var scope = _serviceProvider.CreateScope())
+			{
+				var initializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializer>();
+				var logger = scope.ServiceProvider.GetRequiredService<ILogger<App>>();
+				var initService = _serviceProvider.GetRequiredService<IAppInitializationService>();
+
+				logger.LogInformation("Starting application initialization...");
+
+				// Run database initialization synchronously to block UI until complete
+				await initializer.InitializeDatabaseAsync();
+
+				logger.LogInformation("Database initialization completed successfully");
+				initService.MarkInitializationComplete();
+			}
+		}
+		catch (Exception ex)
 		{
 			try
 			{
-				var initService = services.GetRequiredService<IAppInitializationService>();
-				using (var scope = services.CreateScope())
-				{
-					var initializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializer>();
-					var logger = scope.ServiceProvider.GetRequiredService<ILogger<App>>();
-
-					logger.LogInformation("Starting application initialization...");
-
-					// Run database initialization synchronously to block UI until complete
-					initializer.InitializeDatabaseAsync().Wait();
-
-					logger.LogInformation("Database initialization completed successfully");
-					initService.MarkInitializationComplete();
-				}
-			}
-			catch (Exception ex)
-			{
-				var logger = services.GetRequiredService<ILogger<App>>();
+				var logger = _serviceProvider.GetRequiredService<ILogger<App>>();
+				var initService = _serviceProvider.GetRequiredService<IAppInitializationService>();
 				logger.LogError(ex, "Application initialization failed");
-
-				var initService = services.GetRequiredService<IAppInitializationService>();
 				initService.MarkInitializationFailed(ex.Message);
-
-				// Critical initialization failure - we need to propagate this so the app knows
-				// The Blazor app will catch this and display an error
+			}
+			catch
+			{
+				// If logging fails, we can't do much more
 			}
 		}
-
-		return new Window(new AppShell());
 	}
 }

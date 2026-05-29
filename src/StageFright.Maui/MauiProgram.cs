@@ -27,12 +27,18 @@ public static class MauiProgram
 
 		var config = configBuilder.Build();
 
-		// Configure Serilog
+		// Ensure TestData directory exists in repo root
+		var repoRoot = FindRepositoryRoot();
+		var testDataDir = Path.Combine(repoRoot, "TestData");
+		if (!Directory.Exists(testDataDir))
+			Directory.CreateDirectory(testDataDir);
+
+		// Configure Serilog to write to TestData folder, one entry per line
 		Log.Logger = new LoggerConfiguration()
 			.MinimumLevel.Information()
 			.WriteTo.Console()
 			.WriteTo.File(
-				Path.Combine(AppContext.BaseDirectory, "logs", "stagefright-.txt"),
+				Path.Combine(testDataDir, "stagefright.log"),
 				rollingInterval: RollingInterval.Day,
 				retainedFileCountLimit: 30,
 				outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
@@ -48,8 +54,9 @@ public static class MauiProgram
 					fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 				});
 
-			// Register Blazor Web View
+			// Register Blazor Web View and Routing
 			builder.Services.AddBlazorWebView();
+			builder.Services.AddRouting();
 
 			// Register configuration
 			builder.Services.AddSingleton<IConfiguration>(config);
@@ -65,13 +72,8 @@ public static class MauiProgram
 			});
 
 			// Register database context
-			// Ensure TestData directory exists in repo root and use absolute path
-			var repoRoot = FindRepositoryRoot();
-			var dbDir = Path.Combine(repoRoot, "TestData");
-			if (!Directory.Exists(dbDir))
-				Directory.CreateDirectory(dbDir);
-			
-			var dbPath = Path.Combine(dbDir, "stagefright.db");
+			// Use the TestData directory that was already created for logging
+			var dbPath = Path.Combine(testDataDir, "stagefright.db");
 			var connectionString = $"Data Source={dbPath}";
 			
 			builder.Services.AddDbContext<StageFrightContext>(options =>
