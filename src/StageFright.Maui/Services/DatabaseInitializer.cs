@@ -29,10 +29,27 @@ public class DatabaseInitializer : IDatabaseInitializer
 		{
 			_logger.LogInformation("Starting database initialization...");
 
-			// Ensure the database is created and all migrations are applied
-			await _context.Database.MigrateAsync();
-
-			_logger.LogInformation("Database migrations completed.");
+			// For SQLite, we can use EnsureCreated for initial setup
+			// and MigrateAsync for schema updates
+			bool created = await _context.Database.EnsureCreatedAsync();
+			
+			if (created)
+			{
+				_logger.LogInformation("Database created successfully.");
+			}
+			else
+			{
+				// Database already exists, try to apply any pending migrations
+				try
+				{
+					await _context.Database.MigrateAsync();
+					_logger.LogInformation("Database migrations completed.");
+				}
+				catch (Exception migrationEx)
+				{
+					_logger.LogWarning(migrationEx, "Migration failed, but database exists. Proceeding with initialization.");
+				}
+			}
 
 			// Seed test data if database is empty
 			_logger.LogInformation("Seeding database with test data...");

@@ -65,9 +65,17 @@ public static class MauiProgram
 			});
 
 			// Register database context
-			var connectionString = config.GetConnectionString("DefaultConnection");
+			// Ensure TestData directory exists and use absolute path
+			var dbDir = Path.Combine(AppContext.BaseDirectory, "TestData");
+			if (!Directory.Exists(dbDir))
+				Directory.CreateDirectory(dbDir);
+			
+			var dbPath = Path.Combine(dbDir, "stagefright.db");
+			var connectionString = $"Data Source={dbPath}";
+			
 			builder.Services.AddDbContext<StageFrightContext>(options =>
-				options.UseSqlite(connectionString));
+				options.UseSqlite(connectionString, sqlOptions => 
+					sqlOptions.MigrationsAssembly("StageFright.Data")));
 
 			// Register database initialization and seeding services
 			builder.Services.AddTransient<IDatabaseSeeder, DatabaseSeeder>();
