@@ -134,6 +134,14 @@ public static class MauiProgram
 			builder.Services.AddScoped<PdfExporter>();
 			builder.Services.AddScoped<CsvExporter>();
 
+			// Register financial report providers
+			builder.Services.AddScoped<StageFright.Reports.Providers.IncomeStatementReportProvider>();
+			builder.Services.AddScoped<StageFright.Reports.Providers.TrialBalanceReportProvider>();
+			builder.Services.AddScoped<StageFright.Reports.Providers.AccountRegisterReportProvider>();
+			builder.Services.AddScoped<StageFright.Reports.Providers.MemberAccountSummaryReportProvider>();
+			builder.Services.AddScoped<StageFright.Reports.Providers.MemberListReportProvider>();
+			builder.Services.AddScoped<StageFright.Reports.Providers.CommitteeReportProvider>();
+
 			// Register UI and platform services (C# only, no JS interop)
 			builder.Services.AddScoped<IFileService, MauiFileService>();
 			builder.Services.AddSingleton<IThemeService, ThemeService>();
