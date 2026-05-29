@@ -18,6 +18,9 @@ public partial class BlazorWebViewHost : ContentView
 #endif
         try
         {
+#if DEBUG
+            System.Diagnostics.Debug.WriteLine("[STARTUP-XAML] BlazorWebViewHost.ctor() - calling InitializeComponent");
+#endif
             InitializeComponent();
 #if DEBUG
             System.Diagnostics.Debug.WriteLine("[STARTUP-XAML] BlazorWebViewHost.InitializeComponent() completed");
@@ -30,12 +33,21 @@ public partial class BlazorWebViewHost : ContentView
         catch (Exception ex)
         {
 #if DEBUG
-            System.Diagnostics.Debug.WriteLine($"[STARTUP-XAML] BlazorWebViewHost.ctor() EXCEPTION: {ex.GetType().Name}: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[STARTUP-XAML] BlazorWebViewHost.ctor() EXCEPTION in InitializeComponent: {ex.GetType().Name}: {ex.Message}");
             if (ex.InnerException != null)
                 System.Diagnostics.Debug.WriteLine($"[STARTUP-XAML] InnerException: {ex.InnerException.GetType().Name}: {ex.InnerException.Message}");
             System.Diagnostics.Debug.WriteLine($"[STARTUP-XAML] Stack Trace: {ex.StackTrace}");
 #endif
             throw;
         }
+    }
+
+    protected override void OnHandlerChanging(HandlerChangingEventArgs args)
+    {
+#if DEBUG
+        if (args.NewHandler != null)
+            System.Diagnostics.Debug.WriteLine("[STARTUP-XAML] BlazorWebViewHost.OnHandlerChanging - handler assigned");
+#endif
+        base.OnHandlerChanging(args);
     }
 }

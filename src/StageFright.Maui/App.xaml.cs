@@ -11,7 +11,25 @@ public partial class App : Application
 
 	public App()
 	{
-		InitializeComponent();
+#if DEBUG
+		System.Diagnostics.Debug.WriteLine("[STARTUP] App.ctor() called");
+#endif
+		try
+		{
+			InitializeComponent();
+#if DEBUG
+			System.Diagnostics.Debug.WriteLine("[STARTUP] App.InitializeComponent() completed");
+#endif
+		}
+		catch (Exception ex)
+		{
+#if DEBUG
+			System.Diagnostics.Debug.WriteLine($"[STARTUP] App.ctor() EXCEPTION: {ex.GetType().Name}: {ex.Message}");
+			if (ex.InnerException != null)
+				System.Diagnostics.Debug.WriteLine($"[STARTUP] InnerException: {ex.InnerException.GetType().Name}: {ex.InnerException.Message}");
+#endif
+			throw;
+		}
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)
