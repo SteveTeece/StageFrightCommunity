@@ -207,7 +207,14 @@ public class DatabaseSeeder : IDatabaseSeeder
 		foreach (var rehearsal in allRehearsals.Where(r => r.Date <= _now))
 		{
 			var attendanceCount = (int)Math.Ceiling(activeMembers.Count * 0.8);
-			var membersToAttend = activeMembers.OrderBy(_ => _random.Next()).Take(attendanceCount).ToList();
+			var shuffled = new List<Member>(activeMembers);
+			// Fisher-Yates shuffle
+			for (int i = shuffled.Count - 1; i > 0; i--)
+			{
+				int randomIndex = _random.Next(0, i + 1);
+				(shuffled[i], shuffled[randomIndex]) = (shuffled[randomIndex], shuffled[i]);
+			}
+			var membersToAttend = shuffled.Take(attendanceCount).ToList();
 
 			foreach (var member in membersToAttend)
 			{
@@ -227,7 +234,14 @@ public class DatabaseSeeder : IDatabaseSeeder
 		foreach (var @event in allEvents.Where(e => e.Date <= _now))
 		{
 			var participationCount = (int)Math.Ceiling(activeMembers.Count * 0.8);
-			var membersToParticipate = activeMembers.OrderBy(_ => _random.Next()).Take(participationCount).ToList();
+			var shuffled = new List<Member>(activeMembers);
+			// Fisher-Yates shuffle
+			for (int i = shuffled.Count - 1; i > 0; i--)
+			{
+				int randomIndex = _random.Next(0, i + 1);
+				(shuffled[i], shuffled[randomIndex]) = (shuffled[randomIndex], shuffled[i]);
+			}
+			var membersToParticipate = shuffled.Take(participationCount).ToList();
 
 			foreach (var member in membersToParticipate)
 			{
@@ -328,7 +342,14 @@ public class DatabaseSeeder : IDatabaseSeeder
 		for (int year = 2023; year <= 2026; year++)
 		{
 			// Randomly select committee members
-			var shuffledMembers = activeMembers.OrderBy(_ => _random.Next()).ToList();
+			var shuffled = new List<Member>(activeMembers);
+			// Fisher-Yates shuffle
+			for (int i = shuffled.Count - 1; i > 0; i--)
+			{
+				int randomIndex = _random.Next(0, i + 1);
+				(shuffled[i], shuffled[randomIndex]) = (shuffled[randomIndex], shuffled[i]);
+			}
+			var shuffledMembers = shuffled;
 
 			// President
 			var president = shuffledMembers[0];

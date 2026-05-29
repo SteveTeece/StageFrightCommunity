@@ -51,7 +51,7 @@ public class StageFrightContext : DbContext
 			entity.Property(m => m.JoinDate).IsRequired();
 
 			// Indexes for common queries
-			entity.HasIndex(m => m.Email).IsUnique().IsUnique();
+			entity.HasIndex(m => m.Email).IsUnique();
 			entity.HasIndex(m => m.Status);
 			entity.HasIndex(m => m.IsDeleted);
 		});
