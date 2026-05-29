@@ -1,26 +1,24 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-using StageFright.Data.Repositories;
-using StageFright.Core.Entities;
+using StageFright.Core.Services;
 
 namespace StageFright.UI.Shared;
 
 public partial class ThemeToggle
 {
     [Inject]
-    public ISettingsRepository SettingsRepository { get; set; } = default!;
-
-    [Inject]
-    public IJSRuntime JS { get; set; } = default!;
+    public IThemeService? ThemeService { get; set; }
 
     private bool IsDarkMode { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
     {
+        if (ThemeService == null)
+            return;
+
         try
         {
-            var settings = await SettingsRepository.GetSettingsAsync();
-            IsDarkMode = settings?.Theme == "Dark";
+            IsDarkMode = ThemeService.CurrentTheme == "Dark";
+            ThemeService.ThemeChanged += OnThemeChanged;
         }
         catch
         {
@@ -30,19 +28,30 @@ public partial class ThemeToggle
 
     private async Task ToggleTheme()
     {
+        if (ThemeService == null)
+            return;
+
         try
         {
-            var settings = await SettingsRepository.GetSettingsAsync();
-            IsDarkMode = !IsDarkMode;
-            settings.Theme = IsDarkMode ? "Dark" : "Light";
-            await SettingsRepository.UpdateSettingsAsync(settings);
-            
-            // Apply theme to document
-            await JS.InvokeVoidAsync("applyTheme", IsDarkMode ? "dark" : "light");
+            await ThemeService.ToggleThemeAsync();
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error toggling theme: {ex}");
+        }
+    }
+
+    private void OnThemeChanged(object? sender, ThemeChangedEventArgs args)
+    {
+        IsDarkMode = args.NewTheme == "Dark";
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        if (ThemeService != null)
+        {
+            ThemeService.ThemeChanged -= OnThemeChanged;
         }
     }
 }

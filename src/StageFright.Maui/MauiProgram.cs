@@ -126,6 +126,10 @@ public static class MauiProgram
 			builder.Services.AddScoped<PdfExporter>();
 			builder.Services.AddScoped<CsvExporter>();
 
+			// Register UI and platform services (C# only, no JS interop)
+			builder.Services.AddScoped<IFileService, MauiFileService>();
+			builder.Services.AddSingleton<IThemeService, ThemeService>();
+
 #if DEBUG
 			builder.Logging.AddDebug();
 #endif
