@@ -16,6 +16,8 @@ namespace StageFright.Maui;
 
 public static class MauiProgram
 {
+	private static IServiceProvider? _serviceProvider;
+
 	public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
@@ -55,7 +57,13 @@ public static class MauiProgram
 				});
 
 			// Register Blazor Web View
-			builder.Services.AddBlazorWebView();
+			builder
+				.Services
+				.AddBlazorWebView()
+#if DEBUG
+				.AddBlazorWebViewDeveloperTools()
+#endif
+			;
 
 			// Register configuration
 			builder.Services.AddSingleton<IConfiguration>(config);
@@ -155,13 +163,24 @@ public static class MauiProgram
 			builder.Logging.AddDebug();
 #endif
 
-			return builder.Build();
+			var app = builder.Build();
+			_serviceProvider = app.Services;
+			return app;
 		}
 		catch (Exception ex)
 		{
 			Log.Fatal(ex, "Application start-up failed");
 			throw;
 		}
+	}
+
+	/// <summary>
+	/// Gets the service provider for the MAUI application.
+	/// This allows Blazor components and other parts of the app to access services.
+	/// </summary>
+	public static IServiceProvider? GetServiceProvider()
+	{
+		return _serviceProvider;
 	}
 
 	/// <summary>
