@@ -1,7 +1,9 @@
 @page "/"
 @using StageFright.Core.Services
+@using Microsoft.Extensions.Logging
 @inject NavigationManager Navigation
 @inject IAppInitializationService InitService
+@inject ILogger<Index> Logger
 
 <PageTitle>StageFright Community</PageTitle>
 
@@ -37,26 +39,41 @@ else
     {
         try
         {
+            Logger.LogInformation("[STARTUP-UI] Index.razor OnInitializedAsync started");
+            Logger.LogInformation("[STARTUP-UI] Current initialization state: {State}", InitService.State);
+
             // Wait for initialization to complete
+            Logger.LogInformation("[STARTUP-UI] Waiting for initialization to complete...");
             await InitService.WaitForInitializationAsync();
+            Logger.LogInformation("[STARTUP-UI] Initialization wait completed. Current state: {State}", InitService.State);
         }
-        catch
+        catch (Exception ex)
         {
             // Error handled by state check in markup
+            Logger.LogError(ex, "[STARTUP-UI] Exception during OnInitializedAsync");
             return;
         }
 
         // If we reach here, initialization is complete
+        Logger.LogInformation("[STARTUP-UI] Initialization state is: {State}", InitService.State);
         if (InitService.State == AppInitializationState.Complete)
         {
             // Redirect to dashboard
+            Logger.LogInformation("[STARTUP-UI] Initialization complete, preparing to redirect to dashboard");
             await Task.Delay(100); // Small delay to ensure UI updates
+            Logger.LogInformation("[STARTUP-UI] Navigating to /dashboard");
             Navigation.NavigateTo("/dashboard", replace: true);
+            Logger.LogInformation("[STARTUP-UI] Navigation.NavigateTo() completed");
+        }
+        else
+        {
+            Logger.LogWarning("[STARTUP-UI] Initialization state is not Complete: {State}", InitService.State);
         }
     }
 
     private void ReloadPage()
     {
+        Logger.LogInformation("[STARTUP-UI] Reload button clicked");
         Navigation.NavigateTo("/", forceLoad: true);
     }
 }

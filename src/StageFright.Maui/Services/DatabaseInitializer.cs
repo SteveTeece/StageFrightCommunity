@@ -28,40 +28,52 @@ public class DatabaseInitializer : IDatabaseInitializer
 	{
 		try
 		{
-			_logger.LogInformation("Starting database initialization...");
+			_logger.LogInformation("[STARTUP-DB] Starting database initialization...");
 
 			// Ensure the database file directory exists
 			var dbPath = GetDatabasePath();
+			_logger.LogInformation("[STARTUP-DB] Database path: {DbPath}", dbPath);
+			
 			var dbDir = Path.GetDirectoryName(dbPath);
 			if (dbDir != null && !Directory.Exists(dbDir))
 			{
+				_logger.LogInformation("[STARTUP-DB] Creating database directory: {DbDir}", dbDir);
 				Directory.CreateDirectory(dbDir);
-				_logger.LogInformation("Created database directory: {DbDir}", dbDir);
+				_logger.LogInformation("[STARTUP-DB] Database directory created successfully");
+			}
+			else if (dbDir != null)
+			{
+				_logger.LogInformation("[STARTUP-DB] Database directory already exists: {DbDir}", dbDir);
 			}
 
 			// Run migrations
-			_logger.LogInformation("Running database migrations...");
+			_logger.LogInformation("[STARTUP-DB] Starting database migrations...");
 			await _context.Database.MigrateAsync();
-			_logger.LogInformation("Database migrations completed successfully.");
+			_logger.LogInformation("[STARTUP-DB] Database migrations completed successfully.");
 
 			// Ensure database structure is created if migrations didn't
+			_logger.LogInformation("[STARTUP-DB] Verifying database connectivity...");
 			if (!await _context.Database.CanConnectAsync())
 			{
-				_logger.LogInformation("Creating database structure...");
+				_logger.LogInformation("[STARTUP-DB] Database connectivity check failed, creating database structure...");
 				await _context.Database.EnsureCreatedAsync();
-				_logger.LogInformation("Database structure created.");
+				_logger.LogInformation("[STARTUP-DB] Database structure created.");
+			}
+			else
+			{
+				_logger.LogInformation("[STARTUP-DB] Database connectivity verified successfully");
 			}
 
 			// Seed test data if database is empty
-			_logger.LogInformation("Checking if database needs seeding...");
+			_logger.LogInformation("[STARTUP-DB] Checking if database needs seeding...");
 			await _seeder.SeedDatabaseAsync(_context);
-			_logger.LogInformation("Database seeding completed.");
+			_logger.LogInformation("[STARTUP-DB] Database seeding completed.");
 
-			_logger.LogInformation("Database initialization completed successfully.");
+			_logger.LogInformation("[STARTUP-DB] Database initialization completed successfully.");
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error during database initialization");
+			_logger.LogError(ex, "[STARTUP-DB] Error during database initialization");
 			throw;
 		}
 	}

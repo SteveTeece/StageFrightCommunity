@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -20,24 +21,49 @@ public static class MauiProgram
 
 	public static MauiApp CreateMauiApp()
 	{
+#if DEBUG
+		Debug.WriteLine("[STARTUP] MauiProgram.CreateMauiApp() started");
+#endif
 		var builder = MauiApp.CreateBuilder();
 
 		// Load configuration from appsettings.json
+#if DEBUG
+		Debug.WriteLine("[STARTUP] Loading configuration from appsettings.json");
+#endif
 		var configBuilder = new ConfigurationBuilder()
 			.SetBasePath(AppContext.BaseDirectory)
 			.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 		var config = configBuilder.Build();
+#if DEBUG
+		Debug.WriteLine("[STARTUP] Configuration loaded successfully");
+#endif
 
 		// Ensure TestData directory exists in repo root
+#if DEBUG
+		Debug.WriteLine("[STARTUP] Finding repository root");
+#endif
 		var repoRoot = FindRepositoryRoot();
+#if DEBUG
+		Debug.WriteLine($"[STARTUP] Repository root: {repoRoot}");
+#endif
 		var testDataDir = Path.Combine(repoRoot, "TestData");
 		if (!Directory.Exists(testDataDir))
 			Directory.CreateDirectory(testDataDir);
+#if DEBUG
+		Debug.WriteLine($"[STARTUP] TestData directory: {testDataDir}");
+#endif
 
 		// Configure Serilog to write to TestData folder, one entry per line
+		var minimumLevel =
+#if DEBUG
+			Serilog.Events.LogEventLevel.Debug;
+#else
+			Serilog.Events.LogEventLevel.Information;
+#endif
+
 		Log.Logger = new LoggerConfiguration()
-			.MinimumLevel.Information()
+			.MinimumLevel.Is(minimumLevel)
 			.WriteTo.Console()
 			.WriteTo.File(
 				Path.Combine(testDataDir, "stagefright.log"),
@@ -46,8 +72,15 @@ public static class MauiProgram
 				outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
 			.CreateLogger();
 
+#if DEBUG
+		Log.Information("[STARTUP] Debug logging enabled for startup sequence");
+#endif
+
 		try
 		{
+#if DEBUG
+			Debug.WriteLine("[STARTUP] Configuring MAUI app");
+#endif
 			builder
 				.UseMauiApp<App>()
 				.ConfigureFonts(fonts =>
@@ -55,8 +88,14 @@ public static class MauiProgram
 					fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 					fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 				});
+#if DEBUG
+			Debug.WriteLine("[STARTUP] Fonts configured");
+#endif
 
 			// Register Blazor Web View
+#if DEBUG
+			Debug.WriteLine("[STARTUP] Registering Blazor Web View with developer tools");
+#endif
 			builder
 				.Services
 				.AddBlazorWebView()
@@ -66,9 +105,15 @@ public static class MauiProgram
 			;
 
 			// Register configuration
+#if DEBUG
+			Debug.WriteLine("[STARTUP] Registering configuration service");
+#endif
 			builder.Services.AddSingleton<IConfiguration>(config);
 
 			// Register logging
+#if DEBUG
+			Debug.WriteLine("[STARTUP] Configuring logging providers");
+#endif
 			builder.Services.AddLogging(loggingBuilder =>
 			{
 				loggingBuilder.ClearProviders();
@@ -80,17 +125,32 @@ public static class MauiProgram
 
 			// Register database context
 			// Use the TestData directory that was already created for logging
+#if DEBUG
+			Debug.WriteLine("[STARTUP] Configuring database context");
+#endif
 			var dbPath = Path.Combine(testDataDir, "stagefright.db");
 			var connectionString = $"Data Source={dbPath}";
+#if DEBUG
+			Debug.WriteLine($"[STARTUP] Database path: {dbPath}");
+#endif
 			
 			builder.Services.AddDbContext<StageFrightContext>(options =>
 				options.UseSqlite(connectionString, sqlOptions => 
 					sqlOptions.MigrationsAssembly("StageFright.Data")));
+#if DEBUG
+			Debug.WriteLine("[STARTUP] Database context configured");
+#endif
 
 			// Register app initialization service
+#if DEBUG
+			Debug.WriteLine("[STARTUP] Registering app initialization service");
+#endif
 			builder.Services.AddSingleton<IAppInitializationService, AppInitializationService>();
 
 			// Register database initialization and seeding services
+#if DEBUG
+			Debug.WriteLine("[STARTUP] Registering database services");
+#endif
 			builder.Services.AddTransient<IDatabaseSeeder, DatabaseSeeder>();
 			builder.Services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
 

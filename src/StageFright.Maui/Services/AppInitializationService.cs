@@ -47,10 +47,16 @@ public class AppInitializationService : IAppInitializationService
 	/// </summary>
 	public async Task WaitForInitializationAsync()
 	{
+#if DEBUG
+		System.Diagnostics.Debug.WriteLine("[STARTUP-INIT] WaitForInitializationAsync() called");
+#endif
 		await _initializationCompletionSource.Task;
 
 		lock (_lockObject)
 		{
+#if DEBUG
+			System.Diagnostics.Debug.WriteLine($"[STARTUP-INIT] Initialization wait completed. State: {_state}");
+#endif
 			if (_state == AppInitializationState.Failed)
 			{
 				throw new InvalidOperationException($"Application initialization failed: {_errorMessage}");
@@ -63,10 +69,16 @@ public class AppInitializationService : IAppInitializationService
 	/// </summary>
 	public void MarkInitializationComplete()
 	{
+#if DEBUG
+		System.Diagnostics.Debug.WriteLine("[STARTUP-INIT] MarkInitializationComplete() called");
+#endif
 		lock (_lockObject)
 		{
 			_state = AppInitializationState.Complete;
 			_errorMessage = null;
+#if DEBUG
+			System.Diagnostics.Debug.WriteLine("[STARTUP-INIT] State changed to Complete");
+#endif
 		}
 
 		_initializationCompletionSource.TrySetResult(true);
@@ -77,10 +89,16 @@ public class AppInitializationService : IAppInitializationService
 	/// </summary>
 	public void MarkInitializationFailed(string errorMessage)
 	{
+#if DEBUG
+		System.Diagnostics.Debug.WriteLine($"[STARTUP-INIT] MarkInitializationFailed() called with message: {errorMessage}");
+#endif
 		lock (_lockObject)
 		{
 			_state = AppInitializationState.Failed;
 			_errorMessage = errorMessage;
+#if DEBUG
+			System.Diagnostics.Debug.WriteLine($"[STARTUP-INIT] State changed to Failed. Error: {_errorMessage}");
+#endif
 		}
 
 		_initializationCompletionSource.TrySetResult(false);
