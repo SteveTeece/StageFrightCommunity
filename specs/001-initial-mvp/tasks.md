@@ -36,14 +36,14 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 
 **Purpose**: Solution and project skeleton; NuGet packages; MAUI host wiring; Blazor entry point.
 
-- [ ] T001 Create `StageFrightCommunity.sln` and all 11 `.csproj` files (App, Core, Data, Plugins.Contracts, Reports, UI, Core.Tests, Data.Tests, Reports.Tests, UI.Tests, Integration.Tests) with correct project references and target frameworks
-- [ ] T002 [P] Add all NuGet packages: MAUI + Blazor Hybrid to App; EF Core 10 + SQLite to Data; Radzen.Blazor + Bootstrap 5.3 to UI; Serilog + OpenTelemetry to App; protobuf-net to Core; QuestPDF to Reports; CsvHelper to Reports; xUnit + bUnit + NSubstitute to test projects
-- [ ] T003 [P] Configure `src/StageFright.App/MauiProgram.cs` skeleton (DI builder, `AddMauiBlazorWebView`, platform targets Windows/MacCatalyst; plugin discovery and migrations to be filled in Phase 2)
-- [ ] T004 [P] Create `src/StageFright.App/MainPage.xaml` and `MainPage.xaml.cs` hosting a single `BlazorWebView` loaded programmatically (no XAML BlazorWebView, per commit `acdad7b` pattern)
-- [ ] T005 [P] Create `src/StageFright.App/wwwroot/index.html` (Bootstrap 5.3 CDN link, `app.css` link, Blazor script)
-- [ ] T006 [P] Create `src/StageFright.App/wwwroot/app.css` with CSS custom properties for light/dark pastel palette (HSL lightness 60–80%, saturation <50%; Finance balance colors HSL(120,35%,70%) green, HSL(0,35%,70%) red, HSL(0,0%,60%) neutral)
-- [ ] T007 [P] Create `src/StageFright.UI/App.razor` (Blazor `<Router>` entry point; `<Found>` renders `ShellLayout`; `<NotFound>` shows not-found component)
-- [ ] T008 [P] Create test project scaffolding: `tests/StageFright.Data.Tests/Infrastructure/DbContextFactory.cs` (SQLite in-memory helper), `tests/StageFright.Core.Tests/Fixtures/TestBase.cs`, shared `CancellationTokenSource` helpers
+- [X] T001 Create `StageFrightCommunity.sln` and all 11 `.csproj` files (App, Core, Data, Plugins.Contracts, Reports, UI, Core.Tests, Data.Tests, Reports.Tests, UI.Tests, Integration.Tests) with correct project references and target frameworks
+- [X] T002 [P] Add all NuGet packages: MAUI + Blazor Hybrid to App; EF Core 10 + SQLite to Data; Radzen.Blazor + Bootstrap 5.3 to UI; Serilog + OpenTelemetry to App; protobuf-net to Core; QuestPDF to Reports; CsvHelper to Reports; xUnit + bUnit + NSubstitute to test projects
+- [X] T003 [P] Configure `src/StageFright.App/MauiProgram.cs` skeleton (DI builder, `AddMauiBlazorWebView`, platform targets Windows/MacCatalyst; plugin discovery and migrations to be filled in Phase 2)
+- [X] T004 [P] Create `src/StageFright.App/MainPage.xaml` and `MainPage.xaml.cs` hosting a single `BlazorWebView` loaded programmatically (no XAML BlazorWebView, per commit `acdad7b` pattern)
+- [X] T005 [P] Create `src/StageFright.App/wwwroot/index.html` (Bootstrap 5.3 CDN link, `app.css` link, Blazor script)
+- [X] T006 [P] Create `src/StageFright.App/wwwroot/app.css` with CSS custom properties for light/dark pastel palette (HSL lightness 60–80%, saturation <50%; Finance balance colors HSL(120,35%,70%) green, HSL(0,35%,70%) red, HSL(0,0%,60%) neutral)
+- [X] T007 [P] Create `src/StageFright.UI/App.razor` (Blazor `<Router>` entry point; `<Found>` renders `ShellLayout`; `<NotFound>` shows not-found component)
+- [X] T008 [P] Create test project scaffolding: `tests/StageFright.Data.Tests/Infrastructure/DbContextFactory.cs` (SQLite in-memory helper), `tests/StageFright.Core.Tests/Fixtures/TestBase.cs`, shared `CancellationTokenSource` helpers
 
 ---
 

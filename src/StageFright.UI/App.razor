@@ -1,0 +1,13 @@
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="@typeof(Layout.ShellLayout)" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not Found — StageFright Community</PageTitle>
+        <div class="container mt-4">
+            <h1>Page Not Found</h1>
+            <p>The requested page could not be found. <a href="/dashboard">Return to dashboard</a>.</p>
+        </div>
+    </NotFound>
+</Router>

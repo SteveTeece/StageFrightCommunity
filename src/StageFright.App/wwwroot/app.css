@@ -1,0 +1,139 @@
+/* StageFright Community — theme CSS custom properties */
+
+:root {
+    /* Brand */
+    --sf-brand-purple: #6e4fa3;
+    --sf-brand-strip-bg: #2d1b54;
+    --sf-brand-strip-fg: #ffffff;
+
+    /* Pastel light palette (HSL lightness 60-80%, saturation <50%) */
+    --sf-accent-members:   hsl(220, 40%, 72%);
+    --sf-accent-rehearsal: hsl(180, 35%, 70%);
+    --sf-accent-events:    hsl(45,  40%, 72%);
+    --sf-accent-reports:   hsl(270, 35%, 72%);
+
+    /* Finance balance colours */
+    --sf-balance-positive: hsl(120, 35%, 70%);
+    --sf-balance-negative: hsl(0,   35%, 70%);
+    --sf-balance-zero:     hsl(0,   0%,  60%);
+
+    /* Committee badge */
+    --sf-committee-badge-light: hsl(120, 40%, 70%);
+    --sf-committee-badge-dark:  hsl(120, 35%, 55%);
+}
+
+/* --- Light theme (default) --- */
+[data-bs-theme="light"] {
+    --sf-body-bg:     hsl(210, 20%, 97%);
+    --sf-body-fg:     hsl(210, 15%, 15%);
+    --sf-card-bg:     #ffffff;
+    --sf-nav-bg:      hsl(210, 20%, 94%);
+    --sf-tile-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    --sf-committee-badge-bg: var(--sf-committee-badge-light);
+}
+
+/* --- Dark theme --- */
+[data-bs-theme="dark"] {
+    --sf-body-bg:     hsl(220, 15%, 13%);
+    --sf-body-fg:     hsl(210, 20%, 88%);
+    --sf-card-bg:     hsl(220, 14%, 18%);
+    --sf-nav-bg:      hsl(220, 15%, 16%);
+    --sf-tile-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    --sf-committee-badge-bg: var(--sf-committee-badge-dark);
+}
+
+/* --- Global resets --- */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+#app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* --- Brand strip --- */
+.sf-brand-strip {
+    background-color: var(--sf-brand-strip-bg);
+    color: var(--sf-brand-strip-fg);
+    padding: 0 1rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.sf-brand-wordmark {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--sf-brand-strip-fg);
+    text-decoration: none;
+}
+
+/* --- Dashboard tiles --- */
+.sf-tile {
+    background: var(--sf-card-bg);
+    box-shadow: var(--sf-tile-shadow);
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    height: 100%;
+}
+
+/* --- Committee badge --- */
+.sf-committee-badge {
+    background-color: var(--sf-committee-badge-bg);
+    border-radius: 0.25rem;
+    padding: 0.1em 0.4em;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+/* --- Validation --- */
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid hsl(120, 35%, 50%);
+}
+
+.invalid {
+    outline: 1px solid hsl(0, 65%, 55%);
+}
+
+.validation-message {
+    color: hsl(0, 65%, 45%);
+}
+
+/* --- Blazor error boundary --- */
+.blazor-error-boundary {
+    background: #b32121;
+    padding: 1rem 1rem 1rem 3.7rem;
+    color: white;
+    border-radius: 0.375rem;
+}
+
+.blazor-error-boundary::after {
+    content: "An unhandled error has occurred.";
+}
+
+/* --- Blazor error UI --- */
+#blazor-error-ui {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 0.375rem;
+    padding: 0.75rem 1rem;
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 1000;
+    display: none;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    margin-left: 0.75rem;
+}

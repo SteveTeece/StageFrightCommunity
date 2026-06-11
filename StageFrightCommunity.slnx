@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/StageFright.App/StageFright.App.csproj" />
+    <Project Path="src/StageFright.Core/StageFright.Core.csproj" />
+    <Project Path="src/StageFright.Data/StageFright.Data.csproj" />
+    <Project Path="src/StageFright.Plugins.Contracts/StageFright.Plugins.Contracts.csproj" />
+    <Project Path="src/StageFright.Reports/StageFright.Reports.csproj" />
+    <Project Path="src/StageFright.UI/StageFright.UI.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/StageFright.Core.Tests/StageFright.Core.Tests.csproj" />
+    <Project Path="tests/StageFright.Data.Tests/StageFright.Data.Tests.csproj" />
+    <Project Path="tests/StageFright.Integration.Tests/StageFright.Integration.Tests.csproj" />
+    <Project Path="tests/StageFright.Reports.Tests/StageFright.Reports.Tests.csproj" />
+    <Project Path="tests/StageFright.TestPlugin/StageFright.TestPlugin.csproj" />
+    <Project Path="tests/StageFright.UI.Tests/StageFright.UI.Tests.csproj" />
+  </Folder>
+</Solution>
