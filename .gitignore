@@ -71,6 +71,9 @@ Thumbs.db
 # dotnet
 .dotnet/
 
+# Claude Code
+.claude/
+
 # User settings
 appsettings.local.json
 appsettings.*.json
