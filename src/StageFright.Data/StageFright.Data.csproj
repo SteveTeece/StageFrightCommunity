@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StageFright.Core\StageFright.Core.csproj" />
+    <ProjectReference Include="..\StageFright.Plugins.Contracts\StageFright.Plugins.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

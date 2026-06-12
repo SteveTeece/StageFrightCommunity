@@ -1,0 +1,46 @@
+@page "/settings"
+@using Microsoft.AspNetCore.Components.Web
+@inject NavigationManager Nav
+@inject IEnumerable<ISettingsTabProvider> TabProviders
+
+<PageTitle>Settings — StageFright Community</PageTitle>
+
+<div class="settings-page">
+    <h1>Settings</h1>
+
+    <div class="tab-container">
+        <ul class="tab-strip" role="tablist" aria-label="Settings tabs">
+            @foreach (var tab in OrderedTabs)
+            {
+                <li role="presentation">
+                    <button class="tab-button @(ActiveTabKey == tab.TabKey ? "active" : "")"
+                            role="tab"
+                            id="tab-@tab.TabKey"
+                            aria-selected="@(ActiveTabKey == tab.TabKey)"
+                            aria-controls="tabpanel-@tab.TabKey"
+                            @onclick="() => ActivateTab(tab.TabKey)">
+                        @tab.TabTitle
+                    </button>
+                </li>
+            }
+        </ul>
+
+        @foreach (var tab in OrderedTabs)
+        {
+            <div class="tab-panel @(ActiveTabKey == tab.TabKey ? "active" : "")"
+                 id="tabpanel-@tab.TabKey"
+                 role="tabpanel"
+                 aria-labelledby="tab-@tab.TabKey"
+                 hidden="@(ActiveTabKey != tab.TabKey)">
+                @try
+                {
+                    <DynamicComponent Type="tab.SettingsComponentType" />
+                }
+                catch (Exception)
+                {
+                    <div class="alert alert-warning">This settings tab failed to load.</div>
+                }
+            </div>
+        }
+    </div>
+</div>

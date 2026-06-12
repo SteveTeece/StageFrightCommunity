@@ -55,86 +55,86 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 
 ### Entities (one file per type; all parallelizable)
 
-- [ ] T009 [P] Create `src/StageFright.Core/Entities/Member.cs` (all fields from data-model.md: Id, Name, StreetAddress, Phone?, Email?, JoinDate, DateOfBirth?, Status, ActivateDate?, InactivateDate?, soft-delete fields, CreatedAt, UpdatedAt; XML docs on all public members)
-- [ ] T010 [P] Create `src/StageFright.Core/Entities/CommitteeMembership.cs` (Id, MemberId FK, Year, Position, soft-delete fields, CreatedAt, UpdatedAt; unique constraint noted in XML docs)
-- [ ] T011 [P] Create `src/StageFright.Core/Entities/Rehearsal.cs` (Id, Date, Time, Notes?, StoredAttendanceRate?, soft-delete fields, CreatedAt, UpdatedAt)
-- [ ] T012 [P] Create `src/StageFright.Core/Entities/AttendanceRecord.cs` (Id, RehearsalId FK, MemberId FK, Attended bool, CreatedAt; soft-delete fields present but note immutability in XML docs; unique constraint noted)
-- [ ] T013 [P] Create `src/StageFright.Core/Entities/Event.cs` (Id, Date, EventTypeId FK, Notes?, StoredParticipationRate?, soft-delete fields, CreatedAt, UpdatedAt)
-- [ ] T014 [P] Create `src/StageFright.Core/Entities/EventType.cs` (Id, Name, IsSystemDefault bool, soft-delete fields, CreatedAt, UpdatedAt)
-- [ ] T015 [P] Create `src/StageFright.Core/Entities/ParticipationRecord.cs` (Id, EventId FK, MemberId FK, Participated bool, CreatedAt, soft-delete fields; unique constraint noted)
-- [ ] T016 [P] Create `src/StageFright.Core/Entities/Fee.cs` (Id, MemberId FK, FeeType, Amount decimal(18,2), FeeDate, DueDate, PaidAtCreation bool, RehearsalId? FK, CreatedAt; **NO soft-delete fields** per Constitution §3.4; XML docs on immutability)
-- [ ] T017 [P] Create `src/StageFright.Core/Entities/Payment.cs` (Id, MemberId FK, Date, Amount decimal(18,2), PaymentMethod, PaymentType, Notes?, CreatedAt, UpdatedAt; **NO soft-delete fields**; XML docs on Notes-only mutability)
-- [ ] T018 [P] Create `src/StageFright.Core/Entities/Transaction.cs` (Id, Date, CategoryId FK, DebitAmount, CreditAmount, GLAccount string, MemberId? FK, PaymentId? FK, FeeId? FK, Description?, CreatedAt; **NO soft-delete fields**; XML docs on paired-entry invariant)
-- [ ] T019 [P] Create `src/StageFright.Core/Entities/Category.cs` (Id, Name, Type CategoryType, GLAccount string, SortOrder, IsSystem bool, soft-delete fields, CreatedAt, UpdatedAt; XML docs on auto-assignment and archive guard)
-- [ ] T020 [P] Create `src/StageFright.Core/Entities/Settings.cs` (Id, OrganizationName, AnnualFee, AttendanceFee, MembershipRenewalMonth, CommitteeRenewalMonth, MaxAgeRangeYears, MinimumMemberAge, Theme, LastCommitteeResetYear?, SchemaVersion, soft-delete fields, CreatedAt, UpdatedAt)
-- [ ] T021 [P] Create `src/StageFright.Core/Entities/AuditTrailEntry.cs` (Id, EntityType, EntityId Guid, Action AuditAction, OldValue?, NewValue?, UserId string, Timestamp; no soft-delete fields; XML docs on retention policy)
+- [X] T009 [P] Create `src/StageFright.Core/Entities/Member.cs` (all fields from data-model.md: Id, Name, StreetAddress, Phone?, Email?, JoinDate, DateOfBirth?, Status, ActivateDate?, InactivateDate?, soft-delete fields, CreatedAt, UpdatedAt; XML docs on all public members)
+- [X] T010 [P] Create `src/StageFright.Core/Entities/CommitteeMembership.cs` (Id, MemberId FK, Year, Position, soft-delete fields, CreatedAt, UpdatedAt; unique constraint noted in XML docs)
+- [X] T011 [P] Create `src/StageFright.Core/Entities/Rehearsal.cs` (Id, Date, Time, Notes?, StoredAttendanceRate?, soft-delete fields, CreatedAt, UpdatedAt)
+- [X] T012 [P] Create `src/StageFright.Core/Entities/AttendanceRecord.cs` (Id, RehearsalId FK, MemberId FK, Attended bool, CreatedAt; soft-delete fields present but note immutability in XML docs; unique constraint noted)
+- [X] T013 [P] Create `src/StageFright.Core/Entities/Event.cs` (Id, Date, EventTypeId FK, Notes?, StoredParticipationRate?, soft-delete fields, CreatedAt, UpdatedAt)
+- [X] T014 [P] Create `src/StageFright.Core/Entities/EventType.cs` (Id, Name, IsSystemDefault bool, soft-delete fields, CreatedAt, UpdatedAt)
+- [X] T015 [P] Create `src/StageFright.Core/Entities/ParticipationRecord.cs` (Id, EventId FK, MemberId FK, Participated bool, CreatedAt, soft-delete fields; unique constraint noted)
+- [X] T016 [P] Create `src/StageFright.Core/Entities/Fee.cs` (Id, MemberId FK, FeeType, Amount decimal(18,2), FeeDate, DueDate, PaidAtCreation bool, RehearsalId? FK, CreatedAt; **NO soft-delete fields** per Constitution §3.4; XML docs on immutability)
+- [X] T017 [P] Create `src/StageFright.Core/Entities/Payment.cs` (Id, MemberId FK, Date, Amount decimal(18,2), PaymentMethod, PaymentType, Notes?, CreatedAt, UpdatedAt; **NO soft-delete fields**; XML docs on Notes-only mutability)
+- [X] T018 [P] Create `src/StageFright.Core/Entities/Transaction.cs` (Id, Date, CategoryId FK, DebitAmount, CreditAmount, GLAccount string, MemberId? FK, PaymentId? FK, FeeId? FK, Description?, CreatedAt; **NO soft-delete fields**; XML docs on paired-entry invariant)
+- [X] T019 [P] Create `src/StageFright.Core/Entities/Category.cs` (Id, Name, Type CategoryType, GLAccount string, SortOrder, IsSystem bool, soft-delete fields, CreatedAt, UpdatedAt; XML docs on auto-assignment and archive guard)
+- [X] T020 [P] Create `src/StageFright.Core/Entities/Settings.cs` (Id, OrganizationName, AnnualFee, AttendanceFee, MembershipRenewalMonth, CommitteeRenewalMonth, MaxAgeRangeYears, MinimumMemberAge, Theme, LastCommitteeResetYear?, SchemaVersion, soft-delete fields, CreatedAt, UpdatedAt)
+- [X] T021 [P] Create `src/StageFright.Core/Entities/AuditTrailEntry.cs` (Id, EntityType, EntityId Guid, Action AuditAction, OldValue?, NewValue?, UserId string, Timestamp; no soft-delete fields; XML docs on retention policy)
 
 ### Enums
 
-- [ ] T022 [P] Create enums in `src/StageFright.Core/Enums/`: `MemberStatus.cs` {Active, Inactive}, `FeeType.cs` {Annual, Attendance, Other}, `PaymentMethod.cs` {Cash, Check, Card, ElectronicTransfer, Other}, `PaymentType.cs` {Annual, Attendance, Other}, `CategoryType.cs` {Income, Expense}, `Theme.cs` {Light, Dark}, `AuditAction.cs` {Create, Update, Delete, Restore, StatusChange, Forgiveness, CommitteeReset, Import, Export}, `ReportColumnAlignment.cs`, `ReportColumnFormat.cs`, `ReportFilterType.cs` (all with XML docs on all enum values; one file per enum)
+- [X] T022 [P] Create enums in `src/StageFright.Core/Enums/`: `MemberStatus.cs` {Active, Inactive}, `FeeType.cs` {Annual, Attendance, Other}, `PaymentMethod.cs` {Cash, Check, Card, ElectronicTransfer, Other}, `PaymentType.cs` {Annual, Attendance, Other}, `CategoryType.cs` {Income, Expense}, `Theme.cs` {Light, Dark}, `AuditAction.cs` {Create, Update, Delete, Restore, StatusChange, Forgiveness, CommitteeReset, Import, Export}, `ReportColumnAlignment.cs`, `ReportColumnFormat.cs`, `ReportFilterType.cs` (all with XML docs on all enum values; one file per enum)
 
 ### Exceptions
 
-- [ ] T023 [P] Create `src/StageFright.Core/Exceptions/ValidationException.cs`, `DataAccessException.cs`, `EntityNotFoundException.cs`, `DuplicateEntityException.cs`, `GLBalanceException.cs` (each extends `Exception`; includes EntityType, EntityId, OperationContext, Timestamp, CorrelationId, inner exception; XML docs; one class per file)
-- [ ] T024 [P] Create `src/StageFright.Core/Exceptions/ImportException.cs`, `PluginLoadException.cs`, `ConcurrencyException.cs`, `DataIntegrityException.cs` (same pattern as T023; one class per file)
+- [X] T023 [P] Create `src/StageFright.Core/Exceptions/ValidationException.cs`, `DataAccessException.cs`, `EntityNotFoundException.cs`, `DuplicateEntityException.cs`, `GLBalanceException.cs` (each extends `Exception`; includes EntityType, EntityId, OperationContext, Timestamp, CorrelationId, inner exception; XML docs; one class per file)
+- [X] T024 [P] Create `src/StageFright.Core/Exceptions/ImportException.cs`, `PluginLoadException.cs`, `ConcurrencyException.cs`, `DataIntegrityException.cs` (same pattern as T023; one class per file)
 
 ### Repository + Service Contracts
 
-- [ ] T025 [P] Create `src/StageFright.Core/Contracts/IRepository.cs` (GetByIdAsync, GetAllAsync, AddAsync, UpdateAsync) and `ISoftDeletableRepository.cs` (extends IRepository; ArchiveAsync, RestoreAsync, GetArchivedAsync) with XML docs
-- [ ] T026 [P] Create `src/StageFright.Core/Contracts/IMemberRepository.cs` (extends ISoftDeletable; GetByStatusAsync, GetActiveAsOfAsync) and `ICommitteeMembershipRepository.cs` (extends ISoftDeletable; GetByMemberAsync, GetByYearAsync, SoftDeleteCurrentYearAsync)
-- [ ] T027 [P] Create `src/StageFright.Core/Contracts/IRehearsalRepository.cs` (GetMostRecentPastAsync), `IEventRepository.cs` (GetMostRecentPastAsync, AgmExistsInYearAsync), `IEventTypeRepository.cs`, `IAttendanceRepository.cs` (ExistsAsync, AddBatchAsync), `IParticipationRepository.cs`
-- [ ] T028 [P] Create `src/StageFright.Core/Contracts/IFeeRepository.cs` (GetByIdAsync, AddAsync, GetByMemberAsync, GetUnpaidOrderedFifoAsync, AnnualFeeExistsAsync, AttendanceFeeExistsAsync — no Update/Delete per immutability), `IPaymentRepository.cs` (GetByIdAsync, AddAsync, UpdateNotesAsync, GetByMemberAsync), `IGLRepository.cs` (AddPairAsync, GetMemberBalanceAsync, GetTotalOutstandingAsync, GetByDateRangeAsync, GetByMemberAsync, GetBalanceTotalsAsync)
-- [ ] T029 [P] Create `src/StageFright.Core/Contracts/ICategoryRepository.cs` (IsReferencedByTransactionsAsync, GetNextGLAccountAsync, ReorderAsync), `ISettingsRepository.cs` (GetAsync, SaveAsync), `IAuditTrailRepository.cs` (AddAsync, GetByEntityAsync, PurgeOlderThanAsync), `IUnitOfWork.cs` (ExecuteInTransactionAsync), `IAuditTrailService.cs` (LogAsync overloads)
+- [X] T025 [P] Create `src/StageFright.Core/Contracts/IRepository.cs` (GetByIdAsync, GetAllAsync, AddAsync, UpdateAsync) and `ISoftDeletableRepository.cs` (extends IRepository; ArchiveAsync, RestoreAsync, GetArchivedAsync) with XML docs
+- [X] T026 [P] Create `src/StageFright.Core/Contracts/IMemberRepository.cs` (extends ISoftDeletable; GetByStatusAsync, GetActiveAsOfAsync) and `ICommitteeMembershipRepository.cs` (extends ISoftDeletable; GetByMemberAsync, GetByYearAsync, SoftDeleteCurrentYearAsync)
+- [X] T027 [P] Create `src/StageFright.Core/Contracts/IRehearsalRepository.cs` (GetMostRecentPastAsync), `IEventRepository.cs` (GetMostRecentPastAsync, AgmExistsInYearAsync), `IEventTypeRepository.cs`, `IAttendanceRepository.cs` (ExistsAsync, AddBatchAsync), `IParticipationRepository.cs`
+- [X] T028 [P] Create `src/StageFright.Core/Contracts/IFeeRepository.cs` (GetByIdAsync, AddAsync, GetByMemberAsync, GetUnpaidOrderedFifoAsync, AnnualFeeExistsAsync, AttendanceFeeExistsAsync — no Update/Delete per immutability), `IPaymentRepository.cs` (GetByIdAsync, AddAsync, UpdateNotesAsync, GetByMemberAsync), `IGLRepository.cs` (AddPairAsync, GetMemberBalanceAsync, GetTotalOutstandingAsync, GetByDateRangeAsync, GetByMemberAsync, GetBalanceTotalsAsync)
+- [X] T029 [P] Create `src/StageFright.Core/Contracts/ICategoryRepository.cs` (IsReferencedByTransactionsAsync, GetNextGLAccountAsync, ReorderAsync), `ISettingsRepository.cs` (GetAsync, SaveAsync), `IAuditTrailRepository.cs` (AddAsync, GetByEntityAsync, PurgeOlderThanAsync), `IUnitOfWork.cs` (ExecuteInTransactionAsync), `IAuditTrailService.cs` (LogAsync overloads)
 
 ### Plugin Contracts
 
-- [ ] T030 [P] Create `src/StageFright.Plugins.Contracts/IDashboardTileProvider.cs` (TileId, Title, ModuleName, DisplayOrder, TileComponentType, GetTileDataAsync) and `TileData.cs` (Metrics dict, AccentColor?, NavigateRoute?)
-- [ ] T031 [P] Create `src/StageFright.Plugins.Contracts/ISettingsTabProvider.cs` (TabTitle, TabIcon, TabKey, DisplayOrder, SettingsComponentType), `IMenuItemProvider.cs` (ModuleName, DisplayOrder, GetMenuItems), `MenuItem.cs` (Title, Route, Icon?, DisplayOrder, SubItems, BadgeText?)
-- [ ] T032 [P] Create `src/StageFright.Plugins.Contracts/IDataAccessProvider.cs` (PluginName, DbContextType, RegisterServices)
-- [ ] T033 [P] Create `src/StageFright.Plugins.Contracts/IReportProvider.cs` (ReportId, ReportName, ModuleName, DisplayOrder, Filters, GenerateAsync)
+- [X] T030 [P] Create `src/StageFright.Plugins.Contracts/IDashboardTileProvider.cs` (TileId, Title, ModuleName, DisplayOrder, TileComponentType, GetTileDataAsync) and `TileData.cs` (Metrics dict, AccentColor?, NavigateRoute?)
+- [X] T031 [P] Create `src/StageFright.Plugins.Contracts/ISettingsTabProvider.cs` (TabTitle, TabIcon, TabKey, DisplayOrder, SettingsComponentType), `IMenuItemProvider.cs` (ModuleName, DisplayOrder, GetMenuItems), `MenuItem.cs` (Title, Route, Icon?, DisplayOrder, SubItems, BadgeText?)
+- [X] T032 [P] Create `src/StageFright.Plugins.Contracts/IDataAccessProvider.cs` (PluginName, DbContextType, RegisterServices)
+- [X] T033 [P] Create `src/StageFright.Plugins.Contracts/IReportProvider.cs` (ReportId, ReportName, ModuleName, DisplayOrder, Filters, GenerateAsync)
 
 ### Report Data Models
 
-- [ ] T034 [P] Create `src/StageFright.Reports/Models/ReportData.cs` (Title, SubTitle?, GeneratedAt, Columns, Sections, GrandTotal?), `ReportColumn.cs` (Header, Alignment, Format), `ReportSection.cs` (Heading?, Rows, Subtotal?), `ReportRow.cs` (Cells, IsEmphasized)
-- [ ] T035 [P] Create `src/StageFright.Reports/Models/ReportFilterDefinition.cs` (Key, Type, Label, Options, DefaultValue), `ReportFilterValues.cs` (Dictionary<string,string>), `ReportMenuSection.cs` (ModuleName, Reports list)
-- [ ] T036 [P] Create `src/StageFright.Reports/Registry/IReportProviderRegistry.cs` (GetMenuSections, GetProvider)
-- [ ] T037 [P] Create `src/StageFright.Reports/Rendering/IPdfReportRenderer.cs` (Render returns byte[]) and `ICsvReportExporter.cs` (Export returns string)
+- [X] T034 [P] Create `src/StageFright.Reports/Models/ReportData.cs` (Title, SubTitle?, GeneratedAt, Columns, Sections, GrandTotal?), `ReportColumn.cs` (Header, Alignment, Format), `ReportSection.cs` (Heading?, Rows, Subtotal?), `ReportRow.cs` (Cells, IsEmphasized)
+- [X] T035 [P] Create `src/StageFright.Reports/Models/ReportFilterDefinition.cs` (Key, Type, Label, Options, DefaultValue), `ReportFilterValues.cs` (Dictionary<string,string>), `ReportMenuSection.cs` (ModuleName, Reports list)
+- [X] T036 [P] Create `src/StageFright.Reports/Registry/IReportProviderRegistry.cs` (GetMenuSections, GetProvider)
+- [X] T037 [P] Create `src/StageFright.Reports/Rendering/IPdfReportRenderer.cs` (Render returns byte[]) and `ICsvReportExporter.cs` (Export returns string)
 
 ### EF Core DbContext and Configurations
 
-- [ ] T038 Create `src/StageFright.Data/StageFrightDbContext.cs` (DbSet<> per entity; soft-delete global query filters; constructor accepting DbContextOptions; seeding system categories Cash/MemberReceivable/BadDebtExpense on model creation)
-- [ ] T039 [P] Create 13 `IEntityTypeConfiguration<T>` classes in `src/StageFright.Data/Configurations/` (one per entity: `MemberConfiguration.cs`, `CommitteeMembershipConfiguration.cs`, `RehearsalConfiguration.cs`, `AttendanceRecordConfiguration.cs`, `EventConfiguration.cs`, `EventTypeConfiguration.cs`, `ParticipationRecordConfiguration.cs`, `FeeConfiguration.cs`, `PaymentConfiguration.cs`, `TransactionConfiguration.cs`, `CategoryConfiguration.cs`, `SettingsConfiguration.cs`, `AuditTrailEntryConfiguration.cs`; each sets HasPrecision(18,2) for decimals, unique indexes, DeleteBehavior.Restrict, soft-delete query filters where applicable)
-- [ ] T040 Create initial EF Core database migration `InitialCreate` in `src/StageFright.Data/Migrations/` using `dotnet ef migrations add InitialCreate` targeting `StageFrightDbContext`
+- [X] T038 Create `src/StageFright.Data/StageFrightDbContext.cs` (DbSet<> per entity; soft-delete global query filters; constructor accepting DbContextOptions; seeding system categories Cash/MemberReceivable/BadDebtExpense on model creation)
+- [X] T039 [P] Create 13 `IEntityTypeConfiguration<T>` classes in `src/StageFright.Data/Configurations/` (one per entity: `MemberConfiguration.cs`, `CommitteeMembershipConfiguration.cs`, `RehearsalConfiguration.cs`, `AttendanceRecordConfiguration.cs`, `EventConfiguration.cs`, `EventTypeConfiguration.cs`, `ParticipationRecordConfiguration.cs`, `FeeConfiguration.cs`, `PaymentConfiguration.cs`, `TransactionConfiguration.cs`, `CategoryConfiguration.cs`, `SettingsConfiguration.cs`, `AuditTrailEntryConfiguration.cs`; each sets HasPrecision(18,2) for decimals, unique indexes, DeleteBehavior.Restrict, soft-delete query filters where applicable)
+- [X] T040 Create initial EF Core database migration `InitialCreate` in `src/StageFright.Data/Migrations/` using `dotnet ef migrations add InitialCreate` targeting `StageFrightDbContext`
 
 ### Repository Implementations
 
-- [ ] T041 [P] Create `src/StageFright.Data/Repositories/BaseRepository.cs` (generic IRepository<T> impl; GetByIdAsync, GetAllAsync, AddAsync, UpdateAsync; translates EF exceptions to DataAccessException/EntityNotFoundException/DuplicateEntityException) and `SoftDeletableBaseRepository.cs` (extends BaseRepository; ArchiveAsync, RestoreAsync, GetArchivedAsync; validates not-already-deleted)
-- [ ] T042 [P] Create `src/StageFright.Data/Repositories/MemberRepository.cs` (GetByStatusAsync, GetActiveAsOfAsync using ActivateDate/InactivateDate effective-date query) and `CommitteeMembershipRepository.cs` (GetByMemberAsync, GetByYearAsync, SoftDeleteCurrentYearAsync)
-- [ ] T043 [P] Create `src/StageFright.Data/Repositories/RehearsalRepository.cs` (GetMostRecentPastAsync), `AttendanceRepository.cs` (ExistsAsync, AddBatchAsync — no soft-delete operations exposed), `EventRepository.cs` (GetMostRecentPastAsync, AgmExistsInYearAsync), `EventTypeRepository.cs`, `ParticipationRepository.cs`
-- [ ] T044 [P] Create `src/StageFright.Data/Repositories/FeeRepository.cs` (no Update/Delete methods; GetUnpaidOrderedFifoAsync uses GL-derived balance: FeeDate ASC, CreatedAt ASC, Id ASC), `PaymentRepository.cs` (UpdateNotesAsync validates only Notes changed, bumps UpdatedAt, audits old/new), `GLRepository.cs` (AddPairAsync validates equal amounts; GetMemberBalanceAsync: Σdebits − Σcredits; GetBalanceTotalsAsync for Trial Balance)
-- [ ] T045 [P] Create `src/StageFright.Data/Repositories/CategoryRepository.cs` (IsReferencedByTransactionsAsync checks any Transaction.CategoryId match; GetNextGLAccountAsync: counts existing Income/Expense categories by CreatedAt ASC to determine next 10xx/20xx), `SettingsRepository.cs` (GetAsync/SaveAsync singleton), `AuditTrailRepository.cs` (AddAsync, GetByEntityAsync, PurgeOlderThanAsync — hard delete log records only)
-- [ ] T046 Create `src/StageFright.Data/UnitOfWork.cs` (implements IUnitOfWork; wraps IDbContextTransaction; on exception → RollbackAsync; verifies GL balance via IGLRepository after each financial operation)
-- [ ] T047 [P] Create `src/StageFright.Data/PluginData/PluginMigrationRunner.cs` (discovers IDataAccessProvider implementations; constructs plugin DbContext on shared connection string with `__EFMigrationsHistory_{PluginName}` table; runs Database.Migrate(); catches failures → PluginLoadException + log + skip)
+- [X] T041 [P] Create `src/StageFright.Data/Repositories/BaseRepository.cs` (generic IRepository<T> impl; GetByIdAsync, GetAllAsync, AddAsync, UpdateAsync; translates EF exceptions to DataAccessException/EntityNotFoundException/DuplicateEntityException) and `SoftDeletableBaseRepository.cs` (extends BaseRepository; ArchiveAsync, RestoreAsync, GetArchivedAsync; validates not-already-deleted)
+- [X] T042 [P] Create `src/StageFright.Data/Repositories/MemberRepository.cs` (GetByStatusAsync, GetActiveAsOfAsync using ActivateDate/InactivateDate effective-date query) and `CommitteeMembershipRepository.cs` (GetByMemberAsync, GetByYearAsync, SoftDeleteCurrentYearAsync)
+- [X] T043 [P] Create `src/StageFright.Data/Repositories/RehearsalRepository.cs` (GetMostRecentPastAsync), `AttendanceRepository.cs` (ExistsAsync, AddBatchAsync — no soft-delete operations exposed), `EventRepository.cs` (GetMostRecentPastAsync, AgmExistsInYearAsync), `EventTypeRepository.cs`, `ParticipationRepository.cs`
+- [X] T044 [P] Create `src/StageFright.Data/Repositories/FeeRepository.cs` (no Update/Delete methods; GetUnpaidOrderedFifoAsync uses GL-derived balance: FeeDate ASC, CreatedAt ASC, Id ASC), `PaymentRepository.cs` (UpdateNotesAsync validates only Notes changed, bumps UpdatedAt, audits old/new), `GLRepository.cs` (AddPairAsync validates equal amounts; GetMemberBalanceAsync: Σdebits − Σcredits; GetBalanceTotalsAsync for Trial Balance)
+- [X] T045 [P] Create `src/StageFright.Data/Repositories/CategoryRepository.cs` (IsReferencedByTransactionsAsync checks any Transaction.CategoryId match; GetNextGLAccountAsync: counts existing Income/Expense categories by CreatedAt ASC to determine next 10xx/20xx), `SettingsRepository.cs` (GetAsync/SaveAsync singleton), `AuditTrailRepository.cs` (AddAsync, GetByEntityAsync, PurgeOlderThanAsync — hard delete log records only)
+- [X] T046 Create `src/StageFright.Data/UnitOfWork.cs` (implements IUnitOfWork; wraps IDbContextTransaction; on exception → RollbackAsync; verifies GL balance via IGLRepository after each financial operation)
+- [X] T047 [P] Create `src/StageFright.Data/PluginData/PluginMigrationRunner.cs` (discovers IDataAccessProvider implementations; constructs plugin DbContext on shared connection string with `__EFMigrationsHistory_{PluginName}` table; runs Database.Migrate(); catches failures → PluginLoadException + log + skip)
 
 ### Core Application Services
 
-- [ ] T048 [P] Create `src/StageFright.Core/Modules/AuditTrailService.cs` (implements IAuditTrailService; LogAsync(entityType, entityId, action, oldValue, newValue, userId="system"); calls IAuditTrailRepository.AddAsync; startup purge PurgeOlderThanAsync(now − 12 months) with failure tolerance)
-- [ ] T049 [P] Create `src/StageFright.Core/Modules/Finance/GLAccountAssignmentService.cs` (AssignNextAsync(CategoryType): queries ICategoryRepository.GetNextGLAccountAsync; Income → "10{nn}", Expense → "20{nn}"; fixed accounts: Cash="0100", MemberReceivable="0101", BadDebtExpense="9900")
+- [X] T048 [P] Create `src/StageFright.Core/Modules/AuditTrailService.cs` (implements IAuditTrailService; LogAsync(entityType, entityId, action, oldValue, newValue, userId="system"); calls IAuditTrailRepository.AddAsync; startup purge PurgeOlderThanAsync(now − 12 months) with failure tolerance)
+- [X] T049 [P] Create `src/StageFright.Core/Modules/Finance/GLAccountAssignmentService.cs` (AssignNextAsync(CategoryType): queries ICategoryRepository.GetNextGLAccountAsync; Income → "10{nn}", Expense → "20{nn}"; fixed accounts: Cash="0100", MemberReceivable="0101", BadDebtExpense="9900")
 
 ### MAUI Composition Root
 
-- [ ] T050 Complete `src/StageFright.App/MauiProgram.cs` with: Serilog configuration (file + console sinks, structured properties), OpenTelemetry traces + metrics, all repository + service DI registrations, startup sequence (core migration → plugin discovery → PluginMigrationRunner → audit purge → `Plugins/` directory auto-creation)
-- [ ] T051 [P] Create `src/StageFright.App/PluginLoader.cs` (scans `Plugins/*.dll`; loads each in AssemblyLoadContext; reflects for IDashboardTileProvider, ISettingsTabProvider, IMenuItemProvider, IReportProvider, IDataAccessProvider implementations; registers found providers; catches per-assembly failures → PluginLoadException log → skip)
+- [X] T050 Complete `src/StageFright.App/MauiProgram.cs` with: Serilog configuration (file + console sinks, structured properties), OpenTelemetry traces + metrics, all repository + service DI registrations, startup sequence (core migration → plugin discovery → PluginMigrationRunner → audit purge → `Plugins/` directory auto-creation)
+- [X] T051 [P] Create `src/StageFright.App/PluginLoader.cs` (scans `Plugins/*.dll`; loads each in AssemblyLoadContext; reflects for IDashboardTileProvider, ISettingsTabProvider, IMenuItemProvider, IReportProvider, IDataAccessProvider implementations; registers found providers; catches per-assembly failures → PluginLoadException log → skip)
 
 ### Blazor UI Shell
 
-- [ ] T052 Create `src/StageFright.UI/Layout/ShellLayout.razor` and `ShellLayout.razor.cs` (dark brand strip with purple "StageFright" wordmark, white navigation bar; injects `IEnumerable<IMenuItemProvider>` for nav items; Dashboard always first, Settings always last; `NavigationManager.NavigateTo` for all navigation; tab-accessible)
-- [ ] T053 [P] Create `src/StageFright.UI/Pages/Settings/SettingsPage.razor` and `SettingsPage.razor.cs` (`@page "/settings"`; tab container rendering `IEnumerable<ISettingsTabProvider>` ordered by DisplayOrder; deep-link via `?tab=` query param; failing tab provider skipped gracefully)
+- [X] T052 Create `src/StageFright.UI/Layout/ShellLayout.razor` and `ShellLayout.razor.cs` (dark brand strip with purple "StageFright" wordmark, white navigation bar; injects `IEnumerable<IMenuItemProvider>` for nav items; Dashboard always first, Settings always last; `NavigationManager.NavigateTo` for all navigation; tab-accessible)
+- [X] T053 [P] Create `src/StageFright.UI/Pages/Settings/SettingsPage.razor` and `SettingsPage.razor.cs` (`@page "/settings"`; tab container rendering `IEnumerable<ISettingsTabProvider>` ordered by DisplayOrder; deep-link via `?tab=` query param; failing tab provider skipped gracefully)
 
 ### Foundational Tests
 
-- [ ] T054 [P] Create entity field constraint unit tests in `tests/StageFright.Core.Tests/Entities/` (verify Fee/Payment/Transaction have NO IsDeleted field via reflection; verify Member soft-delete fields present; verify decimal precision attributes; verify unique constraint annotations)
-- [ ] T055 [P] Create repository integration tests in `tests/StageFright.Data.Tests/` using SQLite in-memory connections: CRUD for all 13 entity repositories, global query filter (soft-deleted records excluded from GetAllAsync), ArchiveAsync/RestoreAsync, UpdateNotes-only immutability on Payment, FeeRepository no-Update enforcement
+- [X] T054 [P] Create entity field constraint unit tests in `tests/StageFright.Core.Tests/Entities/` (verify Fee/Payment/Transaction have NO IsDeleted field via reflection; verify Member soft-delete fields present; verify decimal precision attributes; verify unique constraint annotations)
+- [X] T055 [P] Create repository integration tests in `tests/StageFright.Data.Tests/` using SQLite in-memory connections: CRUD for all 13 entity repositories, global query filter (soft-deleted records excluded from GetAllAsync), ArchiveAsync/RestoreAsync, UpdateNotes-only immutability on Payment, FeeRepository no-Update enforcement
 
 **Checkpoint**: Foundation ready — all entities, repositories, DAL, DI, Blazor shell, and base infrastructure complete. User story implementation can begin.
 
@@ -148,17 +148,17 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 
 ### Tests for User Story 1
 
-- [ ] T056 [P] [US1] Write SetupWizard validation unit tests in `tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs` (all fields mandatory, fees ≥ 0, renewal month 1–12) — ensure tests FAIL before implementation
-- [ ] T057 [P] [US1] Write SetupService integration tests in `tests/StageFright.Data.Tests/Settings/SetupServiceIntegrationTests.cs` (Settings persisted with correct values, system categories Cash/MemberReceivable/BadDebtExpense seeded with correct GL accounts, zero Fee records after setup) — ensure tests FAIL before implementation
+- [X] T056 [P] [US1] Write SetupWizard validation unit tests in `tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs` (all fields mandatory, fees ≥ 0, renewal month 1–12) — ensure tests FAIL before implementation
+- [X] T057 [P] [US1] Write SetupService integration tests in `tests/StageFright.Data.Tests/Settings/SetupServiceIntegrationTests.cs` (Settings persisted with correct values, system categories Cash/MemberReceivable/BadDebtExpense seeded with correct GL accounts, zero Fee records after setup) — ensure tests FAIL before implementation
 
 ### Implementation for User Story 1
 
-- [ ] T058 [P] [US1] Create `src/StageFright.Core/Modules/Settings/SetupService.cs` (InitializeAsync: creates Settings singleton, seeds system categories with fixed GL accounts, logs setup-completion event; IsSetupCompleteAsync: checks Settings != null)
-- [ ] T059 [P] [US1] Create `src/StageFright.Core/Modules/Settings/SettingsService.cs` (GetAsync, SaveAsync, thin wrapper over ISettingsRepository; audits changes)
-- [ ] T060 [US1] Implement first-run detection in `src/StageFright.UI/App.razor`: `OnInitializedAsync` checks `ISetupService.IsSetupCompleteAsync()`; if false → `NavigationManager.NavigateTo("/setup")`
-- [ ] T061 [P] [US1] Create `src/StageFright.UI/Pages/Setup/SetupWizard.razor` and `SetupWizard.razor.cs` (`@page "/setup"`; form fields: OrganizationName required, AnnualFee ≥ 0, AttendanceFee ≥ 0, MembershipRenewalMonth 1–12; Bootstrap 5.3 validation; on valid submit → `SetupService.InitializeAsync()` → navigate to `/dashboard`)
-- [ ] T062 [P] [US1] Create bUnit tests in `tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs` (renders form, all fields mandatory, fee < 0 rejected, month 13 rejected, valid submit calls SetupService + navigates)
-- [ ] T063 [US1] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V1_FirstRunSetupTests.cs` (end-to-end: empty DB → wizard render → fill valid data → save → redirect → Settings persisted → zero Fees → system categories present)
+- [X] T058 [P] [US1] Create `src/StageFright.Core/Modules/Settings/SetupService.cs` (InitializeAsync: creates Settings singleton, seeds system categories with fixed GL accounts, logs setup-completion event; IsSetupCompleteAsync: checks Settings != null)
+- [X] T059 [P] [US1] Create `src/StageFright.Core/Modules/Settings/SettingsService.cs` (GetAsync, SaveAsync, thin wrapper over ISettingsRepository; audits changes)
+- [X] T060 [US1] Implement first-run detection in `src/StageFright.UI/App.razor`: `OnInitializedAsync` checks `ISetupService.IsSetupCompleteAsync()`; if false → `NavigationManager.NavigateTo("/setup")`
+- [X] T061 [P] [US1] Create `src/StageFright.UI/Pages/Setup/SetupWizard.razor` and `SetupWizard.razor.cs` (`@page "/setup"`; form fields: OrganizationName required, AnnualFee ≥ 0, AttendanceFee ≥ 0, MembershipRenewalMonth 1–12; Bootstrap 5.3 validation; on valid submit → `SetupService.InitializeAsync()` → navigate to `/dashboard`)
+- [X] T062 [P] [US1] Create bUnit tests in `tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs` (renders form, all fields mandatory, fee < 0 rejected, month 13 rejected, valid submit calls SetupService + navigates)
+- [X] T063 [US1] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V1_FirstRunSetupTests.cs` (end-to-end: empty DB → wizard render → fill valid data → save → redirect → Settings persisted → zero Fees → system categories present)
 
 **Checkpoint**: US1 complete — first-run setup fully functional and independently testable.
 
