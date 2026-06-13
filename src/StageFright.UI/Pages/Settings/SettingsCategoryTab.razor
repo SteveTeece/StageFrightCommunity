@@ -1,0 +1,208 @@
+@using StageFright.Core.Enums
+@using StageFright.Core.Entities
+
+<div class="category-settings-tab">
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">@_errorMessage</div>
+    }
+
+    @if (!string.IsNullOrEmpty(_successMessage))
+    {
+        <div class="alert alert-success" role="status">@_successMessage</div>
+    }
+
+    @if (_loading)
+    {
+        <p role="status" aria-live="polite">Loading categories…</p>
+    }
+    else
+    {
+        <!-- Add Category Form -->
+        <div class="card mb-4" style="max-width: 480px;">
+            <div class="card-body">
+                <h5 class="card-title">Add Category</h5>
+                <EditForm Model="_newCategoryModel" OnValidSubmit="HandleCreateAsync">
+                    <DataAnnotationsValidator />
+                    <div class="mb-2">
+                        <label for="cat-name" class="form-label">Name <span aria-hidden="true" class="text-danger">*</span></label>
+                        <InputText id="cat-name" class="form-control" @bind-Value="_newCategoryModel.Name"
+                                   placeholder="Category name" />
+                        <ValidationMessage For="() => _newCategoryModel.Name" class="text-danger small" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="cat-type" class="form-label">Type <span aria-hidden="true" class="text-danger">*</span></label>
+                        <InputSelect id="cat-type" class="form-select" @bind-Value="_newCategoryModel.Type">
+                            <option value="@CategoryType.Income">Income</option>
+                            <option value="@CategoryType.Expense">Expense</option>
+                        </InputSelect>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm" disabled="@_creating">
+                        @(_creating ? "Creating…" : "Add Category")
+                    </button>
+                </EditForm>
+            </div>
+        </div>
+
+        <!-- Income Categories -->
+        <section aria-labelledby="income-heading" class="mb-4">
+            <h5 id="income-heading">Income Categories</h5>
+            @if (!_incomeCategories.Any())
+            {
+                <p class="text-muted small">No income categories defined yet.</p>
+            }
+            else
+            {
+                <table class="table table-sm table-hover" aria-label="Income categories">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">GL Account</th>
+                            <th scope="col">Order</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var (cat, index) in _incomeCategories.Select((c, i) => (c, i)))
+                        {
+                            <tr>
+                                <td>
+                                    @cat.Name
+                                    @if (cat.IsSystem)
+                                    {
+                                        <span class="badge bg-secondary ms-1" title="System category">System</span>
+                                    }
+                                </td>
+                                <td><code>@cat.GLAccount</code></td>
+                                <td>
+                                    @if (!cat.IsSystem)
+                                    {
+                                        <button class="btn btn-outline-secondary btn-sm me-1"
+                                                @onclick="() => MoveUpAsync(cat, _incomeCategories)"
+                                                disabled="@(index == 0)"
+                                                title="Move up" aria-label="Move @cat.Name up">▲</button>
+                                        <button class="btn btn-outline-secondary btn-sm"
+                                                @onclick="() => MoveDownAsync(cat, _incomeCategories)"
+                                                disabled="@(index == _incomeCategories.Count - 1)"
+                                                title="Move down" aria-label="Move @cat.Name down">▼</button>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!cat.IsSystem)
+                                    {
+                                        <button class="btn btn-outline-danger btn-sm"
+                                                @onclick="() => ArchiveAsync(cat.Id)">
+                                            Archive
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">Read-only</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+
+        <!-- Expense Categories -->
+        <section aria-labelledby="expense-heading" class="mb-4">
+            <h5 id="expense-heading">Expense Categories</h5>
+            @if (!_expenseCategories.Any())
+            {
+                <p class="text-muted small">No expense categories defined yet.</p>
+            }
+            else
+            {
+                <table class="table table-sm table-hover" aria-label="Expense categories">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">GL Account</th>
+                            <th scope="col">Order</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var (cat, index) in _expenseCategories.Select((c, i) => (c, i)))
+                        {
+                            <tr>
+                                <td>
+                                    @cat.Name
+                                    @if (cat.IsSystem)
+                                    {
+                                        <span class="badge bg-secondary ms-1" title="System category">System</span>
+                                    }
+                                </td>
+                                <td><code>@cat.GLAccount</code></td>
+                                <td>
+                                    @if (!cat.IsSystem)
+                                    {
+                                        <button class="btn btn-outline-secondary btn-sm me-1"
+                                                @onclick="() => MoveUpAsync(cat, _expenseCategories)"
+                                                disabled="@(index == 0)"
+                                                title="Move up" aria-label="Move @cat.Name up">▲</button>
+                                        <button class="btn btn-outline-secondary btn-sm"
+                                                @onclick="() => MoveDownAsync(cat, _expenseCategories)"
+                                                disabled="@(index == _expenseCategories.Count - 1)"
+                                                title="Move down" aria-label="Move @cat.Name down">▼</button>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!cat.IsSystem)
+                                    {
+                                        <button class="btn btn-outline-danger btn-sm"
+                                                @onclick="() => ArchiveAsync(cat.Id)">
+                                            Archive
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">Read-only</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+
+        <!-- Archived Categories -->
+        @if (_archivedCategories.Any())
+        {
+            <section aria-labelledby="archived-heading" class="mb-4">
+                <h5 id="archived-heading">Archived Categories</h5>
+                <table class="table table-sm" aria-label="Archived categories">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">GL Account</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cat in _archivedCategories)
+                        {
+                            <tr class="text-muted">
+                                <td>@cat.Name</td>
+                                <td>@cat.Type</td>
+                                <td><code>@cat.GLAccount</code></td>
+                                <td>
+                                    <button class="btn btn-outline-secondary btn-sm"
+                                            @onclick="() => RestoreAsync(cat.Id)">
+                                        Restore
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </section>
+        }
+    }
+</div>

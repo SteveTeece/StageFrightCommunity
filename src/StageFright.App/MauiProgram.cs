@@ -13,6 +13,7 @@ using StageFright.Core.Modules.Rehearsals;
 using StageFright.Core.Modules.Settings;
 using StageFright.Data;
 using StageFright.UI.Modules.Dashboard;
+using StageFright.UI.Pages.Settings;
 using StageFright.Data.PluginData;
 using StageFright.Data.Repositories;
 using StageFright.Plugins.Contracts;
@@ -150,6 +151,9 @@ public static class MauiProgram
         // Finance module (Phase 6)
         services.AddScoped<IFeeService, FeeService>();
 
+        // Category management module (Phase 7)
+        services.AddScoped<ICategoryService, CategoryService>();
+
         // Menu and dashboard providers
         services.AddSingleton<IMenuItemProvider, MemberMenuItemProvider>();
         services.AddSingleton<IMenuItemProvider, RehearsalMenuItemProvider>();
@@ -157,6 +161,9 @@ public static class MauiProgram
         services.AddScoped<IDashboardTileProvider, MembersDashboardTileProvider>();
         services.AddScoped<IDashboardTileProvider, RehearsalsDashboardTileProvider>();
         services.AddScoped<IDashboardTileProvider, FinanceDashboardTileProvider>();
+
+        // Settings tab providers (Phase 7)
+        services.AddScoped<ISettingsTabProvider, CategorySettingsTabProvider>();
     }
 
     private static void RunStartupSequence(IServiceProvider services, string dbPath, string pluginsPath, string connectionString)

@@ -253,17 +253,17 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 
 ### Tests for User Story 7
 
-- [ ] T097 [P] [US7] Write `GLAccountAssignmentServiceTests.cs` in `tests/StageFright.Core.Tests/Modules/Finance/` (first income → GL#1000; second income → GL#1001; first expense → GL#2000; creation-order determinism) — FAIL first
-- [ ] T098 [P] [US7] Write `CategoryServiceTests.cs` (archive blocked while Transaction references; archive unblocked after GL reversals; system categories immutable; reorder updates SortOrder)
-- [ ] T099 [P] [US7] Write `CategoryRepositoryIntegrationTests.cs` in `tests/StageFright.Data.Tests/` (IsReferencedByTransactionsAsync true/false; GetNextGLAccountAsync sequential ordering by CreatedAt ASC)
+- [X] T097 [P] [US7] Write `GLAccountAssignmentServiceTests.cs` in `tests/StageFright.Core.Tests/Modules/Finance/` (first income → GL#1000; second income → GL#1001; first expense → GL#2000; creation-order determinism) — FAIL first
+- [X] T098 [P] [US7] Write `CategoryServiceTests.cs` (archive blocked while Transaction references; archive unblocked after GL reversals; system categories immutable; reorder updates SortOrder)
+- [X] T099 [P] [US7] Write `CategoryRepositoryIntegrationTests.cs` in `tests/StageFright.Data.Tests/` (IsReferencedByTransactionsAsync true/false; GetNextGLAccountAsync sequential ordering by CreatedAt ASC)
 
 ### Implementation for User Story 7
 
-- [ ] T100 [P] [US7] Create `src/StageFright.Core/Modules/Settings/CategoryService.cs` (CreateAsync: assigns GL via GLAccountAssignmentService, audits; ArchiveAsync: checks IsReferencedByTransactionsAsync first, throws ValidationException if referenced; RestoreAsync; ReorderAsync; system categories (IsSystem=true) blocked from edit/archive)
-- [ ] T101 [P] [US7] Create `src/StageFright.UI/Pages/Settings/CategorySettingsTabProvider.cs` (TabTitle="Categories", TabKey="categories", DisplayOrder=10, SettingsComponentType=typeof(SettingsCategoryTab))
-- [ ] T102 [P] [US7] Create `src/StageFright.UI/Pages/Settings/SettingsCategoryTab.razor` and `SettingsCategoryTab.razor.cs` (list income + expense categories with GL account column; create form; archive/restore buttons; drag-reorder; system categories shown as read-only)
-- [ ] T103 [P] [US7] Create bUnit test `tests/StageFright.UI.Tests/Pages/Settings/SettingsCategoryTabTests.cs` (renders by type; create; archive blocked message; restore; system category buttons disabled)
-- [ ] T104 [US7] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V7_CategoryManagementTests.cs` (create income + expense → GL sequential; archive referenced → blocked; archive unreferenced → archive view; reorder persists)
+- [X] T100 [P] [US7] Create `src/StageFright.Core/Modules/Settings/CategoryService.cs` (CreateAsync: assigns GL via GLAccountAssignmentService, audits; ArchiveAsync: checks IsReferencedByTransactionsAsync first, throws ValidationException if referenced; RestoreAsync; ReorderAsync; system categories (IsSystem=true) blocked from edit/archive)
+- [X] T101 [P] [US7] Create `src/StageFright.UI/Pages/Settings/CategorySettingsTabProvider.cs` (TabTitle="Categories", TabKey="categories", DisplayOrder=10, SettingsComponentType=typeof(SettingsCategoryTab))
+- [X] T102 [P] [US7] Create `src/StageFright.UI/Pages/Settings/SettingsCategoryTab.razor` and `SettingsCategoryTab.razor.cs` (list income + expense categories with GL account column; create form; archive/restore buttons; drag-reorder; system categories shown as read-only)
+- [X] T103 [P] [US7] Create bUnit test `tests/StageFright.UI.Tests/Pages/Settings/SettingsCategoryTabTests.cs` (renders by type; create; archive blocked message; restore; system category buttons disabled)
+- [X] T104 [US7] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V7_CategoryManagementTests.cs` (create income + expense → GL sequential; archive referenced → blocked; archive unreferenced → archive view; reorder persists)
 
 **Checkpoint**: US7 complete — category management independently functional.
 
