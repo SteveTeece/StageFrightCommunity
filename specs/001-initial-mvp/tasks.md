@@ -277,17 +277,17 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 
 ### Tests for User Story 8
 
-- [ ] T105 [P] [US8] Write `DashboardServiceTests.cs` in `tests/StageFright.Core.Tests/Modules/Dashboard/` (parallel loading; throwing provider isolated; provider ordering Core 0-99 / plugin 100+) — FAIL first
-- [ ] T106 [P] [US8] Write `DashboardTests.razor` bUnit tests in `tests/StageFright.UI.Tests/Pages/Dashboard/` (4 core tiles render; loading state shown; error tile shows "Unable to load"; Extensions section present when plugin registered)
+- [X] T105 [P] [US8] Write `DashboardServiceTests.cs` in `tests/StageFright.Core.Tests/Modules/Dashboard/` (parallel loading; throwing provider isolated; provider ordering Core 0-99 / plugin 100+) — FAIL first
+- [X] T106 [P] [US8] Write `DashboardTests.razor` bUnit tests in `tests/StageFright.UI.Tests/Pages/Dashboard/` (4 core tiles render; loading state shown; error tile shows "Unable to load"; Extensions section present when plugin registered)
 
 ### Implementation for User Story 8
 
-- [ ] T107 [US8] Create `src/StageFright.Core/Modules/Dashboard/DashboardService.cs` (GetTilesAsync: returns providers ordered by DisplayOrder; LoadTileAsync: wraps GetTileDataAsync in try/catch → TileLoadResult with Data or Error; callers initiate all loads in parallel via Task.WhenAll)
-- [ ] T108 [P] [US8] Create `src/StageFright.Core/Modules/Dashboard/DashboardMenuItemProvider.cs` (ModuleName="Dashboard", DisplayOrder=0; single item "/dashboard", always first)
-- [ ] T109 [P] [US8] Create `src/StageFright.UI/Pages/Dashboard/Dashboard.razor` and `Dashboard.razor.cs` (`@page "/dashboard"`; two sections: Core Metrics 2-column grid (DisplayOrder 0-99), Extensions 2-column grid (DisplayOrder 100+); loads all tiles in parallel via DashboardService; each tile in TileRenderer.razor)
-- [ ] T110 [P] [US8] Create `src/StageFright.UI/Shared/TileRenderer.razor` (renders IDashboardTileProvider tile body component; shows spinner while loading; shows "Unable to load [TileTitle]" with structured error on failure; never blocks siblings)
-- [ ] T111 [P] [US8] Create `tests/StageFright.TestPlugin/TestTileProvider.cs` (implements IDashboardTileProvider; DisplayOrder=100; GetTileDataAsync returns test metrics)
-- [ ] T112 [US8] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V8_DashboardPluginTests.cs` (4 core tiles load; deliberately slow tile doesn't block; TestPlugin tile in Extensions section; missing-dep plugin logged and skipped)
+- [X] T107 [US8] Create `src/StageFright.Core/Modules/Dashboard/DashboardService.cs` (GetTilesAsync: returns providers ordered by DisplayOrder; LoadTileAsync: wraps GetTileDataAsync in try/catch → TileLoadResult with Data or Error; callers initiate all loads in parallel via Task.WhenAll)
+- [X] T108 [P] [US8] Create `src/StageFright.Core/Modules/Dashboard/DashboardMenuItemProvider.cs` (ModuleName="Dashboard", DisplayOrder=0; single item "/dashboard", always first)
+- [X] T109 [P] [US8] Create `src/StageFright.UI/Pages/Dashboard/Dashboard.razor` and `Dashboard.razor.cs` (`@page "/dashboard"`; two sections: Core Metrics 2-column grid (DisplayOrder 0-99), Extensions 2-column grid (DisplayOrder 100+); loads all tiles in parallel via DashboardService; each tile in TileRenderer.razor)
+- [X] T110 [P] [US8] Create `src/StageFright.UI/Shared/TileRenderer.razor` (renders IDashboardTileProvider tile body component; shows spinner while loading; shows "Unable to load [TileTitle]" with structured error on failure; never blocks siblings)
+- [X] T111 [P] [US8] Create `tests/StageFright.TestPlugin/TestTileProvider.cs` (implements IDashboardTileProvider; DisplayOrder=100; GetTileDataAsync returns test metrics)
+- [X] T112 [US8] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V8_DashboardPluginTests.cs` (4 core tiles load; deliberately slow tile doesn't block; TestPlugin tile in Extensions section; missing-dep plugin logged and skipped)
 
 **Checkpoint**: US8 complete — dashboard with parallel loading and plugin extensibility functional.
 

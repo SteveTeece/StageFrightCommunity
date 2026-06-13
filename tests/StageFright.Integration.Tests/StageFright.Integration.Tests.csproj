@@ -31,6 +31,7 @@
     <ProjectReference Include="..\..\src\StageFright.Data\StageFright.Data.csproj" />
     <ProjectReference Include="..\..\src\StageFright.UI\StageFright.UI.csproj" />
     <ProjectReference Include="..\..\src\StageFright.Reports\StageFright.Reports.csproj" />
+    <ProjectReference Include="..\StageFright.TestPlugin\StageFright.TestPlugin.csproj" />
   </ItemGroup>
 
 </Project>

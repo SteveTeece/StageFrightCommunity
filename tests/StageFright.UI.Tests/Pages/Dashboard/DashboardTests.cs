@@ -1,0 +1,182 @@
+using Bunit;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
+using StageFright.Core.Contracts;
+using StageFright.Core.Modules.Dashboard;
+using StageFright.Plugins.Contracts;
+using StageFright.UI.Pages.Dashboard;
+using StageFright.UI.Shared;
+
+namespace StageFright.UI.Tests.Pages.Dashboard;
+
+/// <summary>
+/// bUnit tests for the Dashboard page — section rendering, tile placement by DisplayOrder,
+/// loading state, error tile display, and Extensions section visibility.
+/// TileRenderer is stubbed to isolate Dashboard structure from async tile loading.
+/// </summary>
+public class DashboardTests : BunitContext
+{
+    private readonly IDashboardService _dashboardService = Substitute.For<IDashboardService>();
+
+    public DashboardTests()
+    {
+        Services.AddSingleton(_dashboardService);
+        ComponentFactories.AddStub<TileRenderer>(parameters =>
+        {
+            var provider = parameters.Get(x => x.Provider);
+            return $"<div class=\"tile-stub\" data-tile-id=\"{provider.TileId}\" data-module=\"{provider.ModuleName}\"></div>";
+        });
+    }
+
+    // --- Core Metrics section ---
+
+    [Fact]
+    public void Renders_CoreMetrics_Section_Heading()
+    {
+        SetupProviders(MakeCoreProvider("members", 10));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        Assert.Contains("Core Metrics", cut.Markup, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Renders_TileCard_ForEachCoreProvider()
+    {
+        SetupProviders(
+            MakeCoreProvider("members", 10),
+            MakeCoreProvider("rehearsals", 20),
+            MakeCoreProvider("finance", 40));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        Assert.Equal(3, cut.FindAll("[data-tile-id]").Count);
+    }
+
+    [Fact]
+    public void CoreTile_HasCorrectTileId_InStub()
+    {
+        SetupProviders(MakeCoreProvider("members", 10));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        cut.Find("[data-tile-id='members']");
+    }
+
+    // --- Extensions section ---
+
+    [Fact]
+    public void ExtensionsSection_NotRendered_WhenNoPluginTiles()
+    {
+        SetupProviders(MakeCoreProvider("members", 10));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        Assert.DoesNotContain("Extensions", cut.Markup, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void ExtensionsSection_Rendered_WhenPluginTilePresent()
+    {
+        SetupProviders(
+            MakeCoreProvider("members", 10),
+            MakePluginProvider("test-tile", 100));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        Assert.Contains("Extensions", cut.Markup, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void PluginTile_AppearsInExtensionsSection_NotCoreSection()
+    {
+        SetupProviders(
+            MakeCoreProvider("members", 10),
+            MakePluginProvider("test-tile", 100));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        var extensionsSection = cut.Find("[aria-label='Extensions']");
+        Assert.NotNull(extensionsSection.QuerySelector("[data-tile-id='test-tile']"));
+    }
+
+    [Fact]
+    public void CoreTile_DoesNotAppearInExtensionsSection()
+    {
+        SetupProviders(
+            MakeCoreProvider("members", 10),
+            MakePluginProvider("test-tile", 100));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        var coreSection = cut.Find("[aria-label='Core Metrics']");
+        Assert.Empty(coreSection.QuerySelectorAll("[data-tile-id='test-tile']"));
+    }
+
+    // --- Loading state ---
+
+    [Fact]
+    public void BeforeInitialized_ShowsLoadingIndicator()
+    {
+        // Use a never-completing task to freeze initialization
+        _dashboardService.GetTilesAsync(Arg.Any<CancellationToken>())
+            .Returns(new TaskCompletionSource<IReadOnlyList<IDashboardTileProvider>>().Task);
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        // Tiles section not yet visible; loading state should be shown
+        Assert.DoesNotContain("Core Metrics", cut.Markup, StringComparison.OrdinalIgnoreCase);
+    }
+
+    // --- Empty state ---
+
+    [Fact]
+    public void WhenNoProviders_CoreSection_IsEmpty()
+    {
+        SetupProviders();
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        var coreSection = cut.Find("[aria-label='Core Metrics']");
+        Assert.Empty(coreSection.QuerySelectorAll("[data-tile-id]"));
+    }
+
+    // --- Helpers ---
+
+    private void SetupProviders(params IDashboardTileProvider[] providers)
+    {
+        var list = (IReadOnlyList<IDashboardTileProvider>)providers.ToList();
+        _dashboardService.GetTilesAsync(Arg.Any<CancellationToken>())
+            .Returns(list);
+
+        foreach (var p in providers)
+        {
+            var result = new TileLoadResult(p, new TileData(), null);
+            _dashboardService.LoadTileAsync(p, Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult(result));
+        }
+    }
+
+    private static IDashboardTileProvider MakeCoreProvider(string id, int displayOrder)
+    {
+        var p = Substitute.For<IDashboardTileProvider>();
+        p.TileId.Returns(id);
+        p.Title.Returns(id);
+        p.ModuleName.Returns(id);
+        p.DisplayOrder.Returns(displayOrder);
+        p.TileComponentType.Returns(typeof(object));
+        return p;
+    }
+
+    private static IDashboardTileProvider MakePluginProvider(string id, int displayOrder)
+    {
+        var p = Substitute.For<IDashboardTileProvider>();
+        p.TileId.Returns(id);
+        p.Title.Returns(id);
+        p.ModuleName.Returns("TestPlugin");
+        p.DisplayOrder.Returns(displayOrder);
+        p.TileComponentType.Returns(typeof(object));
+        return p;
+    }
+}

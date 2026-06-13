@@ -7,6 +7,7 @@ using Serilog;
 using Serilog.Events;
 using StageFright.Core.Contracts;
 using StageFright.Core.Modules.AuditTrail;
+using StageFright.Core.Modules.Dashboard;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Members;
 using StageFright.Core.Modules.Rehearsals;
@@ -154,7 +155,11 @@ public static class MauiProgram
         // Category management module (Phase 7)
         services.AddScoped<ICategoryService, CategoryService>();
 
+        // Dashboard service (Phase 8)
+        services.AddScoped<IDashboardService, DashboardService>();
+
         // Menu and dashboard providers
+        services.AddSingleton<IMenuItemProvider, DashboardMenuItemProvider>();
         services.AddSingleton<IMenuItemProvider, MemberMenuItemProvider>();
         services.AddSingleton<IMenuItemProvider, RehearsalMenuItemProvider>();
         services.AddSingleton<IMenuItemProvider, FinanceMenuItemProvider>();

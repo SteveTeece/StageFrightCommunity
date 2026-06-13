@@ -1,0 +1,53 @@
+@using StageFright.Core.Modules.Dashboard
+@using StageFright.Plugins.Contracts
+
+@if (_loading)
+{
+    <div class="d-flex align-items-center gap-2" role="status" aria-live="polite">
+        <div class="spinner-border spinner-border-sm text-secondary" aria-hidden="true"></div>
+        <span class="text-muted small">Loading…</span>
+    </div>
+}
+else if (_result?.Error is not null)
+{
+    <div class="text-danger small" role="alert">
+        <span>Unable to load @Provider.Title</span>
+    </div>
+}
+else
+{
+    <DynamicComponent Type="@Provider.TileComponentType" />
+}
+
+@code {
+    /// <summary>The tile provider whose body component this renderer displays.</summary>
+    [Parameter, EditorRequired] public IDashboardTileProvider Provider { get; set; } = null!;
+
+    /// <summary>Pre-started load task from DashboardService.LoadTileAsync.</summary>
+    [Parameter, EditorRequired] public Task<TileLoadResult> LoadTask { get; set; } = null!;
+
+    private TileLoadResult? _result;
+    private bool _loading = true;
+
+    protected override void OnInitialized()
+    {
+        _ = AwaitLoadAsync();
+    }
+
+    private async Task AwaitLoadAsync()
+    {
+        try
+        {
+            _result = await LoadTask;
+        }
+        catch (Exception ex)
+        {
+            _result = new TileLoadResult(Provider, null, ex);
+        }
+        finally
+        {
+            _loading = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+}
