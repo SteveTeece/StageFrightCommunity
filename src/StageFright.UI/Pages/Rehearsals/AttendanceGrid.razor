@@ -1,0 +1,88 @@
+@page "/rehearsals/{RehearsalId:guid}/attendance"
+
+<PageTitle>Record Attendance — StageFright Community</PageTitle>
+
+<div class="page-header mb-3">
+    <h1 class="h3">Record Attendance</h1>
+    @if (_rehearsal is not null)
+    {
+        <p class="text-muted mb-0">@_rehearsal.Date.ToString("dddd, d MMMM yyyy")</p>
+    }
+</div>
+
+@if (_alreadyRecorded)
+{
+    <div class="alert alert-info" role="alert">
+        Attendance has already been recorded for this rehearsal. Records are immutable after saving.
+    </div>
+    <a href="/rehearsals" class="btn btn-outline-secondary">Back to Rehearsals</a>
+}
+else if (_loading)
+{
+    <p role="status" aria-live="polite">Loading members…</p>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">@_errorMessage</div>
+    }
+
+    @if (_members.Count == 0)
+    {
+        <div class="alert alert-warning">No active members found. Add members before recording attendance.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" aria-label="Attendance grid">
+                <thead>
+                    <tr>
+                        <th scope="col">Member</th>
+                        <th scope="col" class="text-center">Attended</th>
+                        <th scope="col" class="text-center">Mark as Unpaid</th>
+                        <th scope="col" class="text-end">Fee Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in _rows)
+                    {
+                        <tr>
+                            <td>@row.MemberName</td>
+                            <td class="text-center">
+                                <input type="checkbox" class="form-check-input" id="attended-@row.MemberId"
+                                       checked="@row.Attended"
+                                       @onchange="e => row.Attended = (bool)(e.Value ?? false)"
+                                       aria-label="@row.MemberName attended" />
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" class="form-check-input" id="unpaid-@row.MemberId"
+                                       checked="@row.MarkAsUnpaid"
+                                       disabled="@(!row.Attended)"
+                                       @onchange="e => row.MarkAsUnpaid = (bool)(e.Value ?? false)"
+                                       aria-label="Mark @row.MemberName as unpaid" />
+                            </td>
+                            <td class="text-end">
+                                @if (row.Attended && row.MemberIsActive)
+                                {
+                                    <span>@_attendanceFee.ToString("C")</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-primary" @onclick="SaveAttendance" disabled="@_saving">
+                @(_saving ? "Saving…" : "Save Attendance")
+            </button>
+            <a href="/rehearsals" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    }
+}

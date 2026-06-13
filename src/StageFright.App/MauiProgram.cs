@@ -9,6 +9,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Members;
+using StageFright.Core.Modules.Rehearsals;
 using StageFright.Core.Modules.Settings;
 using StageFright.Data;
 using StageFright.UI.Modules.Dashboard;
@@ -133,15 +134,24 @@ public static class MauiProgram
         services.AddScoped<ISetupService, SetupService>();
         services.AddScoped<GLAccountAssignmentService>();
 
+        // Settings service
+        services.AddScoped<ISettingsService, SettingsService>();
+
         // Members module (Phase 4)
         services.AddScoped<AgeCalculationService>();
         services.AddScoped<MemberValidationService>();
         services.AddScoped<IMemberService, MemberService>();
         services.AddScoped<ICommitteeService, CommitteeService>();
 
+        // Rehearsals module (Phase 5)
+        services.AddScoped<IRehearsalService, RehearsalService>();
+        services.AddScoped<IAttendanceService, AttendanceService>();
+
         // Menu and dashboard providers
         services.AddSingleton<IMenuItemProvider, MemberMenuItemProvider>();
+        services.AddSingleton<IMenuItemProvider, RehearsalMenuItemProvider>();
         services.AddScoped<IDashboardTileProvider, MembersDashboardTileProvider>();
+        services.AddScoped<IDashboardTileProvider, RehearsalsDashboardTileProvider>();
     }
 
     private static void RunStartupSequence(IServiceProvider services, string dbPath, string pluginsPath, string connectionString)

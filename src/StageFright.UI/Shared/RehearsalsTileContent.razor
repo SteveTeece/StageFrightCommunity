@@ -1,0 +1,42 @@
+@inject IRehearsalService RehearsalService
+
+@if (_loading)
+{
+    <span class="text-muted small">Loading...</span>
+}
+else if (_error)
+{
+    <span class="text-danger small">Unable to load</span>
+}
+else
+{
+    <ul class="list-unstyled mb-0 small">
+        <li>Last rehearsal: <strong>@(_lastDate?.ToString("d MMM yyyy") ?? "—")</strong></li>
+        <li>Attendance rate: <strong>@(_attendanceRate.HasValue ? $"{_attendanceRate:F1}%" : "—")</strong></li>
+    </ul>
+}
+
+@code {
+    private bool _loading = true;
+    private bool _error;
+    private DateTime? _lastDate;
+    private decimal? _attendanceRate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var recent = await RehearsalService.GetMostRecentPastAsync(DateTime.UtcNow);
+            _lastDate = recent?.Date;
+            _attendanceRate = recent?.StoredAttendanceRate;
+        }
+        catch
+        {
+            _error = true;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}
