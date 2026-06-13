@@ -147,11 +147,16 @@ public static class MauiProgram
         services.AddScoped<IRehearsalService, RehearsalService>();
         services.AddScoped<IAttendanceService, AttendanceService>();
 
+        // Finance module (Phase 6)
+        services.AddScoped<IFeeService, FeeService>();
+
         // Menu and dashboard providers
         services.AddSingleton<IMenuItemProvider, MemberMenuItemProvider>();
         services.AddSingleton<IMenuItemProvider, RehearsalMenuItemProvider>();
+        services.AddSingleton<IMenuItemProvider, FinanceMenuItemProvider>();
         services.AddScoped<IDashboardTileProvider, MembersDashboardTileProvider>();
         services.AddScoped<IDashboardTileProvider, RehearsalsDashboardTileProvider>();
+        services.AddScoped<IDashboardTileProvider, FinanceDashboardTileProvider>();
     }
 
     private static void RunStartupSequence(IServiceProvider services, string dbPath, string pluginsPath, string connectionString)

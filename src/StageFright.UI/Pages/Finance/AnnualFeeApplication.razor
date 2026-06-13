@@ -1,0 +1,52 @@
+@page "/finance/annual-fees"
+
+<PageTitle>Apply Annual Fees — StageFright Community</PageTitle>
+
+<div class="page-header mb-3">
+    <h1 class="h3">Apply Annual Membership Fees</h1>
+    <p class="text-muted mb-0">Apply the current year annual fee to all eligible active members.</p>
+</div>
+
+@if (_loading)
+{
+    <p role="status" aria-live="polite">Loading eligible members…</p>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">@_errorMessage</div>
+    }
+
+    @if (_successMessage is not null)
+    {
+        <div class="alert alert-success" role="status">@_successMessage</div>
+        <a href="/finance" class="btn btn-outline-secondary mt-2">Back to Finance</a>
+    }
+    else if (!_confirmed)
+    {
+        <div class="card mb-3" style="max-width: 480px;">
+            <div class="card-body">
+                <h5 class="card-title">Confirmation</h5>
+                <p class="card-text">
+                    <strong>@_eligibleCount</strong> active @(_eligibleCount == 1 ? "member is" : "members are") eligible for an annual fee this year.
+                </p>
+                @if (_eligibleCount == 0)
+                {
+                    <p class="text-muted small">No eligible members found. Either all active members already have an annual fee for the current year, or there are no active members.</p>
+                    <a href="/finance" class="btn btn-outline-secondary">Back to Finance</a>
+                }
+                else
+                {
+                    <p class="text-muted small">Annual fee amount: <strong>@_annualFee.ToString("C")</strong></p>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" @onclick="ConfirmApply" disabled="@_applying">
+                            Apply Annual Fees
+                        </button>
+                        <a href="/finance" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+}

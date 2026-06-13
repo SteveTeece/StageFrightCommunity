@@ -27,12 +27,14 @@ public class GLRepository : IGLRepository
 
     public async Task<decimal> GetMemberBalanceAsync(Guid memberId, CancellationToken ct = default)
     {
+        // Outstanding = net balance of the MemberReceivable account (GL#0101) for this member.
+        // Debits to 0101 create the receivable; credits to 0101 clear it on payment/forgiveness.
         var debits = await _db.Transactions
-            .Where(t => t.MemberId == memberId)
+            .Where(t => t.MemberId == memberId && t.GLAccount == "0101")
             .SumAsync(t => t.DebitAmount, ct);
 
         var credits = await _db.Transactions
-            .Where(t => t.MemberId == memberId)
+            .Where(t => t.MemberId == memberId && t.GLAccount == "0101")
             .SumAsync(t => t.CreditAmount, ct);
 
         return debits - credits;
@@ -40,8 +42,17 @@ public class GLRepository : IGLRepository
 
     public async Task<decimal> GetTotalOutstandingAsync(CancellationToken ct = default)
     {
-        var debits = await _db.Transactions.SumAsync(t => t.DebitAmount, ct);
-        var credits = await _db.Transactions.SumAsync(t => t.CreditAmount, ct);
+        // Outstanding across all members = net balance of the MemberReceivable account (GL#0101).
+        // In a balanced double-entry GL, summing ALL accounts yields zero; we project only the
+        // receivable account to get the meaningful "members owe" figure for the Finance tile.
+        var debits = await _db.Transactions
+            .Where(t => t.GLAccount == "0101")
+            .SumAsync(t => t.DebitAmount, ct);
+
+        var credits = await _db.Transactions
+            .Where(t => t.GLAccount == "0101")
+            .SumAsync(t => t.CreditAmount, ct);
+
         return debits - credits;
     }
 

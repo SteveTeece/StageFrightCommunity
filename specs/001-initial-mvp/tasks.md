@@ -229,17 +229,17 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 
 ### Tests for User Story 4
 
-- [ ] T089 [P] [US4] Write `FeeServiceTests.cs` in `tests/StageFright.Core.Tests/Modules/Finance/` (active eligible → Fee + GL; inactive → skipped; **existing current-year annual fee (paid or unpaid) → skipped**; batch atomic rollback on failure) — FAIL first
-- [ ] T090 [P] [US4] Write `FeeRepositoryIntegrationTests.cs` in `tests/StageFright.Data.Tests/` (AnnualFeeExistsAsync true/false; AttendanceFeeExistsAsync idempotency check)
+- [X] T089 [P] [US4] Write `FeeServiceTests.cs` in `tests/StageFright.Core.Tests/Modules/Finance/` (active eligible → Fee + GL; inactive → skipped; **existing current-year annual fee (paid or unpaid) → skipped**; batch atomic rollback on failure) — FAIL first
+- [X] T090 [P] [US4] Write `FeeRepositoryIntegrationTests.cs` in `tests/StageFright.Data.Tests/` (AnnualFeeExistsAsync true/false; AttendanceFeeExistsAsync idempotency check)
 
 ### Implementation for User Story 4
 
-- [ ] T091 [P] [US4] Create `src/StageFright.Core/Modules/Finance/FeeService.cs` (GetEligibleMembersAsync: active, **no existing annual fee record for current year (paid or unpaid)**; ApplyAnnualFeesAsync(memberIds): IUnitOfWork; per member → Fee(Annual, Settings.AnnualFee, FeeDate=Jan1, DueDate=Dec31, PaidAtCreation=false) + GL debit MemberReceivable/credit Income category + audit; returns count)
-- [ ] T092 [P] [US4] Create `src/StageFright.Core/Modules/Dashboard/FinanceDashboardTileProvider.cs` (TileId="finance", DisplayOrder=40; GetTileDataAsync: IGLRepository.GetTotalOutstandingAsync; AccentColor: >0 → HSL(120,35%,70%), <0 → HSL(0,35%,70%), =0 → HSL(0,0%,60%))
-- [ ] T093 [P] [US4] Create `src/StageFright.Core/Modules/Finance/FinanceMenuItemProvider.cs` (ModuleName="Finance", DisplayOrder=4; "/finance" with subitems: Balances, Payments, Apply Annual Fees)
-- [ ] T094 [P] [US4] Create `src/StageFright.UI/Pages/Finance/AnnualFeeApplication.razor` and `AnnualFeeApplication.razor.cs` (confirmation dialog shows eligible count; on confirm → FeeService.ApplyAnnualFeesAsync; success message with count applied)
-- [ ] T095 [P] [US4] Create bUnit test `tests/StageFright.UI.Tests/Pages/Finance/AnnualFeeApplicationTests.cs` (dialog renders with count; confirm triggers service; cancels without applying)
-- [ ] T096 [US4] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V4_AnnualFeeApplicationTests.cs` (active+inactive members → apply → only active eligible billed → balance updated in Finance tile)
+- [X] T091 [P] [US4] Create `src/StageFright.Core/Modules/Finance/FeeService.cs` (GetEligibleMembersAsync: active, **no existing annual fee record for current year (paid or unpaid)**; ApplyAnnualFeesAsync(memberIds): IUnitOfWork; per member → Fee(Annual, Settings.AnnualFee, FeeDate=Jan1, DueDate=Dec31, PaidAtCreation=false) + GL debit MemberReceivable/credit Income category + audit; returns count)
+- [X] T092 [P] [US4] Create `src/StageFright.Core/Modules/Dashboard/FinanceDashboardTileProvider.cs` (TileId="finance", DisplayOrder=40; GetTileDataAsync: IGLRepository.GetTotalOutstandingAsync; AccentColor: >0 → HSL(120,35%,70%), <0 → HSL(0,35%,70%), =0 → HSL(0,0%,60%))
+- [X] T093 [P] [US4] Create `src/StageFright.Core/Modules/Finance/FinanceMenuItemProvider.cs` (ModuleName="Finance", DisplayOrder=4; "/finance" with subitems: Balances, Payments, Apply Annual Fees)
+- [X] T094 [P] [US4] Create `src/StageFright.UI/Pages/Finance/AnnualFeeApplication.razor` and `AnnualFeeApplication.razor.cs` (confirmation dialog shows eligible count; on confirm → FeeService.ApplyAnnualFeesAsync; success message with count applied)
+- [X] T095 [P] [US4] Create bUnit test `tests/StageFright.UI.Tests/Pages/Finance/AnnualFeeApplicationTests.cs` (dialog renders with count; confirm triggers service; cancels without applying)
+- [X] T096 [US4] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V4_AnnualFeeApplicationTests.cs` (active+inactive members → apply → only active eligible billed → balance updated in Finance tile)
 
 **Checkpoint**: US4 complete — annual fee batch independently functional.
 

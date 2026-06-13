@@ -1,0 +1,38 @@
+@inject IGLRepository GLRepository
+
+@if (_loading)
+{
+    <span class="text-muted small">Loading...</span>
+}
+else if (_error)
+{
+    <span class="text-danger small">Unable to load</span>
+}
+else
+{
+    <ul class="list-unstyled mb-0 small">
+        <li>Outstanding: <strong>@_outstanding.ToString("C")</strong></li>
+    </ul>
+}
+
+@code {
+    private bool _loading = true;
+    private bool _error;
+    private decimal _outstanding;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _outstanding = await GLRepository.GetTotalOutstandingAsync();
+        }
+        catch
+        {
+            _error = true;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}
