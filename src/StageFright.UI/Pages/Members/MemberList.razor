@@ -1,0 +1,71 @@
+@page "/members"
+
+<PageTitle>Members — StageFright Community</PageTitle>
+
+<div class="page-header d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h3 mb-0">Members</h1>
+    <button class="btn btn-primary btn-sm" @onclick="AddMember">Add Member</button>
+</div>
+
+<div class="mb-3">
+    <div class="btn-group" role="group" aria-label="Member status filter">
+        <button class="btn btn-outline-secondary btn-sm @(_filter == MemberStatus.Active ? "active" : "")"
+                @onclick="() => SetFilter(MemberStatus.Active)">
+            Active
+        </button>
+        <button class="btn btn-outline-secondary btn-sm @(_filter == MemberStatus.Inactive ? "active" : "")"
+                @onclick="() => SetFilter(MemberStatus.Inactive)">
+            Inactive
+        </button>
+    </div>
+</div>
+
+@if (_loading)
+{
+    <p role="status" aria-live="polite">Loading members…</p>
+}
+else if (_members.Count == 0)
+{
+    <p class="text-muted">No @(_filter.ToString().ToLower()) members found.</p>
+}
+else
+{
+    <RadzenDataGrid Data="@_members" TItem="Member"
+                    AllowSorting="true" AllowPaging="true" PageSize="25"
+                    class="rz-shadow-0">
+        <Columns>
+            <RadzenDataGridColumn TItem="Member" Property="Name" Title="Name" Width="200px">
+                <Template Context="member">
+                    <a href="#" @onclick:preventDefault @onclick="() => ViewMember(member.Id)"
+                       class="text-decoration-none fw-semibold">
+                        @member.Name
+                    </a>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="Member" Property="StreetAddress" Title="Address" />
+            <RadzenDataGridColumn TItem="Member" Property="Phone" Title="Phone" Width="130px" />
+            <RadzenDataGridColumn TItem="Member" Property="Email" Title="Email" Width="200px" />
+            <RadzenDataGridColumn TItem="Member" Title="Age" Width="70px">
+                <Template Context="member">
+                    @if (member.DateOfBirth.HasValue)
+                    {
+                        @(_ageCalc.Calculate(member.DateOfBirth, DateTime.UtcNow.Date)?.ToString() ?? "—")
+                    }
+                    else
+                    {
+                        <span class="text-muted">—</span>
+                    }
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="Member" Title="Actions" Width="120px" Sortable="false">
+                <Template Context="member">
+                    <button class="btn btn-outline-secondary btn-sm me-1"
+                            @onclick="() => EditMember(member.Id)"
+                            aria-label="Edit @member.Name">
+                        Edit
+                    </button>
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+}

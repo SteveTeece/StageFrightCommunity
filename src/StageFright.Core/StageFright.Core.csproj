@@ -13,4 +13,8 @@
     <PackageReference Include="protobuf-net" Version="3.2.56" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\StageFright.Plugins.Contracts\StageFright.Plugins.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>

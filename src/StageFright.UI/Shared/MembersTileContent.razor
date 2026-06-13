@@ -1,0 +1,43 @@
+@inject IMemberService MemberService
+
+@if (_loading)
+{
+    <span class="text-muted small">Loading...</span>
+}
+else if (_error)
+{
+    <span class="text-danger small">Unable to load</span>
+}
+else
+{
+    <ul class="list-unstyled mb-0 small">
+        <li>Active: <strong>@_activeCount</strong></li>
+        <li>Inactive: <strong>@_inactiveCount</strong></li>
+    </ul>
+}
+
+@code {
+    private bool _loading = true;
+    private bool _error;
+    private int _activeCount;
+    private int _inactiveCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var active = await MemberService.GetByStatusAsync(StageFright.Core.Enums.MemberStatus.Active);
+            var inactive = await MemberService.GetByStatusAsync(StageFright.Core.Enums.MemberStatus.Inactive);
+            _activeCount = active.Count;
+            _inactiveCount = inactive.Count;
+        }
+        catch
+        {
+            _error = true;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}

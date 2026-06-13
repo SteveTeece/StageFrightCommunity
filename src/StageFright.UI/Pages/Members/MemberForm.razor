@@ -1,0 +1,116 @@
+@page "/members/new"
+@page "/members/edit/{Id:guid}"
+
+<PageTitle>@(_isNew ? "Add Member" : "Edit Member") — StageFright Community</PageTitle>
+
+<div class="page-header mb-3">
+    <h1 class="h3">@(_isNew ? "Add Member" : "Edit Member")</h1>
+</div>
+
+@if (_loading)
+{
+    <p role="status" aria-live="polite">Loading…</p>
+}
+else
+{
+    <EditForm Model="_form" OnValidSubmit="SaveAsync">
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-6">
+                <label class="form-label" for="name">Full Name <span aria-hidden="true">*</span></label>
+                <InputText id="name"
+                           class="@(_errors.ContainsKey("Name") ? "form-control is-invalid" : "form-control")"
+                           @bind-Value="_form.Name" />
+                @if (_errors.TryGetValue("Name", out var nameErr))
+                {
+                    <div class="invalid-feedback">@nameErr</div>
+                }
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label" for="address">Street Address <span aria-hidden="true">*</span></label>
+                <InputText id="address"
+                           class="@(_errors.ContainsKey("StreetAddress") ? "form-control is-invalid" : "form-control")"
+                           @bind-Value="_form.StreetAddress" />
+                @if (_errors.TryGetValue("StreetAddress", out var addrErr))
+                {
+                    <div class="invalid-feedback">@addrErr</div>
+                }
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label" for="phone">Phone</label>
+                <InputText id="phone"
+                           class="@(_errors.ContainsKey("Phone") ? "form-control is-invalid" : "form-control")"
+                           @bind-Value="_form.Phone" />
+                @if (_errors.TryGetValue("Phone", out var phoneErr))
+                {
+                    <div class="invalid-feedback">@phoneErr</div>
+                }
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label" for="email">Email</label>
+                <InputText id="email"
+                           class="@(_errors.ContainsKey("Email") ? "form-control is-invalid" : "form-control")"
+                           @bind-Value="_form.Email" />
+                @if (_errors.TryGetValue("Email", out var emailErr))
+                {
+                    <div class="invalid-feedback">@emailErr</div>
+                }
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label" for="joinDate">Join Date <span aria-hidden="true">*</span></label>
+                <InputDate id="joinDate" class="form-control" @bind-Value="_form.JoinDate" />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label" for="dob">Date of Birth</label>
+                <InputDate id="dob"
+                           class="@(_errors.ContainsKey("DateOfBirth") ? "form-control is-invalid" : "form-control")"
+                           @bind-Value="_form.DateOfBirth" />
+                @if (_errors.TryGetValue("DateOfBirth", out var dobErr))
+                {
+                    <div class="invalid-feedback">@dobErr</div>
+                }
+            </div>
+
+            <div class="col-12">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="isCommittee"
+                           checked="@_isCommitteeMember"
+                           @onchange="OnCommitteeCheckChanged" />
+                    <label class="form-check-label" for="isCommittee">Committee Member</label>
+                </div>
+            </div>
+
+            @if (_isCommitteeMember)
+            {
+                <div class="col-md-6">
+                    <label class="form-label" for="position">Position <span aria-hidden="true">*</span></label>
+                    <InputText id="position"
+                               class="@(_errors.ContainsKey("Position") ? "form-control is-invalid" : "form-control")"
+                               @bind-Value="_form.CommitteePosition" />
+                    @if (_errors.TryGetValue("Position", out var posErr))
+                    {
+                        <div class="invalid-feedback">@posErr</div>
+                    }
+                </div>
+            }
+
+        </div>
+
+        @if (!string.IsNullOrEmpty(_globalError))
+        {
+            <div class="alert alert-danger" role="alert">@_globalError</div>
+        }
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary" disabled="@_saving">
+                @(_saving ? "Saving…" : "Save")
+            </button>
+            <button type="button" class="btn btn-outline-secondary" @onclick="Cancel">Cancel</button>
+        </div>
+    </EditForm>
+}

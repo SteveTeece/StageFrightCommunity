@@ -8,7 +8,10 @@ using Serilog.Events;
 using StageFright.Core.Contracts;
 using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Finance;
+using StageFright.Core.Modules.Members;
+using StageFright.Core.Modules.Settings;
 using StageFright.Data;
+using StageFright.UI.Modules.Dashboard;
 using StageFright.Data.PluginData;
 using StageFright.Data.Repositories;
 using StageFright.Plugins.Contracts;
@@ -127,7 +130,18 @@ public static class MauiProgram
     private static void RegisterCoreServices(IServiceCollection services)
     {
         services.AddScoped<IAuditTrailService, AuditTrailService>();
+        services.AddScoped<ISetupService, SetupService>();
         services.AddScoped<GLAccountAssignmentService>();
+
+        // Members module (Phase 4)
+        services.AddScoped<AgeCalculationService>();
+        services.AddScoped<MemberValidationService>();
+        services.AddScoped<IMemberService, MemberService>();
+        services.AddScoped<ICommitteeService, CommitteeService>();
+
+        // Menu and dashboard providers
+        services.AddSingleton<IMenuItemProvider, MemberMenuItemProvider>();
+        services.AddScoped<IDashboardTileProvider, MembersDashboardTileProvider>();
     }
 
     private static void RunStartupSequence(IServiceProvider services, string dbPath, string pluginsPath, string connectionString)

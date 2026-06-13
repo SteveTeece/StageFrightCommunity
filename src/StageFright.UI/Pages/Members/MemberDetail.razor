@@ -1,0 +1,96 @@
+@page "/members/{Id:guid}"
+
+<PageTitle>@(_member?.Name ?? "Member") — StageFright Community</PageTitle>
+
+@if (_loading)
+{
+    <p role="status" aria-live="polite">Loading…</p>
+}
+else if (_member is null)
+{
+    <div class="alert alert-warning">Member not found.</div>
+}
+else
+{
+    <div class="page-header d-flex align-items-center justify-content-between mb-3">
+        <h1 class="h3 mb-0">@_member.Name</h1>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm" @onclick="Edit">Edit</button>
+            @if (_member.Status == StageFright.Core.Enums.MemberStatus.Active)
+            {
+                <button class="btn btn-outline-warning btn-sm" @onclick="InactivateAsync">Inactivate</button>
+            }
+            else
+            {
+                <button class="btn btn-outline-success btn-sm" @onclick="ActivateAsync">Activate</button>
+            }
+            <button class="btn btn-outline-danger btn-sm" @onclick="ArchiveAsync">Archive</button>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <dl class="row mb-0">
+                <dt class="col-sm-5">Address</dt>
+                <dd class="col-sm-7">@_member.StreetAddress</dd>
+
+                @if (!string.IsNullOrEmpty(_member.Phone))
+                {
+                    <dt class="col-sm-5">Phone</dt>
+                    <dd class="col-sm-7">@_member.Phone</dd>
+                }
+
+                @if (!string.IsNullOrEmpty(_member.Email))
+                {
+                    <dt class="col-sm-5">Email</dt>
+                    <dd class="col-sm-7">@_member.Email</dd>
+                }
+
+                <dt class="col-sm-5">Join Date</dt>
+                <dd class="col-sm-7">@_member.JoinDate.ToString("d MMM yyyy")</dd>
+
+                @if (_member.DateOfBirth.HasValue)
+                {
+                    <dt class="col-sm-5">Date of Birth</dt>
+                    <dd class="col-sm-7">@_member.DateOfBirth.Value.ToString("d MMM yyyy")</dd>
+
+                    <dt class="col-sm-5">Age</dt>
+                    <dd class="col-sm-7">@_age</dd>
+                }
+
+                <dt class="col-sm-5">Status</dt>
+                <dd class="col-sm-7">@_member.Status</dd>
+            </dl>
+        </div>
+    </div>
+
+    @if (_committeeHistory.Count > 0)
+    {
+        <section aria-label="Committee History">
+            <h2 class="h5 mb-2">Committee History</h2>
+            <ul class="list-unstyled">
+                @foreach (var record in _committeeHistory.OrderByDescending(r => r.Year))
+                {
+                    <li class="mb-1">
+                        @if (record.Year == _currentYear)
+                        {
+                            <strong>
+                                @record.Year
+                                <span role="status"
+                                      aria-label="Current year"
+                                      style="background-color:hsl(120,40%,70%);padding:1px 6px;border-radius:4px;font-size:.8em;font-weight:normal">
+                                    Current
+                                </span>
+                                — @record.Position
+                            </strong>
+                        }
+                        else
+                        {
+                            <span>@record.Year — @record.Position</span>
+                        }
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+}
