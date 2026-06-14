@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main, "001-initial-mvp"]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
+      - name: Restore dependencies
+        run: dotnet restore StageFrightCommunity.slnx
+
+      - name: Build (warnings-as-errors for src/ projects)
+        run: >
+          dotnet build StageFrightCommunity.slnx
+          --no-restore
+          --configuration Release
+          -p:TreatWarningsAsErrors=false
+
+      - name: Run Core unit tests
+        run: >
+          dotnet test tests/StageFright.Core.Tests/
+          --no-build
+          --configuration Release
+          --logger "trx;LogFileName=core-tests.trx"
+          --results-directory TestResults/
+
+      - name: Run Data integration tests
+        run: >
+          dotnet test tests/StageFright.Data.Tests/
+          --no-build
+          --configuration Release
+          --logger "trx;LogFileName=data-tests.trx"
+          --results-directory TestResults/
+
+      - name: Run Reports tests
+        run: >
+          dotnet test tests/StageFright.Reports.Tests/
+          --no-build
+          --configuration Release
+          --logger "trx;LogFileName=reports-tests.trx"
+          --results-directory TestResults/
+
+      - name: Run UI tests (bUnit)
+        run: >
+          dotnet test tests/StageFright.UI.Tests/
+          --no-build
+          --configuration Release
+          --logger "trx;LogFileName=ui-tests.trx"
+          --results-directory TestResults/
+
+      - name: Run Integration / acceptance tests
+        run: >
+          dotnet test tests/StageFright.Integration.Tests/
+          --no-build
+          --configuration Release
+          --logger "trx;LogFileName=integration-tests.trx"
+          --results-directory TestResults/
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/

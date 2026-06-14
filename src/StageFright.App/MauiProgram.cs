@@ -1,3 +1,4 @@
+using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
@@ -13,6 +14,7 @@ using StageFright.Core.Modules.Events;
 using StageFright.Core.Modules.Members;
 using StageFright.Core.Modules.Rehearsals;
 using StageFright.Core.Modules.Settings;
+using StageFright.Core.Contracts;
 using StageFright.Data;
 using StageFright.UI.Modules.Dashboard;
 using StageFright.UI.Pages.Settings;
@@ -64,6 +66,10 @@ public static class MauiProgram
         builder.Services.AddDbContext<StageFrightDbContext>(opts =>
             opts.UseSqlite(connectionString), ServiceLifetime.Scoped);
 
+        // Singleton diagnostic service must be registered before RunStartupSequence reads it
+        var diagnosticService = new StartupDiagnosticService();
+        builder.Services.AddSingleton<IStartupDiagnosticService>(diagnosticService);
+
         RegisterRepositories(builder.Services);
         RegisterCoreServices(builder.Services);
 
@@ -76,7 +82,7 @@ public static class MauiProgram
         // Run startup sequence after the app is built
         var app = builder.Build();
 
-        RunStartupSequence(app.Services, dbPath, pluginsPath, connectionString);
+        RunStartupSequence(app.Services, dbPath, pluginsPath, connectionString, diagnosticService);
 
         return app;
     }
@@ -144,11 +150,12 @@ public static class MauiProgram
         // Settings service
         services.AddScoped<ISettingsService, SettingsService>();
 
-        // Members module (Phase 4)
+        // Members module (Phase 4 + 15)
         services.AddScoped<AgeCalculationService>();
         services.AddScoped<MemberValidationService>();
         services.AddScoped<IMemberService, MemberService>();
         services.AddScoped<ICommitteeService, CommitteeService>();
+        services.AddScoped<ICommitteeAnnualResetService, CommitteeAnnualResetService>();
 
         // Rehearsals module (Phase 5)
         services.AddScoped<IRehearsalService, RehearsalService>();
@@ -204,7 +211,7 @@ public static class MauiProgram
         services.AddSingleton<IMenuItemProvider, ReportMenuItemProvider>();
     }
 
-    private static void RunStartupSequence(IServiceProvider services, string dbPath, string pluginsPath, string connectionString)
+    private static void RunStartupSequence(IServiceProvider services, string dbPath, string pluginsPath, string connectionString, StartupDiagnosticService diagnosticService)
     {
         // Auto-create Plugins directory (FR-021)
         try
@@ -230,6 +237,15 @@ public static class MauiProgram
             db.Database.Migrate();
             Log.Information("Database migration completed. DB path: {DbPath}", dbPath);
         }
+        catch (Exception ex) when (ex is DbException or DbUpdateException)
+        {
+            // Database file is corrupted or inaccessible — record the error so the UI can
+            // present recovery options (open file location / create new database) via the
+            // StartupError page instead of crashing (FR-T172).
+            Log.Error(ex, "Database migration failed due to database error; showing recovery UI. DB path: {DbPath}", dbPath);
+            diagnosticService.RecordError(ex, dbPath);
+            return;
+        }
         catch (Exception ex)
         {
             Log.Fatal(ex, "Database migration failed; application cannot start");
@@ -240,11 +256,12 @@ public static class MauiProgram
         var migrationRunner = scope.ServiceProvider.GetRequiredService<PluginMigrationRunner>();
         migrationRunner.RunAsync().GetAwaiter().GetResult();
 
-        // Audit trail startup purge (FR-022)
+        // Audit trail startup purge (FR-022): failure is tolerated, startup continues
         try
         {
             var auditService = scope.ServiceProvider.GetService<AuditTrailService>();
             auditService?.PurgeOlderThanAsync(DateTime.UtcNow.AddMonths(-12)).GetAwaiter().GetResult();
+            Log.Information("Audit trail startup purge complete");
         }
         catch (Exception ex)
         {

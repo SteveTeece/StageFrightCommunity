@@ -1,0 +1,73 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{csproj,props,targets,xml,config}]
+indent_size = 2
+
+[*.{json,yml,yaml}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+# C# files — StageFright Community project conventions
+[*.cs]
+# ── Roslyn analyzer severities ──────────────────────────────────────────────
+
+# CA1515: Consider making public types internal (library-style projects)
+# Suppressed project-wide — StageFright projects expose public APIs by design.
+dotnet_diagnostic.CA1515.severity = none
+
+# IDE0060 / CS1591: suppress missing XML doc warnings on non-public members
+# (GenerateDocumentationFile is enabled; NoWarn CS1591 in csproj covers non-public)
+
+# ── One-class-per-file enforcement (Constitution §3.2.1) ───────────────────
+# Multiple types defined in a single file must be an error.
+# Roslyn: SA1402 from StyleCop enforces this; without StyleCop we use IDE0060 workarounds.
+# Use the .NET analyser rule: each file should contain at most one type declaration.
+# Rule: CA2217 is unrelated; the closest built-in is enforced via custom .editorconfig below.
+#
+# StyleCop SA1402 — one type per file (error in src/, warning in tests/)
+dotnet_diagnostic.SA1402.severity = error
+
+# ── Naming conventions ──────────────────────────────────────────────────────
+dotnet_naming_rule.interface_names.symbols = interface_types
+dotnet_naming_rule.interface_names.style = prefix_i
+dotnet_naming_rule.interface_names.severity = warning
+
+dotnet_naming_symbols.interface_types.applicable_kinds = interface
+dotnet_naming_symbols.interface_types.applicable_accessibilities = public, internal
+
+dotnet_naming_style.prefix_i.required_prefix = I
+dotnet_naming_style.prefix_i.capitalization = pascal_case
+
+# ── Code-style preferences ───────────────────────────────────────────────────
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = false:suggestion
+
+csharp_prefer_braces = when_multiline:suggestion
+csharp_style_expression_bodied_methods = when_on_single_line:suggestion
+csharp_style_expression_bodied_properties = when_on_single_line:suggestion
+
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+# Nullable reference types — treat warnings as suggestions in source
+dotnet_diagnostic.CS8600.severity = warning
+dotnet_diagnostic.CS8601.severity = warning
+dotnet_diagnostic.CS8602.severity = warning
+dotnet_diagnostic.CS8603.severity = warning
+dotnet_diagnostic.CS8604.severity = warning
+
+# ── Test project overrides ──────────────────────────────────────────────────
+[tests/**/*.cs]
+# SA1402 is a warning in test projects (test helpers sometimes group small types)
+dotnet_diagnostic.SA1402.severity = warning

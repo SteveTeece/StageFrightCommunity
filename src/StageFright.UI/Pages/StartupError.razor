@@ -1,0 +1,38 @@
+@page "/startup-error"
+@using StageFright.Core.Contracts
+
+<div class="container mt-5">
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Database Error</h4>
+        <p>
+            StageFright Community could not open its database. The file may be corrupted or inaccessible.
+        </p>
+        @if (!string.IsNullOrEmpty(_errorDetail))
+        {
+            <hr />
+            <p class="mb-0 text-muted small">@_errorDetail</p>
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(_dbPath))
+    {
+        <p class="text-muted small">Database location: <code>@_dbPath</code></p>
+    }
+
+    <div class="d-flex gap-2 mt-3">
+        @if (!string.IsNullOrEmpty(_dbPath))
+        {
+            <button class="btn btn-outline-secondary" type="button" @onclick="OpenFolderAsync">
+                Open File Location
+            </button>
+            <button class="btn btn-warning" type="button" @onclick="RecreateAsync" disabled="@_recreating">
+                @(_recreating ? "Creating new database…" : "Create New Database")
+            </button>
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(_actionError))
+    {
+        <div class="alert alert-warning mt-3" role="alert">@_actionError</div>
+    }
+</div>
