@@ -430,15 +430,15 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 
 ### Tests for User Story 10
 
-- [ ] T162 [P] [US10] Write `ThemeProviderTests.cs` bUnit in `tests/StageFright.UI.Tests/Layout/` (toggle changes data-bs-theme attribute; Light default; preference persisted via SettingsService) — FAIL first
-- [ ] T163 [P] [US10] Write WCAG AA contrast tests in `tests/StageFright.UI.Tests/Accessibility/WcagContrastTests.cs` (HSL(120,35%,70%) green on white/dark backgrounds; HSL(0,35%,70%) red; committee badge HSL(120,40%,70%) light / HSL(120,35%,55%) dark; all pass WCAG AA 4.5:1 minimum)
+- [X] T162 [P] [US10] Write `ThemeProviderTests.cs` bUnit in `tests/StageFright.UI.Tests/Layout/` (toggle changes data-bs-theme attribute; Light default; preference persisted via SettingsService) — FAIL first
+- [X] T163 [P] [US10] Write WCAG AA contrast tests in `tests/StageFright.UI.Tests/Accessibility/WcagContrastTests.cs` (HSL(120,35%,70%) green on white/dark backgrounds; HSL(0,35%,70%) red; committee badge HSL(120,40%,70%) light / HSL(120,35%,55%) dark; all pass WCAG AA 4.5:1 minimum)
 
 ### Implementation for User Story 10
 
-- [ ] T164 [P] [US10] Fully implement `src/StageFright.UI/Layout/ThemeProvider.razor` (cascading component; applies `data-bs-theme="light"|"dark"` on root `<html>` element; reads initial theme from Settings on mount; exposes ToggleAsync updating Settings.Theme)
-- [ ] T165 [P] [US10] Wire theme toggle button in `src/StageFright.UI/Layout/ShellLayout.razor` (sun/moon icon in brand strip; calls ThemeProvider.ToggleAsync; persists via SettingsService.SaveAsync)
-- [ ] T166 [P] [US10] Create `src/StageFright.UI/Pages/Settings/GeneralSettingsTabProvider.cs` (TabKey="general", DisplayOrder=0) and `GeneralSettingsTab.razor` / `GeneralSettingsTab.razor.cs` (all 7 Settings fields per FR-018: OrgName, AnnualFee, AttendanceFee, MembershipRenewalMonth, CommitteeRenewalMonth, MaxAgeRangeYears, MinimumMemberAge; theme toggle; "Reset Committee for New Year" button → ReactivationForgivenessDialog/CommitteeAnnualResetService; AGM banner if applicable)
-- [ ] T167 [US10] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V10_ThemeTests.cs` (toggle → attribute changes; persist → restart → preference restored; WCAG confirmed via automated assertions)
+- [X] T164 [P] [US10] Fully implement `src/StageFright.UI/Layout/ThemeProvider.razor` (cascading component; applies `data-bs-theme="light"|"dark"` on root `<html>` element; reads initial theme from Settings on mount; exposes ToggleAsync updating Settings.Theme)
+- [X] T165 [P] [US10] Wire theme toggle button in `src/StageFright.UI/Layout/ShellLayout.razor` (sun/moon icon in brand strip; calls ThemeProvider.ToggleAsync; persists via SettingsService.SaveAsync)
+- [X] T166 [P] [US10] Create `src/StageFright.UI/Pages/Settings/GeneralSettingsTabProvider.cs` (TabKey="general", DisplayOrder=0) and `GeneralSettingsTab.razor` / `GeneralSettingsTab.razor.cs` (all 7 Settings fields per FR-018: OrgName, AnnualFee, AttendanceFee, MembershipRenewalMonth, CommitteeRenewalMonth, MaxAgeRangeYears, MinimumMemberAge; theme toggle; "Reset Committee for New Year" button → ReactivationForgivenessDialog/CommitteeAnnualResetService; AGM banner if applicable)
+- [X] T167 [US10] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V10_ThemeTests.cs` (toggle → attribute changes; persist → restart → preference restored; WCAG confirmed via automated assertions)
 
 **Checkpoint**: US10 complete — theme toggle with persistence and WCAG AA independently functional.
 

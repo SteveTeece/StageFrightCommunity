@@ -181,7 +181,8 @@ public static class MauiProgram
         services.AddScoped<IDashboardTileProvider, EventsDashboardTileProvider>();
         services.AddScoped<IDashboardTileProvider, FinanceDashboardTileProvider>();
 
-        // Settings tab providers (Phase 7 + 12 + 13)
+        // Settings tab providers (Phase 7 + 12 + 13 + 14)
+        services.AddScoped<ISettingsTabProvider, GeneralSettingsTabProvider>();
         services.AddScoped<ISettingsTabProvider, CategorySettingsTabProvider>();
         services.AddScoped<ISettingsTabProvider, EventTypesSettingsTabProvider>();
         services.AddScoped<ISettingsTabProvider, BackupSettingsTabProvider>();

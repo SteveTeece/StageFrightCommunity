@@ -1,0 +1,113 @@
+@using StageFright.Core.Entities
+@using StageFright.Core.Enums
+@using AppSettings = StageFright.Core.Entities.Settings
+
+@if (!string.IsNullOrEmpty(_agmBanner))
+{
+    <div class="alert alert-info" role="alert" id="agm-banner">
+        @_agmBanner
+        <button class="btn btn-sm btn-outline-primary ms-2" type="button" @onclick="HandleResetCommitteeAsync">
+            Reset now
+        </button>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <div class="alert alert-danger" role="alert">@_errorMessage</div>
+}
+
+@if (!string.IsNullOrEmpty(_successMessage))
+{
+    <div class="alert alert-success" role="status">@_successMessage</div>
+}
+
+@if (_settings is null)
+{
+    <p role="status">Loading settings…</p>
+}
+else
+{
+    var s = _settings;
+
+    <EditForm Model="s" OnValidSubmit="HandleSaveAsync">
+        <DataAnnotationsValidator />
+
+        <div class="mb-3">
+            <label for="orgName" class="form-label">Organisation Name <span class="text-danger">*</span></label>
+            <InputText id="orgName" class="form-control" @bind-Value="s.OrganizationName" />
+            <ValidationMessage For="() => s.OrganizationName" />
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label for="annualFee" class="form-label">Annual Membership Fee ($) <span class="text-danger">*</span></label>
+                <InputNumber id="annualFee" class="form-control" @bind-Value="s.AnnualFee" />
+                <ValidationMessage For="() => s.AnnualFee" />
+            </div>
+            <div class="col-md-6">
+                <label for="attendanceFee" class="form-label">Attendance Fee ($) <span class="text-danger">*</span></label>
+                <InputNumber id="attendanceFee" class="form-control" @bind-Value="s.AttendanceFee" />
+                <ValidationMessage For="() => s.AttendanceFee" />
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label for="membershipRenewalMonth" class="form-label">Membership Renewal Month (1–12) <span class="text-danger">*</span></label>
+                <InputNumber id="membershipRenewalMonth" class="form-control" @bind-Value="s.MembershipRenewalMonth" />
+                <ValidationMessage For="() => s.MembershipRenewalMonth" />
+            </div>
+            <div class="col-md-6">
+                <label for="committeeRenewalMonth" class="form-label">Committee Renewal Month (1–12)</label>
+                <InputNumber id="committeeRenewalMonth" class="form-control" @bind-Value="s.CommitteeRenewalMonth" />
+                <ValidationMessage For="() => s.CommitteeRenewalMonth" />
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label for="maxAge" class="form-label">Maximum Member Age (years)</label>
+                <InputNumber id="maxAge" class="form-control" @bind-Value="s.MaxAgeRangeYears" />
+                <ValidationMessage For="() => s.MaxAgeRangeYears" />
+            </div>
+            <div class="col-md-6">
+                <label for="minAge" class="form-label">Minimum Member Age (years)</label>
+                <InputNumber id="minAge" class="form-control" @bind-Value="s.MinimumMemberAge" />
+                <ValidationMessage For="() => s.MinimumMemberAge" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Theme</label>
+            <div>
+                <button type="button" class="btn btn-outline-secondary" id="theme-toggle-btn"
+                        @onclick="HandleThemeToggleAsync">
+                    @if (s.Theme == StageFright.Core.Enums.Theme.Light)
+                    {
+                        <span>Switch to Dark Mode</span>
+                    }
+                    else
+                    {
+                        <span>Switch to Light Mode</span>
+                    }
+                </button>
+                <span class="ms-2 text-muted small">Current: @s.Theme</span>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary" disabled="@_saving">
+                @(_saving ? "Saving…" : "Save Settings")
+            </button>
+            @if (_committeeResetService is not null)
+            {
+                <button type="button" class="btn btn-outline-warning" id="reset-committee-btn"
+                        @onclick="HandleResetCommitteeAsync"
+                        disabled="@_resetting">
+                    @(_resetting ? "Resetting…" : "Reset Committee for New Year")
+                </button>
+            }
+        </div>
+    </EditForm>
+}
