@@ -1,0 +1,30 @@
+using StageFright.Core.Entities;
+using StageFright.Core.Modules.Events;
+
+namespace StageFright.Core.Contracts;
+
+/// <summary>
+/// Application service for event scheduling and participation recording.
+/// Events never create fees or GL entries (FR-006).
+/// </summary>
+public interface IEventService
+{
+    /// <summary>Schedules a new event.</summary>
+    Task<Event> ScheduleAsync(ScheduleEventRequest request, CancellationToken ct = default);
+
+    /// <summary>Returns all non-deleted events ordered by date descending.</summary>
+    Task<IReadOnlyList<Event>> GetAllAsync(CancellationToken ct = default);
+
+    /// <summary>Returns the most recent non-deleted event before asOf, or null.</summary>
+    Task<Event?> GetMostRecentPastAsync(DateTime asOf, CancellationToken ct = default);
+
+    /// <summary>
+    /// Records participation for a batch of members.
+    /// Computes and freezes StoredParticipationRate on the event (idempotent).
+    /// No fees or GL entries are created.
+    /// </summary>
+    Task RecordParticipationAsync(Guid eventId, IReadOnlyList<ParticipationBatchItem> items, CancellationToken ct = default);
+
+    /// <summary>Returns true if an AGM event exists in the given calendar year.</summary>
+    Task<bool> AgmExistsInYearAsync(int year, CancellationToken ct = default);
+}

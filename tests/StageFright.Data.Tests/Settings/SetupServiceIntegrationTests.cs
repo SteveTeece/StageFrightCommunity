@@ -22,9 +22,10 @@ public class SetupServiceIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var settingsRepo = new SettingsRepository(db);
         var categoryRepo = new CategoryRepository(db);
+        var eventTypeRepo = new EventTypeRepository(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        var svc = new SetupService(settingsRepo, categoryRepo, auditService);
+        var svc = new SetupService(settingsRepo, categoryRepo, eventTypeRepo, auditService);
 
         var request = new SetupRequest("My Choir", 80m, 6m, 3);
         await svc.InitializeAsync(request);
@@ -43,9 +44,10 @@ public class SetupServiceIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var settingsRepo = new SettingsRepository(db);
         var categoryRepo = new CategoryRepository(db);
+        var eventTypeRepo = new EventTypeRepository(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        var svc = new SetupService(settingsRepo, categoryRepo, auditService);
+        var svc = new SetupService(settingsRepo, categoryRepo, eventTypeRepo, auditService);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1));
 
@@ -61,9 +63,10 @@ public class SetupServiceIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var settingsRepo = new SettingsRepository(db);
         var categoryRepo = new CategoryRepository(db);
+        var eventTypeRepo = new EventTypeRepository(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        var svc = new SetupService(settingsRepo, categoryRepo, auditService);
+        var svc = new SetupService(settingsRepo, categoryRepo, eventTypeRepo, auditService);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1));
 
@@ -77,9 +80,10 @@ public class SetupServiceIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var settingsRepo = new SettingsRepository(db);
         var categoryRepo = new CategoryRepository(db);
+        var eventTypeRepo = new EventTypeRepository(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        var svc = new SetupService(settingsRepo, categoryRepo, auditService);
+        var svc = new SetupService(settingsRepo, categoryRepo, eventTypeRepo, auditService);
 
         Assert.False(await svc.IsSetupCompleteAsync());
     }

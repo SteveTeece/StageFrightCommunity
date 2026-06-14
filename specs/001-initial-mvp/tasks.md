@@ -382,19 +382,19 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 
 ### Tests for User Story 5
 
-- [ ] T146 [P] [US5] Write `EventServiceTests.cs` in `tests/StageFright.Core.Tests/Modules/Events/` (schedule event, record participation, StoredParticipationRate formula, AGM event no fees, agmExistsInYear) — FAIL first
-- [ ] T147 [P] [US5] Write `EventTypeServiceTests.cs` (default event types seeded including AGM; archive blocked if referenced by non-deleted Event; IsSystemDefault types cannot be archived)
+- [X] T146 [P] [US5] Write `EventServiceTests.cs` in `tests/StageFright.Core.Tests/Modules/Events/` (schedule event, record participation, StoredParticipationRate formula, AGM event no fees, agmExistsInYear) — FAIL first
+- [X] T147 [P] [US5] Write `EventTypeServiceTests.cs` (default event types seeded including AGM; archive blocked if referenced by non-deleted Event; IsSystemDefault types cannot be archived)
 
 ### Implementation for User Story 5
 
-- [ ] T148 [P] [US5] Create `src/StageFright.Core/Modules/Events/EventTypeService.cs` (GetAllAsync; CreateAsync; ArchiveAsync: blocks if referenced; seeded defaults via SetupService: Performance, Eisteddfod, Fund raiser, Promotional, Annual General Meeting with IsSystemDefault=true)
-- [ ] T149 [P] [US5] Create `src/StageFright.Core/Modules/Events/EventService.cs` (ScheduleAsync; RecordParticipationAsync: computes active-as-of-date count, stores StoredParticipationRate, creates ParticipationRecord batch — **no Fee or GL records created for events** per FR-006; AgmExistsInYearAsync delegates to IEventRepository)
-- [ ] T150 [P] [US5] Create `src/StageFright.Core/Modules/Dashboard/EventsDashboardTileProvider.cs` (TileId="events", DisplayOrder=30; most recent past event date + StoredParticipationRate)
-- [ ] T151 [P] [US5] Create `src/StageFright.Core/Modules/Events/EventsMenuItemProvider.cs` (DisplayOrder=3; "/events")
-- [ ] T152 [P] [US5] Create `src/StageFright.UI/Pages/Settings/EventTypesSettingsTabProvider.cs` (TabKey="event-types", DisplayOrder=20) and `EventTypesTab.razor` / `EventTypesTab.razor.cs` (list + create event types; system defaults shown read-only)
-- [ ] T153 [P] [US5] Create `src/StageFright.UI/Pages/Events/EventList.razor`, `EventForm.razor`, `ParticipationGrid.razor` (similar to Rehearsals grid but no "Paid" checkbox column; `@page` directives as appropriate)
-- [ ] T154 [P] [US5] Create bUnit tests `tests/StageFright.UI.Tests/Pages/Events/` for EventList, EventForm, ParticipationGrid (no fee columns visible)
-- [ ] T155 [US5] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V5_EventsParticipationTests.cs` (event types created; AGM event → no fees; participation recorded → StoredParticipationRate set; Events tile shows rate)
+- [X] T148 [P] [US5] Create `src/StageFright.Core/Modules/Events/EventTypeService.cs` (GetAllAsync; CreateAsync; ArchiveAsync: blocks if referenced; seeded defaults via SetupService: Performance, Eisteddfod, Fund raiser, Promotional, Annual General Meeting with IsSystemDefault=true)
+- [X] T149 [P] [US5] Create `src/StageFright.Core/Modules/Events/EventService.cs` (ScheduleAsync; RecordParticipationAsync: computes active-as-of-date count, stores StoredParticipationRate, creates ParticipationRecord batch — **no Fee or GL records created for events** per FR-006; AgmExistsInYearAsync delegates to IEventRepository)
+- [X] T150 [P] [US5] Create `src/StageFright.Core/Modules/Dashboard/EventsDashboardTileProvider.cs` (TileId="events", DisplayOrder=30; most recent past event date + StoredParticipationRate)
+- [X] T151 [P] [US5] Create `src/StageFright.Core/Modules/Events/EventsMenuItemProvider.cs` (DisplayOrder=3; "/events")
+- [X] T152 [P] [US5] Create `src/StageFright.UI/Pages/Settings/EventTypesSettingsTabProvider.cs` (TabKey="event-types", DisplayOrder=20) and `EventTypesTab.razor` / `EventTypesTab.razor.cs` (list + create event types; system defaults shown read-only)
+- [X] T153 [P] [US5] Create `src/StageFright.UI/Pages/Events/EventList.razor`, `EventForm.razor`, `ParticipationGrid.razor` (similar to Rehearsals grid but no "Paid" checkbox column; `@page` directives as appropriate)
+- [X] T154 [P] [US5] Create bUnit tests `tests/StageFright.UI.Tests/Pages/Events/` for EventList, EventForm, ParticipationGrid (no fee columns visible)
+- [X] T155 [US5] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V5_EventsParticipationTests.cs` (event types created; AGM event → no fees; participation recorded → StoredParticipationRate set; Events tile shows rate)
 
 **Checkpoint**: US5 complete — event scheduling and participation tracking independently functional.
 

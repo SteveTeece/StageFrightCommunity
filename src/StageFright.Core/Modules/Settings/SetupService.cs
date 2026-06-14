@@ -1,25 +1,33 @@
 using StageFright.Core.Contracts;
+using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Events;
 using SettingsEntity = StageFright.Core.Entities.Settings;
 
 namespace StageFright.Core.Modules.Settings;
 
 /// <summary>
 /// Handles first-run initialization. Validates the setup request, creates the Settings singleton,
-/// and audits the event. System categories (Cash/MemberReceivable/BadDebtExpense) are seeded
-/// by EF migrations and require no action here.
+/// seeds default event types, and audits the event.
+/// System categories (Cash/MemberReceivable/BadDebtExpense) are seeded by EF migrations.
 /// </summary>
 public class SetupService : ISetupService
 {
     private readonly ISettingsRepository _settingsRepo;
     private readonly ICategoryRepository _categoryRepo;
+    private readonly IEventTypeRepository _eventTypeRepo;
     private readonly IAuditTrailService _audit;
 
-    public SetupService(ISettingsRepository settingsRepo, ICategoryRepository categoryRepo, IAuditTrailService audit)
+    public SetupService(
+        ISettingsRepository settingsRepo,
+        ICategoryRepository categoryRepo,
+        IEventTypeRepository eventTypeRepo,
+        IAuditTrailService audit)
     {
         _settingsRepo = settingsRepo;
         _categoryRepo = categoryRepo;
+        _eventTypeRepo = eventTypeRepo;
         _audit = audit;
     }
 
@@ -55,12 +63,31 @@ public class SetupService : ISetupService
 
         await _settingsRepo.SaveAsync(settings, ct);
 
+        await SeedDefaultEventTypesAsync(ct);
+
         await _audit.LogAsync(
             entityType: "Settings",
             entityId: settings.Id,
             action: AuditAction.Create,
             newValue: request.OrganizationName,
             ct: ct);
+    }
+
+    private async Task SeedDefaultEventTypesAsync(CancellationToken ct)
+    {
+        var now = DateTime.UtcNow;
+        foreach (var name in EventTypeService.GetDefaultEventTypeNames())
+        {
+            var eventType = new EventType
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+                IsSystemDefault = true,
+                CreatedAt = now,
+                UpdatedAt = now
+            };
+            await _eventTypeRepo.AddAsync(eventType, ct);
+        }
     }
 
     private static void Validate(SetupRequest request)

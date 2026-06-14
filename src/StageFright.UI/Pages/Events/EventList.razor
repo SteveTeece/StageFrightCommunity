@@ -1,0 +1,64 @@
+@page "/events"
+
+<PageTitle>Events — StageFright Community</PageTitle>
+
+<div class="page-header d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h3 mb-0">Events</h1>
+    <button class="btn btn-primary btn-sm" @onclick="AddEvent">Schedule Event</button>
+</div>
+
+@if (_loading)
+{
+    <p role="status" aria-live="polite">Loading events…</p>
+}
+else if (_events.Count == 0)
+{
+    <p class="text-muted">No events scheduled yet.</p>
+}
+else
+{
+    <RadzenDataGrid Data="@_events" TItem="Event"
+                    AllowSorting="true" AllowPaging="true" PageSize="25"
+                    class="rz-shadow-0">
+        <Columns>
+            <RadzenDataGridColumn TItem="Event" Property="Date" Title="Date" Width="140px" FormatString="{0:d MMM yyyy}" />
+            <RadzenDataGridColumn TItem="Event" Title="Event Type" Width="160px">
+                <Template Context="e">@(e.EventType?.Name ?? "—")</Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="Event" Title="Participation Rate" Width="160px">
+                <Template Context="e">
+                    @if (e.StoredParticipationRate.HasValue)
+                    {
+                        <span>@($"{e.StoredParticipationRate:F1}%")</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Not recorded</span>
+                    }
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="Event" Property="Notes" Title="Notes" />
+            <RadzenDataGridColumn TItem="Event" Title="Actions" Width="180px" Sortable="false">
+                <Template Context="e">
+                    @if (!e.StoredParticipationRate.HasValue)
+                    {
+                        <button class="btn btn-outline-primary btn-sm"
+                                @onclick="() => RecordParticipation(e.Id)"
+                                aria-label="Record participation for @e.Date.ToString("d MMM yyyy")">
+                            Record Participation
+                        </button>
+                    }
+                    else
+                    {
+                        <span class="text-muted small">Participation recorded</span>
+                    }
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+}
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <div class="alert alert-danger mt-3" role="alert">@_errorMessage</div>
+}

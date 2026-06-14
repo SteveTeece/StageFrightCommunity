@@ -108,10 +108,11 @@ public sealed class V1_FirstRunSetupTests : IAsyncLifetime
     {
         var settingsRepo = new SettingsRepository(_db);
         var categoryRepo = new CategoryRepository(_db);
+        var eventTypeRepo = new EventTypeRepository(_db);
         var auditRepo = new AuditTrailRepository(_db);
         var auditService = new Core.Modules.AuditTrail.AuditTrailService(
             auditRepo, NullLogger<Core.Modules.AuditTrail.AuditTrailService>.Instance);
-        return new SetupService(settingsRepo, categoryRepo, auditService);
+        return new SetupService(settingsRepo, categoryRepo, eventTypeRepo, auditService);
     }
 
     private static SetupRequest ValidRequest() =>

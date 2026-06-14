@@ -15,9 +15,16 @@ public class SetupServiceTests : TestBase
 {
     private readonly ISettingsRepository _settingsRepo = Substitute.For<ISettingsRepository>();
     private readonly ICategoryRepository _categoryRepo = Substitute.For<ICategoryRepository>();
+    private readonly IEventTypeRepository _eventTypeRepo = Substitute.For<IEventTypeRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
 
-    private SetupService CreateService() => new(_settingsRepo, _categoryRepo, _audit);
+    public SetupServiceTests()
+    {
+        _eventTypeRepo.AddAsync(Arg.Any<StageFright.Core.Entities.EventType>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ci.ArgAt<StageFright.Core.Entities.EventType>(0));
+    }
+
+    private SetupService CreateService() => new(_settingsRepo, _categoryRepo, _eventTypeRepo, _audit);
 
     // --- IsSetupCompleteAsync ---
 

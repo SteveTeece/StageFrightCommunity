@@ -1,0 +1,59 @@
+@page "/events/new"
+
+<PageTitle>Schedule Event — StageFright Community</PageTitle>
+
+<div class="page-header mb-3">
+    <h1 class="h3">Schedule Event</h1>
+</div>
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <div class="alert alert-danger" role="alert">@_errorMessage</div>
+}
+
+<div class="card" style="max-width:500px;">
+    <div class="card-body">
+        <EditForm Model="@_model" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label for="date" class="form-label">Date <span class="text-danger">*</span></label>
+                <InputDate id="date" class="form-control" @bind-Value="_model.Date" />
+                <ValidationMessage For="@(() => _model.Date)" class="text-danger small" />
+            </div>
+
+            <div class="mb-3">
+                <label for="event-type" class="form-label">Event Type <span class="text-danger">*</span></label>
+                @if (_loadingTypes)
+                {
+                    <p class="text-muted small">Loading event types…</p>
+                }
+                else
+                {
+                    <InputSelect id="event-type" class="form-select" @bind-Value="_model.EventTypeId">
+                        <option value="">— Select event type —</option>
+                        @foreach (var et in _eventTypes)
+                        {
+                            <option value="@et.Id">@et.Name</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => _model.EventTypeId)" class="text-danger small" />
+                }
+            </div>
+
+            <div class="mb-3">
+                <label for="notes" class="form-label">Notes</label>
+                <InputTextArea id="notes" class="form-control" rows="3" @bind-Value="_model.Notes" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary" disabled="@_saving">
+                    @(_saving ? "Saving…" : "Schedule")
+                </button>
+                <button type="button" class="btn btn-outline-secondary" @onclick="Cancel">
+                    Cancel
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>

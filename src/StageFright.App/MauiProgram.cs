@@ -9,6 +9,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Dashboard;
 using StageFright.Core.Modules.Finance;
+using StageFright.Core.Modules.Events;
 using StageFright.Core.Modules.Members;
 using StageFright.Core.Modules.Rehearsals;
 using StageFright.Core.Modules.Settings;
@@ -153,6 +154,10 @@ public static class MauiProgram
         services.AddScoped<IRehearsalService, RehearsalService>();
         services.AddScoped<IAttendanceService, AttendanceService>();
 
+        // Events module (Phase 12)
+        services.AddScoped<IEventTypeService, EventTypeService>();
+        services.AddScoped<IEventService, EventService>();
+
         // Finance module (Phase 6 + 9)
         services.AddScoped<IFeeService, FeeService>();
         services.AddScoped<IPaymentService, PaymentService>();
@@ -169,13 +174,16 @@ public static class MauiProgram
         services.AddSingleton<IMenuItemProvider, DashboardMenuItemProvider>();
         services.AddSingleton<IMenuItemProvider, MemberMenuItemProvider>();
         services.AddSingleton<IMenuItemProvider, RehearsalMenuItemProvider>();
+        services.AddSingleton<IMenuItemProvider, EventsMenuItemProvider>();
         services.AddSingleton<IMenuItemProvider, FinanceMenuItemProvider>();
         services.AddScoped<IDashboardTileProvider, MembersDashboardTileProvider>();
         services.AddScoped<IDashboardTileProvider, RehearsalsDashboardTileProvider>();
+        services.AddScoped<IDashboardTileProvider, EventsDashboardTileProvider>();
         services.AddScoped<IDashboardTileProvider, FinanceDashboardTileProvider>();
 
-        // Settings tab providers (Phase 7)
+        // Settings tab providers (Phase 7 + 12)
         services.AddScoped<ISettingsTabProvider, CategorySettingsTabProvider>();
+        services.AddScoped<ISettingsTabProvider, EventTypesSettingsTabProvider>();
 
         // Reports module (Phase 10 + 11)
         services.AddScoped<IReportProvider, IncomeStatementReportProvider>();

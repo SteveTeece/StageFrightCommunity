@@ -1,0 +1,69 @@
+@page "/events/{EventId:guid}/participation"
+
+<PageTitle>Record Participation — StageFright Community</PageTitle>
+
+<div class="page-header mb-3">
+    <h1 class="h3">Record Participation</h1>
+    @if (_event is not null)
+    {
+        <p class="text-muted mb-0">@_event.Date.ToString("dddd, d MMMM yyyy") — @(_event.EventType?.Name ?? "Event")</p>
+    }
+</div>
+
+@if (_alreadyRecorded)
+{
+    <div class="alert alert-info" role="alert">
+        Participation has already been recorded for this event. Records are immutable after saving.
+    </div>
+    <a href="/events" class="btn btn-outline-secondary">Back to Events</a>
+}
+else if (_loading)
+{
+    <p role="status" aria-live="polite">Loading members…</p>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">@_errorMessage</div>
+    }
+
+    @if (_members.Count == 0)
+    {
+        <div class="alert alert-warning">No active members found. Add members before recording participation.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" aria-label="Participation grid">
+                <thead>
+                    <tr>
+                        <th scope="col">Member</th>
+                        <th scope="col" class="text-center">Participated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in _rows)
+                    {
+                        <tr>
+                            <td>@row.MemberName</td>
+                            <td class="text-center">
+                                <input type="checkbox" class="form-check-input" id="participated-@row.MemberId"
+                                       checked="@row.Participated"
+                                       @onchange="e => row.Participated = (bool)(e.Value ?? false)"
+                                       aria-label="@row.MemberName participated" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-primary" @onclick="SaveParticipation" disabled="@_saving">
+                @(_saving ? "Saving…" : "Save Participation")
+            </button>
+            <a href="/events" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    }
+}
