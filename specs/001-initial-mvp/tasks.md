@@ -408,15 +408,15 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 
 ### Tests for User Story 9
 
-- [ ] T156 [P] [US9] Write `BackupServiceTests.cs` in `tests/StageFright.Core.Tests/Modules/Settings/` (export includes soft-deleted records; export EntityCounts match; import version mismatch → ImportException; missing Categories list → ImportException with exact "Import file incomplete: missing Categories" message; valid complete restore → all data present) — FAIL first
-- [ ] T157 [P] [US9] Write import atomicity integration test `tests/StageFright.Data.Tests/BackupImportTests.cs` (import failure mid-upsert → rollback, original data unchanged; pre-import checkpoint file created before write)
+- [X] T156 [P] [US9] Write `BackupServiceTests.cs` in `tests/StageFright.Core.Tests/Modules/Settings/` (export includes soft-deleted records; export EntityCounts match; import version mismatch → ImportException; missing Categories list → ImportException with exact "Import file incomplete: missing Categories" message; valid complete restore → all data present) — FAIL first
+- [X] T157 [P] [US9] Write import atomicity integration test `tests/StageFright.Data.Tests/BackupImportTests.cs` (import failure mid-upsert → rollback, original data unchanged; pre-import checkpoint file created before write)
 
 ### Implementation for User Story 9
 
-- [ ] T158 [P] [US9] Create backup DTOs in `src/StageFright.Core/Modules/Settings/Backup/`: `BackupEnvelope.cs` (protobuf-net `[ProtoContract]`; 10 entity collections + EntityCounts; SchemaVersion, GeneratedAt, ApplicationVersion; field numbers append-only), plus 10 DTO classes mirroring entities (MemberBackupDto.cs through AuditTrailBackupDto.cs) — one file per type
-- [ ] T159 [US9] Create `src/StageFright.Core/Modules/Settings/BackupService.cs` (ExportAsync: reads all 10 entity types via IgnoreQueryFilters; serializes with protobuf-net to `.sfbak` file; logs entity counts; ImportAsync: deserialize → major-version check → completeness check of all 10 collections → pre-import checkpoint → IUnitOfWork PK-upsert → post-commit audit + log)
-- [ ] T160 [P] [US9] Create `src/StageFright.UI/Pages/Settings/BackupSettingsTabProvider.cs` (TabKey="backup", DisplayOrder=30) and `BackupRestoreTab.razor` / `BackupRestoreTab.razor.cs` (Backup button → file-save dialog; Restore button → file-open dialog → confirmation dialog showing entity counts + checkpoint path → ImportAsync; error display for ImportException)
-- [ ] T161 [US9] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V9_BackupRestoreTests.cs` (backup → clear → restore → data intact; missing-entity-type file → rejected with exact error; corrupt file → ImportException "Backup file is corrupted")
+- [X] T158 [P] [US9] Create backup DTOs in `src/StageFright.Core/Modules/Settings/Backup/`: `BackupEnvelope.cs` (protobuf-net `[ProtoContract]`; 10 entity collections + EntityCounts; SchemaVersion, GeneratedAt, ApplicationVersion; field numbers append-only), plus 10 DTO classes mirroring entities (MemberBackupDto.cs through AuditTrailBackupDto.cs) — one file per type
+- [X] T159 [US9] Create `src/StageFright.Core/Modules/Settings/BackupService.cs` (ExportAsync: reads all 10 entity types via IgnoreQueryFilters; serializes with protobuf-net to `.sfbak` file; logs entity counts; ImportAsync: deserialize → major-version check → completeness check of all 10 collections → pre-import checkpoint → IUnitOfWork PK-upsert → post-commit audit + log)
+- [X] T160 [P] [US9] Create `src/StageFright.UI/Pages/Settings/BackupSettingsTabProvider.cs` (TabKey="backup", DisplayOrder=30) and `BackupRestoreTab.razor` / `BackupRestoreTab.razor.cs` (Backup button → file-save dialog; Restore button → file-open dialog → confirmation dialog showing entity counts + checkpoint path → ImportAsync; error display for ImportException)
+- [X] T161 [US9] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V9_BackupRestoreTests.cs` (backup → clear → restore → data intact; missing-entity-type file → rejected with exact error; corrupt file → ImportException "Backup file is corrupted")
 
 **Checkpoint**: US9 complete — backup/restore independently functional.
 
