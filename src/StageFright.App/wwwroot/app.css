@@ -55,12 +55,12 @@ html, body {
     overflow: hidden;
 }
 
-/* --- Shell layout (CSS grid: brand strip full-width top, nav sidebar left, content right) --- */
+/* --- Shell layout (CSS grid: brand strip top, nav bar below brand, content fills remainder) --- */
 .shell-container {
     display: grid;
-    grid-template-columns: 14rem 1fr;
-    grid-template-rows: 3rem 1fr;
-    grid-template-areas: "brand brand" "nav content";
+    grid-template-columns: 1fr;
+    grid-template-rows: 3rem auto 1fr;
+    grid-template-areas: "brand" "nav" "content";
     height: 100%;
     overflow: hidden;
     background: var(--sf-body-bg);
@@ -89,9 +89,11 @@ html, body {
 .shell-nav {
     grid-area: nav;
     background: var(--sf-nav-bg);
-    overflow-y: auto;
-    padding: 0.5rem 0;
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    overflow: visible;
+    padding: 0;
+    position: relative;
+    z-index: 100;
 }
 
 .shell-content {
@@ -100,28 +102,36 @@ html, body {
     padding: 1.5rem;
 }
 
-/* --- Navigation list --- */
+/* --- Navigation list (horizontal) --- */
 .nav-list {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: row;
 }
 
 .nav-item {
     margin: 0;
+    position: relative;
 }
 
 .nav-link {
-    display: block;
-    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.55rem 1rem;
     color: var(--sf-body-fg);
     text-decoration: none;
     font-weight: 600;
     font-size: 0.875rem;
-    border-left: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    cursor: pointer;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-item:hover > .nav-link {
     background: rgba(110, 79, 163, 0.1);
     color: var(--sf-brand-purple);
 }
@@ -129,33 +139,87 @@ html, body {
 .nav-link.active {
     background: rgba(110, 79, 163, 0.15);
     color: var(--sf-brand-purple);
-    border-left-color: var(--sf-brand-purple);
+    border-bottom-color: var(--sf-brand-purple);
 }
 
+.nav-caret {
+    font-size: 0.55rem;
+    opacity: 0.65;
+}
+
+/* --- Dropdown (level 2) --- */
 .nav-subitems {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 12rem;
     list-style: none;
-    padding: 0;
+    padding: 0.25rem 0;
     margin: 0;
+    background: var(--sf-card-bg);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 0 0.25rem 0.25rem 0.25rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 200;
+}
+
+.nav-item:hover > .nav-subitems {
+    display: block;
+}
+
+.nav-sub-item {
+    position: relative;
 }
 
 .nav-sublink {
-    display: block;
-    padding: 0.3rem 1rem 0.3rem 1.75rem;
+    display: flex;
+    align-items: center;
+    padding: 0.4rem 1rem;
     color: var(--sf-body-fg);
     text-decoration: none;
-    font-size: 0.82rem;
-    border-left: 3px solid transparent;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    cursor: pointer;
 }
 
-.nav-sublink:hover {
-    background: rgba(110, 79, 163, 0.07);
+.nav-sublink:hover,
+.nav-sub-item:hover > .nav-sublink {
+    background: rgba(110, 79, 163, 0.08);
     color: var(--sf-brand-purple);
 }
 
 .nav-sublink.active {
     background: rgba(110, 79, 163, 0.12);
     color: var(--sf-brand-purple);
-    border-left-color: var(--sf-brand-purple);
+}
+
+.nav-flyout-caret {
+    font-size: 0.55rem;
+    opacity: 0.65;
+    margin-left: auto;
+    padding-left: 0.5rem;
+}
+
+/* --- Flyout (level 3) --- */
+.nav-sub-subitems {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    min-width: 12rem;
+    list-style: none;
+    padding: 0.25rem 0;
+    margin: 0;
+    background: var(--sf-card-bg);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 0.25rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 300;
+}
+
+.nav-sub-item:hover > .nav-sub-subitems {
+    display: block;
 }
 
 /* --- Brand strip --- */

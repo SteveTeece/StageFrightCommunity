@@ -24,7 +24,7 @@
             </div>
         </header>
 
-        <!-- White navigation bar -->
+        <!-- Horizontal navigation bar -->
         <nav class="shell-nav" role="navigation" aria-label="Main navigation">
             <ul class="nav-list" role="list">
                 @foreach (var provider in MenuProviders.OrderBy(p => p.DisplayOrder))
@@ -46,20 +46,45 @@
                                 {
                                     <span class="nav-badge" role="status" aria-label="@item.BadgeText items">@item.BadgeText</span>
                                 }
+                                @if (item.SubItems.Any())
+                                {
+                                    <span class="nav-caret" aria-hidden="true">&#9660;</span>
+                                }
                             </a>
                             @if (item.SubItems.Any())
                             {
                                 <ul class="nav-subitems" role="list">
                                     @foreach (var sub in item.SubItems.OrderBy(s => s.DisplayOrder))
                                     {
-                                        <li>
+                                        <li class="nav-sub-item">
                                             <a class="nav-sublink @(IsActive(sub.Route) ? "active" : "")"
                                                href="@sub.Route"
                                                @onclick:preventDefault
                                                @onclick="() => Navigate(sub.Route)"
                                                tabindex="0">
                                                 @sub.Title
+                                                @if (sub.SubItems.Any())
+                                                {
+                                                    <span class="nav-flyout-caret" aria-hidden="true">&#9658;</span>
+                                                }
                                             </a>
+                                            @if (sub.SubItems.Any())
+                                            {
+                                                <ul class="nav-sub-subitems" role="list">
+                                                    @foreach (var deep in sub.SubItems.OrderBy(d => d.DisplayOrder))
+                                                    {
+                                                        <li>
+                                                            <a class="nav-sublink @(IsActive(deep.Route) ? "active" : "")"
+                                                               href="@deep.Route"
+                                                               @onclick:preventDefault
+                                                               @onclick="() => Navigate(deep.Route)"
+                                                               tabindex="0">
+                                                                @deep.Title
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            }
                                         </li>
                                     }
                                 </ul>
