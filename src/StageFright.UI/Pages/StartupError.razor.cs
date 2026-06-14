@@ -27,7 +27,7 @@ public partial class StartupError : ComponentBase
         try
         {
             var folder = Path.GetDirectoryName(_dbPath);
-            if (!string.IsNullOrEmpty(folder))
+            if (!string.IsNullOrEmpty(folder) && OperatingSystem.IsWindows())
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
                     FileName = folder,

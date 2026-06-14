@@ -24,7 +24,7 @@ jobs:
         run: dotnet workload install maui
 
       - name: Restore dependencies
-        run: dotnet restore StageFrightCommunity.slnx
+        run: dotnet restore StageFrightCommunity.slnx -r win-x64
 
       - name: Build (warnings-as-errors for src/ projects)
         run: >
