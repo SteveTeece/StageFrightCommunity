@@ -1,0 +1,56 @@
+@page "/reports"
+@page "/reports/{ReportId?}"
+
+<PageTitle>Reports — StageFright Community</PageTitle>
+
+<div class="page-header mb-3">
+    <h1 class="h3 mb-0">Reports</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="list-group mb-3" role="navigation" aria-label="Report sections">
+            @foreach (var section in _sections)
+            {
+                <div class="list-group-item list-group-item-action disabled fw-semibold"
+                     aria-disabled="true">
+                    @section.ModuleName
+                </div>
+
+                @foreach (var entry in section.Reports)
+                {
+                    <a class="list-group-item list-group-item-action ps-4 @(ReportId == entry.ReportId ? "active" : "")"
+                       href="/reports/@entry.ReportId"
+                       role="button"
+                       aria-current="@(ReportId == entry.ReportId ? "page" : null)">
+                        @entry.ReportName
+                    </a>
+                }
+            }
+
+            @if (!_sections.Any())
+            {
+                <span class="list-group-item text-muted">No reports available.</span>
+            }
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        @if (_currentProvider != null)
+        {
+            <ReportViewer Provider="_currentProvider" />
+        }
+        else if (!string.IsNullOrEmpty(ReportId))
+        {
+            <div class="alert alert-warning" role="alert">
+                Report "@ReportId" not found.
+            </div>
+        }
+        else
+        {
+            <div class="text-muted mt-3">
+                <p>Select a report from the list to generate it.</p>
+            </div>
+        }
+    </div>
+</div>

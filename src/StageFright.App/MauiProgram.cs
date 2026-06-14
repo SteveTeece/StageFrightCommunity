@@ -14,7 +14,6 @@ using StageFright.Core.Modules.Events;
 using StageFright.Core.Modules.Members;
 using StageFright.Core.Modules.Rehearsals;
 using StageFright.Core.Modules.Settings;
-using StageFright.Core.Contracts;
 using StageFright.Data;
 using StageFright.UI.Modules.Dashboard;
 using StageFright.UI.Pages.Settings;

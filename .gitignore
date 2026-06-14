@@ -84,8 +84,8 @@ coverage/
 *.opencover.xml
 *.codecov.xml
 
-# Report files
-reports/
+# Report files (root-level output only — not source code folders like Modules/Reports/)
+/reports/
 *.pdf
 *.csv
 
