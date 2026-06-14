@@ -18,6 +18,10 @@ using StageFright.UI.Pages.Settings;
 using StageFright.Data.PluginData;
 using StageFright.Data.Repositories;
 using StageFright.Plugins.Contracts;
+using StageFright.Reports.Providers;
+using StageFright.Reports.Registry;
+using StageFright.Reports.Rendering;
+using StageFright.UI.Modules.Reports;
 
 namespace StageFright.App;
 
@@ -172,6 +176,18 @@ public static class MauiProgram
 
         // Settings tab providers (Phase 7)
         services.AddScoped<ISettingsTabProvider, CategorySettingsTabProvider>();
+
+        // Reports module (Phase 10 + 11)
+        services.AddScoped<IReportProvider, IncomeStatementReportProvider>();
+        services.AddScoped<IReportProvider, TrialBalanceReportProvider>();
+        services.AddScoped<IReportProvider, AccountRegisterReportProvider>();
+        services.AddScoped<IReportProvider, MemberAccountSummaryReportProvider>();
+        services.AddScoped<IReportProvider, MemberListReportProvider>();
+        services.AddScoped<IReportProvider, CommitteeReportProvider>();
+        services.AddScoped<IReportProviderRegistry, ReportProviderRegistry>();
+        services.AddScoped<IPdfReportRenderer, PdfReportRenderer>();
+        services.AddScoped<ICsvReportExporter, CsvReportExporter>();
+        services.AddSingleton<IMenuItemProvider, ReportMenuItemProvider>();
     }
 
     private static void RunStartupSequence(IServiceProvider services, string dbPath, string pluginsPath, string connectionString)

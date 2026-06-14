@@ -8,7 +8,7 @@ namespace StageFright.Core.Modules.Finance;
 /// <summary>
 /// Records member payments with FIFO GL allocation.
 /// Per fee in FIFO order: Debit Cash (0100) / Credit MemberReceivable (0101).
-/// Overpayment (payment > balance): Debit MemberReceivable (0101) / Credit Cash (0100).
+/// Overpayment (payment > balance): Debit Cash (0100) / Credit MemberReceivable (0101) — creates negative (credit) balance.
 /// </summary>
 public class PaymentService : IPaymentService
 {
@@ -117,7 +117,7 @@ public class PaymentService : IPaymentService
                 }
             }
 
-            // 3. Overpayment: record credit balance for member
+            // 3. Overpayment: credit the member's receivable account (negative balance = credit owed)
             if (remainingPayment > 0m)
             {
                 await _glRepo.AddPairAsync(
@@ -125,26 +125,26 @@ public class PaymentService : IPaymentService
                     {
                         Id = Guid.NewGuid(),
                         Date = request.Date,
-                        CategoryId = MemberReceivableCategoryId,
+                        CategoryId = CashCategoryId,
                         DebitAmount = remainingPayment,
                         CreditAmount = 0m,
-                        GLAccount = MemberReceivableGLAccount,
+                        GLAccount = CashGLAccount,
                         MemberId = request.MemberId,
                         PaymentId = savedPayment.Id,
-                        Description = "Overpayment credit to member account",
+                        Description = "Overpayment — cash received",
                         CreatedAt = now
                     },
                     new Transaction
                     {
                         Id = Guid.NewGuid(),
                         Date = request.Date,
-                        CategoryId = CashCategoryId,
+                        CategoryId = MemberReceivableCategoryId,
                         DebitAmount = 0m,
                         CreditAmount = remainingPayment,
-                        GLAccount = CashGLAccount,
+                        GLAccount = MemberReceivableGLAccount,
                         MemberId = request.MemberId,
                         PaymentId = savedPayment.Id,
-                        Description = "Overpayment credit — cash returned to member",
+                        Description = "Overpayment credit to member account",
                         CreatedAt = now
                     },
                     innerCt);

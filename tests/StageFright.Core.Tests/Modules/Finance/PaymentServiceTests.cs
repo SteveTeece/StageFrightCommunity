@@ -137,10 +137,10 @@ public class PaymentServiceTests : TestBase
 
         await _sut.RecordAsync(MakeRequest(130m), Ct);
 
-        // Overpayment pair: Debit MemberReceivable / Credit Cash for $20
+        // Overpayment pair: Debit Cash / Credit MemberReceivable for $20
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 20m && t.GLAccount == "0101"),
-            Arg.Is<Transaction>(t => t.CreditAmount == 20m && t.GLAccount == "0100"),
+            Arg.Is<Transaction>(t => t.DebitAmount == 20m && t.GLAccount == "0100"),
+            Arg.Is<Transaction>(t => t.CreditAmount == 20m && t.GLAccount == "0101"),
             Arg.Any<CancellationToken>());
     }
 
@@ -155,10 +155,10 @@ public class PaymentServiceTests : TestBase
         // Payment record created
         await _paymentRepo.Received(1).AddAsync(Arg.Any<Payment>(), Arg.Any<CancellationToken>());
 
-        // Overpayment pair for the full $50 (entire amount is overpayment)
+        // Overpayment pair for the full $50 (entire amount is overpayment): Debit Cash / Credit MemberReceivable
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 50m && t.GLAccount == "0101"),
-            Arg.Is<Transaction>(t => t.CreditAmount == 50m && t.GLAccount == "0100"),
+            Arg.Is<Transaction>(t => t.DebitAmount == 50m && t.GLAccount == "0100"),
+            Arg.Is<Transaction>(t => t.CreditAmount == 50m && t.GLAccount == "0101"),
             Arg.Any<CancellationToken>());
     }
 

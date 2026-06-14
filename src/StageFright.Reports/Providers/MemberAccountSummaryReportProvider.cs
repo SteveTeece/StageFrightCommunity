@@ -1,0 +1,144 @@
+using StageFright.Core.Contracts;
+using StageFright.Core.Enums;
+using StageFright.Reports.Models;
+using StageFright.Reports.Registry;
+
+namespace StageFright.Reports.Providers;
+
+/// <summary>
+/// Generates the Member Account Summary report.
+/// Per member: opening balance, period transactions, closing balance,
+/// fee aging by DueDate (current / 30 / 60 / 90+ days as of today).
+/// Includes archived members per FR-036.
+/// </summary>
+public class MemberAccountSummaryReportProvider : IReportProvider
+{
+    private readonly IGLRepository _gl;
+    private readonly IMemberRepository _members;
+    private readonly IFeeRepository _fees;
+
+    public MemberAccountSummaryReportProvider(IGLRepository gl, IMemberRepository members, IFeeRepository fees)
+    {
+        _gl = gl;
+        _members = members;
+        _fees = fees;
+    }
+
+    public string ReportId => "member-account-summary";
+    public string ReportName => "Member Account Summary";
+    public string ModuleName => "Finance";
+    public int DisplayOrder => 40;
+
+    public IReadOnlyList<ReportFilterDefinition> Filters =>
+    [
+        new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = "From", DefaultValue = $"{DateTime.UtcNow.Year}-01-01" },
+        new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = "To", DefaultValue = $"{DateTime.UtcNow.Year}-12-31" }
+    ];
+
+    public async Task<ReportData> GenerateAsync(ReportFilterValues filters, CancellationToken ct = default)
+    {
+        var (from, to) = ParseDateRange(filters);
+
+        var activeMembers = await _members.GetAllAsync(ct);
+        var archivedMembers = await _members.GetArchivedAsync(ct);
+        var allMembers = activeMembers.Concat(archivedMembers).OrderBy(m => m.Name).ToList();
+
+        var today = DateTime.UtcNow.Date;
+        var sections = new List<ReportSection>();
+
+        foreach (var member in allMembers)
+        {
+            var periodTxns = await _gl.GetByMemberAsync(member.Id, from, to, ct);
+            var closingBalance = await _gl.GetMemberBalanceAsync(member.Id, ct);
+            var periodNet = periodTxns.Sum(t => t.CreditAmount - t.DebitAmount);
+            var openingBalance = closingBalance - periodNet;
+
+            var memberFees = await _fees.GetByMemberAsync(member.Id, ct);
+            var outstandingFees = memberFees.Where(f => !f.PaidAtCreation).ToList();
+
+            decimal aging0 = 0, aging30 = 0, aging60 = 0, aging90Plus = 0;
+            foreach (var fee in outstandingFees)
+            {
+                var daysOverdue = (today - fee.DueDate.Date).Days;
+                if (daysOverdue <= 0) aging0 += fee.Amount;
+                else if (daysOverdue <= 30) aging30 += fee.Amount;
+                else if (daysOverdue <= 60) aging60 += fee.Amount;
+                else aging90Plus += fee.Amount;
+            }
+
+            var rows = new List<ReportRow>
+            {
+                new() { Cells = ["Opening Balance", string.Empty, string.Empty, string.Empty, string.Empty, FormatCurrency(openingBalance)] }
+            };
+
+            foreach (var txn in periodTxns.OrderBy(t => t.Date))
+            {
+                rows.Add(new ReportRow
+                {
+                    Cells =
+                    [
+                        txn.Date.ToString("yyyy-MM-dd"),
+                        txn.Description ?? string.Empty,
+                        txn.DebitAmount > 0 ? FormatCurrency(txn.DebitAmount) : string.Empty,
+                        txn.CreditAmount > 0 ? FormatCurrency(txn.CreditAmount) : string.Empty,
+                        string.Empty,
+                        string.Empty
+                    ]
+                });
+            }
+
+            rows.Add(new ReportRow
+            {
+                Cells = ["Closing Balance", string.Empty, string.Empty, string.Empty, string.Empty, FormatCurrency(closingBalance)],
+                IsEmphasized = true
+            });
+
+            rows.Add(new ReportRow
+            {
+                Cells =
+                [
+                    "Aging",
+                    $"Current: {FormatCurrency(aging0)}",
+                    $"30 days: {FormatCurrency(aging30)}",
+                    $"60 days: {FormatCurrency(aging60)}",
+                    $"90+ days: {FormatCurrency(aging90Plus)}",
+                    string.Empty
+                ]
+            });
+
+            var label = member.IsDeleted ? $"{member.Name} (Archived)" : member.Name;
+            sections.Add(new ReportSection { Heading = label, Rows = rows });
+        }
+
+        return new ReportData
+        {
+            Title = "Member Account Summary",
+            SubTitle = $"{from:d MMMM yyyy} – {to:d MMMM yyyy}",
+            GeneratedAt = DateTime.UtcNow,
+            Columns =
+            [
+                new ReportColumn { Header = "Date / Item", Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
+                new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
+                new ReportColumn { Header = "Aging", Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = "Balance", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
+            ],
+            Sections = sections
+        };
+    }
+
+    private static (DateTime From, DateTime To) ParseDateRange(ReportFilterValues filters)
+    {
+        var year = DateTime.UtcNow.Year;
+        var from = DateTime.TryParse(filters.Get("dateFrom"), out var df)
+            ? DateTime.SpecifyKind(df.Date, DateTimeKind.Utc)
+            : new DateTime(year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var to = DateTime.TryParse(filters.Get("dateTo"), out var dt)
+            ? new DateTime(dt.Year, dt.Month, dt.Day, 23, 59, 59, DateTimeKind.Utc)
+            : new DateTime(year, 12, 31, 23, 59, 59, DateTimeKind.Utc);
+        return (from, to);
+    }
+
+    private static string FormatCurrency(decimal amount) => amount.ToString("F2");
+}

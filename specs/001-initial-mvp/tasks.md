@@ -330,21 +330,21 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 
 ### Tests for User Story 6a
 
-- [ ] T126 [P] [US6a] Write `IncomeStatementReportProviderTests.cs` in `tests/StageFright.Reports.Tests/` (income section with subtotal; expense section with subtotal; net income/loss; date range filter; empty sections handled) — FAIL first
-- [ ] T127 [P] [US6a] Write `TrialBalanceReportProviderTests.cs` (Assets/Income/Expenses sections; Debit/Credit columns; Σdebits = Σcredits pass → report generated; forced imbalance → GLBalanceException with exact FR-034 message "GL Balance Verification Failed: Total Debits ($X.XX) ≠ Total Credits ($Y.YY)…")
-- [ ] T128 [P] [US6a] Write `AccountRegisterReportProviderTests.cs` (chronological order; running balance correct after each row; date range filter)
-- [ ] T129 [P] [US6a] Write `MemberAccountSummaryReportProviderTests.cs` (opening balance; period transactions; closing balance; aging by DueDate: current/30/60/90+; archived members included)
-- [ ] T130 [P] [US6a] Write `PdfReportRendererTests.cs` and `CsvReportExporterTests.cs` (PDF non-empty byte[]; CSV first row = headers; commas/quotes in values RFC 4180 escaped)
+- [X] T126 [P] [US6a] Write `IncomeStatementReportProviderTests.cs` in `tests/StageFright.Reports.Tests/` (income section with subtotal; expense section with subtotal; net income/loss; date range filter; empty sections handled) — FAIL first
+- [X] T127 [P] [US6a] Write `TrialBalanceReportProviderTests.cs` (Assets/Income/Expenses sections; Debit/Credit columns; Σdebits = Σcredits pass → report generated; forced imbalance → GLBalanceException with exact FR-034 message "GL Balance Verification Failed: Total Debits ($X.XX) ≠ Total Credits ($Y.YY)…")
+- [X] T128 [P] [US6a] Write `AccountRegisterReportProviderTests.cs` (chronological order; running balance correct after each row; date range filter)
+- [X] T129 [P] [US6a] Write `MemberAccountSummaryReportProviderTests.cs` (opening balance; period transactions; closing balance; aging by DueDate: current/30/60/90+; archived members included)
+- [X] T130 [P] [US6a] Write `PdfReportRendererTests.cs` and `CsvReportExporterTests.cs` (PDF non-empty byte[]; CSV first row = headers; commas/quotes in values RFC 4180 escaped)
 
 ### Implementation for User Story 6a
 
-- [ ] T131 [P] [US6a] Create `src/StageFright.Core/Modules/Reports/IncomeStatementReportProvider.cs` (ReportId="income-statement", ModuleName="Finance"; date-range filter defaulting to current calendar year; sections: Income → rows per income category, subtotal; Expenses → rows per expense category, subtotal; GrandTotal=NetIncome)
-- [ ] T132 [P] [US6a] Create `src/StageFright.Core/Modules/Reports/TrialBalanceReportProvider.cs` (ReportId="trial-balance"; sections: Assets (Cash GL#0100, MemberReceivable GL#0101), Income categories, Expense categories; each row: AccountName | DebitAmount | CreditAmount; GrandTotal row; calls IGLRepository.GetBalanceTotalsAsync; if |TotalDebits − TotalCredits| > 0.01 → throws GLBalanceException with exact FR-034 message)
-- [ ] T133 [P] [US6a] Create `src/StageFright.Core/Modules/Reports/AccountRegisterReportProvider.cs` (ReportId="account-register"; date/description/category/debit/credit/running-balance columns; category filter; chronological; running balance recomputed per row)
-- [ ] T134 [P] [US6a] Create `src/StageFright.Core/Modules/Reports/MemberAccountSummaryReportProvider.cs` (ReportId="member-account-summary"; includes archived members (IgnoreQueryFilters); per member: opening balance at start of period, period transactions, closing balance, fee aging by Fee.DueDate as-of today)
-- [ ] T135 [P] [US6a] Create `src/StageFright.Reports/Rendering/PdfReportRenderer.cs` (implements IPdfReportRenderer; uses QuestPDF Document to render title, subtitle/date range, generation date, all column headers, section headings, rows, subtotals, grand totals; professional formatting per FR-037)
-- [ ] T136 [P] [US6a] Create `src/StageFright.Reports/Rendering/CsvReportExporter.cs` (implements ICsvReportExporter; uses CsvHelper; headers as first row; all data rows; RFC 4180 quote-escaping for commas and quotes in field values; FR-041)
-- [ ] T137 [US6a] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V6_AccountingReportsTests.cs` (generate all 4; Trial Balance totals match; forced imbalance error; Account Register running balance; Member Account Summary aging; CSV escaping; PDF non-empty)
+- [X] T131 [P] [US6a] Create `src/StageFright.Core/Modules/Reports/IncomeStatementReportProvider.cs` (ReportId="income-statement", ModuleName="Finance"; date-range filter defaulting to current calendar year; sections: Income → rows per income category, subtotal; Expenses → rows per expense category, subtotal; GrandTotal=NetIncome)
+- [X] T132 [P] [US6a] Create `src/StageFright.Core/Modules/Reports/TrialBalanceReportProvider.cs` (ReportId="trial-balance"; sections: Assets (Cash GL#0100, MemberReceivable GL#0101), Income categories, Expense categories; each row: AccountName | DebitAmount | CreditAmount; GrandTotal row; calls IGLRepository.GetBalanceTotalsAsync; if |TotalDebits − TotalCredits| > 0.01 → throws GLBalanceException with exact FR-034 message)
+- [X] T133 [P] [US6a] Create `src/StageFright.Core/Modules/Reports/AccountRegisterReportProvider.cs` (ReportId="account-register"; date/description/category/debit/credit/running-balance columns; category filter; chronological; running balance recomputed per row)
+- [X] T134 [P] [US6a] Create `src/StageFright.Core/Modules/Reports/MemberAccountSummaryReportProvider.cs` (ReportId="member-account-summary"; includes archived members (IgnoreQueryFilters); per member: opening balance at start of period, period transactions, closing balance, fee aging by Fee.DueDate as-of today)
+- [X] T135 [P] [US6a] Create `src/StageFright.Reports/Rendering/PdfReportRenderer.cs` (implements IPdfReportRenderer; uses QuestPDF Document to render title, subtitle/date range, generation date, all column headers, section headings, rows, subtotals, grand totals; professional formatting per FR-037)
+- [X] T136 [P] [US6a] Create `src/StageFright.Reports/Rendering/CsvReportExporter.cs` (implements ICsvReportExporter; uses CsvHelper; headers as first row; all data rows; RFC 4180 quote-escaping for commas and quotes in field values; FR-041)
+- [X] T137 [US6a] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V6_AccountingReportsTests.cs` (generate all 4; Trial Balance totals match; forced imbalance error; Account Register running balance; Member Account Summary aging; CSV escaping; PDF non-empty)
 
 **Checkpoint**: US6a complete — all 4 accounting reports with print/export independently functional.
 
@@ -358,17 +358,17 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 
 ### Tests for User Story 11
 
-- [ ] T138 [P] [US11] Write `ReportProviderRegistryTests.cs` in `tests/StageFright.Core.Tests/Modules/Reports/` (Members section before Finance before plugins; duplicate ReportId skipped + logged; failing provider skipped) — FAIL first
-- [ ] T139 [P] [US11] Write bUnit test `tests/StageFright.UI.Tests/Shared/ReportViewerTests.cs` (renders loading modal on generation; Cancel button appears after 5s stub; Print button triggers IPdfReportRenderer; Export triggers ICsvReportExporter; error state shown on GenerateAsync throw)
+- [X] T138 [P] [US11] Write `ReportProviderRegistryTests.cs` in `tests/StageFright.Core.Tests/Modules/Reports/` (Members section before Finance before plugins; duplicate ReportId skipped + logged; failing provider skipped) — FAIL first
+- [X] T139 [P] [US11] Write bUnit test `tests/StageFright.UI.Tests/Shared/ReportViewerTests.cs` (renders loading modal on generation; Cancel button appears after 5s stub; Print button triggers IPdfReportRenderer; Export triggers ICsvReportExporter; error state shown on GenerateAsync throw)
 
 ### Implementation for User Story 11
 
-- [ ] T140 [P] [US11] Create `src/StageFright.Reports/Registry/ReportProviderRegistry.cs` (implements IReportProviderRegistry; GetMenuSections: Members first, Finance second, then plugins alphabetically; GetProvider by ReportId; GenerateAsync failures caught, logged, error result returned — FR-049)
-- [ ] T141 [P] [US11] Create `src/StageFright.Core/Modules/Reports/ReportMenuItemProvider.cs` (ModuleName="Reports", DisplayOrder=5; builds submenu hierarchy from IReportProviderRegistry.GetMenuSections())
-- [ ] T142 [P] [US11] Create `src/StageFright.UI/Pages/Reports/ReportsPage.razor` and `ReportsPage.razor.cs` (`@page "/reports/{reportId?}"`; renders report selector sidebar + ReportViewer for selected report)
-- [ ] T143 [P] [US11] Create `src/StageFright.UI/Shared/ReportViewer.razor` and `ReportViewer.razor.cs` (on report selected: show "Generating report..." Radzen modal with spinner always; call IReportProvider.GenerateAsync; display ReportData; Print button → IPdfReportRenderer.Render → OS print dialog; Export CSV button → ICsvReportExporter.Export → file-save dialog; Cancel after 5s CancellationToken; no caching between actions; user-friendly error on failure — FR-049)
-- [ ] T144 [P] [US11] Create `src/StageFright.Core/Modules/Reports/MemberListReportProvider.cs` (ReportId="member-list", ModuleName="Members"; columns: Name, Address, Phone, Email, JoinDate, Age, Status; memberStatus filter: Active (default)/Inactive/Archived/All — FR-051) and `CommitteeReportProvider.cs` (ReportId="committee-report"; Member | Year | Position; year DESC; filter: Active Only (default)/Archived Only/All — FR-052)
-- [ ] T145 [US11] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V11_ReportsMenuTests.cs` (Reports menu structure; Member List filter persistence; Committee Report filter; provider failure graceful; TestPlugin report in alphabetical section)
+- [X] T140 [P] [US11] Create `src/StageFright.Reports/Registry/ReportProviderRegistry.cs` (implements IReportProviderRegistry; GetMenuSections: Members first, Finance second, then plugins alphabetically; GetProvider by ReportId; GenerateAsync failures caught, logged, error result returned — FR-049)
+- [X] T141 [P] [US11] Create `src/StageFright.Core/Modules/Reports/ReportMenuItemProvider.cs` (ModuleName="Reports", DisplayOrder=5; builds submenu hierarchy from IReportProviderRegistry.GetMenuSections())
+- [X] T142 [P] [US11] Create `src/StageFright.UI/Pages/Reports/ReportsPage.razor` and `ReportsPage.razor.cs` (`@page "/reports/{reportId?}"`; renders report selector sidebar + ReportViewer for selected report)
+- [X] T143 [P] [US11] Create `src/StageFright.UI/Shared/ReportViewer.razor` and `ReportViewer.razor.cs` (on report selected: show "Generating report..." Radzen modal with spinner always; call IReportProvider.GenerateAsync; display ReportData; Print button → IPdfReportRenderer.Render → OS print dialog; Export CSV button → ICsvReportExporter.Export → file-save dialog; Cancel after 5s CancellationToken; no caching between actions; user-friendly error on failure — FR-049)
+- [X] T144 [P] [US11] Create `src/StageFright.Core/Modules/Reports/MemberListReportProvider.cs` (ReportId="member-list", ModuleName="Members"; columns: Name, Address, Phone, Email, JoinDate, Age, Status; memberStatus filter: Active (default)/Inactive/Archived/All — FR-051) and `CommitteeReportProvider.cs` (ReportId="committee-report"; Member | Year | Position; year DESC; filter: Active Only (default)/Archived Only/All — FR-052)
+- [X] T145 [US11] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V11_ReportsMenuTests.cs` (Reports menu structure; Member List filter persistence; Committee Report filter; provider failure graceful; TestPlugin report in alphabetical section)
 
 **Checkpoint**: US11 complete — reports menu and shared viewer infrastructure independently functional.
 
