@@ -12,7 +12,8 @@ public partial class MainPage : ContentPage
         // ServiceProvider is resolved automatically by the MAUI host in .NET 10.
         var blazorWebView = new BlazorWebView
         {
-            HostPage = "wwwroot/index.html"
+            HostPage = "wwwroot/index.html",
+            StartPath = "/dashboard"
         };
 
         blazorWebView.RootComponents.Add(new RootComponent

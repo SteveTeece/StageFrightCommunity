@@ -149,8 +149,11 @@ public static class MauiProgram
         services.AddScoped<IRehearsalService, RehearsalService>();
         services.AddScoped<IAttendanceService, AttendanceService>();
 
-        // Finance module (Phase 6)
+        // Finance module (Phase 6 + 9)
         services.AddScoped<IFeeService, FeeService>();
+        services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IReactivationForgivenessService, ReactivationForgivenessService>();
+        services.AddScoped<IMemberBalanceService, MemberBalanceService>();
 
         // Category management module (Phase 7)
         services.AddScoped<ICategoryService, CategoryService>();

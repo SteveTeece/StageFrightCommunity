@@ -1,0 +1,105 @@
+@page "/finance/payment/{MemberId:guid}"
+@using StageFright.Core.Enums
+
+<PageTitle>Record Payment — StageFright Community</PageTitle>
+
+<div class="page-header mb-3">
+    <h1 class="h3">@(_saved ? "Payment Details" : "Record Payment")</h1>
+    @if (_memberName is not null)
+    {
+        <p class="text-muted mb-0">Member: <strong>@_memberName</strong></p>
+    }
+</div>
+
+@if (_loading)
+{
+    <p role="status" aria-live="polite">Loading…</p>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">@_errorMessage</div>
+    }
+
+    @if (_saved && _successMessage is not null)
+    {
+        <div class="alert alert-success" role="status">@_successMessage</div>
+    }
+
+    <div class="card" style="max-width: 540px;">
+        <div class="card-body">
+            <EditForm Model="_form" OnValidSubmit="SaveAsync">
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="payDate">Date <span aria-hidden="true">*</span></label>
+                        <InputDate id="payDate" class="form-control" @bind-Value="_form.Date"
+                                   disabled="@_saved" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="amount">Amount <span aria-hidden="true">*</span></label>
+                        <InputNumber id="amount" class="@(_errors.ContainsKey("Amount") ? "form-control is-invalid" : "form-control")"
+                                     @bind-Value="_form.Amount"
+                                     disabled="@_saved" />
+                        @if (_errors.TryGetValue("Amount", out var amtErr))
+                        {
+                            <div class="invalid-feedback">@amtErr</div>
+                        }
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="method">Payment Method <span aria-hidden="true">*</span></label>
+                        <InputSelect id="method" class="form-select" @bind-Value="_form.PaymentMethod"
+                                     disabled="@_saved">
+                            @foreach (var method in Enum.GetValues<PaymentMethod>())
+                            {
+                                <option value="@method">@method</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="type">Payment Type <span aria-hidden="true">*</span></label>
+                        <InputSelect id="type" class="form-select" @bind-Value="_form.PaymentType"
+                                     disabled="@_saved">
+                            @foreach (var type in Enum.GetValues<PaymentType>())
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label" for="notes">Notes</label>
+                        <InputTextArea id="notes" class="form-control" rows="2"
+                                       @bind-Value="_form.Notes" />
+                    </div>
+
+                </div>
+
+                @if (!_saved)
+                {
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary" disabled="@_saving">
+                            @(_saving ? "Saving…" : "Record Payment")
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary"
+                                @onclick="Cancel">Cancel</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary" disabled="@_saving">
+                            @(_saving ? "Saving…" : "Update Notes")
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary"
+                                @onclick="Cancel">Back to Finance</button>
+                    </div>
+                }
+            </EditForm>
+        </div>
+    </div>
+}

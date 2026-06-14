@@ -52,9 +52,110 @@ html, body {
 
 #app {
     height: 100vh;
-    display: flex;
-    flex-direction: column;
     overflow: hidden;
+}
+
+/* --- Shell layout (CSS grid: brand strip full-width top, nav sidebar left, content right) --- */
+.shell-container {
+    display: grid;
+    grid-template-columns: 14rem 1fr;
+    grid-template-rows: 3rem 1fr;
+    grid-template-areas: "brand brand" "nav content";
+    height: 100%;
+    overflow: hidden;
+    background: var(--sf-body-bg);
+    color: var(--sf-body-fg);
+}
+
+.shell-brand {
+    grid-area: brand;
+    background-color: var(--sf-brand-strip-bg);
+    color: var(--sf-brand-strip-fg);
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.brand-wordmark {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--sf-brand-strip-fg);
+    text-decoration: none;
+    user-select: none;
+}
+
+.shell-nav {
+    grid-area: nav;
+    background: var(--sf-nav-bg);
+    overflow-y: auto;
+    padding: 0.5rem 0;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.shell-content {
+    grid-area: content;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+/* --- Navigation list --- */
+.nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-item {
+    margin: 0;
+}
+
+.nav-link {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: var(--sf-body-fg);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-left: 3px solid transparent;
+}
+
+.nav-link:hover {
+    background: rgba(110, 79, 163, 0.1);
+    color: var(--sf-brand-purple);
+}
+
+.nav-link.active {
+    background: rgba(110, 79, 163, 0.15);
+    color: var(--sf-brand-purple);
+    border-left-color: var(--sf-brand-purple);
+}
+
+.nav-subitems {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-sublink {
+    display: block;
+    padding: 0.3rem 1rem 0.3rem 1.75rem;
+    color: var(--sf-body-fg);
+    text-decoration: none;
+    font-size: 0.82rem;
+    border-left: 3px solid transparent;
+}
+
+.nav-sublink:hover {
+    background: rgba(110, 79, 163, 0.07);
+    color: var(--sf-brand-purple);
+}
+
+.nav-sublink.active {
+    background: rgba(110, 79, 163, 0.12);
+    color: var(--sf-brand-purple);
+    border-left-color: var(--sf-brand-purple);
 }
 
 /* --- Brand strip --- */
