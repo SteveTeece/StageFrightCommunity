@@ -6,6 +6,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Events;
+using StageFright.App.Seeding;
 using StageFright.Core.Contracts;
 using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Dashboard;
@@ -55,6 +56,7 @@ public static class MauiProgram
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
+        builder.Services.AddScoped<IDebugDataSeeder, DebugDataSeeder>();
 #endif
 
         builder.Logging.AddSerilog(dispose: true);

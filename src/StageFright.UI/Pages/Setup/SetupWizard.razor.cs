@@ -1,11 +1,16 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
+using StageFright.Core.Contracts;
 using StageFright.Core.Modules.Settings;
 
 namespace StageFright.UI.Pages.Setup;
 
 public partial class SetupWizard : ComponentBase
 {
+#if DEBUG
+    [Inject] private IDebugDataSeeder DebugSeeder { get; set; } = null!;
+#endif
+
     private readonly SetupFormModel _model = new();
     private bool _submitting;
     private string? _errorMessage;
@@ -24,6 +29,11 @@ public partial class SetupWizard : ComponentBase
                 MembershipRenewalMonth: _model.MembershipRenewalMonth);
 
             await SetupService.InitializeAsync(request);
+
+#if DEBUG
+            await DebugSeeder.SeedAsync();
+#endif
+
             Nav.NavigateTo("/dashboard");
         }
         catch (Core.Exceptions.ValidationException ex)
