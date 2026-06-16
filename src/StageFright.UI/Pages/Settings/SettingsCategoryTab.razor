@@ -54,57 +54,54 @@
             }
             else
             {
-                <table class="table table-sm table-hover" aria-label="Income categories">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">GL Account</th>
-                            <th scope="col">Order</th>
-                            <th scope="col">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var (cat, index) in _incomeCategories.Select((c, i) => (c, i)))
-                        {
-                            <tr>
-                                <td>
-                                    @cat.Name
-                                    @if (cat.IsSystem)
-                                    {
-                                        <span class="badge bg-secondary ms-1" title="System category">System</span>
-                                    }
-                                </td>
-                                <td><code>@cat.GLAccount</code></td>
-                                <td>
-                                    @if (!cat.IsSystem)
-                                    {
-                                        <button class="btn btn-outline-secondary btn-sm me-1"
-                                                @onclick="() => MoveUpAsync(cat, _incomeCategories)"
-                                                disabled="@(index == 0)"
-                                                title="Move up" aria-label="Move @cat.Name up">▲</button>
-                                        <button class="btn btn-outline-secondary btn-sm"
-                                                @onclick="() => MoveDownAsync(cat, _incomeCategories)"
-                                                disabled="@(index == _incomeCategories.Count - 1)"
-                                                title="Move down" aria-label="Move @cat.Name down">▼</button>
-                                    }
-                                </td>
-                                <td>
-                                    @if (!cat.IsSystem)
-                                    {
-                                        <button class="btn btn-outline-danger btn-sm"
-                                                @onclick="() => ArchiveAsync(cat.Id)">
-                                            Archive
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted small">Read-only</span>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                <RadzenDataGrid Data="@_incomeCategories" TItem="Category"
+                                AllowSorting="false" AllowPaging="true" PageSize="10"
+                                class="rz-shadow-0" style="max-height: 400px; overflow-y: auto;">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="Category" Title="Name" Width="200px">
+                            <Template Context="cat">
+                                @cat.Name
+                                @if (cat.IsSystem)
+                                {
+                                    <span class="badge bg-secondary ms-1" title="System category">System</span>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Category" Title="GL Account" Width="140px">
+                            <Template Context="cat">
+                                <code>@cat.GLAccount</code>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Category" Title="Order" Width="120px" Sortable="false">
+                            <Template Context="cat">
+                                @if (!cat.IsSystem)
+                                {
+                                    <button class="btn btn-outline-secondary btn-sm me-1"
+                                            @onclick="() => MoveUpAsync(cat, _incomeCategories)"
+                                            title="Move up" aria-label="Move @cat.Name up">▲</button>
+                                    <button class="btn btn-outline-secondary btn-sm"
+                                            @onclick="() => MoveDownAsync(cat, _incomeCategories)"
+                                            title="Move down" aria-label="Move @cat.Name down">▼</button>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Category" Title="Actions" Width="140px" Sortable="false">
+                            <Template Context="cat">
+                                @if (!cat.IsSystem)
+                                {
+                                    <button class="btn btn-outline-danger btn-sm"
+                                            @onclick="() => ArchiveAsync(cat.Id)">
+                                        Archive
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Read-only</span>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
             }
         </section>
 
@@ -117,57 +114,54 @@
             }
             else
             {
-                <table class="table table-sm table-hover" aria-label="Expense categories">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">GL Account</th>
-                            <th scope="col">Order</th>
-                            <th scope="col">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var (cat, index) in _expenseCategories.Select((c, i) => (c, i)))
-                        {
-                            <tr>
-                                <td>
-                                    @cat.Name
-                                    @if (cat.IsSystem)
-                                    {
-                                        <span class="badge bg-secondary ms-1" title="System category">System</span>
-                                    }
-                                </td>
-                                <td><code>@cat.GLAccount</code></td>
-                                <td>
-                                    @if (!cat.IsSystem)
-                                    {
-                                        <button class="btn btn-outline-secondary btn-sm me-1"
-                                                @onclick="() => MoveUpAsync(cat, _expenseCategories)"
-                                                disabled="@(index == 0)"
-                                                title="Move up" aria-label="Move @cat.Name up">▲</button>
-                                        <button class="btn btn-outline-secondary btn-sm"
-                                                @onclick="() => MoveDownAsync(cat, _expenseCategories)"
-                                                disabled="@(index == _expenseCategories.Count - 1)"
-                                                title="Move down" aria-label="Move @cat.Name down">▼</button>
-                                    }
-                                </td>
-                                <td>
-                                    @if (!cat.IsSystem)
-                                    {
-                                        <button class="btn btn-outline-danger btn-sm"
-                                                @onclick="() => ArchiveAsync(cat.Id)">
-                                            Archive
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted small">Read-only</span>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                <RadzenDataGrid Data="@_expenseCategories" TItem="Category"
+                                AllowSorting="false" AllowPaging="true" PageSize="10"
+                                class="rz-shadow-0" style="max-height: 400px; overflow-y: auto;">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="Category" Title="Name" Width="200px">
+                            <Template Context="cat">
+                                @cat.Name
+                                @if (cat.IsSystem)
+                                {
+                                    <span class="badge bg-secondary ms-1" title="System category">System</span>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Category" Title="GL Account" Width="140px">
+                            <Template Context="cat">
+                                <code>@cat.GLAccount</code>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Category" Title="Order" Width="120px" Sortable="false">
+                            <Template Context="cat">
+                                @if (!cat.IsSystem)
+                                {
+                                    <button class="btn btn-outline-secondary btn-sm me-1"
+                                            @onclick="() => MoveUpAsync(cat, _expenseCategories)"
+                                            title="Move up" aria-label="Move @cat.Name up">▲</button>
+                                    <button class="btn btn-outline-secondary btn-sm"
+                                            @onclick="() => MoveDownAsync(cat, _expenseCategories)"
+                                            title="Move down" aria-label="Move @cat.Name down">▼</button>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Category" Title="Actions" Width="140px" Sortable="false">
+                            <Template Context="cat">
+                                @if (!cat.IsSystem)
+                                {
+                                    <button class="btn btn-outline-danger btn-sm"
+                                            @onclick="() => ArchiveAsync(cat.Id)">
+                                        Archive
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Read-only</span>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
             }
         </section>
 
@@ -176,32 +170,27 @@
         {
             <section aria-labelledby="archived-heading" class="mb-4">
                 <h5 id="archived-heading">Archived Categories</h5>
-                <table class="table table-sm" aria-label="Archived categories">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">GL Account</th>
-                            <th scope="col">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var cat in _archivedCategories)
-                        {
-                            <tr class="text-muted">
-                                <td>@cat.Name</td>
-                                <td>@cat.Type</td>
-                                <td><code>@cat.GLAccount</code></td>
-                                <td>
-                                    <button class="btn btn-outline-secondary btn-sm"
-                                            @onclick="() => RestoreAsync(cat.Id)">
-                                        Restore
-                                    </button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                <RadzenDataGrid Data="@_archivedCategories" TItem="Category"
+                                AllowSorting="true" AllowPaging="true" PageSize="10"
+                                class="rz-shadow-0" style="max-height: 400px; overflow-y: auto;">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="Category" Property="Name" Title="Name" Width="160px" />
+                        <RadzenDataGridColumn TItem="Category" Property="Type" Title="Type" Width="140px" />
+                        <RadzenDataGridColumn TItem="Category" Title="GL Account" Width="140px">
+                            <Template Context="cat">
+                                <code>@cat.GLAccount</code>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Category" Title="Actions" Width="140px" Sortable="false">
+                            <Template Context="cat">
+                                <button class="btn btn-outline-secondary btn-sm"
+                                        @onclick="() => RestoreAsync(cat.Id)">
+                                    Restore
+                                </button>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
             </section>
         }
     }

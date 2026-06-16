@@ -9,6 +9,20 @@ public partial class App : Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        return new Window(new MainPage()) { Title = "StageFright Community" };
+        DisplayInfo displayInfo = DeviceDisplay.Current.MainDisplayInfo;
+        double density = displayInfo.Density;
+        double screenWidth = displayInfo.Width / density;
+        double screenHeight = displayInfo.Height / density;
+
+        Window window = new Window(new MainPage())
+        {
+            Title = "StageFright Community",
+            Width = screenWidth,
+            Height = screenHeight,
+            X = 0,
+            Y = 0
+        };
+
+        return window;
     }
 }

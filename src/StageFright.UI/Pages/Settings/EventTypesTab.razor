@@ -46,42 +46,37 @@
             }
             else
             {
-                <table class="table table-sm table-hover" aria-label="Event types">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var et in _activeTypes)
-                        {
-                            <tr>
-                                <td>
-                                    @et.Name
-                                    @if (et.IsSystemDefault)
-                                    {
-                                        <span class="badge bg-secondary ms-1" title="System default">System</span>
-                                    }
-                                </td>
-                                <td>
-                                    @if (!et.IsSystemDefault)
-                                    {
-                                        <button class="btn btn-outline-danger btn-sm"
-                                                @onclick="() => ArchiveAsync(et.Id)"
-                                                aria-label="Archive @et.Name">
-                                            Archive
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted small">Read-only</span>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                <RadzenDataGrid Data="@_activeTypes" TItem="EventType"
+                                AllowSorting="true" AllowPaging="true" PageSize="10"
+                                class="rz-shadow-0" style="max-height: 400px; overflow-y: auto;">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="EventType" Property="Name" Title="Name" Width="300px">
+                            <Template Context="et">
+                                @et.Name
+                                @if (et.IsSystemDefault)
+                                {
+                                    <span class="badge bg-secondary ms-1" title="System default">System</span>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="EventType" Title="Actions" Width="140px" Sortable="false">
+                            <Template Context="et">
+                                @if (!et.IsSystemDefault)
+                                {
+                                    <button class="btn btn-outline-danger btn-sm"
+                                            @onclick="() => ArchiveAsync(et.Id)"
+                                            aria-label="Archive @et.Name">
+                                        Archive
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Read-only</span>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
             }
         </section>
 
@@ -90,29 +85,22 @@
         {
             <section aria-labelledby="archived-et-heading" class="mb-4">
                 <h5 id="archived-et-heading">Archived Event Types</h5>
-                <table class="table table-sm" aria-label="Archived event types">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var et in _archivedTypes)
-                        {
-                            <tr class="text-muted">
-                                <td>@et.Name</td>
-                                <td>
-                                    <button class="btn btn-outline-secondary btn-sm"
-                                            @onclick="() => RestoreAsync(et.Id)"
-                                            aria-label="Restore @et.Name">
-                                        Restore
-                                    </button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                <RadzenDataGrid Data="@_archivedTypes" TItem="EventType"
+                                AllowSorting="true" AllowPaging="true" PageSize="10"
+                                class="rz-shadow-0" style="max-height: 400px; overflow-y: auto;">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="EventType" Property="Name" Title="Name" Width="300px" />
+                        <RadzenDataGridColumn TItem="EventType" Title="Actions" Width="140px" Sortable="false">
+                            <Template Context="et">
+                                <button class="btn btn-outline-secondary btn-sm"
+                                        @onclick="() => RestoreAsync(et.Id)"
+                                        aria-label="Restore @et.Name">
+                                    Restore
+                                </button>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
             </section>
         }
     }
