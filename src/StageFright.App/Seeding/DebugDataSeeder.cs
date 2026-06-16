@@ -70,7 +70,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         _logger = logger;
     }
 
-    public async Task SeedAsync(CancellationToken ct = default)
+    public async Task SeedAsync(IProgress<string>? progress = null, CancellationToken ct = default)
     {
         var existing = await _memberService.GetByStatusAsync(MemberStatus.Active, ct);
         if (existing.Count > 0)
@@ -82,9 +82,11 @@ public class DebugDataSeeder : IDebugDataSeeder
         _logger.LogInformation("Seeding debug data...");
 
         // Income categories — must exist before attendance/fee GL entries are written
+        progress?.Report("Creating income categories…");
         var membershipFeeCategory = await _categoryService.CreateAsync("Membership Fees", CategoryType.Income, ct);
         var concertIncomeCategory = await _categoryService.CreateAsync("Concert Income", CategoryType.Income, ct);
 
+        progress?.Report("Creating 40 members…");
         var members = await CreateMembersAsync(ct);
         // First 32 of 40 members (80%) attend every rehearsal
         var regularAttendeeIds = new HashSet<Guid>(members.Take(32).Select(m => m.Id));
@@ -99,13 +101,20 @@ public class DebugDataSeeder : IDebugDataSeeder
         foreach (var year in new[] { 2024, 2025, 2026 })
         {
             _logger.LogInformation("Seeding {Year}...", year);
+
+            progress?.Report($"Seeding {year} annual fees…");
             await SeedAnnualFeesAsync(year, members, membershipFeeCategory, settings.AnnualFee, ct);
+
+            progress?.Report($"Seeding {year} rehearsals…");
             await SeedRehearsalsAsync(year, members, regularAttendeeIds, ct);
+
+            progress?.Report($"Seeding {year} events…");
             await SeedEisteddfodAsync(year, members, eisteddfodType, ct);
             if (year < 2026)
                 await SeedConcertsAsync(year, members, performanceType, concertIncomeCategory, ct);
         }
 
+        progress?.Report("Seed complete!");
         _logger.LogInformation("Debug data seed complete — {Count} members, 3 years.", members.Count);
     }
 

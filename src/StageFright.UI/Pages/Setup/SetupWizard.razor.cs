@@ -14,6 +14,9 @@ public partial class SetupWizard : ComponentBase
     private readonly SetupFormModel _model = new();
     private bool _submitting;
     private string? _errorMessage;
+#if DEBUG
+    private string? _seedingProgress;
+#endif
 
     private async Task HandleValidSubmitAsync()
     {
@@ -31,7 +34,12 @@ public partial class SetupWizard : ComponentBase
             await SetupService.InitializeAsync(request);
 
 #if DEBUG
-            await DebugSeeder.SeedAsync();
+            var progress = new Progress<string>(msg =>
+            {
+                _seedingProgress = msg;
+                InvokeAsync(StateHasChanged);
+            });
+            await DebugSeeder.SeedAsync(progress);
 #endif
 
             Nav.NavigateTo("/dashboard");

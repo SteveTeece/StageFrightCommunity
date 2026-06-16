@@ -55,5 +55,15 @@
             }
             Get Started
         </button>
+
+#if DEBUG
+        @if (_submitting && _seedingProgress is not null)
+        {
+            <div class="mt-3 d-flex align-items-center gap-2 text-muted small" aria-live="polite" aria-atomic="true">
+                <span class="spinner-border spinner-border-sm flex-shrink-0" role="status" aria-hidden="true"></span>
+                <span>@_seedingProgress</span>
+            </div>
+        }
+#endif
     </EditForm>
 </div>

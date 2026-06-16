@@ -6,5 +6,5 @@ namespace StageFright.Core.Contracts;
 /// </summary>
 public interface IDebugDataSeeder
 {
-    Task SeedAsync(CancellationToken ct = default);
+    Task SeedAsync(IProgress<string>? progress = null, CancellationToken ct = default);
 }
