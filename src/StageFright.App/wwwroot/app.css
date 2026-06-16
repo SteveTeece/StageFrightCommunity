@@ -55,6 +55,11 @@ html, body {
     overflow: hidden;
 }
 
+/* ThemeProvider wrapper must fill #app so shell-container's height:100% resolves correctly */
+.theme-root {
+    height: 100%;
+}
+
 /* --- Shell layout (CSS grid: brand strip top, nav bar below brand, content fills remainder) --- */
 .shell-container {
     display: grid;

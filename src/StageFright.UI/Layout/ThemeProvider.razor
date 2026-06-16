@@ -1,3 +1,10 @@
+<HeadContent>
+    @if (_currentTheme == StageFright.Core.Enums.Theme.Dark)
+    {
+        <link rel="stylesheet" href="_content/Radzen.Blazor/css/dark-base.css" />
+    }
+</HeadContent>
+
 <CascadingValue Value="this" IsFixed="false">
     <div data-bs-theme="@(_currentTheme == StageFright.Core.Enums.Theme.Dark ? "dark" : "light")" class="theme-root">
         @ChildContent

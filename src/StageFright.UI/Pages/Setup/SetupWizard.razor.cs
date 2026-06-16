@@ -7,12 +7,11 @@ namespace StageFright.UI.Pages.Setup;
 
 public partial class SetupWizard : ComponentBase
 {
-#if DEBUG
     [Inject] private IDebugDataSeeder DebugSeeder { get; set; } = null!;
-#endif
 
     private readonly SetupFormModel _model = new();
     private bool _submitting;
+    private bool _seedWithTestData;
     private string? _errorMessage;
     private string? _seedingProgress;
 
@@ -31,14 +30,15 @@ public partial class SetupWizard : ComponentBase
 
             await SetupService.InitializeAsync(request);
 
-#if DEBUG
-            var progress = new Progress<string>(msg =>
+            if (_seedWithTestData)
             {
-                _seedingProgress = msg;
-                InvokeAsync(StateHasChanged);
-            });
-            await Task.Run(() => DebugSeeder.SeedAsync(progress));
-#endif
+                var progress = new Progress<string>(msg =>
+                {
+                    _seedingProgress = msg;
+                    InvokeAsync(StateHasChanged);
+                });
+                await Task.Run(() => DebugSeeder.SeedAsync(progress));
+            }
 
             Nav.NavigateTo("/dashboard");
         }

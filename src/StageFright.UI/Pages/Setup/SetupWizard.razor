@@ -48,6 +48,13 @@
             <ValidationMessage For="() => _model.MembershipRenewalMonth" class="text-danger small" />
         </div>
 
+        <div class="mb-4">
+            <div class="form-check">
+                <InputCheckbox id="seedData" class="form-check-input" @bind-Value="_seedWithTestData" />
+                <label for="seedData" class="form-check-label">Load sample data (members, rehearsals, events &amp; finances)</label>
+            </div>
+        </div>
+
         <button type="submit" class="btn btn-primary w-100" disabled="@_submitting">
             @if (_submitting)
             {

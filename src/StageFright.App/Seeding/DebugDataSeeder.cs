@@ -12,7 +12,7 @@ namespace StageFright.App.Seeding;
 /// <summary>
 /// Seeds 3 years (2024–2026) of realistic test data after the first-run wizard completes.
 /// 40 members, 40 NSW-school-term rehearsals/year, annual Eisteddfod, two annual concerts.
-/// Registered and invoked only in DEBUG builds.
+/// Only runs when the user opts in via the setup wizard checkbox.
 /// </summary>
 public class DebugDataSeeder : IDebugDataSeeder
 {

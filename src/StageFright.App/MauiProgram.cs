@@ -56,8 +56,9 @@ public static class MauiProgram
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
-        builder.Services.AddScoped<IDebugDataSeeder, DebugDataSeeder>();
 #endif
+
+        builder.Services.AddScoped<IDebugDataSeeder, DebugDataSeeder>();
 
         builder.Logging.AddSerilog(dispose: true);
 

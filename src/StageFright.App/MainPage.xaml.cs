@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebView.Maui;
 
 namespace StageFright.App;
@@ -20,6 +21,12 @@ public partial class MainPage : ContentPage
         {
             Selector = "#app",
             ComponentType = typeof(StageFright.UI.App)
+        });
+
+        blazorWebView.RootComponents.Add(new RootComponent
+        {
+            Selector = "head::after",
+            ComponentType = typeof(HeadOutlet)
         });
 
         Content = blazorWebView;

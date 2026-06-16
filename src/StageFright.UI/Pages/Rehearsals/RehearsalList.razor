@@ -18,7 +18,7 @@ else if (_rehearsals.Count == 0)
 else
 {
     <RadzenDataGrid Data="@_rehearsals" TItem="Rehearsal"
-                    AllowSorting="true" AllowPaging="true" PageSize="25"
+                    AllowSorting="true" AllowPaging="true" PageSize="10"
                     class="rz-shadow-0">
         <Columns>
             <RadzenDataGridColumn TItem="Rehearsal" Property="Date" Title="Date" Width="140px" FormatString="{0:d MMM yyyy}" />

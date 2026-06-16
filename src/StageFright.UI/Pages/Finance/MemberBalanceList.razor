@@ -15,7 +15,7 @@ else if (_balances.Count == 0)
 else
 {
     <RadzenDataGrid Data="@_balances" TItem="MemberBalance"
-                    AllowSorting="true" AllowPaging="true" PageSize="25"
+                    AllowSorting="true" AllowPaging="true" PageSize="10"
                     class="rz-shadow-0 mt-3">
         <Columns>
             <RadzenDataGridColumn TItem="MemberBalance" Property="Name" Title="Member" Width="200px">
