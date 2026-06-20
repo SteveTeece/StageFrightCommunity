@@ -28,4 +28,7 @@ public interface IGLRepository
 
     /// <summary>Returns total debits and total credits for the Trial Balance within the date range.</summary>
     Task<(decimal TotalDebits, decimal TotalCredits)> GetBalanceTotalsAsync(DateTime from, DateTime to, CancellationToken ct = default);
+
+    /// <summary>Returns all GL transactions linked to a specific fee.</summary>
+    Task<IReadOnlyList<Transaction>> GetByFeeAsync(Guid feeId, CancellationToken ct = default);
 }

@@ -86,4 +86,13 @@ public class GLRepository : IGLRepository
 
         return (totalDebits, totalCredits);
     }
+
+    public async Task<IReadOnlyList<Transaction>> GetByFeeAsync(Guid feeId, CancellationToken ct = default)
+    {
+        return await _db.Transactions
+            .Where(t => t.FeeId == feeId)
+            .OrderBy(t => t.Date)
+            .ThenBy(t => t.CreatedAt)
+            .ToListAsync(ct);
+    }
 }

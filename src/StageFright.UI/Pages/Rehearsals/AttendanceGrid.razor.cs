@@ -61,7 +61,7 @@ public partial class AttendanceGrid
                 MemberName = m.Name,
                 MemberIsActive = m.Status == MemberStatus.Active,
                 Attended = false,
-                MarkAsUnpaid = false
+                Paid = false
             }).ToList();
         }
         catch (Exception ex)
@@ -85,7 +85,7 @@ public partial class AttendanceGrid
             {
                 MemberId = r.MemberId,
                 Attended = r.Attended,
-                MarkAsUnpaid = r.MarkAsUnpaid
+                MarkAsUnpaid = !r.Paid
             }).ToList();
 
             await AttendanceService.RecordBatchAsync(RehearsalId, items);
@@ -110,7 +110,24 @@ public partial class AttendanceGrid
         public Guid MemberId { get; init; }
         public string MemberName { get; init; } = string.Empty;
         public bool MemberIsActive { get; init; }
-        public bool Attended { get; set; }
-        public bool MarkAsUnpaid { get; set; }
+        private bool _attended;
+        private bool _paid;
+
+        public bool Attended
+        {
+            get => _attended;
+            set
+            {
+                _attended = value;
+                if (value)
+                    _paid = true;
+            }
+        }
+
+        public bool Paid
+        {
+            get => _paid;
+            set => _paid = value;
+        }
     }
 }

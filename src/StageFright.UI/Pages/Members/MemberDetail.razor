@@ -93,4 +93,45 @@ else
             </ul>
         </section>
     }
+
+    @if (_feeHistory.Count > 0)
+    {
+        <section aria-label="Fee Payment History" class="mt-4">
+            <h2 class="h5 mb-2">Fee Payment History</h2>
+            <div class="table-responsive">
+                <table class="table table-hover table-sm align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Type</th>
+                            <th scope="col" class="text-end">Amount</th>
+                            <th scope="col" class="text-end">Paid</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var fee in _feeHistory.OrderByDescending(f => f.FeeDate))
+                        {
+                            <tr>
+                                <td>@fee.FeeDate.ToString("d MMM yyyy")</td>
+                                <td>@fee.FeeType</td>
+                                <td class="text-end">@fee.Amount.ToString("C")</td>
+                                <td class="text-end">@fee.PaidAmount.ToString("C")</td>
+                                <td>
+                                    @if (fee.IsPaid)
+                                    {
+                                        <span class="badge bg-success">Paid</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Unpaid</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    }
 }
