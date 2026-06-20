@@ -8,39 +8,22 @@
 <div class="settings-page">
     <h1>Settings</h1>
 
-    <div class="tab-container">
-        <ul class="tab-strip" role="tablist" aria-label="Settings tabs">
-            @foreach (var tab in OrderedTabs)
-            {
-                <li role="presentation">
-                    <button class="tab-button @(ActiveTabKey == tab.TabKey ? "active" : "")"
-                            role="tab"
-                            id="tab-@tab.TabKey"
-                            aria-selected="@(ActiveTabKey == tab.TabKey)"
-                            aria-controls="tabpanel-@tab.TabKey"
-                            @onclick="() => ActivateTab(tab.TabKey)">
-                        @tab.TabTitle
-                    </button>
-                </li>
-            }
-        </ul>
-
+    <Tabs DefaultActiveTabIndex="@DefaultTabIndex">
         @foreach (var tab in OrderedTabs)
         {
-            <div class="tab-panel @(ActiveTabKey == tab.TabKey ? "active" : "")"
-                 id="tabpanel-@tab.TabKey"
-                 role="tabpanel"
-                 aria-labelledby="tab-@tab.TabKey"
-                 hidden="@(ActiveTabKey != tab.TabKey)">
-                @try
-                {
-                    <DynamicComponent Type="tab.SettingsComponentType" />
-                }
-                catch (Exception)
-                {
-                    <div class="alert alert-warning">This settings tab failed to load.</div>
-                }
-            </div>
+            var tabKey = tab.TabKey;
+            <Tab Title="@tab.TabTitle" OnShown="@(() => NavToTab(tabKey))">
+                <Content>
+                    @try
+                    {
+                        <DynamicComponent Type="tab.SettingsComponentType" />
+                    }
+                    catch (Exception)
+                    {
+                        <div class="alert alert-warning">This settings tab failed to load.</div>
+                    }
+                </Content>
+            </Tab>
         }
-    </div>
+    </Tabs>
 </div>

@@ -8,7 +8,7 @@ public partial class SettingsPage : ComponentBase
     [SupplyParameterFromQuery(Name = "tab")]
     private string? TabQuery { get; set; }
 
-    private string ActiveTabKey { get; set; } = string.Empty;
+    private int DefaultTabIndex { get; set; }
 
     private IReadOnlyList<ISettingsTabProvider> OrderedTabs { get; set; } = Array.Empty<ISettingsTabProvider>();
 
@@ -25,15 +25,15 @@ public partial class SettingsPage : ComponentBase
 
         OrderedTabs = tabs;
 
-        if (!string.IsNullOrEmpty(TabQuery) && seen.Contains(TabQuery))
-            ActiveTabKey = TabQuery;
-        else
-            ActiveTabKey = OrderedTabs.FirstOrDefault()?.TabKey ?? string.Empty;
+        if (!string.IsNullOrEmpty(TabQuery))
+        {
+            var idx = OrderedTabs.ToList().FindIndex(
+                t => string.Equals(t.TabKey, TabQuery, StringComparison.OrdinalIgnoreCase));
+            if (idx >= 0)
+                DefaultTabIndex = idx;
+        }
     }
 
-    private void ActivateTab(string tabKey)
-    {
-        ActiveTabKey = tabKey;
-        Nav.NavigateTo($"/settings?tab={tabKey}", replace: true);
-    }
+    private void NavToTab(string key) =>
+        Nav.NavigateTo($"/settings?tab={key}", replace: true);
 }
