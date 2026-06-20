@@ -98,40 +98,35 @@ else
     {
         <section aria-label="Fee Payment History" class="mt-4">
             <h2 class="h5 mb-2">Fee Payment History</h2>
-            <div class="table-responsive">
-                <table class="table table-hover table-sm align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th scope="col">Date</th>
-                            <th scope="col">Type</th>
-                            <th scope="col" class="text-end">Amount</th>
-                            <th scope="col" class="text-end">Paid</th>
-                            <th scope="col">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var fee in _feeHistory.OrderByDescending(f => f.FeeDate))
-                        {
-                            <tr>
-                                <td>@fee.FeeDate.ToString("d MMM yyyy")</td>
-                                <td>@fee.FeeType</td>
-                                <td class="text-end">@fee.Amount.ToString("C")</td>
-                                <td class="text-end">@fee.PaidAmount.ToString("C")</td>
-                                <td>
-                                    @if (fee.IsPaid)
-                                    {
-                                        <span class="badge bg-success">Paid</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-warning text-dark">Unpaid</span>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+            <RadzenDataGrid Data="@_feeHistory" TItem="FeeHistoryItem"
+                            AllowPaging="true" PageSize="10"
+                            AllowSorting="true"
+                            class="rz-shadow-0">
+                <Columns>
+                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="FeeDate" Title="Date" Width="130px">
+                        <Template Context="f">@f.FeeDate.ToString("d MMM yyyy")</Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="FeeType" Title="Type" Width="100px" />
+                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="Amount" Title="Amount" Width="85px">
+                        <Template Context="f"><span class="d-block text-end">@f.Amount.ToString("C")</span></Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="PaidAmount" Title="Paid" Width="85px">
+                        <Template Context="f"><span class="d-block text-end">@f.PaidAmount.ToString("C")</span></Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="IsPaid" Title="Status" Width="90px" Sortable="false">
+                        <Template Context="f">
+                            @if (f.IsPaid)
+                            {
+                                <span class="badge bg-success">Paid</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Unpaid</span>
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
         </section>
     }
 }

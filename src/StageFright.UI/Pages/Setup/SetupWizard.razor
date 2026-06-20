@@ -25,13 +25,19 @@
 
         <div class="row g-3 mb-3">
             <div class="col">
-                <label for="annualFee" class="form-label">Annual Fee ($)</label>
-                <InputNumber id="annualFee" class="form-control" @bind-Value="_model.AnnualFee" />
+                <label for="annualFee" class="form-label">Annual Fee</label>
+                <div class="input-group">
+                    <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
+                    <InputNumber id="annualFee" class="form-control" @bind-Value="_model.AnnualFee" @bind-Value:format="N2" />
+                </div>
                 <ValidationMessage For="() => _model.AnnualFee" class="text-danger small" />
             </div>
             <div class="col">
-                <label for="attendanceFee" class="form-label">Attendance Fee ($)</label>
-                <InputNumber id="attendanceFee" class="form-control" @bind-Value="_model.AttendanceFee" />
+                <label for="attendanceFee" class="form-label">Attendance Fee</label>
+                <div class="input-group">
+                    <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
+                    <InputNumber id="attendanceFee" class="form-control" @bind-Value="_model.AttendanceFee" @bind-Value:format="N2" />
+                </div>
                 <ValidationMessage For="() => _model.AttendanceFee" class="text-danger small" />
             </div>
         </div>

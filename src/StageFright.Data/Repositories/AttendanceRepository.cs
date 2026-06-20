@@ -16,6 +16,22 @@ public class AttendanceRepository : BaseRepository<AttendanceRecord>, IAttendanc
             .AnyAsync(a => a.RehearsalId == rehearsalId && a.MemberId == memberId, ct);
     }
 
+    public async Task<IReadOnlyList<AttendanceRecord>> GetByRehearsalAsync(Guid rehearsalId, CancellationToken ct = default)
+    {
+        try
+        {
+            return await _db.AttendanceRecords
+                .Include(a => a.Member)
+                .Where(a => a.RehearsalId == rehearsalId)
+                .OrderBy(a => a.Member.Name)
+                .ToListAsync(ct);
+        }
+        catch (Exception ex) when (ex is not DataAccessException)
+        {
+            throw new DataAccessException(ex.Message, nameof(AttendanceRecord), nameof(GetByRehearsalAsync), null, ex);
+        }
+    }
+
     public async Task AddBatchAsync(IReadOnlyList<AttendanceRecord> records, CancellationToken ct = default)
     {
         try

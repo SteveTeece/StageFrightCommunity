@@ -21,7 +21,15 @@ else
                     AllowSorting="true" AllowPaging="true" PageSize="10"
                     class="rz-shadow-0">
         <Columns>
-            <RadzenDataGridColumn TItem="Rehearsal" Property="Date" Title="Date" Width="140px" FormatString="{0:d MMM yyyy}" />
+            <RadzenDataGridColumn TItem="Rehearsal" Property="Date" Title="Date" Width="140px">
+                <Template Context="r">
+                    <button class="btn btn-link p-0 text-start"
+                            @onclick="() => RecordAttendance(r.Id)"
+                            aria-label="View attendance for @r.Date.ToString("d MMM yyyy")">
+                        @r.Date.ToString("d MMM yyyy")
+                    </button>
+                </Template>
+            </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="Rehearsal" Property="Time" Title="Time" Width="100px">
                 <Template Context="r">@r.Time.ToString(@"hh\:mm")</Template>
             </RadzenDataGridColumn>

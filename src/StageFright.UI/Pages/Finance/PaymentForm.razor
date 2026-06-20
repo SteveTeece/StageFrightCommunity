@@ -40,13 +40,16 @@ else
 
                     <div class="col-md-6">
                         <label class="form-label" for="amount">Amount <span aria-hidden="true">*</span></label>
-                        <InputNumber id="amount" class="@(_errors.ContainsKey("Amount") ? "form-control is-invalid" : "form-control")"
-                                     @bind-Value="_form.Amount"
-                                     disabled="@_saved" />
-                        @if (_errors.TryGetValue("Amount", out var amtErr))
-                        {
-                            <div class="invalid-feedback">@amtErr</div>
-                        }
+                        <div class="input-group @(_errors.ContainsKey("Amount") ? "has-validation" : "")">
+                            <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
+                            <InputNumber id="amount" class="@(_errors.ContainsKey("Amount") ? "form-control is-invalid" : "form-control")"
+                                         @bind-Value="_form.Amount" @bind-Value:format="N2"
+                                         disabled="@_saved" />
+                            @if (_errors.TryGetValue("Amount", out var amtErr))
+                            {
+                                <div class="invalid-feedback">@amtErr</div>
+                            }
+                        </div>
                     </div>
 
                     <div class="col-md-6">

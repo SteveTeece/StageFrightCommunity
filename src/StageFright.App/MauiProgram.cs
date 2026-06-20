@@ -211,6 +211,7 @@ public static class MauiProgram
         services.AddScoped<IPdfReportRenderer, PdfReportRenderer>();
         services.AddScoped<ICsvReportExporter, CsvReportExporter>();
         services.AddSingleton<IMenuItemProvider, ReportMenuItemProvider>();
+        services.AddSingleton<IMenuItemProvider, SettingsMenuItemProvider>();
     }
 
     private static void RunStartupSequence(IServiceProvider services, string dbPath, string pluginsPath, string connectionString, StartupDiagnosticService diagnosticService)

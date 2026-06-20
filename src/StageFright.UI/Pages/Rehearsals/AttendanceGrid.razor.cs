@@ -17,6 +17,8 @@ public partial class AttendanceGrid
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
 
+    private const int PageSize = 15;
+
     private bool _loading = true;
     private bool _saving;
     private bool _alreadyRecorded;
@@ -24,14 +26,23 @@ public partial class AttendanceGrid
     private Rehearsal? _rehearsal;
     private List<Member> _members = new();
     private List<AttendanceRow> _rows = new();
+    private List<AttendanceRecord> _recordedAttendance = new();
     private decimal _attendanceFee;
+    private int _currentPage = 1;
+
+    private int TotalRows => _alreadyRecorded ? _recordedAttendance.Count : _rows.Count;
+    private int TotalPages => (int)Math.Ceiling(TotalRows / (double)PageSize);
+
+    private IEnumerable<AttendanceRow> PagedRows =>
+        _rows.Skip((_currentPage - 1) * PageSize).Take(PageSize);
+
+    private IEnumerable<AttendanceRecord> PagedRecords =>
+        _recordedAttendance.Skip((_currentPage - 1) * PageSize).Take(PageSize);
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            _rehearsal = await RehearsalService.GetMostRecentPastAsync(DateTime.MaxValue);
-            // Load the specific rehearsal
             var all = await RehearsalService.GetAllAsync();
             _rehearsal = all.FirstOrDefault(r => r.Id == RehearsalId);
 
@@ -41,10 +52,10 @@ public partial class AttendanceGrid
                 return;
             }
 
-            // If rate already set, attendance is recorded and locked
             if (_rehearsal.StoredAttendanceRate.HasValue)
             {
                 _alreadyRecorded = true;
+                _recordedAttendance = (await AttendanceService.GetByRehearsalAsync(RehearsalId)).ToList();
                 return;
             }
 
@@ -72,6 +83,12 @@ public partial class AttendanceGrid
         {
             _loading = false;
         }
+    }
+
+    private void GoToPage(int page)
+    {
+        if (page >= 1 && page <= TotalPages)
+            _currentPage = page;
     }
 
     private async Task SaveAttendance()

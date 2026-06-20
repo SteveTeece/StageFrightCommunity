@@ -42,13 +42,19 @@ public partial class MemberDetail : ComponentBase
     {
         try
         {
-            var fees = await FeeRepository.GetByMemberAsync(Id);
+            var fees = (await FeeRepository.GetByMemberAsync(Id))
+                .OrderByDescending(f => f.FeeDate)
+                .ThenByDescending(f => f.CreatedAt);
             _feeHistory = new();
 
             foreach (var fee in fees)
             {
                 var transactions = await GLRepository.GetByFeeAsync(fee.Id);
-                var totalCredits = transactions.Where(t => t.CreditAmount > 0).Sum(t => t.CreditAmount);
+                // Only credits to MemberReceivable (0101) represent actual payments clearing the debt.
+                // The accrual entry credits Income — that must not be counted as payment received.
+                var totalCredits = transactions
+                    .Where(t => t.GLAccount == "0101" && t.CreditAmount > 0)
+                    .Sum(t => t.CreditAmount);
                 bool isPaid = totalCredits >= fee.Amount;
 
                 _feeHistory.Add(new FeeHistoryItem

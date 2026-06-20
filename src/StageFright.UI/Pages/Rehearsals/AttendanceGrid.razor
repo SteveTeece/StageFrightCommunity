@@ -1,25 +1,91 @@
 @page "/rehearsals/{RehearsalId:guid}/attendance"
 
-<PageTitle>Record Attendance — StageFright Community</PageTitle>
+<PageTitle>@(_alreadyRecorded ? "Attendance" : "Record Attendance") — StageFright Community</PageTitle>
 
 <div class="page-header mb-3">
-    <h1 class="h3">Record Attendance</h1>
+    <h1 class="h3">@(_alreadyRecorded ? "Attendance" : "Record Attendance")</h1>
     @if (_rehearsal is not null)
     {
         <p class="text-muted mb-0">@_rehearsal.Date.ToString("dddd, d MMMM yyyy")</p>
     }
 </div>
 
-@if (_alreadyRecorded)
+@if (_loading)
 {
-    <div class="alert alert-info" role="alert">
-        Attendance has already been recorded for this rehearsal. Records are immutable after saving.
-    </div>
+    <p role="status" aria-live="polite">Loading…</p>
+}
+else if (!string.IsNullOrEmpty(_errorMessage) && _rehearsal is null)
+{
+    <div class="alert alert-danger" role="alert">@_errorMessage</div>
     <a href="/rehearsals" class="btn btn-outline-secondary">Back to Rehearsals</a>
 }
-else if (_loading)
+else if (_alreadyRecorded)
 {
-    <p role="status" aria-live="polite">Loading members…</p>
+    @if (_rehearsal is not null)
+    {
+        <div class="alert alert-info mb-3" role="alert">
+            Attendance was recorded at @_rehearsal.StoredAttendanceRate?.ToString("F1")% attendance rate. Records are immutable.
+        </div>
+    }
+
+    @if (_recordedAttendance.Count == 0)
+    {
+        <div class="alert alert-warning">No attendance records found for this rehearsal.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" aria-label="Recorded attendance">
+                <thead>
+                    <tr>
+                        <th scope="col">Member</th>
+                        <th scope="col" class="text-center">Attended</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var record in PagedRecords)
+                    {
+                        <tr>
+                            <td>@record.Member.Name</td>
+                            <td class="text-center">
+                                @if (record.Attended)
+                                {
+                                    <span class="badge bg-success">Yes</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">No</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (TotalPages > 1)
+        {
+            <nav aria-label="Attendance pagination">
+                <ul class="pagination pagination-sm">
+                    <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                        <button class="page-link" @onclick="() => GoToPage(_currentPage - 1)" disabled="@(_currentPage == 1)">Previous</button>
+                    </li>
+                    @for (var p = 1; p <= TotalPages; p++)
+                    {
+                        var pageNum = p;
+                        <li class="page-item @(_currentPage == pageNum ? "active" : "")">
+                            <button class="page-link" @onclick="() => GoToPage(pageNum)">@pageNum</button>
+                        </li>
+                    }
+                    <li class="page-item @(_currentPage == TotalPages ? "disabled" : "")">
+                        <button class="page-link" @onclick="() => GoToPage(_currentPage + 1)" disabled="@(_currentPage == TotalPages)">Next</button>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
+
+    <a href="/rehearsals" class="btn btn-outline-secondary mt-2">Back to Rehearsals</a>
 }
 else
 {
@@ -34,7 +100,6 @@ else
     }
     else
     {
-        <div style="max-height: 60vh; overflow-y: auto;">
         <div class="table-responsive">
             <table class="table table-hover align-middle" aria-label="Attendance grid">
                 <thead>
@@ -46,7 +111,7 @@ else
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var row in _rows)
+                    @foreach (var row in PagedRows)
                     {
                         <tr>
                             <td>@row.MemberName</td>
@@ -78,7 +143,27 @@ else
                 </tbody>
             </table>
         </div>
-        </div>
+
+        @if (TotalPages > 1)
+        {
+            <nav aria-label="Attendance pagination">
+                <ul class="pagination pagination-sm">
+                    <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                        <button class="page-link" @onclick="() => GoToPage(_currentPage - 1)" disabled="@(_currentPage == 1)">Previous</button>
+                    </li>
+                    @for (var p = 1; p <= TotalPages; p++)
+                    {
+                        var pageNum = p;
+                        <li class="page-item @(_currentPage == pageNum ? "active" : "")">
+                            <button class="page-link" @onclick="() => GoToPage(pageNum)">@pageNum</button>
+                        </li>
+                    }
+                    <li class="page-item @(_currentPage == TotalPages ? "disabled" : "")">
+                        <button class="page-link" @onclick="() => GoToPage(_currentPage + 1)" disabled="@(_currentPage == TotalPages)">Next</button>
+                    </li>
+                </ul>
+            </nav>
+        }
 
         <div class="d-flex gap-2 mt-3">
             <button class="btn btn-primary" @onclick="SaveAttendance" disabled="@_saving">
