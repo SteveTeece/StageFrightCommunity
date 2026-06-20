@@ -23,8 +23,15 @@ public partial class ThemeProvider : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        var settings = await SettingsService.GetAsync();
-        _currentTheme = settings?.Theme ?? Theme.Light;
+        try
+        {
+            var settings = await SettingsService.GetAsync();
+            _currentTheme = settings?.Theme ?? Theme.Light;
+        }
+        catch (Exception)
+        {
+            _currentTheme = Theme.Light;
+        }
     }
 
     /// <summary>

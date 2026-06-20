@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Exceptions;
 using StageFright.UI.Layout;
@@ -10,6 +11,7 @@ public partial class GeneralSettingsTab : ComponentBase
 {
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private IServiceProvider ServiceProvider { get; set; } = null!;
+    [Inject] private ILogger<GeneralSettingsTab> Logger { get; set; } = null!;
 
     [CascadingParameter] private ThemeProvider? ThemeProvider { get; set; }
 
@@ -24,22 +26,49 @@ public partial class GeneralSettingsTab : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        _committeeResetService = ServiceProvider.GetService(typeof(ICommitteeAnnualResetService))
-            as ICommitteeAnnualResetService;
+        Logger.LogInformation("GeneralSettingsTab.OnInitializedAsync start");
 
-        _settings = await SettingsService.GetAsync();
+        try
+        {
+            Logger.LogDebug("GeneralSettingsTab: resolving ICommitteeAnnualResetService via IServiceProvider");
+            _committeeResetService = ServiceProvider.GetService(typeof(ICommitteeAnnualResetService))
+                as ICommitteeAnnualResetService;
+            Logger.LogDebug("GeneralSettingsTab: ICommitteeAnnualResetService resolved={Found}", _committeeResetService is not null);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "GeneralSettingsTab: failed to resolve ICommitteeAnnualResetService — AGM banner will be suppressed");
+            _committeeResetService = null;
+        }
+
+        Logger.LogDebug("GeneralSettingsTab: calling SettingsService.GetAsync");
+        try
+        {
+            _settings = await SettingsService.GetAsync();
+            Logger.LogInformation("GeneralSettingsTab: settings loaded. HasSettings={HasSettings}", _settings is not null);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "GeneralSettingsTab: SettingsService.GetAsync failed");
+            _errorMessage = $"Failed to load settings: {ex.Message}";
+            return;
+        }
 
         if (_committeeResetService is not null)
         {
+            Logger.LogDebug("GeneralSettingsTab: checking AGM banner");
             try
             {
                 _agmBanner = await _committeeResetService.CheckAgmBannerAsync();
+                Logger.LogDebug("GeneralSettingsTab: AGM banner check complete. HasBanner={HasBanner}", _agmBanner is not null);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Banner is non-critical; startup continues
+                Logger.LogWarning(ex, "GeneralSettingsTab: CheckAgmBannerAsync failed — banner suppressed");
             }
         }
+
+        Logger.LogInformation("GeneralSettingsTab.OnInitializedAsync complete");
     }
 
     private async Task HandleSaveAsync()

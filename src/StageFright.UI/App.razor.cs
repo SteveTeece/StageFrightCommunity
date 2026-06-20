@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 
 namespace StageFright.UI;
@@ -8,6 +10,9 @@ public partial class App : ComponentBase
     [Inject] private ISetupService SetupService { get; set; } = null!;
     [Inject] private IStartupDiagnosticService Diagnostics { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private ILogger<App> Logger { get; set; } = null!;
+
+    private ErrorBoundary? _errorBoundary;
 
     protected override async Task OnInitializedAsync()
     {
@@ -20,5 +25,21 @@ public partial class App : ComponentBase
 
         if (!await SetupService.IsSetupCompleteAsync())
             Nav.NavigateTo("/setup", forceLoad: false);
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Reset the error boundary on each navigation so a new page gets a fresh boundary
+        _errorBoundary?.Recover();
+    }
+
+    private void LogCircuitError(Exception ex)
+    {
+        Logger.LogError(ex, "Unhandled Blazor component error on route {Uri}", Nav.Uri);
+    }
+
+    private void RecoverFromError()
+    {
+        _errorBoundary?.Recover();
     }
 }

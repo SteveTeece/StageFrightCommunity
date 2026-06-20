@@ -1,7 +1,21 @@
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="@typeof(Layout.ShellLayout)" />
-        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+        <ErrorBoundary @ref="_errorBoundary">
+            <ChildContent>
+                <RouteView RouteData="routeData" DefaultLayout="@typeof(Layout.ShellLayout)" />
+                <FocusOnNavigate RouteData="routeData" Selector="h1" />
+            </ChildContent>
+            <ErrorContent Context="ex">
+                @{ LogCircuitError(ex); }
+                <div class="container mt-4">
+                    <div class="alert alert-danger">
+                        <h4>An error occurred</h4>
+                        <p>@ex.Message</p>
+                        <button class="btn btn-outline-danger btn-sm" @onclick="RecoverFromError">Dismiss and retry</button>
+                    </div>
+                </div>
+            </ErrorContent>
+        </ErrorBoundary>
     </Found>
     <NotFound>
         <PageTitle>Not Found — StageFright Community</PageTitle>
