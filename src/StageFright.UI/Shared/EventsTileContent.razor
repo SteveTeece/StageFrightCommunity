@@ -1,3 +1,4 @@
+@using System.Globalization
 @inject IEventService EventService
 
 @if (_loading)
@@ -8,19 +9,44 @@ else if (_error)
 {
     <span class="text-danger small">Unable to load</span>
 }
+else if (_lastDate is null)
+{
+    <span class="text-muted small">No events recorded</span>
+}
 else
 {
-    <ul class="list-unstyled mb-0 small">
-        <li>Last event: <strong>@(_lastDate?.ToString("d MMM yyyy") ?? "—")</strong></li>
-        <li>Participation rate: <strong>@(_participationRate.HasValue ? $"{_participationRate:F1}%" : "—")</strong></li>
-    </ul>
+    <div class="d-flex align-items-center">
+        <ul class="list-unstyled mb-0 small d-flex flex-column gap-2 me-3">
+            <li><span class="badge" style="background-color:#fd7e14">Participated: @_participatedLabel</span></li>
+            <li><span class="badge" style="background-color:#dc3545">Absent: @_absentLabel</span></li>
+            <li class="text-muted" style="font-size:0.7rem">@_lastDate.Value.ToString("d MMM yyyy")</li>
+        </ul>
+        <svg viewBox="0 0 42 42" width="120" height="120" aria-hidden="true">
+            <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#dee2e6" stroke-width="5.5" />
+            <circle cx="21" cy="21" r="15.91549430918954" fill="transparent"
+                    stroke="#fd7e14" stroke-width="5"
+                    stroke-dasharray="@_participatedDash"
+                    stroke-dashoffset="25" />
+            <circle cx="21" cy="21" r="15.91549430918954" fill="transparent"
+                    stroke="#dc3545" stroke-width="5"
+                    stroke-dasharray="@_absentDash"
+                    stroke-dashoffset="@_absentOffset" />
+            <text x="21" y="19" text-anchor="middle" font-size="5" font-weight="bold" fill="currentColor">@_centerLabel</text>
+            <text x="21" y="24.5" text-anchor="middle" font-size="3.5" fill="currentColor">Participation</text>
+        </svg>
+    </div>
 }
 
 @code {
     private bool _loading = true;
     private bool _error;
     private DateTime? _lastDate;
-    private decimal? _participationRate;
+    private string _participatedLabel = "—";
+    private string _absentLabel = "—";
+    private string _centerLabel = "—";
+    private string _participatedDash = "0 100";
+    private string _absentDash = "0 100";
+    private string _absentOffset = "25";
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,7 +54,18 @@ else
         {
             var recent = await EventService.GetMostRecentPastAsync(DateTime.UtcNow);
             _lastDate = recent?.Date;
-            _participationRate = recent?.StoredParticipationRate;
+
+            if (recent?.StoredParticipationRate is { } rate)
+            {
+                double pp = (double)rate;
+                double abp = 100.0 - pp;
+                _participatedLabel = $"{pp:F1}%";
+                _absentLabel = $"{abp:F1}%";
+                _centerLabel = $"{pp:F0}%";
+                _participatedDash = Fmt(pp) + " " + Fmt(100 - pp);
+                _absentDash = Fmt(abp) + " " + Fmt(100 - abp);
+                _absentOffset = Fmt(25 - pp);
+            }
         }
         catch
         {
@@ -39,4 +76,6 @@ else
             _loading = false;
         }
     }
+
+    private static string Fmt(double v) => v.ToString("F2", CultureInfo.InvariantCulture);
 }

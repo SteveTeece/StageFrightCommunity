@@ -95,4 +95,24 @@ public class GLRepository : IGLRepository
             .ThenBy(t => t.CreatedAt)
             .ToListAsync(ct);
     }
+
+    public async Task<(decimal Current, decimal Days30, decimal Days60, decimal Days90Plus)> GetAgingBucketsAsync(CancellationToken ct = default)
+    {
+        var today = DateTime.UtcNow.Date;
+        var fees = await _db.Fees
+            .Where(f => !f.PaidAtCreation)
+            .Select(f => new { f.Amount, f.DueDate })
+            .ToListAsync(ct);
+
+        decimal current = 0, days30 = 0, days60 = 0, days90Plus = 0;
+        foreach (var fee in fees)
+        {
+            var daysOverdue = (today - fee.DueDate.Date).Days;
+            if (daysOverdue <= 0) current += fee.Amount;
+            else if (daysOverdue <= 30) days30 += fee.Amount;
+            else if (daysOverdue <= 60) days60 += fee.Amount;
+            else days90Plus += fee.Amount;
+        }
+        return (current, days30, days60, days90Plus);
+    }
 }

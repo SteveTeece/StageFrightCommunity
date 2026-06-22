@@ -1,3 +1,4 @@
+@using System.Globalization
 @inject IGLRepository GLRepository
 
 @if (_loading)
@@ -10,21 +11,55 @@ else if (_error)
 }
 else
 {
-    <ul class="list-unstyled mb-0 small">
-        <li>Outstanding: <strong>@_outstanding.ToString("C")</strong></li>
-    </ul>
+    <div class="w-100">
+        <div class="small mb-2">Total Owed: <strong>@_total.ToString("C")</strong></div>
+        <div class="d-flex align-items-end gap-2" style="height: 65px; border-bottom: 1px solid rgba(128,128,128,0.2);">
+            @foreach (var bar in Bars())
+            {
+                <div class="flex-fill d-flex flex-column align-items-center justify-content-end">
+                    @if (bar.Amount > 0)
+                    {
+                        <span style="font-size: 0.55rem; white-space: nowrap; color: var(--bs-secondary-color, #6c757d)">@FormatAmount(bar.Amount)</span>
+                    }
+                    <div style="width: 80%; height: @(BarHeightPx(bar.Amount))px; background-color: @bar.Color; border-radius: 3px 3px 0 0;"></div>
+                </div>
+            }
+        </div>
+        <div class="d-flex gap-2 mt-1">
+            @foreach (var bar in Bars())
+            {
+                <div class="flex-fill text-center text-muted" style="font-size: 0.55rem;">@bar.Label</div>
+            }
+        </div>
+    </div>
 }
 
 @code {
     private bool _loading = true;
     private bool _error;
-    private decimal _outstanding;
+    private decimal _current;
+    private decimal _days30;
+    private decimal _days60;
+    private decimal _days90Plus;
+    private decimal _total => _current + _days30 + _days60 + _days90Plus;
+    private decimal _maxAmount => Math.Max(1m, Math.Max(_current, Math.Max(_days30, Math.Max(_days60, _days90Plus))));
+
+    private (decimal Amount, string Label, string Color)[] Bars() =>
+    [
+        (_current,    "Current",  "#0d6efd"),
+        (_days30,     "30 days",  "#ffc107"),
+        (_days60,     "60 days",  "#fd7e14"),
+        (_days90Plus, "90+ days", "#dc3545"),
+    ];
+
+    private int BarHeightPx(decimal amount) =>
+        (int)Math.Max(amount > 0 ? 2 : 0, Math.Round((double)amount / (double)_maxAmount * 58));
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            _outstanding = await GLRepository.GetTotalOutstandingAsync();
+            (_current, _days30, _days60, _days90Plus) = await GLRepository.GetAgingBucketsAsync();
         }
         catch
         {
@@ -34,5 +69,12 @@ else
         {
             _loading = false;
         }
+    }
+
+    private static string FormatAmount(decimal amount)
+    {
+        if (amount >= 10_000m) return "$" + Math.Round(amount / 1000m).ToString("F0", CultureInfo.InvariantCulture) + "k";
+        if (amount >= 1_000m) return "$" + (amount / 1000m).ToString("F1", CultureInfo.InvariantCulture) + "k";
+        return amount.ToString("C0");
     }
 }
