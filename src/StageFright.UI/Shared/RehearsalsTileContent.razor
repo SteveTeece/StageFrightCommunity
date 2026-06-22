@@ -1,4 +1,3 @@
-@using System.Globalization
 @inject IRehearsalService RehearsalService
 
 @if (_loading)
@@ -15,25 +14,16 @@ else if (_lastDate is null)
 }
 else
 {
-    <div class="d-flex align-items-center">
-        <ul class="list-unstyled mb-0 small d-flex flex-column gap-2 me-3">
+    <div class="d-flex align-items-center gap-3">
+        <ul class="list-unstyled mb-0 small d-flex flex-column gap-2">
             <li><span class="badge" style="background-color:#198754">Attended: @_attendedLabel</span></li>
             <li><span class="badge" style="background-color:#dc3545">Absent: @_absentLabel</span></li>
             <li class="text-muted" style="font-size:0.7rem">@_lastDate.Value.ToString("d MMM yyyy")</li>
         </ul>
-        <svg viewBox="0 0 42 42" width="120" height="120" aria-hidden="true">
-            <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#dee2e6" stroke-width="5.5" />
-            <circle cx="21" cy="21" r="15.91549430918954" fill="transparent"
-                    stroke="#198754" stroke-width="5"
-                    stroke-dasharray="@_attendedDash"
-                    stroke-dashoffset="25" />
-            <circle cx="21" cy="21" r="15.91549430918954" fill="transparent"
-                    stroke="#dc3545" stroke-width="5"
-                    stroke-dasharray="@_absentDash"
-                    stroke-dashoffset="@_absentOffset" />
-            <text x="21" y="19" text-anchor="middle" font-size="5" font-weight="bold" fill="currentColor">@_centerLabel</text>
-            <text x="21" y="24.5" text-anchor="middle" font-size="3.5" fill="currentColor">Attendance</text>
-        </svg>
+        @if (_hasRate)
+        {
+            <DoughnutChart @ref="_chart" Width="130" />
+        }
     </div>
 }
 
@@ -43,16 +33,18 @@ else
     private DateTime? _lastDate;
     private string _attendedLabel = "—";
     private string _absentLabel = "—";
-    private string _centerLabel = "—";
-    private string _attendedDash = "0 100";
-    private string _absentDash = "0 100";
-    private string _absentOffset = "25";
+    private bool _hasRate;
+
+    private DoughnutChart _chart = default!;
+    private ChartData _chartData = default!;
+    private DoughnutChartOptions _chartOptions = default!;
+    private bool _chartInitialized;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var recent = await RehearsalService.GetMostRecentPastAsync(DateTime.UtcNow);
+            var recent = await RehearsalService.GetMostRecentPastAsync(DateTime.Today);
             _lastDate = recent?.Date;
 
             if (recent?.StoredAttendanceRate is { } rate)
@@ -61,10 +53,23 @@ else
                 double abp = 100.0 - ap;
                 _attendedLabel = $"{ap:F1}%";
                 _absentLabel = $"{abp:F1}%";
-                _centerLabel = $"{ap:F0}%";
-                _attendedDash = Fmt(ap) + " " + Fmt(100 - ap);
-                _absentDash = Fmt(abp) + " " + Fmt(100 - abp);
-                _absentOffset = Fmt(25 - ap);
+                _hasRate = true;
+
+                _chartData = new ChartData
+                {
+                    Labels = new List<string> { "Attended", "Absent" },
+                    Datasets = new List<IChartDataset>
+                    {
+                        new DoughnutChartDataset
+                        {
+                            Data = new List<double?> { ap, abp },
+                            BackgroundColor = new List<string> { "#198754", "#dc3545" }
+                        }
+                    }
+                };
+
+                _chartOptions = new DoughnutChartOptions { Responsive = true };
+                _chartOptions.Plugins.Legend!.Display = false;
             }
         }
         catch
@@ -77,5 +82,12 @@ else
         }
     }
 
-    private static string Fmt(double v) => v.ToString("F2", CultureInfo.InvariantCulture);
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_loading && !_error && _hasRate && !_chartInitialized && _chart is not null)
+        {
+            _chartInitialized = true;
+            await _chart.InitializeAsync(_chartData, _chartOptions);
+        }
+    }
 }

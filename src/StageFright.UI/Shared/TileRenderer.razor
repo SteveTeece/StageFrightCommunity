@@ -16,7 +16,7 @@ else if (_result?.Error is not null)
 }
 else
 {
-    <DynamicComponent Type="@Provider.TileComponentType" />
+    <DynamicComponent @key="_renderKey" Type="@Provider.TileComponentType" />
 }
 
 @code {
@@ -28,17 +28,28 @@ else
 
     private TileLoadResult? _result;
     private bool _loading = true;
+    private Task<TileLoadResult>? _activeTask;
+    private Guid _renderKey = Guid.NewGuid();
 
-    protected override void OnInitialized()
+    // Fires on first render and whenever parameters change (e.g. new LoadTask after dashboard refresh).
+    // Changing _renderKey forces Blazor to dispose and recreate DynamicComponent even when _loading
+    // toggles true→false synchronously (before a render cycle) due to a fast-completing LoadTask.
+    protected override void OnParametersSet()
     {
+        if (LoadTask == _activeTask) return;
+        _activeTask = LoadTask;
+        _loading = true;
+        _result = null;
+        _renderKey = Guid.NewGuid();
         _ = AwaitLoadAsync();
     }
 
     private async Task AwaitLoadAsync()
     {
+        var taskSnapshot = _activeTask;
         try
         {
-            _result = await LoadTask;
+            _result = await taskSnapshot!;
         }
         catch (Exception ex)
         {
@@ -46,8 +57,11 @@ else
         }
         finally
         {
-            _loading = false;
-            await InvokeAsync(StateHasChanged);
+            if (_activeTask == taskSnapshot)
+            {
+                _loading = false;
+                await InvokeAsync(StateHasChanged);
+            }
         }
     }
 }

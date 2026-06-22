@@ -10,8 +10,9 @@ public class EventRepository : SoftDeletableBaseRepository<Event>, IEventReposit
 
     public async Task<Event?> GetMostRecentPastAsync(DateTime asOf, CancellationToken ct = default)
     {
+        var endOfDay = asOf.Date.AddDays(1);
         return await _db.Events
-            .Where(e => e.Date < asOf)
+            .Where(e => e.Date < endOfDay)
             .OrderByDescending(e => e.Date)
             .FirstOrDefaultAsync(ct);
     }

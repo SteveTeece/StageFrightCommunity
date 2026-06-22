@@ -10,8 +10,9 @@ public class RehearsalRepository : SoftDeletableBaseRepository<Rehearsal>, IRehe
 
     public async Task<Rehearsal?> GetMostRecentPastAsync(DateTime asOf, CancellationToken ct = default)
     {
+        var endOfDay = asOf.Date.AddDays(1);
         return await _db.Rehearsals
-            .Where(r => r.Date < asOf)
+            .Where(r => r.Date < endOfDay)
             .OrderByDescending(r => r.Date)
             .FirstOrDefaultAsync(ct);
     }

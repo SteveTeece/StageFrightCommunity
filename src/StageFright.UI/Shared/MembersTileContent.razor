@@ -1,4 +1,3 @@
-@using System.Globalization
 @inject IMemberService MemberService
 
 @if (_loading)
@@ -15,24 +14,12 @@ else if (_total == 0)
 }
 else
 {
-    <div class="d-flex align-items-center">
-        <ul class="list-unstyled mb-0 small d-flex flex-column gap-2 me-3">
+    <div class="d-flex align-items-center gap-3">
+        <ul class="list-unstyled mb-0 small d-flex flex-column gap-2">
             <li><span class="badge" style="background-color:#0d6efd">Active: @_activeCount</span></li>
             <li><span class="badge" style="background-color:#dc3545">Inactive: @_inactiveCount</span></li>
         </ul>
-        <svg viewBox="0 0 42 42" width="120" height="120" aria-hidden="true">
-            <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#dee2e6" stroke-width="5.5" />
-            <circle cx="21" cy="21" r="15.91549430918954" fill="transparent"
-                    stroke="#0d6efd" stroke-width="5"
-                    stroke-dasharray="@_activeDash"
-                    stroke-dashoffset="25" />
-            <circle cx="21" cy="21" r="15.91549430918954" fill="transparent"
-                    stroke="#dc3545" stroke-width="5"
-                    stroke-dasharray="@_inactiveDash"
-                    stroke-dashoffset="@_inactiveOffset" />
-            <text x="21" y="19" text-anchor="middle" font-size="5" font-weight="bold" fill="currentColor">@_total</text>
-            <text x="21" y="24.5" text-anchor="middle" font-size="3.5" fill="currentColor">Total</text>
-        </svg>
+        <DoughnutChart @ref="_chart" Width="130" />
     </div>
 }
 
@@ -42,9 +29,11 @@ else
     private int _activeCount;
     private int _inactiveCount;
     private int _total => _activeCount + _inactiveCount;
-    private string _activeDash = "0 100";
-    private string _inactiveDash = "0 100";
-    private string _inactiveOffset = "25";
+
+    private DoughnutChart _chart = default!;
+    private ChartData _chartData = default!;
+    private DoughnutChartOptions _chartOptions = default!;
+    private bool _chartInitialized;
 
     protected override async Task OnInitializedAsync()
     {
@@ -55,14 +44,21 @@ else
             _activeCount = active.Count;
             _inactiveCount = inactive.Count;
 
-            if (_total > 0)
+            _chartData = new ChartData
             {
-                double ap = _activeCount * 100.0 / _total;
-                double ip = _inactiveCount * 100.0 / _total;
-                _activeDash   = Fmt(ap) + " " + Fmt(100 - ap);
-                _inactiveDash = Fmt(ip) + " " + Fmt(100 - ip);
-                _inactiveOffset = Fmt(25 - ap);
-            }
+                Labels = new List<string> { "Active", "Inactive" },
+                Datasets = new List<IChartDataset>
+                {
+                    new DoughnutChartDataset
+                    {
+                        Data = new List<double?> { _activeCount, _inactiveCount },
+                        BackgroundColor = new List<string> { "#0d6efd", "#dc3545" }
+                    }
+                }
+            };
+
+            _chartOptions = new DoughnutChartOptions { Responsive = true };
+            _chartOptions.Plugins.Legend!.Display = false;
         }
         catch
         {
@@ -74,5 +70,12 @@ else
         }
     }
 
-    private static string Fmt(double v) => v.ToString("F2", CultureInfo.InvariantCulture);
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_loading && !_error && _total > 0 && !_chartInitialized && _chart is not null)
+        {
+            _chartInitialized = true;
+            await _chart.InitializeAsync(_chartData, _chartOptions);
+        }
+    }
 }
