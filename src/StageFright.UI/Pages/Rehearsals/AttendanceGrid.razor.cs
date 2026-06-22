@@ -17,7 +17,7 @@ public partial class AttendanceGrid
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
 
-    private const int PageSize = 15;
+    private const int PageSize = 10;
 
     private bool _loading = true;
     private bool _saving;
@@ -62,9 +62,9 @@ public partial class AttendanceGrid
             var settings = await SettingsService.GetAsync();
             _attendanceFee = settings?.AttendanceFee ?? 0m;
 
-            var active = await MemberService.GetByStatusAsync(MemberStatus.Active);
-            var inactive = await MemberService.GetByStatusAsync(MemberStatus.Inactive);
-            _members = active.Concat(inactive).OrderBy(m => m.Name).ToList();
+            _members = (await MemberService.GetByStatusAsync(MemberStatus.Active))
+                .OrderBy(m => m.Name)
+                .ToList();
 
             _rows = _members.Select(m => new AttendanceRow
             {
@@ -138,6 +138,8 @@ public partial class AttendanceGrid
                 _attended = value;
                 if (value)
                     _paid = true;
+                else
+                    _paid = false;
             }
         }
 
