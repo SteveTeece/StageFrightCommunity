@@ -6,7 +6,7 @@
     <h1>Settings</h1>
 
     <Tabs DefaultActiveTabIndex="@DefaultTabIndex">
-        <Tab Title="General" OnShown="OnGeneralShown">
+        <Tab Title="General" OnClick="OnGeneralClicked">
             <Content>
                 <div class="pt-3">
                     @if (GeneralShown)
@@ -19,7 +19,7 @@
                 </div>
             </Content>
         </Tab>
-        <Tab Title="Categories" OnShown="OnCategoriesShown">
+        <Tab Title="Categories" OnClick="OnCategoriesClicked">
             <Content>
                 <div class="pt-3">
                     @if (CategoriesShown)
@@ -32,7 +32,7 @@
                 </div>
             </Content>
         </Tab>
-        <Tab Title="Event Types" OnShown="OnEventTypesShown">
+        <Tab Title="Event Types" OnClick="OnEventTypesClicked">
             <Content>
                 <div class="pt-3">
                     @if (EventTypesShown)
@@ -45,7 +45,7 @@
                 </div>
             </Content>
         </Tab>
-        <Tab Title="Backup &amp; Restore" OnShown="OnBackupShown">
+        <Tab Title="Backup &amp; Restore" OnClick="OnBackupClicked">
             <Content>
                 <div class="pt-3">
                     @if (BackupShown)

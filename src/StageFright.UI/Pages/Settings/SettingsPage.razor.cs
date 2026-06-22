@@ -59,35 +59,14 @@ public partial class SettingsPage : ComponentBase
         }
     }
 
-    // OnShown callbacks use InvokeAsync(StateHasChanged) because BlazorBootstrap fires
-    // these from a JS interop callback which does not automatically queue a Blazor re-render.
-    internal async Task OnGeneralShown()
-    {
-        GeneralShown = true;
-        NavToTab("general");
-        await InvokeAsync(StateHasChanged);
-    }
-
-    internal async Task OnCategoriesShown()
-    {
-        CategoriesShown = true;
-        NavToTab("categories");
-        await InvokeAsync(StateHasChanged);
-    }
-
-    internal async Task OnEventTypesShown()
-    {
-        EventTypesShown = true;
-        NavToTab("event-types");
-        await InvokeAsync(StateHasChanged);
-    }
-
-    internal async Task OnBackupShown()
-    {
-        BackupShown = true;
-        NavToTab("backup");
-        await InvokeAsync(StateHasChanged);
-    }
+    // OnClick fires synchronously from the user gesture before the Bootstrap animation
+    // begins, making it far more reliable than OnShown (which fires via a JS transition
+    // callback that can be missed in the MAUI WebView). Blazor automatically calls
+    // StateHasChanged after an EventCallback, so no manual call is needed.
+    internal void OnGeneralClicked()    { GeneralShown    = true; NavToTab("general"); }
+    internal void OnCategoriesClicked() { CategoriesShown = true; NavToTab("categories"); }
+    internal void OnEventTypesClicked() { EventTypesShown = true; NavToTab("event-types"); }
+    internal void OnBackupClicked()     { BackupShown     = true; NavToTab("backup"); }
 
     private void NavToTab(string key) =>
         Nav.NavigateTo($"/settings?tab={key}", replace: true);
