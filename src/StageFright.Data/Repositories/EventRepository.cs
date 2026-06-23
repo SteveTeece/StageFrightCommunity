@@ -17,6 +17,24 @@ public class EventRepository : SoftDeletableBaseRepository<Event>, IEventReposit
             .FirstOrDefaultAsync(ct);
     }
 
+    public async Task<Event?> GetMostRecentPastWithoutParticipationAsync(DateTime asOf, CancellationToken ct = default)
+    {
+        var endOfDay = asOf.Date.AddDays(1);
+        return await _db.Events
+            .Where(e => e.Date < endOfDay && e.StoredParticipationRate == null)
+            .OrderByDescending(e => e.Date)
+            .FirstOrDefaultAsync(ct);
+    }
+
+    public async Task<Event?> GetMostRecentPastWithParticipationAsync(DateTime asOf, CancellationToken ct = default)
+    {
+        var endOfDay = asOf.Date.AddDays(1);
+        return await _db.Events
+            .Where(e => e.Date < endOfDay && e.StoredParticipationRate != null)
+            .OrderByDescending(e => e.Date)
+            .FirstOrDefaultAsync(ct);
+    }
+
     public async Task<bool> AgmExistsInYearAsync(int year, CancellationToken ct = default)
     {
         return await _db.Events

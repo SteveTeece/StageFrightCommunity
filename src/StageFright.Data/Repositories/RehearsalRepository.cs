@@ -16,4 +16,22 @@ public class RehearsalRepository : SoftDeletableBaseRepository<Rehearsal>, IRehe
             .OrderByDescending(r => r.Date)
             .FirstOrDefaultAsync(ct);
     }
+
+    public async Task<Rehearsal?> GetMostRecentPastWithoutAttendanceAsync(DateTime asOf, CancellationToken ct = default)
+    {
+        var endOfDay = asOf.Date.AddDays(1);
+        return await _db.Rehearsals
+            .Where(r => r.Date < endOfDay && r.StoredAttendanceRate == null)
+            .OrderByDescending(r => r.Date)
+            .FirstOrDefaultAsync(ct);
+    }
+
+    public async Task<Rehearsal?> GetMostRecentPastWithAttendanceAsync(DateTime asOf, CancellationToken ct = default)
+    {
+        var endOfDay = asOf.Date.AddDays(1);
+        return await _db.Rehearsals
+            .Where(r => r.Date < endOfDay && r.StoredAttendanceRate != null)
+            .OrderByDescending(r => r.Date)
+            .FirstOrDefaultAsync(ct);
+    }
 }

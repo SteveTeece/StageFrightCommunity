@@ -8,7 +8,7 @@ else if (_error)
 {
     <span class="text-danger small">Unable to load</span>
 }
-else if (_lastDate is null)
+else if (_recordedDate is null && _pendingDate is null)
 {
     <span class="text-muted small">No rehearsals recorded</span>
 }
@@ -16,9 +16,16 @@ else
 {
     <div class="d-flex align-items-center gap-3">
         <ul class="list-unstyled mb-0 small d-flex flex-column gap-2">
-            <li><span class="badge" style="background-color:#198754">Attended: @_attendedLabel</span></li>
-            <li><span class="badge" style="background-color:#dc3545">Absent: @_absentLabel</span></li>
-            <li class="text-muted" style="font-size:0.7rem">@_lastDate.Value.ToString("d MMM yyyy")</li>
+            @if (_recordedDate is not null)
+            {
+                <li><span class="badge" style="background-color:#198754">Attended: @_attendedLabel</span></li>
+                <li><span class="badge" style="background-color:#dc3545">Absent: @_absentLabel</span></li>
+                <li class="text-muted" style="font-size:0.7rem">@_recordedDate.Value.ToString("d MMM yyyy")</li>
+            }
+            @if (_pendingDate is not null)
+            {
+                <li class="text-warning" style="font-size:0.7rem">&#9888; Pending: @_pendingDate.Value.ToString("d MMM yyyy")</li>
+            }
         </ul>
         @if (_hasRate)
         {
@@ -30,7 +37,8 @@ else
 @code {
     private bool _loading = true;
     private bool _error;
-    private DateTime? _lastDate;
+    private DateTime? _recordedDate;
+    private DateTime? _pendingDate;
     private string _attendedLabel = "—";
     private string _absentLabel = "—";
     private bool _hasRate;
@@ -44,10 +52,13 @@ else
     {
         try
         {
-            var recent = await RehearsalService.GetMostRecentPastAsync(DateTime.Today);
-            _lastDate = recent?.Date;
+            var recorded = await RehearsalService.GetMostRecentPastWithAttendanceAsync(DateTime.Today);
+            var pending = await RehearsalService.GetMostRecentPastWithoutAttendanceAsync(DateTime.Today);
 
-            if (recent?.StoredAttendanceRate is { } rate)
+            _recordedDate = recorded?.Date;
+            _pendingDate = pending?.Date;
+
+            if (recorded?.StoredAttendanceRate is { } rate)
             {
                 double ap = (double)rate;
                 double abp = 100.0 - ap;

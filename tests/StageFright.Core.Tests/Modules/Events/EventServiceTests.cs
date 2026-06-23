@@ -223,6 +223,61 @@ public class EventServiceTests : TestBase
         Assert.Same(evt, result);
     }
 
+    // --- GetMostRecentPastWithoutParticipationAsync ---
+
+    [Fact]
+    public async Task GetMostRecentPastWithoutParticipationAsync_DelegatesToRepository()
+    {
+        var asOf = DateTime.UtcNow;
+        var evt = AnEventWithNoRate();
+        _eventRepo.GetMostRecentPastWithoutParticipationAsync(asOf, Arg.Any<CancellationToken>()).Returns(evt);
+
+        var svc = CreateService();
+        var result = await svc.GetMostRecentPastWithoutParticipationAsync(asOf, Ct);
+
+        Assert.Same(evt, result);
+    }
+
+    [Fact]
+    public async Task GetMostRecentPastWithoutParticipationAsync_ReturnsNull_WhenAllEventsHaveParticipation()
+    {
+        var asOf = DateTime.UtcNow;
+        _eventRepo.GetMostRecentPastWithoutParticipationAsync(asOf, Arg.Any<CancellationToken>()).Returns((Event?)null);
+
+        var svc = CreateService();
+        var result = await svc.GetMostRecentPastWithoutParticipationAsync(asOf, Ct);
+
+        Assert.Null(result);
+    }
+
+    // --- GetMostRecentPastWithParticipationAsync ---
+
+    [Fact]
+    public async Task GetMostRecentPastWithParticipationAsync_DelegatesToRepository()
+    {
+        var asOf = DateTime.UtcNow;
+        var evt = AnEventWithNoRate();
+        evt.StoredParticipationRate = 80m;
+        _eventRepo.GetMostRecentPastWithParticipationAsync(asOf, Arg.Any<CancellationToken>()).Returns(evt);
+
+        var svc = CreateService();
+        var result = await svc.GetMostRecentPastWithParticipationAsync(asOf, Ct);
+
+        Assert.Same(evt, result);
+    }
+
+    [Fact]
+    public async Task GetMostRecentPastWithParticipationAsync_ReturnsNull_WhenNoEventsHaveParticipation()
+    {
+        var asOf = DateTime.UtcNow;
+        _eventRepo.GetMostRecentPastWithParticipationAsync(asOf, Arg.Any<CancellationToken>()).Returns((Event?)null);
+
+        var svc = CreateService();
+        var result = await svc.GetMostRecentPastWithParticipationAsync(asOf, Ct);
+
+        Assert.Null(result);
+    }
+
     // --- Helpers ---
 
     private static Event AnEventWithNoRate() => new()

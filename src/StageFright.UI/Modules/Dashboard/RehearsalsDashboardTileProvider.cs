@@ -27,7 +27,7 @@ public class RehearsalsDashboardTileProvider : IDashboardTileProvider
 
     public async Task<TileData> GetTileDataAsync(CancellationToken ct)
     {
-        var recent = await _rehearsalService.GetMostRecentPastAsync(DateTime.UtcNow, ct);
+        var recent = await _rehearsalService.GetMostRecentPastWithoutAttendanceAsync(DateTime.UtcNow, ct);
 
         return new TileData
         {

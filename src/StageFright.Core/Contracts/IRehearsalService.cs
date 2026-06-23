@@ -13,6 +13,18 @@ public interface IRehearsalService
     Task<Rehearsal?> GetMostRecentPastAsync(DateTime asOf, CancellationToken ct = default);
 
     /// <summary>
+    /// Returns the most recent past rehearsal that does not yet have attendance recorded
+    /// (StoredAttendanceRate is null), or null if all past rehearsals have attendance.
+    /// </summary>
+    Task<Rehearsal?> GetMostRecentPastWithoutAttendanceAsync(DateTime asOf, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns the most recent past rehearsal that has attendance recorded
+    /// (StoredAttendanceRate is not null), or null if no past rehearsals have attendance.
+    /// </summary>
+    Task<Rehearsal?> GetMostRecentPastWithAttendanceAsync(DateTime asOf, CancellationToken ct = default);
+
+    /// <summary>
     /// Computes and freezes StoredAttendanceRate on the rehearsal.
     /// Idempotent: does nothing if the rate is already set.
     /// Formula: presentCount / (active-as-of rehearsalDate) × 100.
