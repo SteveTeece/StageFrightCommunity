@@ -103,7 +103,15 @@ else
             <table class="table table-hover align-middle" aria-label="Attendance grid">
                 <thead>
                     <tr>
-                        <th scope="col" class="text-center" style="width: 1%;">Attended</th>
+                        <th scope="col" class="text-center" style="width: 1%;">
+                            <div class="d-flex flex-column align-items-center gap-1">
+                                <input type="checkbox" class="form-check-input" id="select-all-attended"
+                                       checked="@AllAttended"
+                                       @onchange="e => { ToggleSelectAll((bool)(e.Value ?? false)); StateHasChanged(); }"
+                                       aria-label="Select all members as attended" />
+                                <label class="form-label mb-0 small fw-semibold" for="select-all-attended">Attended</label>
+                            </div>
+                        </th>
                         <th scope="col" class="text-center" style="width: 1%;">Paid</th>
                         <th scope="col">Member</th>
                         <th scope="col" class="text-end">Fee Amount</th>

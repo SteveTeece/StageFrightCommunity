@@ -50,7 +50,7 @@ else
                 <Template Context="r">
                     @if (!r.StoredAttendanceRate.HasValue)
                     {
-                        <button class="btn btn-outline-primary btn-sm"
+                        <button class="btn btn-primary btn-sm"
                                 @onclick="() => RecordAttendance(r.Id)"
                                 aria-label="Record attendance for @r.Date.ToString("d MMM yyyy")">
                             Record Attendance

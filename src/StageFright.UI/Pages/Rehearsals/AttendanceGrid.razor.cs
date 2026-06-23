@@ -85,6 +85,14 @@ public partial class AttendanceGrid
         }
     }
 
+    private bool AllAttended => _rows.Count > 0 && _rows.All(r => r.Attended);
+
+    private void ToggleSelectAll(bool value)
+    {
+        foreach (var row in _rows)
+            row.Attended = value;
+    }
+
     private void GoToPage(int page)
     {
         if (page >= 1 && page <= TotalPages)
