@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components;
 using StageFright.Core.Contracts;
-using StageFright.Core.Enums;
 using StageFright.Core.Modules.Finance;
 
 namespace StageFright.UI.Pages.Finance;
@@ -107,13 +106,4 @@ public partial class PaymentForm : ComponentBase
     }
 
     private void Cancel() => Nav.NavigateTo("/finance");
-}
-
-internal sealed class PaymentFormModel
-{
-    public DateTime Date { get; set; } = DateTime.Today;
-    public decimal Amount { get; set; }
-    public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash;
-    public PaymentType PaymentType { get; set; } = PaymentType.Annual;
-    public string? Notes { get; set; }
 }

@@ -1023,6 +1023,25 @@ private const int DefaultMaxAge = 150;
 - Compliance can be checked via StyleCop analyzers or similar tooling configured in the project
 - Build tooling may be configured to warn on missing documentation (but not fail the build)
 
+### UI Component Libraries: Permitted Libraries
+
+The project permits two Blazor component libraries for UI composition. All usage MUST remain
+within Blazor C# components; no custom JavaScript is permitted (see Constitution §7.3).
+
+**Radzen Blazor** (`Radzen.Blazor`):
+- Primary UI component library for general Blazor composition (forms, grids, dialogs, etc.)
+- Free tier components are permitted without restriction
+- Backed by C# handlers/services; no JavaScript interop for business logic
+
+**BlazorBootstrap** (`Blazor.Bootstrap`):
+- Permitted for charting and Bootstrap-based UI elements not adequately covered by Radzen
+- Usage is scoped to components where Radzen has no equivalent (e.g., chart types)
+- Backed by C# handlers/services; no JavaScript interop for business logic
+
+Both libraries may be used together within the same application. Component choice should
+prefer Radzen for general UI and BlazorBootstrap where charting or Bootstrap-specific
+components are needed.
+
 ---
 
 ## 6. Clarifications *(optional but recommended)*

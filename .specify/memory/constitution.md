@@ -1,45 +1,44 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version Change: 2.2.1 → 2.3.0
+Version Change: 2.3.0 → 2.4.0
 
 Modified Principles:
-- 3.2 SOLID Design Principles (clarified with new file organization rule)
-- Renumbered: 4.5 Navigation Menu System → 4.6 Navigation Menu System
-- Renumbered: 5.0 Error Handling → 5.1 Error Handling, etc. (cascading)
+- §7.1 Technology Stack: Added BlazorBootstrap (Blazor.Bootstrap) to permitted UI libraries
+- §7.2 Architecture Requirements: Extended permitted library clause to include BlazorBootstrap
+  with scoped usage guidance (charting and Bootstrap-based components not available in Radzen)
 
 Added Sections:
-- 3.2.1 Single Responsibility Principle - File Organization (MANDATORY: one class per file)
-- 4.5 Code Organization and File Structure (non-negotiable file structure rules)
+- None
 
 Removed Sections:
 - None
 
 Templates Requiring Updates:
-- ⚠ pending: .specify/templates/spec-template.md (add file organization compliance checks)
-- ⚠ pending: .specify/templates/tasks-template.md (add code review task for file organization)
+- ✅ .specify/templates/spec-template.md — no UI-library-specific content; no update needed
+- ✅ .specify/templates/plan-template.md — no UI-library-specific content; no update needed
+- ✅ .specify/templates/tasks-template.md — no UI-library-specific content; no update needed
 
 Runtime Guidance Docs:
-- ⚠ pending: CONTRIBUTING.md (add mandatory file organization rules)
-- ⚠ pending: docs/ARCHITECTURE.md (document file organization patterns)
-- ⚠ pending: docs/XML-DOCUMENTATION-STANDARDS.md (align with single-class-per-file)
+- ⚠ pending: CLAUDE.md — references Radzen only via NFR-001; consider noting BlazorBootstrap
+  is also permitted
 
 Follow-up TODOs:
-- Review existing codebase for files with multiple classes and plan refactoring
-- Establish code review checklist for file organization compliance
-- Document exceptions (if any) to single-class-per-file rule
+- Update spec.md §5 Technical Standards / NFR-001 to reference BlazorBootstrap as co-permitted
+  (constitution amendment C6 resolution)
 
 Version Bump Rationale: MINOR
-- Adds mandatory code organization principle. Materially expanded guidance on SOLID compliance.
-- Non-breaking: enforces best practices; existing compliant code unaffected.
+- Adds BlazorBootstrap as a permitted UI library alongside Radzen. Materially new governance
+  permission — existing implementations using BlazorBootstrap charts are now explicitly compliant.
+- Non-breaking: all existing Radzen usage remains fully permitted and unchanged.
 -->
 
 # Spec Kit Constitution  
 *A guiding document for clean, modular, extensible software development*
 
-**Version**: 2.3.0  
+**Version**: 2.4.0  
 **Ratification Date**: 2025-01-01  
-**Last Amended**: 2026-05-21
+**Last Amended**: 2026-06-23
 
 ---
 
@@ -748,7 +747,8 @@ All caught exceptions must be logged using Serilog.
 
 ### 7.1 Technology Stack
 - **Framework:** .NET MAUI with Blazor Hybrid  
-- **UI:** Blazor components, including free Radzen Blazor components (`Radzen.Blazor`)  
+- **UI:** Blazor components, including free Radzen Blazor components (`Radzen.Blazor`) and
+  BlazorBootstrap (`Blazor.Bootstrap`) for charting and Bootstrap-based UI composition  
 - **Language:** C# 14  
 - **Platforms:** Windows desktop and macOS desktop  
 - **Hosting Model:** Blazor Hybrid  
@@ -759,7 +759,11 @@ All caught exceptions must be logged using Serilog.
 - Platform-specific code via abstractions or conditional compilation  
 - CSS isolation for component styling  
 - Reusable, testable UI components  
-- Free Radzen components are permitted for UI composition when implemented in Blazor components and backed by C# handlers/services  
+- Free Radzen components (`Radzen.Blazor`) are permitted for UI composition when implemented
+  in Blazor components and backed by C# handlers/services  
+- BlazorBootstrap components (`Blazor.Bootstrap`) are permitted for charting and
+  Bootstrap-based UI elements not covered by Radzen. All usage MUST remain within Blazor
+  C# components; no custom JavaScript is permitted (see §7.3)  
 
 ### 7.3 Prohibited
 - Custom JavaScript files or business logic implemented in JavaScript  
