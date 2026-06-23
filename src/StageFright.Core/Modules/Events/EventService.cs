@@ -67,6 +67,9 @@ public class EventService : IEventService
     public Task<Event?> GetMostRecentPastWithParticipationAsync(DateTime asOf, CancellationToken ct = default) =>
         _eventRepo.GetMostRecentPastWithParticipationAsync(asOf, ct);
 
+    public Task<Event?> GetNextUpcomingAsync(DateTime asOf, CancellationToken ct = default) =>
+        _eventRepo.GetNextUpcomingAsync(asOf, ct);
+
     public async Task RecordParticipationAsync(Guid eventId, IReadOnlyList<ParticipationBatchItem> items, CancellationToken ct = default)
     {
         var evt = await _eventRepo.GetByIdAsync(eventId, ct)

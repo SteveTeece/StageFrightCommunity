@@ -278,6 +278,33 @@ public class EventServiceTests : TestBase
         Assert.Null(result);
     }
 
+    // --- GetNextUpcomingAsync ---
+
+    [Fact]
+    public async Task GetNextUpcomingAsync_DelegatesToRepository()
+    {
+        var asOf = DateTime.UtcNow;
+        var evt = AnEventWithNoRate();
+        _eventRepo.GetNextUpcomingAsync(asOf, Arg.Any<CancellationToken>()).Returns(evt);
+
+        var svc = CreateService();
+        var result = await svc.GetNextUpcomingAsync(asOf, Ct);
+
+        Assert.Same(evt, result);
+    }
+
+    [Fact]
+    public async Task GetNextUpcomingAsync_ReturnsNull_WhenNoFutureEvents()
+    {
+        var asOf = DateTime.UtcNow;
+        _eventRepo.GetNextUpcomingAsync(asOf, Arg.Any<CancellationToken>()).Returns((Event?)null);
+
+        var svc = CreateService();
+        var result = await svc.GetNextUpcomingAsync(asOf, Ct);
+
+        Assert.Null(result);
+    }
+
     // --- Helpers ---
 
     private static Event AnEventWithNoRate() => new()

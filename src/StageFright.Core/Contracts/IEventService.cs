@@ -37,6 +37,9 @@ public interface IEventService
     /// </summary>
     Task RecordParticipationAsync(Guid eventId, IReadOnlyList<ParticipationBatchItem> items, CancellationToken ct = default);
 
+    /// <summary>Returns the next scheduled event on or after asOf, or null if none.</summary>
+    Task<Event?> GetNextUpcomingAsync(DateTime asOf, CancellationToken ct = default);
+
     /// <summary>Returns true if an AGM event exists in the given calendar year.</summary>
     Task<bool> AgmExistsInYearAsync(int year, CancellationToken ct = default);
 }

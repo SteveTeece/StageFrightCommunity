@@ -20,6 +20,9 @@ public interface IEventRepository : ISoftDeletableRepository<Event>
     /// </summary>
     Task<Event?> GetMostRecentPastWithParticipationAsync(DateTime asOf, CancellationToken ct = default);
 
+    /// <summary>Returns the earliest non-deleted event whose date is >= asOf (UTC), or null.</summary>
+    Task<Event?> GetNextUpcomingAsync(DateTime asOf, CancellationToken ct = default);
+
     /// <summary>
     /// Returns true if any non-deleted AGM event (EventType.Name = "Annual General Meeting") exists
     /// with a date in the given calendar year.

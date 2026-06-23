@@ -35,6 +35,15 @@ public class EventRepository : SoftDeletableBaseRepository<Event>, IEventReposit
             .FirstOrDefaultAsync(ct);
     }
 
+    public async Task<Event?> GetNextUpcomingAsync(DateTime asOf, CancellationToken ct = default)
+    {
+        var startOfDay = asOf.Date;
+        return await _db.Events
+            .Where(e => e.Date >= startOfDay)
+            .OrderBy(e => e.Date)
+            .FirstOrDefaultAsync(ct);
+    }
+
     public async Task<bool> AgmExistsInYearAsync(int year, CancellationToken ct = default)
     {
         return await _db.Events

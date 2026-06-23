@@ -42,7 +42,7 @@ else
                 <Template Context="e">
                     @if (!e.StoredParticipationRate.HasValue)
                     {
-                        <button class="btn btn-outline-primary btn-sm"
+                        <button class="btn btn-primary btn-sm"
                                 @onclick="() => RecordParticipation(e.Id)"
                                 aria-label="Record participation for @e.Date.ToString("d MMM yyyy")">
                             Record Participation
