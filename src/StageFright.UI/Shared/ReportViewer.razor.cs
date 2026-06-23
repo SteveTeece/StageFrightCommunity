@@ -96,14 +96,16 @@ public partial class ReportViewer : ComponentBase, IDisposable
         _currentPage = 1;
         StateHasChanged();
 
+        _cts?.Cancel();
         _cts?.Dispose();
         _cts = new CancellationTokenSource();
+        var token = _cts.Token;
 
         // Show cancel button after 5 seconds
-        var cancelTimer = Task.Delay(5000, _cts.Token)
+        var cancelTimer = Task.Delay(5000, token)
             .ContinueWith(_ =>
             {
-                if (!_cts.Token.IsCancellationRequested)
+                if (!token.IsCancellationRequested)
                 {
                     _showCancel = true;
                     InvokeAsync(StateHasChanged);
@@ -194,6 +196,7 @@ public partial class ReportViewer : ComponentBase, IDisposable
 
     public void Dispose()
     {
+        _cts?.Cancel();
         _cts?.Dispose();
     }
 }
