@@ -127,7 +127,7 @@ public class ReportViewerTests : BunitContext
     public async Task Should_NotShowPagination_When_RowCountAtPageSize()
     {
         _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
-            .Returns(MakeReport(15));
+            .Returns(MakeReport(10));
 
         var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
         await cut.InvokeAsync(() => { });
@@ -139,7 +139,7 @@ public class ReportViewerTests : BunitContext
     public async Task Should_ShowPagination_When_RowCountExceedsPageSize()
     {
         _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
-            .Returns(MakeReport(16));
+            .Returns(MakeReport(11));
 
         var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
         await cut.InvokeAsync(() => { });
@@ -151,36 +151,36 @@ public class ReportViewerTests : BunitContext
     public async Task Should_ShowOnlyFirstPageRows_Initially_When_ReportHasManyRows()
     {
         _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
-            .Returns(MakeReport(16));
+            .Returns(MakeReport(11));
 
         var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
         await cut.InvokeAsync(() => { });
 
-        Assert.Contains("Row 015", cut.Markup);
-        Assert.DoesNotContain("Row 016", cut.Markup);
+        Assert.Contains("Row 010", cut.Markup);
+        Assert.DoesNotContain("Row 011", cut.Markup);
     }
 
     [Fact]
     public async Task Should_ShowNextPageRows_When_NextButtonClicked()
     {
         _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
-            .Returns(MakeReport(16));
+            .Returns(MakeReport(11));
 
         var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
         await cut.InvokeAsync(() => { });
 
         cut.Find("button[aria-label='Next page']").Click();
 
-        Assert.Contains("Row 016", cut.Markup);
+        Assert.Contains("Row 011", cut.Markup);
         Assert.Contains("Page 2 of 2", cut.Markup, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Row 015", cut.Markup);
+        Assert.DoesNotContain("Row 010", cut.Markup);
     }
 
     [Fact]
     public async Task Should_ShowPreviousPageRows_When_PrevButtonClicked()
     {
         _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
-            .Returns(MakeReport(16));
+            .Returns(MakeReport(11));
 
         var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
         await cut.InvokeAsync(() => { });
@@ -190,7 +190,7 @@ public class ReportViewerTests : BunitContext
 
         Assert.Contains("Row 001", cut.Markup);
         Assert.Contains("Page 1 of 2", cut.Markup, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Row 016", cut.Markup);
+        Assert.DoesNotContain("Row 011", cut.Markup);
     }
 
 }

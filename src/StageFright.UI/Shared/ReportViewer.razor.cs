@@ -23,7 +23,7 @@ public partial class ReportViewer : ComponentBase, IDisposable
     private ReportFilterValues _filterValues = new();
 
     private int _currentPage = 1;
-    private const int PageSize = 15;
+    private const int PageSize = 10;
 
     private int TotalDataRows => _report?.Sections.Sum(s => s.Rows.Count) ?? 0;
     private int TotalPages => TotalDataRows <= PageSize ? 1 : (int)Math.Ceiling(TotalDataRows / (double)PageSize);
