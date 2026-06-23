@@ -90,7 +90,7 @@ else if (_report != null)
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var section in _report.Sections)
+                    @foreach (var section in GetPagedSections())
                     {
                         @if (!string.IsNullOrEmpty(section.Heading))
                         {
@@ -124,7 +124,7 @@ else if (_report != null)
                         }
                     }
 
-                    @if (_report.GrandTotal != null)
+                    @if (_report.GrandTotal != null && (!UsePaging || _currentPage == TotalPages))
                     {
                         <tr class="fw-bold table-dark">
                             @for (var i = 0; i < _report.Columns.Count; i++)
@@ -138,5 +138,29 @@ else if (_report != null)
                 </tbody>
             </table>
         </div>
+
+        @if (UsePaging)
+        {
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <small class="text-muted">
+                    Rows @(PageStartIndex + 1)–@(Math.Min(PageEndIndex, TotalDataRows)) of @TotalDataRows
+                </small>
+                <nav aria-label="Report page navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                            <button class="page-link" @onclick="PrevPage" disabled="@(_currentPage == 1)"
+                                    aria-label="Previous page">‹ Prev</button>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">Page @_currentPage of @TotalPages</span>
+                        </li>
+                        <li class="page-item @(_currentPage == TotalPages ? "disabled" : "")">
+                            <button class="page-link" @onclick="NextPage" disabled="@(_currentPage == TotalPages)"
+                                    aria-label="Next page">Next ›</button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
     </div>
 }

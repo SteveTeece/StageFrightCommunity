@@ -22,6 +22,47 @@ public partial class ReportViewer : ComponentBase, IDisposable
     private CancellationTokenSource? _cts;
     private ReportFilterValues _filterValues = new();
 
+    private int _currentPage = 1;
+    private const int PageSize = 15;
+
+    private int TotalDataRows => _report?.Sections.Sum(s => s.Rows.Count) ?? 0;
+    private int TotalPages => TotalDataRows <= PageSize ? 1 : (int)Math.Ceiling(TotalDataRows / (double)PageSize);
+    private bool UsePaging => TotalDataRows > PageSize;
+    private int PageStartIndex => (_currentPage - 1) * PageSize;
+    private int PageEndIndex => PageStartIndex + PageSize;
+
+    private void PrevPage() { if (_currentPage > 1) _currentPage--; }
+    private void NextPage() { if (_currentPage < TotalPages) _currentPage++; }
+
+    private IReadOnlyList<PagedSection> GetPagedSections()
+    {
+        if (_report == null) return Array.Empty<PagedSection>();
+        if (!UsePaging) return _report.Sections.Select(s => new PagedSection(s.Heading, s.Rows, s.Subtotal)).ToList();
+
+        var result = new List<PagedSection>();
+        var globalIndex = 0;
+
+        foreach (var section in _report.Sections)
+        {
+            var sectionEnd = globalIndex + section.Rows.Count;
+
+            if (sectionEnd > PageStartIndex && globalIndex < PageEndIndex)
+            {
+                var rowStart = Math.Max(0, PageStartIndex - globalIndex);
+                var rowEnd = Math.Min(section.Rows.Count, PageEndIndex - globalIndex);
+                var visibleRows = (IReadOnlyList<ReportRow>)section.Rows.Skip(rowStart).Take(rowEnd - rowStart).ToList();
+                var showSubtotal = section.Subtotal != null && sectionEnd <= PageEndIndex;
+                result.Add(new PagedSection(section.Heading, visibleRows, showSubtotal ? section.Subtotal : null));
+            }
+
+            globalIndex = sectionEnd;
+        }
+
+        return result;
+    }
+
+    private sealed record PagedSection(string? Heading, IReadOnlyList<ReportRow> Rows, ReportRow? Subtotal);
+
     protected override async Task OnParametersSetAsync()
     {
         if (Provider == null)
@@ -52,6 +93,7 @@ public partial class ReportViewer : ComponentBase, IDisposable
         _error = null;
         _generating = true;
         _showCancel = false;
+        _currentPage = 1;
         StateHasChanged();
 
         _cts?.Dispose();
