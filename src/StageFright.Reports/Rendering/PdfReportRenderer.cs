@@ -18,7 +18,7 @@ public class PdfReportRenderer : IPdfReportRenderer
         QuestPDF.Settings.License = LicenseType.Community;
     }
 
-    public byte[] Render(ReportData report)
+    public byte[] Render(ReportData report, string organizationName = "")
     {
         var document = Document.Create(container =>
         {
@@ -30,6 +30,8 @@ public class PdfReportRenderer : IPdfReportRenderer
 
                 page.Header().Column(col =>
                 {
+                    if (!string.IsNullOrWhiteSpace(organizationName))
+                        col.Item().Text(organizationName).FontSize(22).Bold();
                     col.Item().Text(report.Title).FontSize(16).Bold();
                     if (!string.IsNullOrEmpty(report.SubTitle))
                         col.Item().Text(report.SubTitle).FontSize(11).FontColor(Colors.Grey.Darken1);

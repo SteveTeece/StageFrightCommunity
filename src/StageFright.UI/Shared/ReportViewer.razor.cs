@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
@@ -13,6 +14,7 @@ public partial class ReportViewer : ComponentBase, IDisposable
 
     [Inject] private IPdfReportRenderer PdfRenderer { get; set; } = null!;
     [Inject] private ICsvReportExporter CsvExporter { get; set; } = null!;
+    [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private ILogger<ReportViewer> Logger { get; set; } = null!;
 
     private ReportData? _report;
@@ -138,13 +140,15 @@ public partial class ReportViewer : ComponentBase, IDisposable
         _cts?.Cancel();
     }
 
-    private void PrintReport()
+    private async Task PrintReport()
     {
         if (_report == null) return;
 
         try
         {
-            var bytes = PdfRenderer.Render(_report);
+            var settings = await SettingsService.GetAsync();
+            var orgName = settings?.OrganizationName ?? string.Empty;
+            var bytes = PdfRenderer.Render(_report, orgName);
             var tempPath = Path.Combine(Path.GetTempPath(), $"report_{Guid.NewGuid():N}.pdf");
             File.WriteAllBytes(tempPath, bytes);
 #pragma warning disable CA1416

@@ -2,6 +2,8 @@ using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using StageFright.Core.Contracts;
+using StageFright.Core.Entities;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
 using StageFright.Reports.Rendering;
@@ -22,6 +24,7 @@ public class ReportViewerTests : BunitContext
     private readonly IReportProvider _provider = Substitute.For<IReportProvider>();
     private readonly IPdfReportRenderer _pdfRenderer = Substitute.For<IPdfReportRenderer>();
     private readonly ICsvReportExporter _csvExporter = Substitute.For<ICsvReportExporter>();
+    private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
 
     private static readonly ReportData SampleReport = new()
     {
@@ -38,6 +41,9 @@ public class ReportViewerTests : BunitContext
     {
         Services.AddSingleton(_pdfRenderer);
         Services.AddSingleton(_csvExporter);
+        _settingsService.GetAsync(Arg.Any<CancellationToken>())
+            .Returns(new Settings { OrganizationName = "Test Organisation" });
+        Services.AddSingleton(_settingsService);
 
         _provider.ReportId.Returns("test-report");
         _provider.ReportName.Returns("Test Report");
