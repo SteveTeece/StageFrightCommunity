@@ -231,6 +231,33 @@ public class RehearsalServiceTests : TestBase
         Assert.Null(result);
     }
 
+    // --- GetNextUpcomingAsync ---
+
+    [Fact]
+    public async Task GetNextUpcomingAsync_DelegatesToRepository()
+    {
+        var asOf = DateTime.UtcNow.AddDays(1);
+        var rehearsal = ARehearsalWithNoRate();
+        _rehearsalRepo.GetNextUpcomingAsync(asOf, Arg.Any<CancellationToken>()).Returns(rehearsal);
+
+        var svc = CreateService();
+        var result = await svc.GetNextUpcomingAsync(asOf, Ct);
+
+        Assert.Same(rehearsal, result);
+    }
+
+    [Fact]
+    public async Task GetNextUpcomingAsync_ReturnsNull_WhenNoUpcomingRehearsals()
+    {
+        var asOf = DateTime.UtcNow.AddDays(1);
+        _rehearsalRepo.GetNextUpcomingAsync(asOf, Arg.Any<CancellationToken>()).Returns((Rehearsal?)null);
+
+        var svc = CreateService();
+        var result = await svc.GetNextUpcomingAsync(asOf, Ct);
+
+        Assert.Null(result);
+    }
+
     // --- Helpers ---
 
     private static Rehearsal ARehearsalWithNoRate() => new()

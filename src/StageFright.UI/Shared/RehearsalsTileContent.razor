@@ -8,7 +8,7 @@ else if (_error)
 {
     <span class="text-danger small">Unable to load</span>
 }
-else if (_recordedDate is null && _pendingDate is null)
+else if (_recordedDate is null && _pendingDate is null && _upcomingDate is null)
 {
     <span class="text-muted small">No rehearsals recorded</span>
 }
@@ -24,7 +24,11 @@ else
             }
             @if (_pendingDate is not null)
             {
-                <li class="text-warning" style="font-size:0.7rem">&#9888; Pending: @_pendingDate.Value.ToString("d MMM yyyy")</li>
+                <li class="text-info" style="font-size:0.7rem">&#8594; Upcoming: @_pendingDate.Value.ToString("d MMM yyyy")</li>
+            }
+            @if (_upcomingDate is not null)
+            {
+                <li class="text-info" style="font-size:0.7rem">&#8594; Upcoming: @_upcomingDate.Value.ToString("d MMM yyyy")</li>
             }
         </ul>
         @if (_hasRate)
@@ -39,6 +43,7 @@ else
     private bool _error;
     private DateTime? _recordedDate;
     private DateTime? _pendingDate;
+    private DateTime? _upcomingDate;
     private string _attendedLabel = "—";
     private string _absentLabel = "—";
     private bool _hasRate;
@@ -54,9 +59,11 @@ else
         {
             var recorded = await RehearsalService.GetMostRecentPastWithAttendanceAsync(DateTime.Today);
             var pending = await RehearsalService.GetMostRecentPastWithoutAttendanceAsync(DateTime.Today);
+            var upcoming = await RehearsalService.GetNextUpcomingAsync(DateTime.Today.AddDays(1));
 
             _recordedDate = recorded?.Date;
             _pendingDate = pending?.Date;
+            _upcomingDate = upcoming?.Date;
 
             if (recorded?.StoredAttendanceRate is { } rate)
             {

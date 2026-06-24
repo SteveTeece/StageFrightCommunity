@@ -24,6 +24,9 @@ public interface IRehearsalService
     /// </summary>
     Task<Rehearsal?> GetMostRecentPastWithAttendanceAsync(DateTime asOf, CancellationToken ct = default);
 
+    /// <summary>Returns the next scheduled rehearsal on or after asOf, or null if none.</summary>
+    Task<Rehearsal?> GetNextUpcomingAsync(DateTime asOf, CancellationToken ct = default);
+
     /// <summary>
     /// Computes and freezes StoredAttendanceRate on the rehearsal.
     /// Idempotent: does nothing if the rate is already set.

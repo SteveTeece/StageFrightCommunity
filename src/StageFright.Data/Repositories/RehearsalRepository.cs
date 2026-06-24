@@ -34,4 +34,13 @@ public class RehearsalRepository : SoftDeletableBaseRepository<Rehearsal>, IRehe
             .OrderByDescending(r => r.Date)
             .FirstOrDefaultAsync(ct);
     }
+
+    public async Task<Rehearsal?> GetNextUpcomingAsync(DateTime asOf, CancellationToken ct = default)
+    {
+        var startOfDay = asOf.Date;
+        return await _db.Rehearsals
+            .Where(r => r.Date >= startOfDay)
+            .OrderBy(r => r.Date)
+            .FirstOrDefaultAsync(ct);
+    }
 }

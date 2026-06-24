@@ -62,6 +62,9 @@ public class RehearsalService : IRehearsalService
     public Task<Rehearsal?> GetMostRecentPastWithAttendanceAsync(DateTime asOf, CancellationToken ct = default) =>
         _rehearsalRepo.GetMostRecentPastWithAttendanceAsync(asOf, ct);
 
+    public Task<Rehearsal?> GetNextUpcomingAsync(DateTime asOf, CancellationToken ct = default) =>
+        _rehearsalRepo.GetNextUpcomingAsync(asOf, ct);
+
     public async Task FreezeAttendanceRateAsync(Guid rehearsalId, DateTime rehearsalDate, int presentCount, CancellationToken ct = default)
     {
         var rehearsal = await _rehearsalRepo.GetByIdAsync(rehearsalId, ct)

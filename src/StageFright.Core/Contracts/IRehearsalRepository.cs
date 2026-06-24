@@ -19,4 +19,7 @@ public interface IRehearsalRepository : ISoftDeletableRepository<Rehearsal>
     /// and whose attendance has been recorded (StoredAttendanceRate is not null), or null.
     /// </summary>
     Task<Rehearsal?> GetMostRecentPastWithAttendanceAsync(DateTime asOf, CancellationToken ct = default);
+
+    /// <summary>Returns the next non-deleted rehearsal on or after asOf, or null if none is scheduled.</summary>
+    Task<Rehearsal?> GetNextUpcomingAsync(DateTime asOf, CancellationToken ct = default);
 }
