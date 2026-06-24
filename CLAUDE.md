@@ -104,7 +104,9 @@ Every fee or payment write wraps fee creation + paired GL debit/credit + balance
 
 **One class per file.** Every C# class, interface, record, struct, or enum lives in its own file named exactly after the type. Private nested types are the only exception.
 
-**No custom JavaScript.** All business logic and UI interaction is in C#/Blazor. No `.js` files, no JS interop for business logic.
+**Blazor component structure.** Every `.razor` component MUST have a paired `.razor.cs` code-behind file containing all C# logic — `@code { }` blocks in `.razor` files are prohibited. A `.razor.css` CSS isolation file is added only when the component requires styles that are genuinely scoped to that component; most CSS belongs in the global stylesheet (`wwwroot/css/`).
+
+**No custom JavaScript.** All business logic and UI interaction is in C#/Blazor. No `.js` files, no JS interop for business logic. Javascript that is part of an existing pre-written control or nuget package is permitted.
 
 **Custom exceptions at every boundary.** Raw framework exceptions (`DbException`, `IOException`, etc.) must be caught and re-thrown as project-defined custom exceptions before crossing layer boundaries. Exception types live in `StageFright.Core/Exceptions/`.
 
