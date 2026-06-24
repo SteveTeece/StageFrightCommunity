@@ -15,6 +15,8 @@ public class MemberDetailTests : BunitContext
 {
     private readonly IMemberService _memberService = Substitute.For<IMemberService>();
     private readonly ICommitteeService _committeeService = Substitute.For<ICommitteeService>();
+    private readonly IFeeRepository _feeRepository = Substitute.For<IFeeRepository>();
+    private readonly IGLRepository _glRepository = Substitute.For<IGLRepository>();
 
     private readonly Guid _memberId = Guid.NewGuid();
     private readonly int _currentYear = DateTime.UtcNow.Year;
@@ -23,6 +25,13 @@ public class MemberDetailTests : BunitContext
     {
         Services.AddSingleton(_memberService);
         Services.AddSingleton(_committeeService);
+        Services.AddSingleton(_feeRepository);
+        Services.AddSingleton(_glRepository);
+
+        _feeRepository.GetByMemberAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns((IReadOnlyList<Fee>)new List<Fee>());
+        _glRepository.GetByFeeAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns((IReadOnlyList<Transaction>)new List<Transaction>());
 
         _memberService.GetByIdAsync(_memberId, Arg.Any<CancellationToken>())
             .Returns(new Member
