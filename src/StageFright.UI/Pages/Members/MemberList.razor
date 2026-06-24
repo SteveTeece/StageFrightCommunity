@@ -59,7 +59,7 @@ else
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="Member" Title="Actions" Width="120px" Sortable="false">
                 <Template Context="member">
-                    <button class="btn btn-outline-primary btn-sm me-1"
+                    <button class="btn btn-primary btn-sm"
                             @onclick="() => EditMember(member.Id)"
                             aria-label="Edit @member.Name">
                         Edit
