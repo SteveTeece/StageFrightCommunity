@@ -465,6 +465,22 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 
 ---
 
+## Phase 16: Other Income Recording (Post-MVP Addition)
+
+**Purpose**: Allow recording of non-member income (raffles, fundraising events, donations) directly to the GL without creating Fee or Payment records.
+
+- [X] T182 Create `src/StageFright.Core/Contracts/IIncomeEntryService.cs` (RecordIncomeAsync, GetIncomeCategoriesAsync)
+- [X] T183 [P] Create `src/StageFright.Core/Modules/Finance/RecordIncomeRequest.cs` (Date, Amount, CategoryId, Description?)
+- [X] T184 [P] Create `src/StageFright.Core/Modules/Finance/IncomeEntryService.cs` (validates amount > 0, category must be Income type and non-system; GL pair: Debit Cash 0100 / Credit selected Income category; IUnitOfWork; audit)
+- [X] T185 [P] Create `src/StageFright.UI/Pages/Finance/RecordIncomeModel.cs` (Date, Amount, CategoryId, Description form model)
+- [X] T186 Create `src/StageFright.UI/Pages/Finance/RecordIncome.razor` and `RecordIncome.razor.cs` (`@page "/finance/income/new"`; date, amount, category dropdown (income only, non-system), description; success shows "Record Another" option; warns when no categories configured)
+- [X] T187 [P] Update `src/StageFright.Core/Modules/Finance/FinanceMenuItemProvider.cs` to add "Record Income" submenu item (Route="/finance/income/new", DisplayOrder=3)
+- [X] T188 [P] Register `IIncomeEntryService → IncomeEntryService` in `src/StageFright.App/MauiProgram.cs` Finance module section
+- [X] T189 [P] Create `tests/StageFright.Core.Tests/Modules/Finance/IncomeEntryServiceTests.cs` (GL pair debit/cash credit/income; no member/fee/payment links; amount ≤ 0 rejected; expense category rejected; system category rejected; missing category throws EntityNotFoundException; audit logged; runs inside IUnitOfWork; description defaults to category name when omitted)
+- [X] T190 [P] Create `tests/StageFright.UI.Tests/Pages/Finance/RecordIncomeTests.cs` (renders category dropdown; pre-selects when single category; no-category warning; zero-amount validation; successful submit calls service; success message shown; Record Another option)
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

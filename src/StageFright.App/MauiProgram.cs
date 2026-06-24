@@ -173,6 +173,7 @@ public static class MauiProgram
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IReactivationForgivenessService, ReactivationForgivenessService>();
         services.AddScoped<IMemberBalanceService, MemberBalanceService>();
+        services.AddScoped<IIncomeEntryService, IncomeEntryService>();
 
         // Category management module (Phase 7)
         services.AddScoped<ICategoryService, CategoryService>();
