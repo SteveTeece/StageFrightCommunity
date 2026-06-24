@@ -52,4 +52,13 @@ public class EventRepository : SoftDeletableBaseRepository<Event>, IEventReposit
                 && e.EventType.Name == "Annual General Meeting")
             .AnyAsync(ct);
     }
+
+    public async Task<Event?> GetByIdWithDetailsAsync(Guid id, CancellationToken ct = default)
+    {
+        return await _db.Events
+            .Include(e => e.EventType)
+            .Include(e => e.ParticipationRecords)
+                .ThenInclude(p => p.Member)
+            .FirstOrDefaultAsync(e => e.Id == id, ct);
+    }
 }

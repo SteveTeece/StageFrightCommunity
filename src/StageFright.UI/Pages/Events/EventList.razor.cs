@@ -11,7 +11,16 @@ public partial class EventList
 
     private bool _loading = true;
     private List<Event> _events = new();
+    private string _searchTerm = string.Empty;
     private string? _errorMessage;
+
+    private IEnumerable<Event> DisplayEvents =>
+        string.IsNullOrWhiteSpace(_searchTerm)
+            ? _events
+            : _events.Where(e =>
+                e.Date.ToString("d MMM yyyy").Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                (e.EventType?.Name?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (e.Notes?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false));
 
     protected override async Task OnInitializedAsync()
     {

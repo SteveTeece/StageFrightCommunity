@@ -120,4 +120,7 @@ public class EventService : IEventService
 
     public Task<bool> AgmExistsInYearAsync(int year, CancellationToken ct = default) =>
         _eventRepo.AgmExistsInYearAsync(year, ct);
+
+    public Task<Event?> GetByIdWithDetailsAsync(Guid id, CancellationToken ct = default) =>
+        _eventRepo.GetByIdWithDetailsAsync(id, ct);
 }

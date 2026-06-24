@@ -11,7 +11,15 @@ public partial class RehearsalList
 
     private bool _loading = true;
     private List<Rehearsal> _rehearsals = new();
+    private string _searchTerm = string.Empty;
     private string? _errorMessage;
+
+    private IEnumerable<Rehearsal> DisplayRehearsals =>
+        string.IsNullOrWhiteSpace(_searchTerm)
+            ? _rehearsals
+            : _rehearsals.Where(r =>
+                r.Date.ToString("d MMM yyyy").Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                (r.Notes?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false));
 
     protected override async Task OnInitializedAsync()
     {

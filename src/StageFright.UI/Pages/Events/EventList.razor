@@ -7,21 +7,45 @@
     <button class="btn btn-primary btn-sm" @onclick="AddEvent">Schedule Event</button>
 </div>
 
+<div class="mb-3">
+    <div class="input-group input-group-sm" style="max-width: 320px;">
+        <span class="input-group-text" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+            </svg>
+        </span>
+        <input type="search" class="form-control" placeholder="Search by date, type or notes…"
+               aria-label="Search events"
+               @bind="_searchTerm" @bind:event="oninput" />
+    </div>
+</div>
+
 @if (_loading)
 {
     <p role="status" aria-live="polite">Loading events…</p>
 }
-else if (_events.Count == 0)
+else if (!DisplayEvents.Any())
 {
-    <p class="text-muted">No events scheduled yet.</p>
+    @if (_events.Count == 0)
+    {
+        <p class="text-muted">No events scheduled yet.</p>
+    }
+    else
+    {
+        <p class="text-muted">No events match "<strong>@_searchTerm</strong>".</p>
+    }
 }
 else
 {
-    <RadzenDataGrid Data="@_events" TItem="Event"
+    <RadzenDataGrid Data="@DisplayEvents" TItem="Event"
                     AllowSorting="true" AllowPaging="true" PageSize="10"
                     class="rz-shadow-0">
         <Columns>
-            <RadzenDataGridColumn TItem="Event" Property="Date" Title="Date" Width="140px" FormatString="{0:d MMM yyyy}" />
+            <RadzenDataGridColumn TItem="Event" Property="Date" Title="Date" Width="140px">
+                <Template Context="e">
+                    <a href="/events/@e.Id" class="text-decoration-none">@e.Date.ToString("d MMM yyyy")</a>
+                </Template>
+            </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="Event" Title="Event Type" Width="160px">
                 <Template Context="e">@(e.EventType?.Name ?? "—")</Template>
             </RadzenDataGridColumn>

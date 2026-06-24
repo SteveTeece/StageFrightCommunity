@@ -42,4 +42,7 @@ public interface IEventService
 
     /// <summary>Returns true if an AGM event exists in the given calendar year.</summary>
     Task<bool> AgmExistsInYearAsync(int year, CancellationToken ct = default);
+
+    /// <summary>Returns an event with its EventType and ParticipationRecords (including Member names) loaded, or null if not found.</summary>
+    Task<Event?> GetByIdWithDetailsAsync(Guid id, CancellationToken ct = default);
 }
