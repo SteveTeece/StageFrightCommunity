@@ -114,6 +114,17 @@ else
             </div>
         </div>
 
+        <div class="mb-2">
+            <label class="form-label">Dashboard</label>
+            <div class="form-check">
+                <InputCheckbox id="showParticipationGraphs" class="form-check-input"
+                               @bind-Value="s.ShowParticipationGraphs" />
+                <label class="form-check-label small" for="showParticipationGraphs">
+                    Show year-to-date participation graphs on Rehearsals and Events tiles
+                </label>
+            </div>
+        </div>
+
         <div class="d-flex gap-2 mt-3">
             <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
                 @(_saving ? "Saving…" : "Save Settings")

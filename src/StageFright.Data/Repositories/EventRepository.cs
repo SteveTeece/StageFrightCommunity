@@ -61,4 +61,12 @@ public class EventRepository : SoftDeletableBaseRepository<Event>, IEventReposit
                 .ThenInclude(p => p.Member)
             .FirstOrDefaultAsync(e => e.Id == id, ct);
     }
+
+    public async Task<IReadOnlyList<Event>> GetYearToDateWithParticipationAsync(int year, CancellationToken ct = default)
+    {
+        return await _db.Events
+            .Where(e => e.Date.Year == year && e.StoredParticipationRate != null)
+            .OrderBy(e => e.Date)
+            .ToListAsync(ct);
+    }
 }

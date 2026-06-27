@@ -45,4 +45,10 @@ public interface IEventService
 
     /// <summary>Returns an event with its EventType and ParticipationRecords (including Member names) loaded, or null if not found.</summary>
     Task<Event?> GetByIdWithDetailsAsync(Guid id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns all events in the given calendar year that have participation recorded,
+    /// ordered by date ascending. Used for the year-to-date dashboard chart.
+    /// </summary>
+    Task<IReadOnlyList<Event>> GetYearToDateWithParticipationAsync(int year, CancellationToken ct = default);
 }

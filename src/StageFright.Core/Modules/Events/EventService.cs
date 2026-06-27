@@ -123,4 +123,7 @@ public class EventService : IEventService
 
     public Task<Event?> GetByIdWithDetailsAsync(Guid id, CancellationToken ct = default) =>
         _eventRepo.GetByIdWithDetailsAsync(id, ct);
+
+    public Task<IReadOnlyList<Event>> GetYearToDateWithParticipationAsync(int year, CancellationToken ct = default) =>
+        _eventRepo.GetYearToDateWithParticipationAsync(year, ct);
 }

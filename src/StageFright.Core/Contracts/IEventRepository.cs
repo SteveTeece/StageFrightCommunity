@@ -33,4 +33,10 @@ public interface IEventRepository : ISoftDeletableRepository<Event>
     /// Returns an event with its EventType and ParticipationRecords (including Member) loaded, or null if not found.
     /// </summary>
     Task<Event?> GetByIdWithDetailsAsync(Guid id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns all non-deleted events in the given calendar year that have participation recorded
+    /// (StoredParticipationRate is not null), ordered by date ascending.
+    /// </summary>
+    Task<IReadOnlyList<Event>> GetYearToDateWithParticipationAsync(int year, CancellationToken ct = default);
 }

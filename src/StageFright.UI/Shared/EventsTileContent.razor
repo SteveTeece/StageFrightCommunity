@@ -36,4 +36,9 @@ else
             <DoughnutChart @ref="_chart" Width="130" />
         }
     </div>
+    @if (_showYtd && _hasYtdData)
+    {
+        <div class="mt-2" style="font-size:0.7rem; color: var(--bs-secondary-color);">YTD Participation</div>
+        <BarChart @ref="_ytdChart" Width="260" />
+    }
 }

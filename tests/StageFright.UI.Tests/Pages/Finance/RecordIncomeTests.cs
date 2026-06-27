@@ -83,12 +83,14 @@ public class RecordIncomeTests : BunitContext
     }
 
     [Fact]
-    public void Renders_CancelLink_NavigatingToFinance()
+    public void Renders_ClearButton()
     {
         var cut = Render<RecordIncome>();
 
-        var cancelLink = cut.Find("a.btn-outline-secondary");
-        Assert.Contains("/finance", cancelLink.GetAttribute("href") ?? string.Empty);
+        // RecordIncome is embedded as a tab; the old Cancel nav link was replaced
+        // with a Clear button that resets the form in-place.
+        var clearBtn = cut.Find("button.btn-outline-secondary");
+        Assert.Contains("Clear", clearBtn.TextContent, StringComparison.OrdinalIgnoreCase);
     }
 
     // --- No-categories state ---

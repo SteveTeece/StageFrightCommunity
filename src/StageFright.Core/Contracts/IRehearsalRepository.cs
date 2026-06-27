@@ -22,4 +22,10 @@ public interface IRehearsalRepository : ISoftDeletableRepository<Rehearsal>
 
     /// <summary>Returns the next non-deleted rehearsal on or after asOf, or null if none is scheduled.</summary>
     Task<Rehearsal?> GetNextUpcomingAsync(DateTime asOf, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns all non-deleted rehearsals in the given calendar year that have attendance recorded
+    /// (StoredAttendanceRate is not null), ordered by date ascending.
+    /// </summary>
+    Task<IReadOnlyList<Rehearsal>> GetYearToDateWithAttendanceAsync(int year, CancellationToken ct = default);
 }

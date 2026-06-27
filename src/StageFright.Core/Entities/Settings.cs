@@ -36,6 +36,13 @@ public class Settings
     public Theme Theme { get; set; } = Theme.Light;
 
     /// <summary>
+    /// When true, the Rehearsals and Events dashboard tiles display a year-to-date
+    /// participation bar chart in addition to the most-recent doughnut chart.
+    /// Default: true.
+    /// </summary>
+    public bool ShowParticipationGraphs { get; set; } = true;
+
+    /// <summary>
     /// The calendar year for which the annual committee reset was last performed.
     /// Null until the first reset. Used to drive the AGM reminder banner (FR-031).
     /// </summary>

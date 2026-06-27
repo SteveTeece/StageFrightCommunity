@@ -43,4 +43,12 @@ public class RehearsalRepository : SoftDeletableBaseRepository<Rehearsal>, IRehe
             .OrderBy(r => r.Date)
             .FirstOrDefaultAsync(ct);
     }
+
+    public async Task<IReadOnlyList<Rehearsal>> GetYearToDateWithAttendanceAsync(int year, CancellationToken ct = default)
+    {
+        return await _db.Rehearsals
+            .Where(r => r.Date.Year == year && r.StoredAttendanceRate != null)
+            .OrderBy(r => r.Date)
+            .ToListAsync(ct);
+    }
 }

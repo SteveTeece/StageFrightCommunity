@@ -34,4 +34,10 @@ public interface IRehearsalService
     /// Archived members are always excluded from the denominator.
     /// </summary>
     Task FreezeAttendanceRateAsync(Guid rehearsalId, DateTime rehearsalDate, int presentCount, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns all rehearsals in the given calendar year that have attendance recorded,
+    /// ordered by date ascending. Used for the year-to-date dashboard chart.
+    /// </summary>
+    Task<IReadOnlyList<Rehearsal>> GetYearToDateWithAttendanceAsync(int year, CancellationToken ct = default);
 }
