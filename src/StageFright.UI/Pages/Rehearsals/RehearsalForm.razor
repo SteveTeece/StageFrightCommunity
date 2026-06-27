@@ -2,47 +2,49 @@
 
 <PageTitle>Schedule Rehearsal — StageFright Community</PageTitle>
 
-<div class="page-header mb-3">
+<div class="page-header mb-2">
     <h1 class="h3">Schedule Rehearsal</h1>
 </div>
 
 @if (!string.IsNullOrEmpty(_errorMessage))
 {
-    <div class="alert alert-danger" role="alert">@_errorMessage</div>
+    <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
 }
 
-<div class="card" style="max-width:500px;">
-    <div class="card-body">
+<div class="card mb-2">
+    <div class="card-body py-2">
         <EditForm Model="@_model" OnValidSubmit="HandleSubmit">
             <DataAnnotationsValidator />
 
-            <div class="mb-3">
-                <label for="date" class="form-label">Date <span class="text-danger">*</span></label>
-                <InputDate id="date" class="form-control" @bind-Value="_model.Date" />
-                <ValidationMessage For="@(() => _model.Date)" class="text-danger small" />
+            <div class="row g-2 mb-2">
+                <div class="col-md-4">
+                    <label for="date" class="form-label">Date <span class="text-danger">*</span></label>
+                    <InputDate id="date" class="form-control form-control-sm" @bind-Value="_model.Date" />
+                    <ValidationMessage For="@(() => _model.Date)" class="text-danger small" />
+                </div>
+
+                <div class="col-md-4">
+                    <label for="time" class="form-label">Time <span class="text-danger">*</span></label>
+                    <input id="time" type="time" class="form-control form-control-sm"
+                           value="@_timeString"
+                           @onchange="HandleTimeChange" />
+                    @if (_timeError)
+                    {
+                        <div class="text-danger small">Time is required.</div>
+                    }
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label for="time" class="form-label">Time <span class="text-danger">*</span></label>
-                <input id="time" type="time" class="form-control"
-                       value="@_timeString"
-                       @onchange="HandleTimeChange" />
-                @if (_timeError)
-                {
-                    <div class="text-danger small">Time is required.</div>
-                }
-            </div>
-
-            <div class="mb-3">
+            <div class="mb-2">
                 <label for="notes" class="form-label">Notes</label>
-                <InputTextArea id="notes" class="form-control" rows="3" @bind-Value="_model.Notes" />
+                <InputTextArea id="notes" class="form-control form-control-sm" rows="2" @bind-Value="_model.Notes" />
             </div>
 
             <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary" disabled="@_saving">
+                <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
                     @(_saving ? "Saving…" : "Schedule")
                 </button>
-                <button type="button" class="btn btn-outline-secondary" @onclick="Cancel">
+                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="Cancel">
                     Cancel
                 </button>
             </div>

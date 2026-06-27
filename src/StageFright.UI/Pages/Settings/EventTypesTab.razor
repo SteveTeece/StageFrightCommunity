@@ -4,12 +4,12 @@
 
     @if (!string.IsNullOrEmpty(_errorMessage))
     {
-        <div class="alert alert-danger" role="alert">@_errorMessage</div>
+        <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
     }
 
     @if (!string.IsNullOrEmpty(_successMessage))
     {
-        <div class="alert alert-success" role="status">@_successMessage</div>
+        <div class="alert alert-success py-1 mb-2 small" role="status">@_successMessage</div>
     }
 
     @if (_loading)
@@ -18,37 +18,42 @@
     }
     else
     {
-        <!-- Add Event Type Form -->
-        <div class="card mb-4" style="max-width: 480px;">
-            <div class="card-body">
-                <h5 class="card-title">Add Event Type</h5>
+        <!-- Add Event Type Form — full width, single-row inline layout -->
+        <div class="card mb-2">
+            <div class="card-body py-2">
+                <h6 class="card-title mb-2">Add Event Type</h6>
                 <EditForm Model="_newModel" OnValidSubmit="HandleCreateAsync">
                     <DataAnnotationsValidator />
-                    <div class="mb-3">
-                        <label for="et-name" class="form-label">Name <span aria-hidden="true" class="text-danger">*</span></label>
-                        <InputText id="et-name" class="form-control" @bind-Value="_newModel.Name"
-                                   placeholder="Event type name" />
-                        <ValidationMessage For="() => _newModel.Name" class="text-danger small" />
+                    <div class="row g-2 align-items-start">
+                        <div class="col">
+                            <InputText id="et-name" class="form-control form-control-sm"
+                                       @bind-Value="_newModel.Name"
+                                       placeholder="Event type name"
+                                       aria-label="Event type name" />
+                            <ValidationMessage For="() => _newModel.Name" class="text-danger small" />
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary btn-sm" disabled="@_creating">
+                                @(_creating ? "Creating…" : "Add Event Type")
+                            </button>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-sm" disabled="@_creating">
-                        @(_creating ? "Creating…" : "Add Event Type")
-                    </button>
                 </EditForm>
             </div>
         </div>
 
         <!-- Active Event Types -->
-        <section aria-labelledby="active-et-heading" class="mb-4">
-            <h5 id="active-et-heading">Event Types</h5>
+        <section aria-labelledby="active-et-heading" class="mb-2">
+            <h6 id="active-et-heading" class="mb-1">Event Types</h6>
             @if (!_activeTypes.Any())
             {
-                <p class="text-muted small">No event types defined yet.</p>
+                <p class="text-muted small mb-0">No event types defined yet.</p>
             }
             else
             {
                 <RadzenDataGrid Data="@_activeTypes" TItem="EventType"
                                 AllowSorting="true" AllowPaging="true" PageSize="10"
-                                class="rz-shadow-0" style="max-height: 400px; overflow-y: auto;">
+                                class="rz-shadow-0">
                     <Columns>
                         <RadzenDataGridColumn TItem="EventType" Property="Name" Title="Name" Width="300px">
                             <Template Context="et">
@@ -83,11 +88,11 @@
         <!-- Archived Event Types -->
         @if (_archivedTypes.Any())
         {
-            <section aria-labelledby="archived-et-heading" class="mb-4">
-                <h5 id="archived-et-heading">Archived Event Types</h5>
+            <section aria-labelledby="archived-et-heading" class="mb-2">
+                <h6 id="archived-et-heading" class="mb-1">Archived Event Types</h6>
                 <RadzenDataGrid Data="@_archivedTypes" TItem="EventType"
                                 AllowSorting="true" AllowPaging="true" PageSize="10"
-                                class="rz-shadow-0" style="max-height: 400px; overflow-y: auto;">
+                                class="rz-shadow-0">
                     <Columns>
                         <RadzenDataGridColumn TItem="EventType" Property="Name" Title="Name" Width="300px" />
                         <RadzenDataGridColumn TItem="EventType" Title="Actions" Width="140px" Sortable="false">

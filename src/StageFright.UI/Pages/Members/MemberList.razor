@@ -2,12 +2,12 @@
 
 <PageTitle>Members — StageFright Community</PageTitle>
 
-<div class="page-header d-flex align-items-center justify-content-between mb-3">
+<div class="page-header d-flex align-items-center justify-content-between mb-2">
     <h1 class="h3 mb-0">Members</h1>
     <button class="btn btn-primary btn-sm" @onclick="AddMember">Add Member</button>
 </div>
 
-<div class="mb-3 d-flex align-items-center gap-3 flex-wrap">
+<div class="mb-2 d-flex align-items-center gap-2 flex-wrap">
     <div class="btn-group" role="group" aria-label="Member status filter">
         <button class="btn btn-outline-secondary btn-sm @(_filter == MemberStatus.Active ? "active" : "")"
                 @onclick="() => SetFilter(MemberStatus.Active)">
@@ -24,7 +24,7 @@
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
             </svg>
         </span>
-        <input type="search" class="form-control" placeholder="Search by name, email, phone or address…"
+        <input type="search" class="form-control form-control-sm" placeholder="Search by name, email, phone or address…"
                aria-label="Search members"
                @bind="_searchTerm" @bind:event="oninput" />
     </div>
@@ -48,7 +48,7 @@ else if (!DisplayMembers.Any())
 else
 {
     <RadzenDataGrid Data="@DisplayMembers" TItem="Member"
-                    AllowSorting="true" AllowPaging="true" PageSize="10"
+                    AllowSorting="true" AllowPaging="true" PageSize="15"
                     class="rz-shadow-0">
         <Columns>
             <RadzenDataGridColumn TItem="Member" Property="Name" Title="Name" Width="200px">
@@ -74,7 +74,7 @@ else
                     }
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Member" Title="Actions" Width="120px" Sortable="false">
+            <RadzenDataGridColumn TItem="Member" Title="Actions" Width="80px" Sortable="false">
                 <Template Context="member">
                     <button class="btn btn-primary btn-sm"
                             @onclick="() => EditMember(member.Id)"

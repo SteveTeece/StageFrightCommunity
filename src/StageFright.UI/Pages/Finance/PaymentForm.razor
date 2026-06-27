@@ -3,7 +3,7 @@
 
 <PageTitle>Record Payment — StageFright Community</PageTitle>
 
-<div class="page-header mb-3">
+<div class="page-header mb-2">
     <h1 class="h3">@(_saved ? "Payment Details" : "Record Payment")</h1>
     @if (_memberName is not null)
     {
@@ -19,28 +19,28 @@ else
 {
     @if (!string.IsNullOrEmpty(_errorMessage))
     {
-        <div class="alert alert-danger" role="alert">@_errorMessage</div>
+        <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
     }
 
     @if (_saved && _successMessage is not null)
     {
-        <div class="alert alert-success" role="status">@_successMessage</div>
+        <div class="alert alert-success py-1 mb-2 small" role="status">@_successMessage</div>
     }
 
-    <div class="card" style="max-width: 540px;">
-        <div class="card-body">
+    <div class="card mb-2">
+        <div class="card-body py-2">
             <EditForm Model="_form" OnValidSubmit="SaveAsync">
-                <div class="row g-3">
+                <div class="row g-2">
 
                     <div class="col-md-6">
                         <label class="form-label" for="payDate">Date <span aria-hidden="true">*</span></label>
-                        <InputDate id="payDate" class="form-control" @bind-Value="_form.Date"
+                        <InputDate id="payDate" class="form-control form-control-sm" @bind-Value="_form.Date"
                                    disabled="@_saved" />
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label" for="amount">Amount <span aria-hidden="true">*</span></label>
-                        <div class="input-group @(_errors.ContainsKey("Amount") ? "has-validation" : "")">
+                        <div class="input-group input-group-sm @(_errors.ContainsKey("Amount") ? "has-validation" : "")">
                             <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
                             <InputNumber id="amount" class="@(_errors.ContainsKey("Amount") ? "form-control is-invalid" : "form-control")"
                                          @bind-Value="_form.Amount" @bind-Value:format="N2"
@@ -54,7 +54,7 @@ else
 
                     <div class="col-md-6">
                         <label class="form-label" for="method">Payment Method <span aria-hidden="true">*</span></label>
-                        <InputSelect id="method" class="form-select" @bind-Value="_form.PaymentMethod"
+                        <InputSelect id="method" class="form-select form-select-sm" @bind-Value="_form.PaymentMethod"
                                      disabled="@_saved">
                             @foreach (var method in Enum.GetValues<PaymentMethod>())
                             {
@@ -65,7 +65,7 @@ else
 
                     <div class="col-md-6">
                         <label class="form-label" for="type">Payment Type <span aria-hidden="true">*</span></label>
-                        <InputSelect id="type" class="form-select" @bind-Value="_form.PaymentType"
+                        <InputSelect id="type" class="form-select form-select-sm" @bind-Value="_form.PaymentType"
                                      disabled="@_saved">
                             @foreach (var type in Enum.GetValues<PaymentType>())
                             {
@@ -76,7 +76,7 @@ else
 
                     <div class="col-12">
                         <label class="form-label" for="notes">Notes</label>
-                        <InputTextArea id="notes" class="form-control" rows="2"
+                        <InputTextArea id="notes" class="form-control form-control-sm" rows="2"
                                        @bind-Value="_form.Notes" />
                     </div>
 
@@ -84,21 +84,21 @@ else
 
                 @if (!_saved)
                 {
-                    <div class="d-flex gap-2 mt-3">
-                        <button type="submit" class="btn btn-primary" disabled="@_saving">
+                    <div class="d-flex gap-2 mt-2">
+                        <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
                             @(_saving ? "Saving…" : "Record Payment")
                         </button>
-                        <button type="button" class="btn btn-outline-secondary"
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
                                 @onclick="Cancel">Cancel</button>
                     </div>
                 }
                 else
                 {
-                    <div class="d-flex gap-2 mt-3">
-                        <button type="submit" class="btn btn-primary" disabled="@_saving">
+                    <div class="d-flex gap-2 mt-2">
+                        <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
                             @(_saving ? "Saving…" : "Update Notes")
                         </button>
-                        <button type="button" class="btn btn-outline-secondary"
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
                                 @onclick="Cancel">Back to Finance</button>
                     </div>
                 }

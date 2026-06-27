@@ -4,26 +4,26 @@
 
 @if (!_initialized)
 {
-    <div class="d-flex justify-content-center align-items-center py-5" role="status" aria-live="polite">
+    <div class="d-flex justify-content-center align-items-center py-4" role="status" aria-live="polite">
         <div class="spinner-border text-primary me-2" aria-hidden="true"></div>
         <span>Loading dashboard…</span>
     </div>
 }
 else
 {
-    <div class="page-header mb-4">
+    <div class="page-header mb-2">
         <h1 class="h3">Dashboard</h1>
     </div>
 
-    <section aria-label="Core Metrics" class="mb-4">
-        <h2 class="h5 fw-semibold mb-3">Core Metrics</h2>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+    <section aria-label="Core Metrics" class="mb-2">
+        <h2 class="h6 fw-semibold mb-2">Core Metrics</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-2">
             @foreach (var tile in _coreTiles)
             {
                 <div class="col">
                     <div class="card h-100">
-                        <div class="card-header fw-semibold">@tile.Title</div>
-                        <div class="card-body">
+                        <div class="card-header py-1 fw-semibold small">@tile.Title</div>
+                        <div class="card-body py-2">
                             <TileRenderer Provider="tile" LoadTask="_loadTasks[tile.TileId]" />
                         </div>
                     </div>
@@ -34,15 +34,15 @@ else
 
     @if (_extensionTiles.Count > 0)
     {
-        <section aria-label="Extensions" class="mb-4">
-            <h2 class="h5 fw-semibold mb-3">Extensions</h2>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+        <section aria-label="Extensions" class="mb-2">
+            <h2 class="h6 fw-semibold mb-2">Extensions</h2>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-2">
                 @foreach (var tile in _extensionTiles)
                 {
                     <div class="col">
                         <div class="card h-100">
-                            <div class="card-header fw-semibold">@tile.Title</div>
-                            <div class="card-body">
+                            <div class="card-header py-1 fw-semibold small">@tile.Title</div>
+                            <div class="card-body py-2">
                                 <TileRenderer Provider="tile" LoadTask="_loadTasks[tile.TileId]" />
                             </div>
                         </div>

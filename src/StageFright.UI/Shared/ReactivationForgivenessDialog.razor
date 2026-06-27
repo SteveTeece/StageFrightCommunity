@@ -6,41 +6,41 @@
     <div class="modal show d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="forgiveness-dialog-title" style="z-index: 1050;">
         <div class="modal-dialog modal-dialog-scrollable" role="document">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header py-2">
                     <h5 class="modal-title" id="forgiveness-dialog-title">Reactivation Fee Forgiveness</h5>
                     <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body py-2">
                     @if (_loading)
                     {
                         <p role="status" aria-live="polite">Loading fees…</p>
                     }
                     else if (!string.IsNullOrEmpty(_errorMessage))
                     {
-                        <div class="alert alert-danger" role="alert">@_errorMessage</div>
+                        <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
                     }
                     else if (_items.Count == 0)
                     {
-                        <p class="text-muted">No outstanding fees to forgive for this member.</p>
+                        <p class="text-muted small">No outstanding fees to forgive for this member.</p>
                     }
                     else
                     {
-                        <p class="mb-3 text-muted small">
+                        <p class="mb-2 text-muted small">
                             Prior-year fees are pre-selected for forgiveness. Uncheck any fees you wish to retain.
                         </p>
 
                         @foreach (var yearGroup in _items.GroupBy(i => i.Year).OrderBy(g => g.Key))
                         {
-                            <h6 class="mt-3 mb-1">@yearGroup.Key</h6>
+                            <h6 class="mt-2 mb-1">@yearGroup.Key</h6>
                             @foreach (var item in yearGroup)
                             {
-                                <div class="form-check">
+                                <div class="form-check form-check-sm">
                                     <input class="form-check-input"
                                            type="checkbox"
                                            id="fee-@item.FeeId"
                                            checked="@_selected.Contains(item.FeeId)"
                                            @onchange="e => OnCheckedChange(item.FeeId, (bool)(e.Value ?? false))" />
-                                    <label class="form-check-label" for="fee-@item.FeeId">
+                                    <label class="form-check-label small" for="fee-@item.FeeId">
                                         @item.FeeDate.ToString("d MMM yyyy") — @item.Amount.ToString("C")
                                         @if (item.IsDefaultForgiven)
                                         {
@@ -52,13 +52,13 @@
                         }
                     }
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer py-2">
                     @if (!string.IsNullOrEmpty(_applyError))
                     {
                         <span class="text-danger small me-auto">@_applyError</span>
                     }
-                    <button type="button" class="btn btn-outline-secondary" @onclick="Close">Cancel</button>
-                    <button type="button" class="btn btn-primary"
+                    <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="Close">Cancel</button>
+                    <button type="button" class="btn btn-primary btn-sm"
                             disabled="@(_applying || _selected.Count == 0)"
                             @onclick="ApplyAsync">
                         @(_applying ? "Applying…" : $"Forgive {_selected.Count} {(_selected.Count == 1 ? "fee" : "fees")}")

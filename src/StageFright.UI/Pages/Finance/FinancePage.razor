@@ -2,29 +2,29 @@
 
 <PageTitle>Finance — StageFright Community</PageTitle>
 
-<div class="page-header mb-3">
+<div class="page-header mb-2">
     <h1 class="h3 mb-0">Finance</h1>
 </div>
 
 <Tabs DefaultActiveTabIndex="@DefaultTabIndex">
     <Tab Title="Balances" OnShown="@(() => NavToTab("balances"))">
         <Content>
-            <div class="pt-3">
+            <div class="pt-2">
                 <MemberBalanceList />
             </div>
         </Content>
     </Tab>
     <Tab Title="Payments" OnShown="@(() => NavToTab("payments"))">
         <Content>
-            <div class="pt-3">
-                <p class="text-muted">Select a member from the Balances tab to record a payment.</p>
+            <div class="pt-2">
+                <p class="text-muted small">Select a member from the Balances tab to record a payment.</p>
             </div>
         </Content>
     </Tab>
     <Tab Title="Apply Annual Fees" OnShown="@(() => NavToTab("annual-fees"))">
         <Content>
-            <div class="pt-3">
-                <a href="/finance/annual-fees" class="btn btn-primary">Go to Annual Fee Application</a>
+            <div class="pt-2">
+                <a href="/finance/annual-fees" class="btn btn-primary btn-sm">Go to Annual Fee Application</a>
             </div>
         </Content>
     </Tab>

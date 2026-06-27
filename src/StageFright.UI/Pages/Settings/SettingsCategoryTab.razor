@@ -5,12 +5,12 @@
 
     @if (!string.IsNullOrEmpty(_errorMessage))
     {
-        <div class="alert alert-danger" role="alert">@_errorMessage</div>
+        <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
     }
 
     @if (!string.IsNullOrEmpty(_successMessage))
     {
-        <div class="alert alert-success" role="status">@_successMessage</div>
+        <div class="alert alert-success py-1 mb-2 small" role="status">@_successMessage</div>
     }
 
     @if (_loading)
@@ -19,95 +19,99 @@
     }
     else
     {
-        <!-- Add Category Form -->
-        <div class="card mb-4" style="max-width: 480px;">
-            <div class="card-body">
-                <h5 class="card-title">Add Category</h5>
+        <!-- Add Category Form — full width, single-row inline layout -->
+        <div class="card mb-2">
+            <div class="card-body py-2">
+                <h6 class="card-title mb-2">Add Category</h6>
                 <EditForm Model="_newCategoryModel" OnValidSubmit="HandleCreateAsync">
                     <DataAnnotationsValidator />
-                    <div class="mb-2">
-                        <label for="cat-name" class="form-label">Name <span aria-hidden="true" class="text-danger">*</span></label>
-                        <InputText id="cat-name" class="form-control" @bind-Value="_newCategoryModel.Name"
-                                   placeholder="Category name" />
-                        <ValidationMessage For="() => _newCategoryModel.Name" class="text-danger small" />
+                    <div class="row g-2 align-items-start">
+                        <div class="col">
+                            <InputText id="cat-name" class="form-control form-control-sm"
+                                       @bind-Value="_newCategoryModel.Name"
+                                       placeholder="Category name"
+                                       aria-label="Category name" />
+                            <ValidationMessage For="() => _newCategoryModel.Name" class="text-danger small" />
+                        </div>
+                        <div class="col-auto">
+                            <InputSelect id="cat-type" class="form-select form-select-sm"
+                                         @bind-Value="_newCategoryModel.Type"
+                                         aria-label="Category type">
+                                <option value="@CategoryType.Income">Income</option>
+                                <option value="@CategoryType.Expense">Expense</option>
+                            </InputSelect>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary btn-sm" disabled="@_creating">
+                                @(_creating ? "Creating…" : "Add Category")
+                            </button>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="cat-type" class="form-label">Type <span aria-hidden="true" class="text-danger">*</span></label>
-                        <InputSelect id="cat-type" class="form-select" @bind-Value="_newCategoryModel.Type">
-                            <option value="@CategoryType.Income">Income</option>
-                            <option value="@CategoryType.Expense">Expense</option>
-                        </InputSelect>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-sm" disabled="@_creating">
-                        @(_creating ? "Creating…" : "Add Category")
-                    </button>
                 </EditForm>
             </div>
         </div>
 
         <!-- Income and Expense columns side by side -->
-        <div class="row g-4 mb-4">
+        <div class="row g-2 mb-2">
 
             <!-- Income Categories -->
             <div class="col-xl-6 col-12">
                 <section aria-labelledby="income-heading">
-                    <h5 id="income-heading">Income Categories</h5>
+                    <h6 id="income-heading" class="mb-1">Income Categories</h6>
                     @if (!_incomeCategories.Any())
                     {
-                        <p class="text-muted small">No income categories defined yet.</p>
+                        <p class="text-muted small mb-0">No income categories defined yet.</p>
                     }
                     else
                     {
-                        <div style="max-height: 420px; overflow-y: auto;">
-                            <RadzenDataGrid Data="@_incomeCategories" TItem="Category"
-                                            AllowSorting="false" AllowPaging="true" PageSize="8"
-                                            class="rz-shadow-0">
-                                <Columns>
-                                    <RadzenDataGridColumn TItem="Category" Title="Name">
-                                        <Template Context="cat">
-                                            @cat.Name
-                                            @if (cat.IsSystem)
-                                            {
-                                                <span class="badge bg-secondary ms-1" title="System category">System</span>
-                                            }
-                                        </Template>
-                                    </RadzenDataGridColumn>
-                                    <RadzenDataGridColumn TItem="Category" Title="GL" Width="80px">
-                                        <Template Context="cat">
-                                            <code>@cat.GLAccount</code>
-                                        </Template>
-                                    </RadzenDataGridColumn>
-                                    <RadzenDataGridColumn TItem="Category" Title="Order" Width="88px" Sortable="false">
-                                        <Template Context="cat">
-                                            @if (!cat.IsSystem)
-                                            {
-                                                <button class="btn btn-outline-secondary btn-sm me-1"
-                                                        @onclick="() => MoveUpAsync(cat, _incomeCategories)"
-                                                        title="Move up" aria-label="Move @cat.Name up">▲</button>
-                                                <button class="btn btn-outline-secondary btn-sm"
-                                                        @onclick="() => MoveDownAsync(cat, _incomeCategories)"
-                                                        title="Move down" aria-label="Move @cat.Name down">▼</button>
-                                            }
-                                        </Template>
-                                    </RadzenDataGridColumn>
-                                    <RadzenDataGridColumn TItem="Category" Title="" Width="95px" Sortable="false">
-                                        <Template Context="cat">
-                                            @if (!cat.IsSystem)
-                                            {
-                                                <button class="btn btn-outline-danger btn-sm"
-                                                        @onclick="() => ArchiveAsync(cat.Id)">
-                                                    Archive
-                                                </button>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted small">Read-only</span>
-                                            }
-                                        </Template>
-                                    </RadzenDataGridColumn>
-                                </Columns>
-                            </RadzenDataGrid>
-                        </div>
+                        <RadzenDataGrid Data="@_incomeCategories" TItem="Category"
+                                        AllowSorting="false" AllowPaging="true" PageSize="10"
+                                        class="rz-shadow-0">
+                            <Columns>
+                                <RadzenDataGridColumn TItem="Category" Title="Name">
+                                    <Template Context="cat">
+                                        @cat.Name
+                                        @if (cat.IsSystem)
+                                        {
+                                            <span class="badge bg-secondary ms-1" title="System category">System</span>
+                                        }
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="Category" Title="GL" Width="80px">
+                                    <Template Context="cat">
+                                        <code>@cat.GLAccount</code>
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="Category" Title="Order" Width="88px" Sortable="false">
+                                    <Template Context="cat">
+                                        @if (!cat.IsSystem)
+                                        {
+                                            <button class="btn btn-outline-secondary btn-sm me-1"
+                                                    @onclick="() => MoveUpAsync(cat, _incomeCategories)"
+                                                    title="Move up" aria-label="Move @cat.Name up">▲</button>
+                                            <button class="btn btn-outline-secondary btn-sm"
+                                                    @onclick="() => MoveDownAsync(cat, _incomeCategories)"
+                                                    title="Move down" aria-label="Move @cat.Name down">▼</button>
+                                        }
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="Category" Title="" Width="95px" Sortable="false">
+                                    <Template Context="cat">
+                                        @if (!cat.IsSystem)
+                                        {
+                                            <button class="btn btn-outline-danger btn-sm"
+                                                    @onclick="() => ArchiveAsync(cat.Id)">
+                                                Archive
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">Read-only</span>
+                                        }
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
                     }
                 </section>
             </div>
@@ -115,63 +119,61 @@
             <!-- Expense Categories -->
             <div class="col-xl-6 col-12">
                 <section aria-labelledby="expense-heading">
-                    <h5 id="expense-heading">Expense Categories</h5>
+                    <h6 id="expense-heading" class="mb-1">Expense Categories</h6>
                     @if (!_expenseCategories.Any())
                     {
-                        <p class="text-muted small">No expense categories defined yet.</p>
+                        <p class="text-muted small mb-0">No expense categories defined yet.</p>
                     }
                     else
                     {
-                        <div style="max-height: 420px; overflow-y: auto;">
-                            <RadzenDataGrid Data="@_expenseCategories" TItem="Category"
-                                            AllowSorting="false" AllowPaging="true" PageSize="8"
-                                            class="rz-shadow-0">
-                                <Columns>
-                                    <RadzenDataGridColumn TItem="Category" Title="Name">
-                                        <Template Context="cat">
-                                            @cat.Name
-                                            @if (cat.IsSystem)
-                                            {
-                                                <span class="badge bg-secondary ms-1" title="System category">System</span>
-                                            }
-                                        </Template>
-                                    </RadzenDataGridColumn>
-                                    <RadzenDataGridColumn TItem="Category" Title="GL" Width="80px">
-                                        <Template Context="cat">
-                                            <code>@cat.GLAccount</code>
-                                        </Template>
-                                    </RadzenDataGridColumn>
-                                    <RadzenDataGridColumn TItem="Category" Title="Order" Width="88px" Sortable="false">
-                                        <Template Context="cat">
-                                            @if (!cat.IsSystem)
-                                            {
-                                                <button class="btn btn-outline-secondary btn-sm me-1"
-                                                        @onclick="() => MoveUpAsync(cat, _expenseCategories)"
-                                                        title="Move up" aria-label="Move @cat.Name up">▲</button>
-                                                <button class="btn btn-outline-secondary btn-sm"
-                                                        @onclick="() => MoveDownAsync(cat, _expenseCategories)"
-                                                        title="Move down" aria-label="Move @cat.Name down">▼</button>
-                                            }
-                                        </Template>
-                                    </RadzenDataGridColumn>
-                                    <RadzenDataGridColumn TItem="Category" Title="" Width="95px" Sortable="false">
-                                        <Template Context="cat">
-                                            @if (!cat.IsSystem)
-                                            {
-                                                <button class="btn btn-outline-danger btn-sm"
-                                                        @onclick="() => ArchiveAsync(cat.Id)">
-                                                    Archive
-                                                </button>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted small">Read-only</span>
-                                            }
-                                        </Template>
-                                    </RadzenDataGridColumn>
-                                </Columns>
-                            </RadzenDataGrid>
-                        </div>
+                        <RadzenDataGrid Data="@_expenseCategories" TItem="Category"
+                                        AllowSorting="false" AllowPaging="true" PageSize="10"
+                                        class="rz-shadow-0">
+                            <Columns>
+                                <RadzenDataGridColumn TItem="Category" Title="Name">
+                                    <Template Context="cat">
+                                        @cat.Name
+                                        @if (cat.IsSystem)
+                                        {
+                                            <span class="badge bg-secondary ms-1" title="System category">System</span>
+                                        }
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="Category" Title="GL" Width="80px">
+                                    <Template Context="cat">
+                                        <code>@cat.GLAccount</code>
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="Category" Title="Order" Width="88px" Sortable="false">
+                                    <Template Context="cat">
+                                        @if (!cat.IsSystem)
+                                        {
+                                            <button class="btn btn-outline-secondary btn-sm me-1"
+                                                    @onclick="() => MoveUpAsync(cat, _expenseCategories)"
+                                                    title="Move up" aria-label="Move @cat.Name up">▲</button>
+                                            <button class="btn btn-outline-secondary btn-sm"
+                                                    @onclick="() => MoveDownAsync(cat, _expenseCategories)"
+                                                    title="Move down" aria-label="Move @cat.Name down">▼</button>
+                                        }
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="Category" Title="" Width="95px" Sortable="false">
+                                    <Template Context="cat">
+                                        @if (!cat.IsSystem)
+                                        {
+                                            <button class="btn btn-outline-danger btn-sm"
+                                                    @onclick="() => ArchiveAsync(cat.Id)">
+                                                Archive
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">Read-only</span>
+                                        }
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
                     }
                 </section>
             </div>
@@ -181,11 +183,11 @@
         <!-- Archived Categories -->
         @if (_archivedCategories.Any())
         {
-            <section aria-labelledby="archived-heading" class="mb-4">
-                <h5 id="archived-heading">Archived Categories</h5>
+            <section aria-labelledby="archived-heading" class="mb-2">
+                <h6 id="archived-heading" class="mb-1">Archived Categories</h6>
                 <RadzenDataGrid Data="@_archivedCategories" TItem="Category"
                                 AllowSorting="true" AllowPaging="true" PageSize="10"
-                                class="rz-shadow-0" style="max-height: 400px; overflow-y: auto;">
+                                class="rz-shadow-0">
                     <Columns>
                         <RadzenDataGridColumn TItem="Category" Property="Name" Title="Name" Width="160px" />
                         <RadzenDataGridColumn TItem="Category" Property="Type" Title="Type" Width="140px" />
