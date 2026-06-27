@@ -23,6 +23,7 @@ public class RehearsalsDashboardTileProvider : IDashboardTileProvider
     public string Title => "Rehearsals";
     public string ModuleName => "Rehearsals";
     public int DisplayOrder => 20;
+    public string? NavigateRoute => "/rehearsals";
     public Type TileComponentType => typeof(RehearsalsTileContent);
 
     public async Task<TileData> GetTileDataAsync(CancellationToken ct)

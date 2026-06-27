@@ -23,6 +23,7 @@ public class EventsDashboardTileProvider : IDashboardTileProvider
     public string Title => "Events";
     public string ModuleName => "Events";
     public int DisplayOrder => 30;
+    public string? NavigateRoute => "/events";
     public Type TileComponentType => typeof(EventsTileContent);
 
     public async Task<TileData> GetTileDataAsync(CancellationToken ct)

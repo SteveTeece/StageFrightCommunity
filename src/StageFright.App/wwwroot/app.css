@@ -248,6 +248,16 @@ html, body {
 }
 
 /* --- Dashboard tiles --- */
+.sf-tile-clickable {
+    cursor: pointer;
+    transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.sf-tile-clickable:hover {
+    box-shadow: 0 4px 12px rgba(110, 79, 163, 0.25);
+    transform: translateY(-1px);
+}
+
 .sf-tile {
     background: var(--sf-card-bg);
     box-shadow: var(--sf-tile-shadow);

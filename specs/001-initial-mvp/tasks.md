@@ -481,6 +481,12 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 
 ---
 
+## Phase 17: Convergence
+
+- [X] T191 Create `tests/StageFright.Integration.Tests/Scenarios/StartupBenchmarkTests.cs` measuring time from app entry point to dashboard display via `Stopwatch`, writing result to `ITestOutputHelper`, with an advisory-only logged assertion (no hard timing gate) and a comment citing SC-002 and the "≤3 seconds on a typical development machine" advisory target per SC-002, T181 (missing)
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

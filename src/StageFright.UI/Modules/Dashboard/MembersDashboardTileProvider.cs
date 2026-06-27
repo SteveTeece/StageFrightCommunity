@@ -23,6 +23,7 @@ public class MembersDashboardTileProvider : IDashboardTileProvider
     public string Title => "Members";
     public string ModuleName => "Members";
     public int DisplayOrder => 10;
+    public string? NavigateRoute => "/members";
     public Type TileComponentType => typeof(MembersTileContent);
 
     public async Task<TileData> GetTileDataAsync(CancellationToken ct)
