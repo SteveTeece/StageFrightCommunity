@@ -7,16 +7,22 @@ public partial class FinancePage : ComponentBase
     [SupplyParameterFromQuery(Name = "tab")]
     private string? TabQuery { get; set; }
 
+    [SupplyParameterFromQuery(Name = "memberId")]
+    private Guid? MemberIdQuery { get; set; }
+
     private int DefaultTabIndex { get; set; }
+    private Guid SelectedMemberId { get; set; }
 
     [Inject] private NavigationManager Nav { get; set; } = null!;
 
     protected override void OnInitialized()
     {
+        SelectedMemberId = MemberIdQuery ?? Guid.Empty;
         DefaultTabIndex = TabQuery?.ToLowerInvariant() switch
         {
-            "payments" => 1,
-            "annual-fees" => 2,
+            "record-payment" => 1,
+            "record-income" => 2,
+            "annual-fees" => 3,
             _ => 0
         };
     }

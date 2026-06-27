@@ -21,9 +21,9 @@ public class FinanceMenuItemProvider : IMenuItemProvider
             SubItems =
             [
                 new MenuItem { Title = "Balances", Route = "/finance?tab=balances", DisplayOrder = 0 },
-                new MenuItem { Title = "Payments", Route = "/finance?tab=payments", DisplayOrder = 1 },
-                new MenuItem { Title = "Apply Annual Fees", Route = "/finance/annual-fees", DisplayOrder = 2 },
-                new MenuItem { Title = "Record Income", Route = "/finance/income/new", DisplayOrder = 3 }
+                new MenuItem { Title = "Record Member Payment", Route = "/finance?tab=record-payment", DisplayOrder = 1 },
+                new MenuItem { Title = "Record Income", Route = "/finance?tab=record-income", DisplayOrder = 2 },
+                new MenuItem { Title = "Apply Annual Fees", Route = "/finance/annual-fees", DisplayOrder = 3 }
             ]
         }
     ];

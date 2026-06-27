@@ -1,15 +1,9 @@
-@page "/finance/payment/{MemberId:guid}"
 @using StageFright.Core.Enums
 
-<PageTitle>Record Payment — StageFright Community</PageTitle>
-
-<div class="page-header mb-2">
-    <h1 class="h3">@(_saved ? "Payment Details" : "Record Payment")</h1>
-    @if (_memberName is not null)
-    {
-        <p class="text-muted mb-0">Member: <strong>@_memberName</strong></p>
-    }
-</div>
+@if (_memberName is not null)
+{
+    <p class="text-muted mb-1 small">Member: <strong>@_memberName</strong></p>
+}
 
 @if (_loading)
 {
@@ -86,7 +80,7 @@ else
                 {
                     <div class="d-flex gap-2 mt-2">
                         <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
-                            @(_saving ? "Saving…" : "Record Payment")
+                            @(_saving ? "Saving…" : "Record Member Payment")
                         </button>
                         <button type="button" class="btn btn-outline-secondary btn-sm"
                                 @onclick="Cancel">Cancel</button>
@@ -99,7 +93,7 @@ else
                             @(_saving ? "Saving…" : "Update Notes")
                         </button>
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                                @onclick="Cancel">Back to Finance</button>
+                                @onclick="Cancel">Back to Balances</button>
                     </div>
                 }
             </EditForm>
