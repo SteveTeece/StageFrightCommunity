@@ -9,6 +9,11 @@ shell commands, and other important information, read the current plan
 
 ---
 
+## Build & Test Verification
+
+Always run `dotnet build` and the full test suite (without --no-build) after making code changes, and report the build/test results before considering a task complete.
+
+
 ## Commands
 
 ```bash
@@ -113,3 +118,13 @@ Every fee or payment write wraps fee creation + paired GL debit/credit + balance
 **Exhaustive code-path test coverage.** Every reachable code path — success, validation failure, exception, boundary/null — must have automated tests before merge. Tests follow the `Should_[ExpectedBehavior]_When_[Condition]` naming convention. Test method names use `_Integration` suffix to distinguish integration tests from unit tests.
 
 **Soft-delete everywhere (except finance).** Never hard-delete application data. Financial records (`Fee`, `Payment`, `Transaction`) are explicitly exempt — they carry no soft-delete fields and must never be deleted at all.
+
+## Tech Stack & Conventions section.
+
+This is a MAUI Blazor project using BlazorBootstrap for charts/UI controls and double-entry accounting for finances; prefer existing patterns (e.g. month-name dropdowns, BlazorBootstrap charts) over custom SVG/Radzen.
+
+When summing financial amounts, only sum payment-related credit entries, not all GL credit entries, to avoid double-counting in double-entry accounting.
+
+## Known Gotchas section.
+
+Watch for MAUI WebView quirks: Settings tabs require the Bootstrap JS bundle and may need lazy rendering / StateHasChanged handling to avoid concurrent DbContext access and OnShown callback failures.
