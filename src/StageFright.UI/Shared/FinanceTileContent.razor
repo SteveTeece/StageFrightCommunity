@@ -1,4 +1,5 @@
-@inject IGLRepository GLRepository
+@using System.Globalization
+@inherits ComponentBase
 
 @if (_loading)
 {
@@ -10,29 +11,8 @@ else if (_error)
 }
 else
 {
-    <ul class="list-unstyled mb-0 small">
-        <li>Outstanding: <strong>@_outstanding.ToString("C")</strong></li>
-    </ul>
-}
-
-@code {
-    private bool _loading = true;
-    private bool _error;
-    private decimal _outstanding;
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            _outstanding = await GLRepository.GetTotalOutstandingAsync();
-        }
-        catch
-        {
-            _error = true;
-        }
-        finally
-        {
-            _loading = false;
-        }
-    }
+    <div class="w-100">
+        <div class="small mb-1">Total Owed: <strong>@_total.ToString("C")</strong></div>
+        <BarChart @ref="_chart" Height="130" />
+    </div>
 }

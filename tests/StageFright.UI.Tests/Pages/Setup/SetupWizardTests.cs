@@ -15,10 +15,12 @@ namespace StageFright.UI.Tests.Pages.Setup;
 public class SetupWizardTests : BunitContext
 {
     private readonly ISetupService _setupService = Substitute.For<ISetupService>();
+    private readonly IDebugDataSeeder _debugSeeder = Substitute.For<IDebugDataSeeder>();
 
     public SetupWizardTests()
     {
         Services.AddSingleton(_setupService);
+        Services.AddSingleton(_debugSeeder);
     }
 
     [Fact]

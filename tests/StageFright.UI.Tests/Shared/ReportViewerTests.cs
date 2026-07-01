@@ -2,6 +2,8 @@ using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using StageFright.Core.Contracts;
+using StageFright.Core.Entities;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
 using StageFright.Reports.Rendering;
@@ -22,6 +24,7 @@ public class ReportViewerTests : BunitContext
     private readonly IReportProvider _provider = Substitute.For<IReportProvider>();
     private readonly IPdfReportRenderer _pdfRenderer = Substitute.For<IPdfReportRenderer>();
     private readonly ICsvReportExporter _csvExporter = Substitute.For<ICsvReportExporter>();
+    private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
 
     private static readonly ReportData SampleReport = new()
     {
@@ -38,6 +41,9 @@ public class ReportViewerTests : BunitContext
     {
         Services.AddSingleton(_pdfRenderer);
         Services.AddSingleton(_csvExporter);
+        _settingsService.GetAsync(Arg.Any<CancellationToken>())
+            .Returns(new Settings { OrganizationName = "Test Organisation" });
+        Services.AddSingleton(_settingsService);
 
         _provider.ReportId.Returns("test-report");
         _provider.ReportName.Returns("Test Report");
@@ -106,4 +112,91 @@ public class ReportViewerTests : BunitContext
 
         Assert.DoesNotContain("Generating", cut.Markup, StringComparison.OrdinalIgnoreCase);
     }
+
+    private static ReportData MakeReport(int rowCount) => new()
+    {
+        Title = "Paging Test",
+        GeneratedAt = DateTime.UtcNow,
+        Columns = [new ReportColumn { Header = "Name" }],
+        Sections =
+        [
+            new ReportSection
+            {
+                Rows = Enumerable.Range(1, rowCount)
+                    .Select(i => new ReportRow { Cells = [$"Row {i:D3}"] })
+                    .ToList()
+            }
+        ]
+    };
+
+    [Fact]
+    public async Task Should_NotShowPagination_When_RowCountAtPageSize()
+    {
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
+            .Returns(MakeReport(10));
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        Assert.DoesNotContain("page-link", cut.Markup, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task Should_ShowPagination_When_RowCountExceedsPageSize()
+    {
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
+            .Returns(MakeReport(11));
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        Assert.Contains("Page 1 of 2", cut.Markup, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task Should_ShowOnlyFirstPageRows_Initially_When_ReportHasManyRows()
+    {
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
+            .Returns(MakeReport(11));
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        Assert.Contains("Row 010", cut.Markup);
+        Assert.DoesNotContain("Row 011", cut.Markup);
+    }
+
+    [Fact]
+    public async Task Should_ShowNextPageRows_When_NextButtonClicked()
+    {
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
+            .Returns(MakeReport(11));
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        cut.Find("button[aria-label='Next page']").Click();
+
+        Assert.Contains("Row 011", cut.Markup);
+        Assert.Contains("Page 2 of 2", cut.Markup, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Row 010", cut.Markup);
+    }
+
+    [Fact]
+    public async Task Should_ShowPreviousPageRows_When_PrevButtonClicked()
+    {
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
+            .Returns(MakeReport(11));
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        cut.Find("button[aria-label='Next page']").Click();
+        cut.Find("button[aria-label='Previous page']").Click();
+
+        Assert.Contains("Row 001", cut.Markup);
+        Assert.Contains("Page 1 of 2", cut.Markup, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Row 011", cut.Markup);
+    }
+
 }

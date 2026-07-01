@@ -58,6 +58,11 @@ public class AttendanceService : IAttendanceService
         _rehearsalService = rehearsalService;
     }
 
+    public async Task<IReadOnlyList<AttendanceRecord>> GetByRehearsalAsync(Guid rehearsalId, CancellationToken ct = default)
+    {
+        return await _attendanceRepo.GetByRehearsalAsync(rehearsalId, ct);
+    }
+
     public async Task RecordBatchAsync(Guid rehearsalId, IReadOnlyList<AttendanceBatchItem> items, CancellationToken ct = default)
     {
         var rehearsal = await _rehearsalRepo.GetByIdAsync(rehearsalId, ct)

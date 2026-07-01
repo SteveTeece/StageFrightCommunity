@@ -17,6 +17,8 @@ public partial class AttendanceGrid
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
 
+    private const int PageSize = 10;
+
     private bool _loading = true;
     private bool _saving;
     private bool _alreadyRecorded;
@@ -24,14 +26,23 @@ public partial class AttendanceGrid
     private Rehearsal? _rehearsal;
     private List<Member> _members = new();
     private List<AttendanceRow> _rows = new();
+    private List<AttendanceRecord> _recordedAttendance = new();
     private decimal _attendanceFee;
+    private int _currentPage = 1;
+
+    private int TotalRows => _alreadyRecorded ? _recordedAttendance.Count : _rows.Count;
+    private int TotalPages => (int)Math.Ceiling(TotalRows / (double)PageSize);
+
+    private IEnumerable<AttendanceRow> PagedRows =>
+        _rows.Skip((_currentPage - 1) * PageSize).Take(PageSize);
+
+    private IEnumerable<AttendanceRecord> PagedRecords =>
+        _recordedAttendance.Skip((_currentPage - 1) * PageSize).Take(PageSize);
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            _rehearsal = await RehearsalService.GetMostRecentPastAsync(DateTime.MaxValue);
-            // Load the specific rehearsal
             var all = await RehearsalService.GetAllAsync();
             _rehearsal = all.FirstOrDefault(r => r.Id == RehearsalId);
 
@@ -41,19 +52,19 @@ public partial class AttendanceGrid
                 return;
             }
 
-            // If rate already set, attendance is recorded and locked
             if (_rehearsal.StoredAttendanceRate.HasValue)
             {
                 _alreadyRecorded = true;
+                _recordedAttendance = (await AttendanceService.GetByRehearsalAsync(RehearsalId)).ToList();
                 return;
             }
 
             var settings = await SettingsService.GetAsync();
             _attendanceFee = settings?.AttendanceFee ?? 0m;
 
-            var active = await MemberService.GetByStatusAsync(MemberStatus.Active);
-            var inactive = await MemberService.GetByStatusAsync(MemberStatus.Inactive);
-            _members = active.Concat(inactive).OrderBy(m => m.Name).ToList();
+            _members = (await MemberService.GetByStatusAsync(MemberStatus.Active))
+                .OrderBy(m => m.Name)
+                .ToList();
 
             _rows = _members.Select(m => new AttendanceRow
             {
@@ -61,7 +72,7 @@ public partial class AttendanceGrid
                 MemberName = m.Name,
                 MemberIsActive = m.Status == MemberStatus.Active,
                 Attended = false,
-                MarkAsUnpaid = false
+                Paid = false
             }).ToList();
         }
         catch (Exception ex)
@@ -72,6 +83,20 @@ public partial class AttendanceGrid
         {
             _loading = false;
         }
+    }
+
+    private bool AllAttended => _rows.Count > 0 && _rows.All(r => r.Attended);
+
+    private void ToggleSelectAll(bool value)
+    {
+        foreach (var row in _rows)
+            row.Attended = value;
+    }
+
+    private void GoToPage(int page)
+    {
+        if (page >= 1 && page <= TotalPages)
+            _currentPage = page;
     }
 
     private async Task SaveAttendance()
@@ -85,7 +110,7 @@ public partial class AttendanceGrid
             {
                 MemberId = r.MemberId,
                 Attended = r.Attended,
-                MarkAsUnpaid = r.MarkAsUnpaid
+                MarkAsUnpaid = !r.Paid
             }).ToList();
 
             await AttendanceService.RecordBatchAsync(RehearsalId, items);
@@ -110,7 +135,26 @@ public partial class AttendanceGrid
         public Guid MemberId { get; init; }
         public string MemberName { get; init; } = string.Empty;
         public bool MemberIsActive { get; init; }
-        public bool Attended { get; set; }
-        public bool MarkAsUnpaid { get; set; }
+        private bool _attended;
+        private bool _paid;
+
+        public bool Attended
+        {
+            get => _attended;
+            set
+            {
+                _attended = value;
+                if (value)
+                    _paid = true;
+                else
+                    _paid = false;
+            }
+        }
+
+        public bool Paid
+        {
+            get => _paid;
+            set => _paid = value;
+        }
     }
 }

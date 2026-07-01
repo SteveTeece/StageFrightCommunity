@@ -6,17 +6,17 @@
 }
 else if (!string.IsNullOrEmpty(_errorMessage))
 {
-    <div class="alert alert-danger" role="alert">@_errorMessage</div>
+    <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
 }
 else if (_balances.Count == 0)
 {
-    <p class="text-muted mt-3">No outstanding balances found.</p>
+    <p class="text-muted">No outstanding balances found.</p>
 }
 else
 {
     <RadzenDataGrid Data="@_balances" TItem="MemberBalance"
-                    AllowSorting="true" AllowPaging="true" PageSize="10"
-                    class="rz-shadow-0 mt-3">
+                    AllowSorting="true" AllowPaging="true" PageSize="15"
+                    class="rz-shadow-0">
         <Columns>
             <RadzenDataGridColumn TItem="MemberBalance" Property="Name" Title="Member" Width="200px">
                 <Template Context="row">
@@ -26,12 +26,12 @@ else
                     </a>
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="MemberBalance" Property="Balance" Title="Outstanding" Width="130px" FormatString="{0:C}" />
+            <RadzenDataGridColumn TItem="MemberBalance" Property="Balance" Title="Outstanding" Width="120px" FormatString="{0:C}" />
             <RadzenDataGridColumn TItem="MemberBalance" Title="Fee Breakdown" Sortable="false">
                 <Template Context="row">
                     @if (_expanded.Contains(row.MemberId))
                     {
-                        <div class="small mt-1">
+                        <div class="small">
                             @foreach (var fee in row.Fees)
                             {
                                 <div class="d-flex gap-3">
@@ -41,7 +41,7 @@ else
                                 </div>
                             }
                         </div>
-                        <button class="btn btn-link btn-sm p-0 mt-1" @onclick="() => ToggleExpand(row.MemberId)">Hide fees</button>
+                        <button class="btn btn-link btn-sm p-0" @onclick="() => ToggleExpand(row.MemberId)">Hide fees</button>
                     }
                     else
                     {
@@ -51,10 +51,10 @@ else
                     }
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="MemberBalance" Title="Actions" Width="160px" Sortable="false">
+            <RadzenDataGridColumn TItem="MemberBalance" Title="Actions" Width="140px" Sortable="false">
                 <Template Context="row">
-                    <button class="btn btn-primary btn-sm me-1" @onclick="() => GoToPayment(row.MemberId)">
-                        Record Payment
+                    <button class="btn btn-primary btn-sm" @onclick="() => GoToPayment(row.MemberId)">
+                        Record Member Payment
                     </button>
                 </Template>
             </RadzenDataGridColumn>

@@ -61,6 +61,15 @@ public class EventService : IEventService
     public Task<Event?> GetMostRecentPastAsync(DateTime asOf, CancellationToken ct = default) =>
         _eventRepo.GetMostRecentPastAsync(asOf, ct);
 
+    public Task<Event?> GetMostRecentPastWithoutParticipationAsync(DateTime asOf, CancellationToken ct = default) =>
+        _eventRepo.GetMostRecentPastWithoutParticipationAsync(asOf, ct);
+
+    public Task<Event?> GetMostRecentPastWithParticipationAsync(DateTime asOf, CancellationToken ct = default) =>
+        _eventRepo.GetMostRecentPastWithParticipationAsync(asOf, ct);
+
+    public Task<Event?> GetNextUpcomingAsync(DateTime asOf, CancellationToken ct = default) =>
+        _eventRepo.GetNextUpcomingAsync(asOf, ct);
+
     public async Task RecordParticipationAsync(Guid eventId, IReadOnlyList<ParticipationBatchItem> items, CancellationToken ct = default)
     {
         var evt = await _eventRepo.GetByIdAsync(eventId, ct)
@@ -111,4 +120,10 @@ public class EventService : IEventService
 
     public Task<bool> AgmExistsInYearAsync(int year, CancellationToken ct = default) =>
         _eventRepo.AgmExistsInYearAsync(year, ct);
+
+    public Task<Event?> GetByIdWithDetailsAsync(Guid id, CancellationToken ct = default) =>
+        _eventRepo.GetByIdWithDetailsAsync(id, ct);
+
+    public Task<IReadOnlyList<Event>> GetYearToDateWithParticipationAsync(int year, CancellationToken ct = default) =>
+        _eventRepo.GetYearToDateWithParticipationAsync(year, ct);
 }

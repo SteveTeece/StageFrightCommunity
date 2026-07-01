@@ -2,30 +2,58 @@
 
 <PageTitle>Rehearsals — StageFright Community</PageTitle>
 
-<div class="page-header d-flex align-items-center justify-content-between mb-3">
+<div class="page-header d-flex align-items-center justify-content-between mb-2">
     <h1 class="h3 mb-0">Rehearsals</h1>
     <button class="btn btn-primary btn-sm" @onclick="AddRehearsal">Schedule Rehearsal</button>
+</div>
+
+<div class="mb-2">
+    <div class="input-group input-group-sm" style="max-width: 320px;">
+        <span class="input-group-text" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+            </svg>
+        </span>
+        <input type="search" class="form-control form-control-sm" placeholder="Search by date or notes…"
+               aria-label="Search rehearsals"
+               @bind="_searchTerm" @bind:event="oninput" />
+    </div>
 </div>
 
 @if (_loading)
 {
     <p role="status" aria-live="polite">Loading rehearsals…</p>
 }
-else if (_rehearsals.Count == 0)
+else if (!DisplayRehearsals.Any())
 {
-    <p class="text-muted">No rehearsals scheduled yet.</p>
+    @if (_rehearsals.Count == 0)
+    {
+        <p class="text-muted">No rehearsals scheduled yet.</p>
+    }
+    else
+    {
+        <p class="text-muted">No rehearsals match "<strong>@_searchTerm</strong>".</p>
+    }
 }
 else
 {
-    <RadzenDataGrid Data="@_rehearsals" TItem="Rehearsal"
-                    AllowSorting="true" AllowPaging="true" PageSize="10"
+    <RadzenDataGrid Data="@DisplayRehearsals" TItem="Rehearsal"
+                    AllowSorting="true" AllowPaging="true" PageSize="15"
                     class="rz-shadow-0">
         <Columns>
-            <RadzenDataGridColumn TItem="Rehearsal" Property="Date" Title="Date" Width="140px" FormatString="{0:d MMM yyyy}" />
-            <RadzenDataGridColumn TItem="Rehearsal" Property="Time" Title="Time" Width="100px">
+            <RadzenDataGridColumn TItem="Rehearsal" Property="Date" Title="Date" Width="130px">
+                <Template Context="r">
+                    <button class="btn btn-link p-0 text-start"
+                            @onclick="() => RecordAttendance(r.Id)"
+                            aria-label="View attendance for @r.Date.ToString("d MMM yyyy")">
+                        @r.Date.ToString("d MMM yyyy")
+                    </button>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="Rehearsal" Property="Time" Title="Time" Width="80px">
                 <Template Context="r">@r.Time.ToString(@"hh\:mm")</Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Rehearsal" Title="Attendance Rate" Width="150px">
+            <RadzenDataGridColumn TItem="Rehearsal" Title="Attendance" Width="120px">
                 <Template Context="r">
                     @if (r.StoredAttendanceRate.HasValue)
                     {
@@ -33,16 +61,16 @@ else
                     }
                     else
                     {
-                        <span class="text-muted">Not recorded</span>
+                        <span class="text-muted small">Not recorded</span>
                     }
                 </Template>
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="Rehearsal" Property="Notes" Title="Notes" />
-            <RadzenDataGridColumn TItem="Rehearsal" Title="Actions" Width="180px" Sortable="false">
+            <RadzenDataGridColumn TItem="Rehearsal" Title="Actions" Width="160px" Sortable="false">
                 <Template Context="r">
                     @if (!r.StoredAttendanceRate.HasValue)
                     {
-                        <button class="btn btn-outline-primary btn-sm"
+                        <button class="btn btn-primary btn-sm"
                                 @onclick="() => RecordAttendance(r.Id)"
                                 aria-label="Record attendance for @r.Date.ToString("d MMM yyyy")">
                             Record Attendance
@@ -50,7 +78,7 @@ else
                     }
                     else
                     {
-                        <span class="text-muted small">Attendance recorded</span>
+                        <span class="text-muted small">Recorded</span>
                     }
                 </Template>
             </RadzenDataGridColumn>
@@ -60,5 +88,5 @@ else
 
 @if (!string.IsNullOrEmpty(_errorMessage))
 {
-    <div class="alert alert-danger mt-3" role="alert">@_errorMessage</div>
+    <div class="alert alert-danger py-1 mb-2 small mt-2" role="alert">@_errorMessage</div>
 }

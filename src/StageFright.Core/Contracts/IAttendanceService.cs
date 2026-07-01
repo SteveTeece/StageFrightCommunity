@@ -1,3 +1,4 @@
+using StageFright.Core.Entities;
 using StageFright.Core.Modules.Rehearsals;
 
 namespace StageFright.Core.Contracts;
@@ -15,4 +16,7 @@ public interface IAttendanceService
     /// Idempotent per (rehearsalId, memberId): duplicate calls are silently skipped.
     /// </summary>
     Task RecordBatchAsync(Guid rehearsalId, IReadOnlyList<AttendanceBatchItem> items, CancellationToken ct = default);
+
+    /// <summary>Returns saved attendance records for a rehearsal with Member navigation loaded, ordered by member name.</summary>
+    Task<IReadOnlyList<AttendanceRecord>> GetByRehearsalAsync(Guid rehearsalId, CancellationToken ct = default);
 }

@@ -1,0 +1,91 @@
+@page "/events/{Id:guid}"
+
+<PageTitle>@(_event is not null ? _event.Date.ToString("d MMM yyyy") : "Event") — StageFright Community</PageTitle>
+
+@if (_loading)
+{
+    <p role="status" aria-live="polite">Loading…</p>
+}
+else if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <div class="alert alert-warning py-1 mb-2 small">@_errorMessage</div>
+    <a href="/events" class="btn btn-outline-secondary btn-sm mt-2">Back to Events</a>
+}
+else if (_event is not null)
+{
+    <div class="page-header d-flex align-items-center justify-content-between mb-2">
+        <h1 class="h3 mb-0">@_event.Date.ToString("dddd, d MMMM yyyy")</h1>
+        <a href="/events" class="btn btn-outline-secondary btn-sm">Back to Events</a>
+    </div>
+
+    <div class="row g-2 mb-2">
+        <div class="col-md-6">
+            <dl class="row mb-0 small">
+                <dt class="col-sm-5">Event Type</dt>
+                <dd class="col-sm-7">@(_event.EventType?.Name ?? "—")</dd>
+
+                @if (!string.IsNullOrEmpty(_event.Notes))
+                {
+                    <dt class="col-sm-5">Notes</dt>
+                    <dd class="col-sm-7">@_event.Notes</dd>
+                }
+
+                <dt class="col-sm-5">Participation Rate</dt>
+                <dd class="col-sm-7">
+                    @if (_event.StoredParticipationRate.HasValue)
+                    {
+                        <span>@($"{_event.StoredParticipationRate:F1}%")</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Not recorded</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    @if (_event.ParticipationRecords.Any())
+    {
+        <section aria-label="Attendance">
+            <h2 class="h6 mb-1">Attendance</h2>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle" aria-label="Attendance list">
+                    <thead>
+                        <tr>
+                            <th scope="col">Member</th>
+                            <th scope="col" class="text-center">Participated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var record in _event.ParticipationRecords.OrderBy(p => p.Member?.Name))
+                        {
+                            <tr>
+                                <td>@(record.Member?.Name ?? "—")</td>
+                                <td class="text-center">
+                                    @if (record.Participated)
+                                    {
+                                        <span class="badge bg-success" aria-label="Participated">Yes</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary" aria-label="Did not participate">No</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    }
+    else if (_event.StoredParticipationRate.HasValue)
+    {
+        <p class="text-muted small">No attendance records found.</p>
+    }
+    else
+    {
+        <p class="text-muted small">Participation has not yet been recorded for this event.</p>
+        <a href="/events/@_event.Id/participation" class="btn btn-primary btn-sm">Record Participation</a>
+    }
+}

@@ -1,45 +1,55 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version Change: 2.2.1 → 2.3.0
+Version Change: 2.5.0 → 2.5.1
 
 Modified Principles:
-- 3.2 SOLID Design Principles (clarified with new file organization rule)
-- Renumbered: 4.5 Navigation Menu System → 4.6 Navigation Menu System
-- Renumbered: 5.0 Error Handling → 5.1 Error Handling, etc. (cascading)
+- §4.5 Code Organization and File Structure: Blazor Components bullet updated — .razor.css
+  is now conditional (only when component-specific styles are needed), not mandatory on every
+  component. The mandatory pairing is .razor + .razor.cs only.
+- §4.7.2 CSS Isolation Pattern: Rule rewritten to reflect that the global stylesheet is the
+  primary home for CSS; .razor.css files are created only for genuinely component-scoped
+  styles that are not appropriate for the global stylesheet.
+- §7.2 Architecture Requirements: CSS isolation line updated to reflect the conditional
+  (not universal) requirement.
 
 Added Sections:
-- 3.2.1 Single Responsibility Principle - File Organization (MANDATORY: one class per file)
-- 4.5 Code Organization and File Structure (non-negotiable file structure rules)
+- None
 
 Removed Sections:
 - None
 
 Templates Requiring Updates:
-- ⚠ pending: .specify/templates/spec-template.md (add file organization compliance checks)
-- ⚠ pending: .specify/templates/tasks-template.md (add code review task for file organization)
+- ✅ .specify/templates/plan-template.md — no update needed; Constitution Check is generic.
+- ✅ .specify/templates/spec-template.md — no update needed.
+- ✅ .specify/templates/tasks-template.md — no update needed.
 
 Runtime Guidance Docs:
-- ⚠ pending: CONTRIBUTING.md (add mandatory file organization rules)
-- ⚠ pending: docs/ARCHITECTURE.md (document file organization patterns)
-- ⚠ pending: docs/XML-DOCUMENTATION-STANDARDS.md (align with single-class-per-file)
+- ⚠ pending: CLAUDE.md — does not currently call out code-behind as mandatory. Consider
+  adding a brief note flagging .razor.cs as required and .razor.css as conditional.
 
 Follow-up TODOs:
-- Review existing codebase for files with multiple classes and plan refactoring
-- Establish code review checklist for file organization compliance
-- Document exceptions (if any) to single-class-per-file rule
+- Update CLAUDE.md Architecture section to note mandatory code-behind (.razor.cs) and
+  conditional CSS isolation (.razor.css only when component-specific styles are needed).
 
-Version Bump Rationale: MINOR
-- Adds mandatory code organization principle. Materially expanded guidance on SOLID compliance.
-- Non-breaking: enforces best practices; existing compliant code unaffected.
+Version Bump Rationale: PATCH
+- Clarifies §4.7.2: the .razor.css-per-component rule from v2.5.0 is refined to reflect
+  that most CSS belongs in the global stylesheet and CSS isolation files are conditional.
+  Code-behind (.razor.cs) remains unconditionally mandatory. No structural additions or
+  removals — this is a scoping correction to the previous amendment.
+-->
+
+<!-- Previous Sync Impact Reports:
+2.4.0 → 2.5.0: Added §4.7 (Blazor Component Patterns — code-behind + CSS isolation mandatory)
+2.3.0 → 2.4.0: §7.1 §7.2 — BlazorBootstrap added as permitted library
 -->
 
 # Spec Kit Constitution  
 *A guiding document for clean, modular, extensible software development*
 
-**Version**: 2.3.0  
-**Ratification Date**: 2025-01-01  
-**Last Amended**: 2026-05-21
+**Version**: 2.5.1
+**Ratification Date**: 2025-01-01
+**Last Amended**: 2026-06-24
 
 ---
 
@@ -662,16 +672,109 @@ The physical organization of source files directly reflects the Single Responsib
   - Enums and value objects each get their own file
   - Extensions should be in separate files (e.g., `MemberRepositoryExtensions.cs`)
   
-- **Blazor Components**: 
-  - `.razor` component file contains markup and directives
-  - `.razor.cs` code-behind file contains the component logic and event handlers
-  - Each component gets its own pair of files
+- **Blazor Components (MANDATORY — see §4.7)**:
+  - `.razor` file: markup, `@page` directives, `@inject` directives, and component references ONLY
+  - `.razor.cs` code-behind file: ALL C# logic, event handlers, lifecycle methods, and field declarations
+  - `.razor.css` CSS isolation file: component-specific scoped styles ONLY — created when needed,
+    not required on every component (see §4.7.2)
+  - `@code { }` blocks inside `.razor` files are PROHIBITED
+  - Every component MUST have paired `.razor` and `.razor.cs` files; `.razor.css` is added only
+    when the component requires styles not suited for the global stylesheet
   
 - **Verification and Enforcement**:
   - Code review **must reject** any PR with multiple types in a single file
   - CI/CD pipeline should run analyzers to detect multi-type files
   - Refactoring issues must be created for any violations found
   - No merge approval until compliance is achieved
+
+### 4.7 Blazor Component Patterns (MANDATORY)
+
+All Blazor components in the UI project MUST follow two mandatory structural patterns.
+These rules are non-negotiable and apply to every `.razor` file without exception.
+
+#### 4.7.1 Code-Behind Pattern
+
+Every Blazor component MUST separate its markup from its C# logic using a paired code-behind
+file. This is a binding rule — no inline `@code` blocks are permitted in production components.
+
+**Mandatory Rules**:
+
+- Every `.razor` component file MUST have a corresponding `.razor.cs` partial class file
+  in the same directory.
+- The `.razor` file MUST contain ONLY:
+  - `@page` route directives
+  - `@inject` dependency declarations
+  - `@using` namespace imports
+  - HTML/Razor markup and component references
+- ALL of the following MUST live exclusively in the `.razor.cs` file:
+  - Field and property declarations
+  - Lifecycle overrides (`OnInitializedAsync`, `OnAfterRenderAsync`, `OnParametersSetAsync`, etc.)
+  - Event handlers and callbacks
+  - Computed values and helper methods
+  - `[Parameter]`, `[CascadingParameter]`, `[Inject]` attributes
+- `@code { }` blocks in `.razor` files are **PROHIBITED** — no exceptions.
+- **Rationale**: Enforces the Single Responsibility Principle (§3.2.1) at the component
+  level; separates structural markup from behavioral logic; enables better IDE tooling,
+  refactoring support, and independent unit testing of component logic.
+
+#### 4.7.2 CSS Isolation Pattern
+
+The global stylesheet is the primary home for all application CSS. CSS isolation files
+(`.razor.css`) are used only for styles that are genuinely scoped to a single component
+and are not appropriate for global or shared stylesheets.
+
+**Mandatory Rules**:
+
+- The global stylesheet (`wwwroot/css/app.css` and related files) MUST be the default
+  location for all CSS — layout, typography, utility classes, theme variables, Bootstrap
+  overrides, and styles shared across two or more components.
+- A `.razor.css` file MUST be created alongside a component only when that component
+  requires styles that are unique to its own rendering and cannot be expressed cleanly
+  in the global stylesheet without introducing overly specific selectors.
+- Inline `<style>` tags inside `.razor` files are **PROHIBITED** regardless of scope.
+- **Rationale**: Centralising the majority of CSS in the global stylesheet keeps styling
+  maintainable and consistent. CSS isolation files are a precision tool for genuinely
+  component-scoped concerns, not a blanket requirement.
+
+**When to create a `.razor.css` file**:
+
+- The component has unique structural or visual styles not found elsewhere in the application.
+- Applying the styles globally would require class-name specificity hacks or would risk
+  unintended side-effects on other components.
+- The styles are tightly coupled to the component's internal DOM structure.
+
+**When NOT to create a `.razor.css` file**:
+
+- General layout, spacing, or typography — use the global stylesheet.
+- Bootstrap utility-class overrides — use the global stylesheet.
+- Styles that will be reused across two or more components — use the global stylesheet.
+- The component has no custom styles at all — no `.razor.css` file needed.
+
+**Summary — Required Files**:
+
+Every Blazor component MUST have the following mandatory pairing, with CSS isolation
+added conditionally:
+
+```
+ComponentName.razor        ← Markup and directives only             (REQUIRED)
+ComponentName.razor.cs     ← All C# logic (partial class)          (REQUIRED)
+ComponentName.razor.css    ← Genuinely component-scoped styles only (CONDITIONAL)
+```
+
+**Consequences of Violation**:
+
+- Code review MUST reject any PR that introduces a `@code { }` block in a `.razor` file.
+- Code review MUST reject any PR that adds a `.razor` component without a paired `.razor.cs`
+  file.
+- Code review MUST reject any PR that uses inline `<style>` tags in a `.razor` file.
+- These are **BLOCKING** requirements; no exceptions are permitted.
+
+**Verification**:
+
+- Code review checklist MUST include verification that every new component has a paired
+  `.razor.cs` file and that no `@code { }` blocks appear in `.razor` files.
+- For components that include a `.razor.css` file, reviewers MUST confirm the styles
+  genuinely belong there and are not candidates for the global stylesheet.
 
 ---
 
@@ -748,7 +851,8 @@ All caught exceptions must be logged using Serilog.
 
 ### 7.1 Technology Stack
 - **Framework:** .NET MAUI with Blazor Hybrid  
-- **UI:** Blazor components, including free Radzen Blazor components (`Radzen.Blazor`)  
+- **UI:** Blazor components, including free Radzen Blazor components (`Radzen.Blazor`) and
+  BlazorBootstrap (`Blazor.Bootstrap`) for charting and Bootstrap-based UI composition  
 - **Language:** C# 14  
 - **Platforms:** Windows desktop and macOS desktop  
 - **Hosting Model:** Blazor Hybrid  
@@ -757,9 +861,15 @@ All caught exceptions must be logged using Serilog.
 - UI components in a separate class library  
 - Use MAUI DI container  
 - Platform-specific code via abstractions or conditional compilation  
-- CSS isolation for component styling  
+- CSS isolation (`.razor.css`) MUST be used for genuinely component-scoped styles; most CSS
+  belongs in the global stylesheet (`wwwroot/css/`) — inline `<style>` tags are prohibited
+  (see §4.7.2)
 - Reusable, testable UI components  
-- Free Radzen components are permitted for UI composition when implemented in Blazor components and backed by C# handlers/services  
+- Free Radzen components (`Radzen.Blazor`) are permitted for UI composition when implemented
+  in Blazor components and backed by C# handlers/services  
+- BlazorBootstrap components (`Blazor.Bootstrap`) are permitted for charting and
+  Bootstrap-based UI elements not covered by Radzen. All usage MUST remain within Blazor
+  C# components; no custom JavaScript is permitted (see §7.3)  
 
 ### 7.3 Prohibited
 - Custom JavaScript files or business logic implemented in JavaScript  

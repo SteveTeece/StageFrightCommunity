@@ -1,4 +1,4 @@
-@inject IRehearsalService RehearsalService
+@inherits ComponentBase
 
 @if (_loading)
 {
@@ -8,35 +8,37 @@ else if (_error)
 {
     <span class="text-danger small">Unable to load</span>
 }
+else if (_recordedDate is null && _pendingDate is null && _upcomingDate is null)
+{
+    <span class="text-muted small">No rehearsals recorded</span>
+}
 else
 {
-    <ul class="list-unstyled mb-0 small">
-        <li>Last rehearsal: <strong>@(_lastDate?.ToString("d MMM yyyy") ?? "—")</strong></li>
-        <li>Attendance rate: <strong>@(_attendanceRate.HasValue ? $"{_attendanceRate:F1}%" : "—")</strong></li>
-    </ul>
-}
-
-@code {
-    private bool _loading = true;
-    private bool _error;
-    private DateTime? _lastDate;
-    private decimal? _attendanceRate;
-
-    protected override async Task OnInitializedAsync()
+    <div class="d-flex align-items-center gap-3">
+        <ul class="list-unstyled mb-0 small d-flex flex-column gap-2">
+            @if (_recordedDate is not null)
+            {
+                <li><span class="badge" style="background-color:#198754">Attended: @_attendedLabel</span></li>
+                <li><span class="badge" style="background-color:#dc3545">Absent: @_absentLabel</span></li>
+                <li class="text-muted" style="font-size:0.7rem">@_recordedDate.Value.ToString("d MMM yyyy")</li>
+            }
+            @if (_pendingDate is not null)
+            {
+                <li class="text-info" style="font-size:0.7rem">&#8594; Upcoming: @_pendingDate.Value.ToString("d MMM yyyy")</li>
+            }
+            @if (_upcomingDate is not null)
+            {
+                <li class="text-info" style="font-size:0.7rem">&#8594; Upcoming: @_upcomingDate.Value.ToString("d MMM yyyy")</li>
+            }
+        </ul>
+        @if (_hasRate)
+        {
+            <DoughnutChart @ref="_chart" Width="130" />
+        }
+    </div>
+    @if (_showYtd && _hasYtdData)
     {
-        try
-        {
-            var recent = await RehearsalService.GetMostRecentPastAsync(DateTime.UtcNow);
-            _lastDate = recent?.Date;
-            _attendanceRate = recent?.StoredAttendanceRate;
-        }
-        catch
-        {
-            _error = true;
-        }
-        finally
-        {
-            _loading = false;
-        }
+        <div class="mt-2" style="font-size:0.7rem; color: var(--bs-secondary-color);">YTD Attendance</div>
+        <BarChart @ref="_ytdChart" Width="260" />
     }
 }

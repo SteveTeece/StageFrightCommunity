@@ -7,13 +7,13 @@
 }
 else if (_generating)
 {
-    <div class="modal-backdrop-light d-flex align-items-center justify-content-center py-5" role="status" aria-live="polite">
+    <div class="modal-backdrop-light d-flex align-items-center justify-content-center py-4" role="status" aria-live="polite">
         <div class="text-center">
-            <div class="spinner-border text-primary mb-3" role="status" aria-hidden="true"></div>
-            <p class="mb-0">Generating report...</p>
+            <div class="spinner-border text-primary mb-2" role="status" aria-hidden="true"></div>
+            <p class="mb-0 small">Generating report...</p>
             @if (_showCancel)
             {
-                <button class="btn btn-sm btn-outline-secondary mt-3" @onclick="CancelGeneration">
+                <button class="btn btn-sm btn-outline-secondary mt-2" @onclick="CancelGeneration">
                     Cancel
                 </button>
             }
@@ -22,9 +22,9 @@ else if (_generating)
 }
 else if (_error != null)
 {
-    <div class="alert alert-danger" role="alert">
+    <div class="alert alert-danger py-1 mb-2 small" role="alert">
         <strong>Unable to generate report.</strong> @_error
-        <div class="mt-2">
+        <div class="mt-1">
             <button class="btn btn-sm btn-outline-danger" @onclick="Regenerate">Try Again</button>
         </div>
     </div>
@@ -32,14 +32,14 @@ else if (_error != null)
 else if (_report != null)
 {
     <div class="report-viewer">
-        <div class="d-flex justify-content-between align-items-start mb-3">
+        <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
-                <h2 class="h4 mb-1">@_report.Title</h2>
+                <h2 class="h5 mb-1">@_report.Title</h2>
                 @if (!string.IsNullOrEmpty(_report.SubTitle))
                 {
-                    <p class="text-muted mb-0">@_report.SubTitle</p>
+                    <p class="text-muted mb-0 small">@_report.SubTitle</p>
                 }
-                <small class="text-muted">Generated: @_report.GeneratedAt.ToString("d MMMM yyyy HH:mm") UTC</small>
+                <small class="text-muted">Generated: @_report.GeneratedAt.ToString("d MMM yyyy HH:mm") UTC</small>
             </div>
             <div class="btn-group" role="group" aria-label="Report actions">
                 <button class="btn btn-outline-primary btn-sm" @onclick="PrintReport">
@@ -57,7 +57,7 @@ else if (_report != null)
         @* Filter panel *@
         @if (Provider.Filters.Any())
         {
-            <div class="card mb-3">
+            <div class="card mb-2">
                 <div class="card-body py-2">
                     <div class="row g-2 align-items-end">
                         @foreach (var filter in Provider.Filters)
@@ -90,7 +90,7 @@ else if (_report != null)
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var section in _report.Sections)
+                    @foreach (var section in GetPagedSections())
                     {
                         @if (!string.IsNullOrEmpty(section.Heading))
                         {
@@ -124,7 +124,7 @@ else if (_report != null)
                         }
                     }
 
-                    @if (_report.GrandTotal != null)
+                    @if (_report.GrandTotal != null && (!UsePaging || _currentPage == TotalPages))
                     {
                         <tr class="fw-bold table-dark">
                             @for (var i = 0; i < _report.Columns.Count; i++)
@@ -138,5 +138,29 @@ else if (_report != null)
                 </tbody>
             </table>
         </div>
+
+        @if (UsePaging)
+        {
+            <div class="d-flex justify-content-between align-items-center mt-1">
+                <small class="text-muted">
+                    Rows @(PageStartIndex + 1)–@(Math.Min(PageEndIndex, TotalDataRows)) of @TotalDataRows
+                </small>
+                <nav aria-label="Report page navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                            <button class="page-link" @onclick="PrevPage" disabled="@(_currentPage == 1)"
+                                    aria-label="Previous page">‹ Prev</button>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">Page @_currentPage of @TotalPages</span>
+                        </li>
+                        <li class="page-item @(_currentPage == TotalPages ? "disabled" : "")">
+                            <button class="page-link" @onclick="NextPage" disabled="@(_currentPage == TotalPages)"
+                                    aria-label="Next page">Next ›</button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
     </div>
 }

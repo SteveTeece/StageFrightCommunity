@@ -1,72 +1,149 @@
 @page "/rehearsals/{RehearsalId:guid}/attendance"
 
-<PageTitle>Record Attendance — StageFright Community</PageTitle>
+<PageTitle>@(_alreadyRecorded ? "Attendance" : "Record Attendance") — StageFright Community</PageTitle>
 
-<div class="page-header mb-3">
-    <h1 class="h3">Record Attendance</h1>
+<div class="page-header mb-2">
+    <h1 class="h3">@(_alreadyRecorded ? "Attendance" : "Record Attendance")</h1>
     @if (_rehearsal is not null)
     {
         <p class="text-muted mb-0">@_rehearsal.Date.ToString("dddd, d MMMM yyyy")</p>
     }
 </div>
 
-@if (_alreadyRecorded)
+@if (_loading)
 {
-    <div class="alert alert-info" role="alert">
-        Attendance has already been recorded for this rehearsal. Records are immutable after saving.
-    </div>
-    <a href="/rehearsals" class="btn btn-outline-secondary">Back to Rehearsals</a>
+    <p role="status" aria-live="polite">Loading…</p>
 }
-else if (_loading)
+else if (!string.IsNullOrEmpty(_errorMessage) && _rehearsal is null)
 {
-    <p role="status" aria-live="polite">Loading members…</p>
+    <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+    <a href="/rehearsals" class="btn btn-outline-secondary btn-sm">Back to Rehearsals</a>
+}
+else if (_alreadyRecorded)
+{
+    @if (_rehearsal is not null)
+    {
+        <div class="alert alert-info py-1 mb-2 small" role="alert">
+            Attendance recorded at @_rehearsal.StoredAttendanceRate?.ToString("F1")% attendance rate. Records are immutable.
+        </div>
+    }
+
+    @if (_recordedAttendance.Count == 0)
+    {
+        <div class="alert alert-warning py-1 mb-2 small">No attendance records found for this rehearsal.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle" aria-label="Recorded attendance">
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-center" style="width: 1%;">Attended</th>
+                        <th scope="col" class="text-center" style="width: 1%;">Paid</th>
+                        <th scope="col">Member</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var record in PagedRecords)
+                    {
+                        <tr>
+                            <td class="text-center">
+                                <input type="checkbox" class="form-check-input" checked="@record.Attended" disabled
+                                       aria-label="@record.Member.Name attended" />
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" class="form-check-input" checked="@record.Attended" disabled
+                                       aria-label="@record.Member.Name paid" />
+                            </td>
+                            <td>@record.Member.Name</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (TotalPages > 1)
+        {
+            <nav aria-label="Attendance pagination">
+                <ul class="pagination pagination-sm">
+                    <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                        <button class="page-link" @onclick="() => GoToPage(_currentPage - 1)" disabled="@(_currentPage == 1)">Previous</button>
+                    </li>
+                    @for (var p = 1; p <= TotalPages; p++)
+                    {
+                        var pageNum = p;
+                        <li class="page-item @(_currentPage == pageNum ? "active" : "")">
+                            <button class="page-link" @onclick="() => GoToPage(pageNum)">@pageNum</button>
+                        </li>
+                    }
+                    <li class="page-item @(_currentPage == TotalPages ? "disabled" : "")">
+                        <button class="page-link" @onclick="() => GoToPage(_currentPage + 1)" disabled="@(_currentPage == TotalPages)">Next</button>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
+
+    <a href="/rehearsals" class="btn btn-outline-secondary btn-sm mt-2">Back to Rehearsals</a>
 }
 else
 {
     @if (!string.IsNullOrEmpty(_errorMessage))
     {
-        <div class="alert alert-danger" role="alert">@_errorMessage</div>
+        <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
     }
 
     @if (_members.Count == 0)
     {
-        <div class="alert alert-warning">No active members found. Add members before recording attendance.</div>
+        <div class="alert alert-warning py-1 mb-2 small">No active members found. Add members before recording attendance.</div>
     }
     else
     {
-        <div style="max-height: 60vh; overflow-y: auto;">
         <div class="table-responsive">
-            <table class="table table-hover align-middle" aria-label="Attendance grid">
+            <table class="table table-sm table-hover align-middle" aria-label="Attendance grid">
                 <thead>
                     <tr>
+                        <th scope="col" class="text-center" style="width: 1%;">
+                            <div class="d-flex flex-column align-items-center gap-1">
+                                <input type="checkbox" class="form-check-input" id="select-all-attended"
+                                       checked="@AllAttended"
+                                       @onchange="e => { ToggleSelectAll((bool)(e.Value ?? false)); StateHasChanged(); }"
+                                       aria-label="Select all members as attended" />
+                                <label class="form-label mb-0 small fw-semibold" for="select-all-attended">Attended</label>
+                            </div>
+                        </th>
+                        <th scope="col" class="text-center" style="width: 1%;">Paid</th>
                         <th scope="col">Member</th>
-                        <th scope="col" class="text-center">Attended</th>
-                        <th scope="col" class="text-center">Mark as Unpaid</th>
-                        <th scope="col" class="text-end">Fee Amount</th>
+                        <th scope="col" class="text-end">Fee</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var row in _rows)
+                    @foreach (var row in PagedRows)
                     {
                         <tr>
-                            <td>@row.MemberName</td>
                             <td class="text-center">
                                 <input type="checkbox" class="form-check-input" id="attended-@row.MemberId"
                                        checked="@row.Attended"
-                                       @onchange="e => row.Attended = (bool)(e.Value ?? false)"
+                                       @onchange="e => { row.Attended = (bool)(e.Value ?? false); StateHasChanged(); }"
                                        aria-label="@row.MemberName attended" />
                             </td>
                             <td class="text-center">
-                                <input type="checkbox" class="form-check-input" id="unpaid-@row.MemberId"
-                                       checked="@row.MarkAsUnpaid"
+                                <input type="checkbox" class="form-check-input" id="paid-@row.MemberId"
+                                       checked="@row.Paid"
                                        disabled="@(!row.Attended)"
-                                       @onchange="e => row.MarkAsUnpaid = (bool)(e.Value ?? false)"
-                                       aria-label="Mark @row.MemberName as unpaid" />
+                                       @onchange="e => row.Paid = (bool)(e.Value ?? false)"
+                                       aria-label="Mark @row.MemberName as paid" />
                             </td>
+                            <td>@row.MemberName</td>
                             <td class="text-end">
-                                @if (row.Attended && row.MemberIsActive)
+                                @if (row.Attended && row.Paid)
                                 {
                                     <span>@_attendanceFee.ToString("C")</span>
+                                }
+                                else if (row.Attended && !row.Paid)
+                                {
+                                    <span class="text-warning fw-semibold">@_attendanceFee.ToString("C")</span>
+                                    <span class="badge bg-warning text-dark ms-1">Owed</span>
                                 }
                                 else
                                 {
@@ -78,13 +155,33 @@ else
                 </tbody>
             </table>
         </div>
-        </div>
 
-        <div class="d-flex gap-2 mt-3">
-            <button class="btn btn-primary" @onclick="SaveAttendance" disabled="@_saving">
+        @if (TotalPages > 1)
+        {
+            <nav aria-label="Attendance pagination">
+                <ul class="pagination pagination-sm">
+                    <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                        <button class="page-link" @onclick="() => GoToPage(_currentPage - 1)" disabled="@(_currentPage == 1)">Previous</button>
+                    </li>
+                    @for (var p = 1; p <= TotalPages; p++)
+                    {
+                        var pageNum = p;
+                        <li class="page-item @(_currentPage == pageNum ? "active" : "")">
+                            <button class="page-link" @onclick="() => GoToPage(pageNum)">@pageNum</button>
+                        </li>
+                    }
+                    <li class="page-item @(_currentPage == TotalPages ? "disabled" : "")">
+                        <button class="page-link" @onclick="() => GoToPage(_currentPage + 1)" disabled="@(_currentPage == TotalPages)">Next</button>
+                    </li>
+                </ul>
+            </nav>
+        }
+
+        <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-primary btn-sm" @onclick="SaveAttendance" disabled="@_saving">
                 @(_saving ? "Saving…" : "Save Attendance")
             </button>
-            <a href="/rehearsals" class="btn btn-outline-secondary">Cancel</a>
+            <a href="/rehearsals" class="btn btn-outline-secondary btn-sm">Cancel</a>
         </div>
     }
 }

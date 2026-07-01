@@ -2,30 +2,54 @@
 
 <PageTitle>Events — StageFright Community</PageTitle>
 
-<div class="page-header d-flex align-items-center justify-content-between mb-3">
+<div class="page-header d-flex align-items-center justify-content-between mb-2">
     <h1 class="h3 mb-0">Events</h1>
     <button class="btn btn-primary btn-sm" @onclick="AddEvent">Schedule Event</button>
+</div>
+
+<div class="mb-2">
+    <div class="input-group input-group-sm" style="max-width: 320px;">
+        <span class="input-group-text" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+            </svg>
+        </span>
+        <input type="search" class="form-control form-control-sm" placeholder="Search by date, type or notes…"
+               aria-label="Search events"
+               @bind="_searchTerm" @bind:event="oninput" />
+    </div>
 </div>
 
 @if (_loading)
 {
     <p role="status" aria-live="polite">Loading events…</p>
 }
-else if (_events.Count == 0)
+else if (!DisplayEvents.Any())
 {
-    <p class="text-muted">No events scheduled yet.</p>
+    @if (_events.Count == 0)
+    {
+        <p class="text-muted">No events scheduled yet.</p>
+    }
+    else
+    {
+        <p class="text-muted">No events match "<strong>@_searchTerm</strong>".</p>
+    }
 }
 else
 {
-    <RadzenDataGrid Data="@_events" TItem="Event"
-                    AllowSorting="true" AllowPaging="true" PageSize="10"
+    <RadzenDataGrid Data="@DisplayEvents" TItem="Event"
+                    AllowSorting="true" AllowPaging="true" PageSize="15"
                     class="rz-shadow-0">
         <Columns>
-            <RadzenDataGridColumn TItem="Event" Property="Date" Title="Date" Width="140px" FormatString="{0:d MMM yyyy}" />
-            <RadzenDataGridColumn TItem="Event" Title="Event Type" Width="160px">
+            <RadzenDataGridColumn TItem="Event" Property="Date" Title="Date" Width="130px">
+                <Template Context="e">
+                    <a href="/events/@e.Id" class="text-decoration-none">@e.Date.ToString("d MMM yyyy")</a>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="Event" Title="Event Type" Width="150px">
                 <Template Context="e">@(e.EventType?.Name ?? "—")</Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Event" Title="Participation Rate" Width="160px">
+            <RadzenDataGridColumn TItem="Event" Title="Participation" Width="120px">
                 <Template Context="e">
                     @if (e.StoredParticipationRate.HasValue)
                     {
@@ -33,16 +57,16 @@ else
                     }
                     else
                     {
-                        <span class="text-muted">Not recorded</span>
+                        <span class="text-muted small">Not recorded</span>
                     }
                 </Template>
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="Event" Property="Notes" Title="Notes" />
-            <RadzenDataGridColumn TItem="Event" Title="Actions" Width="180px" Sortable="false">
+            <RadzenDataGridColumn TItem="Event" Title="Actions" Width="160px" Sortable="false">
                 <Template Context="e">
                     @if (!e.StoredParticipationRate.HasValue)
                     {
-                        <button class="btn btn-outline-primary btn-sm"
+                        <button class="btn btn-primary btn-sm"
                                 @onclick="() => RecordParticipation(e.Id)"
                                 aria-label="Record participation for @e.Date.ToString("d MMM yyyy")">
                             Record Participation
@@ -50,7 +74,7 @@ else
                     }
                     else
                     {
-                        <span class="text-muted small">Participation recorded</span>
+                        <span class="text-muted small">Recorded</span>
                     }
                 </Template>
             </RadzenDataGridColumn>
@@ -60,5 +84,5 @@ else
 
 @if (!string.IsNullOrEmpty(_errorMessage))
 {
-    <div class="alert alert-danger mt-3" role="alert">@_errorMessage</div>
+    <div class="alert alert-danger py-1 mb-2 small mt-2" role="alert">@_errorMessage</div>
 }

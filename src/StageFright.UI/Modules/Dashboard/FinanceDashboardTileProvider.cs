@@ -24,6 +24,7 @@ public class FinanceDashboardTileProvider : IDashboardTileProvider
     public string Title => "Finance";
     public string ModuleName => "Finance";
     public int DisplayOrder => 40;
+    public string? NavigateRoute => "/finance";
     public Type TileComponentType => typeof(FinanceTileContent);
 
     public async Task<TileData> GetTileDataAsync(CancellationToken ct)

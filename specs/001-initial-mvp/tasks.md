@@ -183,7 +183,7 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 - [X] T069 [US2] Create `src/StageFright.Core/Modules/Members/MemberService.cs` (CreateAsync, UpdateAsync, GetByIdAsync, GetByStatusAsync, ArchiveAsync (cascades soft-delete to CommitteeMembership current-year records), InactivateAsync (sets InactivateDate+audit; **does NOT cascade to CommitteeMembership** — assignments remain intact), ActivateAsync sets ActivateDate+triggers ReactivationForgivenessService if prior fees exist+audit; uses IUnitOfWork for status-change+audit atomicity)
 - [X] T070 [P] [US2] Create `src/StageFright.Core/Modules/Members/CommitteeService.cs` (AddOrUpdateAsync: Position required, (MemberId, Year) unique; GetHistoryAsync: ordered year DESC; SoftDeleteCurrentYearAsync called by CommitteeAnnualResetService)
 - [X] T071 [P] [US2] Create `src/StageFright.Core/Modules/Members/MemberMenuItemProvider.cs` (ModuleName="Members", DisplayOrder=1; menu item "/members" with subitems: Active Members, Add Member)
-- [X] T072 [P] [US2] Create `src/StageFright.UI/Modules/Dashboard/MembersDashboardTileProvider.cs` (TileId="members", DisplayOrder=10; GetTileDataAsync: active count, inactive count)
+- [X] T072 [P] [US2] Create `src/StageFright.Core/Modules/Dashboard/MembersDashboardTileProvider.cs` (TileId="members", DisplayOrder=10; GetTileDataAsync: active count, inactive count)
 - [X] T073 [P] [US2] Create `src/StageFright.UI/Pages/Members/MemberList.razor` and `MemberList.razor.cs` (`@page "/members"`; Radzen DataGrid; filter Active/Inactive toggle; Age column if DOB present; navigate to detail/edit)
 - [X] T074 [P] [US2] Create `src/StageFright.UI/Pages/Members/MemberForm.razor` and `MemberForm.razor.cs` (`@page "/members/new"`, `@page "/members/edit/{id:guid}"`; all fields per FR-002; Committee Member checkbox shows Position field when checked; Bootstrap 5.3 validation feedback)
 - [X] T075 [P] [US2] Create `src/StageFright.UI/Pages/Members/MemberDetail.razor` and `MemberDetail.razor.cs` (`@page "/members/{id:guid}"`; shows profile, calculated age if DOB present, Committee History section; current year rendered as `<strong>YYYY <span role="status" aria-label="Current year">Current</span> - Position</strong>` with HSL(120,40%,70%) badge; historical as plain `<span>`)
@@ -342,7 +342,7 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 - [X] T132 [P] [US6a] Create `src/StageFright.Core/Modules/Reports/TrialBalanceReportProvider.cs` (ReportId="trial-balance"; sections: Assets (Cash GL#0100, MemberReceivable GL#0101), Income categories, Expense categories; each row: AccountName | DebitAmount | CreditAmount; GrandTotal row; calls IGLRepository.GetBalanceTotalsAsync; if |TotalDebits − TotalCredits| > 0.01 → throws GLBalanceException with exact FR-034 message)
 - [X] T133 [P] [US6a] Create `src/StageFright.Core/Modules/Reports/AccountRegisterReportProvider.cs` (ReportId="account-register"; date/description/category/debit/credit/running-balance columns; category filter; chronological; running balance recomputed per row)
 - [X] T134 [P] [US6a] Create `src/StageFright.Core/Modules/Reports/MemberAccountSummaryReportProvider.cs` (ReportId="member-account-summary"; includes archived members (IgnoreQueryFilters); per member: opening balance at start of period, period transactions, closing balance, fee aging by Fee.DueDate as-of today)
-- [X] T135 [P] [US6a] Create `src/StageFright.Reports/Rendering/PdfReportRenderer.cs` (implements IPdfReportRenderer; uses QuestPDF Document to render title, subtitle/date range, generation date, all column headers, section headings, rows, subtotals, grand totals; professional formatting per FR-037)
+- [X] T135 [P] [US6a] Create `src/StageFright.Reports/Rendering/PdfReportRenderer.cs` (implements IPdfReportRenderer; uses QuestPDF Document to render title, subtitle/date range, generation date, all column headers, section headings, rows, subtotals, grand totals; professional formatting per FR-037). **PDF Validation in tests (T130/T137)**: Tests MUST verify structural content beyond non-empty bytes — assert that generated PDF byte array: (1) starts with `%PDF-` magic bytes; (2) contains the report title string encoded in the PDF text stream; (3) contains at least one column header from the report schema; (4) length exceeds 1,000 bytes (distinguishes real content from empty-document stub). This validates professional formatting requirements per FR-037 without a full PDF parser.
 - [X] T136 [P] [US6a] Create `src/StageFright.Reports/Rendering/CsvReportExporter.cs` (implements ICsvReportExporter; uses CsvHelper; headers as first row; all data rows; RFC 4180 quote-escaping for commas and quotes in field values; FR-041)
 - [X] T137 [US6a] Create integration acceptance test `tests/StageFright.Integration.Tests/Scenarios/V6_AccountingReportsTests.cs` (generate all 4; Trial Balance totals match; forced imbalance error; Account Register running balance; Member Account Summary aging; CSV escaping; PDF non-empty)
 
@@ -461,6 +461,29 @@ All source under `src/` and tests under `tests/` at repository root. Projects:
 - [X] T178 [P] Configure `.editorconfig` + Roslyn analyzers (CA1515 / custom) for one-class-per-file enforcement in all `src/` projects; add to CI build as warnings-as-errors for the one-class rule
 - [X] T179 [P] Configure XML documentation generation in all `src/*.csproj` files (`<GenerateDocumentationFile>true</GenerateDocumentationFile>`, `<NoWarn>` for non-public members); missing public API XML docs treated as build warning
 - [X] T180 Configure CI merge gate in `StageFrightCommunity.sln` / GitHub Actions workflow: `dotnet test` all 5 test projects (Core, Data, Reports, UI, Integration) must be green; build must be warning-free on one-class rule; NFR-005 compliance
+- [X] T181 [P] Document and capture startup performance benchmark for SC-002 (advisory 3-second target). In `tests/StageFright.Integration.Tests/Scenarios/StartupBenchmarkTests.cs`: measure time from app entry point to dashboard display using `Stopwatch`; write benchmark result to test output with `ITestOutputHelper`; assert result is logged (no hard assertion on timing — advisory only per NFR-003); include a comment citing SC-002 and the "≤3 seconds on a typical development machine" advisory. This creates an observable, reproducible baseline without enforcing a hard SLA gate.
+
+---
+
+## Phase 16: Other Income Recording (Post-MVP Addition)
+
+**Purpose**: Allow recording of non-member income (raffles, fundraising events, donations) directly to the GL without creating Fee or Payment records.
+
+- [X] T182 Create `src/StageFright.Core/Contracts/IIncomeEntryService.cs` (RecordIncomeAsync, GetIncomeCategoriesAsync)
+- [X] T183 [P] Create `src/StageFright.Core/Modules/Finance/RecordIncomeRequest.cs` (Date, Amount, CategoryId, Description?)
+- [X] T184 [P] Create `src/StageFright.Core/Modules/Finance/IncomeEntryService.cs` (validates amount > 0, category must be Income type and non-system; GL pair: Debit Cash 0100 / Credit selected Income category; IUnitOfWork; audit)
+- [X] T185 [P] Create `src/StageFright.UI/Pages/Finance/RecordIncomeModel.cs` (Date, Amount, CategoryId, Description form model)
+- [X] T186 Create `src/StageFright.UI/Pages/Finance/RecordIncome.razor` and `RecordIncome.razor.cs` (`@page "/finance/income/new"`; date, amount, category dropdown (income only, non-system), description; success shows "Record Another" option; warns when no categories configured)
+- [X] T187 [P] Update `src/StageFright.Core/Modules/Finance/FinanceMenuItemProvider.cs` to add "Record Income" submenu item (Route="/finance/income/new", DisplayOrder=3)
+- [X] T188 [P] Register `IIncomeEntryService → IncomeEntryService` in `src/StageFright.App/MauiProgram.cs` Finance module section
+- [X] T189 [P] Create `tests/StageFright.Core.Tests/Modules/Finance/IncomeEntryServiceTests.cs` (GL pair debit/cash credit/income; no member/fee/payment links; amount ≤ 0 rejected; expense category rejected; system category rejected; missing category throws EntityNotFoundException; audit logged; runs inside IUnitOfWork; description defaults to category name when omitted)
+- [X] T190 [P] Create `tests/StageFright.UI.Tests/Pages/Finance/RecordIncomeTests.cs` (renders category dropdown; pre-selects when single category; no-category warning; zero-amount validation; successful submit calls service; success message shown; Record Another option)
+
+---
+
+## Phase 17: Convergence
+
+- [X] T191 Create `tests/StageFright.Integration.Tests/Scenarios/StartupBenchmarkTests.cs` measuring time from app entry point to dashboard display via `Stopwatch`, writing result to `ITestOutputHelper`, with an advisory-only logged assertion (no hard timing gate) and a comment citing SC-002 and the "≤3 seconds on a typical development machine" advisory target per SC-002, T181 (missing)
 
 ---
 

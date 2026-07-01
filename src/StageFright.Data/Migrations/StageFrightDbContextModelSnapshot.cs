@@ -15,7 +15,7 @@ namespace StageFright.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
 
             modelBuilder.Entity("StageFright.Core.Entities.AttendanceRecord", b =>
                 {
@@ -552,6 +552,9 @@ namespace StageFright.Data.Migrations
                     b.Property<string>("SchemaVersion")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("ShowParticipationGraphs")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Theme")
                         .IsRequired()

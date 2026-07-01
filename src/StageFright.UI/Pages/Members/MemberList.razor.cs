@@ -14,7 +14,17 @@ public partial class MemberList : ComponentBase
     private readonly AgeCalculationService _ageCalc = new();
     private MemberStatus _filter = MemberStatus.Active;
     private List<Member> _members = new();
+    private string _searchTerm = string.Empty;
     private bool _loading = true;
+
+    private IEnumerable<Member> DisplayMembers =>
+        string.IsNullOrWhiteSpace(_searchTerm)
+            ? _members
+            : _members.Where(m =>
+                (m.Name?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (m.Phone?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (m.Email?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (m.StreetAddress?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false));
 
     protected override async Task OnInitializedAsync()
     {

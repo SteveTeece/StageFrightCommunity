@@ -22,6 +22,9 @@ public interface IDashboardTileProvider
     /// <summary>Blazor component type rendered in the tile body.</summary>
     Type TileComponentType { get; }
 
+    /// <summary>Optional Blazor route to navigate to when the tile card is clicked. Null disables click-through.</summary>
+    string? NavigateRoute => null;
+
     /// <summary>Loads tile metric data asynchronously. Exceptions are caught by the dashboard.</summary>
     Task<TileData> GetTileDataAsync(CancellationToken ct);
 }

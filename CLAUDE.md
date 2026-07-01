@@ -4,16 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
-shell commands, and other important information, read the current plan:
-[specs/001-initial-mvp/plan.md](specs/001-initial-mvp/plan.md)
-
-Active feature: `001-initial-mvp` — StageFright Community MVP desktop app.
-Stack: C# 14 / .NET 10.0, .NET MAUI Blazor Hybrid (single BlazorWebView, Blazor-controlled navigation), EF Core + SQLite (centralized DAL), Radzen.Blazor + Bootstrap 5.3, Serilog + OpenTelemetry, protobuf-net (backup), QuestPDF (PDF reports), CsvHelper (CSV export), xUnit + bUnit + NSubstitute (tests).
-Design artifacts: [research.md](specs/001-initial-mvp/research.md), [data-model.md](specs/001-initial-mvp/data-model.md), [contracts/](specs/001-initial-mvp/contracts/), [quickstart.md](specs/001-initial-mvp/quickstart.md).
-Governance: `.specify/memory/constitution.md` (v2.3.0) — one class per file, soft-delete pattern (financial records exempt and immutable), custom exceptions at boundaries, no custom JavaScript, exhaustive code-path test coverage.
+shell commands, and other important information, read the current plan
 <!-- SPECKIT END -->
 
 ---
+
+## Build & Test Verification
+
+Always run `dotnet build` and the full test suite (without --no-build) after making code changes, and report the build/test results before considering a task complete.
+
 
 ## Commands
 
@@ -112,10 +111,22 @@ Every fee or payment write wraps fee creation + paired GL debit/credit + balance
 
 **One class per file.** Every C# class, interface, record, struct, or enum lives in its own file named exactly after the type. Private nested types are the only exception.
 
-**No custom JavaScript.** All business logic and UI interaction is in C#/Blazor. No `.js` files, no JS interop for business logic.
+**Blazor component structure.** Every `.razor` component MUST have a paired `.razor.cs` code-behind file containing all C# logic — `@code { }` blocks in `.razor` files are prohibited. A `.razor.css` CSS isolation file is added only when the component requires styles that are genuinely scoped to that component; most CSS belongs in the global stylesheet (`wwwroot/css/`).
+
+**No custom JavaScript.** All business logic and UI interaction is in C#/Blazor. No `.js` files, no JS interop for business logic. Javascript that is part of an existing pre-written control or nuget package is permitted.
 
 **Custom exceptions at every boundary.** Raw framework exceptions (`DbException`, `IOException`, etc.) must be caught and re-thrown as project-defined custom exceptions before crossing layer boundaries. Exception types live in `StageFright.Core/Exceptions/`.
 
 **Exhaustive code-path test coverage.** Every reachable code path — success, validation failure, exception, boundary/null — must have automated tests before merge. Tests follow the `Should_[ExpectedBehavior]_When_[Condition]` naming convention. Test method names use `_Integration` suffix to distinguish integration tests from unit tests.
 
 **Soft-delete everywhere (except finance).** Never hard-delete application data. Financial records (`Fee`, `Payment`, `Transaction`) are explicitly exempt — they carry no soft-delete fields and must never be deleted at all.
+
+## Tech Stack & Conventions section.
+
+This is a MAUI Blazor project using BlazorBootstrap for charts/UI controls and double-entry accounting for finances; prefer existing patterns (e.g. month-name dropdowns, BlazorBootstrap charts) over custom SVG/Radzen.
+
+When summing financial amounts, only sum payment-related credit entries, not all GL credit entries, to avoid double-counting in double-entry accounting.
+
+## Known Gotchas section.
+
+Watch for MAUI WebView quirks: Settings tabs require the Bootstrap JS bundle and may need lazy rendering / StateHasChanged handling to avoid concurrent DbContext access and OnShown callback failures.

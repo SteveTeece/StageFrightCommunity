@@ -13,10 +13,31 @@ public interface IRehearsalService
     Task<Rehearsal?> GetMostRecentPastAsync(DateTime asOf, CancellationToken ct = default);
 
     /// <summary>
+    /// Returns the most recent past rehearsal that does not yet have attendance recorded
+    /// (StoredAttendanceRate is null), or null if all past rehearsals have attendance.
+    /// </summary>
+    Task<Rehearsal?> GetMostRecentPastWithoutAttendanceAsync(DateTime asOf, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns the most recent past rehearsal that has attendance recorded
+    /// (StoredAttendanceRate is not null), or null if no past rehearsals have attendance.
+    /// </summary>
+    Task<Rehearsal?> GetMostRecentPastWithAttendanceAsync(DateTime asOf, CancellationToken ct = default);
+
+    /// <summary>Returns the next scheduled rehearsal on or after asOf, or null if none.</summary>
+    Task<Rehearsal?> GetNextUpcomingAsync(DateTime asOf, CancellationToken ct = default);
+
+    /// <summary>
     /// Computes and freezes StoredAttendanceRate on the rehearsal.
     /// Idempotent: does nothing if the rate is already set.
     /// Formula: presentCount / (active-as-of rehearsalDate) × 100.
     /// Archived members are always excluded from the denominator.
     /// </summary>
     Task FreezeAttendanceRateAsync(Guid rehearsalId, DateTime rehearsalDate, int presentCount, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns all rehearsals in the given calendar year that have attendance recorded,
+    /// ordered by date ascending. Used for the year-to-date dashboard chart.
+    /// </summary>
+    Task<IReadOnlyList<Rehearsal>> GetYearToDateWithAttendanceAsync(int year, CancellationToken ct = default);
 }

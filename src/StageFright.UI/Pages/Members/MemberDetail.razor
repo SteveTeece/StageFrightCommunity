@@ -8,11 +8,11 @@
 }
 else if (_member is null)
 {
-    <div class="alert alert-warning">Member not found.</div>
+    <div class="alert alert-warning py-1 mb-2 small">Member not found.</div>
 }
 else
 {
-    <div class="page-header d-flex align-items-center justify-content-between mb-3">
+    <div class="page-header d-flex align-items-center justify-content-between mb-2">
         <h1 class="h3 mb-0">@_member.Name</h1>
         <div class="d-flex gap-2">
             <button class="btn btn-outline-secondary btn-sm" @onclick="Edit">Edit</button>
@@ -28,9 +28,9 @@ else
         </div>
     </div>
 
-    <div class="row g-3 mb-4">
+    <div class="row g-2 mb-2">
         <div class="col-md-6">
-            <dl class="row mb-0">
+            <dl class="row mb-0 small">
                 <dt class="col-sm-5">Address</dt>
                 <dd class="col-sm-7">@_member.StreetAddress</dd>
 
@@ -66,9 +66,9 @@ else
 
     @if (_committeeHistory.Count > 0)
     {
-        <section aria-label="Committee History">
-            <h2 class="h5 mb-2">Committee History</h2>
-            <ul class="list-unstyled">
+        <section aria-label="Committee History" class="mb-2">
+            <h2 class="h6 mb-1">Committee History</h2>
+            <ul class="list-unstyled small mb-0">
                 @foreach (var record in _committeeHistory.OrderByDescending(r => r.Year))
                 {
                     <li class="mb-1">
@@ -91,6 +91,42 @@ else
                     </li>
                 }
             </ul>
+        </section>
+    }
+
+    @if (_feeHistory.Count > 0)
+    {
+        <section aria-label="Fee Payment History" class="mt-2">
+            <h2 class="h6 mb-1">Fee Payment History</h2>
+            <RadzenDataGrid Data="@_feeHistory" TItem="FeeHistoryItem"
+                            AllowPaging="true" PageSize="15"
+                            AllowSorting="true"
+                            class="rz-shadow-0">
+                <Columns>
+                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="FeeDate" Title="Date" Width="120px">
+                        <Template Context="f">@f.FeeDate.ToString("d MMM yyyy")</Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="FeeType" Title="Type" Width="100px" />
+                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="Amount" Title="Amount" Width="85px">
+                        <Template Context="f"><span class="d-block text-end">@f.Amount.ToString("C")</span></Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="PaidAmount" Title="Paid" Width="85px">
+                        <Template Context="f"><span class="d-block text-end">@f.PaidAmount.ToString("C")</span></Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="IsPaid" Title="Status" Width="80px" Sortable="false">
+                        <Template Context="f">
+                            @if (f.IsPaid)
+                            {
+                                <span class="badge bg-success">Paid</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Unpaid</span>
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
         </section>
     }
 }

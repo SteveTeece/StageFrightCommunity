@@ -79,7 +79,10 @@ public class EventListTests : BunitContext
 
         var cut = Render<EventList>();
 
-        Assert.Contains("Participation recorded", cut.Markup);
+        // When participation is recorded the Actions column shows "Recorded"
+        // and the Participation column shows the rate (e.g. "85.0%").
+        Assert.Contains("Recorded", cut.Markup, StringComparison.Ordinal);
+        Assert.Contains("85", cut.Markup, StringComparison.Ordinal);
     }
 
     [Fact]

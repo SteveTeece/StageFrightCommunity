@@ -2,7 +2,7 @@
 
 <PageTitle>Record Participation — StageFright Community</PageTitle>
 
-<div class="page-header mb-3">
+<div class="page-header mb-2">
     <h1 class="h3">Record Participation</h1>
     @if (_event is not null)
     {
@@ -12,10 +12,10 @@
 
 @if (_alreadyRecorded)
 {
-    <div class="alert alert-info" role="alert">
+    <div class="alert alert-info py-1 mb-2 small" role="alert">
         Participation has already been recorded for this event. Records are immutable after saving.
     </div>
-    <a href="/events" class="btn btn-outline-secondary">Back to Events</a>
+    <a href="/events" class="btn btn-outline-secondary btn-sm">Back to Events</a>
 }
 else if (_loading)
 {
@@ -25,18 +25,17 @@ else
 {
     @if (!string.IsNullOrEmpty(_errorMessage))
     {
-        <div class="alert alert-danger" role="alert">@_errorMessage</div>
+        <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
     }
 
     @if (_members.Count == 0)
     {
-        <div class="alert alert-warning">No active members found. Add members before recording participation.</div>
+        <div class="alert alert-warning py-1 mb-2 small">No active members found. Add members before recording participation.</div>
     }
     else
     {
-        <div style="max-height: 60vh; overflow-y: auto;">
         <div class="table-responsive">
-            <table class="table table-hover align-middle" aria-label="Participation grid">
+            <table class="table table-sm table-hover align-middle" aria-label="Participation grid">
                 <thead>
                     <tr>
                         <th scope="col">Member</th>
@@ -59,13 +58,12 @@ else
                 </tbody>
             </table>
         </div>
-        </div>
 
-        <div class="d-flex gap-2 mt-3">
-            <button class="btn btn-primary" @onclick="SaveParticipation" disabled="@_saving">
+        <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-primary btn-sm" @onclick="SaveParticipation" disabled="@_saving">
                 @(_saving ? "Saving…" : "Save Participation")
             </button>
-            <a href="/events" class="btn btn-outline-secondary">Cancel</a>
+            <a href="/events" class="btn btn-outline-secondary btn-sm">Cancel</a>
         </div>
     }
 }

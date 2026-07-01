@@ -1,0 +1,95 @@
+@if (_loading)
+{
+    <p role="status" aria-live="polite">Loading…</p>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+    }
+
+    @if (_successMessage is not null)
+    {
+        <div class="alert alert-success py-1 mb-2 small" role="status">
+            @_successMessage
+            <div class="mt-1">
+                <button class="btn btn-sm btn-outline-success" @onclick="RecordAnother">Record Another</button>
+            </div>
+        </div>
+    }
+
+    @if (_successMessage is null)
+    {
+        @if (_categories.Count == 0)
+        {
+            <div class="alert alert-warning py-1 mb-2 small" role="alert">
+                No income categories are configured. Please add an income category in
+                <a href="/settings?tab=categories">Settings → Categories</a> before recording income.
+            </div>
+        }
+        else
+        {
+            <div class="card mb-2">
+                <div class="card-body py-2">
+                    <EditForm Model="_form" OnValidSubmit="SaveAsync">
+                        <div class="row g-2">
+
+                            <div class="col-md-4">
+                                <label class="form-label" for="incomeDate">Date <span aria-hidden="true">*</span></label>
+                                <InputDate id="incomeDate" class="form-control form-control-sm" @bind-Value="_form.Date" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label" for="amount">Amount <span aria-hidden="true">*</span></label>
+                                <div class="input-group input-group-sm @(_errors.ContainsKey("Amount") ? "has-validation" : "")">
+                                    <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
+                                    <InputNumber id="amount"
+                                                 class="@(_errors.ContainsKey("Amount") ? "form-control is-invalid" : "form-control")"
+                                                 @bind-Value="_form.Amount"
+                                                 @bind-Value:format="N2" />
+                                    @if (_errors.TryGetValue("Amount", out var amtErr))
+                                    {
+                                        <div class="invalid-feedback">@amtErr</div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label" for="category">Category <span aria-hidden="true">*</span></label>
+                                <InputSelect id="category"
+                                             class="@(_errors.ContainsKey("CategoryId") ? "form-select form-select-sm is-invalid" : "form-select form-select-sm")"
+                                             @bind-Value="_form.CategoryId">
+                                    <option value="@Guid.Empty">— select —</option>
+                                    @foreach (var cat in _categories)
+                                    {
+                                        <option value="@cat.Id">@cat.Name</option>
+                                    }
+                                </InputSelect>
+                                @if (_errors.TryGetValue("CategoryId", out var catErr))
+                                {
+                                    <div class="invalid-feedback d-block">@catErr</div>
+                                }
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label" for="description">Description</label>
+                                <InputTextArea id="description" class="form-control form-control-sm" rows="2"
+                                               @bind-Value="_form.Description"
+                                               placeholder="e.g. Christmas raffle, Annual fundraiser…" />
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex gap-2 mt-2">
+                            <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
+                                @(_saving ? "Saving…" : "Record Income")
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="RecordAnother">Clear</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        }
+    }
+}

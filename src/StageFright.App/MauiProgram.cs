@@ -52,6 +52,7 @@ public static class MauiProgram
             });
 
         builder.Services.AddMauiBlazorWebView();
+        builder.Services.AddBlazorBootstrap();
 
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
@@ -172,6 +173,7 @@ public static class MauiProgram
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IReactivationForgivenessService, ReactivationForgivenessService>();
         services.AddScoped<IMemberBalanceService, MemberBalanceService>();
+        services.AddScoped<IIncomeEntryService, IncomeEntryService>();
 
         // Category management module (Phase 7)
         services.AddScoped<ICategoryService, CategoryService>();
@@ -190,12 +192,6 @@ public static class MauiProgram
         services.AddScoped<IDashboardTileProvider, EventsDashboardTileProvider>();
         services.AddScoped<IDashboardTileProvider, FinanceDashboardTileProvider>();
 
-        // Settings tab providers (Phase 7 + 12 + 13 + 14)
-        services.AddScoped<ISettingsTabProvider, GeneralSettingsTabProvider>();
-        services.AddScoped<ISettingsTabProvider, CategorySettingsTabProvider>();
-        services.AddScoped<ISettingsTabProvider, EventTypesSettingsTabProvider>();
-        services.AddScoped<ISettingsTabProvider, BackupSettingsTabProvider>();
-
         // Backup service (Phase 13)
         services.AddScoped<IBackupRepository, BackupRepository>();
         services.AddScoped<IBackupService, BackupService>();
@@ -211,6 +207,7 @@ public static class MauiProgram
         services.AddScoped<IPdfReportRenderer, PdfReportRenderer>();
         services.AddScoped<ICsvReportExporter, CsvReportExporter>();
         services.AddSingleton<IMenuItemProvider, ReportMenuItemProvider>();
+        services.AddSingleton<IMenuItemProvider, SettingsMenuItemProvider>();
     }
 
     private static void RunStartupSequence(IServiceProvider services, string dbPath, string pluginsPath, string connectionString, StartupDiagnosticService diagnosticService)

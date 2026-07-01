@@ -1,4 +1,4 @@
-@inject IMemberService MemberService
+@inherits ComponentBase
 
 @if (_loading)
 {
@@ -8,36 +8,17 @@ else if (_error)
 {
     <span class="text-danger small">Unable to load</span>
 }
+else if (_total == 0)
+{
+    <span class="text-muted small">No members found</span>
+}
 else
 {
-    <ul class="list-unstyled mb-0 small">
-        <li>Active: <strong>@_activeCount</strong></li>
-        <li>Inactive: <strong>@_inactiveCount</strong></li>
-    </ul>
-}
-
-@code {
-    private bool _loading = true;
-    private bool _error;
-    private int _activeCount;
-    private int _inactiveCount;
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            var active = await MemberService.GetByStatusAsync(StageFright.Core.Enums.MemberStatus.Active);
-            var inactive = await MemberService.GetByStatusAsync(StageFright.Core.Enums.MemberStatus.Inactive);
-            _activeCount = active.Count;
-            _inactiveCount = inactive.Count;
-        }
-        catch
-        {
-            _error = true;
-        }
-        finally
-        {
-            _loading = false;
-        }
-    }
+    <div class="d-flex align-items-center gap-3">
+        <ul class="list-unstyled mb-0 small d-flex flex-column gap-2">
+            <li><span class="badge" style="background-color:#0d6efd">Active: @_activeCount</span></li>
+            <li><span class="badge" style="background-color:#dc3545">Inactive: @_inactiveCount</span></li>
+        </ul>
+        <DoughnutChart @ref="_chart" Width="130" />
+    </div>
 }

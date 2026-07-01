@@ -1,46 +1,74 @@
 @page "/settings"
-@using Microsoft.AspNetCore.Components.Web
-@inject NavigationManager Nav
-@inject IEnumerable<ISettingsTabProvider> TabProviders
 
 <PageTitle>Settings — StageFright Community</PageTitle>
 
 <div class="settings-page">
     <h1>Settings</h1>
 
-    <div class="tab-container">
-        <ul class="tab-strip" role="tablist" aria-label="Settings tabs">
-            @foreach (var tab in OrderedTabs)
-            {
-                <li role="presentation">
-                    <button class="tab-button @(ActiveTabKey == tab.TabKey ? "active" : "")"
-                            role="tab"
-                            id="tab-@tab.TabKey"
-                            aria-selected="@(ActiveTabKey == tab.TabKey)"
-                            aria-controls="tabpanel-@tab.TabKey"
-                            @onclick="() => ActivateTab(tab.TabKey)">
-                        @tab.TabTitle
-                    </button>
-                </li>
-            }
-        </ul>
-
-        @foreach (var tab in OrderedTabs)
+    <Tabs DefaultActiveTabIndex="@DefaultTabIndex">
+        <Tab Title="General" OnClick="OnGeneralClicked">
+            <Content>
+                <div class="pt-3">
+                    @if (GeneralShown)
+                    {
+                        <ErrorBoundary>
+                            <ChildContent><GeneralSettingsTab /></ChildContent>
+                            <ErrorContent><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                        </ErrorBoundary>
+                    }
+                </div>
+            </Content>
+        </Tab>
+        <Tab Title="Categories" OnClick="OnCategoriesClicked">
+            <Content>
+                <div class="pt-3">
+                    @if (CategoriesShown)
+                    {
+                        <ErrorBoundary>
+                            <ChildContent><SettingsCategoryTab /></ChildContent>
+                            <ErrorContent><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                        </ErrorBoundary>
+                    }
+                </div>
+            </Content>
+        </Tab>
+        <Tab Title="Event Types" OnClick="OnEventTypesClicked">
+            <Content>
+                <div class="pt-3">
+                    @if (EventTypesShown)
+                    {
+                        <ErrorBoundary>
+                            <ChildContent><EventTypesTab /></ChildContent>
+                            <ErrorContent><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                        </ErrorBoundary>
+                    }
+                </div>
+            </Content>
+        </Tab>
+        <Tab Title="Backup &amp; Restore" OnClick="OnBackupClicked">
+            <Content>
+                <div class="pt-3">
+                    @if (BackupShown)
+                    {
+                        <ErrorBoundary>
+                            <ChildContent><BackupRestoreTab /></ChildContent>
+                            <ErrorContent><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                        </ErrorBoundary>
+                    }
+                </div>
+            </Content>
+        </Tab>
+        @foreach (var tab in PluginTabs)
         {
-            <div class="tab-panel @(ActiveTabKey == tab.TabKey ? "active" : "")"
-                 id="tabpanel-@tab.TabKey"
-                 role="tabpanel"
-                 aria-labelledby="tab-@tab.TabKey"
-                 hidden="@(ActiveTabKey != tab.TabKey)">
-                @try
-                {
-                    <DynamicComponent Type="tab.SettingsComponentType" />
-                }
-                catch (Exception)
-                {
-                    <div class="alert alert-warning">This settings tab failed to load.</div>
-                }
-            </div>
+            var key = tab.TabKey;
+            <Tab Title="@tab.TabTitle" OnShown="@(() => NavToTab(key))">
+                <Content>
+                    <ErrorBoundary>
+                        <ChildContent><DynamicComponent Type="tab.SettingsComponentType" /></ChildContent>
+                        <ErrorContent><div class="alert alert-warning">This settings tab failed to load.</div></ErrorContent>
+                    </ErrorBoundary>
+                </Content>
+            </Tab>
         }
-    </div>
+    </Tabs>
 </div>

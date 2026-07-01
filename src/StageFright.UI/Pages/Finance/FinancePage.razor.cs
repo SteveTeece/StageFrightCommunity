@@ -7,21 +7,26 @@ public partial class FinancePage : ComponentBase
     [SupplyParameterFromQuery(Name = "tab")]
     private string? TabQuery { get; set; }
 
-    private string ActiveTab { get; set; } = "balances";
+    [SupplyParameterFromQuery(Name = "memberId")]
+    private Guid? MemberIdQuery { get; set; }
+
+    private int DefaultTabIndex { get; set; }
+    private Guid SelectedMemberId { get; set; }
 
     [Inject] private NavigationManager Nav { get; set; } = null!;
 
     protected override void OnInitialized()
     {
-        var validTabs = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "balances", "payments", "annual-fees" };
-
-        if (!string.IsNullOrEmpty(TabQuery) && validTabs.Contains(TabQuery))
-            ActiveTab = TabQuery.ToLowerInvariant();
+        SelectedMemberId = MemberIdQuery ?? Guid.Empty;
+        DefaultTabIndex = TabQuery?.ToLowerInvariant() switch
+        {
+            "record-payment" => 1,
+            "record-income" => 2,
+            "annual-fees" => 3,
+            _ => 0
+        };
     }
 
-    private void ActivateTab(string tab)
-    {
-        ActiveTab = tab;
-        Nav.NavigateTo($"/finance?tab={tab}", replace: true);
-    }
+    private void NavToTab(string key) =>
+        Nav.NavigateTo($"/finance?tab={key}", replace: true);
 }
