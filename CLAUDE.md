@@ -33,6 +33,7 @@ dotnet test tests/StageFright.Core.Tests/
 dotnet test tests/StageFright.Data.Tests/
 dotnet test tests/StageFright.UI.Tests/
 dotnet test tests/StageFright.Integration.Tests/
+dotnet test tests/StageFright.Reports.Tests/
 
 # Run a single test by name filter
 dotnet test --filter "FullyQualifiedName~MemberServiceTests"
@@ -43,7 +44,7 @@ dotnet ef database update             --project src/StageFright.Data/ --startup-
 dotnet ef migrations remove           --project src/StageFright.Data/ --startup-project src/StageFright.App/
 ```
 
-The solution file is `StageFright.slnx` in the repo root.
+The solution file is `StageFrightCommunity.slnx` in the repo root.
 
 During development the SQLite database is written to `<repo-root>/TestData/stagefright.db` (auto-created). Logs are written to rolling daily files under the MAUI app-data directory.
 
@@ -65,6 +66,7 @@ During development the SQLite database is written to `<repo-root>/TestData/stage
 | `tests/StageFright.Data.Tests` | Integration tests hitting SQLite in-memory connections. |
 | `tests/StageFright.UI.Tests` | bUnit component tests. |
 | `tests/StageFright.Integration.Tests` | Cross-layer user-journey tests. |
+| `tests/StageFright.Reports.Tests` | Report-provider and PDF/CSV renderer tests. |
 | `tests/StageFright.TestPlugin` | Sample plugin fixture (tile + report + entity). |
 
 ### Navigation
@@ -75,7 +77,7 @@ Blazor Router owns **all** navigation. Every screen has a `@page` directive. `Na
 
 Application logic lives in `StageFright.Core/Modules/<ModuleName>/`. Each module slice contains its services, request/response models, and menu/tile providers. Repositories are *not* module-owned; they live centrally in `StageFright.Data/Repositories/` (this is a spec-mandated deviation from pure vertical-slice, required by FR-042).
 
-Current modules: `AuditTrail`, `Dashboard`, `Finance`, `Members`, `Rehearsals`, `Settings`.
+Current modules: `AuditTrail`, `Dashboard`, `Events`, `Finance`, `Members`, `Rehearsals`, `Settings`.
 
 ### Extension points (plugin contracts)
 
