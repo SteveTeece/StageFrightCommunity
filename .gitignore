@@ -72,7 +72,7 @@ Thumbs.db
 .dotnet/
 
 # Claude Code
-.claude/
+#.claude/
 
 # User settings
 appsettings.local.json
