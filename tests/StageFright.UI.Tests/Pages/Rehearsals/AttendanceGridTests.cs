@@ -103,6 +103,66 @@ public class AttendanceGridTests : BunitContext
         Assert.All(attendedChecks, cb => Assert.False(cb.HasAttribute("checked")));
     }
 
+    // --- Select All ---
+
+    [Fact]
+    public void Renders_SelectAllCheckbox_BelowAttendedColumnTitle_InParentheses()
+    {
+        var cut = RenderWithId();
+
+        var header = cut.Find("thead th:first-child");
+        Assert.NotNull(header.QuerySelector("#select-all-attended"));
+        Assert.Contains("Select All", header.TextContent);
+        Assert.Contains("Attended", header.TextContent);
+        Assert.True(
+            header.TextContent.IndexOf("Attended", StringComparison.Ordinal) <
+            header.TextContent.IndexOf("Select All", StringComparison.Ordinal),
+            "Attended should appear before the Select All control in the header's text content.");
+
+        var inline = header.QuerySelector(".select-all-inline");
+        Assert.NotNull(inline);
+        Assert.StartsWith("(", inline!.TextContent.TrimStart());
+        Assert.EndsWith(")", inline.TextContent.TrimEnd());
+    }
+
+    [Fact]
+    public void CheckingSelectAll_ChecksAllRowCheckboxes()
+    {
+        var cut = RenderWithId();
+
+        cut.Find("#select-all-attended").Change(true);
+
+        var checkboxes = cut.FindAll("input[type=checkbox][id^='attended-']");
+        Assert.All(checkboxes, cb => Assert.True(cb.HasAttribute("checked")));
+    }
+
+    [Fact]
+    public void UncheckingSelectAll_ClearsAllRowCheckboxes()
+    {
+        var cut = RenderWithId();
+        cut.Find("#select-all-attended").Change(true);
+
+        cut.Find("#select-all-attended").Change(false);
+
+        var checkboxes = cut.FindAll("input[type=checkbox][id^='attended-']");
+        Assert.All(checkboxes, cb => Assert.False(cb.HasAttribute("checked")));
+    }
+
+    [Fact]
+    public async Task ClickSave_AfterSelectAll_SendsAllMembersAsAttended()
+    {
+        var cut = RenderWithId();
+        cut.Find("#select-all-attended").Change(true);
+
+        await cut.Find("button.btn-primary").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        await _attendanceService.Received(1).RecordBatchAsync(
+            RehearsalId,
+            Arg.Is<IReadOnlyList<AttendanceBatchItem>>(items =>
+                items.Count == 2 && items.All(i => i.Attended)),
+            Arg.Any<CancellationToken>());
+    }
+
     [Fact]
     public void SaveButton_Renders()
     {

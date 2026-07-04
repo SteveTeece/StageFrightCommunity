@@ -732,6 +732,30 @@ a {
     border-color: var(--sf-line);
 }
 
+/* Parenthetical "select all" control shown under a grid column header,
+   e.g. Participated / (☐ Select All). Deliberately smaller than the
+   column title and not uppercased, so it reads as a secondary action. */
+.select-all-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: .85em;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: normal;
+    white-space: nowrap;
+}
+
+.select-all-inline .form-check-input {
+    width: .85em;
+    height: .85em;
+    margin: 0;
+}
+
+.select-all-inline .form-check-label {
+    font-size: inherit;
+}
+
 /* --- Modals & dialogs --- */
 .modal-content {
     background: var(--sf-panel);
