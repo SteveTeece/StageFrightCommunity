@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Saira+Semi+Condensed:wght@400;500;600;700&amp;family=Barlow+Semi+Condensed:wght@400;500;600;700&amp;family=Archivo+Narrow:wght@400;500;600;700&amp;family=Oswald:wght@400;500;600&amp;family=IBM+Plex+Sans+Condensed:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#f0eee9;font-family:system-ui,sans-serif}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}</style>
+</helmet>
+
+<section class="dv-turn" id="t3">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">All pages from the real app (StageFright.UI) in the chosen direction — one shared light/dark toggle across the set</span></div>
+<div style="font:400 11.5px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.55);max-width:780px;margin:-10px 0 20px">Built from the linked source: Dashboard tile grid per DASHBOARD-SPECIFICATION.md (incl. plugin Extensions section), Members list (Name/Address/Phone/Email/Age/Edit + Active–Inactive filter), Finance tabs (Balances · Record Member Payment · Record Income · Apply Annual Fees), Rehearsals (attendance recording), Events (participation by event type), Reports (provider list + viewer) and Settings tabs. Toggling any theme switch flips the whole set.</div>
+<div class="dv-opts">
+
+<!-- ====== 3a DASHBOARD ====== -->
+<div class="dv-opt" id="3a">
+<div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>Dashboard — core tiles + extensions (/dashboard)</div>
+<div class="dv-card" style="width:1180px">
+<div style="{{ v3 }}position:relative;height:720px;background:var(--bg);font-family:'Saira Semi Condensed',sans-serif;color:var(--text);overflow:hidden;transition:background .3s" data-screen-label="Dashboard">
+  <div style="position:absolute;inset:0;background:radial-gradient(600px 420px at 12% 8%,var(--orb1),transparent 65%),radial-gradient(520px 400px at 88% 18%,var(--orb2),transparent 60%),radial-gradient(700px 500px at 55% 110%,var(--orb3),transparent 60%);pointer-events:none"></div>
+  <nav style="position:absolute;left:16px;top:50%;transform:translateY(-50%);z-index:2;display:flex;flex-direction:column;gap:5px;padding:10px 8px;border-radius:20px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(24px);box-shadow:0 16px 44px rgba(2,10,30,.55),inset 0 1px 0 rgba(255,255,255,.14)">
+    <div style="width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));margin-bottom:4px;box-shadow:0 4px 16px rgba(70,140,255,.5)"></div>
+    <div style="width:40px;height:40px;border-radius:13px;background:var(--glass2);border:1px solid var(--brd);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span><span style="font:600 7.5px 'Saira Semi Condensed',sans-serif;color:var(--accent2);letter-spacing:.5px">HOME</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">MEMB</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:2px;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">FIN</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border:1.5px solid var(--sub);transform:rotate(45deg)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">REH</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50% 50% 0 50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">EVNT</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:8px;height:10px;border:1.5px solid var(--sub);border-radius:2px"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">RPT</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px dashed var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">SET</span></div>
+    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));font:600 12px 'Saira Semi Condensed',sans-serif;color:#04101f;display:flex;align-items:center;justify-content:center;margin-top:6px">SF</div>
+  </nav>
+  <main style="position:relative;height:100%;padding:20px 20px 16px 88px;display:flex;flex-direction:column;gap:12px;min-width:0">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div><div style="font:600 21px 'Saira Semi Condensed',sans-serif">Dashboard</div><div style="font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">StageFright Community · Saturday 4 July 2026</div></div>
+      <button onClick="{{ tg3 }}" style="margin-left:auto;display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--brd);background:var(--glass2);color:var(--text);font:500 11.5px 'Saira Semi Condensed',sans-serif;cursor:pointer;backdrop-filter:blur(14px)"><span style="width:10px;height:10px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span>{{ lbl3 }}</button>
+    </div>
+    <div style="font:500 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1.6px">CORE METRICS</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+      <!-- Members tile -->
+      <div style="padding:14px 16px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)">
+        <div style="display:flex;align-items:baseline"><span style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Members</span><a style="margin-left:auto;font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--accent2)">View Members</a></div>
+        <div style="display:flex;gap:18px;margin-top:8px">
+          <div><div style="font:600 24px 'Saira Semi Condensed',sans-serif">24</div><div style="font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px">ACTIVE</div></div>
+          <div><div style="font:600 24px 'Saira Semi Condensed',sans-serif;color:var(--sub)">3</div><div style="font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px">INACTIVE</div></div>
+          <div><div style="font:600 24px 'Saira Semi Condensed',sans-serif">27</div><div style="font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px">TOTAL</div></div>
+        </div>
+        <div style="margin-top:9px;padding:6px 10px;border-radius:9px;background:rgba(255,125,146,.12);font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--bad)">Outstanding fees · <b>8 members</b></div>
+      </div>
+      <!-- Rehearsals tile -->
+      <div style="padding:14px 16px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)">
+        <div style="display:flex;align-items:baseline"><span style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Rehearsals</span><a style="margin-left:auto;font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--accent2)">View Rehearsals</a></div>
+        <div style="display:flex;gap:18px;margin-top:8px;align-items:flex-end">
+          <div><div style="font:600 24px 'Saira Semi Condensed',sans-serif">5</div><div style="font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px">UPCOMING</div></div>
+          <div><div style="font:600 24px 'Saira Semi Condensed',sans-serif;color:var(--accent2)">Jul 7</div><div style="font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px">NEXT</div></div>
+        </div>
+        <div style="margin-top:9px;font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Last attendance <b style="color:var(--good)">18 of 22 (82%)</b></div>
+        <div style="height:4px;border-radius:2px;background:var(--line);margin-top:5px"><div style="width:82%;height:100%;border-radius:2px;background:var(--good)"></div></div>
+      </div>
+      <!-- Events tile -->
+      <div style="padding:14px 16px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)">
+        <div style="display:flex;align-items:baseline"><span style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Events</span><a style="margin-left:auto;font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--accent2)">View Events</a></div>
+        <div style="display:flex;gap:18px;margin-top:8px;align-items:flex-end">
+          <div><div style="font:600 24px 'Saira Semi Condensed',sans-serif">2</div><div style="font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px">UPCOMING</div></div>
+          <div><div style="font:600 24px 'Saira Semi Condensed',sans-serif;color:var(--accent2)">Jul 16</div><div style="font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px">NEXT</div></div>
+        </div>
+        <div style="margin-top:9px;font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Last participation <b style="color:var(--text)">16 of 22 (73%)</b></div>
+        <div style="height:4px;border-radius:2px;background:var(--line);margin-top:5px"><div style="width:73%;height:100%;border-radius:2px;background:var(--accent)"></div></div>
+      </div>
+      <!-- Finance tile -->
+      <div style="padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,rgba(79,141,255,.28),rgba(56,210,255,.14));border:1px solid var(--brd);backdrop-filter:blur(22px);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)">
+        <div style="display:flex;align-items:baseline"><span style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Finance</span><a style="margin-left:auto;font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--accent2)">Open Finance</a></div>
+        <div style="font:600 26px 'Saira Semi Condensed',sans-serif;margin-top:6px">$4,286.50</div>
+        <div style="font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px">CURRENT BALANCE</div>
+        <div style="margin-top:8px;display:flex;gap:14px;font:400 11px 'Saira Semi Condensed',sans-serif"><span style="color:var(--good)">July income +$727.50</span><span style="color:var(--bad)">expenses −$306.40</span></div>
+      </div>
+      <!-- Cash flow graph tile -->
+      <div style="padding:14px 16px 8px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px)">
+        <div style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Cash flow · 6 months</div>
+        <svg viewBox="0 0 300 76" style="width:100%;height:88px;margin-top:4px">
+          <line x1="0" y1="70" x2="300" y2="70" stroke="var(--line)"></line>
+          <rect x="12" y="26" width="13" height="44" rx="3" fill="var(--accent)"></rect><rect x="27" y="41" width="13" height="29" rx="3" fill="var(--line)"></rect>
+          <rect x="62" y="36" width="13" height="34" rx="3" fill="var(--accent)"></rect><rect x="77" y="33" width="13" height="37" rx="3" fill="var(--line)"></rect>
+          <rect x="112" y="6" width="13" height="64" rx="3" fill="var(--accent)"></rect><rect x="127" y="43" width="13" height="27" rx="3" fill="var(--line)"></rect>
+          <rect x="162" y="32" width="13" height="38" rx="3" fill="var(--accent)"></rect><rect x="177" y="28" width="13" height="42" rx="3" fill="var(--line)"></rect>
+          <rect x="212" y="17" width="13" height="53" rx="3" fill="var(--accent)"></rect><rect x="227" y="38" width="13" height="32" rx="3" fill="var(--line)"></rect>
+          <rect x="262" y="9" width="13" height="61" rx="3" fill="var(--accent2)"></rect><rect x="277" y="34" width="13" height="36" rx="3" fill="var(--line)"></rect>
+        </svg>
+        <div style="display:flex;justify-content:space-between;padding:0 6px;font:400 9.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)"><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span></div>
+      </div>
+      <!-- Attendance graph tile -->
+      <div style="padding:14px 16px 8px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px)">
+        <div style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Attendance trend</div>
+        <svg viewBox="0 0 300 76" style="width:100%;height:88px;margin-top:4px">
+          <polyline points="12,32 66,24 120,40 174,16 228,10 288,20" fill="none" stroke="var(--accent2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <circle cx="228" cy="10" r="3.5" fill="var(--accent2)"></circle>
+          <line x1="0" y1="70" x2="300" y2="70" stroke="var(--line)"></line>
+          <text x="236" y="24" fill="var(--text)" style="font:600 10.5px 'Saira Semi Condensed',sans-serif">82%</text>
+        </svg>
+        <div style="display:flex;justify-content:space-between;padding:0 6px;font:400 9.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)"><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span></div>
+      </div>
+    </div>
+    <div style="font:500 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1.6px;margin-top:2px">EXTENSIONS</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+      <div style="padding:14px 16px;border-radius:16px;background:var(--glass);border:1px dashed var(--brd);backdrop-filter:blur(22px)">
+        <div style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Costume Inventory <span style="font:400 9.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px;padding:2px 7px;border-radius:999px;border:1px solid var(--brd);margin-left:6px">PLUGIN</span></div>
+        <div style="display:flex;gap:18px;margin-top:8px"><div><div style="font:600 22px 'Saira Semi Condensed',sans-serif">142</div><div style="font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px">ITEMS</div></div><div><div style="font:600 22px 'Saira Semi Condensed',sans-serif;color:var(--bad)">7</div><div style="font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px">ON LOAN</div></div></div>
+      </div>
+      <div style="padding:14px 16px;border-radius:16px;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Registered plugin tiles appear here</div>
+      <div></div>
+    </div>
+  </main>
+</div>
+</div>
+</div>
+
+<!-- ====== 3b MEMBERS ====== -->
+<div class="dv-opt" id="3b">
+<div class="dv-olabel"><a class="dv-oid" href="#3b">3b</a>Members — list with Active/Inactive filter (/members)</div>
+<div class="dv-card" style="width:1180px">
+<div style="{{ v3 }}position:relative;height:660px;background:var(--bg);font-family:'Saira Semi Condensed',sans-serif;color:var(--text);overflow:hidden;transition:background .3s" data-screen-label="Members">
+  <div style="position:absolute;inset:0;background:radial-gradient(600px 420px at 12% 8%,var(--orb1),transparent 65%),radial-gradient(520px 400px at 88% 18%,var(--orb2),transparent 60%),radial-gradient(700px 500px at 55% 110%,var(--orb3),transparent 60%);pointer-events:none"></div>
+  <nav style="position:absolute;left:16px;top:50%;transform:translateY(-50%);z-index:2;display:flex;flex-direction:column;gap:5px;padding:10px 8px;border-radius:20px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(24px);box-shadow:0 16px 44px rgba(2,10,30,.55),inset 0 1px 0 rgba(255,255,255,.14)">
+    <div style="width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));margin-bottom:4px;box-shadow:0 4px 16px rgba(70,140,255,.5)"></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">HOME</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;background:var(--glass2);border:1px solid var(--brd);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span><span style="font:600 7.5px 'Saira Semi Condensed',sans-serif;color:var(--accent2);letter-spacing:.5px">MEMB</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:2px;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">FIN</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border:1.5px solid var(--sub);transform:rotate(45deg)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">REH</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50% 50% 0 50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">EVNT</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:8px;height:10px;border:1.5px solid var(--sub);border-radius:2px"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">RPT</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px dashed var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">SET</span></div>
+    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));font:600 12px 'Saira Semi Condensed',sans-serif;color:#04101f;display:flex;align-items:center;justify-content:center;margin-top:6px">SF</div>
+  </nav>
+  <main style="position:relative;height:100%;padding:20px 20px 16px 88px;display:flex;flex-direction:column;gap:12px;min-width:0">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div><div style="font:600 21px 'Saira Semi Condensed',sans-serif">Members</div><div style="font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">24 active · 3 inactive · 8 with outstanding fees</div></div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <div style="padding:7px 15px;border-radius:999px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04101f;font:600 11.5px 'Saira Semi Condensed',sans-serif;box-shadow:0 4px 16px rgba(70,140,255,.4)">+ Add Member</div>
+        <button onClick="{{ tg3 }}" style="display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--brd);background:var(--glass2);color:var(--text);font:500 11.5px 'Saira Semi Condensed',sans-serif;cursor:pointer;backdrop-filter:blur(14px)"><span style="width:10px;height:10px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span>{{ lbl3 }}</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <div style="display:flex;border-radius:999px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px);overflow:hidden">
+        <span style="padding:6px 16px;background:var(--glass2);font:500 11.5px 'Saira Semi Condensed',sans-serif;color:var(--accent2)">Active</span>
+        <span style="padding:6px 16px;font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Inactive</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px);width:280px"><span style="width:10px;height:10px;border-radius:50%;border:1.5px solid var(--sub);position:relative;flex:none"><span style="position:absolute;width:5px;height:1.5px;background:var(--sub);transform:rotate(45deg);left:8px;top:9px"></span></span><span style="font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Search by name, email, phone or address…</span></div>
+    </div>
+    <div style="flex:1;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);padding:4px 18px 10px;min-height:0;overflow:hidden">
+      <div style="display:grid;grid-template-columns:1.3fr 1.5fr 110px 1.3fr 54px 70px;gap:0 12px;font:400 12.5px 'Saira Semi Condensed',sans-serif;align-items:center">
+        <div style="display:contents;color:var(--sub)"><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">NAME ↑</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">ADDRESS</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">PHONE</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">EMAIL</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">AGE</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd);text-align:right">ACTIONS</span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">Amara Okafor</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">14 Belmore St, Fairfield</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">0412 337 209</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">a.okafor@mail.com</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">34</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:3px 12px;border-radius:8px;background:var(--glass2);border:1px solid var(--brd);font-size:10.5px">Edit</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">Dan Whitfield</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">3/22 Harrow Rd, Auburn</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">0433 810 552</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">dan.w@mail.com</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">51</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:3px 12px;border-radius:8px;background:var(--glass2);border:1px solid var(--brd);font-size:10.5px">Edit</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">Elsie Byrne</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">91 Kite Ave, Granville</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">—</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">elsie.b@mail.com</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">27</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:3px 12px;border-radius:8px;background:var(--glass2);border:1px solid var(--brd);font-size:10.5px">Edit</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">Hannah Cole</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">7 Warwick Cl, Lidcombe</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">0401 668 214</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">hannah.cole@mail.com</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">45</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:3px 12px;border-radius:8px;background:var(--glass2);border:1px solid var(--brd);font-size:10.5px">Edit</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">Jo Merton</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">55 Chester Hill Rd</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">0407 119 384</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">jo.merton@mail.com</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">48</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:3px 12px;border-radius:8px;background:var(--glass2);border:1px solid var(--brd);font-size:10.5px">Edit</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">Lena Kowalski</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">18b Park Pde, Merrylands</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">0466 902 731</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">l.kowalski@mail.com</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">31</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:3px 12px;border-radius:8px;background:var(--glass2);border:1px solid var(--brd);font-size:10.5px">Edit</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">Marco Castellanos</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">2 Foundry Ln, Clyde</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">0421 553 088</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">m.castellanos@mail.com</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">—</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:3px 12px;border-radius:8px;background:var(--glass2);border:1px solid var(--brd);font-size:10.5px">Edit</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;font-weight:500;color:var(--accent2)">Priya Shah</span><span style="padding:8px 0;color:var(--sub)">40 Rowley St, Guildford</span><span style="padding:8px 0">0418 274 660</span><span style="padding:8px 0;color:var(--sub)">priya.shah@mail.com</span><span style="padding:8px 0">29</span><span style="align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:3px 12px;border-radius:8px;background:var(--glass2);border:1px solid var(--brd);font-size:10.5px">Edit</span></span></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub)"><span>Showing 8 of 24 active members</span><span style="margin-left:auto;display:flex;gap:6px"><span style="padding:4px 11px;border-radius:8px;background:var(--glass2);border:1px solid var(--brd);color:var(--text)">1</span><span style="padding:4px 11px;border-radius:8px;border:1px solid var(--line)">2</span><span style="padding:4px 11px;border-radius:8px;border:1px solid var(--line)">3</span><span style="padding:4px 11px;border-radius:8px;border:1px solid var(--line)">→</span></span></div>
+  </main>
+</div>
+</div>
+</div>
+
+<!-- ====== 3c FINANCE ====== -->
+<div class="dv-opt" id="3c">
+<div class="dv-olabel"><a class="dv-oid" href="#3c">3c</a>Finance — Balances tab of the tabbed page (/finance)</div>
+<div class="dv-card" style="width:1180px">
+<div style="{{ v3 }}position:relative;height:660px;background:var(--bg);font-family:'Saira Semi Condensed',sans-serif;color:var(--text);overflow:hidden;transition:background .3s" data-screen-label="Finance">
+  <div style="position:absolute;inset:0;background:radial-gradient(600px 420px at 12% 8%,var(--orb1),transparent 65%),radial-gradient(520px 400px at 88% 18%,var(--orb2),transparent 60%),radial-gradient(700px 500px at 55% 110%,var(--orb3),transparent 60%);pointer-events:none"></div>
+  <nav style="position:absolute;left:16px;top:50%;transform:translateY(-50%);z-index:2;display:flex;flex-direction:column;gap:5px;padding:10px 8px;border-radius:20px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(24px);box-shadow:0 16px 44px rgba(2,10,30,.55),inset 0 1px 0 rgba(255,255,255,.14)">
+    <div style="width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));margin-bottom:4px;box-shadow:0 4px 16px rgba(70,140,255,.5)"></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">HOME</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">MEMB</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;background:var(--glass2);border:1px solid var(--brd);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:2px;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span><span style="font:600 7.5px 'Saira Semi Condensed',sans-serif;color:var(--accent2);letter-spacing:.5px">FIN</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border:1.5px solid var(--sub);transform:rotate(45deg)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">REH</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50% 50% 0 50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">EVNT</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:8px;height:10px;border:1.5px solid var(--sub);border-radius:2px"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">RPT</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px dashed var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">SET</span></div>
+    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));font:600 12px 'Saira Semi Condensed',sans-serif;color:#04101f;display:flex;align-items:center;justify-content:center;margin-top:6px">SF</div>
+  </nav>
+  <main style="position:relative;height:100%;padding:20px 20px 16px 88px;display:flex;flex-direction:column;gap:12px;min-width:0">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div><div style="font:600 21px 'Saira Semi Condensed',sans-serif">Finance</div><div style="font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Balance $4,286.50 · outstanding $312.00 across 8 members</div></div>
+      <button onClick="{{ tg3 }}" style="margin-left:auto;display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--brd);background:var(--glass2);color:var(--text);font:500 11.5px 'Saira Semi Condensed',sans-serif;cursor:pointer;backdrop-filter:blur(14px)"><span style="width:10px;height:10px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span>{{ lbl3 }}</button>
+    </div>
+    <div style="display:flex;gap:6px;padding:5px;border-radius:14px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px);align-self:flex-start">
+      <span style="padding:7px 16px;border-radius:10px;background:var(--glass2);border:1px solid var(--brd);font:500 12px 'Saira Semi Condensed',sans-serif;color:var(--accent2)">Balances</span>
+      <span style="padding:7px 16px;border-radius:10px;font:400 12px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Record Member Payment</span>
+      <span style="padding:7px 16px;border-radius:10px;font:400 12px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Record Income</span>
+      <span style="padding:7px 16px;border-radius:10px;font:400 12px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Apply Annual Fees</span>
+    </div>
+    <div style="flex:1;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);padding:4px 18px 12px;min-height:0;overflow:hidden">
+      <div style="display:grid;grid-template-columns:1.2fr 110px 1.8fr 170px;gap:0 12px;font:400 12.5px 'Saira Semi Condensed',sans-serif;align-items:start">
+        <div style="display:contents;color:var(--sub)"><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">MEMBER</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd);text-align:right">OUTSTANDING</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">FEE BREAKDOWN</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd);text-align:right">ACTIONS</span></div>
+        <div style="display:contents"><span style="padding:10px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">Amara Okafor</span><span style="padding:10px 0;border-bottom:1px solid var(--line);text-align:right;font-weight:600;color:var(--bad)">$78.00</span><span style="padding:8px 0;border-bottom:1px solid var(--line)"><span style="display:flex;gap:14px;font-size:11.5px"><span>2026 Annual · <b>$52.00</b> <span style="color:var(--sub)">due 1 Mar 2026</span></span></span><span style="display:flex;gap:14px;font-size:11.5px;margin-top:3px"><span>2026 Attendance · <b>$26.00</b> <span style="color:var(--sub)">due 30 Jun 2026</span></span></span><span style="font-size:10.5px;color:var(--accent2)">Hide fees</span></span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:5px 12px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04101f;font:600 10.5px 'Saira Semi Condensed',sans-serif">Record Member Payment</span></span></div>
+        <div style="display:contents"><span style="padding:10px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">Tom Nguyen</span><span style="padding:10px 0;border-bottom:1px solid var(--line);text-align:right;font-weight:600;color:var(--bad)">$52.00</span><span style="padding:10px 0;border-bottom:1px solid var(--line);font-size:10.5px;color:var(--accent2)">Show 1 fee</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:5px 12px;border-radius:9px;background:var(--glass2);border:1px solid var(--brd);font:600 10.5px 'Saira Semi Condensed',sans-serif">Record Member Payment</span></span></div>
+        <div style="display:contents"><span style="padding:10px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">Marco Castellanos</span><span style="padding:10px 0;border-bottom:1px solid var(--line);text-align:right;font-weight:600;color:var(--bad)">$52.00</span><span style="padding:10px 0;border-bottom:1px solid var(--line);font-size:10.5px;color:var(--accent2)">Show 1 fee</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:5px 12px;border-radius:9px;background:var(--glass2);border:1px solid var(--brd);font:600 10.5px 'Saira Semi Condensed',sans-serif">Record Member Payment</span></span></div>
+        <div style="display:contents"><span style="padding:10px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">Elsie Byrne</span><span style="padding:10px 0;border-bottom:1px solid var(--line);text-align:right;font-weight:600;color:var(--bad)">$39.00</span><span style="padding:10px 0;border-bottom:1px solid var(--line);font-size:10.5px;color:var(--accent2)">Show 2 fees</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:5px 12px;border-radius:9px;background:var(--glass2);border:1px solid var(--brd);font:600 10.5px 'Saira Semi Condensed',sans-serif">Record Member Payment</span></span></div>
+        <div style="display:contents"><span style="padding:10px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">Sam Ferreira</span><span style="padding:10px 0;border-bottom:1px solid var(--line);text-align:right;font-weight:600;color:var(--bad)">$35.00</span><span style="padding:10px 0;border-bottom:1px solid var(--line);font-size:10.5px;color:var(--accent2)">Show 1 fee</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:5px 12px;border-radius:9px;background:var(--glass2);border:1px solid var(--brd);font:600 10.5px 'Saira Semi Condensed',sans-serif">Record Member Payment</span></span></div>
+        <div style="display:contents"><span style="padding:10px 0;font-weight:500;color:var(--accent2)">Priya Shah</span><span style="padding:10px 0;text-align:right;font-weight:600;color:var(--bad)">$26.00</span><span style="padding:10px 0;font-size:10.5px;color:var(--accent2)">Show 1 fee</span><span style="align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:5px 12px;border-radius:9px;background:var(--glass2);border:1px solid var(--brd);font:600 10.5px 'Saira Semi Condensed',sans-serif">Record Member Payment</span></span></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub)"><span>Showing 6 of 8 members with balances</span><span style="margin-left:auto">Total outstanding <b style="color:var(--bad)">$312.00</b></span></div>
+  </main>
+</div>
+</div>
+</div>
+
+<!-- ====== 3d REHEARSALS ====== -->
+<div class="dv-opt" id="3d">
+<div class="dv-olabel"><a class="dv-oid" href="#3d">3d</a>Rehearsals — list + attendance recording (/rehearsals)</div>
+<div class="dv-card" style="width:1180px">
+<div style="{{ v3 }}position:relative;height:640px;background:var(--bg);font-family:'Saira Semi Condensed',sans-serif;color:var(--text);overflow:hidden;transition:background .3s" data-screen-label="Rehearsals">
+  <div style="position:absolute;inset:0;background:radial-gradient(600px 420px at 12% 8%,var(--orb1),transparent 65%),radial-gradient(520px 400px at 88% 18%,var(--orb2),transparent 60%),radial-gradient(700px 500px at 55% 110%,var(--orb3),transparent 60%);pointer-events:none"></div>
+  <nav style="position:absolute;left:16px;top:50%;transform:translateY(-50%);z-index:2;display:flex;flex-direction:column;gap:5px;padding:10px 8px;border-radius:20px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(24px);box-shadow:0 16px 44px rgba(2,10,30,.55),inset 0 1px 0 rgba(255,255,255,.14)">
+    <div style="width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));margin-bottom:4px;box-shadow:0 4px 16px rgba(70,140,255,.5)"></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">HOME</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">MEMB</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:2px;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">FIN</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;background:var(--glass2);border:1px solid var(--brd);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;background:var(--accent2);transform:rotate(45deg);box-shadow:0 0 8px var(--accent2)"></span><span style="font:600 7.5px 'Saira Semi Condensed',sans-serif;color:var(--accent2);letter-spacing:.5px">REH</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50% 50% 0 50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">EVNT</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:8px;height:10px;border:1.5px solid var(--sub);border-radius:2px"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">RPT</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px dashed var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">SET</span></div>
+    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));font:600 12px 'Saira Semi Condensed',sans-serif;color:#04101f;display:flex;align-items:center;justify-content:center;margin-top:6px">SF</div>
+  </nav>
+  <main style="position:relative;height:100%;padding:20px 20px 16px 88px;display:flex;flex-direction:column;gap:12px;min-width:0">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div><div style="font:600 21px 'Saira Semi Condensed',sans-serif">Rehearsals</div><div style="font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">5 upcoming · next Tue 7 Jul · last attendance 82%</div></div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px);width:220px"><span style="width:10px;height:10px;border-radius:50%;border:1.5px solid var(--sub);position:relative;flex:none"><span style="position:absolute;width:5px;height:1.5px;background:var(--sub);transform:rotate(45deg);left:8px;top:9px"></span></span><span style="font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Search by date or notes…</span></div>
+        <div style="padding:7px 15px;border-radius:999px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04101f;font:600 11.5px 'Saira Semi Condensed',sans-serif;box-shadow:0 4px 16px rgba(70,140,255,.4)">+ Schedule Rehearsal</div>
+        <button onClick="{{ tg3 }}" style="display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--brd);background:var(--glass2);color:var(--text);font:500 11.5px 'Saira Semi Condensed',sans-serif;cursor:pointer;backdrop-filter:blur(14px)"><span style="width:10px;height:10px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span>{{ lbl3 }}</button>
+      </div>
+    </div>
+    <div style="flex:1;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);padding:4px 18px 12px;min-height:0;overflow:hidden">
+      <div style="display:grid;grid-template-columns:120px 70px 150px 1fr 160px;gap:0 12px;font:400 12.5px 'Saira Semi Condensed',sans-serif;align-items:center">
+        <div style="display:contents;color:var(--sub)"><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">DATE ↓</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">TIME</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">ATTENDANCE</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">NOTES</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd);text-align:right">ACTIONS</span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">14 Jul 2026</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">18:00</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub);font-size:11px">Not recorded</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">Tech + dress — full company call</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:4px 12px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04101f;font:600 10.5px 'Saira Semi Condensed',sans-serif">Record Attendance</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">11 Jul 2026</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">10:00</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub);font-size:11px">Not recorded</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">Full run-through, Main Hall</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:4px 12px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04101f;font:600 10.5px 'Saira Semi Condensed',sans-serif">Record Attendance</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">9 Jul 2026</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">19:30</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub);font-size:11px">Not recorded</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">Vocal ensemble, Studio B</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:4px 12px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04101f;font:600 10.5px 'Saira Semi Condensed',sans-serif">Record Attendance</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">7 Jul 2026</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">19:00</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub);font-size:11px">Not recorded</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">Act II staging, Main Hall</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:4px 12px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04101f;font:600 10.5px 'Saira Semi Condensed',sans-serif">Record Attendance</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">30 Jun 2026</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">19:00</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;gap:8px"><span style="width:56px;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:82%;height:100%;border-radius:2px;background:var(--good)"></span></span><span style="font-weight:600;color:var(--good)">81.8%</span></span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">Act I polish</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="font-size:11px;color:var(--sub)">Recorded</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">23 Jun 2026</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">19:00</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;gap:8px"><span style="width:56px;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:91%;height:100%;border-radius:2px;background:var(--good)"></span></span><span style="font-weight:600;color:var(--good)">90.9%</span></span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">Blocking review with orchestra</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="font-size:11px;color:var(--sub)">Recorded</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">16 Jun 2026</span><span style="padding:8px 0;border-bottom:1px solid var(--line)">19:00</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;gap:8px"><span style="width:56px;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:68%;height:100%;border-radius:2px;background:var(--accent)"></span></span><span style="font-weight:600;color:var(--sub)">68.2%</span></span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">Choreography, small groups</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="font-size:11px;color:var(--sub)">Recorded</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;font-weight:500;color:var(--accent2)">9 Jun 2026</span><span style="padding:8px 0">19:00</span><span style="align-self:stretch;display:flex;align-items:center;gap:8px"><span style="width:56px;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:77%;height:100%;border-radius:2px;background:var(--accent)"></span></span><span style="font-weight:600;color:var(--sub)">77.3%</span></span><span style="padding:8px 0;color:var(--sub)">Read-through of revised script</span><span style="align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="font-size:11px;color:var(--sub)">Recorded</span></span></div>
+      </div>
+    </div>
+    <div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Showing 8 of 23 rehearsals · click a date to open the attendance grid</div>
+  </main>
+</div>
+</div>
+</div>
+
+<!-- ====== 3e EVENTS ====== -->
+<div class="dv-opt" id="3e">
+<div class="dv-olabel"><a class="dv-oid" href="#3e">3e</a>Events — list + participation by event type (/events)</div>
+<div class="dv-card" style="width:1180px">
+<div style="{{ v3 }}position:relative;height:640px;background:var(--bg);font-family:'Saira Semi Condensed',sans-serif;color:var(--text);overflow:hidden;transition:background .3s" data-screen-label="Events">
+  <div style="position:absolute;inset:0;background:radial-gradient(600px 420px at 12% 8%,var(--orb1),transparent 65%),radial-gradient(520px 400px at 88% 18%,var(--orb2),transparent 60%),radial-gradient(700px 500px at 55% 110%,var(--orb3),transparent 60%);pointer-events:none"></div>
+  <nav style="position:absolute;left:16px;top:50%;transform:translateY(-50%);z-index:2;display:flex;flex-direction:column;gap:5px;padding:10px 8px;border-radius:20px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(24px);box-shadow:0 16px 44px rgba(2,10,30,.55),inset 0 1px 0 rgba(255,255,255,.14)">
+    <div style="width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));margin-bottom:4px;box-shadow:0 4px 16px rgba(70,140,255,.5)"></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">HOME</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">MEMB</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:2px;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">FIN</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border:1.5px solid var(--sub);transform:rotate(45deg)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">REH</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;background:var(--glass2);border:1px solid var(--brd);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50% 50% 0 50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span><span style="font:600 7.5px 'Saira Semi Condensed',sans-serif;color:var(--accent2);letter-spacing:.5px">EVNT</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:8px;height:10px;border:1.5px solid var(--sub);border-radius:2px"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">RPT</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px dashed var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">SET</span></div>
+    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));font:600 12px 'Saira Semi Condensed',sans-serif;color:#04101f;display:flex;align-items:center;justify-content:center;margin-top:6px">SF</div>
+  </nav>
+  <main style="position:relative;height:100%;padding:20px 20px 16px 88px;display:flex;flex-direction:column;gap:12px;min-width:0">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div><div style="font:600 21px 'Saira Semi Condensed',sans-serif">Events</div><div style="font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">2 upcoming · next Thu 16 Jul · last participation 73%</div></div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px);width:220px"><span style="width:10px;height:10px;border-radius:50%;border:1.5px solid var(--sub);position:relative;flex:none"><span style="position:absolute;width:5px;height:1.5px;background:var(--sub);transform:rotate(45deg);left:8px;top:9px"></span></span><span style="font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Search by date, type or notes…</span></div>
+        <div style="padding:7px 15px;border-radius:999px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04101f;font:600 11.5px 'Saira Semi Condensed',sans-serif;box-shadow:0 4px 16px rgba(70,140,255,.4)">+ Schedule Event</div>
+        <button onClick="{{ tg3 }}" style="display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--brd);background:var(--glass2);color:var(--text);font:500 11.5px 'Saira Semi Condensed',sans-serif;cursor:pointer;backdrop-filter:blur(14px)"><span style="width:10px;height:10px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span>{{ lbl3 }}</button>
+      </div>
+    </div>
+    <div style="flex:1;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);padding:4px 18px 12px;min-height:0;overflow:hidden">
+      <div style="display:grid;grid-template-columns:120px 150px 150px 1fr 170px;gap:0 12px;font:400 12.5px 'Saira Semi Condensed',sans-serif;align-items:center">
+        <div style="display:contents;color:var(--sub)"><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">DATE ↓</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">EVENT TYPE</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">PARTICIPATION</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">NOTES</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd);text-align:right">ACTIONS</span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">2 Aug 2026</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(56,210,255,.12);border:1px solid var(--brd);font-size:10.5px;color:var(--accent2)">Fundraiser</span></span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub);font-size:11px">Not recorded</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">Open Mic Night — sign-ups open, 14 acts</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:4px 12px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04101f;font:600 10.5px 'Saira Semi Condensed',sans-serif">Record Participation</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">16 Jul 2026</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(79,141,255,.16);border:1px solid var(--brd);font-size:10.5px;color:var(--accent2)">Performance</span></span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub);font-size:11px">Not recorded</span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">Summer Showcase — Riverside Theatre</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="padding:4px 12px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04101f;font:600 10.5px 'Saira Semi Condensed',sans-serif">Record Participation</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">14 Jun 2026</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(79,141,255,.16);border:1px solid var(--brd);font-size:10.5px;color:var(--accent2)">Performance</span></span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;gap:8px"><span style="width:56px;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:73%;height:100%;border-radius:2px;background:var(--accent)"></span></span><span style="font-weight:600;color:var(--sub)">72.7%</span></span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">Matinee at Riverside — 16 of 22 performed</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="font-size:11px;color:var(--sub)">Recorded</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;border-bottom:1px solid var(--line);font-weight:500;color:var(--accent2)">17 May 2026</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(56,210,255,.12);border:1px solid var(--brd);font-size:10.5px;color:var(--accent2)">Workshop</span></span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;gap:8px"><span style="width:56px;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:86%;height:100%;border-radius:2px;background:var(--good)"></span></span><span style="font-weight:600;color:var(--good)">86.4%</span></span><span style="padding:8px 0;border-bottom:1px solid var(--line);color:var(--sub)">Stage combat workshop, guest instructor</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="font-size:11px;color:var(--sub)">Recorded</span></span></div>
+        <div style="display:contents"><span style="padding:8px 0;font-weight:500;color:var(--accent2)">12 Apr 2026</span><span style="align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(56,210,255,.12);border:1px solid var(--brd);font-size:10.5px;color:var(--accent2)">Fundraiser</span></span><span style="align-self:stretch;display:flex;align-items:center;gap:8px"><span style="width:56px;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:59%;height:100%;border-radius:2px;background:var(--accent)"></span></span><span style="font-weight:600;color:var(--sub)">59.1%</span></span><span style="padding:8px 0;color:var(--sub)">Trivia night at the community hall</span><span style="align-self:stretch;display:flex;align-items:center;justify-content:flex-end"><span style="font-size:11px;color:var(--sub)">Recorded</span></span></div>
+      </div>
+    </div>
+    <div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Showing 5 of 11 events · click a date to open event detail + participation grid</div>
+  </main>
+</div>
+</div>
+</div>
+
+<!-- ====== 3f REPORTS ====== -->
+<div class="dv-opt" id="3f">
+<div class="dv-olabel"><a class="dv-oid" href="#3f">3f</a>Reports — provider list + viewer (/reports)</div>
+<div class="dv-card" style="width:1180px">
+<div style="{{ v3 }}position:relative;height:640px;background:var(--bg);font-family:'Saira Semi Condensed',sans-serif;color:var(--text);overflow:hidden;transition:background .3s" data-screen-label="Reports">
+  <div style="position:absolute;inset:0;background:radial-gradient(600px 420px at 12% 8%,var(--orb1),transparent 65%),radial-gradient(520px 400px at 88% 18%,var(--orb2),transparent 60%),radial-gradient(700px 500px at 55% 110%,var(--orb3),transparent 60%);pointer-events:none"></div>
+  <nav style="position:absolute;left:16px;top:50%;transform:translateY(-50%);z-index:2;display:flex;flex-direction:column;gap:5px;padding:10px 8px;border-radius:20px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(24px);box-shadow:0 16px 44px rgba(2,10,30,.55),inset 0 1px 0 rgba(255,255,255,.14)">
+    <div style="width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));margin-bottom:4px;box-shadow:0 4px 16px rgba(70,140,255,.5)"></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">HOME</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">MEMB</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:2px;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">FIN</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border:1.5px solid var(--sub);transform:rotate(45deg)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">REH</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50% 50% 0 50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">EVNT</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;background:var(--glass2);border:1px solid var(--brd);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:8px;height:10px;border:1.5px solid var(--accent2);border-radius:2px;box-shadow:0 0 8px var(--accent2)"></span><span style="font:600 7.5px 'Saira Semi Condensed',sans-serif;color:var(--accent2);letter-spacing:.5px">RPT</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px dashed var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">SET</span></div>
+    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));font:600 12px 'Saira Semi Condensed',sans-serif;color:#04101f;display:flex;align-items:center;justify-content:center;margin-top:6px">SF</div>
+  </nav>
+  <main style="position:relative;height:100%;padding:20px 20px 16px 88px;display:flex;flex-direction:column;gap:12px;min-width:0">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div><div style="font:600 21px 'Saira Semi Condensed',sans-serif">Reports</div><div style="font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Generated from registered report providers</div></div>
+      <button onClick="{{ tg3 }}" style="margin-left:auto;display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--brd);background:var(--glass2);color:var(--text);font:500 11.5px 'Saira Semi Condensed',sans-serif;cursor:pointer;backdrop-filter:blur(14px)"><span style="width:10px;height:10px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span>{{ lbl3 }}</button>
+    </div>
+    <div style="flex:1;display:grid;grid-template-columns:250px 1fr;gap:12px;min-height:0">
+      <div style="border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);padding:12px 10px;display:flex;flex-direction:column;gap:2px">
+        <div style="font:500 10px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1.6px;padding:4px 10px 6px">FINANCE</div>
+        <div style="padding:7px 12px;border-radius:10px;font:400 12px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Account Register</div>
+        <div style="padding:7px 12px;border-radius:10px;background:var(--glass2);border:1px solid var(--brd);font:500 12px 'Saira Semi Condensed',sans-serif;color:var(--accent2)">Income Statement</div>
+        <div style="padding:7px 12px;border-radius:10px;font:400 12px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Trial Balance</div>
+        <div style="font:500 10px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1.6px;padding:12px 10px 6px">MEMBERS</div>
+        <div style="padding:7px 12px;border-radius:10px;font:400 12px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Member Account Summary</div>
+      </div>
+      <div style="border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);padding:16px 18px;display:flex;flex-direction:column;min-height:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="font:600 15px 'Saira Semi Condensed',sans-serif">Income Statement</div>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <span style="padding:5px 13px;border-radius:9px;background:var(--glass2);border:1px solid var(--brd);font:500 11px 'Saira Semi Condensed',sans-serif">Export PDF</span>
+            <span style="padding:5px 13px;border-radius:9px;border:1px solid var(--brd);font:500 11px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Export CSV</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <div style="padding:6px 12px;border-radius:10px;background:var(--glass2);border:1px solid var(--brd);font:400 11px 'Saira Semi Condensed',sans-serif"><span style="color:var(--sub)">From</span> 1 Jan 2026</div>
+          <div style="padding:6px 12px;border-radius:10px;background:var(--glass2);border:1px solid var(--brd);font:400 11px 'Saira Semi Condensed',sans-serif"><span style="color:var(--sub)">To</span> 30 Jun 2026</div>
+          <div style="padding:6px 14px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04101f;font:600 11px 'Saira Semi Condensed',sans-serif">Generate</div>
+        </div>
+        <div style="margin-top:14px;display:grid;grid-template-columns:1fr 100px;gap:0 12px;font:400 12.5px 'Saira Semi Condensed',sans-serif">
+          <div style="display:contents;color:var(--sub)"><span style="padding:6px 0;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">INCOME</span><span style="padding:6px 0;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd);text-align:right">AMOUNT</span></div>
+          <div style="display:contents"><span style="padding:6.5px 0;border-bottom:1px solid var(--line)">Member dues</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--good)">1,404.00</span></div>
+          <div style="display:contents"><span style="padding:6.5px 0;border-bottom:1px solid var(--line)">Box office</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--good)">2,187.50</span></div>
+          <div style="display:contents"><span style="padding:6.5px 0;border-bottom:1px solid var(--line)">Grants &amp; fundraising</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--good)">1,275.00</span></div>
+          <div style="display:contents;color:var(--sub)"><span style="padding:10px 0 6px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">EXPENSES</span><span style="padding:10px 0 6px;border-bottom:1px solid var(--brd)"></span></div>
+          <div style="display:contents"><span style="padding:6.5px 0;border-bottom:1px solid var(--line)">Venue hire</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--bad)">−1,320.00</span></div>
+          <div style="display:contents"><span style="padding:6.5px 0;border-bottom:1px solid var(--line)">Production (set, wardrobe)</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--bad)">−964.15</span></div>
+          <div style="display:contents"><span style="padding:6.5px 0;border-bottom:1px solid var(--line)">Admin &amp; insurance</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--bad)">−542.00</span></div>
+          <div style="display:contents"><span style="padding:8px 0;font-weight:600">Net surplus</span><span style="padding:8px 0;text-align:right;font-weight:600;color:var(--good)">+2,040.35</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+</div>
+
+<!-- ====== 3g SETTINGS ====== -->
+<div class="dv-opt" id="3g">
+<div class="dv-olabel"><a class="dv-oid" href="#3g">3g</a>Settings — General tab (/settings)</div>
+<div class="dv-card" style="width:1180px">
+<div style="{{ v3 }}position:relative;height:640px;background:var(--bg);font-family:'Saira Semi Condensed',sans-serif;color:var(--text);overflow:hidden;transition:background .3s" data-screen-label="Settings">
+  <div style="position:absolute;inset:0;background:radial-gradient(600px 420px at 12% 8%,var(--orb1),transparent 65%),radial-gradient(520px 400px at 88% 18%,var(--orb2),transparent 60%),radial-gradient(700px 500px at 55% 110%,var(--orb3),transparent 60%);pointer-events:none"></div>
+  <nav style="position:absolute;left:16px;top:50%;transform:translateY(-50%);z-index:2;display:flex;flex-direction:column;gap:5px;padding:10px 8px;border-radius:20px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(24px);box-shadow:0 16px 44px rgba(2,10,30,.55),inset 0 1px 0 rgba(255,255,255,.14)">
+    <div style="width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));margin-bottom:4px;box-shadow:0 4px 16px rgba(70,140,255,.5)"></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">HOME</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">MEMB</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:2px;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">FIN</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border:1.5px solid var(--sub);transform:rotate(45deg)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">REH</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50% 50% 0 50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">EVNT</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:8px;height:10px;border:1.5px solid var(--sub);border-radius:2px"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">RPT</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;background:var(--glass2);border:1px solid var(--brd);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px dashed var(--accent2);box-shadow:0 0 8px var(--accent2)"></span><span style="font:600 7.5px 'Saira Semi Condensed',sans-serif;color:var(--accent2);letter-spacing:.5px">SET</span></div>
+    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));font:600 12px 'Saira Semi Condensed',sans-serif;color:#04101f;display:flex;align-items:center;justify-content:center;margin-top:6px">SF</div>
+  </nav>
+  <main style="position:relative;height:100%;padding:20px 20px 16px 88px;display:flex;flex-direction:column;gap:12px;min-width:0">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div><div style="font:600 21px 'Saira Semi Condensed',sans-serif">Settings</div><div style="font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Organization, categories, event types, backup</div></div>
+      <button onClick="{{ tg3 }}" style="margin-left:auto;display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--brd);background:var(--glass2);color:var(--text);font:500 11.5px 'Saira Semi Condensed',sans-serif;cursor:pointer;backdrop-filter:blur(14px)"><span style="width:10px;height:10px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span>{{ lbl3 }}</button>
+    </div>
+    <div style="display:flex;gap:6px;padding:5px;border-radius:14px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px);align-self:flex-start">
+      <span style="padding:7px 16px;border-radius:10px;background:var(--glass2);border:1px solid var(--brd);font:500 12px 'Saira Semi Condensed',sans-serif;color:var(--accent2)">General</span>
+      <span style="padding:7px 16px;border-radius:10px;font:400 12px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Categories</span>
+      <span style="padding:7px 16px;border-radius:10px;font:400 12px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Event Types</span>
+      <span style="padding:7px 16px;border-radius:10px;font:400 12px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Backup &amp; Restore</span>
+    </div>
+    <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:0">
+      <div style="border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);padding:16px 18px;display:flex;flex-direction:column;gap:12px">
+        <div style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Organization</div>
+        <div><div style="font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px;margin-bottom:5px">ORGANIZATION NAME</div><div style="padding:9px 13px;border-radius:11px;background:var(--glass2);border:1px solid var(--brd);font:400 12.5px 'Saira Semi Condensed',sans-serif">StageFright Community Theatre Inc.</div></div>
+        <div><div style="font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px;margin-bottom:5px">ORGANIZATION LOGO</div><div style="display:flex;align-items:center;gap:12px"><div style="width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 14px rgba(70,140,255,.4)"></div><span style="padding:6px 13px;border-radius:9px;background:var(--glass2);border:1px solid var(--brd);font:500 11px 'Saira Semi Condensed',sans-serif">Change logo</span><span style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub)">PNG or SVG · shown on dashboard + reports</span></div></div>
+        <div><div style="font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px;margin-bottom:5px">DEFAULT THEME</div><div style="display:flex;border-radius:999px;background:var(--glass2);border:1px solid var(--brd);overflow:hidden;align-self:flex-start;width:fit-content"><span style="padding:6px 18px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04101f;font:600 11.5px 'Saira Semi Condensed',sans-serif">Dark</span><span style="padding:6px 18px;font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Light</span></div></div>
+      </div>
+      <div style="border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);padding:16px 18px;display:flex;flex-direction:column;gap:12px">
+        <div style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Membership &amp; fees</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div><div style="font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px;margin-bottom:5px">ANNUAL FEE</div><div style="padding:9px 13px;border-radius:11px;background:var(--glass2);border:1px solid var(--brd);font:400 12.5px 'Saira Semi Condensed',sans-serif">$52.00</div></div>
+          <div><div style="font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px;margin-bottom:5px">ATTENDANCE FEE</div><div style="padding:9px 13px;border-radius:11px;background:var(--glass2);border:1px solid var(--brd);font:400 12.5px 'Saira Semi Condensed',sans-serif">$2.00 per rehearsal</div></div>
+          <div><div style="font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px;margin-bottom:5px">MINIMUM MEMBER AGE</div><div style="padding:9px 13px;border-radius:11px;background:var(--glass2);border:1px solid var(--brd);font:400 12.5px 'Saira Semi Condensed',sans-serif">16</div></div>
+          <div><div style="font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px;margin-bottom:5px">FEE DUE DATE</div><div style="padding:9px 13px;border-radius:11px;background:var(--glass2);border:1px solid var(--brd);font:400 12.5px 'Saira Semi Condensed',sans-serif">1 March each year</div></div>
+        </div>
+        <div style="margin-top:auto;display:flex;gap:10px;justify-content:flex-end"><span style="padding:7px 16px;border-radius:10px;border:1px solid var(--brd);font:500 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Discard</span><span style="padding:7px 16px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04101f;font:600 11.5px 'Saira Semi Condensed',sans-serif;box-shadow:0 4px 16px rgba(70,140,255,.4)">Save changes</span></div>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: "show the attendance grid for a rehearsal" · "member detail + edit form" · "Record Income tab" · "lighter glass on tables"</p>
+</section>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Midnight Glass (<a class="dv-oid" href="#1a">1a</a>) with the floating dock from <a class="dv-oid" href="#1c">1c</a> — Dashboard + Members</span></div>
+<div class="dv-opts">
+
+<!-- ============ 2a DASHBOARD ============ -->
+<div class="dv-opt" id="2a">
+<div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Dashboard — Midnight Glass + floating dock</div>
+<div class="dv-card" style="width:1180px">
+<div style="--bg:#050d1c;--orb1:rgba(56,118,255,.38);--orb2:rgba(0,190,255,.22);--orb3:rgba(120,80,255,.18);--glass:rgba(255,255,255,.06);--glass2:rgba(255,255,255,.11);--brd:rgba(255,255,255,.14);--text:#eaf1ff;--sub:rgba(205,222,255,.62);--accent:#4f8dff;--accent2:#38d2ff;--line:rgba(255,255,255,.08);--good:#3ddca0;--bad:#ff7d92">
+<div style="{{ v2a }}position:relative;height:740px;background:var(--bg);font-family:'Saira Semi Condensed',sans-serif;color:var(--text);overflow:hidden;transition:background .3s">
+  <div style="position:absolute;inset:0;background:radial-gradient(600px 420px at 12% 8%,var(--orb1),transparent 65%),radial-gradient(520px 400px at 88% 18%,var(--orb2),transparent 60%),radial-gradient(700px 500px at 55% 110%,var(--orb3),transparent 60%);pointer-events:none"></div>
+  <!-- floating dock -->
+  <nav style="position:absolute;left:16px;top:50%;transform:translateY(-50%);z-index:2;display:flex;flex-direction:column;gap:6px;padding:10px 8px;border-radius:20px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(24px);box-shadow:0 16px 44px rgba(2,10,30,.55),inset 0 1px 0 rgba(255,255,255,.14)">
+    <div style="width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));margin-bottom:4px;box-shadow:0 4px 16px rgba(70,140,255,.5)"></div>
+    <div style="width:40px;height:40px;border-radius:13px;background:var(--glass2);border:1px solid var(--brd);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span><span style="font:600 7.5px 'Saira Semi Condensed',sans-serif;color:var(--accent2);letter-spacing:.5px">HOME</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">TEAM</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:2px;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">CASH</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border:1.5px solid var(--sub);transform:rotate(45deg)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">REH</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50% 50% 0 50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">EVNT</span></div>
+    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));font:600 12px 'Saira Semi Condensed',sans-serif;color:#04101f;display:flex;align-items:center;justify-content:center;margin-top:8px">JM</div>
+  </nav>
+  <main style="position:relative;height:100%;padding:20px 20px 14px 88px;display:flex;flex-direction:column;gap:12px;min-width:0">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div><div style="font:600 21px 'Saira Semi Condensed',sans-serif">Dashboard</div><div style="font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">StageFright Community · Saturday 4 July · season 2025–26</div></div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <div style="padding:6px 14px;border-radius:999px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px);font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Summer Showcase in <b style="color:var(--text)">12 days</b></div>
+        <button onClick="{{ tg2a }}" style="display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--brd);background:var(--glass2);color:var(--text);font:500 11.5px 'Saira Semi Condensed',sans-serif;cursor:pointer;backdrop-filter:blur(14px)"><span style="width:10px;height:10px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span>{{ lbl2a }}</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+      <div style="padding:14px 16px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)"><div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1.2px">ACTIVE MEMBERS</div><div style="font:600 26px 'Saira Semi Condensed',sans-serif;margin-top:2px">47</div><div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--good)">+3 this month</div></div>
+      <div style="padding:14px 16px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)"><div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1.2px">BALANCE</div><div style="font:600 26px 'Saira Semi Condensed',sans-serif;margin-top:2px">$4,286.50</div><div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--good)">+$421 vs June</div></div>
+      <div style="padding:14px 16px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)"><div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1.2px">DUES OUTSTANDING</div><div style="font:600 26px 'Saira Semi Condensed',sans-serif;margin-top:2px">$312</div><div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--bad)">6 members overdue</div></div>
+      <div style="padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,rgba(79,141,255,.28),rgba(56,210,255,.14));border:1px solid var(--brd);backdrop-filter:blur(22px);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)"><div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1.2px">TICKETS SOLD</div><div style="font:600 26px 'Saira Semi Condensed',sans-serif;margin-top:2px">148<span style="font:400 14px 'Saira Semi Condensed',sans-serif;color:var(--sub)"> / 220</span></div><div style="height:4px;border-radius:2px;background:var(--line);margin-top:7px"><div style="width:67%;height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--accent2))"></div></div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:12px">
+      <div style="padding:14px 16px 10px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px)">
+        <div style="display:flex;align-items:baseline;gap:10px"><div style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Income vs expenses</div><div style="margin-left:auto;display:flex;gap:12px;font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)"><span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--accent);margin-right:5px"></span>Income</span><span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--line);border:1px solid var(--brd);margin-right:5px"></span>Expenses</span></div></div>
+        <svg viewBox="0 0 340 110" style="width:100%;height:132px;margin-top:6px">
+          <line x1="0" y1="100" x2="340" y2="100" stroke="var(--line)"></line>
+          <rect x="14" y="38" width="14" height="62" rx="3" fill="var(--accent)"></rect><rect x="31" y="59" width="14" height="41" rx="3" fill="var(--line)"></rect>
+          <rect x="70" y="52" width="14" height="48" rx="3" fill="var(--accent)"></rect><rect x="87" y="48" width="14" height="52" rx="3" fill="var(--line)"></rect>
+          <rect x="126" y="9" width="14" height="91" rx="3" fill="var(--accent)"></rect><rect x="143" y="62" width="14" height="38" rx="3" fill="var(--line)"></rect>
+          <rect x="182" y="46" width="14" height="54" rx="3" fill="var(--accent)"></rect><rect x="199" y="40" width="14" height="60" rx="3" fill="var(--line)"></rect>
+          <rect x="238" y="24" width="14" height="76" rx="3" fill="var(--accent)"></rect><rect x="255" y="55" width="14" height="45" rx="3" fill="var(--line)"></rect>
+          <rect x="294" y="12" width="14" height="88" rx="3" fill="var(--accent2)"></rect><rect x="311" y="48" width="14" height="52" rx="3" fill="var(--line)"></rect>
+        </svg>
+        <div style="display:flex;justify-content:space-between;padding:0 8px;font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub)"><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span></div>
+      </div>
+      <div style="padding:14px 16px 10px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px)">
+        <div style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Rehearsal attendance</div>
+        <svg viewBox="0 0 240 110" style="width:100%;height:132px;margin-top:6px">
+          <polyline points="10,42 55,32 100,52 145,20 190,12 230,24" fill="none" stroke="var(--accent2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <circle cx="190" cy="12" r="4" fill="var(--accent2)"></circle>
+          <line x1="0" y1="100" x2="240" y2="100" stroke="var(--line)"></line>
+          <text x="196" y="30" fill="var(--text)" style="font:600 11px 'Saira Semi Condensed',sans-serif">91%</text>
+        </svg>
+        <div style="display:flex;justify-content:space-between;padding:0 6px;font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub)"><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.25fr;gap:12px;flex:1;min-height:0">
+      <div style="padding:14px 16px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px)">
+        <div style="display:flex;align-items:baseline"><div style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Upcoming rehearsals</div><a style="margin-left:auto;font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--accent2)">View all</a></div>
+        <div style="display:flex;flex-direction:column;margin-top:6px">
+          <div style="display:flex;align-items:center;gap:11px;padding:8px 0;border-bottom:1px solid var(--line)"><div style="width:38px;text-align:center;padding:4px 0;border-radius:9px;background:var(--glass2);border:1px solid var(--brd)"><div style="font:600 13px 'Saira Semi Condensed',sans-serif">7</div><div style="font:400 8.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">JUL</div></div><div style="flex:1"><div style="font:500 12.5px 'Saira Semi Condensed',sans-serif">Summer Showcase — Act II</div><div style="font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">7:00 PM · Main Hall</div></div><div style="font:500 11px 'Saira Semi Condensed',sans-serif;color:var(--good)">24/28</div></div>
+          <div style="display:flex;align-items:center;gap:11px;padding:8px 0;border-bottom:1px solid var(--line)"><div style="width:38px;text-align:center;padding:4px 0;border-radius:9px;background:var(--glass2);border:1px solid var(--brd)"><div style="font:600 13px 'Saira Semi Condensed',sans-serif">9</div><div style="font:400 8.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">JUL</div></div><div style="flex:1"><div style="font:500 12.5px 'Saira Semi Condensed',sans-serif">Vocal ensemble</div><div style="font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">7:30 PM · Studio B</div></div><div style="font:500 11px 'Saira Semi Condensed',sans-serif;color:var(--sub)">11/14</div></div>
+          <div style="display:flex;align-items:center;gap:11px;padding:8px 0;border-bottom:1px solid var(--line)"><div style="width:38px;text-align:center;padding:4px 0;border-radius:9px;background:var(--glass2);border:1px solid var(--brd)"><div style="font:600 13px 'Saira Semi Condensed',sans-serif">11</div><div style="font:400 8.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">JUL</div></div><div style="flex:1"><div style="font:500 12.5px 'Saira Semi Condensed',sans-serif">Full run-through</div><div style="font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">10:00 AM · Main Hall</div></div><div style="font:500 11px 'Saira Semi Condensed',sans-serif;color:var(--good)">26/31</div></div>
+          <div style="display:flex;align-items:center;gap:11px;padding:8px 0"><div style="width:38px;text-align:center;padding:4px 0;border-radius:9px;background:var(--glass2);border:1px solid var(--brd)"><div style="font:600 13px 'Saira Semi Condensed',sans-serif">14</div><div style="font:400 8.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">JUL</div></div><div style="flex:1"><div style="font:500 12.5px 'Saira Semi Condensed',sans-serif">Tech + dress rehearsal</div><div style="font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">6:00 PM · Theatre</div></div><div style="font:500 11px 'Saira Semi Condensed',sans-serif;color:var(--good)">30/31</div></div>
+        </div>
+      </div>
+      <div style="padding:14px 16px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px)">
+        <div style="display:flex;align-items:baseline"><div style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Recent transactions</div><a style="margin-left:auto;font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--accent2)">Open ledger</a></div>
+        <div style="display:grid;grid-template-columns:52px 1fr 92px 76px;gap:0 10px;margin-top:6px;font:400 12px 'Saira Semi Condensed',sans-serif">
+          <div style="display:contents;color:var(--sub)"><span style="padding:5px 0;font-size:10px;letter-spacing:1px">DATE</span><span style="padding:5px 0;font-size:10px;letter-spacing:1px">DESCRIPTION</span><span style="padding:5px 0;font-size:10px;letter-spacing:1px">CATEGORY</span><span style="padding:5px 0;font-size:10px;letter-spacing:1px;text-align:right">AMOUNT</span></div>
+          <div style="display:contents"><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Jul 2</span><span style="padding:7px 0;border-top:1px solid var(--line)">Costume fabric</span><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Wardrobe</span><span style="padding:7px 0;border-top:1px solid var(--line);text-align:right;color:var(--bad)">−86.40</span></div>
+          <div style="display:contents"><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Jul 1</span><span style="padding:7px 0;border-top:1px solid var(--line)">Member dues × 4</span><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Dues</span><span style="padding:7px 0;border-top:1px solid var(--line);text-align:right;color:var(--good)">+140.00</span></div>
+          <div style="display:contents"><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Jun 28</span><span style="padding:7px 0;border-top:1px solid var(--line)">Hall hire — June</span><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Venue</span><span style="padding:7px 0;border-top:1px solid var(--line);text-align:right;color:var(--bad)">−220.00</span></div>
+          <div style="display:contents"><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Jun 27</span><span style="padding:7px 0;border-top:1px solid var(--line)">Program ad sales</span><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Fundraising</span><span style="padding:7px 0;border-top:1px solid var(--line);text-align:right;color:var(--good)">+175.00</span></div>
+          <div style="display:contents"><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Jun 24</span><span style="padding:7px 0;border-top:1px solid var(--line)">Ticket pre-sales</span><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Box office</span><span style="padding:7px 0;border-top:1px solid var(--line);text-align:right;color:var(--good)">+412.50</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============ 2b MEMBERS ============ -->
+<div class="dv-opt" id="2b">
+<div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Members page — same direction</div>
+<div class="dv-card" style="width:1180px">
+<div style="--bg:#050d1c;--orb1:rgba(56,118,255,.38);--orb2:rgba(0,190,255,.22);--orb3:rgba(120,80,255,.18);--glass:rgba(255,255,255,.06);--glass2:rgba(255,255,255,.11);--brd:rgba(255,255,255,.14);--text:#eaf1ff;--sub:rgba(205,222,255,.62);--accent:#4f8dff;--accent2:#38d2ff;--line:rgba(255,255,255,.08);--good:#3ddca0;--bad:#ff7d92">
+<div style="{{ v2b }}position:relative;height:740px;background:var(--bg);font-family:'Saira Semi Condensed',sans-serif;color:var(--text);overflow:hidden;transition:background .3s">
+  <div style="position:absolute;inset:0;background:radial-gradient(600px 420px at 12% 8%,var(--orb1),transparent 65%),radial-gradient(520px 400px at 88% 18%,var(--orb2),transparent 60%),radial-gradient(700px 500px at 55% 110%,var(--orb3),transparent 60%);pointer-events:none"></div>
+  <nav style="position:absolute;left:16px;top:50%;transform:translateY(-50%);z-index:2;display:flex;flex-direction:column;gap:6px;padding:10px 8px;border-radius:20px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(24px);box-shadow:0 16px 44px rgba(2,10,30,.55),inset 0 1px 0 rgba(255,255,255,.14)">
+    <div style="width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));margin-bottom:4px;box-shadow:0 4px 16px rgba(70,140,255,.5)"></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">HOME</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;background:var(--glass2);border:1px solid var(--brd);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span><span style="font:600 7.5px 'Saira Semi Condensed',sans-serif;color:var(--accent2);letter-spacing:.5px">TEAM</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:2px;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">CASH</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border:1.5px solid var(--sub);transform:rotate(45deg)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">REH</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50% 50% 0 50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:.5px">EVNT</span></div>
+    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));font:600 12px 'Saira Semi Condensed',sans-serif;color:#04101f;display:flex;align-items:center;justify-content:center;margin-top:8px">JM</div>
+  </nav>
+  <main style="position:relative;height:100%;padding:20px 20px 14px 88px;display:flex;flex-direction:column;gap:12px;min-width:0">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div><div style="font:600 21px 'Saira Semi Condensed',sans-serif">Members</div><div style="font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">47 active · 3 joined this month · 6 dues overdue</div></div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px);width:210px"><span style="width:10px;height:10px;border-radius:50%;border:1.5px solid var(--sub);position:relative"><span style="position:absolute;width:5px;height:1.5px;background:var(--sub);transform:rotate(45deg);left:8px;top:9px"></span></span><span style="font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Search members…</span></div>
+        <div style="padding:7px 15px;border-radius:999px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04101f;font:600 11.5px 'Saira Semi Condensed',sans-serif;box-shadow:0 4px 16px rgba(70,140,255,.4)">+ Add member</div>
+        <button onClick="{{ tg2b }}" style="display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--brd);background:var(--glass2);color:var(--text);font:500 11.5px 'Saira Semi Condensed',sans-serif;cursor:pointer;backdrop-filter:blur(14px)"><span style="width:10px;height:10px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span>{{ lbl2b }}</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div style="padding:6px 14px;border-radius:999px;background:var(--glass2);border:1px solid var(--brd);backdrop-filter:blur(14px);font:500 11.5px 'Saira Semi Condensed',sans-serif">All · 47</div>
+      <div style="padding:6px 14px;border-radius:999px;border:1px solid var(--line);font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Performers · 32</div>
+      <div style="padding:6px 14px;border-radius:999px;border:1px solid var(--line);font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Crew · 9</div>
+      <div style="padding:6px 14px;border-radius:999px;border:1px solid var(--line);font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Committee · 6</div>
+      <div style="padding:6px 14px;border-radius:999px;border:1px solid var(--line);font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--bad)">Dues overdue · 6</div>
+      <div style="margin-left:auto;font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Sort: <b style="color:var(--text)">Name A–Z</b></div>
+    </div>
+    <!-- table -->
+    <div style="flex:1;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);padding:6px 18px 12px;min-height:0;overflow:hidden">
+      <div style="display:grid;grid-template-columns:1.6fr 110px 76px 120px 130px 60px;gap:0 12px;font:400 12.5px 'Saira Semi Condensed',sans-serif;align-items:center">
+        <div style="display:contents;color:var(--sub)"><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">MEMBER</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">ROLE</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">JOINED</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">DUES</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">ATTENDANCE</span><span style="padding:9px 0 7px;font-size:10px;letter-spacing:1.2px;border-bottom:1px solid var(--brd);text-align:right">&nbsp;</span></div>
+        <div style="display:contents"><span style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)"><span style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#4f8dff,#38d2ff);color:#04101f;font:600 10.5px 'Saira Semi Condensed',sans-serif;display:flex;align-items:center;justify-content:center;flex:none">AO</span><span><span style="display:block;font-weight:500">Amara Okafor</span><span style="display:block;font-size:10.5px;color:var(--sub)">a.okafor@mail.com</span></span></span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(79,141,255,.16);border:1px solid var(--brd);font-size:10.5px;color:var(--accent2)">Performer</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);color:var(--sub)">2021</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(255,125,146,.14);font-size:10.5px;color:var(--bad)">Overdue · $78</span></span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;gap:8px"><span style="flex:1;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:94%;height:100%;border-radius:2px;background:var(--good)"></span></span><span style="font-size:11px;color:var(--sub)">94%</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub);letter-spacing:2px">•••</span></div>
+        <div style="display:contents"><span style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)"><span style="width:28px;height:28px;border-radius:50%;background:var(--glass2);border:1px solid var(--brd);font:600 10.5px 'Saira Semi Condensed',sans-serif;display:flex;align-items:center;justify-content:center;flex:none">EB</span><span><span style="display:block;font-weight:500">Elsie Byrne</span><span style="display:block;font-size:10.5px;color:var(--sub)">elsie.b@mail.com</span></span></span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(79,141,255,.16);border:1px solid var(--brd);font-size:10.5px;color:var(--accent2)">Performer</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);color:var(--sub)">2024</span><span style="padding:7px 0;border-bottom:1px solid var(--line);color:var(--good)">Paid</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;gap:8px"><span style="flex:1;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:92%;height:100%;border-radius:2px;background:var(--good)"></span></span><span style="font-size:11px;color:var(--sub)">92%</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub);letter-spacing:2px">•••</span></div>
+        <div style="display:contents"><span style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)"><span style="width:28px;height:28px;border-radius:50%;background:var(--glass2);border:1px solid var(--brd);font:600 10.5px 'Saira Semi Condensed',sans-serif;display:flex;align-items:center;justify-content:center;flex:none">MC</span><span><span style="display:block;font-weight:500">Marco Castellanos</span><span style="display:block;font-size:10.5px;color:var(--sub)">m.castellanos@mail.com</span></span></span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(56,210,255,.12);border:1px solid var(--brd);font-size:10.5px;color:var(--accent2)">Crew</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);color:var(--sub)">2020</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(255,125,146,.14);font-size:10.5px;color:var(--bad)">Overdue · $52</span></span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;gap:8px"><span style="flex:1;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:76%;height:100%;border-radius:2px;background:var(--accent)"></span></span><span style="font-size:11px;color:var(--sub)">76%</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub);letter-spacing:2px">•••</span></div>
+        <div style="display:contents"><span style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)"><span style="width:28px;height:28px;border-radius:50%;background:var(--glass2);border:1px solid var(--brd);font:600 10.5px 'Saira Semi Condensed',sans-serif;display:flex;align-items:center;justify-content:center;flex:none">HC</span><span><span style="display:block;font-weight:500">Hannah Cole</span><span style="display:block;font-size:10.5px;color:var(--sub)">hannah.cole@mail.com</span></span></span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:var(--glass2);border:1px solid var(--brd);font-size:10.5px">Secretary</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);color:var(--sub)">2020</span><span style="padding:7px 0;border-bottom:1px solid var(--line);color:var(--good)">Paid</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;gap:8px"><span style="flex:1;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:97%;height:100%;border-radius:2px;background:var(--good)"></span></span><span style="font-size:11px;color:var(--sub)">97%</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub);letter-spacing:2px">•••</span></div>
+        <div style="display:contents"><span style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)"><span style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#38d2ff,#4f8dff);color:#04101f;font:600 10.5px 'Saira Semi Condensed',sans-serif;display:flex;align-items:center;justify-content:center;flex:none">JM</span><span><span style="display:block;font-weight:500">Jo Merton</span><span style="display:block;font-size:10.5px;color:var(--sub)">jo.merton@mail.com</span></span></span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:var(--glass2);border:1px solid var(--brd);font-size:10.5px">Treasurer</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);color:var(--sub)">2019</span><span style="padding:7px 0;border-bottom:1px solid var(--line);color:var(--good)">Paid</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;gap:8px"><span style="flex:1;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:100%;height:100%;border-radius:2px;background:var(--good)"></span></span><span style="font-size:11px;color:var(--sub)">100%</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub);letter-spacing:2px">•••</span></div>
+        <div style="display:contents"><span style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)"><span style="width:28px;height:28px;border-radius:50%;background:var(--glass2);border:1px solid var(--brd);font:600 10.5px 'Saira Semi Condensed',sans-serif;display:flex;align-items:center;justify-content:center;flex:none">LK</span><span><span style="display:block;font-weight:500">Lena Kowalski</span><span style="display:block;font-size:10.5px;color:var(--sub)">l.kowalski@mail.com</span></span></span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(79,141,255,.16);border:1px solid var(--brd);font-size:10.5px;color:var(--accent2)">Performer</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);color:var(--sub)">2023</span><span style="padding:7px 0;border-bottom:1px solid var(--line);color:var(--good)">Paid</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;gap:8px"><span style="flex:1;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:90%;height:100%;border-radius:2px;background:var(--good)"></span></span><span style="font-size:11px;color:var(--sub)">90%</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub);letter-spacing:2px">•••</span></div>
+        <div style="display:contents"><span style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)"><span style="width:28px;height:28px;border-radius:50%;background:var(--glass2);border:1px solid var(--brd);font:600 10.5px 'Saira Semi Condensed',sans-serif;display:flex;align-items:center;justify-content:center;flex:none">TN</span><span><span style="display:block;font-weight:500">Tom Nguyen</span><span style="display:block;font-size:10.5px;color:var(--sub)">tom.n@mail.com</span></span></span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(79,141,255,.16);border:1px solid var(--brd);font-size:10.5px;color:var(--accent2)">Performer</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);color:var(--sub)">2023</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(255,125,146,.14);font-size:10.5px;color:var(--bad)">Overdue · $52</span></span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;gap:8px"><span style="flex:1;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:81%;height:100%;border-radius:2px;background:var(--accent)"></span></span><span style="font-size:11px;color:var(--sub)">81%</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub);letter-spacing:2px">•••</span></div>
+        <div style="display:contents"><span style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)"><span style="width:28px;height:28px;border-radius:50%;background:var(--glass2);border:1px solid var(--brd);font:600 10.5px 'Saira Semi Condensed',sans-serif;display:flex;align-items:center;justify-content:center;flex:none">PS</span><span><span style="display:block;font-weight:500">Priya Shah</span><span style="display:block;font-size:10.5px;color:var(--sub)">priya.shah@mail.com</span></span></span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(79,141,255,.16);border:1px solid var(--brd);font-size:10.5px;color:var(--accent2)">Performer</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);color:var(--sub)">2022</span><span style="padding:7px 0;border-bottom:1px solid var(--line);color:var(--good)">Paid</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;gap:8px"><span style="flex:1;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:88%;height:100%;border-radius:2px;background:var(--good)"></span></span><span style="font-size:11px;color:var(--sub)">88%</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub);letter-spacing:2px">•••</span></div>
+        <div style="display:contents"><span style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)"><span style="width:28px;height:28px;border-radius:50%;background:var(--glass2);border:1px solid var(--brd);font:600 10.5px 'Saira Semi Condensed',sans-serif;display:flex;align-items:center;justify-content:center;flex:none">SF</span><span><span style="display:block;font-weight:500">Sam Ferreira</span><span style="display:block;font-size:10.5px;color:var(--sub)">sam.f@mail.com</span></span></span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(79,141,255,.16);border:1px solid var(--brd);font-size:10.5px;color:var(--accent2)">Performer</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);color:var(--sub)">2025</span><span style="padding:7px 0;border-bottom:1px solid var(--line);color:var(--good)">Paid</span><span style="border-bottom:1px solid var(--line);align-self:stretch;display:flex;align-items:center;gap:8px"><span style="flex:1;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:71%;height:100%;border-radius:2px;background:var(--accent)"></span></span><span style="font-size:11px;color:var(--sub)">71%</span></span><span style="padding:7px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub);letter-spacing:2px">•••</span></div>
+        <div style="display:contents"><span style="display:flex;align-items:center;gap:10px;padding:7px 0"><span style="width:28px;height:28px;border-radius:50%;background:var(--glass2);border:1px solid var(--brd);font:600 10.5px 'Saira Semi Condensed',sans-serif;display:flex;align-items:center;justify-content:center;flex:none">DW</span><span><span style="display:block;font-weight:500">Dan Whitfield</span><span style="display:block;font-size:10.5px;color:var(--sub)">dan.w@mail.com</span></span></span><span style="align-self:stretch;display:flex;align-items:center"><span style="padding:3px 10px;border-radius:999px;background:rgba(56,210,255,.12);border:1px solid var(--brd);font-size:10.5px;color:var(--accent2)">Crew</span></span><span style="padding:7px 0;color:var(--sub)">2018</span><span style="padding:7px 0;color:var(--good)">Paid</span><span style="align-self:stretch;display:flex;align-items:center;gap:8px"><span style="flex:1;height:4px;border-radius:2px;background:var(--line)"><span style="display:block;width:85%;height:100%;border-radius:2px;background:var(--good)"></span></span><span style="font-size:11px;color:var(--sub)">85%</span></span><span style="padding:7px 0;text-align:right;color:var(--sub);letter-spacing:2px">•••</span></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub)"><span>Showing 10 of 47 members</span><span style="margin-left:auto;display:flex;gap:6px"><span style="padding:4px 11px;border-radius:8px;background:var(--glass2);border:1px solid var(--brd);color:var(--text)">1</span><span style="padding:4px 11px;border-radius:8px;border:1px solid var(--line)">2</span><span style="padding:4px 11px;border-radius:8px;border:1px solid var(--line)">3</span><span style="padding:4px 11px;border-radius:8px;border:1px solid var(--line)">→</span></span></div>
+  </main>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: "show the Finances and Rehearsals pages" · "member row click → detail panel" · "make the dock horizontal at the bottom" · "less glow"</p>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">StageFright Community — 4 style directions (each has a working light/dark toggle, top-right of the mock)</span></div>
+<div style="font:400 11.5px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.55);max-width:760px;margin:-10px 0 20px">Assumptions: desktop-first (Win + Mac Catalyst), dense power-user layouts, condensed sans type, placeholder data for a small performing-arts group. Options vary glass intensity, blue palette, navigation pattern and dashboard layout. Real app structure to follow once the local folder is linked.</div>
+<div class="dv-opts">
+
+<!-- ============ 1a MIDNIGHT GLASS ============ -->
+<div class="dv-opt" id="1a">
+<div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Midnight Glass — deep navy · full liquid glass · left sidebar · Saira Semi Condensed</div>
+<div class="dv-card" style="width:1180px">
+<div style="--bg:#050d1c;--orb1:rgba(56,118,255,.38);--orb2:rgba(0,190,255,.22);--orb3:rgba(120,80,255,.18);--glass:rgba(255,255,255,.06);--glass2:rgba(255,255,255,.11);--brd:rgba(255,255,255,.14);--text:#eaf1ff;--sub:rgba(205,222,255,.62);--accent:#4f8dff;--accent2:#38d2ff;--line:rgba(255,255,255,.08);--good:#3ddca0;--bad:#ff7d92">
+<div style="{{ v1a }}position:relative;height:740px;background:var(--bg);font-family:'Saira Semi Condensed',sans-serif;color:var(--text);overflow:hidden;display:flex;transition:background .3s">
+  <div style="position:absolute;inset:0;background:radial-gradient(600px 420px at 12% 8%,var(--orb1),transparent 65%),radial-gradient(520px 400px at 88% 18%,var(--orb2),transparent 60%),radial-gradient(700px 500px at 55% 110%,var(--orb3),transparent 60%);pointer-events:none"></div>
+  <!-- sidebar -->
+  <nav style="position:relative;width:208px;flex:none;margin:14px 0 14px 14px;border-radius:18px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);display:flex;flex-direction:column;padding:18px 12px;gap:4px">
+    <div style="display:flex;align-items:center;gap:9px;padding:0 8px 16px">
+      <div style="width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 14px rgba(70,140,255,.5)"></div>
+      <div><div style="font:600 15px 'Saira Semi Condensed',sans-serif;letter-spacing:.4px">STAGEFRIGHT</div><div style="font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:2.4px">COMMUNITY</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:11px;background:var(--glass2);border:1px solid var(--brd);font:500 13px 'Saira Semi Condensed',sans-serif"><span style="width:8px;height:8px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span>Dashboard</div>
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:11px;color:var(--sub);font:400 13px 'Saira Semi Condensed',sans-serif"><span style="width:8px;height:8px;border-radius:50%;border:1.5px solid var(--sub)"></span>Members</div>
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:11px;color:var(--sub);font:400 13px 'Saira Semi Condensed',sans-serif"><span style="width:8px;height:8px;border-radius:2px;border:1.5px solid var(--sub)"></span>Finances</div>
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:11px;color:var(--sub);font:400 13px 'Saira Semi Condensed',sans-serif"><span style="width:8px;height:8px;border:1.5px solid var(--sub);transform:rotate(45deg)"></span>Rehearsals</div>
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:11px;color:var(--sub);font:400 13px 'Saira Semi Condensed',sans-serif"><span style="width:8px;height:8px;border-radius:50% 50% 0 50%;border:1.5px solid var(--sub)"></span>Events</div>
+    <div style="margin-top:auto;display:flex;align-items:center;gap:9px;padding:10px 10px;border-radius:12px;background:var(--glass);border:1px solid var(--brd)">
+      <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));font:600 11px 'Saira Semi Condensed',sans-serif;color:#04101f;display:flex;align-items:center;justify-content:center">JM</div>
+      <div><div style="font:500 12px 'Saira Semi Condensed',sans-serif">Jo Merton</div><div style="font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Treasurer</div></div>
+    </div>
+  </nav>
+  <!-- main -->
+  <main style="position:relative;flex:1;padding:20px 20px 14px;display:flex;flex-direction:column;gap:12px;min-width:0">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div><div style="font:600 21px 'Saira Semi Condensed',sans-serif">Dashboard</div><div style="font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Saturday 4 July · season 2025–26</div></div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <div style="padding:6px 14px;border-radius:999px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px);font:400 11.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">Summer Showcase in <b style="color:var(--text)">12 days</b></div>
+        <button onClick="{{ tg1a }}" style="display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--brd);background:var(--glass2);color:var(--text);font:500 11.5px 'Saira Semi Condensed',sans-serif;cursor:pointer;backdrop-filter:blur(14px)"><span style="width:10px;height:10px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></span>{{ lbl1a }}</button>
+      </div>
+    </div>
+    <!-- KPI tiles -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+      <div style="padding:14px 16px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)"><div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1.2px">ACTIVE MEMBERS</div><div style="font:600 26px 'Saira Semi Condensed',sans-serif;margin-top:2px">47</div><div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--good)">+3 this month</div></div>
+      <div style="padding:14px 16px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)"><div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1.2px">BALANCE</div><div style="font:600 26px 'Saira Semi Condensed',sans-serif;margin-top:2px">$4,286.50</div><div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--good)">+$421 vs June</div></div>
+      <div style="padding:14px 16px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)"><div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1.2px">DUES OUTSTANDING</div><div style="font:600 26px 'Saira Semi Condensed',sans-serif;margin-top:2px">$312</div><div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--bad)">6 members overdue</div></div>
+      <div style="padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,rgba(79,141,255,.28),rgba(56,210,255,.14));border:1px solid var(--brd);backdrop-filter:blur(22px);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)"><div style="font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1.2px">TICKETS SOLD</div><div style="font:600 26px 'Saira Semi Condensed',sans-serif;margin-top:2px">148<span style="font:400 14px 'Saira Semi Condensed',sans-serif;color:var(--sub)"> / 220</span></div><div style="height:4px;border-radius:2px;background:var(--line);margin-top:7px"><div style="width:67%;height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--accent2))"></div></div></div>
+    </div>
+    <!-- charts -->
+    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:12px">
+      <div style="padding:14px 16px 10px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px)">
+        <div style="display:flex;align-items:baseline;gap:10px"><div style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Income vs expenses</div><div style="margin-left:auto;display:flex;gap:12px;font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)"><span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--accent);margin-right:5px"></span>Income</span><span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--line);border:1px solid var(--brd);margin-right:5px"></span>Expenses</span></div></div>
+        <svg viewBox="0 0 340 110" style="width:100%;height:132px;margin-top:6px">
+          <line x1="0" y1="100" x2="340" y2="100" stroke="var(--line)"></line>
+          <rect x="14" y="38" width="14" height="62" rx="3" fill="var(--accent)"></rect><rect x="31" y="59" width="14" height="41" rx="3" fill="var(--line)"></rect>
+          <rect x="70" y="52" width="14" height="48" rx="3" fill="var(--accent)"></rect><rect x="87" y="48" width="14" height="52" rx="3" fill="var(--line)"></rect>
+          <rect x="126" y="9" width="14" height="91" rx="3" fill="var(--accent)"></rect><rect x="143" y="62" width="14" height="38" rx="3" fill="var(--line)"></rect>
+          <rect x="182" y="46" width="14" height="54" rx="3" fill="var(--accent)"></rect><rect x="199" y="40" width="14" height="60" rx="3" fill="var(--line)"></rect>
+          <rect x="238" y="24" width="14" height="76" rx="3" fill="var(--accent)"></rect><rect x="255" y="55" width="14" height="45" rx="3" fill="var(--line)"></rect>
+          <rect x="294" y="12" width="14" height="88" rx="3" fill="var(--accent2)"></rect><rect x="311" y="48" width="14" height="52" rx="3" fill="var(--line)"></rect>
+        </svg>
+        <div style="display:flex;justify-content:space-between;padding:0 8px;font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub)"><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span></div>
+      </div>
+      <div style="padding:14px 16px 10px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px)">
+        <div style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Rehearsal attendance</div>
+        <svg viewBox="0 0 240 110" style="width:100%;height:132px;margin-top:6px">
+          <polyline points="10,42 55,32 100,52 145,20 190,12 230,24" fill="none" stroke="var(--accent2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <circle cx="190" cy="12" r="4" fill="var(--accent2)"></circle>
+          <line x1="0" y1="100" x2="240" y2="100" stroke="var(--line)"></line>
+          <text x="196" y="30" fill="var(--text)" style="font:600 11px 'Saira Semi Condensed',sans-serif">91%</text>
+        </svg>
+        <div style="display:flex;justify-content:space-between;padding:0 6px;font:400 10px 'Saira Semi Condensed',sans-serif;color:var(--sub)"><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span></div>
+      </div>
+    </div>
+    <!-- lists -->
+    <div style="display:grid;grid-template-columns:1fr 1.25fr;gap:12px;flex:1;min-height:0">
+      <div style="padding:14px 16px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px)">
+        <div style="display:flex;align-items:baseline"><div style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Upcoming rehearsals</div><a style="margin-left:auto;font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--accent2)">View all</a></div>
+        <div style="display:flex;flex-direction:column;margin-top:6px">
+          <div style="display:flex;align-items:center;gap:11px;padding:8px 0;border-bottom:1px solid var(--line)"><div style="width:38px;text-align:center;padding:4px 0;border-radius:9px;background:var(--glass2);border:1px solid var(--brd)"><div style="font:600 13px 'Saira Semi Condensed',sans-serif">7</div><div style="font:400 8.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">JUL</div></div><div style="flex:1"><div style="font:500 12.5px 'Saira Semi Condensed',sans-serif">Summer Showcase — Act II</div><div style="font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">7:00 PM · Main Hall</div></div><div style="font:500 11px 'Saira Semi Condensed',sans-serif;color:var(--good)">24/28</div></div>
+          <div style="display:flex;align-items:center;gap:11px;padding:8px 0;border-bottom:1px solid var(--line)"><div style="width:38px;text-align:center;padding:4px 0;border-radius:9px;background:var(--glass2);border:1px solid var(--brd)"><div style="font:600 13px 'Saira Semi Condensed',sans-serif">9</div><div style="font:400 8.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">JUL</div></div><div style="flex:1"><div style="font:500 12.5px 'Saira Semi Condensed',sans-serif">Vocal ensemble</div><div style="font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">7:30 PM · Studio B</div></div><div style="font:500 11px 'Saira Semi Condensed',sans-serif;color:var(--sub)">11/14</div></div>
+          <div style="display:flex;align-items:center;gap:11px;padding:8px 0;border-bottom:1px solid var(--line)"><div style="width:38px;text-align:center;padding:4px 0;border-radius:9px;background:var(--glass2);border:1px solid var(--brd)"><div style="font:600 13px 'Saira Semi Condensed',sans-serif">11</div><div style="font:400 8.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">JUL</div></div><div style="flex:1"><div style="font:500 12.5px 'Saira Semi Condensed',sans-serif">Full run-through</div><div style="font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">10:00 AM · Main Hall</div></div><div style="font:500 11px 'Saira Semi Condensed',sans-serif;color:var(--good)">26/31</div></div>
+          <div style="display:flex;align-items:center;gap:11px;padding:8px 0"><div style="width:38px;text-align:center;padding:4px 0;border-radius:9px;background:var(--glass2);border:1px solid var(--brd)"><div style="font:600 13px 'Saira Semi Condensed',sans-serif">14</div><div style="font:400 8.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">JUL</div></div><div style="flex:1"><div style="font:500 12.5px 'Saira Semi Condensed',sans-serif">Tech + dress rehearsal</div><div style="font:400 10.5px 'Saira Semi Condensed',sans-serif;color:var(--sub)">6:00 PM · Theatre</div></div><div style="font:500 11px 'Saira Semi Condensed',sans-serif;color:var(--good)">30/31</div></div>
+        </div>
+      </div>
+      <div style="padding:14px 16px;border-radius:16px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(22px)">
+        <div style="display:flex;align-items:baseline"><div style="font:600 13.5px 'Saira Semi Condensed',sans-serif">Recent transactions</div><a style="margin-left:auto;font:400 11px 'Saira Semi Condensed',sans-serif;color:var(--accent2)">Open ledger</a></div>
+        <div style="display:grid;grid-template-columns:52px 1fr 92px 76px;gap:0 10px;margin-top:6px;font:400 12px 'Saira Semi Condensed',sans-serif">
+          <div style="display:contents;color:var(--sub)"><span style="padding:5px 0;font-size:10px;letter-spacing:1px">DATE</span><span style="padding:5px 0;font-size:10px;letter-spacing:1px">DESCRIPTION</span><span style="padding:5px 0;font-size:10px;letter-spacing:1px">CATEGORY</span><span style="padding:5px 0;font-size:10px;letter-spacing:1px;text-align:right">AMOUNT</span></div>
+          <div style="display:contents"><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Jul 2</span><span style="padding:7px 0;border-top:1px solid var(--line)">Costume fabric</span><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Wardrobe</span><span style="padding:7px 0;border-top:1px solid var(--line);text-align:right;color:var(--bad)">−86.40</span></div>
+          <div style="display:contents"><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Jul 1</span><span style="padding:7px 0;border-top:1px solid var(--line)">Member dues × 4</span><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Dues</span><span style="padding:7px 0;border-top:1px solid var(--line);text-align:right;color:var(--good)">+140.00</span></div>
+          <div style="display:contents"><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Jun 28</span><span style="padding:7px 0;border-top:1px solid var(--line)">Hall hire — June</span><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Venue</span><span style="padding:7px 0;border-top:1px solid var(--line);text-align:right;color:var(--bad)">−220.00</span></div>
+          <div style="display:contents"><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Jun 27</span><span style="padding:7px 0;border-top:1px solid var(--line)">Program ad sales</span><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Fundraising</span><span style="padding:7px 0;border-top:1px solid var(--line);text-align:right;color:var(--good)">+175.00</span></div>
+          <div style="display:contents"><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Jun 24</span><span style="padding:7px 0;border-top:1px solid var(--line)">Ticket pre-sales</span><span style="padding:7px 0;border-top:1px solid var(--line);color:var(--sub)">Box office</span><span style="padding:7px 0;border-top:1px solid var(--line);text-align:right;color:var(--good)">+412.50</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============ 1b COBALT STUDIO ============ -->
+<div class="dv-opt" id="1b">
+<div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Cobalt Studio — vivid cobalt · medium glass · top bar nav · Barlow Semi Condensed</div>
+<div class="dv-card" style="width:1180px">
+<div style="--bg:#dde6f8;--orb1:rgba(30,86,214,.30);--orb2:rgba(79,131,255,.34);--orb3:rgba(150,190,255,.5);--glass:rgba(255,255,255,.55);--glass2:rgba(255,255,255,.78);--brd:rgba(255,255,255,.85);--text:#0c1c3d;--sub:rgba(18,45,95,.6);--accent:#1e56d6;--accent2:#4f83ff;--line:rgba(15,45,110,.1);--good:#0e9a6a;--bad:#d5445f">
+<div style="{{ v1b }}position:relative;height:740px;background:var(--bg);font-family:'Barlow Semi Condensed',sans-serif;color:var(--text);overflow:hidden;display:flex;flex-direction:column;transition:background .3s">
+  <div style="position:absolute;inset:0;background:radial-gradient(640px 460px at 8% -10%,var(--orb2),transparent 60%),radial-gradient(560px 420px at 96% 30%,var(--orb1),transparent 65%),radial-gradient(760px 520px at 45% 115%,var(--orb3),transparent 60%);pointer-events:none"></div>
+  <!-- top bar -->
+  <header style="position:relative;margin:14px 16px 0;border-radius:14px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(18px);box-shadow:0 8px 30px rgba(20,50,130,.10);display:flex;align-items:center;gap:6px;padding:9px 14px">
+    <div style="display:flex;align-items:center;gap:9px;margin-right:14px">
+      <div style="width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2))"></div>
+      <div style="font:700 14.5px 'Barlow Semi Condensed',sans-serif;letter-spacing:.5px">StageFright <span style="font-weight:400;color:var(--sub)">Community</span></div>
+    </div>
+    <div style="padding:7px 15px;border-radius:9px;background:var(--accent);color:#fff;font:600 12.5px 'Barlow Semi Condensed',sans-serif;box-shadow:0 4px 12px rgba(30,86,214,.35)">Dashboard</div>
+    <div style="padding:7px 15px;border-radius:9px;color:var(--sub);font:500 12.5px 'Barlow Semi Condensed',sans-serif">Members</div>
+    <div style="padding:7px 15px;border-radius:9px;color:var(--sub);font:500 12.5px 'Barlow Semi Condensed',sans-serif">Finances</div>
+    <div style="padding:7px 15px;border-radius:9px;color:var(--sub);font:500 12.5px 'Barlow Semi Condensed',sans-serif">Rehearsals</div>
+    <div style="padding:7px 15px;border-radius:9px;color:var(--sub);font:500 12.5px 'Barlow Semi Condensed',sans-serif">Events</div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+      <button onClick="{{ tg1b }}" style="display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--brd);background:var(--glass2);color:var(--text);font:600 11.5px 'Barlow Semi Condensed',sans-serif;cursor:pointer">
+        <span style="width:10px;height:10px;border-radius:50%;background:var(--accent)"></span>{{ lbl1b }}</button>
+      <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;font:600 11.5px 'Barlow Semi Condensed',sans-serif;display:flex;align-items:center;justify-content:center">JM</div>
+    </div>
+  </header>
+  <main style="position:relative;flex:1;padding:14px 16px;display:grid;grid-template-columns:340px 1fr;gap:12px;min-height:0">
+    <!-- treasury hero -->
+    <div style="display:flex;flex-direction:column;gap:12px;min-height:0">
+      <div style="padding:20px;border-radius:18px;background:linear-gradient(150deg,var(--accent),#12328a);color:#fff;box-shadow:0 14px 36px rgba(20,60,170,.35);position:relative;overflow:hidden">
+        <div style="position:absolute;right:-30px;top:-30px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.10)"></div>
+        <div style="position:absolute;right:24px;bottom:-52px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.07)"></div>
+        <div style="font:500 11px 'Barlow Semi Condensed',sans-serif;letter-spacing:1.6px;opacity:.75">TREASURY BALANCE</div>
+        <div style="font:700 36px 'Barlow Semi Condensed',sans-serif;margin:4px 0 2px">$4,286.50</div>
+        <div style="font:400 12px 'Barlow Semi Condensed',sans-serif;opacity:.8">+$421.10 this month · reconciled Jul 2</div>
+        <div style="display:flex;gap:8px;margin-top:16px">
+          <div style="padding:7px 14px;border-radius:9px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);font:600 11.5px 'Barlow Semi Condensed',sans-serif;backdrop-filter:blur(6px)">+ Record transaction</div>
+          <div style="padding:7px 14px;border-radius:9px;border:1px solid rgba(255,255,255,.35);font:600 11.5px 'Barlow Semi Condensed',sans-serif">Export</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="padding:13px 15px;border-radius:15px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px)"><div style="font:500 10.5px 'Barlow Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px">MEMBERS</div><div style="font:700 23px 'Barlow Semi Condensed',sans-serif">47</div><div style="font:400 10.5px 'Barlow Semi Condensed',sans-serif;color:var(--good)">+3 new</div></div>
+        <div style="padding:13px 15px;border-radius:15px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px)"><div style="font:500 10.5px 'Barlow Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px">DUES OWED</div><div style="font:700 23px 'Barlow Semi Condensed',sans-serif">$312</div><div style="font:400 10.5px 'Barlow Semi Condensed',sans-serif;color:var(--bad)">6 overdue</div></div>
+        <div style="padding:13px 15px;border-radius:15px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px)"><div style="font:500 10.5px 'Barlow Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px">ATTENDANCE</div><div style="font:700 23px 'Barlow Semi Condensed',sans-serif">91%</div><div style="font:400 10.5px 'Barlow Semi Condensed',sans-serif;color:var(--good)">season high</div></div>
+        <div style="padding:13px 15px;border-radius:15px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px)"><div style="font:500 10.5px 'Barlow Semi Condensed',sans-serif;color:var(--sub);letter-spacing:1px">TICKETS</div><div style="font:700 23px 'Barlow Semi Condensed',sans-serif">148<span style="font:400 13px 'Barlow Semi Condensed',sans-serif;color:var(--sub)">/220</span></div><div style="height:4px;border-radius:2px;background:var(--line);margin-top:5px"><div style="width:67%;height:100%;border-radius:2px;background:var(--accent)"></div></div></div>
+      </div>
+      <div style="flex:1;padding:14px 16px;border-radius:15px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px);min-height:0">
+        <div style="font:600 13px 'Barlow Semi Condensed',sans-serif">Next events</div>
+        <div style="display:flex;flex-direction:column;gap:0;margin-top:4px;font:400 12px 'Barlow Semi Condensed',sans-serif">
+          <div style="display:flex;gap:9px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)"><span style="width:7px;height:7px;border-radius:50%;background:var(--accent)"></span><span style="flex:1;font-weight:500">Summer Showcase</span><span style="color:var(--sub)">Jul 16</span></div>
+          <div style="display:flex;gap:9px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)"><span style="width:7px;height:7px;border-radius:50%;background:var(--accent2)"></span><span style="flex:1;font-weight:500">Open Mic Night</span><span style="color:var(--sub)">Aug 2</span></div>
+          <div style="display:flex;gap:9px;align-items:center;padding:7px 0"><span style="width:7px;height:7px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="flex:1;font-weight:500">Annual General Meeting</span><span style="color:var(--sub)">Aug 20</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- right: chart + tables -->
+    <div style="display:flex;flex-direction:column;gap:12px;min-height:0;min-width:0">
+      <div style="padding:15px 18px 10px;border-radius:18px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px);box-shadow:0 8px 26px rgba(20,50,130,.08)">
+        <div style="display:flex;align-items:baseline"><div style="font:600 14px 'Barlow Semi Condensed',sans-serif">Cash flow — last 6 months</div><div style="margin-left:auto;display:flex;gap:12px;font:400 10.5px 'Barlow Semi Condensed',sans-serif;color:var(--sub)"><span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--accent);margin-right:5px"></span>In</span><span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--line);margin-right:5px"></span>Out</span></div></div>
+        <svg viewBox="0 0 620 120" style="width:100%;height:140px;margin-top:4px">
+          <line x1="0" y1="108" x2="620" y2="108" stroke="var(--line)"></line>
+          <rect x="30" y="46" width="26" height="62" rx="4" fill="var(--accent)"></rect><rect x="60" y="67" width="26" height="41" rx="4" fill="var(--line)"></rect>
+          <rect x="130" y="60" width="26" height="48" rx="4" fill="var(--accent)"></rect><rect x="160" y="56" width="26" height="52" rx="4" fill="var(--line)"></rect>
+          <rect x="230" y="17" width="26" height="91" rx="4" fill="var(--accent)"></rect><rect x="260" y="70" width="26" height="38" rx="4" fill="var(--line)"></rect>
+          <rect x="330" y="54" width="26" height="54" rx="4" fill="var(--accent)"></rect><rect x="360" y="48" width="26" height="60" rx="4" fill="var(--line)"></rect>
+          <rect x="430" y="32" width="26" height="76" rx="4" fill="var(--accent)"></rect><rect x="460" y="63" width="26" height="45" rx="4" fill="var(--line)"></rect>
+          <rect x="530" y="20" width="26" height="88" rx="4" fill="var(--accent2)"></rect><rect x="560" y="56" width="26" height="52" rx="4" fill="var(--line)"></rect>
+        </svg>
+        <div style="display:flex;justify-content:space-between;padding:0 30px;font:400 10px 'Barlow Semi Condensed',sans-serif;color:var(--sub)"><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span></div>
+      </div>
+      <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:0">
+        <div style="padding:14px 16px;border-radius:15px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px)">
+          <div style="font:600 13px 'Barlow Semi Condensed',sans-serif">Rehearsals this week</div>
+          <div style="margin-top:4px;font:400 12px 'Barlow Semi Condensed',sans-serif">
+            <div style="display:flex;gap:9px;padding:8px 0;border-bottom:1px solid var(--line);align-items:center"><span style="font:700 12px 'Barlow Semi Condensed',sans-serif;color:var(--accent);width:44px">TUE 7</span><span style="flex:1"><b>Act II staging</b><span style="color:var(--sub)"> · Main Hall</span></span><span style="color:var(--good);font-weight:600">24/28</span></div>
+            <div style="display:flex;gap:9px;padding:8px 0;border-bottom:1px solid var(--line);align-items:center"><span style="font:700 12px 'Barlow Semi Condensed',sans-serif;color:var(--accent);width:44px">THU 9</span><span style="flex:1"><b>Vocal ensemble</b><span style="color:var(--sub)"> · Studio B</span></span><span style="color:var(--sub);font-weight:600">11/14</span></div>
+            <div style="display:flex;gap:9px;padding:8px 0;align-items:center"><span style="font:700 12px 'Barlow Semi Condensed',sans-serif;color:var(--accent);width:44px">SAT 11</span><span style="flex:1"><b>Full run-through</b><span style="color:var(--sub)"> · Main Hall</span></span><span style="color:var(--good);font-weight:600">26/31</span></div>
+          </div>
+        </div>
+        <div style="padding:14px 16px;border-radius:15px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(14px)">
+          <div style="font:600 13px 'Barlow Semi Condensed',sans-serif">Latest transactions</div>
+          <div style="margin-top:4px;font:400 12px 'Barlow Semi Condensed',sans-serif">
+            <div style="display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)"><span style="flex:1">Costume fabric</span><span style="color:var(--bad);font-weight:600">−86.40</span></div>
+            <div style="display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)"><span style="flex:1">Member dues × 4</span><span style="color:var(--good);font-weight:600">+140.00</span></div>
+            <div style="display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)"><span style="flex:1">Hall hire — June</span><span style="color:var(--bad);font-weight:600">−220.00</span></div>
+            <div style="display:flex;gap:8px;padding:8px 0"><span style="flex:1">Ticket pre-sales</span><span style="color:var(--good);font-weight:600">+412.50</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============ 1c ICE DOCK ============ -->
+<div class="dv-opt" id="1c">
+<div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Ice Dock — cyan / ice · subtle frost · floating glass dock · Archivo Narrow</div>
+<div class="dv-card" style="width:1180px">
+<div style="--bg:#e9f4fa;--orb1:rgba(14,155,192,.20);--orb2:rgba(80,200,235,.28);--orb3:rgba(180,225,245,.6);--glass:rgba(255,255,255,.62);--glass2:rgba(255,255,255,.85);--brd:rgba(255,255,255,.9);--text:#07293a;--sub:rgba(10,60,90,.58);--accent:#0e9bc0;--accent2:#22c9e8;--line:rgba(10,70,100,.1);--good:#0d9f72;--bad:#d5506a">
+<div style="{{ v1c }}position:relative;height:740px;background:var(--bg);font-family:'Archivo Narrow',sans-serif;color:var(--text);overflow:hidden;transition:background .3s">
+  <div style="position:absolute;inset:0;background:radial-gradient(700px 500px at 90% -10%,var(--orb2),transparent 60%),radial-gradient(600px 440px at 0% 50%,var(--orb1),transparent 60%),radial-gradient(800px 500px at 60% 120%,var(--orb3),transparent 65%);pointer-events:none"></div>
+  <!-- floating dock -->
+  <nav style="position:absolute;left:16px;top:50%;transform:translateY(-50%);z-index:2;display:flex;flex-direction:column;gap:6px;padding:10px 8px;border-radius:20px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(20px);box-shadow:0 12px 32px rgba(10,70,110,.14)">
+    <div style="width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));margin-bottom:4px"></div>
+    <div style="width:40px;height:40px;border-radius:13px;background:var(--glass2);border:1px solid var(--brd);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 3px 10px rgba(14,155,192,.25)"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent)"></span><span style="font:600 7.5px 'Archivo Narrow',sans-serif;color:var(--accent)">HOME</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Archivo Narrow',sans-serif;color:var(--sub)">TEAM</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:2px;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Archivo Narrow',sans-serif;color:var(--sub)">CASH</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border:1.5px solid var(--sub);transform:rotate(45deg)"></span><span style="font:400 7.5px 'Archivo Narrow',sans-serif;color:var(--sub)">REH</span></div>
+    <div style="width:40px;height:40px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="width:9px;height:9px;border-radius:50% 50% 0 50%;border:1.5px solid var(--sub)"></span><span style="font:400 7.5px 'Archivo Narrow',sans-serif;color:var(--sub)">EVNT</span></div>
+  </nav>
+  <main style="position:relative;height:100%;padding:18px 22px 16px 88px;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;align-items:center">
+      <div><div style="font:600 20px 'Archivo Narrow',sans-serif">Good morning, Jo</div><div style="font:400 12px 'Archivo Narrow',sans-serif;color:var(--sub)">StageFright Community · Sat 4 Jul</div></div>
+      <button onClick="{{ tg1c }}" style="margin-left:auto;display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--brd);background:var(--glass);color:var(--text);font:600 11.5px 'Archivo Narrow',sans-serif;cursor:pointer;backdrop-filter:blur(12px)"><span style="width:10px;height:10px;border-radius:50%;background:var(--accent2)"></span>{{ lbl1c }}</button>
+    </div>
+    <!-- events strip -->
+    <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:12px">
+      <div style="padding:16px 18px;border-radius:18px;background:linear-gradient(140deg,var(--accent),var(--accent2));color:#fff;position:relative;overflow:hidden;box-shadow:0 12px 30px rgba(14,155,192,.3)">
+        <div style="position:absolute;right:-20px;bottom:-40px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.14)"></div>
+        <div style="font:600 10.5px 'Archivo Narrow',sans-serif;letter-spacing:1.6px;opacity:.85">NEXT EVENT · 12 DAYS</div>
+        <div style="font:700 24px 'Archivo Narrow',sans-serif;margin-top:3px">Summer Showcase</div>
+        <div style="font:400 12px 'Archivo Narrow',sans-serif;opacity:.85">Thu 16 Jul · Riverside Theatre · 148/220 tickets sold</div>
+        <div style="height:5px;border-radius:3px;background:rgba(255,255,255,.25);margin-top:12px;max-width:300px"><div style="width:67%;height:100%;border-radius:3px;background:#fff"></div></div>
+      </div>
+      <div style="padding:16px 18px;border-radius:18px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(12px)"><div style="font:600 10.5px 'Archivo Narrow',sans-serif;letter-spacing:1.6px;color:var(--sub)">OPEN MIC NIGHT</div><div style="font:700 20px 'Archivo Narrow',sans-serif;margin-top:3px">Aug 2</div><div style="font:400 11.5px 'Archivo Narrow',sans-serif;color:var(--sub)">Sign-ups open · 14 acts</div></div>
+      <div style="padding:16px 18px;border-radius:18px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(12px)"><div style="font:600 10.5px 'Archivo Narrow',sans-serif;letter-spacing:1.6px;color:var(--sub)">AGM</div><div style="font:700 20px 'Archivo Narrow',sans-serif;margin-top:3px">Aug 20</div><div style="font:400 11.5px 'Archivo Narrow',sans-serif;color:var(--sub)">Agenda draft due Jul 30</div></div>
+    </div>
+    <!-- middle grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 300px;gap:12px;flex:1;min-height:0">
+      <div style="padding:14px 16px 10px;border-radius:18px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(12px)">
+        <div style="font:600 13.5px 'Archivo Narrow',sans-serif">Attendance trend</div>
+        <svg viewBox="0 0 240 120" style="width:100%;height:120px;margin-top:8px">
+          <polyline points="10,52 55,42 100,62 145,28 190,18 230,32" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <polyline points="10,52 55,42 100,62 145,28 190,18 230,32 230,112 10,112" fill="var(--accent2)" opacity="0.14" stroke="none"></polyline>
+          <circle cx="190" cy="18" r="4" fill="var(--accent)"></circle>
+          <text x="198" y="36" fill="var(--text)" style="font:700 11px 'Archivo Narrow',sans-serif">91%</text>
+        </svg>
+        <div style="display:flex;justify-content:space-between;font:400 10px 'Archivo Narrow',sans-serif;color:var(--sub)"><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span></div>
+      </div>
+      <div style="padding:14px 16px;border-radius:18px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(12px);display:flex;flex-direction:column">
+        <div style="font:600 13.5px 'Archivo Narrow',sans-serif">Membership</div>
+        <div style="display:flex;align-items:center;gap:16px;flex:1">
+          <svg viewBox="0 0 100 100" style="width:104px;height:104px;flex:none">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="var(--line)" stroke-width="11"></circle>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="var(--accent)" stroke-width="11" stroke-dasharray="171 251" stroke-linecap="round" transform="rotate(-90 50 50)"></circle>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="var(--accent2)" stroke-width="11" stroke-dasharray="48 251" stroke-dashoffset="-171" stroke-linecap="round" transform="rotate(-90 50 50)"></circle>
+            <text x="50" y="47" text-anchor="middle" fill="var(--text)" style="font:700 19px 'Archivo Narrow',sans-serif">47</text>
+            <text x="50" y="62" text-anchor="middle" fill="var(--sub)" style="font:400 8.5px 'Archivo Narrow',sans-serif">members</text>
+          </svg>
+          <div style="font:400 12px 'Archivo Narrow',sans-serif;display:flex;flex-direction:column;gap:7px">
+            <div><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--accent);margin-right:7px"></span>Performers · <b>32</b></div>
+            <div><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--accent2);margin-right:7px"></span>Crew · <b>9</b></div>
+            <div><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--line);margin-right:7px"></span>Committee · <b>6</b></div>
+            <div style="color:var(--bad)">6 dues overdue · $312</div>
+          </div>
+        </div>
+      </div>
+      <div style="grid-row:span 2;padding:14px 16px;border-radius:18px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(12px);display:flex;flex-direction:column;min-height:0">
+        <div style="display:flex;align-items:baseline"><div style="font:600 13.5px 'Archivo Narrow',sans-serif">Rehearsals</div><a style="margin-left:auto;font:400 11px 'Archivo Narrow',sans-serif;color:var(--accent)">All</a></div>
+        <div style="margin-top:6px;font:400 12px 'Archivo Narrow',sans-serif;display:flex;flex-direction:column">
+          <div style="padding:8px 0;border-bottom:1px solid var(--line)"><div style="display:flex"><b>Act II staging</b><span style="margin-left:auto;color:var(--good);font-weight:700">24/28</span></div><div style="color:var(--sub);font-size:11px">Tue 7 Jul · 7:00 PM · Main Hall</div></div>
+          <div style="padding:8px 0;border-bottom:1px solid var(--line)"><div style="display:flex"><b>Vocal ensemble</b><span style="margin-left:auto;color:var(--sub);font-weight:700">11/14</span></div><div style="color:var(--sub);font-size:11px">Thu 9 Jul · 7:30 PM · Studio B</div></div>
+          <div style="padding:8px 0;border-bottom:1px solid var(--line)"><div style="display:flex"><b>Full run-through</b><span style="margin-left:auto;color:var(--good);font-weight:700">26/31</span></div><div style="color:var(--sub);font-size:11px">Sat 11 Jul · 10:00 AM · Main Hall</div></div>
+          <div style="padding:8px 0"><div style="display:flex"><b>Tech + dress</b><span style="margin-left:auto;color:var(--good);font-weight:700">30/31</span></div><div style="color:var(--sub);font-size:11px">Tue 14 Jul · 6:00 PM · Theatre</div></div>
+        </div>
+        <div style="margin-top:auto;padding:9px 12px;border-radius:11px;background:var(--glass2);border:1px solid var(--brd);font:600 11.5px 'Archivo Narrow',sans-serif;text-align:center;color:var(--accent)">+ Schedule rehearsal</div>
+      </div>
+      <div style="grid-column:span 2;padding:12px 16px;border-radius:18px;background:var(--glass);border:1px solid var(--brd);backdrop-filter:blur(12px);min-height:0;overflow:hidden">
+        <div style="display:flex;align-items:baseline"><div style="font:600 13.5px 'Archivo Narrow',sans-serif">Recent transactions</div><span style="margin-left:auto;font:400 11px 'Archivo Narrow',sans-serif;color:var(--sub)">Balance <b style="color:var(--text)">$4,286.50</b></span></div>
+        <div style="display:grid;grid-template-columns:50px 1fr 90px 74px;gap:0 10px;margin-top:2px;font:400 11.5px 'Archivo Narrow',sans-serif">
+          <div style="display:contents"><span style="padding:6px 0;border-bottom:1px solid var(--line);color:var(--sub)">Jul 2</span><span style="padding:6px 0;border-bottom:1px solid var(--line)">Costume fabric</span><span style="padding:6px 0;border-bottom:1px solid var(--line);color:var(--sub)">Wardrobe</span><span style="padding:6px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--bad);font-weight:700">−86.40</span></div>
+          <div style="display:contents"><span style="padding:6px 0;border-bottom:1px solid var(--line);color:var(--sub)">Jul 1</span><span style="padding:6px 0;border-bottom:1px solid var(--line)">Member dues × 4</span><span style="padding:6px 0;border-bottom:1px solid var(--line);color:var(--sub)">Dues</span><span style="padding:6px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--good);font-weight:700">+140.00</span></div>
+          <div style="display:contents"><span style="padding:6px 0;color:var(--sub)">Jun 28</span><span style="padding:6px 0">Hall hire — June</span><span style="padding:6px 0;color:var(--sub)">Venue</span><span style="padding:6px 0;text-align:right;color:var(--bad);font-weight:700">−220.00</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============ 1d SLATE CONSOLE ============ -->
+<div class="dv-opt" id="1d">
+<div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Slate Console — desaturated slate blue · minimal glass · icon rail · max density · Oswald + IBM Plex Sans Condensed</div>
+<div class="dv-card" style="width:1180px">
+<div style="--bg:#10161f;--orb1:rgba(90,130,190,.16);--orb2:rgba(60,90,140,.2);--orb3:rgba(110,143,181,.1);--glass:rgba(148,178,215,.07);--glass2:rgba(148,178,215,.13);--brd:rgba(160,190,225,.16);--text:#dbe6f2;--sub:rgba(170,195,220,.55);--accent:#6e9fd6;--accent2:#9dc3ea;--line:rgba(160,190,225,.1);--good:#63c797;--bad:#e08298">
+<div style="{{ v1d }}position:relative;height:740px;background:var(--bg);font-family:'IBM Plex Sans Condensed',sans-serif;color:var(--text);overflow:hidden;display:flex;transition:background .3s">
+  <div style="position:absolute;inset:0;background:radial-gradient(600px 400px at 80% 0%,var(--orb1),transparent 60%),radial-gradient(500px 400px at 0% 100%,var(--orb2),transparent 60%);pointer-events:none"></div>
+  <!-- icon rail -->
+  <nav style="position:relative;width:54px;flex:none;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:6px;background:var(--glass)">
+    <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));margin-bottom:10px"></div>
+    <div style="width:36px;height:36px;border-radius:10px;background:var(--glass2);border:1px solid var(--brd);display:flex;align-items:center;justify-content:center"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent2)"></span></div>
+    <div style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sub)"></span></div>
+    <div style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center"><span style="width:9px;height:9px;border-radius:2px;border:1.5px solid var(--sub)"></span></div>
+    <div style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center"><span style="width:9px;height:9px;border:1.5px solid var(--sub);transform:rotate(45deg)"></span></div>
+    <div style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center"><span style="width:9px;height:9px;border-radius:50% 50% 0 50%;border:1.5px solid var(--sub)"></span></div>
+    <div style="margin-top:auto;width:30px;height:30px;border-radius:50%;background:var(--glass2);border:1px solid var(--brd);font:600 10px 'IBM Plex Sans Condensed',sans-serif;display:flex;align-items:center;justify-content:center">JM</div>
+  </nav>
+  <main style="position:relative;flex:1;display:flex;flex-direction:column;min-width:0">
+    <!-- header strip -->
+    <div style="display:flex;align-items:center;gap:20px;padding:12px 18px;border-bottom:1px solid var(--line)">
+      <div style="font:500 16px 'Oswald',sans-serif;letter-spacing:.8px">STAGEFRIGHT <span style="color:var(--sub);font-weight:300">/ DASHBOARD</span></div>
+      <div style="display:flex;gap:20px;margin-left:8px;font:400 11px 'IBM Plex Sans Condensed',sans-serif;color:var(--sub)">
+        <span>MEMBERS <b style="font:500 14px 'Oswald',sans-serif;color:var(--text);margin-left:4px">47</b></span><span style="border-left:1px solid var(--line)"></span>
+        <span>BALANCE <b style="font:500 14px 'Oswald',sans-serif;color:var(--text);margin-left:4px">$4,286.50</b></span><span style="border-left:1px solid var(--line)"></span>
+        <span>DUES OWED <b style="font:500 14px 'Oswald',sans-serif;color:var(--bad);margin-left:4px">$312</b></span><span style="border-left:1px solid var(--line)"></span>
+        <span>ATTENDANCE <b style="font:500 14px 'Oswald',sans-serif;color:var(--good);margin-left:4px">91%</b></span><span style="border-left:1px solid var(--line)"></span>
+        <span>SHOWCASE <b style="font:500 14px 'Oswald',sans-serif;color:var(--accent2);margin-left:4px">T−12d</b></span>
+      </div>
+      <button onClick="{{ tg1d }}" style="margin-left:auto;display:flex;align-items:center;gap:7px;padding:5px 12px;border-radius:8px;border:1px solid var(--brd);background:var(--glass2);color:var(--text);font:500 11px 'IBM Plex Sans Condensed',sans-serif;cursor:pointer"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent2)"></span>{{ lbl1d }}</button>
+    </div>
+    <div style="flex:1;display:grid;grid-template-columns:1fr 330px;min-height:0">
+      <!-- ledger -->
+      <div style="border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0">
+        <div style="display:flex;align-items:center;padding:12px 18px 8px"><div style="font:500 13px 'Oswald',sans-serif;letter-spacing:1px">LEDGER — JULY</div><div style="margin-left:auto;display:flex;gap:6px"><span style="padding:4px 10px;border-radius:6px;background:var(--glass2);border:1px solid var(--brd);font:500 10px 'IBM Plex Sans Condensed',sans-serif">All</span><span style="padding:4px 10px;border-radius:6px;font:400 10px 'IBM Plex Sans Condensed',sans-serif;color:var(--sub)">Income</span><span style="padding:4px 10px;border-radius:6px;font:400 10px 'IBM Plex Sans Condensed',sans-serif;color:var(--sub)">Expenses</span></div></div>
+        <div style="display:grid;grid-template-columns:54px 1fr 96px 80px 80px;gap:0 12px;padding:0 18px;font:400 11.5px 'IBM Plex Sans Condensed',sans-serif">
+          <div style="display:contents;color:var(--sub)"><span style="padding:4px 0;font-size:9.5px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">DATE</span><span style="padding:4px 0;font-size:9.5px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">DESCRIPTION</span><span style="padding:4px 0;font-size:9.5px;letter-spacing:1.2px;border-bottom:1px solid var(--brd)">CATEGORY</span><span style="padding:4px 0;font-size:9.5px;letter-spacing:1.2px;border-bottom:1px solid var(--brd);text-align:right">AMOUNT</span><span style="padding:4px 0;font-size:9.5px;letter-spacing:1.2px;border-bottom:1px solid var(--brd);text-align:right">BALANCE</span></div>
+          <div style="display:contents"><span style="padding:6.5px 0;border-bottom:1px solid var(--line);color:var(--sub)">Jul 2</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line)">Costume fabric</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);color:var(--sub)">Wardrobe</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--bad)">−86.40</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub)">4,286.50</span></div>
+          <div style="display:contents"><span style="padding:6.5px 0;border-bottom:1px solid var(--line);color:var(--sub)">Jul 1</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line)">Member dues × 4</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);color:var(--sub)">Dues</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--good)">+140.00</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub)">4,372.90</span></div>
+          <div style="display:contents"><span style="padding:6.5px 0;border-bottom:1px solid var(--line);color:var(--sub)">Jun 28</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line)">Hall hire — June</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);color:var(--sub)">Venue</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--bad)">−220.00</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub)">4,232.90</span></div>
+          <div style="display:contents"><span style="padding:6.5px 0;border-bottom:1px solid var(--line);color:var(--sub)">Jun 27</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line)">Program ad sales</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);color:var(--sub)">Fundraising</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--good)">+175.00</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub)">4,452.90</span></div>
+          <div style="display:contents"><span style="padding:6.5px 0;border-bottom:1px solid var(--line);color:var(--sub)">Jun 24</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line)">Ticket pre-sales</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);color:var(--sub)">Box office</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--good)">+412.50</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub)">4,277.90</span></div>
+          <div style="display:contents"><span style="padding:6.5px 0;border-bottom:1px solid var(--line);color:var(--sub)">Jun 21</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line)">Set timber + paint</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);color:var(--sub)">Set build</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--bad)">−148.75</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub)">3,865.40</span></div>
+          <div style="display:contents"><span style="padding:6.5px 0;border-bottom:1px solid var(--line);color:var(--sub)">Jun 18</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line)">Grant — arts council</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);color:var(--sub)">Grants</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--good)">+500.00</span><span style="padding:6.5px 0;border-bottom:1px solid var(--line);text-align:right;color:var(--sub)">4,014.15</span></div>
+          <div style="display:contents"><span style="padding:6.5px 0;color:var(--sub)">Jun 15</span><span style="padding:6.5px 0">Insurance — annual</span><span style="padding:6.5px 0;color:var(--sub)">Admin</span><span style="padding:6.5px 0;text-align:right;color:var(--bad)">−310.00</span><span style="padding:6.5px 0;text-align:right;color:var(--sub)">3,514.15</span></div>
+        </div>
+        <div style="margin-top:auto;padding:10px 18px;border-top:1px solid var(--line)">
+          <div style="display:flex;align-items:baseline"><div style="font:500 12px 'Oswald',sans-serif;letter-spacing:1px;color:var(--sub)">CASH FLOW · 6 MO</div><div style="margin-left:auto;font:400 10.5px 'IBM Plex Sans Condensed',sans-serif;color:var(--sub)">net <b style="color:var(--good)">+$1,240</b></div></div>
+          <svg viewBox="0 0 620 56" style="width:100%;height:56px;margin-top:4px">
+            <line x1="0" y1="50" x2="620" y2="50" stroke="var(--line)"></line>
+            <rect x="20" y="19" width="30" height="31" rx="2" fill="var(--accent)"></rect><rect x="54" y="30" width="30" height="20" rx="2" fill="var(--glass2)"></rect>
+            <rect x="120" y="26" width="30" height="24" rx="2" fill="var(--accent)"></rect><rect x="154" y="24" width="30" height="26" rx="2" fill="var(--glass2)"></rect>
+            <rect x="220" y="5" width="30" height="45" rx="2" fill="var(--accent)"></rect><rect x="254" y="31" width="30" height="19" rx="2" fill="var(--glass2)"></rect>
+            <rect x="320" y="23" width="30" height="27" rx="2" fill="var(--accent)"></rect><rect x="354" y="20" width="30" height="30" rx="2" fill="var(--glass2)"></rect>
+            <rect x="420" y="12" width="30" height="38" rx="2" fill="var(--accent)"></rect><rect x="454" y="27" width="30" height="23" rx="2" fill="var(--glass2)"></rect>
+            <rect x="520" y="6" width="30" height="44" rx="2" fill="var(--accent2)"></rect><rect x="554" y="24" width="30" height="26" rx="2" fill="var(--glass2)"></rect>
+          </svg>
+        </div>
+      </div>
+      <!-- right column -->
+      <div style="display:flex;flex-direction:column;min-height:0">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--line)">
+          <div style="font:500 13px 'Oswald',sans-serif;letter-spacing:1px">REHEARSALS</div>
+          <div style="margin-top:4px;font:400 11.5px 'IBM Plex Sans Condensed',sans-serif">
+            <div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);align-items:baseline"><span style="font:500 11px 'Oswald',sans-serif;color:var(--accent2);width:42px">TUE 7</span><span style="flex:1">Act II staging <span style="color:var(--sub)">· Main Hall</span></span><span style="color:var(--good)">24/28</span></div>
+            <div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);align-items:baseline"><span style="font:500 11px 'Oswald',sans-serif;color:var(--accent2);width:42px">THU 9</span><span style="flex:1">Vocal ensemble <span style="color:var(--sub)">· Studio B</span></span><span style="color:var(--sub)">11/14</span></div>
+            <div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);align-items:baseline"><span style="font:500 11px 'Oswald',sans-serif;color:var(--accent2);width:42px">SAT 11</span><span style="flex:1">Full run-through <span style="color:var(--sub)">· Main Hall</span></span><span style="color:var(--good)">26/31</span></div>
+            <div style="display:flex;gap:8px;padding:6px 0;align-items:baseline"><span style="font:500 11px 'Oswald',sans-serif;color:var(--accent2);width:42px">TUE 14</span><span style="flex:1">Tech + dress <span style="color:var(--sub)">· Theatre</span></span><span style="color:var(--good)">30/31</span></div>
+          </div>
+        </div>
+        <div style="padding:12px 16px;border-bottom:1px solid var(--line)">
+          <div style="font:500 13px 'Oswald',sans-serif;letter-spacing:1px">DUES OVERDUE</div>
+          <div style="margin-top:4px;font:400 11.5px 'IBM Plex Sans Condensed',sans-serif">
+            <div style="display:flex;padding:5.5px 0;border-bottom:1px solid var(--line)"><span style="flex:1">R. Okafor</span><span style="color:var(--sub)">42d</span><span style="width:56px;text-align:right;color:var(--bad)">78.00</span></div>
+            <div style="display:flex;padding:5.5px 0;border-bottom:1px solid var(--line)"><span style="flex:1">T. Nguyen</span><span style="color:var(--sub)">28d</span><span style="width:56px;text-align:right;color:var(--bad)">52.00</span></div>
+            <div style="display:flex;padding:5.5px 0;border-bottom:1px solid var(--line)"><span style="flex:1">M. Castellanos</span><span style="color:var(--sub)">21d</span><span style="width:56px;text-align:right;color:var(--bad)">52.00</span></div>
+            <div style="display:flex;padding:5.5px 0"><span style="flex:1">+ 3 more</span><span style="width:56px;text-align:right;color:var(--sub)">130.00</span></div>
+          </div>
+        </div>
+        <div style="padding:12px 16px;flex:1">
+          <div style="font:500 13px 'Oswald',sans-serif;letter-spacing:1px">EVENTS</div>
+          <div style="margin-top:6px;display:flex;flex-direction:column;gap:6px;font:400 11.5px 'IBM Plex Sans Condensed',sans-serif">
+            <div style="padding:9px 12px;border-radius:10px;background:var(--glass2);border:1px solid var(--brd)"><div style="display:flex"><b>Summer Showcase</b><span style="margin-left:auto;font:500 11px 'Oswald',sans-serif;color:var(--accent2)">JUL 16</span></div><div style="height:3px;border-radius:2px;background:var(--line);margin-top:6px"><div style="width:67%;height:100%;border-radius:2px;background:var(--accent)"></div></div><div style="color:var(--sub);margin-top:4px;font-size:10.5px">148/220 tickets</div></div>
+            <div style="padding:9px 12px;border-radius:10px;background:var(--glass);border:1px solid var(--line)"><div style="display:flex"><b>Open Mic Night</b><span style="margin-left:auto;font:500 11px 'Oswald',sans-serif;color:var(--sub)">AUG 2</span></div></div>
+            <div style="padding:9px 12px;border-radius:10px;background:var(--glass);border:1px solid var(--line)"><div style="display:flex"><b>AGM</b><span style="margin-left:auto;font:500 11px 'Oswald',sans-serif;color:var(--sub)">AUG 20</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: "more like <a class="dv-oid" href="#1a">1a</a> but with the top bar from <a class="dv-oid" href="#1b">1b</a>" · "show <a class="dv-oid" href="#1c">1c</a>'s Members page" · "less glass on <a class="dv-oid" href="#1a">1a</a>" · "new directions"</p>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { t: { a: 'dark', b: 'light', c: 'light', d: 'dark', e: 'dark', f: 'dark', g: 'dark' } };
+  // e = 2a dashboard, f = 2b members, g = shared theme for all turn-3 page mocks — Midnight (a) palette
+  ids = { a: '1a', b: '1b', c: '1c', d: '1d', e: '2a', f: '2b', g: '3' };
+
+  pal() {
+    return {
+      a: {
+        dark:  { bg:'#050d1c', orb1:'rgba(56,118,255,.38)', orb2:'rgba(0,190,255,.22)', orb3:'rgba(120,80,255,.18)', glass:'rgba(255,255,255,.06)', glass2:'rgba(255,255,255,.11)', brd:'rgba(255,255,255,.14)', text:'#eaf1ff', sub:'rgba(205,222,255,.62)', accent:'#4f8dff', accent2:'#38d2ff', line:'rgba(255,255,255,.08)', good:'#3ddca0', bad:'#ff7d92' },
+        light: { bg:'#e6edfb', orb1:'rgba(70,130,255,.28)', orb2:'rgba(60,200,255,.3)', orb3:'rgba(150,120,255,.18)', glass:'rgba(255,255,255,.55)', glass2:'rgba(255,255,255,.8)', brd:'rgba(255,255,255,.9)', text:'#0c1c38', sub:'rgba(20,45,90,.6)', accent:'#2b63e8', accent2:'#0aa6d8', line:'rgba(10,40,90,.1)', good:'#0e9a6a', bad:'#d5445f' }
+      },
+      b: {
+        light: { bg:'#dde6f8', orb1:'rgba(30,86,214,.30)', orb2:'rgba(79,131,255,.34)', orb3:'rgba(150,190,255,.5)', glass:'rgba(255,255,255,.55)', glass2:'rgba(255,255,255,.78)', brd:'rgba(255,255,255,.85)', text:'#0c1c3d', sub:'rgba(18,45,95,.6)', accent:'#1e56d6', accent2:'#4f83ff', line:'rgba(15,45,110,.1)', good:'#0e9a6a', bad:'#d5445f' },
+        dark:  { bg:'#081130', orb1:'rgba(50,105,235,.4)', orb2:'rgba(90,140,255,.3)', orb3:'rgba(40,70,170,.4)', glass:'rgba(120,155,255,.08)', glass2:'rgba(120,155,255,.15)', brd:'rgba(150,180,255,.2)', text:'#e7edff', sub:'rgba(190,205,255,.6)', accent:'#4f83ff', accent2:'#7ea6ff', line:'rgba(150,180,255,.12)', good:'#3ddca0', bad:'#ff7d92' }
+      },
+      c: {
+        light: { bg:'#e9f4fa', orb1:'rgba(14,155,192,.20)', orb2:'rgba(80,200,235,.28)', orb3:'rgba(180,225,245,.6)', glass:'rgba(255,255,255,.62)', glass2:'rgba(255,255,255,.85)', brd:'rgba(255,255,255,.9)', text:'#07293a', sub:'rgba(10,60,90,.58)', accent:'#0e9bc0', accent2:'#22c9e8', line:'rgba(10,70,100,.1)', good:'#0d9f72', bad:'#d5506a' },
+        dark:  { bg:'#04212e', orb1:'rgba(20,170,210,.28)', orb2:'rgba(40,210,245,.18)', orb3:'rgba(10,110,150,.3)', glass:'rgba(130,220,250,.07)', glass2:'rgba(130,220,250,.13)', brd:'rgba(150,225,250,.18)', text:'#e2f5fc', sub:'rgba(180,225,245,.58)', accent:'#2cc4e6', accent2:'#6adcf4', line:'rgba(150,225,250,.1)', good:'#3ddca0', bad:'#ff8298' }
+      },
+      d: {
+        dark:  { bg:'#10161f', orb1:'rgba(90,130,190,.16)', orb2:'rgba(60,90,140,.2)', orb3:'rgba(110,143,181,.1)', glass:'rgba(148,178,215,.07)', glass2:'rgba(148,178,215,.13)', brd:'rgba(160,190,225,.16)', text:'#dbe6f2', sub:'rgba(170,195,220,.55)', accent:'#6e9fd6', accent2:'#9dc3ea', line:'rgba(160,190,225,.1)', good:'#63c797', bad:'#e08298' },
+        light: { bg:'#e9edf3', orb1:'rgba(90,130,190,.22)', orb2:'rgba(120,155,200,.25)', orb3:'rgba(170,195,225,.4)', glass:'rgba(255,255,255,.6)', glass2:'rgba(255,255,255,.85)', brd:'rgba(255,255,255,.95)', text:'#1a2634', sub:'rgba(40,65,95,.6)', accent:'#3f6c9e', accent2:'#5e8fc4', line:'rgba(30,60,100,.12)', good:'#178257', bad:'#c04a63' }
+      }
+    };
+  }
+
+  vars(k) {
+    const pk = (k === 'e' || k === 'f' || k === 'g') ? 'a' : k;
+    const p = this.pal()[pk][this.state.t[k]];
+    return Object.entries(p).map(([n, v]) => '--' + n.replace('brd', 'brd') + ':' + v).join(';') + ';';
+  }
+
+  renderVals() {
+    const out = {};
+    for (const k of Object.keys(this.state.t)) {
+      const id = this.ids[k];
+      out['v' + id] = this.vars(k);
+      out['lbl' + id] = this.state.t[k] === 'dark' ? 'Dark' : 'Light';
+      out['tg' + id] = () => this.setState(s => ({ t: { ...s.t, [k]: s.t[k] === 'dark' ? 'light' : 'dark' } }));
+    }
+    return out;
+  }
+}
+</script>
+</body>
+</html>

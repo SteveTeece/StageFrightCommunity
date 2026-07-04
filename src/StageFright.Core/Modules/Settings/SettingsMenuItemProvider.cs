@@ -17,6 +17,7 @@ public class SettingsMenuItemProvider : IMenuItemProvider
         {
             Title = "Settings",
             Route = "/settings",
+            ShortLabel = "SET",
             DisplayOrder = 0
         }
     ];

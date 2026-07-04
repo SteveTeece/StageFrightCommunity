@@ -12,6 +12,12 @@ public class MenuItem
     /// <summary>Optional icon name or CSS class.</summary>
     public string? Icon { get; set; }
 
+    /// <summary>
+    /// Optional short label (≤4 chars, e.g. "MEMB") shown under the item's glyph in the
+    /// navigation dock. Null = derived from <see cref="Title"/> by the shell.
+    /// </summary>
+    public string? ShortLabel { get; set; }
+
     /// <summary>Sort order within the module's menu items.</summary>
     public int DisplayOrder { get; set; }
 

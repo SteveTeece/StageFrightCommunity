@@ -16,7 +16,7 @@ else
     </div>
 
     <section aria-label="Core Metrics" class="mb-2">
-        <h2 class="h6 fw-semibold mb-2">Core Metrics</h2>
+        <h2 class="section-label mb-2">Core Metrics</h2>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-2">
             @foreach (var tile in _coreTiles)
             {
@@ -36,7 +36,7 @@ else
     @if (_extensionTiles.Count > 0)
     {
         <section aria-label="Extensions" class="mb-2">
-            <h2 class="h6 fw-semibold mb-2">Extensions</h2>
+            <h2 class="section-label mb-2">Extensions</h2>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-2">
                 @foreach (var tile in _extensionTiles)
                 {

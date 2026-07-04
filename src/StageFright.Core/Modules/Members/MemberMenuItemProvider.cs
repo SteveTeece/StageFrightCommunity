@@ -17,6 +17,7 @@ public class MemberMenuItemProvider : IMenuItemProvider
         {
             Title = "Members",
             Route = "/members",
+            ShortLabel = "MEMB",
             DisplayOrder = 0,
             SubItems =
             [

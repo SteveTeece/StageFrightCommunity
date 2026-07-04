@@ -17,6 +17,7 @@ public class EventsMenuItemProvider : IMenuItemProvider
         {
             Title = "Events",
             Route = "/events",
+            ShortLabel = "EVNT",
             DisplayOrder = 0,
             SubItems =
             [

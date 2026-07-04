@@ -37,6 +37,7 @@ public class ReportMenuItemProvider : IMenuItemProvider
             {
                 Title = "Reports",
                 Route = "/reports",
+                ShortLabel = "RPT",
                 DisplayOrder = DisplayOrder,
                 SubItems = subItems
             }

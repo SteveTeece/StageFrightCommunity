@@ -17,6 +17,7 @@ public class FinanceMenuItemProvider : IMenuItemProvider
         {
             Title = "Finance",
             Route = "/finance",
+            ShortLabel = "FIN",
             DisplayOrder = 0,
             SubItems =
             [

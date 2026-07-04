@@ -19,6 +19,7 @@ public class RehearsalMenuItemProvider : IMenuItemProvider
                 Title = "Rehearsals",
                 Route = "/rehearsals",
                 Icon = "schedule",
+                ShortLabel = "REH",
                 DisplayOrder = 0,
                 SubItems = new List<MenuItem>
                 {
