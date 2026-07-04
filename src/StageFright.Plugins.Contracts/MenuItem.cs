@@ -13,15 +13,18 @@ public class MenuItem
     public string? Icon { get; set; }
 
     /// <summary>
-    /// Optional short label (≤4 chars, e.g. "MEMB") shown under the item's glyph in the
-    /// navigation dock. Null = derived from <see cref="Title"/> by the shell.
+    /// Optional short label (≤4 chars, e.g. "MEMB") for compact navigation surfaces.
+    /// The current sidebar shows the full <see cref="Title"/> and ignores this.
     /// </summary>
     public string? ShortLabel { get; set; }
 
     /// <summary>Sort order within the module's menu items.</summary>
     public int DisplayOrder { get; set; }
 
-    /// <summary>Nested sub-items rendered as a dropdown. Empty list = no dropdown.</summary>
+    /// <summary>
+    /// Nested sub-items. The shell sidebar renders top-level items only and
+    /// ignores this list; it is retained for plugin compatibility.
+    /// </summary>
     public List<MenuItem> SubItems { get; set; } = new();
 
     /// <summary>Optional badge text (e.g., count of pending items). Null = no badge.</summary>

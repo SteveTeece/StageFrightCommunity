@@ -18,12 +18,7 @@ public class EventsMenuItemProvider : IMenuItemProvider
             Title = "Events",
             Route = "/events",
             ShortLabel = "EVNT",
-            DisplayOrder = 0,
-            SubItems =
-            [
-                new MenuItem { Title = "All Events", Route = "/events", DisplayOrder = 0 },
-                new MenuItem { Title = "Schedule Event", Route = "/events/new", DisplayOrder = 1 }
-            ]
+            DisplayOrder = 0
         }
     ];
 }

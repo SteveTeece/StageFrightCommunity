@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using StageFright.Plugins.Contracts;
 
 namespace StageFright.UI.Layout;
 
@@ -19,33 +18,22 @@ public partial class ShellLayout : LayoutComponentBase
     }
 
     /// <summary>
-    /// Maps a top-level route to the geometric dock glyph defined in app.css.
-    /// Unknown routes (external plugins) get the generic plugin glyph.
+    /// Maps a top-level route to the sidebar icon defined in app.css.
+    /// Unknown routes (external plugins) get the generic plugin icon.
     /// </summary>
-    private static string GlyphClass(string route)
+    private static string IconClass(string route)
     {
         var root = route.TrimStart('/').Split('/', '?')[0].ToLowerInvariant();
         return root switch
         {
-            "dashboard" => "glyph-home",
-            "members" => "glyph-members",
-            "finance" => "glyph-finance",
-            "rehearsals" => "glyph-rehearsals",
-            "events" => "glyph-events",
-            "reports" => "glyph-reports",
-            "settings" => "glyph-settings",
-            _ => "glyph-plugin"
+            "dashboard" => "icon-dashboard",
+            "members" => "icon-members",
+            "finance" => "icon-finance",
+            "rehearsals" => "icon-rehearsals",
+            "events" => "icon-events",
+            "reports" => "icon-reports",
+            "settings" => "icon-settings",
+            _ => "icon-plugin"
         };
     }
-
-    /// <summary>
-    /// Dock label under the glyph: the provider-supplied ShortLabel, or the first
-    /// four characters of the title uppercased as a fallback for plugin items.
-    /// </summary>
-    private static string ShortLabelFor(MenuItem item) =>
-        !string.IsNullOrWhiteSpace(item.ShortLabel)
-            ? item.ShortLabel
-            : item.Title.Length <= 4
-                ? item.Title.ToUpperInvariant()
-                : item.Title[..4].ToUpperInvariant();
 }
