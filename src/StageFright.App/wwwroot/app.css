@@ -835,6 +835,7 @@ a {
     text-transform: uppercase;
     letter-spacing: 1.2px;
     border-bottom: 1px solid var(--sf-brd) !important;
+    padding: 8px 12px !important;
 }
 
 .rz-grid-table thead th .rz-column-title,
@@ -842,11 +843,24 @@ a {
     color: var(--sf-sub);
 }
 
+/* Compact rows: Radzen's default cell padding leaves too much vertical space */
 .rz-grid-table tbody td,
 .rz-datatable-data td {
     background: transparent !important;
     color: var(--sf-text) !important;
     border-bottom: 1px solid var(--sf-line) !important;
+    padding: 5px 12px !important;
+    line-height: 1.3;
+}
+
+.rz-grid-table tbody td .rz-cell-data {
+    line-height: 1.3;
+}
+
+/* Keep action buttons from inflating the compact rows */
+.rz-grid-table tbody td .btn {
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 .rz-grid-table tbody tr:hover td {
