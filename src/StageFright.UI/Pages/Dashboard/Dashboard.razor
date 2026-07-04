@@ -21,9 +21,18 @@ else
             @foreach (var tile in _coreTiles)
             {
                 <div class="col">
-                    <div class="card h-100 @(tile.NavigateRoute != null ? "sf-tile-clickable" : "")"
+                    <div class="card h-100 sf-dash-tile tile-@tile.TileId @(tile.NavigateRoute != null ? "sf-tile-clickable" : "")"
                          @onclick="@(() => NavigateTo(tile.NavigateRoute))">
-                        <div class="card-header py-1 fw-semibold small">@tile.Title</div>
+                        <div class="card-header py-1 fw-semibold small d-flex align-items-baseline justify-content-between">
+                            <span>@tile.Title</span>
+                            @if (!string.IsNullOrEmpty(tile.ActionText) && !string.IsNullOrEmpty(tile.NavigateRoute))
+                            {
+                                <a class="tile-action-link" href="@tile.NavigateRoute"
+                                   @onclick:preventDefault
+                                   @onclick:stopPropagation
+                                   @onclick="() => NavigateTo(tile.NavigateRoute)">@tile.ActionText</a>
+                            }
+                        </div>
                         <div class="card-body py-2">
                             <TileRenderer Provider="tile" LoadTask="_loadTasks[tile.TileId]" />
                         </div>
@@ -41,9 +50,18 @@ else
                 @foreach (var tile in _extensionTiles)
                 {
                     <div class="col">
-                        <div class="card h-100 @(tile.NavigateRoute != null ? "sf-tile-clickable" : "")"
+                        <div class="card h-100 sf-dash-tile tile-@tile.TileId @(tile.NavigateRoute != null ? "sf-tile-clickable" : "")"
                              @onclick="@(() => NavigateTo(tile.NavigateRoute))">
-                            <div class="card-header py-1 fw-semibold small">@tile.Title</div>
+                            <div class="card-header py-1 fw-semibold small d-flex align-items-baseline justify-content-between">
+                                <span>@tile.Title</span>
+                                @if (!string.IsNullOrEmpty(tile.ActionText) && !string.IsNullOrEmpty(tile.NavigateRoute))
+                                {
+                                    <a class="tile-action-link" href="@tile.NavigateRoute"
+                                       @onclick:preventDefault
+                                       @onclick:stopPropagation
+                                       @onclick="() => NavigateTo(tile.NavigateRoute)">@tile.ActionText</a>
+                                }
+                            </div>
                             <div class="card-body py-2">
                                 <TileRenderer Provider="tile" LoadTask="_loadTasks[tile.TileId]" />
                             </div>

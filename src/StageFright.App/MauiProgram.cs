@@ -1,4 +1,4 @@
-using System.Data.Common;
+﻿using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
@@ -16,7 +16,10 @@ using StageFright.Core.Modules.Members;
 using StageFright.Core.Modules.Rehearsals;
 using StageFright.Core.Modules.Settings;
 using StageFright.Data;
-using StageFright.UI.Modules.Dashboard;
+using StageFright.UI.Modules.Events;
+using StageFright.UI.Modules.Finance;
+using StageFright.UI.Modules.Members;
+using StageFright.UI.Modules.Rehearsals;
 using StageFright.UI.Pages.Settings;
 using StageFright.Data.PluginData;
 using StageFright.Data.Repositories;
@@ -173,6 +176,7 @@ public static class MauiProgram
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IReactivationForgivenessService, ReactivationForgivenessService>();
         services.AddScoped<IMemberBalanceService, MemberBalanceService>();
+        services.AddScoped<IFinanceSummaryService, FinanceSummaryService>();
         services.AddScoped<IIncomeEntryService, IncomeEntryService>();
 
         // Category management module (Phase 7)
@@ -191,6 +195,8 @@ public static class MauiProgram
         services.AddScoped<IDashboardTileProvider, RehearsalsDashboardTileProvider>();
         services.AddScoped<IDashboardTileProvider, EventsDashboardTileProvider>();
         services.AddScoped<IDashboardTileProvider, FinanceDashboardTileProvider>();
+        services.AddScoped<IDashboardTileProvider, CashFlowDashboardTileProvider>();
+        services.AddScoped<IDashboardTileProvider, AttendanceTrendDashboardTileProvider>();
 
         // Backup service (Phase 13)
         services.AddScoped<IBackupRepository, BackupRepository>();
