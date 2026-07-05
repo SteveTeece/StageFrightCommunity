@@ -111,6 +111,8 @@ Every fee or payment write wraps fee creation + paired GL debit/credit + balance
 
 **One class per file.** Every C# class, interface, record, struct, or enum lives in its own file named exactly after the type. Private nested types are the only exception.
 
+**Simple over clever code.** Always prefer the simplest approach to solving a problem. Keep code easily readable. Simple, readable code is better than clever/complex or difficult to read code.
+
 **Blazor component structure.** Every `.razor` component MUST have a paired `.razor.cs` code-behind file containing all C# logic — `@code { }` blocks in `.razor` files are prohibited. A `.razor.css` CSS isolation file is added only when the component requires styles that are genuinely scoped to that component; most CSS belongs in the global stylesheet (`wwwroot/css/`).
 
 **No custom JavaScript.** All business logic and UI interaction is in C#/Blazor. No `.js` files, no JS interop for business logic. Javascript that is part of an existing pre-written control or nuget package is permitted.
@@ -123,7 +125,7 @@ Every fee or payment write wraps fee creation + paired GL debit/credit + balance
 
 ## Tech Stack & Conventions section.
 
-This is a MAUI Blazor project using BlazorBootstrap for charts/UI controls and double-entry accounting for finances; prefer existing patterns (e.g. month-name dropdowns, BlazorBootstrap charts) over custom SVG/Radzen.
+This is a MAUI Blazor project using BlazorBootstrap and Radzen for charts/UI controls and double-entry accounting for finances; prefer existing patterns (e.g. month-name dropdowns, BlazorBootstrap charts) over custom SVG.
 
 When summing financial amounts, only sum payment-related credit entries, not all GL credit entries, to avoid double-counting in double-entry accounting.
 
