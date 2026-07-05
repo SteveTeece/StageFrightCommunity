@@ -101,8 +101,8 @@ public class ReactivationForgivenessServiceTests : TestBase
 
         // Debit BadDebtExpense (9900) / Credit MemberReceivable (0101) per fee
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 50m && t.GLAccount == "9900"),
-            Arg.Is<Transaction>(t => t.CreditAmount == 50m && t.GLAccount == "0101" && t.MemberId == MemberId),
+            Arg.Is<Transaction>(t => t.DebitAmount == 50m && t.GLAccount == "6999"),
+            Arg.Is<Transaction>(t => t.CreditAmount == 50m && t.GLAccount == "1200" && t.MemberId == MemberId),
             Arg.Any<CancellationToken>());
     }
 

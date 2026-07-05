@@ -8,7 +8,7 @@ namespace StageFright.Data;
 /// <summary>
 /// Central EF Core DbContext for the StageFright Community application.
 /// Applies global soft-delete query filters on all entities that carry IsDeleted.
-/// Seeds system categories (Cash, MemberReceivable, BadDebtExpense) on first model creation.
+/// Seeds system accounts (Cash, MemberReceivable, BadDebtExpense) on first model creation.
 /// </summary>
 public class StageFrightDbContext : DbContext
 {
@@ -24,7 +24,7 @@ public class StageFrightDbContext : DbContext
     public DbSet<Fee> Fees => Set<Fee>();
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
-    public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Account> Accounts => Set<Account>();
     public DbSet<Settings> Settings => Set<Settings>();
     public DbSet<AuditTrailEntry> AuditTrailEntries => Set<AuditTrailEntry>();
 
@@ -42,49 +42,99 @@ public class StageFrightDbContext : DbContext
         modelBuilder.ApplyConfiguration(new FeeConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentConfiguration());
         modelBuilder.ApplyConfiguration(new TransactionConfiguration());
-        modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new AccountConfiguration());
         modelBuilder.ApplyConfiguration(new SettingsConfiguration());
         modelBuilder.ApplyConfiguration(new AuditTrailEntryConfiguration());
 
-        SeedSystemCategories(modelBuilder);
+        SeedSystemAccounts(modelBuilder);
     }
 
-    private static void SeedSystemCategories(ModelBuilder modelBuilder)
+    private static void SeedSystemAccounts(ModelBuilder modelBuilder)
     {
+        // Fixed seed timestamp — must never change or EF emits spurious UpdateData migrations.
         var now = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        modelBuilder.Entity<Category>().HasData(
-            new Category
+        modelBuilder.Entity<Account>().HasData(
+            new Account
             {
                 Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                Name = "Cash",
-                Type = CategoryType.Income,
-                GLAccount = "0100",
+                Name = "Cash on Hand",
+                Type = AccountType.Asset,
+                AccountNumber = "1100",
                 SortOrder = 0,
                 IsSystem = true,
+                IsBankAccount = true,
                 IsDeleted = false,
                 CreatedAt = now,
                 UpdatedAt = now
             },
-            new Category
+            new Account
             {
                 Id = new Guid("00000000-0000-0000-0000-000000000002"),
                 Name = "Member Receivable",
-                Type = CategoryType.Income,
-                GLAccount = "0101",
+                Type = AccountType.Asset,
+                AccountNumber = "1200",
                 SortOrder = 1,
                 IsSystem = true,
                 IsDeleted = false,
                 CreatedAt = now,
                 UpdatedAt = now
             },
-            new Category
+            new Account
             {
                 Id = new Guid("00000000-0000-0000-0000-000000000003"),
                 Name = "Bad Debt Expense",
-                Type = CategoryType.Expense,
-                GLAccount = "9900",
+                Type = AccountType.Expense,
+                AccountNumber = "6999",
                 SortOrder = 999,
+                IsSystem = true,
+                IsDeleted = false,
+                CreatedAt = now,
+                UpdatedAt = now
+            },
+            new Account
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000004"),
+                Name = "GST Collected",
+                Type = AccountType.Liability,
+                AccountNumber = "2310",
+                SortOrder = 10,
+                IsSystem = true,
+                IsDeleted = false,
+                CreatedAt = now,
+                UpdatedAt = now
+            },
+            new Account
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000005"),
+                Name = "GST Paid",
+                Type = AccountType.Liability,
+                AccountNumber = "2320",
+                SortOrder = 11,
+                IsSystem = true,
+                IsDeleted = false,
+                CreatedAt = now,
+                UpdatedAt = now
+            },
+            new Account
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000006"),
+                Name = "Opening Balance Equity",
+                Type = AccountType.Equity,
+                AccountNumber = "3100",
+                SortOrder = 20,
+                IsSystem = true,
+                IsDeleted = false,
+                CreatedAt = now,
+                UpdatedAt = now
+            },
+            new Account
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000007"),
+                Name = "Accumulated Surplus",
+                Type = AccountType.Equity,
+                AccountNumber = "3200",
+                SortOrder = 21,
                 IsSystem = true,
                 IsDeleted = false,
                 CreatedAt = now,

@@ -10,18 +10,18 @@ namespace StageFright.Core.Tests.Modules.Finance;
 
 /// <summary>
 /// Unit tests for IncomeEntryService — non-member income recording with GL pair creation,
-/// category validation, amount validation, and audit logging.
+/// account validation, amount validation, and audit logging.
 /// </summary>
 public class IncomeEntryServiceTests : TestBase
 {
-    private readonly ICategoryRepository _categoryRepo = Substitute.For<ICategoryRepository>();
+    private readonly IAccountRepository _accountRepo = Substitute.For<IAccountRepository>();
     private readonly IGLRepository _glRepo = Substitute.For<IGLRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
 
-    private static readonly Guid IncomeCategoryId = Guid.NewGuid();
-    private static readonly Guid ExpenseCategoryId = Guid.NewGuid();
-    private static readonly Guid SystemCategoryId = new("00000000-0000-0000-0000-000000000001");
+    private static readonly Guid IncomeAccountId = Guid.NewGuid();
+    private static readonly Guid ExpenseAccountId = Guid.NewGuid();
+    private static readonly Guid SystemAccountId = new("00000000-0000-0000-0000-000000000001");
 
     private readonly IncomeEntryService _sut;
 
@@ -31,40 +31,40 @@ public class IncomeEntryServiceTests : TestBase
             .ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.ArgAt<Func<CancellationToken, Task>>(0)(ci.ArgAt<CancellationToken>(1)));
 
-        _categoryRepo.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(new List<Category>
+        _accountRepo.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Account>
             {
-                MakeIncomeCategory(IncomeCategoryId, "Raffle Income", "1000"),
-                MakeExpenseCategory(ExpenseCategoryId, "Hall Hire", "2000"),
-                MakeSystemCategory(SystemCategoryId, "Cash", "0100")
+                MakeIncomeAccount(IncomeAccountId, "Raffle Income", "4000"),
+                MakeExpenseAccount(ExpenseAccountId, "Hall Hire", "6000"),
+                MakeSystemAccount(SystemAccountId, "Cash", "1100")
             });
 
-        _sut = new IncomeEntryService(_categoryRepo, _glRepo, _audit, _unitOfWork);
+        _sut = new IncomeEntryService(_accountRepo, _glRepo, _audit, _unitOfWork);
     }
 
-    // --- GetIncomeCategoriesAsync ---
+    // --- GetIncomeAccountsAsync ---
 
     [Fact]
-    public async Task GetIncomeCategoriesAsync_ReturnsOnlyNonSystemIncomeCategories()
+    public async Task GetIncomeAccountsAsync_ReturnsOnlyNonSystemIncomeAccounts()
     {
-        var result = await _sut.GetIncomeCategoriesAsync(Ct);
+        var result = await _sut.GetIncomeAccountsAsync(Ct);
 
         Assert.Single(result);
-        Assert.Equal(IncomeCategoryId, result[0].Id);
+        Assert.Equal(IncomeAccountId, result[0].Id);
     }
 
     [Fact]
-    public async Task GetIncomeCategoriesAsync_ExcludesExpenseCategories()
+    public async Task GetIncomeAccountsAsync_ExcludesExpenseAccounts()
     {
-        var result = await _sut.GetIncomeCategoriesAsync(Ct);
+        var result = await _sut.GetIncomeAccountsAsync(Ct);
 
-        Assert.DoesNotContain(result, c => c.Type == CategoryType.Expense);
+        Assert.DoesNotContain(result, c => c.Type == AccountType.Expense);
     }
 
     [Fact]
-    public async Task GetIncomeCategoriesAsync_ExcludesSystemCategories()
+    public async Task GetIncomeAccountsAsync_ExcludesSystemAccounts()
     {
-        var result = await _sut.GetIncomeCategoriesAsync(Ct);
+        var result = await _sut.GetIncomeAccountsAsync(Ct);
 
         Assert.DoesNotContain(result, c => c.IsSystem);
     }
@@ -90,7 +90,7 @@ public class IncomeEntryServiceTests : TestBase
     }
 
     [Fact]
-    public async Task RecordIncomeAsync_ThrowsEntityNotFound_WhenCategoryDoesNotExist()
+    public async Task RecordIncomeAsync_ThrowsEntityNotFound_WhenAccountDoesNotExist()
     {
         var request = MakeRequest(100m, Guid.NewGuid());
 
@@ -99,18 +99,18 @@ public class IncomeEntryServiceTests : TestBase
     }
 
     [Fact]
-    public async Task RecordIncomeAsync_ThrowsValidation_WhenCategoryIsExpenseType()
+    public async Task RecordIncomeAsync_ThrowsValidation_WhenAccountIsExpenseType()
     {
-        var request = MakeRequest(100m, ExpenseCategoryId);
+        var request = MakeRequest(100m, ExpenseAccountId);
 
         await Assert.ThrowsAsync<ValidationException>(
             () => _sut.RecordIncomeAsync(request, Ct));
     }
 
     [Fact]
-    public async Task RecordIncomeAsync_ThrowsValidation_WhenCategoryIsSystemCategory()
+    public async Task RecordIncomeAsync_ThrowsValidation_WhenAccountIsSystemAccount()
     {
-        var request = MakeRequest(100m, SystemCategoryId);
+        var request = MakeRequest(100m, SystemAccountId);
 
         await Assert.ThrowsAsync<ValidationException>(
             () => _sut.RecordIncomeAsync(request, Ct));
@@ -126,8 +126,8 @@ public class IncomeEntryServiceTests : TestBase
         await _sut.RecordIncomeAsync(request, Ct);
 
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 250m && t.GLAccount == "0100"),
-            Arg.Is<Transaction>(t => t.CreditAmount == 250m && t.CategoryId == IncomeCategoryId),
+            Arg.Is<Transaction>(t => t.DebitAmount == 250m && t.GLAccount == "1100"),
+            Arg.Is<Transaction>(t => t.CreditAmount == 250m && t.AccountId == IncomeAccountId),
             Arg.Any<CancellationToken>());
     }
 
@@ -150,7 +150,7 @@ public class IncomeEntryServiceTests : TestBase
         var date = new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc);
         var request = new RecordIncomeRequest
         {
-            Date = date, Amount = 100m, CategoryId = IncomeCategoryId
+            Date = date, Amount = 100m, AccountId = IncomeAccountId
         };
 
         await _sut.RecordIncomeAsync(request, Ct);
@@ -167,7 +167,7 @@ public class IncomeEntryServiceTests : TestBase
         var request = new RecordIncomeRequest
         {
             Date = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc),
-            Amount = 100m, CategoryId = IncomeCategoryId,
+            Amount = 100m, AccountId = IncomeAccountId,
             Description = "Christmas Raffle"
         };
 
@@ -180,12 +180,12 @@ public class IncomeEntryServiceTests : TestBase
     }
 
     [Fact]
-    public async Task RecordIncomeAsync_GLDebit_DefaultsDescriptionToCategory_WhenNotProvided()
+    public async Task RecordIncomeAsync_GLDebit_DefaultsDescriptionToAccount_WhenNotProvided()
     {
         var request = new RecordIncomeRequest
         {
             Date = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc),
-            Amount = 100m, CategoryId = IncomeCategoryId, Description = null
+            Amount = 100m, AccountId = IncomeAccountId, Description = null
         };
 
         await _sut.RecordIncomeAsync(request, Ct);
@@ -220,33 +220,33 @@ public class IncomeEntryServiceTests : TestBase
 
     // --- Helpers ---
 
-    private static RecordIncomeRequest MakeRequest(decimal amount, Guid? categoryId = null) =>
+    private static RecordIncomeRequest MakeRequest(decimal amount, Guid? accountId = null) =>
         new()
         {
             Date = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc),
             Amount = amount,
-            CategoryId = categoryId ?? IncomeCategoryId,
+            AccountId = accountId ?? IncomeAccountId,
             Description = null
         };
 
-    private static Category MakeIncomeCategory(Guid id, string name, string gl) => new()
+    private static Account MakeIncomeAccount(Guid id, string name, string gl) => new()
     {
-        Id = id, Name = name, Type = CategoryType.Income,
-        GLAccount = gl, IsSystem = false, SortOrder = 0,
+        Id = id, Name = name, Type = AccountType.Income,
+        AccountNumber = gl, IsSystem = false, SortOrder = 0,
         CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
 
-    private static Category MakeExpenseCategory(Guid id, string name, string gl) => new()
+    private static Account MakeExpenseAccount(Guid id, string name, string gl) => new()
     {
-        Id = id, Name = name, Type = CategoryType.Expense,
-        GLAccount = gl, IsSystem = false, SortOrder = 0,
+        Id = id, Name = name, Type = AccountType.Expense,
+        AccountNumber = gl, IsSystem = false, SortOrder = 0,
         CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
 
-    private static Category MakeSystemCategory(Guid id, string name, string gl) => new()
+    private static Account MakeSystemAccount(Guid id, string name, string gl) => new()
     {
-        Id = id, Name = name, Type = CategoryType.Income,
-        GLAccount = gl, IsSystem = true, SortOrder = 0,
+        Id = id, Name = name, Type = AccountType.Income,
+        AccountNumber = gl, IsSystem = true, SortOrder = 0,
         CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
 }

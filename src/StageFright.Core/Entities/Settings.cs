@@ -26,6 +26,12 @@ public class Settings
     /// <summary>Month (1–12) when committee positions are reviewed. Default: 1 (January).</summary>
     public int CommitteeRenewalMonth { get; set; } = 1;
 
+    /// <summary>
+    /// First month (1–12) of the financial year used by reports and FY presets.
+    /// Default: 7 (Australian financial year, 1 July – 30 June).
+    /// </summary>
+    public int FinancialYearStartMonth { get; set; } = 7;
+
     /// <summary>Maximum member age accepted by the system (years). Default: 150.</summary>
     public int MaxAgeRangeYears { get; set; } = 150;
 
@@ -49,7 +55,7 @@ public class Settings
     public int? LastCommitteeResetYear { get; set; }
 
     /// <summary>Semver schema version recorded by migrations and backup manifests (NFR-002).</summary>
-    public string SchemaVersion { get; set; } = "1.0.0";
+    public string SchemaVersion { get; set; } = "1.1.0";
 
     // --- Soft-delete fields (never set; singleton row) ---
 

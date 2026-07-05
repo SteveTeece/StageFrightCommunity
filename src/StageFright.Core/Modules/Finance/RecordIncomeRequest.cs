@@ -12,9 +12,9 @@ public class RecordIncomeRequest
     public decimal Amount { get; set; }
 
     /// <summary>
-    /// Id of the Income category to credit. Must be a non-system Income category.
+    /// Id of the Income account to credit. Must be a non-system Income account.
     /// </summary>
-    public Guid CategoryId { get; set; }
+    public Guid AccountId { get; set; }
 
     /// <summary>Optional description for the GL transaction.</summary>
     public string? Description { get; set; }

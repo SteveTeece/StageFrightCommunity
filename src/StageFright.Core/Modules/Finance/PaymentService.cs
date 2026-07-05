@@ -12,11 +12,7 @@ namespace StageFright.Core.Modules.Finance;
 /// </summary>
 public class PaymentService : IPaymentService
 {
-    private static readonly Guid CashCategoryId = new("00000000-0000-0000-0000-000000000001");
-    private static readonly Guid MemberReceivableCategoryId = new("00000000-0000-0000-0000-000000000002");
 
-    private const string CashGLAccount = "0100";
-    private const string MemberReceivableGLAccount = "0101";
 
     private readonly IFeeRepository _feeRepo;
     private readonly IPaymentRepository _paymentRepo;
@@ -87,10 +83,10 @@ public class PaymentService : IPaymentService
                         {
                             Id = Guid.NewGuid(),
                             Date = request.Date,
-                            CategoryId = CashCategoryId,
+                            AccountId = SystemAccounts.CashId,
                             DebitAmount = allocation,
                             CreditAmount = 0m,
-                            GLAccount = CashGLAccount,
+                            GLAccount = SystemAccounts.CashNumber,
                             MemberId = request.MemberId,
                             PaymentId = savedPayment.Id,
                             FeeId = fee.Id,
@@ -101,10 +97,10 @@ public class PaymentService : IPaymentService
                         {
                             Id = Guid.NewGuid(),
                             Date = request.Date,
-                            CategoryId = MemberReceivableCategoryId,
+                            AccountId = SystemAccounts.MemberReceivableId,
                             CreditAmount = allocation,
                             DebitAmount = 0m,
-                            GLAccount = MemberReceivableGLAccount,
+                            GLAccount = SystemAccounts.MemberReceivableNumber,
                             MemberId = request.MemberId,
                             PaymentId = savedPayment.Id,
                             FeeId = fee.Id,
@@ -125,10 +121,10 @@ public class PaymentService : IPaymentService
                     {
                         Id = Guid.NewGuid(),
                         Date = request.Date,
-                        CategoryId = CashCategoryId,
+                        AccountId = SystemAccounts.CashId,
                         DebitAmount = remainingPayment,
                         CreditAmount = 0m,
-                        GLAccount = CashGLAccount,
+                        GLAccount = SystemAccounts.CashNumber,
                         MemberId = request.MemberId,
                         PaymentId = savedPayment.Id,
                         Description = "Overpayment — cash received",
@@ -138,10 +134,10 @@ public class PaymentService : IPaymentService
                     {
                         Id = Guid.NewGuid(),
                         Date = request.Date,
-                        CategoryId = MemberReceivableCategoryId,
+                        AccountId = SystemAccounts.MemberReceivableId,
                         DebitAmount = 0m,
                         CreditAmount = remainingPayment,
-                        GLAccount = MemberReceivableGLAccount,
+                        GLAccount = SystemAccounts.MemberReceivableNumber,
                         MemberId = request.MemberId,
                         PaymentId = savedPayment.Id,
                         Description = "Overpayment credit to member account",

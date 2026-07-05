@@ -141,7 +141,7 @@ public static class MauiProgram
         services.AddScoped<IFeeRepository, FeeRepository>();
         services.AddScoped<IPaymentRepository, PaymentRepository>();
         services.AddScoped<IGLRepository, GLRepository>();
-        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<ISettingsRepository, SettingsRepository>();
         services.AddScoped<IAuditTrailRepository, AuditTrailRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -151,7 +151,7 @@ public static class MauiProgram
     {
         services.AddScoped<IAuditTrailService, AuditTrailService>();
         services.AddScoped<ISetupService, SetupService>();
-        services.AddScoped<GLAccountAssignmentService>();
+        services.AddScoped<AccountNumberAssignmentService>();
 
         // Settings service
         services.AddScoped<ISettingsService, SettingsService>();
@@ -179,8 +179,8 @@ public static class MauiProgram
         services.AddScoped<IFinanceSummaryService, FinanceSummaryService>();
         services.AddScoped<IIncomeEntryService, IncomeEntryService>();
 
-        // Category management module (Phase 7)
-        services.AddScoped<ICategoryService, CategoryService>();
+        // Account management module (Phase 7)
+        services.AddScoped<IAccountService, AccountService>();
 
         // Dashboard service (Phase 8)
         services.AddScoped<IDashboardService, DashboardService>();

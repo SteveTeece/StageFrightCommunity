@@ -7,35 +7,33 @@ namespace StageFright.Core.Modules.Finance;
 
 /// <summary>
 /// Records non-member income (raffles, donations, fundraising) directly to the GL.
-/// GL pair: Debit Cash (0100) / Credit selected Income category.
+/// GL pair: Debit Cash (0100) / Credit selected Income account.
 /// </summary>
 public class IncomeEntryService : IIncomeEntryService
 {
-    private static readonly Guid CashCategoryId = new("00000000-0000-0000-0000-000000000001");
-    private const string CashGLAccount = "0100";
 
-    private readonly ICategoryRepository _categoryRepo;
+    private readonly IAccountRepository _accountRepo;
     private readonly IGLRepository _glRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
 
     public IncomeEntryService(
-        ICategoryRepository categoryRepo,
+        IAccountRepository accountRepo,
         IGLRepository glRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork)
     {
-        _categoryRepo = categoryRepo;
+        _accountRepo = accountRepo;
         _glRepo = glRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IReadOnlyList<Category>> GetIncomeCategoriesAsync(CancellationToken ct = default)
+    public async Task<IReadOnlyList<Account>> GetIncomeAccountsAsync(CancellationToken ct = default)
     {
-        var all = await _categoryRepo.GetAllAsync(ct);
+        var all = await _accountRepo.GetAllAsync(ct);
         return all
-            .Where(c => c.Type == CategoryType.Income && !c.IsSystem)
+            .Where(c => c.Type == AccountType.Income && !c.IsSystem)
             .OrderBy(c => c.SortOrder)
             .ThenBy(c => c.Name)
             .ToList();
@@ -47,24 +45,24 @@ public class IncomeEntryService : IIncomeEntryService
             throw new ValidationException(
                 "Income amount must be greater than zero.", nameof(Transaction), nameof(RecordIncomeAsync));
 
-        var all = await _categoryRepo.GetAllAsync(ct);
-        var category = all.FirstOrDefault(c => c.Id == request.CategoryId)
+        var all = await _accountRepo.GetAllAsync(ct);
+        var account = all.FirstOrDefault(c => c.Id == request.AccountId)
             ?? throw new EntityNotFoundException(
-                nameof(Category), request.CategoryId, nameof(RecordIncomeAsync));
+                nameof(Account), request.AccountId, nameof(RecordIncomeAsync));
 
-        if (category.Type != CategoryType.Income)
+        if (account.Type != AccountType.Income)
             throw new ValidationException(
-                "Selected category is not an Income category.", nameof(Category), nameof(RecordIncomeAsync));
+                "Selected account is not an Income account.", nameof(Account), nameof(RecordIncomeAsync));
 
-        if (category.IsSystem)
+        if (account.IsSystem)
             throw new ValidationException(
-                "System categories cannot be used for manual income entries.", nameof(Category), nameof(RecordIncomeAsync));
+                "System accounts cannot be used for manual income entries.", nameof(Account), nameof(RecordIncomeAsync));
 
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
             var now = DateTime.UtcNow;
             var description = string.IsNullOrWhiteSpace(request.Description)
-                ? $"Income — {category.Name}"
+                ? $"Income — {account.Name}"
                 : request.Description.Trim();
 
             await _glRepo.AddPairAsync(
@@ -72,10 +70,10 @@ public class IncomeEntryService : IIncomeEntryService
                 {
                     Id = Guid.NewGuid(),
                     Date = request.Date,
-                    CategoryId = CashCategoryId,
+                    AccountId = SystemAccounts.CashId,
                     DebitAmount = request.Amount,
                     CreditAmount = 0m,
-                    GLAccount = CashGLAccount,
+                    GLAccount = SystemAccounts.CashNumber,
                     MemberId = null,
                     PaymentId = null,
                     FeeId = null,
@@ -86,10 +84,10 @@ public class IncomeEntryService : IIncomeEntryService
                 {
                     Id = Guid.NewGuid(),
                     Date = request.Date,
-                    CategoryId = category.Id,
+                    AccountId = account.Id,
                     DebitAmount = 0m,
                     CreditAmount = request.Amount,
-                    GLAccount = category.GLAccount,
+                    GLAccount = account.AccountNumber,
                     MemberId = null,
                     PaymentId = null,
                     FeeId = null,
@@ -101,7 +99,7 @@ public class IncomeEntryService : IIncomeEntryService
             await _audit.LogAsync(
                 nameof(Transaction), Guid.Empty, AuditAction.Create,
                 oldValue: null,
-                newValue: $"Other income {request.Amount:C} to category '{category.Name}' on {request.Date:yyyy-MM-dd}",
+                newValue: $"Other income {request.Amount:C} to account '{account.Name}' on {request.Date:yyyy-MM-dd}",
                 ct: innerCt);
 
         }, ct);

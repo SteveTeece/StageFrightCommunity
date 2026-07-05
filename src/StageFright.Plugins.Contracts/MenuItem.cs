@@ -22,8 +22,8 @@ public class MenuItem
     public int DisplayOrder { get; set; }
 
     /// <summary>
-    /// Nested sub-items. The shell sidebar renders top-level items only and
-    /// ignores this list; it is retained for plugin compatibility.
+    /// Nested sub-items. The shell sidebar renders items with sub-items as an
+    /// expandable group that auto-expands while a child route is active.
     /// </summary>
     public List<MenuItem> SubItems { get; set; } = new();
 

@@ -10,7 +10,7 @@ namespace StageFright.Data.Tests.Setup;
 
 /// <summary>
 /// Integration tests for SetupService using an in-memory SQLite database.
-/// Verifies Settings persistence, system category seeding, and zero Fee records post-setup.
+/// Verifies Settings persistence, system account seeding, and zero Fee records post-setup.
 /// </summary>
 public class SetupServiceIntegrationTests : IDisposable
 {
@@ -21,11 +21,11 @@ public class SetupServiceIntegrationTests : IDisposable
     {
         using var db = _factory.CreateContext();
         var settingsRepo = new SettingsRepository(db);
-        var categoryRepo = new CategoryRepository(db);
+        var accountRepo = new AccountRepository(db);
         var eventTypeRepo = new EventTypeRepository(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        var svc = new SetupService(settingsRepo, categoryRepo, eventTypeRepo, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, auditService);
 
         var request = new SetupRequest("My Choir", 80m, 6m, 3);
         await svc.InitializeAsync(request);
@@ -39,22 +39,22 @@ public class SetupServiceIntegrationTests : IDisposable
     }
 
     [Fact]
-    public async Task InitializeAsync_SeedsSystemCategories()
+    public async Task InitializeAsync_SeedsSystemAccounts()
     {
         using var db = _factory.CreateContext();
         var settingsRepo = new SettingsRepository(db);
-        var categoryRepo = new CategoryRepository(db);
+        var accountRepo = new AccountRepository(db);
         var eventTypeRepo = new EventTypeRepository(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        var svc = new SetupService(settingsRepo, categoryRepo, eventTypeRepo, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, auditService);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1));
 
-        var all = await categoryRepo.GetAllAsync();
-        Assert.Contains(all, c => c.GLAccount == "0100" && c.Name == "Cash" && c.IsSystem);
-        Assert.Contains(all, c => c.GLAccount == "0101" && c.IsSystem);
-        Assert.Contains(all, c => c.GLAccount == "9900" && c.IsSystem);
+        var all = await accountRepo.GetAllAsync();
+        Assert.Contains(all, c => c.AccountNumber == "1100" && c.Name == "Cash on Hand" && c.IsSystem);
+        Assert.Contains(all, c => c.AccountNumber == "1200" && c.IsSystem);
+        Assert.Contains(all, c => c.AccountNumber == "6999" && c.IsSystem);
     }
 
     [Fact]
@@ -62,11 +62,11 @@ public class SetupServiceIntegrationTests : IDisposable
     {
         using var db = _factory.CreateContext();
         var settingsRepo = new SettingsRepository(db);
-        var categoryRepo = new CategoryRepository(db);
+        var accountRepo = new AccountRepository(db);
         var eventTypeRepo = new EventTypeRepository(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        var svc = new SetupService(settingsRepo, categoryRepo, eventTypeRepo, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, auditService);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1));
 
@@ -79,11 +79,11 @@ public class SetupServiceIntegrationTests : IDisposable
     {
         using var db = _factory.CreateContext();
         var settingsRepo = new SettingsRepository(db);
-        var categoryRepo = new CategoryRepository(db);
+        var accountRepo = new AccountRepository(db);
         var eventTypeRepo = new EventTypeRepository(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        var svc = new SetupService(settingsRepo, categoryRepo, eventTypeRepo, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, auditService);
 
         Assert.False(await svc.IsSetupCompleteAsync());
     }

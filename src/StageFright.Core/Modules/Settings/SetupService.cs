@@ -10,23 +10,23 @@ namespace StageFright.Core.Modules.Settings;
 /// <summary>
 /// Handles first-run initialization. Validates the setup request, creates the Settings singleton,
 /// seeds default event types, and audits the event.
-/// System categories (Cash/MemberReceivable/BadDebtExpense) are seeded by EF migrations.
+/// System accounts (Cash/MemberReceivable/BadDebtExpense) are seeded by EF migrations.
 /// </summary>
 public class SetupService : ISetupService
 {
     private readonly ISettingsRepository _settingsRepo;
-    private readonly ICategoryRepository _categoryRepo;
+    private readonly IAccountRepository _accountRepo;
     private readonly IEventTypeRepository _eventTypeRepo;
     private readonly IAuditTrailService _audit;
 
     public SetupService(
         ISettingsRepository settingsRepo,
-        ICategoryRepository categoryRepo,
+        IAccountRepository accountRepo,
         IEventTypeRepository eventTypeRepo,
         IAuditTrailService audit)
     {
         _settingsRepo = settingsRepo;
-        _categoryRepo = categoryRepo;
+        _accountRepo = accountRepo;
         _eventTypeRepo = eventTypeRepo;
         _audit = audit;
     }
@@ -56,7 +56,7 @@ public class SetupService : ISetupService
             MaxAgeRangeYears = 150,
             MinimumMemberAge = 0,
             Theme = Theme.Light,
-            SchemaVersion = "1.0.0",
+            SchemaVersion = "1.1.0",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

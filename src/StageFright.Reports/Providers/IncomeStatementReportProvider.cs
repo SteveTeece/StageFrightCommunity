@@ -7,19 +7,19 @@ namespace StageFright.Reports.Providers;
 
 /// <summary>
 /// Generates the Income Statement report for the Finance module.
-/// Income section: one row per income category with subtotal.
-/// Expenses section: one row per expense category with subtotal.
+/// Income section: one row per income account with subtotal.
+/// Expenses section: one row per expense account with subtotal.
 /// Grand total: Net Income (positive) or Net Loss (negative).
 /// </summary>
 public class IncomeStatementReportProvider : IReportProvider
 {
     private readonly IGLRepository _gl;
-    private readonly ICategoryRepository _categories;
+    private readonly IAccountRepository _accounts;
 
-    public IncomeStatementReportProvider(IGLRepository gl, ICategoryRepository categories)
+    public IncomeStatementReportProvider(IGLRepository gl, IAccountRepository accounts)
     {
         _gl = gl;
-        _categories = categories;
+        _accounts = accounts;
     }
 
     public string ReportId => "income-statement";
@@ -36,23 +36,23 @@ public class IncomeStatementReportProvider : IReportProvider
     public async Task<ReportData> GenerateAsync(ReportFilterValues filters, CancellationToken ct = default)
     {
         var (from, to) = ParseDateRange(filters);
-        var allCategories = await _categories.GetAllAsync(ct);
+        var allAccounts = await _accounts.GetAllAsync(ct);
         var transactions = await _gl.GetByDateRangeAsync(from, to, ct);
 
-        var txnsByCat = transactions.GroupBy(t => t.CategoryId)
+        var txnsByCat = transactions.GroupBy(t => t.AccountId)
             .ToDictionary(g => g.Key, g => g.ToList());
 
-        var incomeCategories = allCategories
-            .Where(c => c.Type == CategoryType.Income && !c.IsSystem)
+        var incomeAccounts = allAccounts
+            .Where(c => c.Type == AccountType.Income && !c.IsSystem)
             .OrderBy(c => c.SortOrder).ThenBy(c => c.CreatedAt).ToList();
 
-        var expenseCategories = allCategories
-            .Where(c => c.Type == CategoryType.Expense && !c.IsSystem)
+        var expenseAccounts = allAccounts
+            .Where(c => c.Type == AccountType.Expense && !c.IsSystem)
             .OrderBy(c => c.SortOrder).ThenBy(c => c.CreatedAt).ToList();
 
         decimal totalIncome = 0m;
         var incomeRows = new List<ReportRow>();
-        foreach (var cat in incomeCategories)
+        foreach (var cat in incomeAccounts)
         {
             var catTxns = txnsByCat.GetValueOrDefault(cat.Id, []);
             var amount = catTxns.Sum(t => t.CreditAmount) - catTxns.Sum(t => t.DebitAmount);
@@ -62,7 +62,7 @@ public class IncomeStatementReportProvider : IReportProvider
 
         decimal totalExpenses = 0m;
         var expenseRows = new List<ReportRow>();
-        foreach (var cat in expenseCategories)
+        foreach (var cat in expenseAccounts)
         {
             var catTxns = txnsByCat.GetValueOrDefault(cat.Id, []);
             var amount = catTxns.Sum(t => t.DebitAmount) - catTxns.Sum(t => t.CreditAmount);

@@ -18,7 +18,7 @@ public class AttendanceServiceTests : TestBase
     private readonly IFeeRepository _feeRepo = Substitute.For<IFeeRepository>();
     private readonly IPaymentRepository _paymentRepo = Substitute.For<IPaymentRepository>();
     private readonly IGLRepository _glRepo = Substitute.For<IGLRepository>();
-    private readonly ICategoryRepository _categoryRepo = Substitute.For<ICategoryRepository>();
+    private readonly IAccountRepository _accountRepo = Substitute.For<IAccountRepository>();
     private readonly ISettingsRepository _settingsRepo = Substitute.For<ISettingsRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
@@ -28,10 +28,10 @@ public class AttendanceServiceTests : TestBase
     private static readonly Guid ActiveMemberId = Guid.NewGuid();
     private static readonly Guid InactiveMemberId = Guid.NewGuid();
 
-    // System category GUIDs as seeded in StageFrightDbContext
-    private static readonly Guid CashCategoryId = new("00000000-0000-0000-0000-000000000001");
-    private static readonly Guid MemberReceivableCategoryId = new("00000000-0000-0000-0000-000000000002");
-    private static readonly Guid IncomeCategoryId = Guid.NewGuid();
+    // System account GUIDs as seeded in StageFrightDbContext
+    private static readonly Guid CashAccountId = new("00000000-0000-0000-0000-000000000001");
+    private static readonly Guid MemberReceivableAccountId = new("00000000-0000-0000-0000-000000000002");
+    private static readonly Guid IncomeAccountId = Guid.NewGuid();
 
     public AttendanceServiceTests()
     {
@@ -63,16 +63,16 @@ public class AttendanceServiceTests : TestBase
         _memberRepo.GetByIdAsync(InactiveMemberId, Arg.Any<CancellationToken>())
             .Returns(InactiveMember(InactiveMemberId));
 
-        // Income category (non-system)
-        var incomeCategory = new Category
+        // Income account (non-system)
+        var incomeAccount = new Account
         {
-            Id = IncomeCategoryId, Name = "Attendance Income",
-            Type = CategoryType.Income, GLAccount = "1000",
+            Id = IncomeAccountId, Name = "Attendance Income",
+            Type = AccountType.Income, AccountNumber = "4000",
             IsSystem = false, SortOrder = 0,
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         };
-        _categoryRepo.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(new List<Category> { incomeCategory });
+        _accountRepo.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Account> { incomeAccount });
 
         _attendanceRepo.ExistsAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(false);
@@ -85,7 +85,7 @@ public class AttendanceServiceTests : TestBase
 
     private AttendanceService CreateService() =>
         new(_rehearsalRepo, _attendanceRepo, _memberRepo, _feeRepo, _paymentRepo,
-            _glRepo, _categoryRepo, _settingsRepo, _audit, _unitOfWork, _rehearsalService);
+            _glRepo, _accountRepo, _settingsRepo, _audit, _unitOfWork, _rehearsalService);
 
     // --- Attended + active + PaidAtCreation (default) ---
 
@@ -112,8 +112,8 @@ public class AttendanceServiceTests : TestBase
 
         // Accrual: Debit MemberReceivable / Credit Income — must be called at least once
         await _glRepo.Received().AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount > 0 && t.CategoryId == MemberReceivableCategoryId),
-            Arg.Is<Transaction>(t => t.CreditAmount > 0 && t.CategoryId == IncomeCategoryId),
+            Arg.Is<Transaction>(t => t.DebitAmount > 0 && t.AccountId == MemberReceivableAccountId),
+            Arg.Is<Transaction>(t => t.CreditAmount > 0 && t.AccountId == IncomeAccountId),
             Arg.Any<CancellationToken>());
     }
 
@@ -127,8 +127,8 @@ public class AttendanceServiceTests : TestBase
 
         // Payment: Debit Cash / Credit MemberReceivable
         await _glRepo.Received().AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount > 0 && t.CategoryId == CashCategoryId),
-            Arg.Is<Transaction>(t => t.CreditAmount > 0 && t.CategoryId == MemberReceivableCategoryId),
+            Arg.Is<Transaction>(t => t.DebitAmount > 0 && t.AccountId == CashAccountId),
+            Arg.Is<Transaction>(t => t.CreditAmount > 0 && t.AccountId == MemberReceivableAccountId),
             Arg.Any<CancellationToken>());
     }
 

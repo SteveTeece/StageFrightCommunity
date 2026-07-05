@@ -8,7 +8,7 @@ public class TransactionBackupDto
 {
     [ProtoMember(1)] public Guid Id { get; set; }
     [ProtoMember(2)] public DateTime Date { get; set; }
-    [ProtoMember(3)] public Guid CategoryId { get; set; }
+    [ProtoMember(3)] public Guid AccountId { get; set; }
     [ProtoMember(4)] public decimal DebitAmount { get; set; }
     [ProtoMember(5)] public decimal CreditAmount { get; set; }
     [ProtoMember(6)] public string GLAccount { get; set; } = string.Empty;

@@ -33,9 +33,9 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
         await _db.Database.OpenConnectionAsync();
         await _db.Database.MigrateAsync();
 
-        _db.Categories.AddRange(
-            new Category { Id = IncomeCatId, Name = "Membership Dues", Type = CategoryType.Income, GLAccount = "1000", SortOrder = 0, IsSystem = false, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new Category { Id = ExpenseCatId, Name = "Hall Hire", Type = CategoryType.Expense, GLAccount = "2000", SortOrder = 0, IsSystem = false, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+        _db.Accounts.AddRange(
+            new Account { Id = IncomeCatId, Name = "Membership Dues", Type = AccountType.Income, AccountNumber = "1000", SortOrder = 0, IsSystem = false, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new Account { Id = ExpenseCatId, Name = "Hall Hire", Type = AccountType.Expense, AccountNumber = "2000", SortOrder = 0, IsSystem = false, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
         );
 
         _db.Members.Add(new Member
@@ -48,10 +48,10 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
 
         // Balanced GL: debit MemberReceivable / credit Income = 100, debit Cash / credit MemberReceivable = 100
         _db.Transactions.AddRange(
-            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), CategoryId = IncomeCatId, GLAccount = "1000", DebitAmount = 0, CreditAmount = 100m, MemberId = MemberId, Description = "Annual fee", CreatedAt = DateTime.UtcNow },
-            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), CategoryId = IncomeCatId, GLAccount = "1000", DebitAmount = 100m, CreditAmount = 0, MemberId = MemberId, Description = "Annual fee offset", CreatedAt = DateTime.UtcNow },
-            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 4, 1, 0, 0, 0, DateTimeKind.Utc), CategoryId = ExpenseCatId, GLAccount = "2000", DebitAmount = 50m, CreditAmount = 0, Description = "Hall hire", CreatedAt = DateTime.UtcNow },
-            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 4, 1, 0, 0, 0, DateTimeKind.Utc), CategoryId = ExpenseCatId, GLAccount = "2000", DebitAmount = 0, CreditAmount = 50m, Description = "Hall hire payment", CreatedAt = DateTime.UtcNow }
+            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), AccountId = IncomeCatId, GLAccount = "1000", DebitAmount = 0, CreditAmount = 100m, MemberId = MemberId, Description = "Annual fee", CreatedAt = DateTime.UtcNow },
+            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), AccountId = IncomeCatId, GLAccount = "1000", DebitAmount = 100m, CreditAmount = 0, MemberId = MemberId, Description = "Annual fee offset", CreatedAt = DateTime.UtcNow },
+            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 4, 1, 0, 0, 0, DateTimeKind.Utc), AccountId = ExpenseCatId, GLAccount = "2000", DebitAmount = 50m, CreditAmount = 0, Description = "Hall hire", CreatedAt = DateTime.UtcNow },
+            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 4, 1, 0, 0, 0, DateTimeKind.Utc), AccountId = ExpenseCatId, GLAccount = "2000", DebitAmount = 0, CreditAmount = 50m, Description = "Hall hire payment", CreatedAt = DateTime.UtcNow }
         );
 
         await _db.SaveChangesAsync();
@@ -107,7 +107,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
         {
             Id = Guid.NewGuid(),
             Date = new DateTime(2026, 5, 1, 0, 0, 0, DateTimeKind.Utc),
-            CategoryId = IncomeCatId, GLAccount = "1000",
+            AccountId = IncomeCatId, GLAccount = "1000",
             DebitAmount = 0, CreditAmount = 999m, // unbalanced
             Description = "Imbalance test", CreatedAt = DateTime.UtcNow
         });
@@ -215,21 +215,21 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     private IncomeStatementReportProvider BuildIncomeStatementProvider()
     {
         var gl = new GLRepository(_db);
-        var cat = new CategoryRepository(_db);
+        var cat = new AccountRepository(_db);
         return new IncomeStatementReportProvider(gl, cat);
     }
 
     private TrialBalanceReportProvider BuildTrialBalanceProvider()
     {
         var gl = new GLRepository(_db);
-        var cat = new CategoryRepository(_db);
-        return new TrialBalanceReportProvider(gl, cat);
+        var cat = new AccountRepository(_db);
+        return new TrialBalanceReportProvider(gl, cat, new SettingsRepository(_db));
     }
 
     private AccountRegisterReportProvider BuildAccountRegisterProvider()
     {
         var gl = new GLRepository(_db);
-        var cat = new CategoryRepository(_db);
+        var cat = new AccountRepository(_db);
         return new AccountRegisterReportProvider(gl, cat);
     }
 

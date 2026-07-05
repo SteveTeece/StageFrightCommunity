@@ -14,7 +14,7 @@ namespace StageFright.Core.Tests.Setup;
 public class SetupServiceTests : TestBase
 {
     private readonly ISettingsRepository _settingsRepo = Substitute.For<ISettingsRepository>();
-    private readonly ICategoryRepository _categoryRepo = Substitute.For<ICategoryRepository>();
+    private readonly IAccountRepository _accountRepo = Substitute.For<IAccountRepository>();
     private readonly IEventTypeRepository _eventTypeRepo = Substitute.For<IEventTypeRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
 
@@ -24,7 +24,7 @@ public class SetupServiceTests : TestBase
             .Returns(ci => ci.ArgAt<StageFright.Core.Entities.EventType>(0));
     }
 
-    private SetupService CreateService() => new(_settingsRepo, _categoryRepo, _eventTypeRepo, _audit);
+    private SetupService CreateService() => new(_settingsRepo, _accountRepo, _eventTypeRepo, _audit);
 
     // --- IsSetupCompleteAsync ---
 
@@ -72,8 +72,8 @@ public class SetupServiceTests : TestBase
     public async Task InitializeAsync_Allows_ZeroAnnualFee()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
-        _categoryRepo.GetNextGLAccountAsync(Arg.Any<Core.Enums.CategoryType>(), Arg.Any<CancellationToken>())
-            .Returns("1000");
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
         var svc = CreateService();
 
         var request = ValidRequest() with { AnnualFee = 0m };
@@ -114,8 +114,8 @@ public class SetupServiceTests : TestBase
     public async Task InitializeAsync_SavesSettings_WithCorrectValues()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
-        _categoryRepo.GetNextGLAccountAsync(Arg.Any<Core.Enums.CategoryType>(), Arg.Any<CancellationToken>())
-            .Returns("1000");
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
         var svc = CreateService();
 
         var request = ValidRequest();

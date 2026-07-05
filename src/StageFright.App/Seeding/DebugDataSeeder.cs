@@ -16,9 +16,7 @@ namespace StageFright.App.Seeding;
 /// </summary>
 public class DebugDataSeeder : IDebugDataSeeder
 {
-    // Well-known system category GUIDs seeded by StageFrightDbContext
-    private static readonly Guid CashCategoryId = new("00000000-0000-0000-0000-000000000001");
-    private static readonly Guid MemberReceivableCategoryId = new("00000000-0000-0000-0000-000000000002");
+    // Well-known system account GUIDs seeded by StageFrightDbContext
 
     // Seed reference date — keeps generated data stable regardless of when seeding runs
     private static readonly DateTime SeedToday = new(2026, 6, 15, 0, 0, 0, DateTimeKind.Utc);
@@ -33,7 +31,7 @@ public class DebugDataSeeder : IDebugDataSeeder
     private readonly IFeeRepository _feeRepository;
     private readonly IPaymentRepository _paymentRepository;
     private readonly IGLRepository _glRepository;
-    private readonly ICategoryService _categoryService;
+    private readonly IAccountService _accountService;
     private readonly ISettingsService _settingsService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<DebugDataSeeder> _logger;
@@ -49,7 +47,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         IFeeRepository feeRepository,
         IPaymentRepository paymentRepository,
         IGLRepository glRepository,
-        ICategoryService categoryService,
+        IAccountService accountService,
         ISettingsService settingsService,
         IUnitOfWork unitOfWork,
         ILogger<DebugDataSeeder> logger)
@@ -64,7 +62,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         _feeRepository = feeRepository;
         _paymentRepository = paymentRepository;
         _glRepository = glRepository;
-        _categoryService = categoryService;
+        _accountService = accountService;
         _settingsService = settingsService;
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -81,10 +79,10 @@ public class DebugDataSeeder : IDebugDataSeeder
 
         _logger.LogInformation("Seeding debug data...");
 
-        // Income categories — must exist before attendance/fee GL entries are written
-        progress?.Report("Creating income categories…");
-        var membershipFeeCategory = await _categoryService.CreateAsync("Membership Fees", CategoryType.Income, ct);
-        var concertIncomeCategory = await _categoryService.CreateAsync("Concert Income", CategoryType.Income, ct);
+        // Income accounts — must exist before attendance/fee GL entries are written
+        progress?.Report("Creating income accounts…");
+        var membershipFeeAccount = await _accountService.CreateAsync("Membership Fees", AccountType.Income, ct: ct);
+        var concertIncomeAccount = await _accountService.CreateAsync("Concert Income", AccountType.Income, ct: ct);
 
         progress?.Report("Creating 40 members…");
         var members = await CreateMembersAsync(ct);
@@ -103,7 +101,7 @@ public class DebugDataSeeder : IDebugDataSeeder
             _logger.LogInformation("Seeding {Year}...", year);
 
             progress?.Report($"Seeding {year} annual fees…");
-            await SeedAnnualFeesAsync(year, members, membershipFeeCategory, settings.AnnualFee, ct);
+            await SeedAnnualFeesAsync(year, members, membershipFeeAccount, settings.AnnualFee, ct);
 
             progress?.Report($"Seeding {year} rehearsals…");
             await SeedRehearsalsAsync(year, members, regularAttendeeIds, ct);
@@ -111,7 +109,7 @@ public class DebugDataSeeder : IDebugDataSeeder
             progress?.Report($"Seeding {year} events…");
             await SeedEisteddfodAsync(year, members, eisteddfodType, ct);
             if (year < 2026)
-                await SeedConcertsAsync(year, members, performanceType, concertIncomeCategory, ct);
+                await SeedConcertsAsync(year, members, performanceType, concertIncomeAccount, ct);
         }
 
         progress?.Report("Seed complete!");
@@ -192,7 +190,7 @@ public class DebugDataSeeder : IDebugDataSeeder
     private async Task SeedAnnualFeesAsync(
         int year,
         IReadOnlyList<Member> members,
-        Category incomeCategory,
+        Account incomeAccount,
         decimal annualFeeAmount,
         CancellationToken ct)
     {
@@ -250,7 +248,7 @@ public class DebugDataSeeder : IDebugDataSeeder
                     new Transaction
                     {
                         Id = Guid.NewGuid(), Date = feeDate,
-                        CategoryId = MemberReceivableCategoryId, GLAccount = "0101",
+                        AccountId = SystemAccounts.MemberReceivableId, GLAccount = SystemAccounts.MemberReceivableNumber,
                         DebitAmount = annualFeeAmount, CreditAmount = 0m,
                         MemberId = member.Id, FeeId = savedFee.Id,
                         Description = $"Annual membership fee {year}",
@@ -259,7 +257,7 @@ public class DebugDataSeeder : IDebugDataSeeder
                     new Transaction
                     {
                         Id = Guid.NewGuid(), Date = feeDate,
-                        CategoryId = incomeCategory.Id, GLAccount = incomeCategory.GLAccount,
+                        AccountId = incomeAccount.Id, GLAccount = incomeAccount.AccountNumber,
                         DebitAmount = 0m, CreditAmount = annualFeeAmount,
                         FeeId = savedFee.Id,
                         Description = $"Annual membership fee income {year}",
@@ -287,7 +285,7 @@ public class DebugDataSeeder : IDebugDataSeeder
                     new Transaction
                     {
                         Id = Guid.NewGuid(), Date = payDate,
-                        CategoryId = CashCategoryId, GLAccount = "0100",
+                        AccountId = SystemAccounts.CashId, GLAccount = SystemAccounts.CashNumber,
                         DebitAmount = annualFeeAmount, CreditAmount = 0m,
                         MemberId = member.Id, PaymentId = savedPayment.Id, FeeId = savedFee.Id,
                         Description = $"Annual fee cash receipt {year}",
@@ -296,7 +294,7 @@ public class DebugDataSeeder : IDebugDataSeeder
                     new Transaction
                     {
                         Id = Guid.NewGuid(), Date = payDate,
-                        CategoryId = MemberReceivableCategoryId, GLAccount = "0101",
+                        AccountId = SystemAccounts.MemberReceivableId, GLAccount = SystemAccounts.MemberReceivableNumber,
                         DebitAmount = 0m, CreditAmount = annualFeeAmount,
                         MemberId = member.Id, PaymentId = savedPayment.Id, FeeId = savedFee.Id,
                         Description = $"Annual fee receivable cleared {year}",
@@ -374,7 +372,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         int year,
         IReadOnlyList<Member> members,
         EventType performanceType,
-        Category concertIncomeCategory,
+        Account concertIncomeAccount,
         CancellationToken ct)
     {
         var (satDate, sunDate) = GetConcertDates(year);
@@ -391,7 +389,7 @@ public class DebugDataSeeder : IDebugDataSeeder
             Notes = $"{year} Annual Concert — Saturday, Maclean"
         }, ct);
         await _eventService.RecordParticipationAsync(satEvent.Id, participationItems, ct);
-        await RecordConcertIncomeAsync(satDate, 800m, $"{year} Maclean Concert income", concertIncomeCategory, ct);
+        await RecordConcertIncomeAsync(satDate, 800m, $"{year} Maclean Concert income", concertIncomeAccount, ct);
 
         // Sunday — Yamba
         var sunEvent = await _eventService.ScheduleAsync(new ScheduleEventRequest
@@ -401,14 +399,14 @@ public class DebugDataSeeder : IDebugDataSeeder
             Notes = $"{year} Annual Concert — Sunday, Yamba"
         }, ct);
         await _eventService.RecordParticipationAsync(sunEvent.Id, participationItems, ct);
-        await RecordConcertIncomeAsync(sunDate, 800m, $"{year} Yamba Concert income", concertIncomeCategory, ct);
+        await RecordConcertIncomeAsync(sunDate, 800m, $"{year} Yamba Concert income", concertIncomeAccount, ct);
     }
 
     private async Task RecordConcertIncomeAsync(
         DateTime date,
         decimal amount,
         string description,
-        Category incomeCategory,
+        Account incomeAccount,
         CancellationToken ct)
     {
         var now = DateTime.UtcNow;
@@ -416,14 +414,14 @@ public class DebugDataSeeder : IDebugDataSeeder
             new Transaction
             {
                 Id = Guid.NewGuid(), Date = date,
-                CategoryId = CashCategoryId, GLAccount = "0100",
+                AccountId = SystemAccounts.CashId, GLAccount = SystemAccounts.CashNumber,
                 DebitAmount = amount, CreditAmount = 0m,
                 Description = description, CreatedAt = now
             },
             new Transaction
             {
                 Id = Guid.NewGuid(), Date = date,
-                CategoryId = incomeCategory.Id, GLAccount = incomeCategory.GLAccount,
+                AccountId = incomeAccount.Id, GLAccount = incomeAccount.AccountNumber,
                 DebitAmount = 0m, CreditAmount = amount,
                 Description = description, CreatedAt = now
             },

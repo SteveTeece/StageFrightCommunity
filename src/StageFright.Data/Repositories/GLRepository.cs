@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Finance;
 
 namespace StageFright.Data.Repositories;
 
@@ -27,14 +28,16 @@ public class GLRepository : IGLRepository
 
     public async Task<decimal> GetMemberBalanceAsync(Guid memberId, CancellationToken ct = default)
     {
-        // Outstanding = net balance of the MemberReceivable account (GL#0101) for this member.
-        // Debits to 0101 create the receivable; credits to 0101 clear it on payment/forgiveness.
+        // Outstanding = net balance of the Member Receivable account for this member.
+        // Debits create the receivable; credits clear it on payment/forgiveness.
+        // Keyed on AccountId — the denormalized GLAccount string is a posting-time
+        // snapshot and legacy rows still carry the old "0101" number.
         var debits = await _db.Transactions
-            .Where(t => t.MemberId == memberId && t.GLAccount == "0101")
+            .Where(t => t.MemberId == memberId && t.AccountId == SystemAccounts.MemberReceivableId)
             .SumAsync(t => t.DebitAmount, ct);
 
         var credits = await _db.Transactions
-            .Where(t => t.MemberId == memberId && t.GLAccount == "0101")
+            .Where(t => t.MemberId == memberId && t.AccountId == SystemAccounts.MemberReceivableId)
             .SumAsync(t => t.CreditAmount, ct);
 
         return debits - credits;
@@ -42,18 +45,48 @@ public class GLRepository : IGLRepository
 
     public async Task<decimal> GetTotalOutstandingAsync(CancellationToken ct = default)
     {
-        // Outstanding across all members = net balance of the MemberReceivable account (GL#0101).
+        // Outstanding across all members = net balance of the Member Receivable account.
         // In a balanced double-entry GL, summing ALL accounts yields zero; we project only the
         // receivable account to get the meaningful "members owe" figure for the Finance tile.
         var debits = await _db.Transactions
-            .Where(t => t.GLAccount == "0101")
+            .Where(t => t.AccountId == SystemAccounts.MemberReceivableId)
             .SumAsync(t => t.DebitAmount, ct);
 
         var credits = await _db.Transactions
-            .Where(t => t.GLAccount == "0101")
+            .Where(t => t.AccountId == SystemAccounts.MemberReceivableId)
             .SumAsync(t => t.CreditAmount, ct);
 
         return debits - credits;
+    }
+
+    public async Task<decimal> GetAccountBalanceAsync(Guid accountId, DateTime asAt, CancellationToken ct = default)
+    {
+        var debits = await _db.Transactions
+            .Where(t => t.AccountId == accountId && t.Date <= asAt)
+            .SumAsync(t => t.DebitAmount, ct);
+
+        var credits = await _db.Transactions
+            .Where(t => t.AccountId == accountId && t.Date <= asAt)
+            .SumAsync(t => t.CreditAmount, ct);
+
+        return debits - credits;
+    }
+
+    public async Task<IReadOnlyDictionary<Guid, (decimal Debits, decimal Credits)>> GetAccountMovementsAsync(
+        DateTime from, DateTime to, CancellationToken ct = default)
+    {
+        var movements = await _db.Transactions
+            .Where(t => t.Date >= from && t.Date <= to)
+            .GroupBy(t => t.AccountId)
+            .Select(g => new
+            {
+                AccountId = g.Key,
+                Debits = g.Sum(t => t.DebitAmount),
+                Credits = g.Sum(t => t.CreditAmount)
+            })
+            .ToListAsync(ct);
+
+        return movements.ToDictionary(m => m.AccountId, m => (m.Debits, m.Credits));
     }
 
     public async Task<IReadOnlyList<Transaction>> GetByDateRangeAsync(DateTime from, DateTime to, CancellationToken ct = default)

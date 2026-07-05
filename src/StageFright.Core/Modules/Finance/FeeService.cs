@@ -8,17 +8,15 @@ namespace StageFright.Core.Modules.Finance;
 /// <summary>
 /// Application service for annual membership fee batch operations.
 /// Eligibility: Active members with no existing Annual fee for the current calendar year (paid or unpaid).
-/// GL pair on creation: Debit MemberReceivable (0101) / Credit first available Income category.
+/// GL pair on creation: Debit MemberReceivable (0101) / Credit first available Income account.
 /// </summary>
 public class FeeService : IFeeService
 {
-    private static readonly Guid MemberReceivableCategoryId = new("00000000-0000-0000-0000-000000000002");
-    private const string MemberReceivableGLAccount = "0101";
 
     private readonly IMemberRepository _memberRepo;
     private readonly IFeeRepository _feeRepo;
     private readonly IGLRepository _glRepo;
-    private readonly ICategoryRepository _categoryRepo;
+    private readonly IAccountRepository _accountRepo;
     private readonly ISettingsRepository _settingsRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
@@ -27,7 +25,7 @@ public class FeeService : IFeeService
         IMemberRepository memberRepo,
         IFeeRepository feeRepo,
         IGLRepository glRepo,
-        ICategoryRepository categoryRepo,
+        IAccountRepository accountRepo,
         ISettingsRepository settingsRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork)
@@ -35,7 +33,7 @@ public class FeeService : IFeeService
         _memberRepo = memberRepo;
         _feeRepo = feeRepo;
         _glRepo = glRepo;
-        _categoryRepo = categoryRepo;
+        _accountRepo = accountRepo;
         _settingsRepo = settingsRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
@@ -65,11 +63,11 @@ public class FeeService : IFeeService
             ?? throw new ValidationException(
                 "Application settings are not configured.", "Settings", nameof(ApplyAnnualFeesAsync));
 
-        var categories = await _categoryRepo.GetAllAsync(ct);
-        var incomeCategory = categories.FirstOrDefault(c => c.Type == CategoryType.Income && !c.IsSystem)
+        var accounts = await _accountRepo.GetAllAsync(ct);
+        var incomeAccount = accounts.FirstOrDefault(c => c.Type == AccountType.Income && !c.IsSystem)
             ?? throw new ValidationException(
-                "No income category configured. Please set up categories in Settings before applying fees.",
-                "Category", nameof(ApplyAnnualFeesAsync));
+                "No income account configured. Please set up accounts in Settings before applying fees.",
+                "Account", nameof(ApplyAnnualFeesAsync));
 
         var currentYear = DateTime.UtcNow.Year;
         var feeDate = new DateTime(currentYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -101,10 +99,10 @@ public class FeeService : IFeeService
                     {
                         Id = Guid.NewGuid(),
                         Date = feeDate,
-                        CategoryId = MemberReceivableCategoryId,
+                        AccountId = SystemAccounts.MemberReceivableId,
                         DebitAmount = settings.AnnualFee,
                         CreditAmount = 0m,
-                        GLAccount = MemberReceivableGLAccount,
+                        GLAccount = SystemAccounts.MemberReceivableNumber,
                         MemberId = memberId,
                         FeeId = savedFee.Id,
                         Description = $"Annual membership fee {currentYear}",
@@ -114,10 +112,10 @@ public class FeeService : IFeeService
                     {
                         Id = Guid.NewGuid(),
                         Date = feeDate,
-                        CategoryId = incomeCategory.Id,
+                        AccountId = incomeAccount.Id,
                         DebitAmount = 0m,
                         CreditAmount = settings.AnnualFee,
-                        GLAccount = incomeCategory.GLAccount,
+                        GLAccount = incomeAccount.AccountNumber,
                         MemberId = null,
                         FeeId = savedFee.Id,
                         Description = $"Annual membership fee income {currentYear}",

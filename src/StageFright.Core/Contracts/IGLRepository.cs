@@ -33,6 +33,19 @@ public interface IGLRepository
     Task<IReadOnlyList<Transaction>> GetByFeeAsync(Guid feeId, CancellationToken ct = default);
 
     /// <summary>
+    /// Returns the net balance (Σdebits − Σcredits) of a single account for all
+    /// transactions dated on or before <paramref name="asAt"/>. Positive = net debit.
+    /// </summary>
+    Task<decimal> GetAccountBalanceAsync(Guid accountId, DateTime asAt, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns per-account debit/credit movement totals for transactions within the
+    /// inclusive date range, keyed by AccountId.
+    /// </summary>
+    Task<IReadOnlyDictionary<Guid, (decimal Debits, decimal Credits)>> GetAccountMovementsAsync(
+        DateTime from, DateTime to, CancellationToken ct = default);
+
+    /// <summary>
     /// Returns the total outstanding fee amounts grouped into standard aging buckets as of today.
     /// Buckets: Current (not yet due), 30 days (1–30 days overdue), 60 days (31–60 days overdue),
     /// 90+ days (61+ days overdue). Uses Fee.DueDate and Fee.PaidAtCreation, consistent with reports.

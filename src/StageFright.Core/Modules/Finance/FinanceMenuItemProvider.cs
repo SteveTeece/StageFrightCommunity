@@ -3,8 +3,9 @@ using StageFright.Plugins.Contracts;
 namespace StageFright.Core.Modules.Finance;
 
 /// <summary>
-/// Contributes the top-level Finance navigation item. Balances, payments, and
-/// annual fees are reached via tabs on the Finance page itself.
+/// Contributes the Finance navigation group. The Overview page keeps its tabs
+/// (Balances / Record Member Payment / Record Income / Apply Annual Fees);
+/// the expanded accounting surfaces are sub-items.
 /// DisplayOrder=4 places Finance after Events (3) and before Reports (5).
 /// </summary>
 public class FinanceMenuItemProvider : IMenuItemProvider
@@ -19,7 +20,12 @@ public class FinanceMenuItemProvider : IMenuItemProvider
             Title = "Finance",
             Route = "/finance",
             ShortLabel = "FIN",
-            DisplayOrder = 0
+            DisplayOrder = 0,
+            SubItems =
+            [
+                new MenuItem { Title = "Overview", Route = "/finance", DisplayOrder = 0 },
+                new MenuItem { Title = "Chart of Accounts", Route = "/finance/accounts", DisplayOrder = 1 }
+            ]
         }
     ];
 }

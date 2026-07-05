@@ -2,7 +2,7 @@ namespace StageFright.Plugins.Contracts;
 
 /// <summary>
 /// Implemented by core modules and external plugins to contribute a tab to the Settings page.
-/// Core tabs: General (0), Categories (10), Event Types (20), Backup (30), Restore (40).
+/// Core tabs: General (0), Accounts (10), Event Types (20), Backup (30), Restore (40).
 /// Duplicate TabKeys are skipped and logged. A failing tab provider is skipped gracefully.
 /// </summary>
 public interface ISettingsTabProvider

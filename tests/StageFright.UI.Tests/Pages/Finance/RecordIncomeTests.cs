@@ -12,27 +12,27 @@ namespace StageFright.UI.Tests.Pages.Finance;
 
 /// <summary>
 /// bUnit tests for RecordIncome page:
-/// - Renders category dropdown with available income categories
-/// - Shows warning when no categories configured
+/// - Renders account dropdown with available income accounts
+/// - Shows warning when no accounts configured
 /// - Amount > 0 validation enforced client-side
-/// - Category must be selected
+/// - Account must be selected
 /// - Submit calls IIncomeEntryService.RecordIncomeAsync
 /// - Success message displayed after save with Record Another option
-/// - Category pre-selected when only one category exists
+/// - Account pre-selected when only one account exists
 /// </summary>
 public class RecordIncomeTests : BunitContext
 {
     private readonly IIncomeEntryService _incomeService = Substitute.For<IIncomeEntryService>();
-    private static readonly Guid CategoryId = Guid.NewGuid();
+    private static readonly Guid AccountId = Guid.NewGuid();
 
     public RecordIncomeTests()
     {
         Services.AddSingleton(_incomeService);
 
-        _incomeService.GetIncomeCategoriesAsync(Arg.Any<CancellationToken>())
-            .Returns(new List<Category>
+        _incomeService.GetIncomeAccountsAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Account>
             {
-                MakeCategory(CategoryId, "Raffle Income")
+                MakeAccount(AccountId, "Raffle Income")
             });
 
         _incomeService.RecordIncomeAsync(Arg.Any<RecordIncomeRequest>(), Arg.Any<CancellationToken>())
@@ -50,11 +50,11 @@ public class RecordIncomeTests : BunitContext
     }
 
     [Fact]
-    public void Renders_CategoryDropdown_WithAvailableCategories()
+    public void Renders_AccountDropdown_WithAvailableAccounts()
     {
         var cut = Render<RecordIncome>();
 
-        var select = cut.Find("#category");
+        var select = cut.Find("#account");
         Assert.Contains("Raffle Income", select.InnerHtml);
     }
 
@@ -93,30 +93,30 @@ public class RecordIncomeTests : BunitContext
         Assert.Contains("Clear", clearBtn.TextContent, StringComparison.OrdinalIgnoreCase);
     }
 
-    // --- No-categories state ---
+    // --- No-accounts state ---
 
     [Fact]
-    public void WhenNoCategories_ShowsWarning_AndNoForm()
+    public void WhenNoAccounts_ShowsWarning_AndNoForm()
     {
-        _incomeService.GetIncomeCategoriesAsync(Arg.Any<CancellationToken>())
-            .Returns(new List<Category>());
+        _incomeService.GetIncomeAccountsAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Account>());
 
         var cut = Render<RecordIncome>();
 
-        Assert.Empty(cut.FindAll("#category"));
-        Assert.Contains("No income categories", cut.Markup, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(cut.FindAll("#account"));
+        Assert.Contains("No income accounts", cut.Markup, StringComparison.OrdinalIgnoreCase);
     }
 
-    // --- Pre-selection when single category ---
+    // --- Pre-selection when single account ---
 
     [Fact]
-    public void WhenSingleCategory_PreSelectsItInDropdown()
+    public void WhenSingleAccount_PreSelectsItInDropdown()
     {
         var cut = Render<RecordIncome>();
 
-        // Only one category; code-behind sets _form.CategoryId to its Id
-        var select = cut.Find("#category");
-        Assert.Equal(CategoryId.ToString(), select.GetAttribute("value"));
+        // Only one account; code-behind sets _form.AccountId to its Id
+        var select = cut.Find("#account");
+        Assert.Equal(AccountId.ToString(), select.GetAttribute("value"));
     }
 
     // --- Validation ---
@@ -188,10 +188,10 @@ public class RecordIncomeTests : BunitContext
 
     // --- Helpers ---
 
-    private static Category MakeCategory(Guid id, string name) => new()
+    private static Account MakeAccount(Guid id, string name) => new()
     {
-        Id = id, Name = name, Type = CategoryType.Income,
-        GLAccount = "1000", IsSystem = false, SortOrder = 0,
+        Id = id, Name = name, Type = AccountType.Income,
+        AccountNumber = "4000", IsSystem = false, SortOrder = 0,
         CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
 }

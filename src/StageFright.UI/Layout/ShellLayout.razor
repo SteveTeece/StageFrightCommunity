@@ -15,22 +15,72 @@
                 {
                     @foreach (var item in provider.GetMenuItems().OrderBy(i => i.DisplayOrder))
                     {
-                        <li class="sidebar-item">
-                            <a class="sidebar-link @(IsActive(item.Route) ? "active" : "")"
-                               href="@item.Route"
-                               title="@item.Title"
-                               aria-label="@item.Title"
-                               @onclick:preventDefault
-                               @onclick="() => Navigate(item.Route)"
-                               tabindex="0">
-                                <span class="nav-icon @IconClass(item.Route)" aria-hidden="true"></span>
-                                <span class="sidebar-label">@item.Title</span>
-                                @if (!string.IsNullOrEmpty(item.BadgeText))
+                        @if (item.SubItems.Count > 0)
+                        {
+                            <li class="sidebar-item sidebar-group">
+                                <div class="sidebar-link sidebar-group-header @(IsParentActive(item) ? "active" : "")">
+                                    <a class="sidebar-group-link"
+                                       href="@item.Route"
+                                       title="@item.Title"
+                                       aria-label="@item.Title"
+                                       @onclick:preventDefault
+                                       @onclick="() => Navigate(item.Route)"
+                                       tabindex="0">
+                                        <span class="nav-icon @IconClass(item.Route)" aria-hidden="true"></span>
+                                        <span class="sidebar-label">@item.Title</span>
+                                    </a>
+                                    <button class="sidebar-chevron @(IsGroupExpanded(item) ? "expanded" : "")"
+                                            type="button"
+                                            aria-label="@(IsGroupExpanded(item) ? $"Collapse {item.Title}" : $"Expand {item.Title}")"
+                                            aria-expanded="@(IsGroupExpanded(item) ? "true" : "false")"
+                                            @onclick="() => ToggleGroup(item.Route)"
+                                            @onclick:stopPropagation>
+                                    </button>
+                                </div>
+                                @if (IsGroupExpanded(item))
                                 {
-                                    <span class="sidebar-badge" role="status" aria-label="@item.BadgeText items">@item.BadgeText</span>
+                                    <ul class="sidebar-sublist" role="list">
+                                        @foreach (var sub in item.SubItems.OrderBy(s => s.DisplayOrder))
+                                        {
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link sidebar-sublink @(IsActive(sub.Route) ? "active" : "")"
+                                                   href="@sub.Route"
+                                                   title="@sub.Title"
+                                                   aria-label="@sub.Title"
+                                                   @onclick:preventDefault
+                                                   @onclick="() => Navigate(sub.Route)"
+                                                   tabindex="0">
+                                                    <span class="sidebar-label">@sub.Title</span>
+                                                    @if (!string.IsNullOrEmpty(sub.BadgeText))
+                                                    {
+                                                        <span class="sidebar-badge" role="status" aria-label="@sub.BadgeText items">@sub.BadgeText</span>
+                                                    }
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
                                 }
-                            </a>
-                        </li>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="sidebar-item">
+                                <a class="sidebar-link @(IsActive(item.Route) ? "active" : "")"
+                                   href="@item.Route"
+                                   title="@item.Title"
+                                   aria-label="@item.Title"
+                                   @onclick:preventDefault
+                                   @onclick="() => Navigate(item.Route)"
+                                   tabindex="0">
+                                    <span class="nav-icon @IconClass(item.Route)" aria-hidden="true"></span>
+                                    <span class="sidebar-label">@item.Title</span>
+                                    @if (!string.IsNullOrEmpty(item.BadgeText))
+                                    {
+                                        <span class="sidebar-badge" role="status" aria-label="@item.BadgeText items">@item.BadgeText</span>
+                                    }
+                                </a>
+                            </li>
+                        }
                     }
                 }
             </ul>

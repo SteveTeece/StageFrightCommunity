@@ -50,11 +50,11 @@ public sealed class StartupBenchmarkTests : IAsyncLifetime
     private SetupService BuildSetupService(StageFrightDbContext ctx)
     {
         var settingsRepo = new SettingsRepository(ctx);
-        var categoryRepo = new CategoryRepository(ctx);
+        var accountRepo = new AccountRepository(ctx);
         var eventTypeRepo = new EventTypeRepository(ctx);
         var auditRepo = new AuditTrailRepository(ctx);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        return new SetupService(settingsRepo, categoryRepo, eventTypeRepo, auditSvc);
+        return new SetupService(settingsRepo, accountRepo, eventTypeRepo, auditSvc);
     }
 
     /// <summary>

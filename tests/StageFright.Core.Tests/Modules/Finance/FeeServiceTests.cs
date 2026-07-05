@@ -16,7 +16,7 @@ public class FeeServiceTests : TestBase
     private readonly IMemberRepository _memberRepo = Substitute.For<IMemberRepository>();
     private readonly IFeeRepository _feeRepo = Substitute.For<IFeeRepository>();
     private readonly IGLRepository _glRepo = Substitute.For<IGLRepository>();
-    private readonly ICategoryRepository _categoryRepo = Substitute.For<ICategoryRepository>();
+    private readonly IAccountRepository _accountRepo = Substitute.For<IAccountRepository>();
     private readonly ISettingsRepository _settingsRepo = Substitute.For<ISettingsRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
@@ -24,9 +24,9 @@ public class FeeServiceTests : TestBase
     private static readonly Guid ActiveMember1Id = Guid.NewGuid();
     private static readonly Guid ActiveMember2Id = Guid.NewGuid();
     private static readonly Guid InactiveMemberId = Guid.NewGuid();
-    private static readonly Guid IncomeCategoryId = Guid.NewGuid();
+    private static readonly Guid IncomeAccountId = Guid.NewGuid();
 
-    private static readonly Guid MemberReceivableCategoryId = new("00000000-0000-0000-0000-000000000002");
+    private static readonly Guid MemberReceivableAccountId = new("00000000-0000-0000-0000-000000000002");
 
     private readonly FeeService _sut;
 
@@ -46,15 +46,15 @@ public class FeeServiceTests : TestBase
                 CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
             });
 
-        var incomeCategory = new Category
+        var incomeAccount = new Account
         {
-            Id = IncomeCategoryId, Name = "Membership Income",
-            Type = CategoryType.Income, GLAccount = "1000",
+            Id = IncomeAccountId, Name = "Membership Income",
+            Type = AccountType.Income, AccountNumber = "4000",
             IsSystem = false, SortOrder = 0,
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         };
-        _categoryRepo.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(new List<Category> { incomeCategory });
+        _accountRepo.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Account> { incomeAccount });
 
         _memberRepo.GetByStatusAsync(MemberStatus.Active, Arg.Any<CancellationToken>())
             .Returns(new List<Member>
@@ -71,7 +71,7 @@ public class FeeServiceTests : TestBase
             .Returns(ci => ci.ArgAt<Fee>(0));
 
         _sut = new FeeService(
-            _memberRepo, _feeRepo, _glRepo, _categoryRepo, _settingsRepo, _audit, _unitOfWork);
+            _memberRepo, _feeRepo, _glRepo, _accountRepo, _settingsRepo, _audit, _unitOfWork);
     }
 
     // --- GetEligibleMembersAsync ---
@@ -129,8 +129,8 @@ public class FeeServiceTests : TestBase
             Arg.Any<CancellationToken>());
 
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 50m && t.GLAccount == "0101"),
-            Arg.Is<Transaction>(t => t.CreditAmount == 50m && t.GLAccount == "1000"),
+            Arg.Is<Transaction>(t => t.DebitAmount == 50m && t.GLAccount == "1200"),
+            Arg.Is<Transaction>(t => t.CreditAmount == 50m && t.GLAccount == "4000"),
             Arg.Any<CancellationToken>());
     }
 

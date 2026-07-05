@@ -20,10 +20,10 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
 {
     private StageFrightDbContext _db = null!;
 
-    // System category GUIDs (seeded by StageFrightDbContext)
-    private static readonly Guid MemberReceivableCategoryId = new("00000000-0000-0000-0000-000000000002");
+    // System account GUIDs (seeded by StageFrightDbContext)
+    private static readonly Guid MemberReceivableAccountId = new("00000000-0000-0000-0000-000000000002");
 
-    private static readonly Guid IncomeCategoryId = Guid.NewGuid();
+    private static readonly Guid IncomeAccountId = Guid.NewGuid();
 
     public async Task InitializeAsync()
     {
@@ -35,13 +35,13 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         await _db.Database.OpenConnectionAsync();
         await _db.Database.MigrateAsync();
 
-        // Seed income category for GL pairs
-        _db.Categories.Add(new Category
+        // Seed income account for GL pairs
+        _db.Accounts.Add(new Account
         {
-            Id = IncomeCategoryId,
+            Id = IncomeAccountId,
             Name = "Membership Income",
-            Type = CategoryType.Income,
-            GLAccount = "1000",
+            Type = AccountType.Income,
+            AccountNumber = "1000",
             SortOrder = 0,
             IsSystem = false,
             CreatedAt = DateTime.UtcNow,
@@ -163,7 +163,7 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         Assert.Equal(2, allTransactions.Count);
 
         Assert.Contains(allTransactions, t =>
-            t.DebitAmount == 50m && t.CategoryId == MemberReceivableCategoryId && t.MemberId == member.Id);
+            t.DebitAmount == 50m && t.AccountId == MemberReceivableAccountId && t.MemberId == member.Id);
         Assert.Contains(allTransactions, t =>
             t.CreditAmount == 50m && t.GLAccount == "1000" && t.MemberId == null);
     }
@@ -237,13 +237,13 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         var memberRepo = new MemberRepository(_db);
         var feeRepo = new FeeRepository(_db);
         var glRepo = new GLRepository(_db);
-        var categoryRepo = new CategoryRepository(_db);
+        var accountRepo = new AccountRepository(_db);
         var settingsRepo = new SettingsRepository(_db);
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var unitOfWork = new UnitOfWork(_db);
 
-        return new FeeService(memberRepo, feeRepo, glRepo, categoryRepo, settingsRepo, auditSvc, unitOfWork);
+        return new FeeService(memberRepo, feeRepo, glRepo, accountRepo, settingsRepo, auditSvc, unitOfWork);
     }
 
     private async Task<Member> AddActiveMember(string name)

@@ -11,12 +11,6 @@ namespace StageFright.Core.Modules.Finance;
 /// </summary>
 public class ReactivationForgivenessService : IReactivationForgivenessService
 {
-    private static readonly Guid BadDebtCategoryId = new("00000000-0000-0000-0000-000000000003");
-    private static readonly Guid MemberReceivableCategoryId = new("00000000-0000-0000-0000-000000000002");
-
-    private const string BadDebtGLAccount = "9900";
-    private const string MemberReceivableGLAccount = "0101";
-
     private readonly IFeeRepository _feeRepo;
     private readonly IGLRepository _glRepo;
     private readonly IAuditTrailService _audit;
@@ -78,10 +72,10 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
                     {
                         Id = Guid.NewGuid(),
                         Date = now,
-                        CategoryId = BadDebtCategoryId,
+                        AccountId = SystemAccounts.BadDebtId,
                         DebitAmount = fee.Amount,
                         CreditAmount = 0m,
-                        GLAccount = BadDebtGLAccount,
+                        GLAccount = SystemAccounts.BadDebtNumber,
                         MemberId = memberId,
                         FeeId = feeId,
                         Description = $"Reactivation forgiveness write-off for fee {feeId}",
@@ -91,10 +85,10 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
                     {
                         Id = Guid.NewGuid(),
                         Date = now,
-                        CategoryId = MemberReceivableCategoryId,
+                        AccountId = SystemAccounts.MemberReceivableId,
                         DebitAmount = 0m,
                         CreditAmount = fee.Amount,
-                        GLAccount = MemberReceivableGLAccount,
+                        GLAccount = SystemAccounts.MemberReceivableNumber,
                         MemberId = memberId,
                         FeeId = feeId,
                         Description = $"Reactivation forgiveness — receivable cleared for fee {feeId}",

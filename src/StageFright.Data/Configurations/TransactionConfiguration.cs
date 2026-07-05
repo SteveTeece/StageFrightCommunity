@@ -18,9 +18,9 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 
         // No soft-delete fields; no global query filter on Transaction (Constitution §3.4)
 
-        builder.HasOne(t => t.Category)
+        builder.HasOne(t => t.Account)
             .WithMany(c => c.Transactions)
-            .HasForeignKey(t => t.CategoryId)
+            .HasForeignKey(t => t.AccountId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(t => t.Member)

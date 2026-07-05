@@ -18,12 +18,12 @@ namespace StageFright.Reports.Tests;
 public class IncomeStatementReportProviderTests
 {
     private readonly IGLRepository _gl = Substitute.For<IGLRepository>();
-    private readonly ICategoryRepository _categories = Substitute.For<ICategoryRepository>();
+    private readonly IAccountRepository _accounts = Substitute.For<IAccountRepository>();
     private readonly IncomeStatementReportProvider _sut;
 
     public IncomeStatementReportProviderTests()
     {
-        _sut = new IncomeStatementReportProvider(_gl, _categories);
+        _sut = new IncomeStatementReportProvider(_gl, _accounts);
     }
 
     [Fact]
@@ -47,11 +47,11 @@ public class IncomeStatementReportProviderTests
     }
 
     [Fact]
-    public async Task GenerateAsync_IncomeSection_ContainsIncomeCategoryRow()
+    public async Task GenerateAsync_IncomeSection_ContainsIncomeAccountRow()
     {
         var catId = Guid.NewGuid();
-        SetupCategories(
-            MakeCategory(catId, "Membership Dues", CategoryType.Income, "1000", false));
+        SetupAccounts(
+            MakeAccount(catId, "Membership Dues", AccountType.Income, "1000", false));
 
         SetupTransactions(
             MakeTransaction(catId, "1000", debit: 0, credit: 100m, new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc)));
@@ -68,7 +68,7 @@ public class IncomeStatementReportProviderTests
     public async Task GenerateAsync_IncomeSection_SubtotalEqualsSum()
     {
         var catId = Guid.NewGuid();
-        SetupCategories(MakeCategory(catId, "Dues", CategoryType.Income, "1000", false));
+        SetupAccounts(MakeAccount(catId, "Dues", AccountType.Income, "1000", false));
         SetupTransactions(
             MakeTransaction(catId, "1000", debit: 0, credit: 100m, new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)),
             MakeTransaction(catId, "1000", debit: 0, credit: 50m, new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc)));
@@ -81,10 +81,10 @@ public class IncomeStatementReportProviderTests
     }
 
     [Fact]
-    public async Task GenerateAsync_ExpenseSection_ContainsExpenseCategoryRow()
+    public async Task GenerateAsync_ExpenseSection_ContainsExpenseAccountRow()
     {
         var catId = Guid.NewGuid();
-        SetupCategories(MakeCategory(catId, "Hall Hire", CategoryType.Expense, "2000", false));
+        SetupAccounts(MakeAccount(catId, "Hall Hire", AccountType.Expense, "2000", false));
         SetupTransactions(
             MakeTransaction(catId, "2000", debit: 200m, credit: 0, new DateTime(2026, 4, 1, 0, 0, 0, DateTimeKind.Utc)));
 
@@ -100,9 +100,9 @@ public class IncomeStatementReportProviderTests
     {
         var incCatId = Guid.NewGuid();
         var expCatId = Guid.NewGuid();
-        SetupCategories(
-            MakeCategory(incCatId, "Dues", CategoryType.Income, "1000", false),
-            MakeCategory(expCatId, "Hall", CategoryType.Expense, "2000", false));
+        SetupAccounts(
+            MakeAccount(incCatId, "Dues", AccountType.Income, "1000", false),
+            MakeAccount(expCatId, "Hall", AccountType.Expense, "2000", false));
 
         SetupTransactions(
             MakeTransaction(incCatId, "1000", 0, 300m, new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)),
@@ -119,9 +119,9 @@ public class IncomeStatementReportProviderTests
     {
         var incCatId = Guid.NewGuid();
         var expCatId = Guid.NewGuid();
-        SetupCategories(
-            MakeCategory(incCatId, "Dues", CategoryType.Income, "1000", false),
-            MakeCategory(expCatId, "Hall", CategoryType.Expense, "2000", false));
+        SetupAccounts(
+            MakeAccount(incCatId, "Dues", AccountType.Income, "1000", false),
+            MakeAccount(expCatId, "Hall", AccountType.Expense, "2000", false));
 
         SetupTransactions(
             MakeTransaction(incCatId, "1000", 0, 50m, new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)),
@@ -137,7 +137,7 @@ public class IncomeStatementReportProviderTests
     [Fact]
     public async Task GenerateAsync_EmptySections_HandledWithoutThrowing()
     {
-        SetupCategories(); // no categories
+        SetupAccounts(); // no accounts
         SetupTransactions(); // no transactions
 
         var result = await _sut.GenerateAsync(CurrentYearFilters());
@@ -150,7 +150,7 @@ public class IncomeStatementReportProviderTests
     public async Task GenerateAsync_DateRangeFilter_Applied()
     {
         var catId = Guid.NewGuid();
-        SetupCategories(MakeCategory(catId, "Dues", CategoryType.Income, "1000", false));
+        SetupAccounts(MakeAccount(catId, "Dues", AccountType.Income, "1000", false));
         SetupTransactions(); // no matching transactions for the range query
 
         var filters = new ReportFilterValues();
@@ -167,10 +167,10 @@ public class IncomeStatementReportProviderTests
 
     // --- Helpers ---
 
-    private void SetupCategories(params Category[] cats)
+    private void SetupAccounts(params Account[] cats)
     {
-        _categories.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<Category>>(cats.ToList()));
+        _accounts.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<Account>>(cats.ToList()));
     }
 
     private void SetupTransactions(params Transaction[] txns)
@@ -179,11 +179,11 @@ public class IncomeStatementReportProviderTests
             .Returns(Task.FromResult<IReadOnlyList<Transaction>>(txns.ToList()));
     }
 
-    private static Category MakeCategory(Guid id, string name, CategoryType type, string gl, bool isSystem)
-        => new() { Id = id, Name = name, Type = type, GLAccount = gl, IsSystem = isSystem, CreatedAt = DateTime.UtcNow };
+    private static Account MakeAccount(Guid id, string name, AccountType type, string gl, bool isSystem)
+        => new() { Id = id, Name = name, Type = type, AccountNumber = gl, IsSystem = isSystem, CreatedAt = DateTime.UtcNow };
 
-    private static Transaction MakeTransaction(Guid categoryId, string glAccount, decimal debit, decimal credit, DateTime date)
-        => new() { Id = Guid.NewGuid(), CategoryId = categoryId, GLAccount = glAccount, DebitAmount = debit, CreditAmount = credit, Date = date, CreatedAt = DateTime.UtcNow };
+    private static Transaction MakeTransaction(Guid accountId, string glAccount, decimal debit, decimal credit, DateTime date)
+        => new() { Id = Guid.NewGuid(), AccountId = accountId, GLAccount = glAccount, DebitAmount = debit, CreditAmount = credit, Date = date, CreatedAt = DateTime.UtcNow };
 
     private static ReportFilterValues CurrentYearFilters()
     {

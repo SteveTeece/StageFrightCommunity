@@ -109,7 +109,7 @@ public class BackupImportTests_Integration : IDisposable
     // --- Completeness validation ---
 
     [Fact]
-    public async Task ImportAsync_ThrowsImportException_WhenCategoriesNull_IntegrationPath()
+    public async Task ImportAsync_ThrowsImportException_WhenAccountsNull_IntegrationPath()
     {
         using var db = _factory.CreateContext();
         var svc = BuildBackupService(db);
@@ -119,17 +119,17 @@ public class BackupImportTests_Integration : IDisposable
         {
             await svc.ExportAsync(path);
 
-            // Tamper: remove Categories from EntityCounts to simulate a missing entity type
+            // Tamper: remove Accounts from EntityCounts to simulate a missing entity type
             using var readStream = File.OpenRead(path);
             var envelope = ProtoBuf.Serializer.Deserialize<StageFright.Core.Modules.Settings.Backup.BackupEnvelope>(readStream);
             readStream.Close();
-            envelope.EntityCounts.Remove("Categories");
+            envelope.EntityCounts.Remove("Accounts");
             using var writeStream = File.Create(path);
             ProtoBuf.Serializer.Serialize(writeStream, envelope);
             writeStream.Close();
 
             var ex = await Assert.ThrowsAsync<ImportException>(() => svc.ImportAsync(path));
-            Assert.Contains("missing Categories", ex.Message);
+            Assert.Contains("missing Accounts", ex.Message);
         }
         finally
         {

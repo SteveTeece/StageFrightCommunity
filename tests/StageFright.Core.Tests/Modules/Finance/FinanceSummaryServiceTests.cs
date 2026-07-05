@@ -8,7 +8,7 @@ namespace StageFright.Core.Tests.Modules.Finance;
 
 /// <summary>
 /// Unit tests for FinanceSummaryService — verifies balance/month figures and monthly
-/// cash-flow buckets follow the income-statement conventions (non-system categories only,
+/// cash-flow buckets follow the income-statement conventions (non-system accounts only,
 /// income = credits − debits, expenses = debits − credits).
 /// </summary>
 public class FinanceSummaryServiceTests
@@ -16,19 +16,19 @@ public class FinanceSummaryServiceTests
     private static readonly DateTime AsOf = new(2026, 7, 4, 0, 0, 0, DateTimeKind.Utc);
 
     private readonly IGLRepository _glRepository = Substitute.For<IGLRepository>();
-    private readonly ICategoryRepository _categoryRepository = Substitute.For<ICategoryRepository>();
+    private readonly IAccountRepository _accountRepository = Substitute.For<IAccountRepository>();
     private readonly FinanceSummaryService _service;
 
-    private readonly Category _incomeCategory = MakeCategory(CategoryType.Income, isSystem: false);
-    private readonly Category _expenseCategory = MakeCategory(CategoryType.Expense, isSystem: false);
-    private readonly Category _systemIncomeCategory = MakeCategory(CategoryType.Income, isSystem: true);
-    private readonly Category _systemExpenseCategory = MakeCategory(CategoryType.Expense, isSystem: true);
+    private readonly Account _incomeAccount = MakeAccount(AccountType.Income, isSystem: false);
+    private readonly Account _expenseAccount = MakeAccount(AccountType.Expense, isSystem: false);
+    private readonly Account _systemIncomeAccount = MakeAccount(AccountType.Income, isSystem: true);
+    private readonly Account _systemExpenseAccount = MakeAccount(AccountType.Expense, isSystem: true);
 
     public FinanceSummaryServiceTests()
     {
-        _service = new FinanceSummaryService(_glRepository, _categoryRepository);
-        _categoryRepository.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns([_incomeCategory, _expenseCategory, _systemIncomeCategory, _systemExpenseCategory]);
+        _service = new FinanceSummaryService(_glRepository, _accountRepository);
+        _accountRepository.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns([_incomeAccount, _expenseAccount, _systemIncomeAccount, _systemExpenseAccount]);
     }
 
     // --- GetSummaryAsync ---
@@ -37,9 +37,9 @@ public class FinanceSummaryServiceTests
     public async Task Should_ComputeBalanceAsIncomeMinusExpenses_When_TransactionsExist()
     {
         SetupTransactions(
-            Txn(_incomeCategory.Id, credit: 500m, date: AsOf.AddMonths(-3)),
-            Txn(_incomeCategory.Id, credit: 250m, date: AsOf.AddDays(-1)),
-            Txn(_expenseCategory.Id, debit: 100m, date: AsOf.AddMonths(-2)));
+            Txn(_incomeAccount.Id, credit: 500m, date: AsOf.AddMonths(-3)),
+            Txn(_incomeAccount.Id, credit: 250m, date: AsOf.AddDays(-1)),
+            Txn(_expenseAccount.Id, debit: 100m, date: AsOf.AddMonths(-2)));
 
         var summary = await _service.GetSummaryAsync(AsOf);
 
@@ -47,12 +47,12 @@ public class FinanceSummaryServiceTests
     }
 
     [Fact]
-    public async Task Should_ExcludeSystemCategories_When_ComputingSummary()
+    public async Task Should_ExcludeSystemAccounts_When_ComputingSummary()
     {
         SetupTransactions(
-            Txn(_incomeCategory.Id, credit: 100m, date: AsOf.AddDays(-1)),
-            Txn(_systemIncomeCategory.Id, credit: 9_999m, date: AsOf.AddDays(-1)),
-            Txn(_systemExpenseCategory.Id, debit: 5_000m, date: AsOf.AddDays(-1)));
+            Txn(_incomeAccount.Id, credit: 100m, date: AsOf.AddDays(-1)),
+            Txn(_systemIncomeAccount.Id, credit: 9_999m, date: AsOf.AddDays(-1)),
+            Txn(_systemExpenseAccount.Id, debit: 5_000m, date: AsOf.AddDays(-1)));
 
         var summary = await _service.GetSummaryAsync(AsOf);
 
@@ -62,13 +62,13 @@ public class FinanceSummaryServiceTests
     }
 
     [Fact]
-    public async Task Should_NetDebitsAgainstCredits_When_CategoryHasBothLegs()
+    public async Task Should_NetDebitsAgainstCredits_When_AccountHasBothLegs()
     {
         SetupTransactions(
-            Txn(_incomeCategory.Id, credit: 300m, date: AsOf.AddDays(-2)),
-            Txn(_incomeCategory.Id, debit: 50m, date: AsOf.AddDays(-2)),   // income reversal
-            Txn(_expenseCategory.Id, debit: 200m, date: AsOf.AddDays(-2)),
-            Txn(_expenseCategory.Id, credit: 40m, date: AsOf.AddDays(-2))); // expense refund
+            Txn(_incomeAccount.Id, credit: 300m, date: AsOf.AddDays(-2)),
+            Txn(_incomeAccount.Id, debit: 50m, date: AsOf.AddDays(-2)),   // income reversal
+            Txn(_expenseAccount.Id, debit: 200m, date: AsOf.AddDays(-2)),
+            Txn(_expenseAccount.Id, credit: 40m, date: AsOf.AddDays(-2))); // expense refund
 
         var summary = await _service.GetSummaryAsync(AsOf);
 
@@ -81,9 +81,9 @@ public class FinanceSummaryServiceTests
     public async Task Should_LimitMonthFiguresToAsOfMonth_When_OlderTransactionsExist()
     {
         SetupTransactions(
-            Txn(_incomeCategory.Id, credit: 400m, date: new DateTime(2026, 6, 30, 0, 0, 0, DateTimeKind.Utc)),
-            Txn(_incomeCategory.Id, credit: 150m, date: new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc)),
-            Txn(_expenseCategory.Id, debit: 60m, date: new DateTime(2026, 7, 3, 0, 0, 0, DateTimeKind.Utc)));
+            Txn(_incomeAccount.Id, credit: 400m, date: new DateTime(2026, 6, 30, 0, 0, 0, DateTimeKind.Utc)),
+            Txn(_incomeAccount.Id, credit: 150m, date: new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc)),
+            Txn(_expenseAccount.Id, debit: 60m, date: new DateTime(2026, 7, 3, 0, 0, 0, DateTimeKind.Utc)));
 
         var summary = await _service.GetSummaryAsync(AsOf);
 
@@ -135,9 +135,9 @@ public class FinanceSummaryServiceTests
     public async Task Should_BucketTransactionsByMonth_When_GettingCashFlow()
     {
         SetupTransactions(
-            Txn(_incomeCategory.Id, credit: 300m, date: new DateTime(2026, 5, 10, 0, 0, 0, DateTimeKind.Utc)),
-            Txn(_expenseCategory.Id, debit: 120m, date: new DateTime(2026, 5, 20, 0, 0, 0, DateTimeKind.Utc)),
-            Txn(_incomeCategory.Id, credit: 80m, date: new DateTime(2026, 7, 2, 0, 0, 0, DateTimeKind.Utc)));
+            Txn(_incomeAccount.Id, credit: 300m, date: new DateTime(2026, 5, 10, 0, 0, 0, DateTimeKind.Utc)),
+            Txn(_expenseAccount.Id, debit: 120m, date: new DateTime(2026, 5, 20, 0, 0, 0, DateTimeKind.Utc)),
+            Txn(_incomeAccount.Id, credit: 80m, date: new DateTime(2026, 7, 2, 0, 0, 0, DateTimeKind.Utc)));
 
         var result = await _service.GetMonthlyCashFlowAsync(AsOf, 6);
 
@@ -153,7 +153,7 @@ public class FinanceSummaryServiceTests
     public async Task Should_ZeroFillMonths_When_MonthHasNoTransactions()
     {
         SetupTransactions(
-            Txn(_incomeCategory.Id, credit: 100m, date: new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc)));
+            Txn(_incomeAccount.Id, credit: 100m, date: new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc)));
 
         var result = await _service.GetMonthlyCashFlowAsync(AsOf, 3);
 
@@ -178,10 +178,10 @@ public class FinanceSummaryServiceTests
     }
 
     [Fact]
-    public async Task Should_ExcludeSystemCategories_When_GettingCashFlow()
+    public async Task Should_ExcludeSystemAccounts_When_GettingCashFlow()
     {
         SetupTransactions(
-            Txn(_systemIncomeCategory.Id, credit: 500m, date: new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc)));
+            Txn(_systemIncomeAccount.Id, credit: 500m, date: new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc)));
 
         var result = await _service.GetMonthlyCashFlowAsync(AsOf, 2);
 
@@ -205,7 +205,7 @@ public class FinanceSummaryServiceTests
             .Returns(transactions);
     }
 
-    private static Category MakeCategory(CategoryType type, bool isSystem) => new()
+    private static Account MakeAccount(AccountType type, bool isSystem) => new()
     {
         Id = Guid.NewGuid(),
         Name = $"{type}{(isSystem ? "-system" : "")}",
@@ -215,10 +215,10 @@ public class FinanceSummaryServiceTests
         UpdatedAt = DateTime.UtcNow
     };
 
-    private static Transaction Txn(Guid categoryId, decimal debit = 0m, decimal credit = 0m, DateTime date = default) => new()
+    private static Transaction Txn(Guid accountId, decimal debit = 0m, decimal credit = 0m, DateTime date = default) => new()
     {
         Id = Guid.NewGuid(),
-        CategoryId = categoryId,
+        AccountId = accountId,
         DebitAmount = debit,
         CreditAmount = credit,
         Date = date,

@@ -1,0 +1,184 @@
+@page "/finance/accounts"
+@using StageFright.Core.Enums
+@using StageFright.Core.Entities
+
+<PageTitle>Chart of Accounts</PageTitle>
+
+<div class="chart-of-accounts-page container-fluid py-2">
+    <h4 class="mb-2">Chart of Accounts</h4>
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+    }
+
+    @if (!string.IsNullOrEmpty(_successMessage))
+    {
+        <div class="alert alert-success py-1 mb-2 small" role="status">@_successMessage</div>
+    }
+
+    @if (_loading)
+    {
+        <p role="status" aria-live="polite">Loading accounts…</p>
+    }
+    else
+    {
+        <!-- Add Account Form -->
+        <div class="card mb-2">
+            <div class="card-body py-2">
+                <h6 class="card-title mb-2">Add Account</h6>
+                <EditForm Model="_newAccountModel" OnValidSubmit="HandleCreateAsync">
+                    <DataAnnotationsValidator />
+                    <div class="row g-2 align-items-start">
+                        <div class="col">
+                            <InputText id="account-name" class="form-control form-control-sm"
+                                       @bind-Value="_newAccountModel.Name"
+                                       placeholder="Account name"
+                                       aria-label="Account name" />
+                            <ValidationMessage For="() => _newAccountModel.Name" class="text-danger small" />
+                        </div>
+                        <div class="col-auto">
+                            <InputSelect id="account-type" class="form-select form-select-sm"
+                                         @bind-Value="_newAccountModel.Type"
+                                         aria-label="Account type">
+                                <option value="@AccountType.Asset">Asset</option>
+                                <option value="@AccountType.Liability">Liability</option>
+                                <option value="@AccountType.Equity">Equity</option>
+                                <option value="@AccountType.Income">Income</option>
+                                <option value="@AccountType.Expense">Expense</option>
+                            </InputSelect>
+                        </div>
+                        @if (_newAccountModel.Type == AccountType.Asset)
+                        {
+                            <div class="col-auto d-flex align-items-center">
+                                <div class="form-check form-check-sm mb-0">
+                                    <InputCheckbox id="account-is-bank" class="form-check-input"
+                                                   @bind-Value="_newAccountModel.IsBankAccount" />
+                                    <label class="form-check-label small" for="account-is-bank">Bank / cash account</label>
+                                </div>
+                            </div>
+                        }
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary btn-sm" disabled="@_creating">
+                                @(_creating ? "Creating…" : "Add Account")
+                            </button>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+
+        <!-- Type filter -->
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <label for="type-filter" class="form-label small mb-0">Show:</label>
+            <select id="type-filter" class="form-select form-select-sm w-auto"
+                    value="@_typeFilter" @onchange="OnTypeFilterChanged" aria-label="Filter by account type">
+                <option value="">All types</option>
+                <option value="@AccountType.Asset">Assets</option>
+                <option value="@AccountType.Liability">Liabilities</option>
+                <option value="@AccountType.Equity">Equity</option>
+                <option value="@AccountType.Income">Income</option>
+                <option value="@AccountType.Expense">Expenses</option>
+            </select>
+        </div>
+
+        <!-- Active accounts -->
+        <section aria-labelledby="accounts-heading" class="mb-2">
+            <h6 id="accounts-heading" class="mb-1">Active Accounts</h6>
+            @if (!FilteredAccounts.Any())
+            {
+                <p class="text-muted small mb-0">No accounts match the current filter.</p>
+            }
+            else
+            {
+                <RadzenDataGrid Data="@FilteredAccounts" TItem="Account"
+                                AllowSorting="false" AllowPaging="true" PageSize="15"
+                                class="rz-shadow-0">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="Account" Title="No." Width="70px">
+                            <Template Context="account">
+                                <code>@account.AccountNumber</code>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Account" Title="Name">
+                            <Template Context="account">
+                                @if (_editingId == account.Id)
+                                {
+                                    <input class="form-control form-control-sm d-inline-block w-auto me-1"
+                                           @bind="_editName" aria-label="New name for @account.Name" />
+                                    <button class="btn btn-primary btn-sm me-1" @onclick="() => SaveRenameAsync(account.Id)">Save</button>
+                                    <button class="btn btn-outline-secondary btn-sm" @onclick="CancelRename">Cancel</button>
+                                }
+                                else
+                                {
+                                    @account.Name
+                                    @if (account.IsSystem)
+                                    {
+                                        <span class="badge bg-secondary ms-1" title="System account">System</span>
+                                    }
+                                    @if (account.IsBankAccount)
+                                    {
+                                        <span class="badge bg-info ms-1" title="Bank / cash account">Bank</span>
+                                    }
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Account" Title="Type" Width="110px">
+                            <Template Context="account">
+                                @account.Type
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Account" Title="" Width="170px" Sortable="false">
+                            <Template Context="account">
+                                @if (!account.IsSystem && _editingId != account.Id)
+                                {
+                                    <button class="btn btn-outline-secondary btn-sm me-1"
+                                            @onclick="() => StartRename(account)">
+                                        Rename
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm"
+                                            @onclick="() => ArchiveAsync(account.Id)">
+                                        Archive
+                                    </button>
+                                }
+                                else if (account.IsSystem)
+                                {
+                                    <span class="text-muted small">Read-only</span>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            }
+        </section>
+
+        <!-- Archived accounts -->
+        @if (_archivedAccounts.Any())
+        {
+            <section aria-labelledby="archived-heading" class="mb-2">
+                <h6 id="archived-heading" class="mb-1">Archived Accounts</h6>
+                <RadzenDataGrid Data="@_archivedAccounts" TItem="Account"
+                                AllowSorting="true" AllowPaging="true" PageSize="10"
+                                class="rz-shadow-0">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="Account" Title="No." Width="90px">
+                            <Template Context="account">
+                                <code>@account.AccountNumber</code>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Account" Property="Name" Title="Name" />
+                        <RadzenDataGridColumn TItem="Account" Property="Type" Title="Type" Width="120px" />
+                        <RadzenDataGridColumn TItem="Account" Title="Actions" Width="120px" Sortable="false">
+                            <Template Context="account">
+                                <button class="btn btn-outline-secondary btn-sm"
+                                        @onclick="() => RestoreAsync(account.Id)">
+                                    Restore
+                                </button>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </section>
+        }
+    }
+</div>

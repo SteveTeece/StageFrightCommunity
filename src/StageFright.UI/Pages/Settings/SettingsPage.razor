@@ -19,19 +19,6 @@
                 </div>
             </Content>
         </Tab>
-        <Tab Title="Categories" OnClick="OnCategoriesClicked">
-            <Content>
-                <div class="pt-3">
-                    @if (CategoriesShown)
-                    {
-                        <ErrorBoundary>
-                            <ChildContent><SettingsCategoryTab /></ChildContent>
-                            <ErrorContent><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
-                        </ErrorBoundary>
-                    }
-                </div>
-            </Content>
-        </Tab>
         <Tab Title="Event Types" OnClick="OnEventTypesClicked">
             <Content>
                 <div class="pt-3">

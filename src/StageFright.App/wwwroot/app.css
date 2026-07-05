@@ -287,6 +287,71 @@ html, body {
     flex: none;
 }
 
+/* Sidebar sub-menu groups (MenuItem.SubItems) */
+.sidebar-group-header {
+    padding: 0;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+}
+
+.sidebar-group-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+    padding: 9px 0 9px 10px;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.sidebar-chevron {
+    flex: none;
+    width: 28px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    position: relative;
+}
+
+.sidebar-chevron::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: translate(-50%, -60%) rotate(45deg);
+    transition: transform .15s ease;
+}
+
+.sidebar-chevron.expanded::after {
+    transform: translate(-50%, -40%) rotate(225deg);
+}
+
+.sidebar-sublist {
+    list-style: none;
+    margin: 2px 0 4px 0;
+    padding: 0 0 0 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sidebar-sublink {
+    padding: 6px 10px;
+    border-radius: 10px;
+}
+
+.sidebar-sublink .sidebar-label {
+    font-size: .8rem;
+}
+
 /* Sidebar icons — Bootstrap Icons (MIT, https://icons.getbootstrap.com) inlined
    as CSS masks so they render in currentColor and follow the theme + active state. */
 .nav-icon {

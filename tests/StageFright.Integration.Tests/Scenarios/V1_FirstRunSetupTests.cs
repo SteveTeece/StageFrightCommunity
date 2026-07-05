@@ -65,15 +65,15 @@ public sealed class V1_FirstRunSetupTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task AfterSetup_SystemCategoriesExist_WithCorrectGLAccounts()
+    public async Task AfterSetup_SystemAccountsExist_WithCorrectGLAccounts()
     {
         var svc = BuildSetupService();
         await svc.InitializeAsync(ValidRequest());
 
-        var categories = await new CategoryRepository(_db).GetAllAsync();
-        Assert.Contains(categories, c => c.GLAccount == "0100" && c.Name == "Cash" && c.IsSystem);
-        Assert.Contains(categories, c => c.GLAccount == "0101" && c.IsSystem);
-        Assert.Contains(categories, c => c.GLAccount == "9900" && c.IsSystem);
+        var accounts = await new AccountRepository(_db).GetAllAsync();
+        Assert.Contains(accounts, c => c.AccountNumber == "1100" && c.Name == "Cash on Hand" && c.IsSystem);
+        Assert.Contains(accounts, c => c.AccountNumber == "1200" && c.IsSystem);
+        Assert.Contains(accounts, c => c.AccountNumber == "6999" && c.IsSystem);
     }
 
     [Fact]
@@ -107,12 +107,12 @@ public sealed class V1_FirstRunSetupTests : IAsyncLifetime
     private SetupService BuildSetupService()
     {
         var settingsRepo = new SettingsRepository(_db);
-        var categoryRepo = new CategoryRepository(_db);
+        var accountRepo = new AccountRepository(_db);
         var eventTypeRepo = new EventTypeRepository(_db);
         var auditRepo = new AuditTrailRepository(_db);
         var auditService = new Core.Modules.AuditTrail.AuditTrailService(
             auditRepo, NullLogger<Core.Modules.AuditTrail.AuditTrailService>.Instance);
-        return new SetupService(settingsRepo, categoryRepo, eventTypeRepo, auditService);
+        return new SetupService(settingsRepo, accountRepo, eventTypeRepo, auditService);
     }
 
     private static SetupRequest ValidRequest() =>

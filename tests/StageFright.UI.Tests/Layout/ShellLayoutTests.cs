@@ -12,8 +12,8 @@ namespace StageFright.UI.Tests.Layout;
 /// <summary>
 /// bUnit tests for ShellLayout — verifies the fixed vertical sidebar renders one
 /// link per top-level provider menu item with the correct icon and full title,
-/// ignores sub-items, and handles badges, active-route highlighting, navigation,
-/// and the theme toggle.
+/// renders sub-items as expandable groups (auto-expanding on active child routes),
+/// and handles badges, active-route highlighting, navigation, and the theme toggle.
 /// </summary>
 public class ShellLayoutTests : BunitContext
 {
@@ -79,26 +79,107 @@ public class ShellLayoutTests : BunitContext
         Assert.Contains("icon-plugin", cut.Find(".nav-icon").ClassList);
     }
 
-    // --- Sub-items are not rendered ---
+    // --- Sub-item groups ---
+
+    private static MenuItem FinanceGroup() => new()
+    {
+        Title = "Finance",
+        Route = "/finance",
+        SubItems =
+        [
+            new MenuItem { Title = "Overview", Route = "/finance", DisplayOrder = 0 },
+            new MenuItem { Title = "Chart of Accounts", Route = "/finance/accounts", DisplayOrder = 1 }
+        ]
+    };
 
     [Fact]
-    public void Should_RenderOnlyTopLevelLink_When_ItemHasSubItems()
+    public void Should_RenderCollapsedGroup_When_ItemHasSubItemsAndNoChildActive()
     {
-        AddProvider(0, new MenuItem
-        {
-            Title = "Members",
-            Route = "/members",
-            SubItems =
-            [
-                new MenuItem { Title = "Active Members", Route = "/members" },
-                new MenuItem { Title = "Add Member", Route = "/members/new" }
-            ]
-        });
+        AddProvider(0, FinanceGroup());
+        Services.GetRequiredService<BunitNavigationManager>().NavigateTo("/dashboard");
 
         var cut = Render<ShellLayout>();
 
-        Assert.Single(cut.FindAll(".sidebar-link"));
-        Assert.DoesNotContain("Add Member", cut.Markup);
+        Assert.NotNull(cut.Find(".sidebar-group-header"));
+        Assert.Empty(cut.FindAll(".sidebar-sublist"));
+        Assert.DoesNotContain("Chart of Accounts", cut.Markup);
+    }
+
+    [Fact]
+    public void Should_ExpandGroup_When_ChevronClicked()
+    {
+        AddProvider(0, FinanceGroup());
+        Services.GetRequiredService<BunitNavigationManager>().NavigateTo("/dashboard");
+
+        var cut = Render<ShellLayout>();
+        cut.Find(".sidebar-chevron").Click();
+
+        Assert.NotNull(cut.Find(".sidebar-sublist"));
+        Assert.Contains("Chart of Accounts", cut.Markup);
+    }
+
+    [Fact]
+    public void Should_CollapseGroup_When_ChevronClickedTwice()
+    {
+        AddProvider(0, FinanceGroup());
+        Services.GetRequiredService<BunitNavigationManager>().NavigateTo("/dashboard");
+
+        var cut = Render<ShellLayout>();
+        cut.Find(".sidebar-chevron").Click();
+        cut.Find(".sidebar-chevron").Click();
+
+        Assert.Empty(cut.FindAll(".sidebar-sublist"));
+    }
+
+    [Fact]
+    public void Should_AutoExpandGroup_When_ChildRouteIsActive()
+    {
+        AddProvider(0, FinanceGroup());
+        Services.GetRequiredService<BunitNavigationManager>().NavigateTo("/finance/accounts");
+
+        var cut = Render<ShellLayout>();
+
+        Assert.NotNull(cut.Find(".sidebar-sublist"));
+        var subLinks = cut.FindAll(".sidebar-sublink");
+        Assert.Contains(subLinks, l => l.TextContent.Contains("Chart of Accounts") && l.ClassList.Contains("active"));
+    }
+
+    [Fact]
+    public void Should_MarkGroupHeaderActive_When_ChildRouteIsActive()
+    {
+        AddProvider(0, FinanceGroup());
+        Services.GetRequiredService<BunitNavigationManager>().NavigateTo("/finance/accounts");
+
+        var cut = Render<ShellLayout>();
+
+        Assert.Contains("active", cut.Find(".sidebar-group-header").ClassList);
+    }
+
+    [Fact]
+    public void Should_NavigateToSubRoute_When_SubLinkClicked()
+    {
+        AddProvider(0, FinanceGroup());
+        var nav = Services.GetRequiredService<BunitNavigationManager>();
+        nav.NavigateTo("/finance");
+
+        var cut = Render<ShellLayout>();
+        var subLink = cut.FindAll(".sidebar-sublink").First(l => l.TextContent.Contains("Chart of Accounts"));
+        subLink.Click();
+
+        Assert.EndsWith("/finance/accounts", nav.Uri);
+    }
+
+    [Fact]
+    public void Should_NavigateToParentRoute_When_GroupHeaderLinkClicked()
+    {
+        AddProvider(0, FinanceGroup());
+        var nav = Services.GetRequiredService<BunitNavigationManager>();
+        nav.NavigateTo("/dashboard");
+
+        var cut = Render<ShellLayout>();
+        cut.Find(".sidebar-group-link").Click();
+
+        Assert.EndsWith("/finance", nav.Uri);
     }
 
     // --- Badges ---

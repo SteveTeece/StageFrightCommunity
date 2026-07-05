@@ -12,7 +12,7 @@ public partial class RecordIncome : ComponentBase
 
     private readonly RecordIncomeModel _form = new();
     private readonly Dictionary<string, string> _errors = new();
-    private IReadOnlyList<Category> _categories = [];
+    private IReadOnlyList<Account> _accounts = [];
     private bool _loading = true;
     private bool _saving;
     private string? _successMessage;
@@ -22,13 +22,13 @@ public partial class RecordIncome : ComponentBase
     {
         try
         {
-            _categories = await IncomeEntryService.GetIncomeCategoriesAsync();
-            if (_categories.Count == 1)
-                _form.CategoryId = _categories[0].Id;
+            _accounts = await IncomeEntryService.GetIncomeAccountsAsync();
+            if (_accounts.Count == 1)
+                _form.AccountId = _accounts[0].Id;
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load categories: {ex.Message}";
+            _errorMessage = $"Failed to load accounts: {ex.Message}";
         }
         finally
         {
@@ -47,9 +47,9 @@ public partial class RecordIncome : ComponentBase
             return;
         }
 
-        if (_form.CategoryId == Guid.Empty)
+        if (_form.AccountId == Guid.Empty)
         {
-            _errors["CategoryId"] = "Please select a category.";
+            _errors["AccountId"] = "Please select a account.";
             return;
         }
 
@@ -60,7 +60,7 @@ public partial class RecordIncome : ComponentBase
             {
                 Date = _form.Date,
                 Amount = _form.Amount,
-                CategoryId = _form.CategoryId,
+                AccountId = _form.AccountId,
                 Description = string.IsNullOrWhiteSpace(_form.Description) ? null : _form.Description.Trim()
             };
 

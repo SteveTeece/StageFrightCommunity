@@ -5,20 +5,20 @@ using StageFright.Core.Enums;
 namespace StageFright.Core.Modules.Finance;
 
 /// <summary>
-/// Computes organisation-level finance figures from the GL using the same category
-/// conventions as the Income Statement report: only non-system Income/Expense categories
+/// Computes organisation-level finance figures from the GL using the same account
+/// conventions as the Income Statement report: only non-system Income/Expense accounts
 /// count, income = credits − debits, expenses = debits − credits. This avoids
 /// double-counting the receivable legs of double-entry fee/payment transactions.
 /// </summary>
 public class FinanceSummaryService : IFinanceSummaryService
 {
     private readonly IGLRepository _glRepository;
-    private readonly ICategoryRepository _categoryRepository;
+    private readonly IAccountRepository _accountRepository;
 
-    public FinanceSummaryService(IGLRepository glRepository, ICategoryRepository categoryRepository)
+    public FinanceSummaryService(IGLRepository glRepository, IAccountRepository accountRepository)
     {
         _glRepository = glRepository;
-        _categoryRepository = categoryRepository;
+        _accountRepository = accountRepository;
     }
 
     public async Task<FinanceSummary> GetSummaryAsync(DateTime asOf, CancellationToken ct = default)
@@ -26,13 +26,13 @@ public class FinanceSummaryService : IFinanceSummaryService
         var endOfDay = asOf.Date.AddDays(1).AddTicks(-1);
         var monthStart = new DateTime(asOf.Year, asOf.Month, 1, 0, 0, 0, asOf.Kind);
 
-        var (incomeCategoryIds, expenseCategoryIds) = await GetUserCategoryIdsAsync(ct);
+        var (incomeAccountIds, expenseAccountIds) = await GetUserAccountIdsAsync(ct);
         var transactions = await _glRepository.GetByDateRangeAsync(DateTime.MinValue, endOfDay, ct);
 
-        var (totalIncome, totalExpenses) = SumIncomeAndExpenses(transactions, incomeCategoryIds, expenseCategoryIds);
+        var (totalIncome, totalExpenses) = SumIncomeAndExpenses(transactions, incomeAccountIds, expenseAccountIds);
 
         var monthTransactions = transactions.Where(t => t.Date >= monthStart).ToList();
-        var (monthIncome, monthExpenses) = SumIncomeAndExpenses(monthTransactions, incomeCategoryIds, expenseCategoryIds);
+        var (monthIncome, monthExpenses) = SumIncomeAndExpenses(monthTransactions, incomeAccountIds, expenseAccountIds);
 
         return new FinanceSummary
         {
@@ -50,7 +50,7 @@ public class FinanceSummaryService : IFinanceSummaryService
         var endOfDay = asOf.Date.AddDays(1).AddTicks(-1);
         var firstMonth = new DateTime(asOf.Year, asOf.Month, 1, 0, 0, 0, asOf.Kind).AddMonths(-(months - 1));
 
-        var (incomeCategoryIds, expenseCategoryIds) = await GetUserCategoryIdsAsync(ct);
+        var (incomeAccountIds, expenseAccountIds) = await GetUserAccountIdsAsync(ct);
         var transactions = await _glRepository.GetByDateRangeAsync(firstMonth, endOfDay, ct);
 
         var byMonth = transactions
@@ -62,7 +62,7 @@ public class FinanceSummaryService : IFinanceSummaryService
         {
             var month = firstMonth.AddMonths(i);
             var monthTransactions = byMonth.GetValueOrDefault((month.Year, month.Month), []);
-            var (income, expenses) = SumIncomeAndExpenses(monthTransactions, incomeCategoryIds, expenseCategoryIds);
+            var (income, expenses) = SumIncomeAndExpenses(monthTransactions, incomeAccountIds, expenseAccountIds);
 
             result.Add(new MonthlyCashFlow
             {
@@ -76,17 +76,17 @@ public class FinanceSummaryService : IFinanceSummaryService
         return result;
     }
 
-    private async Task<(HashSet<Guid> IncomeIds, HashSet<Guid> ExpenseIds)> GetUserCategoryIdsAsync(CancellationToken ct)
+    private async Task<(HashSet<Guid> IncomeIds, HashSet<Guid> ExpenseIds)> GetUserAccountIdsAsync(CancellationToken ct)
     {
-        var categories = await _categoryRepository.GetAllAsync(ct);
+        var accounts = await _accountRepository.GetAllAsync(ct);
 
-        var incomeIds = categories
-            .Where(c => c.Type == CategoryType.Income && !c.IsSystem)
+        var incomeIds = accounts
+            .Where(c => c.Type == AccountType.Income && !c.IsSystem)
             .Select(c => c.Id)
             .ToHashSet();
 
-        var expenseIds = categories
-            .Where(c => c.Type == CategoryType.Expense && !c.IsSystem)
+        var expenseIds = accounts
+            .Where(c => c.Type == AccountType.Expense && !c.IsSystem)
             .Select(c => c.Id)
             .ToHashSet();
 
@@ -95,15 +95,15 @@ public class FinanceSummaryService : IFinanceSummaryService
 
     private static (decimal Income, decimal Expenses) SumIncomeAndExpenses(
         IReadOnlyCollection<Transaction> transactions,
-        HashSet<Guid> incomeCategoryIds,
-        HashSet<Guid> expenseCategoryIds)
+        HashSet<Guid> incomeAccountIds,
+        HashSet<Guid> expenseAccountIds)
     {
         var income = transactions
-            .Where(t => incomeCategoryIds.Contains(t.CategoryId))
+            .Where(t => incomeAccountIds.Contains(t.AccountId))
             .Sum(t => t.CreditAmount - t.DebitAmount);
 
         var expenses = transactions
-            .Where(t => expenseCategoryIds.Contains(t.CategoryId))
+            .Where(t => expenseAccountIds.Contains(t.AccountId))
             .Sum(t => t.DebitAmount - t.CreditAmount);
 
         return (income, expenses);
