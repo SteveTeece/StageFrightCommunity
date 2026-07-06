@@ -160,11 +160,11 @@
 
 **Independent Test**: Fixture + legacy data → Balance Sheet balances (A = L + E incl. computed Accumulated Surplus); FY presets honour FinancialYearStartMonth; GL running balances correct.
 
-- [ ] T062 [P] [US5] `BalanceSheetReportProvider` ("Statement of Financial Position", `balance-sheet`, order 25; as-at filter default FY end; computed Accumulated Surplus; A = L + E footer) in src/StageFright.Reports/Providers/
-- [ ] T063 [P] [US5] Rework `IncomeStatementReportProvider` → "Statement of Income & Expenditure" (FY presets This FY / Last FY / custom from FinancialYearStartMonth, optional prior-year comparison column, surplus/(deficit) total) in src/StageFright.Reports/Providers/IncomeStatementReportProvider.cs
-- [ ] T064 [P] [US5] `GeneralLedgerReportProvider` (`general-ledger`, order 35; account-or-all + date filters; opening balance, running balance lines, closing balance per account section) in src/StageFright.Reports/Providers/
-- [ ] T065 [US5] Register new providers in src/StageFright.App/MauiProgram.cs
-- [ ] T066 [US5] Tests: balance-sheet equality on fixtures incl. legacy pre-migration rows, FY boundary tests (July default + non-default), running balances, comparison column in tests/StageFright.Reports.Tests/; verify checkpoint build + full test green
+- [X] T062 [P] [US5] `BalanceSheetReportProvider` ("Statement of Financial Position", `balance-sheet`, order 25; as-at filter default FY end; computed Accumulated Surplus; A = L + E footer) in src/StageFright.Reports/Providers/
+- [X] T063 [P] [US5] Rework `IncomeStatementReportProvider` → "Statement of Income & Expenditure" (FY presets This FY / Last FY / custom from FinancialYearStartMonth, optional prior-year comparison column, surplus/(deficit) total) in src/StageFright.Reports/Providers/IncomeStatementReportProvider.cs
+- [X] T064 [P] [US5] `GeneralLedgerReportProvider` (`general-ledger`, order 35; account-or-all + date filters; opening balance, running balance lines, closing balance per account section) in src/StageFright.Reports/Providers/
+- [X] T065 [US5] Register new providers in src/StageFright.App/MauiProgram.cs
+- [X] T066 [US5] Tests: balance-sheet equality on fixtures incl. legacy pre-migration rows, FY boundary tests (July default + non-default), running balances, comparison column in tests/StageFright.Reports.Tests/; verify checkpoint build + full test green
 
 ---
 
