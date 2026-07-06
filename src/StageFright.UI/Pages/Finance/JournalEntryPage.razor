@@ -1,0 +1,129 @@
+@page "/finance/journal"
+
+<PageTitle>Journal Entry</PageTitle>
+
+<div class="journal-entry-page container-fluid py-2">
+    <h4 class="mb-2">Journal Entry</h4>
+
+    @if (_loading)
+    {
+        <p role="status" aria-live="polite">Loading…</p>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+        }
+
+        @if (_successMessage is not null)
+        {
+            <div class="alert alert-success py-1 mb-2 small" role="status">
+                @_successMessage
+                <div class="mt-1">
+                    <button class="btn btn-sm btn-outline-success" @onclick="RecordAnother">Record Another</button>
+                </div>
+            </div>
+        }
+
+        @if (_successMessage is null)
+        {
+            <div class="card mb-2">
+                <div class="card-body py-2">
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-4">
+                            <label class="form-label" for="journalDate">Date <span aria-hidden="true">*</span></label>
+                            <input id="journalDate" type="date" class="form-control form-control-sm"
+                                   value="@_date.ToString("yyyy-MM-dd")"
+                                   @onchange="e => _date = DateTime.TryParse(e.Value?.ToString(), out var d) ? d : _date" />
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label" for="journalDescription">Description <span aria-hidden="true">*</span></label>
+                            <input id="journalDescription" type="text" class="form-control form-control-sm"
+                                   value="@_description"
+                                   @onchange="e => _description = e.Value?.ToString()"
+                                   placeholder="Why this journal is being posted" />
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle journal-lines-table">
+                            <thead>
+                                <tr>
+                                    <th style="min-width: 16rem;">Account</th>
+                                    <th class="text-end" style="width: 10rem;">Debit</th>
+                                    <th class="text-end" style="width: 10rem;">Credit</th>
+                                    <th style="width: 3rem;"><span class="visually-hidden">Remove</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var line in _lines)
+                                {
+                                    <tr>
+                                        <td>
+                                            <select class="form-select form-select-sm journal-account"
+                                                    value="@line.AccountId"
+                                                    @onchange="e => SetAccount(line, e)"
+                                                    aria-label="Account">
+                                                <option value="@Guid.Empty">— select —</option>
+                                                @foreach (var acc in _accounts)
+                                                {
+                                                    <option value="@acc.Id">@acc.AccountNumber @acc.Name</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="number" step="0.01" min="0"
+                                                   class="form-control form-control-sm text-end journal-debit"
+                                                   value="@(line.Debit == 0m ? null : line.Debit)"
+                                                   @onchange="e => SetDebit(line, e)"
+                                                   aria-label="Debit amount" />
+                                        </td>
+                                        <td>
+                                            <input type="number" step="0.01" min="0"
+                                                   class="form-control form-control-sm text-end journal-credit"
+                                                   value="@(line.Credit == 0m ? null : line.Credit)"
+                                                   @onchange="e => SetCredit(line, e)"
+                                                   aria-label="Credit amount" />
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-sm btn-outline-danger journal-remove-line"
+                                                    @onclick="() => RemoveLine(line)"
+                                                    disabled="@(_lines.Count <= 2)"
+                                                    aria-label="Remove line">&times;</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="fw-semibold">
+                                    <td>Totals</td>
+                                    <td class="text-end journal-total-debits">@TotalDebits.ToString("N2")</td>
+                                    <td class="text-end journal-total-credits">@TotalCredits.ToString("N2")</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2 mt-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm journal-add-line" @onclick="AddLine">Add Line</button>
+
+                        @if (IsBalanced)
+                        {
+                            <span class="badge text-bg-success journal-balance-badge">Balanced</span>
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-warning journal-balance-badge">Out of balance by @Math.Abs(OutOfBalance).ToString("C")</span>
+                        }
+
+                        <button type="button" class="btn btn-primary btn-sm ms-auto journal-save" @onclick="SaveAsync" disabled="@(!CanSave)">
+                            @(_saving ? "Posting…" : "Post Journal")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

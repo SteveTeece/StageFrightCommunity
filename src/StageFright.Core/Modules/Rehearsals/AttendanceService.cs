@@ -75,6 +75,15 @@ public class AttendanceService : IAttendanceService
                 "No income account configured. Please set up accounts in Settings before recording attendance.",
                 "Account", nameof(RecordBatchAsync));
 
+        // Per-fee-type GST treatment, stamped on each Fee at accrual. GST is recognised
+        // at accrual only — the payment pair below always clears the gross receivable.
+        var gstCode = settings.IsGstRegistered
+            ? settings.AttendanceFeeGstCode ?? GstCode.GstFree
+            : (GstCode?)null;
+        var (incomeAmount, gstAmount) = gstCode == GstCode.Gst
+            ? GstCalculator.SplitInclusive(settings.AttendanceFee)
+            : (settings.AttendanceFee, 0m);
+
         int presentCount = 0;
         var attendanceRecords = new List<AttendanceRecord>();
 
@@ -121,13 +130,16 @@ public class AttendanceService : IAttendanceService
                     DueDate = rehearsal.Date,
                     PaidAtCreation = paidAtCreation,
                     RehearsalId = rehearsalId,
+                    GstCode = gstCode,
                     CreatedAt = now
                 };
                 var savedFee = await _feeRepo.AddAsync(fee, innerCt);
 
-                // GL accrual pair: Debit MemberReceivable / Credit Income
-                await _glRepo.AddPairAsync(
-                    new Transaction
+                // GL accrual: Debit MemberReceivable gross / Credit Income net
+                // (+ Credit GST Collected when the fee is taxable while registered).
+                var accrualLines = new List<Transaction>
+                {
+                    new()
                     {
                         Id = Guid.NewGuid(),
                         Date = rehearsal.Date,
@@ -137,23 +149,45 @@ public class AttendanceService : IAttendanceService
                         GLAccount = SystemAccounts.MemberReceivableNumber,
                         MemberId = item.MemberId,
                         FeeId = savedFee.Id,
+                        GstCode = gstCode,
                         Description = "Attendance fee accrual",
                         CreatedAt = now
                     },
-                    new Transaction
+                    new()
                     {
                         Id = Guid.NewGuid(),
                         Date = rehearsal.Date,
                         AccountId = incomeAccount.Id,
                         DebitAmount = 0m,
-                        CreditAmount = settings.AttendanceFee,
+                        CreditAmount = incomeAmount,
                         GLAccount = incomeAccount.AccountNumber,
                         MemberId = item.MemberId,
                         FeeId = savedFee.Id,
+                        GstCode = gstCode,
                         Description = "Attendance fee income",
                         CreatedAt = now
-                    },
-                    innerCt);
+                    }
+                };
+
+                if (gstAmount != 0m)
+                {
+                    accrualLines.Add(new Transaction
+                    {
+                        Id = Guid.NewGuid(),
+                        Date = rehearsal.Date,
+                        AccountId = SystemAccounts.GstCollectedId,
+                        DebitAmount = 0m,
+                        CreditAmount = gstAmount,
+                        GLAccount = SystemAccounts.GstCollectedNumber,
+                        MemberId = item.MemberId,
+                        FeeId = savedFee.Id,
+                        GstCode = gstCode,
+                        Description = "GST collected — attendance fee",
+                        CreatedAt = now
+                    });
+                }
+
+                await _glRepo.AddBalancedSetAsync(accrualLines, innerCt);
 
                 if (paidAtCreation)
                 {

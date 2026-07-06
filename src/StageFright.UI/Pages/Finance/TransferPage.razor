@@ -1,0 +1,120 @@
+@page "/finance/transfers"
+
+<PageTitle>Transfer Between Accounts</PageTitle>
+
+<div class="transfer-page container-fluid py-2">
+    <h4 class="mb-2">Transfer Between Accounts</h4>
+
+    @if (_loading)
+    {
+        <p role="status" aria-live="polite">Loading…</p>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+        }
+
+        @if (_successMessage is not null)
+        {
+            <div class="alert alert-success py-1 mb-2 small" role="status">
+                @_successMessage
+                <div class="mt-1">
+                    <button class="btn btn-sm btn-outline-success" @onclick="RecordAnother">Record Another</button>
+                </div>
+            </div>
+        }
+
+        @if (_successMessage is null)
+        {
+            @if (_bankAccounts.Count < 2)
+            {
+                <div class="alert alert-warning py-1 mb-2 small" role="alert">
+                    Transfers need at least two bank/cash accounts. Please add a bank account in the
+                    <a href="/finance/accounts">Chart of Accounts</a> first.
+                </div>
+            }
+            else
+            {
+                <div class="card mb-2">
+                    <div class="card-body py-2">
+                        <EditForm Model="_form" OnValidSubmit="SaveAsync">
+                            <div class="row g-2">
+
+                                <div class="col-md-4">
+                                    <label class="form-label" for="transferDate">Date <span aria-hidden="true">*</span></label>
+                                    <InputDate id="transferDate" class="form-control form-control-sm" @bind-Value="_form.Date" />
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label" for="transferAmount">Amount <span aria-hidden="true">*</span></label>
+                                    <div class="input-group input-group-sm @(_errors.ContainsKey("Amount") ? "has-validation" : "")">
+                                        <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
+                                        <InputNumber id="transferAmount"
+                                                     class="@(_errors.ContainsKey("Amount") ? "form-control is-invalid" : "form-control")"
+                                                     @bind-Value="_form.Amount"
+                                                     @bind-Value:format="N2" />
+                                        @if (_errors.TryGetValue("Amount", out var amtErr))
+                                        {
+                                            <div class="invalid-feedback">@amtErr</div>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label" for="fromAccount">From <span aria-hidden="true">*</span></label>
+                                    <InputSelect id="fromAccount"
+                                                 class="@(_errors.ContainsKey("FromAccountId") ? "form-select form-select-sm is-invalid" : "form-select form-select-sm")"
+                                                 @bind-Value="_form.FromAccountId">
+                                        <option value="@Guid.Empty">— select —</option>
+                                        @foreach (var bank in _bankAccounts)
+                                        {
+                                            <option value="@bank.Id">@bank.AccountNumber @bank.Name</option>
+                                        }
+                                    </InputSelect>
+                                    @if (_errors.TryGetValue("FromAccountId", out var fromErr))
+                                    {
+                                        <div class="invalid-feedback d-block">@fromErr</div>
+                                    }
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label" for="toAccount">To <span aria-hidden="true">*</span></label>
+                                    <InputSelect id="toAccount"
+                                                 class="@(_errors.ContainsKey("ToAccountId") ? "form-select form-select-sm is-invalid" : "form-select form-select-sm")"
+                                                 @bind-Value="_form.ToAccountId">
+                                        <option value="@Guid.Empty">— select —</option>
+                                        @foreach (var bank in _bankAccounts)
+                                        {
+                                            <option value="@bank.Id">@bank.AccountNumber @bank.Name</option>
+                                        }
+                                    </InputSelect>
+                                    @if (_errors.TryGetValue("ToAccountId", out var toErr))
+                                    {
+                                        <div class="invalid-feedback d-block">@toErr</div>
+                                    }
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label" for="transferDescription">Description</label>
+                                    <InputTextArea id="transferDescription" class="form-control form-control-sm" rows="2"
+                                                   @bind-Value="_form.Description"
+                                                   placeholder="e.g. Move float back to operating account…" />
+                                </div>
+
+                            </div>
+
+                            <div class="d-flex gap-2 mt-2">
+                                <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
+                                    @(_saving ? "Saving…" : "Record Transfer")
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="RecordAnother">Clear</button>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            }
+        }
+    }
+</div>

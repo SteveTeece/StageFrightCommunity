@@ -24,7 +24,10 @@ public class StageFrightDbContext : DbContext
     public DbSet<Fee> Fees => Set<Fee>();
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
+    public DbSet<JournalEntry> JournalEntries => Set<JournalEntry>();
     public DbSet<Account> Accounts => Set<Account>();
+    public DbSet<BankReconciliation> BankReconciliations => Set<BankReconciliation>();
+    public DbSet<ReconciliationLine> ReconciliationLines => Set<ReconciliationLine>();
     public DbSet<Settings> Settings => Set<Settings>();
     public DbSet<AuditTrailEntry> AuditTrailEntries => Set<AuditTrailEntry>();
 
@@ -42,7 +45,10 @@ public class StageFrightDbContext : DbContext
         modelBuilder.ApplyConfiguration(new FeeConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentConfiguration());
         modelBuilder.ApplyConfiguration(new TransactionConfiguration());
+        modelBuilder.ApplyConfiguration(new JournalEntryConfiguration());
         modelBuilder.ApplyConfiguration(new AccountConfiguration());
+        modelBuilder.ApplyConfiguration(new BankReconciliationConfiguration());
+        modelBuilder.ApplyConfiguration(new ReconciliationLineConfiguration());
         modelBuilder.ApplyConfiguration(new SettingsConfiguration());
         modelBuilder.ApplyConfiguration(new AuditTrailEntryConfiguration());
 

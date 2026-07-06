@@ -74,6 +74,14 @@ public class FeeService : IFeeService
         var dueDate = new DateTime(currentYear, 12, 31, 0, 0, 0, DateTimeKind.Utc);
         int count = 0;
 
+        // Per-fee-type GST treatment, stamped on the Fee at accrual (drives forgiveness/BAS).
+        var gstCode = settings.IsGstRegistered
+            ? settings.AnnualFeeGstCode ?? GstCode.GstFree
+            : (GstCode?)null;
+        var (incomeAmount, gstAmount) = gstCode == GstCode.Gst
+            ? GstCalculator.SplitInclusive(settings.AnnualFee)
+            : (settings.AnnualFee, 0m);
+
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
             foreach (var memberId in memberIds)
@@ -89,13 +97,16 @@ public class FeeService : IFeeService
                     FeeDate = feeDate,
                     DueDate = dueDate,
                     PaidAtCreation = false,
+                    GstCode = gstCode,
                     CreatedAt = now
                 };
                 var savedFee = await _feeRepo.AddAsync(fee, innerCt);
 
-                // GL accrual pair: Debit MemberReceivable (member-specific) / Credit Income (org-level)
-                await _glRepo.AddPairAsync(
-                    new Transaction
+                // GL accrual: Debit MemberReceivable gross / Credit Income net
+                // (+ Credit GST Collected when the fee is taxable while registered).
+                var lines = new List<Transaction>
+                {
+                    new()
                     {
                         Id = Guid.NewGuid(),
                         Date = feeDate,
@@ -105,23 +116,45 @@ public class FeeService : IFeeService
                         GLAccount = SystemAccounts.MemberReceivableNumber,
                         MemberId = memberId,
                         FeeId = savedFee.Id,
+                        GstCode = gstCode,
                         Description = $"Annual membership fee {currentYear}",
                         CreatedAt = now
                     },
-                    new Transaction
+                    new()
                     {
                         Id = Guid.NewGuid(),
                         Date = feeDate,
                         AccountId = incomeAccount.Id,
                         DebitAmount = 0m,
-                        CreditAmount = settings.AnnualFee,
+                        CreditAmount = incomeAmount,
                         GLAccount = incomeAccount.AccountNumber,
                         MemberId = null,
                         FeeId = savedFee.Id,
+                        GstCode = gstCode,
                         Description = $"Annual membership fee income {currentYear}",
                         CreatedAt = now
-                    },
-                    innerCt);
+                    }
+                };
+
+                if (gstAmount != 0m)
+                {
+                    lines.Add(new Transaction
+                    {
+                        Id = Guid.NewGuid(),
+                        Date = feeDate,
+                        AccountId = SystemAccounts.GstCollectedId,
+                        DebitAmount = 0m,
+                        CreditAmount = gstAmount,
+                        GLAccount = SystemAccounts.GstCollectedNumber,
+                        MemberId = null,
+                        FeeId = savedFee.Id,
+                        GstCode = gstCode,
+                        Description = $"GST collected — annual membership fee {currentYear}",
+                        CreatedAt = now
+                    });
+                }
+
+                await _glRepo.AddBalancedSetAsync(lines, innerCt);
 
                 await _audit.LogAsync(
                     nameof(Fee), savedFee.Id, AuditAction.Create,

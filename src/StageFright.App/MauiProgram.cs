@@ -141,6 +141,8 @@ public static class MauiProgram
         services.AddScoped<IFeeRepository, FeeRepository>();
         services.AddScoped<IPaymentRepository, PaymentRepository>();
         services.AddScoped<IGLRepository, GLRepository>();
+        services.AddScoped<IJournalEntryRepository, JournalEntryRepository>();
+        services.AddScoped<IBankReconciliationRepository, BankReconciliationRepository>();
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<ISettingsRepository, SettingsRepository>();
         services.AddScoped<IAuditTrailRepository, AuditTrailRepository>();
@@ -179,6 +181,15 @@ public static class MauiProgram
         services.AddScoped<IFinanceSummaryService, FinanceSummaryService>();
         services.AddScoped<IIncomeEntryService, IncomeEntryService>();
 
+        // Finance expansion — posting engine + money-out workflows (spec 002 US2)
+        services.AddScoped<IExpensePaymentService, ExpensePaymentService>();
+        services.AddScoped<IAccountTransferService, AccountTransferService>();
+        services.AddScoped<IGeneralJournalService, GeneralJournalService>();
+        services.AddScoped<IOpeningBalanceService, OpeningBalanceService>();
+
+        // Finance expansion — bank reconciliation (spec 002 US3)
+        services.AddScoped<IBankReconciliationService, BankReconciliationService>();
+
         // Account management module (Phase 7)
         services.AddScoped<IAccountService, AccountService>();
 
@@ -209,6 +220,8 @@ public static class MauiProgram
         services.AddScoped<IReportProvider, MemberAccountSummaryReportProvider>();
         services.AddScoped<IReportProvider, MemberListReportProvider>();
         services.AddScoped<IReportProvider, CommitteeReportProvider>();
+        services.AddScoped<IReportProvider, BankReconciliationReportProvider>();
+        services.AddScoped<IReportProvider, BasSummaryReportProvider>();
         services.AddScoped<IReportProviderRegistry, ReportProviderRegistry>();
         services.AddScoped<IPdfReportRenderer, PdfReportRenderer>();
         services.AddScoped<ICsvReportExporter, CsvReportExporter>();

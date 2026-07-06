@@ -87,34 +87,34 @@
 
 ### Domain & data
 
-- [ ] T027 [P] [US2] Create immutable `JournalEntry` entity (no soft-delete) in src/StageFright.Core/Entities/JournalEntry.cs and `JournalEntryType` enum (`Income, ExpensePayment, Transfer, GeneralJournal, OpeningBalance`) in src/StageFright.Core/Enums/JournalEntryType.cs; add nullable `JournalEntryId` FK to Transaction
-- [ ] T028 [US2] Add `JournalEntryConfiguration` in src/StageFright.Data/Configurations/JournalEntryConfiguration.cs, DbSet in StageFrightDbContext, migration `AddJournalEntries` (JournalEntries table + Transactions.JournalEntryId nullable FK Restrict + index)
-- [ ] T029 [US2] Add `AddBalancedSetAsync(IReadOnlyList<GLLine> lines, ...)` to src/StageFright.Core/Contracts/IGLRepository.cs + src/StageFright.Data/Repositories/GLRepository.cs (≥2 lines, one non-zero side each, Σdebits == Σcredits else GLBalanceException); retain `AddPairAsync` delegating to it
-- [ ] T030 [P] [US2] Create `IJournalEntryRepository` in src/StageFright.Core/Contracts/IJournalEntryRepository.cs + `JournalEntryRepository` in src/StageFright.Data/Repositories/JournalEntryRepository.cs
+- [X] T027 [P] [US2] Create immutable `JournalEntry` entity (no soft-delete) in src/StageFright.Core/Entities/JournalEntry.cs and `JournalEntryType` enum (`Income, ExpensePayment, Transfer, GeneralJournal, OpeningBalance`) in src/StageFright.Core/Enums/JournalEntryType.cs; add nullable `JournalEntryId` FK to Transaction
+- [X] T028 [US2] Add `JournalEntryConfiguration` in src/StageFright.Data/Configurations/JournalEntryConfiguration.cs, DbSet in StageFrightDbContext, migration `AddJournalEntries` (JournalEntries table + Transactions.JournalEntryId nullable FK Restrict + index)
+- [X] T029 [US2] Add `AddBalancedSetAsync(IReadOnlyList<GLLine> lines, ...)` to src/StageFright.Core/Contracts/IGLRepository.cs + src/StageFright.Data/Repositories/GLRepository.cs (≥2 lines, one non-zero side each, Σdebits == Σcredits else GLBalanceException); retain `AddPairAsync` delegating to it
+- [X] T030 [P] [US2] Create `IJournalEntryRepository` in src/StageFright.Core/Contracts/IJournalEntryRepository.cs + `JournalEntryRepository` in src/StageFright.Data/Repositories/JournalEntryRepository.cs
 
 ### Services (all in Modules/Finance/, inside IUnitOfWork.ExecuteInTransactionAsync, audit-logged, ValidationException on bad input)
 
-- [ ] T031 [P] [US2] `IExpensePaymentService`/`ExpensePaymentService` (DR Expense / CR chosen Bank) in src/StageFright.Core/Modules/Finance/ExpensePaymentService.cs + request model
-- [ ] T032 [P] [US2] `IAccountTransferService`/`AccountTransferService` (from≠to, both IsBankAccount; DR To / CR From) in src/StageFright.Core/Modules/Finance/AccountTransferService.cs
-- [ ] T033 [P] [US2] `IGeneralJournalService`/`GeneralJournalService` (N user lines verbatim; Member Receivable 1200 blocked) in src/StageFright.Core/Modules/Finance/GeneralJournalService.cs
-- [ ] T034 [P] [US2] `IOpeningBalanceService`/`OpeningBalanceService` (one line per account at normal side, plug residual to 3100, exclude 1200 + GST accounts, warn if OpeningBalance journal exists) in src/StageFright.Core/Modules/Finance/OpeningBalanceService.cs
-- [ ] T035 [US2] `IncomeEntryService.RecordIncomeAsync` gains `DepositAccountId` (defaults Cash 1100) in src/StageFright.Core/Modules/Finance/IncomeEntryService.cs
+- [X] T031 [P] [US2] `IExpensePaymentService`/`ExpensePaymentService` (DR Expense / CR chosen Bank) in src/StageFright.Core/Modules/Finance/ExpensePaymentService.cs + request model
+- [X] T032 [P] [US2] `IAccountTransferService`/`AccountTransferService` (from≠to, both IsBankAccount; DR To / CR From) in src/StageFright.Core/Modules/Finance/AccountTransferService.cs
+- [X] T033 [P] [US2] `IGeneralJournalService`/`GeneralJournalService` (N user lines verbatim; Member Receivable 1200 blocked) in src/StageFright.Core/Modules/Finance/GeneralJournalService.cs
+- [X] T034 [P] [US2] `IOpeningBalanceService`/`OpeningBalanceService` (one line per account at normal side, plug residual to 3100, exclude 1200 + GST accounts, warn if OpeningBalance journal exists) in src/StageFright.Core/Modules/Finance/OpeningBalanceService.cs
+- [X] T035 [US2] `IncomeEntryService.RecordIncomeAsync` gains `DepositAccountId` (defaults Cash 1100) in src/StageFright.Core/Modules/Finance/IncomeEntryService.cs
 
 ### UI
 
-- [ ] T036 [P] [US2] `ExpensePaymentPage.razor(+.razor.cs)` at `/finance/expenses` (bank + expense dropdowns, date, payee, description, amount — RecordIncome EditForm pattern) in src/StageFright.UI/Pages/Finance/
-- [ ] T037 [P] [US2] `TransferPage.razor(+.razor.cs)` at `/finance/transfers` in src/StageFright.UI/Pages/Finance/
-- [ ] T038 [P] [US2] `JournalEntryPage.razor(+.razor.cs)` at `/finance/journal` (dynamic C# line list, debit-clears-credit per row, running totals + out-of-balance badge, Save gated on balanced) in src/StageFright.UI/Pages/Finance/
-- [ ] T039 [P] [US2] `OpeningBalancesWizard.razor(+.razor.cs)` at `/finance/opening-balances` (3 steps: as-at date defaulting FY start → account grid with live plug preview → confirm) in src/StageFright.UI/Pages/Finance/
-- [ ] T040 [US2] Add menu sub-items (Record Expense, Transfers, Journal Entries, Opening Balances) to FinanceMenuItemProvider.cs; register new services/repos in src/StageFright.App/MauiProgram.cs
+- [X] T036 [P] [US2] `ExpensePaymentPage.razor(+.razor.cs)` at `/finance/expenses` (bank + expense dropdowns, date, payee, description, amount — RecordIncome EditForm pattern) in src/StageFright.UI/Pages/Finance/
+- [X] T037 [P] [US2] `TransferPage.razor(+.razor.cs)` at `/finance/transfers` in src/StageFright.UI/Pages/Finance/
+- [X] T038 [P] [US2] `JournalEntryPage.razor(+.razor.cs)` at `/finance/journal` (dynamic C# line list, debit-clears-credit per row, running totals + out-of-balance badge, Save gated on balanced) in src/StageFright.UI/Pages/Finance/
+- [X] T039 [P] [US2] `OpeningBalancesWizard.razor(+.razor.cs)` at `/finance/opening-balances` (3 steps: as-at date defaulting FY start → account grid with live plug preview → confirm) in src/StageFright.UI/Pages/Finance/
+- [X] T040 [US2] Add menu sub-items (Record Expense, Transfers, Journal Entries, Opening Balances) to FinanceMenuItemProvider.cs; register new services/repos in src/StageFright.App/MauiProgram.cs
 
 ### Tests
 
-- [ ] T041 [US2] `AddBalancedSetAsync` integration tests (balanced multi-line commits; imbalanced / 1-line / both-sides rejected + rolled back) in tests/StageFright.Data.Tests/
-- [ ] T042 [P] [US2] Service tests for every path of ExpensePayment/AccountTransfer/GeneralJournal/OpeningBalance services in tests/StageFright.Core.Tests/
-- [ ] T043 [P] [US2] bUnit tests: journal balance indicator + opening-balances wizard in tests/StageFright.UI.Tests/
-- [ ] T044 [US2] New Integration scenario V13 (expenses + transfers) in tests/StageFright.Integration.Tests/; V4–V12 regression
-- [ ] T045 [US2] Verify checkpoint: `dotnet build` + full `dotnet test` green
+- [X] T041 [US2] `AddBalancedSetAsync` integration tests (balanced multi-line commits; imbalanced / 1-line / both-sides rejected + rolled back) in tests/StageFright.Data.Tests/
+- [X] T042 [P] [US2] Service tests for every path of ExpensePayment/AccountTransfer/GeneralJournal/OpeningBalance services in tests/StageFright.Core.Tests/
+- [X] T043 [P] [US2] bUnit tests: journal balance indicator + opening-balances wizard in tests/StageFright.UI.Tests/
+- [X] T044 [US2] New Integration scenario V14 (expenses + transfers) in tests/StageFright.Integration.Tests/ (V13 already used by CommitteeResetAgmBanner); V4–V12 regression
+- [X] T045 [US2] Verify checkpoint: `dotnet build` + full `dotnet test` green
 
 **Checkpoint**: Posting engine complete — US3 and US4 can start (parallel).
 
@@ -126,15 +126,15 @@
 
 **Independent Test**: Draft rec → tick to $0.00 → finalise (immutable); one draft per account; transaction cleared by at most one rec.
 
-- [ ] T046 [P] [US3] Entities `BankReconciliation` + `ReconciliationLine` in src/StageFright.Core/Entities/, `ReconciliationStatus` enum in src/StageFright.Core/Enums/ReconciliationStatus.cs, `ReconciliationException` in src/StageFright.Core/Exceptions/ReconciliationException.cs (CSV-import seam documented in XML docs)
-- [ ] T047 [US3] Configurations + DbSets + migration `AddBankReconciliation` (unique (ReconciliationId, TransactionId) index) in src/StageFright.Data/
-- [ ] T048 [US3] `IBankReconciliationRepository`/`BankReconciliationRepository` (create draft w/ chained OpeningBalance, lines add/remove draft-only, cleared-IDs lookup, finalise, soft-delete draft) + `GLRepository.GetUnreconciledByAccountAsync` in src/StageFright.Data/Repositories/
-- [ ] T049 [US3] `IBankReconciliationService`/`BankReconciliationService` in src/StageFright.Core/Modules/Finance/ — start (IsBankAccount, date > last finalised, one draft per account), toggle-clear, live Difference, finalise gated |diff| ≤ 0.005, finalised immutable/undeletable; `AccountService.ArchiveAsync` also blocks bank accounts with draft recs
-- [ ] T050 [P] [US3] `ReconciliationListPage.razor(+.razor.cs)` at `/finance/reconciliation` (account picker, history grid, new/resume draft) in src/StageFright.UI/Pages/Finance/
-- [ ] T051 [P] [US3] `ReconciliationWorkspace.razor(+.razor.cs)` at `/finance/reconciliation/{Id:guid}` (summary cards statement/cleared/difference, RadzenDataGrid persistent ticks, Finalise + Delete-draft) in src/StageFright.UI/Pages/Finance/
-- [ ] T052 [P] [US3] `BankReconciliationReportProvider` (`bank-reconciliation`, Finance, order 50) in src/StageFright.Reports/Providers/
-- [ ] T053 [US3] Menu sub-item + DI registrations in MauiProgram.cs
-- [ ] T054 [US3] Tests: repository + service paths (draft lifecycle, finalise gating, immutability, single-draft, single-rec-per-transaction), bUnit workspace, report provider in tests/; verify checkpoint build + full test green
+- [X] T046 [P] [US3] Entities `BankReconciliation` + `ReconciliationLine` in src/StageFright.Core/Entities/, `ReconciliationStatus` enum in src/StageFright.Core/Enums/ReconciliationStatus.cs, `ReconciliationException` in src/StageFright.Core/Exceptions/ReconciliationException.cs (CSV-import seam documented in XML docs)
+- [X] T047 [US3] Configurations + DbSets + migration `AddBankReconciliation` (unique (ReconciliationId, TransactionId) index) in src/StageFright.Data/
+- [X] T048 [US3] `IBankReconciliationRepository`/`BankReconciliationRepository` (create draft w/ chained OpeningBalance, lines add/remove draft-only, cleared-IDs lookup, finalise, soft-delete draft) + `GLRepository.GetUnreconciledByAccountAsync` in src/StageFright.Data/Repositories/
+- [X] T049 [US3] `IBankReconciliationService`/`BankReconciliationService` in src/StageFright.Core/Modules/Finance/ — start (IsBankAccount, date > last finalised, one draft per account), toggle-clear, live Difference, finalise gated |diff| ≤ 0.005, finalised immutable/undeletable; `AccountService.ArchiveAsync` also blocks bank accounts with draft recs
+- [X] T050 [P] [US3] `ReconciliationListPage.razor(+.razor.cs)` at `/finance/reconciliation` (account picker, history grid, new/resume draft) in src/StageFright.UI/Pages/Finance/
+- [X] T051 [P] [US3] `ReconciliationWorkspace.razor(+.razor.cs)` at `/finance/reconciliation/{Id:guid}` (summary cards statement/cleared/difference, RadzenDataGrid persistent ticks, Finalise + Delete-draft) in src/StageFright.UI/Pages/Finance/
+- [X] T052 [P] [US3] `BankReconciliationReportProvider` (`bank-reconciliation`, Finance, order 50) in src/StageFright.Reports/Providers/
+- [X] T053 [US3] Menu sub-item + DI registrations in MauiProgram.cs
+- [X] T054 [US3] Tests: repository + service paths (draft lifecycle, finalise gating, immutability, single-draft, single-rec-per-transaction), bUnit workspace, report provider in tests/; verify checkpoint build + full test green
 
 ---
 
@@ -144,13 +144,13 @@
 
 **Independent Test**: GST on → $110 income + expense → BAS 1A=$10/1B=$10; GST off → postings byte-identical to Phase 2, UI hidden.
 
-- [ ] T055 [P] [US4] `GstCode` enum in src/StageFright.Core/Enums/GstCode.cs, `GstConstants` (0.10m, divisor 11m) + `GstCalculator.SplitInclusive` (AwayFromZero) in src/StageFright.Core/Modules/Finance/
-- [ ] T056 [US4] Migration `AddGst`: Settings.IsGstRegistered (default 0), Settings.AnnualFeeGstCode/AttendanceFeeGstCode (nullable string, GstFree default semantics), Transactions.GstCode (nullable string), Fees.GstCode (nullable string); entity + configuration updates
-- [ ] T057 [US4] Posting variants when registered: IncomeEntryService (DR Bank / CR Income / CR 2310), ExpensePaymentService (DR Expense / DR 2320 / CR Bank), FeeService annual+attendance accrual (per-fee-type setting, Fee.GstCode stamped; attendance paid-at-creation DR Bank), ReactivationForgivenessService (DR Bad Debt / DR 2310 / CR 1200 proportions from Fee.GstCode), AttendanceService — transfers/journals/opening stay BasExcluded/null; payment FIFO allocation unchanged
-- [ ] T058 [P] [US4] Settings General tab: GST toggle with confirm dialog + per-fee-type GST code dropdowns (visible only when registered) in src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor(+.razor.cs)
-- [ ] T059 [P] [US4] RecordIncome + ExpensePaymentPage gain GST code dropdown + "includes GST of $X" hint when registered in src/StageFright.UI/Pages/Finance/
-- [ ] T060 [P] [US4] `BasSummaryReportProvider` (`bas-summary`, order 60; self-explains when GST off; current-quarter defaults; G1/G3/G11, 1A/1B/9 from 2310/2320 movements; accruals-basis header) in src/StageFright.Reports/Providers/ + MauiProgram registration
-- [ ] T061 [US4] Tests: GstCalculator rounding table, 3-line sets balance to the cent, per-fee-type matrix (registered × fee code), forgiveness GST adjustment, toggle-off regression (byte-identical postings), BAS fixture ledger, Integration scenario V15 in tests/; verify checkpoint build + full test green
+- [X] T055 [P] [US4] `GstCode` enum in src/StageFright.Core/Enums/GstCode.cs, `GstConstants` (0.10m, divisor 11m) + `GstCalculator.SplitInclusive` (AwayFromZero) in src/StageFright.Core/Modules/Finance/
+- [X] T056 [US4] Migration `AddGst`: Settings.IsGstRegistered (default 0), Settings.AnnualFeeGstCode/AttendanceFeeGstCode (nullable string, GstFree default semantics), Transactions.GstCode (nullable string), Fees.GstCode (nullable string); entity + configuration updates
+- [X] T057 [US4] Posting variants when registered: IncomeEntryService (DR Bank / CR Income / CR 2310), ExpensePaymentService (DR Expense / DR 2320 / CR Bank), FeeService annual+attendance accrual (per-fee-type setting, Fee.GstCode stamped; attendance paid-at-creation DR Bank), ReactivationForgivenessService (DR Bad Debt / DR 2310 / CR 1200 proportions from Fee.GstCode), AttendanceService — transfers/journals/opening stay BasExcluded/null; payment FIFO allocation unchanged
+- [X] T058 [P] [US4] Settings General tab: GST toggle with confirm dialog + per-fee-type GST code dropdowns (visible only when registered) in src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor(+.razor.cs)
+- [X] T059 [P] [US4] RecordIncome + ExpensePaymentPage gain GST code dropdown + "includes GST of $X" hint when registered in src/StageFright.UI/Pages/Finance/
+- [X] T060 [P] [US4] `BasSummaryReportProvider` (`bas-summary`, order 60; self-explains when GST off; current-quarter defaults; G1/G3/G11, 1A/1B/9 from 2310/2320 movements; accruals-basis header) in src/StageFright.Reports/Providers/ + MauiProgram registration
+- [X] T061 [US4] Tests: GstCalculator rounding table, 3-line sets balance to the cent, per-fee-type matrix (registered × fee code), forgiveness GST adjustment, toggle-off regression (byte-identical postings), BAS fixture ledger, Integration scenario V15 in tests/; verify checkpoint build + full test green
 
 ---
 

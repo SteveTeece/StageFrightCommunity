@@ -16,6 +16,9 @@ public interface IAccountService
     /// <summary>Returns all archived accounts.</summary>
     Task<IReadOnlyList<Account>> GetArchivedAsync(CancellationToken ct = default);
 
+    /// <summary>Returns all active bank/cash accounts (IsBankAccount), ordered by account number.</summary>
+    Task<IReadOnlyList<Account>> GetBankAccountsAsync(CancellationToken ct = default);
+
     /// <summary>
     /// Creates a new user-defined account and assigns the next sequential account number
     /// for its type range. The bank flag is only permitted on Asset accounts.

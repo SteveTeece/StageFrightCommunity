@@ -7,24 +7,31 @@ namespace StageFright.Core.Modules.Finance;
 
 /// <summary>
 /// Records non-member income (raffles, donations, fundraising) directly to the GL.
-/// GL pair: Debit Cash (0100) / Credit selected Income account.
+/// GL pair under an Income journal entry: Debit the chosen deposit bank account
+/// (default Cash on Hand 1100) / Credit selected Income account.
 /// </summary>
 public class IncomeEntryService : IIncomeEntryService
 {
 
     private readonly IAccountRepository _accountRepo;
     private readonly IGLRepository _glRepo;
+    private readonly IJournalEntryRepository _journalRepo;
+    private readonly ISettingsRepository _settingsRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
 
     public IncomeEntryService(
         IAccountRepository accountRepo,
         IGLRepository glRepo,
+        IJournalEntryRepository journalRepo,
+        ISettingsRepository settingsRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork)
     {
         _accountRepo = accountRepo;
         _glRepo = glRepo;
+        _journalRepo = journalRepo;
+        _settingsRepo = settingsRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
     }
@@ -58,6 +65,19 @@ public class IncomeEntryService : IIncomeEntryService
             throw new ValidationException(
                 "System accounts cannot be used for manual income entries.", nameof(Account), nameof(RecordIncomeAsync));
 
+        var depositAccountId = request.DepositAccountId ?? SystemAccounts.CashId;
+        var depositAccount = all.FirstOrDefault(a => a.Id == depositAccountId)
+            ?? throw new EntityNotFoundException(
+                nameof(Account), depositAccountId, nameof(RecordIncomeAsync));
+
+        if (!depositAccount.IsBankAccount)
+            throw new ValidationException(
+                "The deposit account must be a bank/cash account.", nameof(Account), nameof(RecordIncomeAsync));
+
+        var settings = await _settingsRepo.GetAsync(ct);
+        var isRegistered = settings?.IsGstRegistered ?? false;
+        var gstCode = isRegistered ? (request.GstCode ?? GstCode.GstFree) : (GstCode?)null;
+
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
             var now = DateTime.UtcNow;
@@ -65,41 +85,74 @@ public class IncomeEntryService : IIncomeEntryService
                 ? $"Income — {account.Name}"
                 : request.Description.Trim();
 
-            await _glRepo.AddPairAsync(
-                new Transaction
+            var entry = await _journalRepo.AddAsync(new JournalEntry
+            {
+                Id = Guid.NewGuid(),
+                Type = JournalEntryType.Income,
+                Date = request.Date,
+                Description = description,
+                CreatedAt = now
+            }, innerCt);
+
+            // Taxable while registered: DR Bank gross / CR Income net / CR GST Collected.
+            // Otherwise a 2-line pair; unregistered postings carry no GST code at all.
+            var (incomeAmount, gstAmount) = gstCode == GstCode.Gst
+                ? GstCalculator.SplitInclusive(request.Amount)
+                : (request.Amount, 0m);
+
+            var lines = new List<Transaction>
+            {
+                new()
                 {
                     Id = Guid.NewGuid(),
                     Date = request.Date,
-                    AccountId = SystemAccounts.CashId,
+                    AccountId = depositAccount.Id,
                     DebitAmount = request.Amount,
                     CreditAmount = 0m,
-                    GLAccount = SystemAccounts.CashNumber,
-                    MemberId = null,
-                    PaymentId = null,
-                    FeeId = null,
+                    GLAccount = depositAccount.AccountNumber,
+                    JournalEntryId = entry.Id,
+                    GstCode = gstCode,
                     Description = description,
                     CreatedAt = now
                 },
-                new Transaction
+                new()
                 {
                     Id = Guid.NewGuid(),
                     Date = request.Date,
                     AccountId = account.Id,
                     DebitAmount = 0m,
-                    CreditAmount = request.Amount,
+                    CreditAmount = incomeAmount,
                     GLAccount = account.AccountNumber,
-                    MemberId = null,
-                    PaymentId = null,
-                    FeeId = null,
+                    JournalEntryId = entry.Id,
+                    GstCode = gstCode,
                     Description = description,
                     CreatedAt = now
-                },
-                innerCt);
+                }
+            };
+
+            if (gstAmount != 0m)
+            {
+                lines.Add(new Transaction
+                {
+                    Id = Guid.NewGuid(),
+                    Date = request.Date,
+                    AccountId = SystemAccounts.GstCollectedId,
+                    DebitAmount = 0m,
+                    CreditAmount = gstAmount,
+                    GLAccount = SystemAccounts.GstCollectedNumber,
+                    JournalEntryId = entry.Id,
+                    GstCode = gstCode,
+                    Description = $"GST collected — {description}",
+                    CreatedAt = now
+                });
+            }
+
+            await _glRepo.AddBalancedSetAsync(lines, innerCt);
 
             await _audit.LogAsync(
                 nameof(Transaction), Guid.Empty, AuditAction.Create,
                 oldValue: null,
-                newValue: $"Other income {request.Amount:C} to account '{account.Name}' on {request.Date:yyyy-MM-dd}",
+                newValue: $"Other income {request.Amount:C} to account '{account.Name}' deposited to '{depositAccount.Name}' on {request.Date:yyyy-MM-dd}",
                 ct: innerCt);
 
         }, ct);

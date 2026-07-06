@@ -100,9 +100,10 @@ public class ReactivationForgivenessServiceTests : TestBase
         await _sut.ApplyForgivenessAsync(MemberId, new[] { PriorFee2025Id }, Ct);
 
         // Debit BadDebtExpense (9900) / Credit MemberReceivable (0101) per fee
-        await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 50m && t.GLAccount == "6999"),
-            Arg.Is<Transaction>(t => t.CreditAmount == 50m && t.GLAccount == "1200" && t.MemberId == MemberId),
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines.Any(t => t.DebitAmount == 50m && t.GLAccount == "6999") &&
+                lines.Any(t => t.CreditAmount == 50m && t.GLAccount == "1200" && t.MemberId == MemberId)),
             Arg.Any<CancellationToken>());
     }
 
@@ -111,8 +112,8 @@ public class ReactivationForgivenessServiceTests : TestBase
     {
         await _sut.ApplyForgivenessAsync(MemberId, new[] { PriorFee2024Id, PriorFee2025Id }, Ct);
 
-        await _glRepo.Received(2).AddPairAsync(
-            Arg.Any<Transaction>(), Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
+        await _glRepo.Received(2).AddBalancedSetAsync(
+            Arg.Any<IReadOnlyList<Transaction>>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -150,8 +151,49 @@ public class ReactivationForgivenessServiceTests : TestBase
     {
         await _sut.ApplyForgivenessAsync(MemberId, Array.Empty<Guid>(), Ct);
 
-        await _glRepo.DidNotReceive().AddPairAsync(
-            Arg.Any<Transaction>(), Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
+        await _glRepo.DidNotReceive().AddBalancedSetAsync(
+            Arg.Any<IReadOnlyList<Transaction>>(), Arg.Any<CancellationToken>());
+    }
+
+    // --- GST decreasing adjustment ---
+
+    [Fact]
+    public async Task ApplyForgiveness_TaxableFee_Posts3Lines_DebitsBadDebtNetAndGstCollected()
+    {
+        // A taxable $110-gross fee is forgiven: DR BadDebt net $100 / DR GstCollected $10 / CR MemberReceivable gross $110.
+        _feeRepo.GetByMemberAsync(MemberId, Arg.Any<CancellationToken>())
+            .Returns(new List<Fee> { MakeFee(PriorFee2025Id, new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc), 110m, GstCode.Gst) });
+
+        await _sut.ApplyForgivenessAsync(MemberId, new[] { PriorFee2025Id }, Ct);
+
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines.Count == 3
+                && lines.Any(t => t.DebitAmount == 100m && t.GLAccount == "6999")
+                && lines.Any(t => t.DebitAmount == 10m && t.AccountId == SystemAccounts.GstCollectedId)
+                && lines.Any(t => t.CreditAmount == 110m && t.GLAccount == "1200")
+                && lines.All(t => t.GstCode == GstCode.Gst)),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData(GstCode.GstFree)]
+    [InlineData(GstCode.InputTaxed)]
+    public async Task ApplyForgiveness_NonTaxableFee_Posts2Lines_NoGstAdjustment(GstCode? code)
+    {
+        _feeRepo.GetByMemberAsync(MemberId, Arg.Any<CancellationToken>())
+            .Returns(new List<Fee> { MakeFee(PriorFee2025Id, new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc), 50m, code) });
+
+        await _sut.ApplyForgivenessAsync(MemberId, new[] { PriorFee2025Id }, Ct);
+
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines.Count == 2
+                && lines.Any(t => t.DebitAmount == 50m && t.GLAccount == "6999")
+                && lines.Any(t => t.CreditAmount == 50m && t.GLAccount == "1200")
+                && lines.All(t => t.GstCode == code)),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -159,15 +201,14 @@ public class ReactivationForgivenessServiceTests : TestBase
     {
         await _sut.ApplyForgivenessAsync(MemberId, new[] { PriorFee2025Id }, Ct);
 
-        await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.FeeId == PriorFee2025Id),
-            Arg.Is<Transaction>(t => t.FeeId == PriorFee2025Id),
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.FeeId == PriorFee2025Id)),
             Arg.Any<CancellationToken>());
     }
 
     // --- Helpers ---
 
-    private static Fee MakeFee(Guid id, DateTime feeDate, decimal amount) => new()
+    private static Fee MakeFee(Guid id, DateTime feeDate, decimal amount, GstCode? gstCode = null) => new()
     {
         Id = id,
         MemberId = MemberId,
@@ -176,6 +217,7 @@ public class ReactivationForgivenessServiceTests : TestBase
         FeeDate = feeDate,
         DueDate = feeDate,
         PaidAtCreation = false,
+        GstCode = gstCode,
         CreatedAt = feeDate
     };
 }

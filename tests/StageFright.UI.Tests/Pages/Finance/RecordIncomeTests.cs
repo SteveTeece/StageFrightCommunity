@@ -23,11 +23,26 @@ namespace StageFright.UI.Tests.Pages.Finance;
 public class RecordIncomeTests : BunitContext
 {
     private readonly IIncomeEntryService _incomeService = Substitute.For<IIncomeEntryService>();
+    private readonly IAccountService _accountService = Substitute.For<IAccountService>();
+    private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
     private static readonly Guid AccountId = Guid.NewGuid();
 
     public RecordIncomeTests()
     {
         Services.AddSingleton(_incomeService);
+        Services.AddSingleton(_accountService);
+        Services.AddSingleton(_settingsService);
+
+        _settingsService.GetAsync(Arg.Any<CancellationToken>())
+            .Returns(new Settings
+            {
+                Id = Guid.NewGuid(), OrganizationName = "Test Choir",
+                AnnualFee = 50m, AttendanceFee = 10m,
+                MembershipRenewalMonth = 1, MaxAgeRangeYears = 150,
+                MinimumMemberAge = 0, SchemaVersion = "1.1.0",
+                IsGstRegistered = false,
+                CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+            });
 
         _incomeService.GetIncomeAccountsAsync(Arg.Any<CancellationToken>())
             .Returns(new List<Account>
@@ -37,6 +52,17 @@ public class RecordIncomeTests : BunitContext
 
         _incomeService.RecordIncomeAsync(Arg.Any<RecordIncomeRequest>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
+
+        _accountService.GetBankAccountsAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Account>
+            {
+                new()
+                {
+                    Id = SystemAccounts.CashId, Name = "Cash on Hand", Type = AccountType.Asset,
+                    AccountNumber = "1100", IsSystem = true, IsBankAccount = true,
+                    CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+                }
+            });
     }
 
     // --- Rendering ---

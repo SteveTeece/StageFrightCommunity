@@ -213,7 +213,8 @@ public sealed class V7_AccountManagementTests : IAsyncLifetime
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
-        return new AccountService(accountRepo, glAssignment, auditSvc);
+        var reconciliationRepo = new BankReconciliationRepository(_db);
+        return new AccountService(accountRepo, glAssignment, auditSvc, reconciliationRepo);
     }
 
     private async Task AddTransaction(Guid accountId, string glAccount)

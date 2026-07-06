@@ -9,8 +9,10 @@ namespace StageFright.Core.Contracts;
 public interface IIncomeEntryService
 {
     /// <summary>
-    /// Records an income entry with a matching GL pair: Debit Cash (0100) / Credit the selected Income account.
-    /// The account must be of type Income and must not be a system account.
+    /// Records an income entry with a matching GL pair under an Income journal entry:
+    /// Debit the chosen deposit bank account (default Cash on Hand 1100) / Credit the
+    /// selected Income account. The account must be of type Income and must not be a
+    /// system account.
     /// </summary>
     Task RecordIncomeAsync(RecordIncomeRequest request, CancellationToken ct = default);
 

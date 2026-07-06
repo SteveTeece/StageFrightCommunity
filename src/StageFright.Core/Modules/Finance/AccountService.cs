@@ -16,15 +16,18 @@ public class AccountService : IAccountService
     private readonly IAccountRepository _repo;
     private readonly AccountNumberAssignmentService _numberAssignment;
     private readonly IAuditTrailService _audit;
+    private readonly IBankReconciliationRepository _reconciliationRepo;
 
     public AccountService(
         IAccountRepository repo,
         AccountNumberAssignmentService numberAssignment,
-        IAuditTrailService audit)
+        IAuditTrailService audit,
+        IBankReconciliationRepository reconciliationRepo)
     {
         _repo = repo;
         _numberAssignment = numberAssignment;
         _audit = audit;
+        _reconciliationRepo = reconciliationRepo;
     }
 
     public Task<IReadOnlyList<Account>> GetAllAsync(CancellationToken ct = default) =>
@@ -32,6 +35,15 @@ public class AccountService : IAccountService
 
     public Task<IReadOnlyList<Account>> GetArchivedAsync(CancellationToken ct = default) =>
         _repo.GetArchivedAsync(ct);
+
+    public async Task<IReadOnlyList<Account>> GetBankAccountsAsync(CancellationToken ct = default)
+    {
+        var all = await _repo.GetAllAsync(ct);
+        return all
+            .Where(a => a.IsBankAccount)
+            .OrderBy(a => a.AccountNumber)
+            .ToList();
+    }
 
     public async Task<Account> CreateAsync(string name, AccountType type, bool isBankAccount = false, CancellationToken ct = default)
     {
@@ -106,6 +118,11 @@ public class AccountService : IAccountService
         if (await _repo.IsReferencedByTransactionsAsync(id, ct))
             throw new ValidationException(
                 "This account cannot be archived because it is referenced by one or more transactions.",
+                nameof(Account), nameof(ArchiveAsync), id);
+
+        if (account.IsBankAccount && await _reconciliationRepo.GetDraftForAccountAsync(id, ct) is not null)
+            throw new ValidationException(
+                "This bank account cannot be archived while it has a draft reconciliation in progress.",
                 nameof(Account), nameof(ArchiveAsync), id);
 
         await _repo.ArchiveAsync(id, "system", ct);

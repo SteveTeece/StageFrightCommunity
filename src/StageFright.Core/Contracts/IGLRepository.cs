@@ -14,6 +14,13 @@ public interface IGLRepository
     /// </summary>
     Task AddPairAsync(Transaction debit, Transaction credit, CancellationToken ct = default);
 
+    /// <summary>
+    /// Inserts a balanced multi-line GL set atomically. Requires at least two lines,
+    /// exactly one non-zero (positive) side per line, and Σdebits == Σcredits;
+    /// otherwise throws GLBalanceException and nothing is inserted.
+    /// </summary>
+    Task AddBalancedSetAsync(IReadOnlyList<Transaction> lines, CancellationToken ct = default);
+
     /// <summary>Returns the outstanding balance for the member: Σdebits − Σcredits.</summary>
     Task<decimal> GetMemberBalanceAsync(Guid memberId, CancellationToken ct = default);
 
@@ -44,6 +51,14 @@ public interface IGLRepository
     /// </summary>
     Task<IReadOnlyDictionary<Guid, (decimal Debits, decimal Credits)>> GetAccountMovementsAsync(
         DateTime from, DateTime to, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns the account's GL transactions not yet cleared by any non-deleted bank
+    /// reconciliation, optionally limited to transactions dated on or before
+    /// <paramref name="upTo"/>. Ordered by date then creation time.
+    /// </summary>
+    Task<IReadOnlyList<Transaction>> GetUnreconciledByAccountAsync(
+        Guid accountId, DateTime? upTo = null, CancellationToken ct = default);
 
     /// <summary>
     /// Returns the total outstanding fee amounts grouped into standard aging buckets as of today.

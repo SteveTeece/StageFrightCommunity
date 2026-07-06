@@ -22,7 +22,35 @@ public class GLRepository : IGLRepository
                 "GL transaction pair imbalanced; operation cancelled.",
                 nameof(Transaction), nameof(AddPairAsync));
 
-        await _db.Transactions.AddRangeAsync(new[] { debit, credit }, ct);
+        await AddBalancedSetAsync(new[] { debit, credit }, ct);
+    }
+
+    public async Task AddBalancedSetAsync(IReadOnlyList<Transaction> lines, CancellationToken ct = default)
+    {
+        if (lines.Count < 2)
+            throw new GLBalanceException(
+                "A GL posting requires at least two lines.",
+                nameof(Transaction), nameof(AddBalancedSetAsync));
+
+        foreach (var line in lines)
+        {
+            if (line.DebitAmount < 0m || line.CreditAmount < 0m)
+                throw new GLBalanceException(
+                    "GL line amounts cannot be negative.",
+                    nameof(Transaction), nameof(AddBalancedSetAsync));
+
+            if ((line.DebitAmount != 0m) == (line.CreditAmount != 0m))
+                throw new GLBalanceException(
+                    "Each GL line must have exactly one non-zero side (debit or credit).",
+                    nameof(Transaction), nameof(AddBalancedSetAsync));
+        }
+
+        if (lines.Sum(l => l.DebitAmount) != lines.Sum(l => l.CreditAmount))
+            throw new GLBalanceException(
+                "GL set imbalanced (Σdebits ≠ Σcredits); operation cancelled.",
+                nameof(Transaction), nameof(AddBalancedSetAsync));
+
+        await _db.Transactions.AddRangeAsync(lines, ct);
         await _db.SaveChangesAsync(ct);
     }
 
@@ -124,6 +152,24 @@ public class GLRepository : IGLRepository
     {
         return await _db.Transactions
             .Where(t => t.FeeId == feeId)
+            .OrderBy(t => t.Date)
+            .ThenBy(t => t.CreatedAt)
+            .ToListAsync(ct);
+    }
+
+    public async Task<IReadOnlyList<Transaction>> GetUnreconciledByAccountAsync(
+        Guid accountId, DateTime? upTo = null, CancellationToken ct = default)
+    {
+        // The global query filter on ReconciliationLine excludes lines belonging to
+        // soft-deleted reconciliations, so those transactions reappear as unreconciled.
+        var query = _db.Transactions
+            .Where(t => t.AccountId == accountId)
+            .Where(t => !_db.ReconciliationLines.Any(l => l.TransactionId == t.Id));
+
+        if (upTo is not null)
+            query = query.Where(t => t.Date <= upTo);
+
+        return await query
             .OrderBy(t => t.Date)
             .ThenBy(t => t.CreatedAt)
             .ToListAsync(ct);

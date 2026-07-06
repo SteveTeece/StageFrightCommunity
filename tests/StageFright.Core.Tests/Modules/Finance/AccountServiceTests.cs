@@ -18,6 +18,7 @@ public class AccountServiceTests : TestBase
 {
     private readonly IAccountRepository _repo = Substitute.For<IAccountRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
+    private readonly IBankReconciliationRepository _reconciliationRepo = Substitute.For<IBankReconciliationRepository>();
     private readonly AccountNumberAssignmentService _glAssignment;
     private readonly AccountService _sut;
 
@@ -43,7 +44,7 @@ public class AccountServiceTests : TestBase
         _repo.AddAsync(Arg.Any<Account>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.ArgAt<Account>(0));
 
-        _sut = new AccountService(_repo, _glAssignment, _audit);
+        _sut = new AccountService(_repo, _glAssignment, _audit, _reconciliationRepo);
     }
 
     // --- CreateAsync ---
@@ -253,6 +254,36 @@ public class AccountServiceTests : TestBase
     }
 
     [Fact]
+    public async Task ArchiveAsync_BankAccountWithDraftReconciliation_ThrowsValidationException()
+    {
+        var bankAccount = MakeBankAccount(ExpenseAccountId);
+        _repo.GetByIdAsync(ExpenseAccountId, Arg.Any<CancellationToken>()).Returns(bankAccount);
+        _repo.IsReferencedByTransactionsAsync(ExpenseAccountId, Arg.Any<CancellationToken>()).Returns(false);
+        _reconciliationRepo.GetDraftForAccountAsync(ExpenseAccountId, Arg.Any<CancellationToken>())
+            .Returns(new BankReconciliation { Id = Guid.NewGuid(), AccountId = ExpenseAccountId });
+
+        var ex = await Assert.ThrowsAsync<ValidationException>(() =>
+            _sut.ArchiveAsync(ExpenseAccountId, Ct));
+
+        Assert.Contains("draft reconciliation", ex.Message);
+        await _repo.DidNotReceive().ArchiveAsync(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ArchiveAsync_BankAccountWithoutDraftReconciliation_Succeeds()
+    {
+        var bankAccount = MakeBankAccount(ExpenseAccountId);
+        _repo.GetByIdAsync(ExpenseAccountId, Arg.Any<CancellationToken>()).Returns(bankAccount);
+        _repo.IsReferencedByTransactionsAsync(ExpenseAccountId, Arg.Any<CancellationToken>()).Returns(false);
+        _reconciliationRepo.GetDraftForAccountAsync(ExpenseAccountId, Arg.Any<CancellationToken>())
+            .Returns((BankReconciliation?)null);
+
+        await _sut.ArchiveAsync(ExpenseAccountId, Ct);
+
+        await _repo.Received(1).ArchiveAsync(ExpenseAccountId, "system", Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task ArchiveAsync_NotFound_ThrowsEntityNotFoundException()
     {
         _repo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
@@ -304,6 +335,18 @@ public class AccountServiceTests : TestBase
     }
 
     // --- Helpers ---
+
+    private static Account MakeBankAccount(Guid id) => new()
+    {
+        Id = id,
+        Name = "Operating Account",
+        Type = AccountType.Asset,
+        AccountNumber = "1110",
+        IsBankAccount = true,
+        SortOrder = 0,
+        CreatedAt = DateTime.UtcNow,
+        UpdatedAt = DateTime.UtcNow
+    };
 
     private static Account MakeAccount(Guid id, bool isSystem) => new()
     {

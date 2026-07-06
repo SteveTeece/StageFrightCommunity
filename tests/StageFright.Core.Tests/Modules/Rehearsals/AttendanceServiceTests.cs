@@ -2,6 +2,7 @@ using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Rehearsals;
 using StageFright.Core.Tests.Fixtures;
 
@@ -83,6 +84,18 @@ public class AttendanceServiceTests : TestBase
             .Returns(ci => ci.ArgAt<Payment>(0));
     }
 
+    private void SetSettings(bool isGstRegistered, GstCode? attendanceFeeGstCode, decimal attendanceFee) =>
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>())
+            .Returns(new Settings
+            {
+                Id = Guid.NewGuid(), OrganizationName = "Test",
+                AnnualFee = 50m, AttendanceFee = attendanceFee,
+                MembershipRenewalMonth = 1, MaxAgeRangeYears = 150,
+                MinimumMemberAge = 0, SchemaVersion = "1.1.0",
+                IsGstRegistered = isGstRegistered, AttendanceFeeGstCode = attendanceFeeGstCode,
+                CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+            });
+
     private AttendanceService CreateService() =>
         new(_rehearsalRepo, _attendanceRepo, _memberRepo, _feeRepo, _paymentRepo,
             _glRepo, _accountRepo, _settingsRepo, _audit, _unitOfWork, _rehearsalService);
@@ -111,9 +124,10 @@ public class AttendanceServiceTests : TestBase
         await svc.RecordBatchAsync(RehearsalId, items, Ct);
 
         // Accrual: Debit MemberReceivable / Credit Income — must be called at least once
-        await _glRepo.Received().AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount > 0 && t.AccountId == MemberReceivableAccountId),
-            Arg.Is<Transaction>(t => t.CreditAmount > 0 && t.AccountId == IncomeAccountId),
+        await _glRepo.Received().AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines.Any(t => t.DebitAmount > 0 && t.AccountId == MemberReceivableAccountId) &&
+                lines.Any(t => t.CreditAmount > 0 && t.AccountId == IncomeAccountId)),
             Arg.Any<CancellationToken>());
     }
 
@@ -172,9 +186,79 @@ public class AttendanceServiceTests : TestBase
 
         await svc.RecordBatchAsync(RehearsalId, items, Ct);
 
-        // Only one GL pair: accrual. No cash/MemberReceivable payment pair.
-        await _glRepo.Received(1).AddPairAsync(Arg.Any<Transaction>(), Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
+        // Only the accrual set posts. No cash/MemberReceivable payment pair.
+        await _glRepo.Received(1).AddBalancedSetAsync(Arg.Any<IReadOnlyList<Transaction>>(), Arg.Any<CancellationToken>());
+        await _glRepo.DidNotReceive().AddPairAsync(Arg.Any<Transaction>(), Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
         await _paymentRepo.DidNotReceive().AddAsync(Arg.Any<Payment>(), Arg.Any<CancellationToken>());
+    }
+
+    // --- GST ---
+
+    [Fact]
+    public async Task RecordBatch_NotRegistered_StampsNullGstCode_OnFeeAndAccrualLines_EvenWhenGstCodeConfigured()
+    {
+        // Toggle-off byte-identical regression: unregistered orgs must always get the
+        // pre-GST 2-line accrual with GstCode == null, regardless of AttendanceFeeGstCode.
+        SetSettings(isGstRegistered: false, attendanceFeeGstCode: GstCode.Gst, attendanceFee: 11m);
+        var svc = CreateService();
+        var items = new[] { new AttendanceBatchItem { MemberId = ActiveMemberId, Attended = true, MarkAsUnpaid = true } };
+
+        await svc.RecordBatchAsync(RehearsalId, items, Ct);
+
+        await _feeRepo.Received(1).AddAsync(Arg.Is<Fee>(f => f.GstCode == null), Arg.Any<CancellationToken>());
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.Count == 2 && lines.All(t => t.GstCode == null)),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RecordBatch_RegisteredAndTaxable_Posts3LineAccrual_SplitsGstToClearing()
+    {
+        SetSettings(isGstRegistered: true, attendanceFeeGstCode: GstCode.Gst, attendanceFee: 11m);
+        var svc = CreateService();
+        var items = new[] { new AttendanceBatchItem { MemberId = ActiveMemberId, Attended = true, MarkAsUnpaid = true } };
+
+        await svc.RecordBatchAsync(RehearsalId, items, Ct);
+
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines.Count == 3
+                && lines.Any(t => t.DebitAmount == 11m && t.AccountId == MemberReceivableAccountId)
+                && lines.Any(t => t.CreditAmount == 10m && t.AccountId == IncomeAccountId)
+                && lines.Any(t => t.CreditAmount == 1m && t.AccountId == SystemAccounts.GstCollectedId)
+                && lines.All(t => t.GstCode == GstCode.Gst)),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(GstCode.GstFree)]
+    [InlineData(GstCode.InputTaxed)]
+    public async Task RecordBatch_RegisteredButNotTaxable_Posts2LineAccrual_NoGstSplit(GstCode code)
+    {
+        SetSettings(isGstRegistered: true, attendanceFeeGstCode: code, attendanceFee: 10m);
+        var svc = CreateService();
+        var items = new[] { new AttendanceBatchItem { MemberId = ActiveMemberId, Attended = true, MarkAsUnpaid = true } };
+
+        await svc.RecordBatchAsync(RehearsalId, items, Ct);
+
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines.Count == 2 && lines.All(t => t.GstCode == code)),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RecordBatch_RegisteredWithNoFeeGstCodeSet_DefaultsToGstFree()
+    {
+        SetSettings(isGstRegistered: true, attendanceFeeGstCode: null, attendanceFee: 10m);
+        var svc = CreateService();
+        var items = new[] { new AttendanceBatchItem { MemberId = ActiveMemberId, Attended = true, MarkAsUnpaid = true } };
+
+        await svc.RecordBatchAsync(RehearsalId, items, Ct);
+
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.GstCode == GstCode.GstFree)),
+            Arg.Any<CancellationToken>());
     }
 
     // --- Inactive member ---
@@ -205,6 +289,7 @@ public class AttendanceServiceTests : TestBase
 
         await _feeRepo.DidNotReceive().AddAsync(Arg.Any<Fee>(), Arg.Any<CancellationToken>());
         await _glRepo.DidNotReceive().AddPairAsync(Arg.Any<Transaction>(), Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
+        await _glRepo.DidNotReceive().AddBalancedSetAsync(Arg.Any<IReadOnlyList<Transaction>>(), Arg.Any<CancellationToken>());
     }
 
     // --- Idempotency ---
@@ -222,6 +307,7 @@ public class AttendanceServiceTests : TestBase
 
         await _feeRepo.DidNotReceive().AddAsync(Arg.Any<Fee>(), Arg.Any<CancellationToken>());
         await _glRepo.DidNotReceive().AddPairAsync(Arg.Any<Transaction>(), Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
+        await _glRepo.DidNotReceive().AddBalancedSetAsync(Arg.Any<IReadOnlyList<Transaction>>(), Arg.Any<CancellationToken>());
     }
 
     // --- Batch atomicity ---

@@ -1,3 +1,5 @@
+using StageFright.Core.Enums;
+
 namespace StageFright.Core.Entities;
 
 /// <summary>
@@ -48,6 +50,18 @@ public class Transaction
     public Guid? FeeId { get; set; }
 
     /// <summary>
+    /// FK to the journal entry header that grouped this posting. Null for pair-based
+    /// postings (fees, payments, forgiveness) and all rows created before journal entries existed.
+    /// </summary>
+    public Guid? JournalEntryId { get; set; }
+
+    /// <summary>
+    /// GST treatment stamped at posting time. Null on rows posted while unregistered
+    /// and on all historical rows — never updated after posting.
+    /// </summary>
+    public GstCode? GstCode { get; set; }
+
+    /// <summary>
     /// Optional description. Reversing entries MUST state what was reversed and why
     /// (Constitution §3.6).
     /// </summary>
@@ -69,4 +83,7 @@ public class Transaction
 
     /// <summary>The fee associated with this transaction, if any.</summary>
     public Fee? Fee { get; set; }
+
+    /// <summary>The journal entry that grouped this posting, if any.</summary>
+    public JournalEntry? JournalEntry { get; set; }
 }

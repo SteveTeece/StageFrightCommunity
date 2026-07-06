@@ -1,0 +1,135 @@
+@page "/finance/reconciliation/{Id:guid}"
+@using StageFright.Core.Enums
+@using StageFright.Core.Modules.Finance
+
+<PageTitle>Reconcile Account</PageTitle>
+
+<div class="reconciliation-workspace container-fluid py-2">
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+    }
+
+    @if (_loading)
+    {
+        <p role="status" aria-live="polite">Loading reconciliation…</p>
+    }
+    else if (_workspace is null)
+    {
+        <p class="text-muted">Reconciliation not found. <a href="/finance/reconciliation">Back to reconciliations</a>.</p>
+    }
+    else
+    {
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <h4 class="mb-0">
+                Reconcile — @_workspace.Account.Name
+                <small class="text-muted">to @_workspace.Reconciliation.StatementDate.ToString("d MMM yyyy")</small>
+            </h4>
+            @if (IsFinalised)
+            {
+                <span class="badge bg-success fs-6">Finalised</span>
+            }
+            else
+            {
+                <span class="badge bg-warning text-dark fs-6">Draft</span>
+            }
+        </div>
+
+        <div class="row g-2 mb-3">
+            <div class="col-sm-3">
+                <div class="card text-center">
+                    <div class="card-body py-2">
+                        <div class="small text-muted">Statement closing balance</div>
+                        <div class="fs-5" id="summary-statement">@_workspace.Reconciliation.StatementClosingBalance.ToString("C")</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="card text-center">
+                    <div class="card-body py-2">
+                        <div class="small text-muted">Opening balance</div>
+                        <div class="fs-5" id="summary-opening">@_workspace.Reconciliation.OpeningBalance.ToString("C")</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="card text-center">
+                    <div class="card-body py-2">
+                        <div class="small text-muted">Cleared</div>
+                        <div class="fs-5" id="summary-cleared">@_workspace.ClearedTotal.ToString("C")</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="card text-center @(IsBalanced ? "border-success" : "border-danger")">
+                    <div class="card-body py-2">
+                        <div class="small text-muted">Difference</div>
+                        <div class="fs-5 @(IsBalanced ? "text-success" : "text-danger")" id="summary-difference">
+                            @_workspace.Difference.ToString("C")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (!_workspace.Transactions.Any())
+        {
+            <p class="text-muted">No transactions on this account up to the statement date.</p>
+        }
+        else
+        {
+            <RadzenDataGrid Data="@_workspace.Transactions" TItem="ReconciliationTransactionView"
+                            AllowSorting="false" AllowPaging="true" PageSize="25"
+                            class="rz-shadow-0">
+                <Columns>
+                    <RadzenDataGridColumn TItem="ReconciliationTransactionView" Title="Cleared" Width="80px" Sortable="false">
+                        <Template Context="line">
+                            <input type="checkbox" class="form-check-input reconciliation-tick"
+                                   checked="@line.IsCleared"
+                                   disabled="@(IsFinalised || _busy)"
+                                   aria-label="Cleared"
+                                   @onchange="() => ToggleAsync(line.Transaction.Id)" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ReconciliationTransactionView" Title="Date" Width="130px">
+                        <Template Context="line">@line.Transaction.Date.ToString("d MMM yyyy")</Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ReconciliationTransactionView" Title="Description">
+                        <Template Context="line">@(line.Transaction.Description ?? "—")</Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ReconciliationTransactionView" Title="Deposit" Width="120px">
+                        <Template Context="line">
+                            @(line.Transaction.DebitAmount != 0m ? line.Transaction.DebitAmount.ToString("C") : "")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ReconciliationTransactionView" Title="Payment" Width="120px">
+                        <Template Context="line">
+                            @(line.Transaction.CreditAmount != 0m ? line.Transaction.CreditAmount.ToString("C") : "")
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+        }
+
+        @if (!IsFinalised)
+        {
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-primary" id="finalise-button"
+                        disabled="@(!IsBalanced || _busy)" @onclick="FinaliseAsync">
+                    Finalise
+                </button>
+                <button class="btn btn-outline-danger" id="delete-draft-button"
+                        disabled="@_busy" @onclick="DeleteDraftAsync">
+                    Delete Draft
+                </button>
+                <a class="btn btn-outline-secondary ms-auto" href="/finance/reconciliation">Back</a>
+            </div>
+        }
+        else
+        {
+            <div class="mt-3">
+                <a class="btn btn-outline-secondary" href="/finance/reconciliation">Back</a>
+            </div>
+        }
+    }
+</div>

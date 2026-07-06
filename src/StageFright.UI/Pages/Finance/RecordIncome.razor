@@ -72,6 +72,34 @@ else
                                 }
                             </div>
 
+                            <div class="col-md-4">
+                                <label class="form-label" for="depositAccount">Deposit to</label>
+                                <InputSelect id="depositAccount" class="form-select form-select-sm"
+                                             @bind-Value="_form.DepositAccountId">
+                                    @foreach (var bank in _bankAccounts)
+                                    {
+                                        <option value="@bank.Id">@bank.AccountNumber @bank.Name</option>
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            @if (_isGstRegistered)
+                            {
+                                <div class="col-md-4">
+                                    <label class="form-label" for="gstCode">GST Treatment</label>
+                                    <InputSelect id="gstCode" class="form-select form-select-sm" @bind-Value="_form.GstCode">
+                                        <option value="">GST-free (default)</option>
+                                        <option value="@StageFright.Core.Enums.GstCode.Gst">Taxable (GST)</option>
+                                        <option value="@StageFright.Core.Enums.GstCode.GstFree">GST-free</option>
+                                        <option value="@StageFright.Core.Enums.GstCode.InputTaxed">Input-taxed</option>
+                                    </InputSelect>
+                                    @if (GstInclusiveHint is not null)
+                                    {
+                                        <div class="form-text small">@GstInclusiveHint</div>
+                                    }
+                                </div>
+                            }
+
                             <div class="col-12">
                                 <label class="form-label" for="description">Description</label>
                                 <InputTextArea id="description" class="form-control form-control-sm" rows="2"

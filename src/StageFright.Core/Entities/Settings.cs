@@ -32,6 +32,24 @@ public class Settings
     /// </summary>
     public int FinancialYearStartMonth { get; set; } = 7;
 
+    /// <summary>
+    /// True when the organisation is registered for GST. When false all GST UI is
+    /// hidden, postings are 2-line, and GST codes stay null. Default: false.
+    /// </summary>
+    public bool IsGstRegistered { get; set; }
+
+    /// <summary>
+    /// GST treatment applied to annual fee accruals while registered.
+    /// Null means GST-free (the default for NFP membership fees).
+    /// </summary>
+    public GstCode? AnnualFeeGstCode { get; set; }
+
+    /// <summary>
+    /// GST treatment applied to attendance fee accruals while registered.
+    /// Null means GST-free.
+    /// </summary>
+    public GstCode? AttendanceFeeGstCode { get; set; }
+
     /// <summary>Maximum member age accepted by the system (years). Default: 150.</summary>
     public int MaxAgeRangeYears { get; set; } = 150;
 
