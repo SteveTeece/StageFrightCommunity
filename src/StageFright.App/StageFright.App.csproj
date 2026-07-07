@@ -23,6 +23,11 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);CS1591</NoWarn>
 
+        <!-- Unpackaged app with no .resw/localized resources of our own, so the project-level
+             Package Resource Index is unused. Its indexer misparses hyphenated filenames in
+             Blazor.Bootstrap's bundled JS (e.g. "sortable-list") as MRT qualifiers (PRI249). -->
+        <AppxGeneratePriEnabled Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">false</AppxGeneratePriEnabled>
+
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>

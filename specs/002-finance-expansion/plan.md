@@ -1,6 +1,6 @@
 # Finance Module Expansion — Full Accounting, Bank Reconciliation, GST/BAS
 
-> **Status:** Approved, not yet implemented (plan saved 2026-07-05).
+> **Status:** Implemented (all tasks T001–T069 complete as of 2026-07-07; 1008 tests green across 5 test projects).
 > **Branch:** intended for `ExpandFnance`.
 
 ## Context

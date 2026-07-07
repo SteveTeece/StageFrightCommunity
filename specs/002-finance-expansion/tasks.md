@@ -170,9 +170,9 @@
 
 ## Phase 8: Polish & Final Verification
 
-- [ ] T067 Full-solution verification: `dotnet build` + full `dotnet test` (no --no-build), all 5 test projects green, V4–V12 scenarios unmodified
-- [ ] T068 Migration end-to-end check: copy pre-expansion TestData/stagefright.db, run app (auto-migrates), confirm member balances / trial balance totals / existing reports match pre-migration values
-- [ ] T069 Update specs/002-finance-expansion/plan.md status to implemented
+- [X] T067 Full-solution verification: `dotnet build` + full `dotnet test` (no --no-build), all 5 test projects green, V4–V12 scenarios unmodified
+- [X] T068 Migration end-to-end check: copy pre-expansion TestData/stagefright.db, run app (auto-migrates), confirm member balances / trial balance totals / existing reports match pre-migration values
+- [X] T069 Update specs/002-finance-expansion/plan.md status to implemented
 
 ---
 

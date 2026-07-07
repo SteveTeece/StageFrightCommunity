@@ -50,28 +50,28 @@ public sealed class ConvertCategoriesToAccountsMigrationTests : IDisposable
         await db.GetService<IMigrator>().MigrateAsync(PreExpansionMigration);
 
         // User categories in the legacy count-based ranges.
-        await db.Database.ExecuteSqlRawAsync(
+        await db.Database.ExecuteSqlAsync(
             $"""
             INSERT INTO Categories (Id, Name, Type, GLAccount, SortOrder, IsSystem, IsDeleted, DeletedAt, DeletedBy, CreatedAt, UpdatedAt) VALUES
-            ('{IncomeCat1Id}', 'Membership Fees', 'Income', '1000', 0, 0, 0, NULL, NULL, '2026-02-01 00:00:00', '2026-02-01 00:00:00'),
-            ('{IncomeCat2Id}', 'Concert Income', 'Income', '1001', 1, 0, 0, NULL, NULL, '2026-02-02 00:00:00', '2026-02-02 00:00:00'),
-            ('{ExpenseCatId}', 'Hall Hire', 'Expense', '2000', 0, 0, 0, NULL, NULL, '2026-02-03 00:00:00', '2026-02-03 00:00:00');
+            ({IncomeCat1Id}, 'Membership Fees', 'Income', '1000', 0, 0, 0, NULL, NULL, '2026-02-01 00:00:00', '2026-02-01 00:00:00'),
+            ({IncomeCat2Id}, 'Concert Income', 'Income', '1001', 1, 0, 0, NULL, NULL, '2026-02-02 00:00:00', '2026-02-02 00:00:00'),
+            ({ExpenseCatId}, 'Hall Hire', 'Expense', '2000', 0, 0, 0, NULL, NULL, '2026-02-03 00:00:00', '2026-02-03 00:00:00');
             """);
 
-        await db.Database.ExecuteSqlRawAsync(
+        await db.Database.ExecuteSqlAsync(
             $"""
             INSERT INTO Members (Id, Name, StreetAddress, Phone, Email, JoinDate, DateOfBirth, Status, ActivateDate, InactivateDate, IsDeleted, DeletedAt, DeletedBy, CreatedAt, UpdatedAt) VALUES
-            ('{MemberId}', 'Alice Legacy', '1 Old St', NULL, NULL, '2025-01-01 00:00:00', NULL, 'Active', NULL, NULL, 0, NULL, NULL, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
+            ({MemberId}, 'Alice Legacy', '1 Old St', NULL, NULL, '2025-01-01 00:00:00', NULL, 'Active', NULL, NULL, 0, NULL, NULL, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
             """);
 
         // Legacy GL: $100 fee accrual (DR 0101 / CR 1000) and $50 payment (DR 0100 / CR 0101).
-        await db.Database.ExecuteSqlRawAsync(
+        await db.Database.ExecuteSqlAsync(
             $"""
             INSERT INTO Transactions (Id, Date, CategoryId, DebitAmount, CreditAmount, GLAccount, MemberId, PaymentId, FeeId, Description, CreatedAt) VALUES
-            ('33333333-0000-0000-0000-000000000001', '2026-01-10 00:00:00', '{ReceivableId}', 100.0, 0.0, '0101', '{MemberId}', NULL, NULL, 'Annual fee', '2026-01-10 00:00:00'),
-            ('33333333-0000-0000-0000-000000000002', '2026-01-10 00:00:00', '{IncomeCat1Id}', 0.0, 100.0, '1000', NULL, NULL, NULL, 'Annual fee income', '2026-01-10 00:00:00'),
-            ('33333333-0000-0000-0000-000000000003', '2026-01-20 00:00:00', '{CashId}', 50.0, 0.0, '0100', '{MemberId}', NULL, NULL, 'Payment', '2026-01-20 00:00:00'),
-            ('33333333-0000-0000-0000-000000000004', '2026-01-20 00:00:00', '{ReceivableId}', 0.0, 50.0, '0101', '{MemberId}', NULL, NULL, 'Receivable cleared', '2026-01-20 00:00:00');
+            ('33333333-0000-0000-0000-000000000001', '2026-01-10 00:00:00', {ReceivableId}, 100.0, 0.0, '0101', {MemberId}, NULL, NULL, 'Annual fee', '2026-01-10 00:00:00'),
+            ('33333333-0000-0000-0000-000000000002', '2026-01-10 00:00:00', {IncomeCat1Id}, 0.0, 100.0, '1000', NULL, NULL, NULL, 'Annual fee income', '2026-01-10 00:00:00'),
+            ('33333333-0000-0000-0000-000000000003', '2026-01-20 00:00:00', {CashId}, 50.0, 0.0, '0100', {MemberId}, NULL, NULL, 'Payment', '2026-01-20 00:00:00'),
+            ('33333333-0000-0000-0000-000000000004', '2026-01-20 00:00:00', {ReceivableId}, 0.0, 50.0, '0101', {MemberId}, NULL, NULL, 'Receivable cleared', '2026-01-20 00:00:00');
             """);
 
         await db.Database.ExecuteSqlRawAsync(

@@ -8,7 +8,7 @@ using StageFright.Reports.Registry;
 namespace StageFright.Reports.Providers;
 
 /// <summary>
-/// Generates the Statement of Income & Expenditure. Period is chosen via an FY preset
+/// Generates the Statement of Income &amp; Expenditure. Period is chosen via an FY preset
 /// (This FY / Last FY / Custom) aligned to Settings.FinancialYearStartMonth, with an
 /// optional prior-year comparison column (the chosen period shifted back one year).
 /// Income section: one row per income account with subtotal.

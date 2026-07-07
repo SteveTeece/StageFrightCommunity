@@ -98,7 +98,7 @@ public class BankReconciliationServiceTests : TestBase
         Assert.Equal(250m, draft.StatementClosingBalance);
         await _recRepo.Received(1).CreateDraftAsync(BankAccountId, StatementDate, 250m, null, Arg.Any<CancellationToken>());
         await _audit.Received(1).LogAsync(nameof(BankReconciliation), draft.Id, AuditAction.Create,
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
+            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -256,7 +256,7 @@ public class BankReconciliationServiceTests : TestBase
 
         await _recRepo.Received(1).FinaliseAsync(rec.Id, Arg.Any<CancellationToken>());
         await _audit.Received(1).LogAsync(nameof(BankReconciliation), rec.Id, AuditAction.Update,
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
+            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -288,7 +288,7 @@ public class BankReconciliationServiceTests : TestBase
 
         await _recRepo.Received(1).SoftDeleteDraftAsync(rec.Id, "system", Arg.Any<CancellationToken>());
         await _audit.Received(1).LogAsync(nameof(BankReconciliation), rec.Id, AuditAction.Delete,
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
+            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     // --- Delegating lookups ---

@@ -51,7 +51,7 @@ public class GeneralLedgerReportProviderTests
 
         var result = await _sut.GenerateAsync(CurrentYearFilters());
 
-        var section = result.Sections.First(s => s.Heading.Contains("Cash on Hand"));
+        var section = result.Sections.First(s => s.Heading != null && s.Heading.Contains("Cash on Hand"));
         Assert.Equal("Opening Balance", section.Rows[0].Cells[1]);
         Assert.Equal("100.00", section.Rows[0].Cells[4]);
         Assert.Equal("150.00", section.Rows[1].Cells[4]); // 100 + 50
@@ -70,7 +70,7 @@ public class GeneralLedgerReportProviderTests
 
         var result = await _sut.GenerateAsync(CurrentYearFilters());
 
-        Assert.DoesNotContain(result.Sections, s => s.Heading.Contains("Unused Expense"));
+        Assert.DoesNotContain(result.Sections, s => s.Heading != null && s.Heading.Contains("Unused Expense"));
     }
 
     [Fact]
