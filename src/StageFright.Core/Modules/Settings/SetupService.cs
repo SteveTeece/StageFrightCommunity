@@ -45,13 +45,22 @@ public class SetupService : ISetupService
 
         Validate(request);
 
+        // GST codes only ever apply while registered — force them null otherwise, regardless
+        // of what the wizard happened to have selected before the user toggled registration off.
+        var annualFeeGstCode = request.IsGstRegistered ? request.AnnualFeeGstCode : null;
+        var attendanceFeeGstCode = request.IsGstRegistered ? request.AttendanceFeeGstCode : null;
+
         var settings = new SettingsEntity
         {
             Id = Guid.NewGuid(),
             OrganizationName = request.OrganizationName.Trim(),
+            Abn = request.Abn.Trim(),
             AnnualFee = request.AnnualFee,
             AttendanceFee = request.AttendanceFee,
             MembershipRenewalMonth = request.MembershipRenewalMonth,
+            IsGstRegistered = request.IsGstRegistered,
+            AnnualFeeGstCode = annualFeeGstCode,
+            AttendanceFeeGstCode = attendanceFeeGstCode,
             CommitteeRenewalMonth = 1,
             MaxAgeRangeYears = 150,
             MinimumMemberAge = 0,
@@ -94,6 +103,9 @@ public class SetupService : ISetupService
     {
         if (string.IsNullOrWhiteSpace(request.OrganizationName))
             throw new ValidationException("OrganizationName is required.", "Settings", nameof(InitializeAsync));
+
+        if (string.IsNullOrWhiteSpace(request.Abn) || !AbnValidator.IsValid(request.Abn.Trim()))
+            throw new ValidationException("A valid ABN is required.", "Settings", nameof(InitializeAsync));
 
         if (request.AnnualFee < 0)
             throw new ValidationException("AnnualFee must be zero or greater.", "Settings", nameof(InitializeAsync));

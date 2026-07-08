@@ -2,79 +2,168 @@
 @inherits ComponentBase
 @inject ISetupService SetupService
 @inject NavigationManager Nav
+@using StageFright.Core.Enums
+@using StageFright.UI.Shared
 
 <PageTitle>First-Time Setup — StageFright Community</PageTitle>
 
 <div class="container mt-3" style="max-width:560px">
     <h1 class="mb-1">Welcome to StageFright Community</h1>
-    <p class="text-muted mb-3 small">Complete the short setup below to get started.</p>
+    <p class="text-muted mb-1 small">Complete the short setup below to get started.</p>
+
+    <p class="text-muted mb-1 small">Step @_currentStep of 4</p>
+    <div class="progress mb-3" style="height:6px;" role="progressbar" aria-valuenow="@_currentStep" aria-valuemin="1" aria-valuemax="4">
+        <div class="progress-bar" style="width:@(_currentStep * 25)%"></div>
+    </div>
 
     @if (_errorMessage is not null)
     {
         <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
     }
 
-    <EditForm Model="_model" OnValidSubmit="HandleValidSubmitAsync">
+    <EditForm EditContext="_editContext" OnValidSubmit="HandleValidSubmitAsync">
         <DataAnnotationsValidator />
 
-        <div class="mb-2">
-            <label for="orgName" class="form-label">Organisation Name <span aria-hidden="true" class="text-danger">*</span></label>
-            <InputText id="orgName" class="form-control form-control-sm" @bind-Value="_model.OrganizationName" placeholder="e.g. Springfield Choral Society" />
-            <ValidationMessage For="() => _model.OrganizationName" class="text-danger small" />
-        </div>
-
-        <div class="row g-2 mb-2">
-            <div class="col">
-                <label for="annualFee" class="form-label">Annual Fee</label>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
-                    <InputNumber id="annualFee" class="form-control" @bind-Value="_model.AnnualFee" @bind-Value:format="N2" />
-                </div>
-                <ValidationMessage For="() => _model.AnnualFee" class="text-danger small" />
-            </div>
-            <div class="col">
-                <label for="attendanceFee" class="form-label">Attendance Fee</label>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
-                    <InputNumber id="attendanceFee" class="form-control" @bind-Value="_model.AttendanceFee" @bind-Value:format="N2" />
-                </div>
-                <ValidationMessage For="() => _model.AttendanceFee" class="text-danger small" />
-            </div>
-        </div>
-
-        <div class="mb-2">
-            <label for="renewalMonth" class="form-label">Membership Renewal Month <span aria-hidden="true" class="text-danger">*</span></label>
-            <InputSelect id="renewalMonth" class="form-select form-select-sm" @bind-Value="_model.MembershipRenewalMonth">
-                @for (var m = 1; m <= 12; m++)
-                {
-                    var month = m;
-                    <option value="@month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => _model.MembershipRenewalMonth" class="text-danger small" />
-        </div>
-
-        <div class="mb-3">
-            <div class="form-check form-check-sm">
-                <InputCheckbox id="seedData" class="form-check-input" @bind-Value="_seedWithTestData" />
-                <label for="seedData" class="form-check-label">Load sample data (members, rehearsals, events &amp; finances)</label>
-            </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-sm w-100" disabled="@_submitting">
-            @if (_submitting)
-            {
-                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            }
-            Get Started
-        </button>
-
-        @if (_submitting && _seedingProgress is not null)
+        @if (_currentStep == 1)
         {
-            <div class="mt-2 d-flex align-items-center gap-2 text-muted small" aria-live="polite" aria-atomic="true">
-                <span class="spinner-border spinner-border-sm flex-shrink-0" role="status" aria-hidden="true"></span>
-                <span>@_seedingProgress</span>
+            <div class="mb-2">
+                <label for="orgName" class="form-label">Organisation Name <span aria-hidden="true" class="text-danger">*</span></label>
+                <InputText id="orgName" class="form-control form-control-sm" @bind-Value="_model.OrganizationName" placeholder="e.g. Springfield Choral Society" />
+                <ValidationMessage For="() => _model.OrganizationName" class="text-danger small" />
+            </div>
+
+            <div class="mb-3">
+                <label for="abn" class="form-label">ABN <span aria-hidden="true" class="text-danger">*</span></label>
+                <AbnInput id="abn" class="form-control form-control-sm" @bind-Value="_model.Abn" placeholder="XX XXX XXX XXX" />
+                <ValidationMessage For="() => _model.Abn" class="text-danger small" />
             </div>
         }
+        else if (_currentStep == 2)
+        {
+            <div class="row g-2 mb-2">
+                <div class="col">
+                    <label for="annualFee" class="form-label">Annual Fee</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
+                        <InputNumber id="annualFee" class="form-control" @bind-Value="_model.AnnualFee" @bind-Value:format="N2" />
+                    </div>
+                    <ValidationMessage For="() => _model.AnnualFee" class="text-danger small" />
+                </div>
+                <div class="col">
+                    <label for="attendanceFee" class="form-label">Attendance Fee</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
+                        <InputNumber id="attendanceFee" class="form-control" @bind-Value="_model.AttendanceFee" @bind-Value:format="N2" />
+                    </div>
+                    <ValidationMessage For="() => _model.AttendanceFee" class="text-danger small" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="renewalMonth" class="form-label">Membership Renewal Month <span aria-hidden="true" class="text-danger">*</span></label>
+                <InputSelect id="renewalMonth" class="form-select form-select-sm" @bind-Value="_model.MembershipRenewalMonth">
+                    @for (var m = 1; m <= 12; m++)
+                    {
+                        var month = m;
+                        <option value="@month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => _model.MembershipRenewalMonth" class="text-danger small" />
+            </div>
+        }
+        else if (_currentStep == 3)
+        {
+            <div class="mb-3">
+                <div class="form-check">
+                    <InputCheckbox id="gstRegistered" class="form-check-input" @bind-Value="_model.IsGstRegistered" @bind-Value:after="HandleGstToggleChanged" />
+                    <label class="form-check-label small" for="gstRegistered">Organisation is registered for GST</label>
+                </div>
+
+                @if (_model.IsGstRegistered)
+                {
+                    <div class="row g-2 mt-1">
+                        <div class="col-md-6">
+                            <label for="annualFeeGstCode" class="form-label">Annual Fee GST Treatment</label>
+                            <InputSelect id="annualFeeGstCode" class="form-select form-select-sm" @bind-Value="_model.AnnualFeeGstCode">
+                                <option value="">GST-free (default)</option>
+                                <option value="@GstCode.Gst">Taxable (GST)</option>
+                                <option value="@GstCode.GstFree">GST-free</option>
+                                <option value="@GstCode.InputTaxed">Input-taxed</option>
+                            </InputSelect>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="attendanceFeeGstCode" class="form-label">Attendance Fee GST Treatment</label>
+                            <InputSelect id="attendanceFeeGstCode" class="form-select form-select-sm" @bind-Value="_model.AttendanceFeeGstCode">
+                                <option value="">GST-free (default)</option>
+                                <option value="@GstCode.Gst">Taxable (GST)</option>
+                                <option value="@GstCode.GstFree">GST-free</option>
+                                <option value="@GstCode.InputTaxed">Input-taxed</option>
+                            </InputSelect>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="mb-3">
+                <h2 class="h6">Review</h2>
+                <dl class="row small mb-2">
+                    <dt class="col-5">Organisation Name</dt><dd class="col-7">@_model.OrganizationName</dd>
+                    <dt class="col-5">ABN</dt><dd class="col-7">@_model.Abn</dd>
+                    <dt class="col-5">Annual Fee</dt><dd class="col-7">@_model.AnnualFee.ToString("C")</dd>
+                    <dt class="col-5">Attendance Fee</dt><dd class="col-7">@_model.AttendanceFee.ToString("C")</dd>
+                    <dt class="col-5">Membership Renewal Month</dt><dd class="col-7">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(_model.MembershipRenewalMonth)</dd>
+                    <dt class="col-5">GST Registered</dt><dd class="col-7">@(_model.IsGstRegistered ? "Yes" : "No")</dd>
+                    @if (_model.IsGstRegistered)
+                    {
+                        <dt class="col-5">Annual Fee GST Treatment</dt><dd class="col-7">@(_model.AnnualFeeGstCode?.ToString() ?? "GST-free (default)")</dd>
+                        <dt class="col-5">Attendance Fee GST Treatment</dt><dd class="col-7">@(_model.AttendanceFeeGstCode?.ToString() ?? "GST-free (default)")</dd>
+                    }
+                </dl>
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check form-check-sm">
+                    <InputCheckbox id="seedData" class="form-check-input" @bind-Value="_seedWithTestData" />
+                    <label for="seedData" class="form-check-label">Load sample data (members, rehearsals, events &amp; finances)</label>
+                </div>
+            </div>
+        }
+
+        <div class="d-flex gap-2">
+            @if (_currentStep > 1)
+            {
+                <button type="button" id="btn-back" class="btn btn-outline-secondary btn-sm" @onclick="HandleBack" disabled="@_submitting">Back</button>
+            }
+            @if (_currentStep < 4)
+            {
+                <button type="button" id="btn-next" class="btn btn-primary btn-sm" @onclick="HandleNext">Next</button>
+            }
+            else
+            {
+                <button type="submit" id="btn-finish" class="btn btn-primary btn-sm" disabled="@_submitting">
+                    @if (_submitting)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    }
+                    Finish
+                </button>
+            }
+        </div>
     </EditForm>
 </div>
+
+@if (_seedingInProgress)
+{
+    <div class="setup-seeding-overlay" role="status" aria-live="polite" aria-atomic="true">
+        <div class="setup-seeding-overlay-card text-center">
+            <div class="spinner-border text-primary mb-2" role="status" aria-hidden="true"></div>
+            <p class="mb-1">Setting up your sample data — this may take a few minutes. Please don't close the app.</p>
+            @if (_seedingProgress is not null)
+            {
+                <p class="mb-0 small text-muted">@_seedingProgress</p>
+            }
+        </div>
+    </div>
+}

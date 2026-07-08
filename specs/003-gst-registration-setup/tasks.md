@@ -48,18 +48,18 @@
 
 ### Implementation for User Story 1
 
-- [ ] T012 [US1] Add `Abn` (`[Required]` + `[Abn]`), `IsGstRegistered`, `AnnualFeeGstCode`, `AttendanceFeeGstCode` to src/StageFright.UI/Pages/Setup/SetupFormModel.cs (depends on T004)
-- [ ] T013 [US1] Add `Abn`, `IsGstRegistered`, `AnnualFeeGstCode`, `AttendanceFeeGstCode` to src/StageFright.Core/Modules/Settings/SetupRequest.cs
-- [ ] T014 [US1] Update `SetupService.Validate`/`InitializeAsync` in src/StageFright.Core/Modules/Settings/SetupService.cs: required + checksum ABN check at the service boundary; force GST codes to `null` when `IsGstRegistered` is false; persist `Abn`/`IsGstRegistered`/GST codes onto the new `Settings` row (depends on T003, T013)
-- [ ] T015 [US1] Restructure src/StageFright.UI/Pages/Setup/SetupWizard.razor into 4 steps sharing one `EditContext` (Organisation incl. `<AbnInput>`, Fees & Renewal, GST Registration, Review & Finish), with a "Step X of 4" indicator/progress bar (depends on T006, T012)
-- [ ] T016 [US1] Update src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs: `_currentStep`/`_editContext` state, `HandleNext`/`HandleBack` (Next validates via `_editContext.Validate()`), extend the `SetupRequest` construction in `HandleValidSubmitAsync` with the new fields, wrap only the `DebugSeeder.SeedAsync` call in `_seedingInProgress` (depends on T014, T015)
-- [ ] T017 [US1] Add `.setup-seeding-overlay` full-screen modal styles (fixed position, dimmed backdrop, centered card) to src/StageFright.App/wwwroot/app.css, distinct from `ReportViewer`'s unstyled `.modal-backdrop-light`
+- [X] T012 [US1] Add `Abn` (`[Required]` + `[Abn]`), `IsGstRegistered`, `AnnualFeeGstCode`, `AttendanceFeeGstCode` to src/StageFright.UI/Pages/Setup/SetupFormModel.cs (depends on T004)
+- [X] T013 [US1] Add `Abn`, `IsGstRegistered`, `AnnualFeeGstCode`, `AttendanceFeeGstCode` to src/StageFright.Core/Modules/Settings/SetupRequest.cs
+- [X] T014 [US1] Update `SetupService.Validate`/`InitializeAsync` in src/StageFright.Core/Modules/Settings/SetupService.cs: required + checksum ABN check at the service boundary; force GST codes to `null` when `IsGstRegistered` is false; persist `Abn`/`IsGstRegistered`/GST codes onto the new `Settings` row (depends on T003, T013)
+- [X] T015 [US1] Restructure src/StageFright.UI/Pages/Setup/SetupWizard.razor into 4 steps sharing one `EditContext` (Organisation incl. `<AbnInput>`, Fees & Renewal, GST Registration, Review & Finish), with a "Step X of 4" indicator/progress bar (depends on T006, T012)
+- [X] T016 [US1] Update src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs: `_currentStep`/`_editContext` state, `HandleNext`/`HandleBack` (Next validates via `_editContext.Validate()`), extend the `SetupRequest` construction in `HandleValidSubmitAsync` with the new fields, wrap only the `DebugSeeder.SeedAsync` call in `_seedingInProgress` (depends on T014, T015). Also added `HandleGstToggleChanged` (`@bind-Value:after`) to clear both GST codes client-side the moment registration is toggled off.
+- [X] T017 [US1] Add `.setup-seeding-overlay` full-screen modal styles (fixed position, dimmed backdrop, centered card) to src/StageFright.App/wwwroot/app.css, distinct from `ReportViewer`'s unstyled `.modal-backdrop-light`
 
 ### Tests for User Story 1
 
-- [ ] T018 [P] [US1] `SetupService`/`SetupRequest` unit tests: missing/invalid ABN blocks `InitializeAsync` with `ValidationException`; GST codes forced null when `IsGstRegistered` is false regardless of what was passed in — in tests/StageFright.Core.Tests/
-- [ ] T019 [US1] Rewrite `SetupWizard` bUnit tests: Next/Back navigation across all 4 steps; Next blocked on missing/invalid ABN or empty org name; GST dropdowns appear only when toggled on (and codes clear when toggled off); Finish composes the full `SetupRequest` including ABN and GST fields; seeding overlay appears only once seeding starts and only when "Load sample data" is checked — in tests/StageFright.UI.Tests/
-- [ ] T020 [US1] Verify checkpoint: `dotnet build` + full `dotnet test` green; manual E2E wizard run for both a GST-registered and a non-registered org (`dotnet run --project src/StageFright.App/`)
+- [X] T018 [P] [US1] `SetupService`/`SetupRequest` unit tests: missing/invalid ABN blocks `InitializeAsync` with `ValidationException`; GST codes forced null when `IsGstRegistered` is false regardless of what was passed in — in tests/StageFright.Core.Tests/
+- [X] T019 [US1] Rewrite `SetupWizard` bUnit tests: Next/Back navigation across all 4 steps; Next blocked on missing/invalid ABN or empty org name; GST dropdowns appear only when toggled on (and codes clear when toggled off); Finish composes the full `SetupRequest` including ABN and GST fields; seeding overlay appears only once seeding starts and only when "Load sample data" is checked — in tests/StageFright.UI.Tests/
+- [X] T020 [US1] Verify checkpoint: `dotnet build` + full `dotnet test` green (1037 tests, up from the 1026 Phase-1 baseline). Manual E2E run deferred — flagging as a follow-up before this ships (see note below).
 
 **Checkpoint**: User Story 1 fully functional and testable independently.
 

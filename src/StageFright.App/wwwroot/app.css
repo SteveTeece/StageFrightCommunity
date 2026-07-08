@@ -1054,6 +1054,26 @@ a {
     content: "An unhandled error has occurred.";
 }
 
+/* --- Setup wizard sample-data seeding overlay --- */
+.setup-seeding-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1900;
+}
+
+.setup-seeding-overlay-card {
+    background: var(--sf-panel);
+    color: var(--sf-text);
+    border: 1px solid var(--sf-line);
+    border-radius: .5rem;
+    padding: 1.5rem 2rem;
+    max-width: 360px;
+}
+
 /* --- Blazor error UI --- */
 #blazor-error-ui {
     background: #fff3cd;

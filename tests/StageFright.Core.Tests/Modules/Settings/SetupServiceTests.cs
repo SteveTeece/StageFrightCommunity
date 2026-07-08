@@ -1,6 +1,7 @@
 using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.Settings;
 using StageFright.Core.Tests.Fixtures;
@@ -56,6 +57,68 @@ public class SetupServiceTests : TestBase
 
         var request = ValidRequest() with { OrganizationName = "" };
         await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
+    }
+
+    [Fact]
+    public async Task InitializeAsync_Throws_WhenAbnMissing()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var request = ValidRequest() with { Abn = "" };
+        await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
+    }
+
+    [Fact]
+    public async Task InitializeAsync_Throws_WhenAbnChecksumInvalid()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var request = ValidRequest() with { Abn = "12345678901" };
+        await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
+    }
+
+    [Fact]
+    public async Task InitializeAsync_ForcesGstCodesNull_WhenNotRegistered()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        var request = ValidRequest() with
+        {
+            IsGstRegistered = false,
+            AnnualFeeGstCode = GstCode.Gst,
+            AttendanceFeeGstCode = GstCode.Gst
+        };
+        await svc.InitializeAsync(request, Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s.IsGstRegistered == false && s.AnnualFeeGstCode == null && s.AttendanceFeeGstCode == null),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitializeAsync_PersistsGstCodes_WhenRegistered()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        var request = ValidRequest() with
+        {
+            IsGstRegistered = true,
+            AnnualFeeGstCode = GstCode.Gst,
+            AttendanceFeeGstCode = GstCode.GstFree
+        };
+        await svc.InitializeAsync(request, Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s.IsGstRegistered && s.AnnualFeeGstCode == GstCode.Gst && s.AttendanceFeeGstCode == GstCode.GstFree),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -139,7 +202,11 @@ public class SetupServiceTests : TestBase
 
     private static SetupRequest ValidRequest() => new(
         OrganizationName: "Test Org",
+        Abn: "51824753556",
         AnnualFee: 75m,
         AttendanceFee: 5m,
-        MembershipRenewalMonth: 1);
+        MembershipRenewalMonth: 1,
+        IsGstRegistered: false,
+        AnnualFeeGstCode: null,
+        AttendanceFeeGstCode: null);
 }
