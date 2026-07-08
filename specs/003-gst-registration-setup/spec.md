@@ -1,6 +1,6 @@
 # Feature Specification: GST Registration in Setup Wizard & GST/BAS Settings Tab
 
-**Feature Branch**: `ExpandFnance`
+**Feature Branch**: `003-gst-registration-setup`
 **Created**: 2026-07-08
 **Status**: Approved (design confirmed via brainstorming session)
 **Input**: Add GST registration setup to the first-run Setup Wizard, and give organisations a way to change GST registration status later without the Settings page overflowing.
