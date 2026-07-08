@@ -722,6 +722,15 @@ a {
     --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2338d2ff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
 }
 
+/* The native option popup isn't part of the page's backdrop-filter/glass
+   surface, so it needs its own opaque background — otherwise it falls back
+   to the browser's default white list, making --sf-text unreadable in dark
+   mode (light text on a white popup). */
+.form-select option {
+    background-color: var(--sf-panel);
+    color: var(--sf-text);
+}
+
 .form-check-input:checked {
     background-color: var(--sf-accent);
     border-color: var(--sf-accent);
