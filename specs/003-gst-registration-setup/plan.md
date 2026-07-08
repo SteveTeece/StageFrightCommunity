@@ -23,6 +23,17 @@
 - `SetupFormModel.Abn` gets `[Required]` + `[Abn]` → wizard cannot finish without a valid ABN.
 - `Settings.Abn` gets only `[Abn]` → empty passes (existing installs aren't blocked), malformed non-empty values are rejected. This is also the first real DataAnnotations validator `Settings` will carry — `GeneralSettingsTab.razor` already wraps its form in `<DataAnnotationsValidator />` today with nothing for it to check.
 
+Both `AbnValidator` and the bound model field always operate on the plain 11-digit string — display formatting (below) is a presentation-only concern layered on top, never persisted.
+
+### 1a. ABN display mask is a reusable `InputText` subclass, not custom JS
+
+A new shared component, `src/StageFright.UI/Shared/AbnInput.razor` + `.razor.cs`, subclasses `Microsoft.AspNetCore.Components.Forms.InputText` (Blazor's own built-in component — permitted under the "no custom JavaScript" rule since it's framework code, not JS interop) and overrides its two extension points:
+
+- `FormatValueAsString(string? value)` — inserts spaces into the raw digit string to render the standard **"XX XXX XXX XXX"** (2-3-3-3) grouping for display.
+- `TryParseValueFromString(string? value, out string? result, out string? validationErrorMessage)` — strips every non-digit character from whatever the user typed or pasted, truncates to 11 digits, and sets `result` to that plain digit string (never spaces). Always succeeds (returns `true`) so `AbnAttribute` — not this component — owns validity.
+
+Because it subclasses `InputText`, it inherits full `EditContext`/`FieldIdentifier`/`ValidationMessage` wiring for free — call sites use it exactly like `InputText` (`<AbnInput @bind-Value="_model.Abn" class="form-control form-control-sm" />`), and both the wizard and `GeneralSettingsTab` reuse the same component instead of duplicating masking logic. No JavaScript, no JS interop.
+
 ### 2. `Settings.Abn` is a standing identity fact, not a GST preference
 
 Added as `string? Abn` on `src/StageFright.Core/Entities/Settings.cs`, alongside a new nullable-column migration. It is **not** touched by GST-toggle logic (unlike `AnnualFeeGstCode`/`AttendanceFeeGstCode`, which get force-nulled when unregistered) — placed physically near `OrganizationName` in the entity, not near the GST properties.
@@ -67,6 +78,7 @@ Phase 2 and Phase 3 both depend on Phase 1 (the `Abn` field/validator) but not o
 **New files:**
 - `src/StageFright.Core/Modules/Settings/AbnValidator.cs` — static `IsValid(string? abn)`, weighted-modulus-89 checksum, exactly-11-digits requirement.
 - `src/StageFright.Core/Modules/Settings/AbnAttribute.cs` — `ValidationAttribute` subclass wrapping `AbnValidator`; null/empty passes.
+- `src/StageFright.UI/Shared/AbnInput.razor` + `.razor.cs` — `InputText` subclass implementing the "XX XXX XXX XXX" display mask (Core design decision 1a). Built here, in Phase 1, since both Phase 2 (wizard) and Phase 3 (Settings) consume it.
 
 **Changed files:**
 - `src/StageFright.Core/Entities/Settings.cs` — add `public string? Abn { get; set; }` with `[Abn]`, placed near `OrganizationName`.
@@ -82,6 +94,7 @@ Phase 2 and Phase 3 both depend on Phase 1 (the `Abn` field/validator) but not o
 **Tests:**
 - `AbnValidator` unit tests: ATO's published test ABN (51 824 753 556) valid; checksum-broken variant invalid; wrong length invalid; non-digit characters invalid; null/empty invalid.
 - `AbnAttribute` unit tests: null/empty passes; valid ABN passes; malformed non-empty fails.
+- `AbnInput` bUnit tests: typing digits renders "XX XXX XXX XXX" grouping; `@bind-Value` yields a plain digit string with no spaces; pasting a pre-formatted value (with spaces/hyphens) parses to the correct 11-digit value; typing an 12th+ digit is ignored; `ValidationMessage` still fires correctly through the inherited `InputText` wiring.
 - `SetupService`/`SetupRequest` unit tests: missing/invalid ABN blocks `InitializeAsync` with `ValidationException`; GST codes forced null when `IsGstRegistered` is false regardless of what was passed in.
 - `SettingsService.SaveAsync` unit tests: empty `Abn` saves successfully; malformed non-empty `Abn` throws `ValidationException`; valid `Abn` saves successfully.
 - `StageFright.Data.Tests`: migration test — existing seeded/migrated rows survive with `Abn = null`, no exceptions.
@@ -90,7 +103,7 @@ Phase 2 and Phase 3 both depend on Phase 1 (the `Abn` field/validator) but not o
 
 **Changed files:**
 - `src/StageFright.UI/Pages/Setup/SetupFormModel.cs` — add `Abn` (`[Required]` + `[Abn]`), `IsGstRegistered` (bool, default false), `AnnualFeeGstCode`/`AttendanceFeeGstCode` (`GstCode?`, no `[Required]`).
-- `src/StageFright.UI/Pages/Setup/SetupWizard.razor` — restructure into 4 conditionally-rendered step blocks inside one `<EditForm EditContext="_editContext">`, step indicator, Back/Next/Finish buttons; replace the inline spinner block (lines 72-78) with a full-screen overlay (`_seedingInProgress` flag) using the new `.setup-seeding-overlay` class, message "Setting up your sample data — this may take a few minutes. Please don't close the app," plus the existing live progress text.
+- `src/StageFright.UI/Pages/Setup/SetupWizard.razor` — restructure into 4 conditionally-rendered step blocks inside one `<EditForm EditContext="_editContext">`, step indicator, Back/Next/Finish buttons; the Organisation step's ABN field uses `<AbnInput @bind-Value="_model.Abn" class="form-control form-control-sm" />` (Core design decision 1a) instead of a plain `InputText`; replace the inline spinner block (lines 72-78) with a full-screen overlay (`_seedingInProgress` flag) using the new `.setup-seeding-overlay` class, message "Setting up your sample data — this may take a few minutes. Please don't close the app," plus the existing live progress text.
 - `src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs`:
   - Add `_currentStep` (int, default 1), `_editContext` (constructed in `OnInitialized` over `_model`), `_seedingInProgress` (bool).
   - `HandleNext()` / `HandleBack()` — `_currentStep` +/- 1 clamped to [1,4]; `HandleNext` calls `_editContext.Validate()` and only advances if it returns `true`.
@@ -107,7 +120,7 @@ Phase 2 and Phase 3 both depend on Phase 1 (the `Abn` field/validator) but not o
 - `src/StageFright.UI/Pages/Settings/GstSettingsTab.razor.cs` — `OnInitializedAsync` loads `_settings` via `SettingsService.GetAsync()`; `_pendingGstToggle`/`HandleGstToggleRequested`/`ConfirmGstToggle`/`CancelGstToggle` moved verbatim from `GeneralSettingsTab.razor.cs:26,113-132`; `HandleSaveAsync` implements the refetch-and-merge-non-owned-fields pattern from Core design decision 4.
 
 **Changed files:**
-- `src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor` — remove the GST block (lines 132-185); add an ABN `InputText` field near the Organisation Name field (line 36-40) with a non-blocking small-text notice ("ABN not on file") shown when `s.Abn` is empty — notice only, no blocking of the Save button.
+- `src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor` — remove the GST block (lines 132-185); add an ABN field near the Organisation Name field (line 36-40) using `<AbnInput @bind-Value="s.Abn" class="form-control form-control-sm" />` (same shared component as the wizard) with a non-blocking small-text notice ("ABN not on file") shown when `s.Abn` is empty — notice only, no blocking of the Save button.
 - `src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor.cs` — remove `_pendingGstToggle`/`HandleGstToggleRequested`/`ConfirmGstToggle`/`CancelGstToggle` (lines 26, 113-132); `HandleSaveAsync` (line 75) implements the refetch-and-merge pattern from Core design decision 4 before calling `SettingsService.SaveAsync`.
 - `src/StageFright.UI/Pages/Settings/SettingsPage.razor` — insert `<Tab Title="GST / BAS" OnClick="OnGstClicked">` (lazily rendering `<GstSettingsTab />` behind a `GstShown` flag) immediately after the General tab.
 - `src/StageFright.UI/Pages/Settings/SettingsPage.razor.cs`:
@@ -127,7 +140,7 @@ Phase 2 and Phase 3 both depend on Phase 1 (the `Abn` field/validator) but not o
 ## Explicitly NOT changing
 
 - `GstCalculator`, `BasSummaryReportProvider`, or any GL posting logic — this is data-entry only (wizard + Settings UI) plus the new `Abn` field.
-- ABN display formatting/masking (e.g. "XX XXX XXX XXX" grouping) — stored and entered as a plain 11-digit string.
+- The *stored* representation of `Abn` — always a plain 11-digit string with no spaces; only the on-screen display (via `AbnInput`) is masked.
 - No retroactive enforcement forcing existing installs to supply an ABN immediately (Phase 1's `SettingsService.SaveAsync` check only rejects *malformed*, not *missing*, values).
 - `ReportViewer.razor`'s existing (unstyled) `.modal-backdrop-light` usage — left untouched; the new overlay is a separate class.
 - Confirm-dialog behaviour/wording for the GST toggle — moved to `GstSettingsTab` unchanged.
@@ -138,6 +151,7 @@ Phase 2 and Phase 3 both depend on Phase 1 (the `Abn` field/validator) but not o
 - `EditContext.Validate()` triggered from a plain `type="button"` Next handler must not accidentally trigger form submission (only the Finish button is `type="submit"`) — verify Enter-key behaviour doesn't advance/submit unexpectedly mid-wizard.
 - The cross-tab merge logic (Core design decision 4) must copy fields *by name*, not do a wholesale entity replace — a careless implementation could silently reintroduce the lost-update bug it's meant to fix.
 - Migration must be verified as a simple `AddColumn` (nullable, no default-value backfill needed) — confirm EF doesn't emit an unexpected table rebuild for SQLite.
+- Format-as-you-type inputs are prone to cursor-jump bugs (the caret resets to the end after each re-render once spaces are inserted mid-string). `AbnInput` must be manually verified for usable mid-string editing (e.g. correcting a digit in the middle of an already-formatted ABN), not just append-only typing — a bUnit test can assert the formatted output but can't fully exercise real caret behaviour, so this needs a manual check too.
 
 ## Verification (per phase)
 

@@ -39,7 +39,7 @@ As a treasurer whose organisation newly registers for GST (or deregisters), I ch
 ## Requirements
 
 ### Functional
-- **FR-111**: `Settings` gains `Abn` (`string?`, digits only). Not soft-deleted/nulled by GST toggling — it is a standing organisation-identity fact, not a GST-transaction preference. New EF Core migration adds the column (nullable, since existing installs have no value to backfill).
+- **FR-111**: `Settings` gains `Abn` (`string?`, stored as a plain 11-digit string with no spaces — display formatting is handled at the UI layer per FR-121, not persisted). Not soft-deleted/nulled by GST toggling — it is a standing organisation-identity fact, not a GST-transaction preference. New EF Core migration adds the column (nullable, since existing installs have no value to backfill).
 - **FR-112**: New `AbnValidator` (`StageFright.Core/Modules/Settings/AbnValidator.cs`) implements the official ATO weighted-modulus-89 ABN checksum algorithm over an 11-digit input.
 - **FR-113**: New `AbnAttribute : ValidationAttribute` (`StageFright.Core/Modules/Settings/AbnAttribute.cs`) wraps `AbnValidator`. Empty/null values are treated as valid by the attribute itself (so it can be reused on both a strictly-required context and an optional-but-format-checked context); a non-empty value that isn't 11 digits or fails the checksum is invalid.
   - `SetupFormModel.Abn` carries both `[Required]` and `[Abn]` — the wizard cannot finish without a valid ABN.
@@ -57,6 +57,7 @@ As a treasurer whose organisation newly registers for GST (or deregisters), I ch
 - **FR-118**: `SettingsPage.razor`/`.razor.cs` adds a "GST / BAS" tab immediately after General. Tab order/index: General(0) → GST/BAS(1) → Event Types(2) → Backup & Restore(3) → plugin tabs. `DefaultTabIndex` switch, lazy-render flags, and `?tab=` query keys (`general`, `gst`, `event-types`, `backup`) updated accordingly; the reserved-key list in `specs/001-initial-mvp/spec.md` NFR-010 is updated to include `gst`.
 - **FR-119**: Cross-tab save safety: both `GeneralSettingsTab.HandleSaveAsync` and `GstSettingsTab.HandleSaveAsync` re-fetch the current `Settings` row from the DB immediately before saving and copy across only the fields owned by *the other* tab (GST fields for General; everything else, including Abn, for GST/BAS) before persisting — preventing a stale in-memory copy in one tab from clobbering a concurrent save made in the other during the same page visit.
 - **FR-120**: The wizard's sample-data seeding progress moves from an inline spinner/text at the bottom of the form to a full-screen overlay (fixed position, dimmed backdrop, centered card) shown only once seeding actually starts (not during the preceding settings-creation step). Message: "Setting up your sample data — this may take a few minutes. Please don't close the app," plus the existing live progress text. New CSS class added to `app.css` (distinct from `ReportViewer`'s unstyled `modal-backdrop-light`, so that component's appearance is untouched).
+- **FR-121**: Every ABN input (wizard Organisation step, Settings General tab) applies the standard Australian display mask **"XX XXX XXX XXX"** (2-3-3-3 digit grouping) live as the user types. The mask is presentation-only: the bound/persisted value (`SetupFormModel.Abn`, `Settings.Abn`) always remains the plain 11-digit string with no spaces, and `AbnValidator`/`AbnAttribute` validate that raw digit string unchanged. Pasting a pre-formatted ABN (with spaces or other separators) is accepted and re-formatted; non-digit characters are stripped as they're typed and input beyond 11 digits is ignored.
 
 ### Non-functional / constraints (CLAUDE.md non-negotiables)
 - One class per file; `.razor` + `.razor.cs` pairs, no `@code` blocks; custom exceptions (`ValidationException`) at service boundaries; exhaustive `Should_X_When_Y` test coverage for every new/changed code path; `dotnet build` and full `dotnet test` green before considering the task complete.
@@ -70,6 +71,7 @@ As a treasurer whose organisation newly registers for GST (or deregisters), I ch
 - GST-toggle/confirm-dialog bUnit tests move from `GeneralSettingsTab`'s test file to a new `GstSettingsTab` test file; `GeneralSettingsTab` tests updated to confirm GST UI is absent and ABN UI is present (required-but-not-blocking).
 - New cross-tab concurrency test: save GST tab, then save General tab from a stale in-memory copy, assert the GST change survives (and vice versa for an ABN change).
 - `StageFright.Data.Tests`: migration adds the `Abn` column without breaking existing seeded/migrated rows (nullable, no backfill required).
+- New `AbnInput` component bUnit tests: typed digits render grouped as "XX XXX XXX XXX"; the bound value exposed to the parent form has no spaces; pasting a formatted ABN parses to the correct 11-digit value; input beyond 11 digits is ignored.
 
 ## Success Criteria
 
@@ -78,8 +80,8 @@ As a treasurer whose organisation newly registers for GST (or deregisters), I ch
 - **SC-103**: Switching between General and GST / BAS tabs and saving from either one, in either order, never loses the other tab's already-saved change.
 - **SC-104**: Existing (pre-upgrade) organisations with no ABN on file can still save any Settings change; only a non-blocking notice appears until they supply one.
 - **SC-105**: The sample-data seeding modal is visibly a blocking, full-screen "please wait" experience distinct from the brief settings-creation step that precedes it.
+- **SC-106**: Every ABN field (wizard and Settings) displays the standard "XX XXX XXX XXX" digit grouping live as the user types, while the underlying stored/validated value is always the plain 11-digit string.
 
 ## Out of Scope
 - No changes to `GstCalculator`, `BasSummaryReportProvider`, or GL posting logic — this feature is purely data-entry (wizard + Settings UI) plus the new `Abn` field.
-- No ABN formatting/display masking (e.g. "XX XXX XXX XXX" grouping) — stored and entered as a plain digit string.
 - No retroactive enforcement that forces existing installs to supply an ABN immediately (see FR-116).
