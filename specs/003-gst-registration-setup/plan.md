@@ -27,7 +27,7 @@ Both `AbnValidator` and the bound model field always operate on the plain 11-dig
 
 ### 1a. ABN display mask is a reusable `InputText` subclass, not custom JS
 
-A new shared component, `src/StageFright.UI/Shared/AbnInput.razor` + `.razor.cs`, subclasses `Microsoft.AspNetCore.Components.Forms.InputText` (Blazor's own built-in component — permitted under the "no custom JavaScript" rule since it's framework code, not JS interop) and overrides its two extension points:
+A new shared component, `src/StageFright.UI/Shared/AbnInput.cs` (a single C# file — it has no markup of its own, so it does not get a paired `.razor`; this is the standard Blazor idiom for subclassing a built-in input component), subclasses `Microsoft.AspNetCore.Components.Forms.InputText` (Blazor's own built-in component — permitted under the "no custom JavaScript" rule since it's framework code, not JS interop) and overrides its two extension points:
 
 - `FormatValueAsString(string? value)` — inserts spaces into the raw digit string to render the standard **"XX XXX XXX XXX"** (2-3-3-3) grouping for display.
 - `TryParseValueFromString(string? value, out string? result, out string? validationErrorMessage)` — strips every non-digit character from whatever the user typed or pasted, truncates to 11 digits, and sets `result` to that plain digit string (never spaces). Always succeeds (returns `true`) so `AbnAttribute` — not this component — owns validity.
@@ -78,7 +78,7 @@ Phase 2 and Phase 3 both depend on Phase 1 (the `Abn` field/validator) but not o
 **New files:**
 - `src/StageFright.Core/Modules/Settings/AbnValidator.cs` — static `IsValid(string? abn)`, weighted-modulus-89 checksum, exactly-11-digits requirement.
 - `src/StageFright.Core/Modules/Settings/AbnAttribute.cs` — `ValidationAttribute` subclass wrapping `AbnValidator`; null/empty passes.
-- `src/StageFright.UI/Shared/AbnInput.razor` + `.razor.cs` — `InputText` subclass implementing the "XX XXX XXX XXX" display mask (Core design decision 1a). Built here, in Phase 1, since both Phase 2 (wizard) and Phase 3 (Settings) consume it.
+- `src/StageFright.UI/Shared/AbnInput.cs` — `InputText` subclass implementing the "XX XXX XXX XXX" display mask (Core design decision 1a). Built here, in Phase 1, since both Phase 2 (wizard) and Phase 3 (Settings) consume it.
 
 **Changed files:**
 - `src/StageFright.Core/Entities/Settings.cs` — add `public string? Abn { get; set; }` with `[Abn]`, placed near `OrganizationName`.
@@ -94,7 +94,7 @@ Phase 2 and Phase 3 both depend on Phase 1 (the `Abn` field/validator) but not o
 **Tests:**
 - `AbnValidator` unit tests: ATO's published test ABN (51 824 753 556) valid; checksum-broken variant invalid; wrong length invalid; non-digit characters invalid; null/empty invalid.
 - `AbnAttribute` unit tests: null/empty passes; valid ABN passes; malformed non-empty fails.
-- `AbnInput` bUnit tests: typing digits renders "XX XXX XXX XXX" grouping; `@bind-Value` yields a plain digit string with no spaces; pasting a pre-formatted value (with spaces/hyphens) parses to the correct 11-digit value; typing an 12th+ digit is ignored; `ValidationMessage` still fires correctly through the inherited `InputText` wiring.
+- `AbnInput` bUnit tests: typing digits renders "XX XXX XXX XXX" grouping; `@bind-Value` yields a plain digit string with no spaces; pasting a pre-formatted value (with spaces/hyphens) parses to the correct 11-digit value; typing an 12th+ digit is ignored; `EditContext` wiring (field marked modified) still fires through the inherited `InputText` plumbing.
 - `SetupService`/`SetupRequest` unit tests: missing/invalid ABN blocks `InitializeAsync` with `ValidationException`; GST codes forced null when `IsGstRegistered` is false regardless of what was passed in.
 - `SettingsService.SaveAsync` unit tests: empty `Abn` saves successfully; malformed non-empty `Abn` throws `ValidationException`; valid `Abn` saves successfully.
 - `StageFright.Data.Tests`: migration test — existing seeded/migrated rows survive with `Abn = null`, no exceptions.

@@ -14,7 +14,7 @@
 
 **Purpose**: Baseline verification — no scaffolding needed (existing solution).
 
-- [ ] T001 Verify baseline: `dotnet build` and full `dotnet test` green on branch `003-gst-registration-setup` before any change
+- [X] T001 Verify baseline: `dotnet build` and full `dotnet test` green on branch `003-gst-registration-setup` before any change
 
 ---
 
@@ -22,19 +22,19 @@
 
 **Purpose**: The `Abn` field, its validation, and the shared masked-input component — required by both the wizard (US1) and the Settings tabs (US2). No user-story work can begin until this phase is complete.
 
-- [ ] T002 Add nullable `Abn` (`string?`) property to `Settings` entity in src/StageFright.Core/Entities/Settings.cs, placed near `OrganizationName`; not touched by GST-toggle logic
-- [ ] T003 [P] Implement `AbnValidator` (ATO weighted-modulus-89 checksum; input must be exactly 11 digit characters) in src/StageFright.Core/Modules/Settings/AbnValidator.cs
-- [ ] T004 Implement `AbnAttribute : ValidationAttribute` wrapping `AbnValidator` (null/empty passes; non-empty malformed fails) in src/StageFright.Core/Modules/Settings/AbnAttribute.cs (depends on T003); apply `[Abn]` to `Settings.Abn` (T002)
-- [ ] T005 Add migration `AddAbnToSettings` (`dotnet ef migrations add AddAbnToSettings --project src/StageFright.Data/ --startup-project src/StageFright.App/`): nullable `Abn` column, no backfill (depends on T002)
-- [ ] T006 [P] Create shared `AbnInput` component — `InputText` subclass overriding `FormatValueAsString`/`TryParseValueFromString` to display the "XX XXX XXX XXX" grouping while binding/persisting the plain 11-digit value, no custom JS — in src/StageFright.UI/Shared/AbnInput.razor(+.razor.cs)
+- [X] T002 Add nullable `Abn` (`string?`) property to `Settings` entity in src/StageFright.Core/Entities/Settings.cs, placed near `OrganizationName`; not touched by GST-toggle logic
+- [X] T003 [P] Implement `AbnValidator` (ATO weighted-modulus-89 checksum; input must be exactly 11 digit characters) in src/StageFright.Core/Modules/Settings/AbnValidator.cs
+- [X] T004 Implement `AbnAttribute : ValidationAttribute` wrapping `AbnValidator` (null/empty passes; non-empty malformed fails) in src/StageFright.Core/Modules/Settings/AbnAttribute.cs (depends on T003); apply `[Abn]` to `Settings.Abn` (T002)
+- [X] T005 Add migration `AddAbnToSettings` (`dotnet ef migrations add AddAbnToSettings --project src/StageFright.Data/ --startup-project src/StageFright.App/`): nullable `Abn` column, no backfill (depends on T002)
+- [X] T006 Create shared `AbnInput` component — `InputText` subclass overriding `FormatValueAsString`/`TryParseValueFromString` to display the "XX XXX XXX XXX" grouping while binding/persisting the plain 11-digit value, no custom JS — in src/StageFright.UI/Shared/AbnInput.cs (single-file component; no markup, so no paired `.razor`)
 
 ### Tests
 
-- [ ] T007 [P] `AbnValidator` unit tests: ATO's published test ABN (51 824 753 556) valid; checksum-broken variant invalid; wrong length invalid; non-digit characters invalid; null/empty invalid — in tests/StageFright.Core.Tests/
-- [ ] T008 [P] `AbnAttribute` unit tests: null/empty passes; valid ABN passes; malformed non-empty fails — in tests/StageFright.Core.Tests/
-- [ ] T009 [P] `AbnInput` bUnit tests: typed digits render grouped as "XX XXX XXX XXX"; bound value has no spaces; pasting a pre-formatted value parses to the correct 11-digit value; input beyond 11 digits is ignored; `ValidationMessage` still fires through inherited `InputText` wiring — in tests/StageFright.UI.Tests/
-- [ ] T010 [P] Migration integration test: existing seeded/migrated `Settings` rows survive the `AddAbnToSettings` migration with `Abn = null` — in tests/StageFright.Data.Tests/
-- [ ] T011 Verify checkpoint: `dotnet build` + full `dotnet test` green
+- [X] T007 [P] `AbnValidator` unit tests: ATO's published test ABN (51 824 753 556) valid; checksum-broken variant invalid; wrong length invalid; non-digit characters invalid; null/empty invalid — in tests/StageFright.Core.Tests/
+- [X] T008 [P] `AbnAttribute` unit tests: null/empty passes; valid ABN passes; malformed non-empty fails — in tests/StageFright.Core.Tests/
+- [X] T009 [P] `AbnInput` bUnit tests: typed digits render grouped as "XX XXX XXX XXX"; bound value has no spaces; pasting a pre-formatted value parses to the correct 11-digit value; input beyond 11 digits is ignored; EditContext wiring (IsModified) still fires through inherited `InputText` — in tests/StageFright.UI.Tests/
+- [X] T010 [P] Migration integration test: existing seeded/migrated `Settings` rows survive the `AddAbnToSettings` migration with `Abn = null` — in tests/StageFright.Data.Tests/
+- [X] T011 Verify checkpoint: `dotnet build` + full `dotnet test` green (1026 tests, up from 1008 baseline)
 
 **Checkpoint**: Foundation ready — User Story 1 and User Story 2 can now proceed independently (and in parallel).
 

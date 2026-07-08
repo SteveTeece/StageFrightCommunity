@@ -1,4 +1,5 @@
 using StageFright.Core.Enums;
+using StageFright.Core.Modules.Settings;
 
 namespace StageFright.Core.Entities;
 
@@ -13,6 +14,14 @@ public class Settings
 
     /// <summary>Display name of the performing arts group. Required (setup wizard).</summary>
     public string OrganizationName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Australian Business Number, stored as a plain 11-digit string (no spaces). A standing
+    /// organisation-identity fact — unlike the GST properties below, never nulled by GST toggling.
+    /// Required for new installs (setup wizard); existing installs may have none on file.
+    /// </summary>
+    [Abn]
+    public string? Abn { get; set; }
 
     /// <summary>Annual membership fee amount. Required. Precision: decimal(18,2). Must be ≥ 0.</summary>
     public decimal AnnualFee { get; set; }
