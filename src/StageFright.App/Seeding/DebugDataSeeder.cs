@@ -16,12 +16,21 @@ namespace StageFright.App.Seeding;
 /// during NSW school terms with probabilistic attendance, annual subscription fees, a July
 /// Eisteddfod, a September Maclean/Yamba concert weekend, an annual raffle, committee
 /// membership, an AGM, and a spread of dated operating expenses (insurance, musical
-/// director, hall hire, costumes, licensing, printing, bank fees). Only runs when the user
-/// opts in via the setup wizard checkbox.
+/// director, hall hire, costumes, licensing, printing, bank fees). Financial activity is
+/// generated as if "today" were 1 July 2026 — nothing dated after that is posted, so
+/// rehearsals/events in the second half of 2026 are scheduled but not yet paid/settled.
+/// Only runs when the user opts in via the setup wizard checkbox.
 /// </summary>
 public class DebugDataSeeder : IDebugDataSeeder
 {
     private const decimal PettyCashFloat = 50m;
+
+    /// <summary>
+    /// Seed data is generated as if "today" were 1 July 2026. Financial transactions
+    /// (fees, payments, income, expenses) dated after this are not posted — they
+    /// represent activity that has not happened yet from the seed data's point of view.
+    /// </summary>
+    private static readonly DateTime SeedCurrentDate = Utc(2026, 7, 1);
 
     private readonly IMemberService _memberService;
     private readonly IMemberRepository _memberRepository;
@@ -350,6 +359,9 @@ public class DebugDataSeeder : IDebugDataSeeder
                 ? rehearsalDates[random.Next(12, 26)]
                 : rehearsalDates[random.Next(0, 2)];
 
+            if (paymentDate > SeedCurrentDate)
+                continue; // the rehearsal night this payment would ride in on hasn't happened yet — stays outstanding
+
             await _paymentService.RecordAsync(new RecordPaymentRequest
             {
                 MemberId = member.Id,
@@ -458,6 +470,9 @@ public class DebugDataSeeder : IDebugDataSeeder
                 Time = new TimeSpan(19, 30, 0) // 7:30 PM
             }, ct);
 
+            if (date > SeedCurrentDate)
+                continue; // future rehearsal — attendance not yet taken, no fees collected
+
             var items = activeMembers
                 .Select(m => new AttendanceBatchItem
                 {
@@ -509,9 +524,13 @@ public class DebugDataSeeder : IDebugDataSeeder
         var items = activeMembers.Select(m => new ParticipationBatchItem { MemberId = m.Id, Participated = true }).ToList();
         await _eventService.RecordParticipationAsync(evt.Id, items, ct);
 
+        var entryFeeDate = eventDate.AddDays(-14);
+        if (entryFeeDate > SeedCurrentDate)
+            return; // entry fee hasn't been paid yet
+
         await _expensePaymentService.RecordExpenseAsync(new RecordExpenseRequest
         {
-            Date = eventDate.AddDays(-14),
+            Date = entryFeeDate,
             Amount = 150m,
             BankAccountId = bankAccount.Id,
             ExpenseAccountId = eisteddfodEntryExpense.Id,
@@ -558,6 +577,9 @@ public class DebugDataSeeder : IDebugDataSeeder
     private async Task RecordConcertTicketIncomeAsync(
         DateTime date, decimal totalSales, string location, Account concertIncomeAccount, Account bankAccount, CancellationToken ct)
     {
+        if (date > SeedCurrentDate)
+            return; // concert hasn't happened yet — no ticket sales to record
+
         var cashAmount = Math.Round(totalSales * 0.7m, 2);
         var eftposAmount = totalSales - cashAmount;
 
@@ -586,6 +608,9 @@ public class DebugDataSeeder : IDebugDataSeeder
     private async Task SeedRaffleAsync(int year, Account raffleIncomeAccount, CancellationToken ct)
     {
         var raffleDate = GetRaffleDate(year);
+        if (raffleDate > SeedCurrentDate)
+            return; // raffle hasn't been drawn yet
+
         var amount = year == 2025 ? 1620m : 1580m; // one raffle per year, always over $1,500
 
         await _incomeEntryService.RecordIncomeAsync(new RecordIncomeRequest
@@ -631,7 +656,11 @@ public class DebugDataSeeder : IDebugDataSeeder
         Account bankFeesExpense,
         CancellationToken ct)
     {
-        async Task PayAsync(DateTime date, decimal amount, Account account, string payee, string description) =>
+        async Task PayAsync(DateTime date, decimal amount, Account account, string payee, string description)
+        {
+            if (date > SeedCurrentDate)
+                return; // not paid yet
+
             await _expensePaymentService.RecordExpenseAsync(new RecordExpenseRequest
             {
                 Date = date,
@@ -641,6 +670,7 @@ public class DebugDataSeeder : IDebugDataSeeder
                 Payee = payee,
                 Description = description
             }, ct);
+        }
 
         var termStarts = GetTermStartMondays(year);
         for (var i = 0; i < termStarts.Count; i++)

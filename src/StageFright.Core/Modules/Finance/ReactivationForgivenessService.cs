@@ -13,17 +13,20 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
 {
     private readonly IFeeRepository _feeRepo;
     private readonly IGLRepository _glRepo;
+    private readonly IMemberRepository _memberRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
 
     public ReactivationForgivenessService(
         IFeeRepository feeRepo,
         IGLRepository glRepo,
+        IMemberRepository memberRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork)
     {
         _feeRepo = feeRepo;
         _glRepo = glRepo;
+        _memberRepo = memberRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
     }
@@ -56,6 +59,8 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
 
         var fees = await _feeRepo.GetByMemberAsync(memberId, ct);
         var feeMap = fees.ToDictionary(f => f.Id);
+        var member = await _memberRepo.GetByIdAsync(memberId, ct);
+        var memberName = member?.Name ?? "Unknown Member";
 
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
@@ -86,7 +91,7 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
                         MemberId = memberId,
                         FeeId = feeId,
                         GstCode = fee.GstCode,
-                        Description = $"Reactivation forgiveness write-off for fee {feeId}",
+                        Description = $"Reactivation forgiveness write-off for {memberName}",
                         CreatedAt = now
                     },
                     new()
@@ -100,7 +105,7 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
                         MemberId = memberId,
                         FeeId = feeId,
                         GstCode = fee.GstCode,
-                        Description = $"Reactivation forgiveness — receivable cleared for fee {feeId}",
+                        Description = $"Reactivation forgiveness — receivable cleared for {memberName}",
                         CreatedAt = now
                     }
                 };
@@ -118,7 +123,7 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
                         MemberId = memberId,
                         FeeId = feeId,
                         GstCode = fee.GstCode,
-                        Description = $"GST decreasing adjustment — forgiveness of fee {feeId}",
+                        Description = $"GST decreasing adjustment — forgiveness for {memberName}",
                         CreatedAt = now
                     });
                 }

@@ -221,9 +221,10 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
         var feeRepo = new FeeRepository(_db);
         var paymentRepo = new PaymentRepository(_db, BuildAuditService());
         var glRepo = new GLRepository(_db);
+        var memberRepo = new MemberRepository(_db);
         var audit = BuildAuditService();
         var unitOfWork = new UnitOfWork(_db);
-        return new PaymentService(feeRepo, paymentRepo, glRepo, audit, unitOfWork);
+        return new PaymentService(feeRepo, paymentRepo, glRepo, memberRepo, audit, unitOfWork);
     }
 
     private static AuditTrailService BuildAuditService()

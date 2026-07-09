@@ -17,6 +17,7 @@ public class PaymentService : IPaymentService
     private readonly IFeeRepository _feeRepo;
     private readonly IPaymentRepository _paymentRepo;
     private readonly IGLRepository _glRepo;
+    private readonly IMemberRepository _memberRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -24,12 +25,14 @@ public class PaymentService : IPaymentService
         IFeeRepository feeRepo,
         IPaymentRepository paymentRepo,
         IGLRepository glRepo,
+        IMemberRepository memberRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork)
     {
         _feeRepo = feeRepo;
         _paymentRepo = paymentRepo;
         _glRepo = glRepo;
+        _memberRepo = memberRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
     }
@@ -61,6 +64,9 @@ public class PaymentService : IPaymentService
             };
             savedPayment = await _paymentRepo.AddAsync(payment, innerCt);
 
+            var member = await _memberRepo.GetByIdAsync(request.MemberId, innerCt);
+            var memberName = member?.Name ?? "Unknown Member";
+
             // 2. FIFO allocation: get outstanding balance and fees in order
             var outstandingBalance = await _glRepo.GetMemberBalanceAsync(request.MemberId, innerCt);
             var fees = await _feeRepo.GetUnpaidOrderedFifoAsync(request.MemberId, innerCt);
@@ -90,7 +96,7 @@ public class PaymentService : IPaymentService
                             MemberId = request.MemberId,
                             PaymentId = savedPayment.Id,
                             FeeId = fee.Id,
-                            Description = $"Payment allocation against fee {fee.Id}",
+                            Description = $"Payment from {memberName} — {fee.FeeType} fee allocation",
                             CreatedAt = now
                         },
                         new Transaction
@@ -104,7 +110,7 @@ public class PaymentService : IPaymentService
                             MemberId = request.MemberId,
                             PaymentId = savedPayment.Id,
                             FeeId = fee.Id,
-                            Description = $"Payment received — receivable cleared for fee {fee.Id}",
+                            Description = $"Payment from {memberName} — receivable cleared",
                             CreatedAt = now
                         },
                         innerCt);
@@ -127,7 +133,7 @@ public class PaymentService : IPaymentService
                         GLAccount = SystemAccounts.CashNumber,
                         MemberId = request.MemberId,
                         PaymentId = savedPayment.Id,
-                        Description = "Overpayment — cash received",
+                        Description = $"Overpayment — cash received from {memberName}",
                         CreatedAt = now
                     },
                     new Transaction
@@ -140,7 +146,7 @@ public class PaymentService : IPaymentService
                         GLAccount = SystemAccounts.MemberReceivableNumber,
                         MemberId = request.MemberId,
                         PaymentId = savedPayment.Id,
-                        Description = "Overpayment credit to member account",
+                        Description = $"Overpayment credit to {memberName}'s account",
                         CreatedAt = now
                     },
                     innerCt);

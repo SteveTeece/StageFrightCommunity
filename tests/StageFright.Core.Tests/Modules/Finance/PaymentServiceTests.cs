@@ -15,6 +15,7 @@ public class PaymentServiceTests : TestBase
     private readonly IFeeRepository _feeRepo = Substitute.For<IFeeRepository>();
     private readonly IPaymentRepository _paymentRepo = Substitute.For<IPaymentRepository>();
     private readonly IGLRepository _glRepo = Substitute.For<IGLRepository>();
+    private readonly IMemberRepository _memberRepo = Substitute.For<IMemberRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
 
@@ -44,7 +45,7 @@ public class PaymentServiceTests : TestBase
                 MakeFee(Fee2Id, new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc), 80m),
             });
 
-        _sut = new PaymentService(_feeRepo, _paymentRepo, _glRepo, _audit, _unitOfWork);
+        _sut = new PaymentService(_feeRepo, _paymentRepo, _glRepo, _memberRepo, _audit, _unitOfWork);
     }
 
     // --- RecordAsync: creates Payment ---

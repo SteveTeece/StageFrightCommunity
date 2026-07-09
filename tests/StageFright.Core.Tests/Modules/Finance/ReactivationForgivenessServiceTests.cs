@@ -15,6 +15,7 @@ public class ReactivationForgivenessServiceTests : TestBase
 {
     private readonly IFeeRepository _feeRepo = Substitute.For<IFeeRepository>();
     private readonly IGLRepository _glRepo = Substitute.For<IGLRepository>();
+    private readonly IMemberRepository _memberRepo = Substitute.For<IMemberRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
 
@@ -40,7 +41,7 @@ public class ReactivationForgivenessServiceTests : TestBase
                 MakeFee(CurrentFeeId, new DateTime(CurrentYear, 1, 1, 0, 0, 0, DateTimeKind.Utc), 50m),
             });
 
-        _sut = new ReactivationForgivenessService(_feeRepo, _glRepo, _audit, _unitOfWork);
+        _sut = new ReactivationForgivenessService(_feeRepo, _glRepo, _memberRepo, _audit, _unitOfWork);
     }
 
     // --- GetForgivenessItemsAsync ---
