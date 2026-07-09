@@ -4,6 +4,14 @@
   "branch": "001-initial-mvp",
   "selectedAt": "2026-06-11T11:04:18.859Z",
   "currentStep": "specify",
-  "status": "draft",
-  "history": []
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "user",
+      "at": "2026-07-09T02:33:37.452Z"
+    }
+  ]
 }
