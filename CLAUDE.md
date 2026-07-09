@@ -13,6 +13,10 @@ shell commands, and other important information, read the current plan
 
 Always run `dotnet build` and the full test suite (without --no-build) after making code changes, and report the build/test results before considering a task complete.
 
+## Git / Commit Workflow
+
+Always commit all changed and new files at the end of a task — this overrides the default behavior of only committing when explicitly asked. Stage everything (`git add -A`) and commit with a message describing the change, following the existing commit style (see `git log`), unless the user explicitly says not to commit or asks for only specific files to be committed. Still show the user what changed; committing automatically doesn't replace surfacing a summary of the work.
+
 
 ## Commands
 
