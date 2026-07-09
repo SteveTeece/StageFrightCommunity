@@ -7,10 +7,11 @@ namespace StageFright.UI.Pages.Setup;
 
 public partial class SetupWizard : ComponentBase
 {
-    [Inject] private IDebugDataSeeder DebugSeeder { get; set; } = null!;
+    [Inject] private IServiceProvider ServiceProvider { get; set; } = null!;
 
     private readonly SetupFormModel _model = new();
     private EditContext _editContext = null!;
+    private IDebugDataSeeder? _debugSeeder;
     private int _currentStep = 1;
     private bool _submitting;
     private bool _seedingInProgress;
@@ -21,6 +22,11 @@ public partial class SetupWizard : ComponentBase
     protected override void OnInitialized()
     {
         _editContext = new EditContext(_model);
+
+        // IDebugDataSeeder is only registered in Debug builds (MauiProgram.cs) — there is
+        // never a database seed in Release, so resolve it optionally rather than requiring
+        // it via [Inject], and hide the "Load sample data" checkbox when it's unavailable.
+        _debugSeeder = ServiceProvider.GetService(typeof(IDebugDataSeeder)) as IDebugDataSeeder;
     }
 
     private void HandleNext()
@@ -63,7 +69,7 @@ public partial class SetupWizard : ComponentBase
 
             await SetupService.InitializeAsync(request);
 
-            if (_seedWithTestData)
+            if (_seedWithTestData && _debugSeeder is not null)
             {
                 _seedingInProgress = true;
                 try
@@ -73,7 +79,7 @@ public partial class SetupWizard : ComponentBase
                         _seedingProgress = msg;
                         InvokeAsync(StateHasChanged);
                     });
-                    await Task.Run(() => DebugSeeder.SeedAsync(progress));
+                    await Task.Run(() => _debugSeeder.SeedAsync(progress));
                 }
                 finally
                 {

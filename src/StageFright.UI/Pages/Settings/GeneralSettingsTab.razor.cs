@@ -23,7 +23,6 @@ public partial class GeneralSettingsTab : ComponentBase
     private string? _errorMessage;
     private string? _successMessage;
     private string? _agmBanner;
-    private bool? _pendingGstToggle;
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,6 +81,16 @@ public partial class GeneralSettingsTab : ComponentBase
 
         try
         {
+            // Merge in the fields owned by the GST/BAS tab, so a stale in-memory copy
+            // here never clobbers a concurrent GST-registration save made there.
+            var current = await SettingsService.GetAsync();
+            if (current is not null)
+            {
+                _settings.IsGstRegistered = current.IsGstRegistered;
+                _settings.AnnualFeeGstCode = current.AnnualFeeGstCode;
+                _settings.AttendanceFeeGstCode = current.AttendanceFeeGstCode;
+            }
+
             await SettingsService.SaveAsync(_settings);
             _successMessage = "Settings saved successfully.";
         }
@@ -108,27 +117,6 @@ public partial class GeneralSettingsTab : ComponentBase
             if (_settings is not null)
                 _settings.Theme = ThemeProvider.CurrentTheme;
         }
-    }
-
-    private void HandleGstToggleRequested(Microsoft.AspNetCore.Components.ChangeEventArgs e)
-    {
-        if (_settings is null) return;
-
-        var requested = (bool)(e.Value ?? false);
-        _pendingGstToggle = requested == _settings.IsGstRegistered ? null : requested;
-    }
-
-    private void ConfirmGstToggle()
-    {
-        if (_settings is null || _pendingGstToggle is null) return;
-
-        _settings.IsGstRegistered = _pendingGstToggle.Value;
-        _pendingGstToggle = null;
-    }
-
-    private void CancelGstToggle()
-    {
-        _pendingGstToggle = null;
     }
 
     private async Task HandleResetCommitteeAsync()

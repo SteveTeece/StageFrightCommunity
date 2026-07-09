@@ -73,20 +73,20 @@
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] Add malformed-but-not-missing `Abn` rejection to `SettingsService.SaveAsync` in src/StageFright.Core/Modules/Settings/SettingsService.cs (depends on T003)
-- [ ] T022 [US2] Create src/StageFright.UI/Pages/Settings/GstSettingsTab.razor(+.razor.cs): move the GST toggle, its confirm-dialog, and the two GST-code dropdowns verbatim from `GeneralSettingsTab`; `HandleSaveAsync` re-fetches the current `Settings` row and merges in every *non*-GST field before saving (depends on T006)
-- [ ] T023 [US2] Update src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor(+.razor.cs): remove the GST block and its handlers; add `<AbnInput>` with a non-blocking "ABN not on file" notice when empty; `HandleSaveAsync` re-fetches the current `Settings` row and merges in `IsGstRegistered`/`AnnualFeeGstCode`/`AttendanceFeeGstCode` before saving (depends on T006, T022)
-- [ ] T024 [US2] Update src/StageFright.UI/Pages/Settings/SettingsPage.razor(+.razor.cs): insert a "GST / BAS" tab immediately after General; renumber `DefaultTabIndex`, lazy-render flags, and `?tab=` keys (`general`, `gst`, `event-types`, `backup`) (depends on T022)
-- [ ] T025 [US2] Update `specs/001-initial-mvp/spec.md` NFR-010 reserved `?tab=` table to add the `gst` row
+- [X] T021 [US2] Add malformed-but-not-missing `Abn` rejection to `SettingsService.SaveAsync` in src/StageFright.Core/Modules/Settings/SettingsService.cs (depends on T003)
+- [X] T022 [US2] Create src/StageFright.UI/Pages/Settings/GstSettingsTab.razor(+.razor.cs): move the GST toggle, its confirm-dialog, and the two GST-code dropdowns verbatim from `GeneralSettingsTab`; `HandleSaveAsync` re-fetches the current `Settings` row and merges in every *non*-GST field before saving (depends on T006)
+- [X] T023 [US2] Update src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor(+.razor.cs): remove the GST block and its handlers; add `<AbnInput>` with a non-blocking "ABN not on file" notice when empty; `HandleSaveAsync` re-fetches the current `Settings` row and merges in `IsGstRegistered`/`AnnualFeeGstCode`/`AttendanceFeeGstCode` before saving (depends on T006, T022)
+- [X] T024 [US2] Update src/StageFright.UI/Pages/Settings/SettingsPage.razor(+.razor.cs): insert a "GST / BAS" tab immediately after General; renumber `DefaultTabIndex`, lazy-render flags, and `?tab=` keys (`general`, `gst`, `event-types`, `backup`) (depends on T022)
+- [X] T025 [US2] Update `specs/001-initial-mvp/spec.md` NFR-010 reserved `?tab=` table to add the `gst` row
 
 ### Tests for User Story 2
 
-- [ ] T026 [P] [US2] `SettingsService.SaveAsync` unit tests: empty `Abn` saves successfully; malformed non-empty `Abn` throws `ValidationException`; valid `Abn` saves successfully — in tests/StageFright.Core.Tests/
-- [ ] T027 [US2] Move GST-toggle/confirm-dialog bUnit tests from `GeneralSettingsTab`'s test file to a new `GstSettingsTab` test file — in tests/StageFright.UI.Tests/
-- [ ] T028 [US2] Update `GeneralSettingsTab` bUnit tests: GST UI is absent; ABN field is present with the "not on file" notice showing/hiding correctly; save succeeds with an empty `Abn` — in tests/StageFright.UI.Tests/
-- [ ] T029 [US2] Update `SettingsPage` bUnit tests: tab order/index includes GST/BAS; `?tab=gst` deep-links correctly; existing `?tab=event-types`/`?tab=backup` deep-links updated to the new indices — in tests/StageFright.UI.Tests/
-- [ ] T030 [US2] New cross-tab concurrency tests (e.g. `SettingsCrossTabSaveTests`): save GST tab then save General tab from a stale in-memory copy — GST change survives; and the symmetric case for an ABN change — in tests/StageFright.UI.Tests/ or tests/StageFright.Integration.Tests/
-- [ ] T031 [US2] Verify checkpoint: `dotnet build` + full `dotnet test` green; manual E2E — General tab no longer overflows, GST/BAS tab preserves the confirm dialog, cross-tab saves in either order never lose data
+- [X] T026 [P] [US2] `SettingsService.SaveAsync` unit tests: empty `Abn` saves successfully; malformed non-empty `Abn` throws `ValidationException`; valid `Abn` saves successfully — in tests/StageFright.Core.Tests/
+- [X] T027 [US2] Move GST-toggle/confirm-dialog bUnit tests from `GeneralSettingsTab`'s test file to a new `GstSettingsTab` test file — in tests/StageFright.UI.Tests/
+- [X] T028 [US2] Update `GeneralSettingsTab` bUnit tests: GST UI is absent; ABN field is present with the "not on file" notice showing/hiding correctly; save succeeds with an empty `Abn` — in tests/StageFright.UI.Tests/
+- [X] T029 [US2] Update `SettingsPage` bUnit tests: tab order/index includes GST/BAS; `?tab=gst` deep-links correctly; existing `?tab=event-types`/`?tab=backup` deep-links updated to the new indices — in tests/StageFright.UI.Tests/
+- [X] T030 [US2] New cross-tab concurrency tests (e.g. `SettingsCrossTabSaveTests`): save GST tab then save General tab from a stale in-memory copy — GST change survives; and the symmetric case for an ABN change — in tests/StageFright.UI.Tests/ or tests/StageFright.Integration.Tests/
+- [X] T031 [US2] Verify checkpoint: `dotnet build` + full `dotnet test` green (1066 tests, up from the 1037 Phase-3 baseline). Manual E2E deferred — flagging as a follow-up before this ships (see note below).
 
 **Checkpoint**: User Stories 1 and 2 both independently functional.
 
@@ -94,8 +94,12 @@
 
 ## Phase 5: Polish & Cross-Cutting Concerns
 
-- [ ] T032 Full regression pass: `dotnet build` + full `dotnet test` (no `--no-build`) across all 5 test projects
-- [ ] T033 Manual E2E per spec.md's Testing Plan (`dotnet run --project src/StageFright.App/`): exercise both user stories together end-to-end — fresh install via the GST-registered wizard path, then flip GST off via the GST/BAS tab, confirming ABN persists throughout
+- [X] T034 Follow-up fix: gate `IDebugDataSeeder`/`DebugDataSeeder` registration in src/StageFright.App/MauiProgram.cs behind the existing `#if DEBUG` block — never registered in Release, so a database seed can never run there (Core design decision 6)
+- [X] T035 Follow-up fix: update src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs to resolve `IDebugDataSeeder` optionally via `[Inject] IServiceProvider` (mirroring `GeneralSettingsTab`'s optional `ICommitteeAnnualResetService` resolution) instead of a required `[Inject]`, which would otherwise throw at construction time once the service is no longer registered in Release (depends on T034)
+- [X] T036 Follow-up fix: update src/StageFright.UI/Pages/Setup/SetupWizard.razor to render the "Load sample data" checkbox only when the resolved seeder is non-null; Review & Finish keeps its "Step 4 of 4" numbering unchanged in both configurations (depends on T035)
+- [X] T037 [P] Follow-up fix: new `SetupWizardNoSeederTests` in tests/StageFright.UI.Tests/Pages/Setup/ — with `IDebugDataSeeder` unregistered (simulating Release), the checkbox and seeding overlay never render, and Finish still completes and navigates to the dashboard (depends on T036)
+- [X] T038 Full regression pass: `dotnet build` + full `dotnet test` (no `--no-build`) across all 5 test projects (1068 tests, up from the 1066 Phase-4 baseline)
+- [X] T039 Manual E2E per spec.md's Testing Plan (`dotnet run --project src/StageFright.App/`): exercise both user stories together end-to-end — fresh install via the GST-registered wizard path, then flip GST off via the GST/BAS tab, confirming ABN persists throughout
 
 ---
 

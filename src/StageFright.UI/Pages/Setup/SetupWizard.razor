@@ -123,12 +123,15 @@
                 </dl>
             </div>
 
-            <div class="mb-3">
-                <div class="form-check form-check-sm">
-                    <InputCheckbox id="seedData" class="form-check-input" @bind-Value="_seedWithTestData" />
-                    <label for="seedData" class="form-check-label">Load sample data (members, rehearsals, events &amp; finances)</label>
+            @if (_debugSeeder is not null)
+            {
+                <div class="mb-3">
+                    <div class="form-check form-check-sm">
+                        <InputCheckbox id="seedData" class="form-check-input" @bind-Value="_seedWithTestData" />
+                        <label for="seedData" class="form-check-label">Load sample data (members, rehearsals, events &amp; finances)</label>
+                    </div>
                 </div>
-            </div>
+            }
         }
 
         <div class="d-flex gap-2">

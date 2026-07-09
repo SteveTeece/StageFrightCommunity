@@ -19,6 +19,19 @@
                 </div>
             </Content>
         </Tab>
+        <Tab Title="GST / BAS" OnClick="OnGstClicked">
+            <Content>
+                <div class="pt-3">
+                    @if (GstShown)
+                    {
+                        <ErrorBoundary>
+                            <ChildContent><GstSettingsTab /></ChildContent>
+                            <ErrorContent><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                        </ErrorBoundary>
+                    }
+                </div>
+            </Content>
+        </Tab>
         <Tab Title="Event Types" OnClick="OnEventTypesClicked">
             <Content>
                 <div class="pt-3">

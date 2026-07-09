@@ -60,6 +60,10 @@ Splitting the single General-tab `Settings` form into General + GST/BAS tabs, ea
 
 `ReportViewer.razor:11` already references `.modal-backdrop-light`, which has no CSS definition anywhere (confirmed via repo-wide search) — a pre-existing gap. Rather than fix/reuse it (which would change `ReportViewer`'s shipped appearance as a side effect), the wizard gets its own class (`.setup-seeding-overlay`) in `src/StageFright.App/wwwroot/app.css`, scoped to a fixed-position, full-viewport, dimmed backdrop with a centered card.
 
+### 6. Sample-data seeding is Debug-only, enforced at the DI boundary, not a UI-only check
+
+`IDebugDataSeeder`/`DebugDataSeeder` are registered in `src/StageFright.App/MauiProgram.cs` only inside the existing `#if DEBUG` block (alongside `AddBlazorWebViewDeveloperTools`) — in a Release build the service is never in the container, so there is no code path by which a database seed could ever run, regardless of what the wizard UI does. `SetupWizard.razor.cs` resolves it optionally (`ServiceProvider.GetService(typeof(IDebugDataSeeder))`, mirroring `GeneralSettingsTab`'s existing optional resolution of `ICommitteeAnnualResetService`) rather than a required `[Inject]`, which would otherwise throw at component construction time in Release. The "Load sample data" checkbox and the seeding overlay render only when the resolved service is non-null. The wizard stays a 4-step flow in both configurations — only this one checkbox is conditional; Review & Finish is otherwise identical.
+
 ---
 
 ## Phases (each ends green: `dotnet build` + full `dotnet test`)
@@ -107,11 +111,14 @@ Phase 2 and Phase 3 both depend on Phase 1 (the `Abn` field/validator) but not o
 - `src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs`:
   - Add `_currentStep` (int, default 1), `_editContext` (constructed in `OnInitialized` over `_model`), `_seedingInProgress` (bool).
   - `HandleNext()` / `HandleBack()` — `_currentStep` +/- 1 clamped to [1,4]; `HandleNext` calls `_editContext.Validate()` and only advances if it returns `true`.
-  - `HandleValidSubmitAsync` (line 17) — `SetupRequest` construction (line 24) gains `Abn: _model.Abn!.Trim()`, `IsGstRegistered: _model.IsGstRegistered`, `AnnualFeeGstCode: _model.AnnualFeeGstCode`, `AttendanceFeeGstCode: _model.AttendanceFeeGstCode`. Wrap only the `DebugSeeder.SeedAsync` call in `_seedingInProgress = true` / `finally { _seedingInProgress = false; }`, not the whole method — so the modal appears only once seeding actually starts, not during the fast settings-creation step.
+  - `HandleValidSubmitAsync` (line 17) — `SetupRequest` construction (line 24) gains `Abn: _model.Abn!.Trim()`, `IsGstRegistered: _model.IsGstRegistered`, `AnnualFeeGstCode: _model.AnnualFeeGstCode`, `AttendanceFeeGstCode: _model.AttendanceFeeGstCode`. Wrap only the `_debugSeeder.SeedAsync` call (guarded by `_seedWithTestData && _debugSeeder is not null`) in `_seedingInProgress = true` / `finally { _seedingInProgress = false; }`, not the whole method — so the modal appears only once seeding actually starts, not during the fast settings-creation step, and never at all when `_debugSeeder` is null (Core design decision 6).
+  - `[Inject] IServiceProvider ServiceProvider` replaces the required `[Inject] IDebugDataSeeder DebugSeeder`; `OnInitialized` resolves `_debugSeeder` optionally via `ServiceProvider.GetService(typeof(IDebugDataSeeder))`.
 - `src/StageFright.App/wwwroot/app.css` — new `.setup-seeding-overlay` rule (fixed position, full viewport, dimmed backdrop, centered card; distinct from `ReportViewer`'s undefined `.modal-backdrop-light`).
+- `src/StageFright.App/MauiProgram.cs` — move `builder.Services.AddScoped<IDebugDataSeeder, DebugDataSeeder>()` inside the existing `#if DEBUG` block (Core design decision 6); never registered in Release.
 
 **Tests:**
 - `SetupWizard` bUnit tests rewritten: Next/Back navigation across all 4 steps; Next blocked on missing/invalid ABN or empty org name; GST dropdowns appear only when `IsGstRegistered` is toggled on and disappear (with codes cleared) when toggled off; Finish composes the full `SetupRequest` including ABN and GST fields; seeding overlay appears only once seeding starts (not during the settings-creation await) and only when "Load sample data" is checked.
+- New `SetupWizardNoSeederTests`: with `IDebugDataSeeder` unregistered (simulating Release), the "Load sample data" checkbox and seeding overlay never render, and Finish still completes and navigates to the dashboard.
 
 ### Phase 3 — Settings GST/BAS tab split + cross-tab safety
 

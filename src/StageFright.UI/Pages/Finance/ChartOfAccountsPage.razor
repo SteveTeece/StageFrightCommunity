@@ -91,6 +91,7 @@
             }
             else
             {
+                <div class="table-responsive">
                 <RadzenDataGrid Data="@FilteredAccounts" TItem="Account"
                                 AllowSorting="false" AllowPaging="true" PageSize="15"
                                 class="rz-shadow-0">
@@ -128,7 +129,7 @@
                                 @account.Type
                             </Template>
                         </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="Account" Title="" Width="170px" Sortable="false">
+                        <RadzenDataGridColumn TItem="Account" Title="" Width="210px" Sortable="false">
                             <Template Context="account">
                                 @if (!account.IsSystem && _editingId != account.Id)
                                 {
@@ -149,6 +150,7 @@
                         </RadzenDataGridColumn>
                     </Columns>
                 </RadzenDataGrid>
+                </div>
             }
         </section>
 
@@ -157,6 +159,7 @@
         {
             <section aria-labelledby="archived-heading" class="mb-2">
                 <h6 id="archived-heading" class="mb-1">Archived Accounts</h6>
+                <div class="table-responsive">
                 <RadzenDataGrid Data="@_archivedAccounts" TItem="Account"
                                 AllowSorting="true" AllowPaging="true" PageSize="10"
                                 class="rz-shadow-0">
@@ -178,6 +181,7 @@
                         </RadzenDataGridColumn>
                     </Columns>
                 </RadzenDataGrid>
+                </div>
             </section>
         }
     }

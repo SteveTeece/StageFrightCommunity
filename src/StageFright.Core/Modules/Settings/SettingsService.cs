@@ -1,6 +1,7 @@
 using System.Text.Json;
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
+using StageFright.Core.Exceptions;
 
 namespace StageFright.Core.Modules.Settings;
 
@@ -24,6 +25,9 @@ public class SettingsService : ISettingsService
 
     public async Task SaveAsync(global::StageFright.Core.Entities.Settings settings, CancellationToken ct = default)
     {
+        if (!string.IsNullOrEmpty(settings.Abn) && !AbnValidator.IsValid(settings.Abn))
+            throw new ValidationException("The ABN is not valid.", "Settings", nameof(SaveAsync));
+
         var existing = await _repository.GetAsync(ct);
 
         string? oldValue = existing is null

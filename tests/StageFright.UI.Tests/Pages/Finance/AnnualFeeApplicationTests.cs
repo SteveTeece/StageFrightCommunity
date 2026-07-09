@@ -5,6 +5,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.UI.Pages.Finance;
+using AppSettings = StageFright.Core.Entities.Settings;
 
 namespace StageFright.UI.Tests.Pages.Finance;
 
@@ -23,7 +24,7 @@ public class AnnualFeeApplicationTests : BunitContext
         Services.AddSingleton(_settingsService);
 
         _settingsService.GetAsync(Arg.Any<CancellationToken>())
-            .Returns(new Settings
+            .Returns(new AppSettings
             {
                 Id = Guid.NewGuid(), OrganizationName = "Test Choir",
                 AnnualFee = 50m, AttendanceFee = 10m,

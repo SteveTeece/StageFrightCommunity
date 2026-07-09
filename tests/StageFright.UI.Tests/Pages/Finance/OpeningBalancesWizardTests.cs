@@ -7,6 +7,7 @@ using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.Finance;
 using StageFright.UI.Pages.Finance;
+using AppSettings = StageFright.Core.Entities.Settings;
 
 namespace StageFright.UI.Tests.Pages.Finance;
 
@@ -54,7 +55,7 @@ public class OpeningBalancesWizardTests : BunitContext
                     .Where(e => e.AccountId == LoanAccountId).Sum(e => e.Amount));
 
         _settingsService.GetAsync(Arg.Any<CancellationToken>())
-            .Returns((Settings?)null);
+            .Returns((AppSettings?)null);
     }
 
     // --- Step 1 ---
