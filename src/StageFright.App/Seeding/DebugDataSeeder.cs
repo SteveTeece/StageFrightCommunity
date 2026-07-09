@@ -521,8 +521,11 @@ public class DebugDataSeeder : IDebugDataSeeder
             Notes = $"{year} Eisteddfod"
         }, ct);
 
-        var items = activeMembers.Select(m => new ParticipationBatchItem { MemberId = m.Id, Participated = true }).ToList();
-        await _eventService.RecordParticipationAsync(evt.Id, items, ct);
+        if (eventDate <= SeedCurrentDate)
+        {
+            var items = activeMembers.Select(m => new ParticipationBatchItem { MemberId = m.Id, Participated = true }).ToList();
+            await _eventService.RecordParticipationAsync(evt.Id, items, ct);
+        }
 
         var entryFeeDate = eventDate.AddDays(-14);
         if (entryFeeDate > SeedCurrentDate)
@@ -560,7 +563,8 @@ public class DebugDataSeeder : IDebugDataSeeder
             EventTypeId = performanceType.Id,
             Notes = $"{year} Annual Concert — Saturday, Maclean"
         }, ct);
-        await _eventService.RecordParticipationAsync(macleanEvent.Id, participationItems, ct);
+        if (macleanDate <= SeedCurrentDate)
+            await _eventService.RecordParticipationAsync(macleanEvent.Id, participationItems, ct);
         await RecordConcertTicketIncomeAsync(macleanDate, 560m, "Maclean", concertIncomeAccount, bankAccount, ct);
 
         var yambaEvent = await _eventService.ScheduleAsync(new ScheduleEventRequest
@@ -569,7 +573,8 @@ public class DebugDataSeeder : IDebugDataSeeder
             EventTypeId = performanceType.Id,
             Notes = $"{year} Annual Concert — Sunday, Yamba"
         }, ct);
-        await _eventService.RecordParticipationAsync(yambaEvent.Id, participationItems, ct);
+        if (yambaDate <= SeedCurrentDate)
+            await _eventService.RecordParticipationAsync(yambaEvent.Id, participationItems, ct);
         await RecordConcertTicketIncomeAsync(yambaDate, 860m, "Yamba", concertIncomeAccount, bankAccount, ct);
     }
 
@@ -636,8 +641,11 @@ public class DebugDataSeeder : IDebugDataSeeder
             Notes = $"{year} Annual General Meeting — new committee term commences"
         }, ct);
 
-        var items = activeMembers.Select(m => new ParticipationBatchItem { MemberId = m.Id, Participated = true }).ToList();
-        await _eventService.RecordParticipationAsync(evt.Id, items, ct);
+        if (agmDate <= SeedCurrentDate)
+        {
+            var items = activeMembers.Select(m => new ParticipationBatchItem { MemberId = m.Id, Participated = true }).ToList();
+            await _eventService.RecordParticipationAsync(evt.Id, items, ct);
+        }
     }
 
     // -------------------------------------------------------------------------
