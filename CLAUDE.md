@@ -102,6 +102,10 @@ Every fee or payment write wraps fee creation + paired GL debit/credit + balance
 
 `IReportProvider` → `ReportData` (rows/columns/sections/subtotals) → `ReportViewer.razor` (modal "Generating…", synchronous) → `PdfReportRenderer` (QuestPDF) or `CsvReportExporter` (CsvHelper). Cancel appears after 5 s. All six MVP reports (`IncomeStatement`, `TrialBalance`, `AccountRegister`, `MemberAccountSummary`, `MemberList`, `Committee`) follow this single pipeline.
 
+### Data grid standards
+
+All tabular data uses `RadzenDataGrid<TItem>`, never plain `<table>` markup or a `table-responsive` wrapper div. Every grid instance follows the Members grid (`src/StageFright.UI/Pages/Members/MemberList.razor`) as the reference: `AllowSorting="true" AllowPaging="true" PageSize="15" class="rz-shadow-0"`. Grids needing a "select all" checkbox in a column header use a `HeaderTemplate` rather than a separate control outside the grid. `ReportViewer.razor` is the one exception — its dynamic columns, section headers, and subtotal/grand-total rows don't fit RadzenDataGrid's typed-column model, so it keeps hand-rolled paging (also fixed at a page size of 15) instead.
+
 ### Data model highlights
 
 - **13 entities** in `StageFright.Core/Entities/`: `Member`, `CommitteeMembership`, `Rehearsal`, `AttendanceRecord`, `Event`, `EventType`, `ParticipationRecord`, `Fee`, `Payment`, `Transaction`, `Category`, `Settings`, `AuditTrailEntry`.
