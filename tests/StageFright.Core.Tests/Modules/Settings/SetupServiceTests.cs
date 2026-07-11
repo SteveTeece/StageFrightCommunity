@@ -1,6 +1,7 @@
 using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.Settings;
 using StageFright.Core.Tests.Fixtures;
@@ -14,7 +15,7 @@ namespace StageFright.Core.Tests.Setup;
 public class SetupServiceTests : TestBase
 {
     private readonly ISettingsRepository _settingsRepo = Substitute.For<ISettingsRepository>();
-    private readonly ICategoryRepository _categoryRepo = Substitute.For<ICategoryRepository>();
+    private readonly IAccountRepository _accountRepo = Substitute.For<IAccountRepository>();
     private readonly IEventTypeRepository _eventTypeRepo = Substitute.For<IEventTypeRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
 
@@ -24,7 +25,7 @@ public class SetupServiceTests : TestBase
             .Returns(ci => ci.ArgAt<StageFright.Core.Entities.EventType>(0));
     }
 
-    private SetupService CreateService() => new(_settingsRepo, _categoryRepo, _eventTypeRepo, _audit);
+    private SetupService CreateService() => new(_settingsRepo, _accountRepo, _eventTypeRepo, _audit);
 
     // --- IsSetupCompleteAsync ---
 
@@ -59,6 +60,82 @@ public class SetupServiceTests : TestBase
     }
 
     [Fact]
+    public async Task InitializeAsync_Throws_WhenAbnMissing()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var request = ValidRequest() with { Abn = "" };
+        await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
+    }
+
+#if !DEBUG
+    [Fact]
+    public async Task InitializeAsync_Throws_WhenAbnChecksumInvalid()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var request = ValidRequest() with { Abn = "12345678901" };
+        await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
+    }
+#else
+    [Fact]
+    public async Task InitializeAsync_AllowsAbnChecksumInvalid_InDebugBuild()
+    {
+        // ABN checksum validation is disabled in Debug builds (see SetupService.Validate)
+        // so developers can complete setup without a real, checksum-valid ABN.
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var request = ValidRequest() with { Abn = "12345678901" };
+        await svc.InitializeAsync(request, Ct);
+    }
+#endif
+
+    [Fact]
+    public async Task InitializeAsync_ForcesGstCodesNull_WhenNotRegistered()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        var request = ValidRequest() with
+        {
+            IsGstRegistered = false,
+            AnnualFeeGstCode = GstCode.Gst,
+            AttendanceFeeGstCode = GstCode.Gst
+        };
+        await svc.InitializeAsync(request, Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s.IsGstRegistered == false && s.AnnualFeeGstCode == null && s.AttendanceFeeGstCode == null),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitializeAsync_PersistsGstCodes_WhenRegistered()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        var request = ValidRequest() with
+        {
+            IsGstRegistered = true,
+            AnnualFeeGstCode = GstCode.Gst,
+            AttendanceFeeGstCode = GstCode.GstFree
+        };
+        await svc.InitializeAsync(request, Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s.IsGstRegistered && s.AnnualFeeGstCode == GstCode.Gst && s.AttendanceFeeGstCode == GstCode.GstFree),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task InitializeAsync_Throws_WhenAnnualFeeNegative()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
@@ -72,8 +149,8 @@ public class SetupServiceTests : TestBase
     public async Task InitializeAsync_Allows_ZeroAnnualFee()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
-        _categoryRepo.GetNextGLAccountAsync(Arg.Any<Core.Enums.CategoryType>(), Arg.Any<CancellationToken>())
-            .Returns("1000");
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
         var svc = CreateService();
 
         var request = ValidRequest() with { AnnualFee = 0m };
@@ -114,8 +191,8 @@ public class SetupServiceTests : TestBase
     public async Task InitializeAsync_SavesSettings_WithCorrectValues()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
-        _categoryRepo.GetNextGLAccountAsync(Arg.Any<Core.Enums.CategoryType>(), Arg.Any<CancellationToken>())
-            .Returns("1000");
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
         var svc = CreateService();
 
         var request = ValidRequest();
@@ -139,7 +216,11 @@ public class SetupServiceTests : TestBase
 
     private static SetupRequest ValidRequest() => new(
         OrganizationName: "Test Org",
+        Abn: "51824753556",
         AnnualFee: 75m,
         AttendanceFee: 5m,
-        MembershipRenewalMonth: 1);
+        MembershipRenewalMonth: 1,
+        IsGstRegistered: false,
+        AnnualFeeGstCode: null,
+        AttendanceFeeGstCode: null);
 }

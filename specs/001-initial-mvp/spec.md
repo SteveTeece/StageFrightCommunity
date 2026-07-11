@@ -544,6 +544,7 @@ System MUST automatically calculate GL transaction dates and link Payment to cre
 | Finance (`/finance`) | `payments` | Payment history |
 | Finance (`/finance`) | `annual-fees` | Apply Annual Fees |
 | Settings (`/settings`) | `general` | General Settings (TabKey="general") |
+| Settings (`/settings`) | `gst` | GST / BAS (TabKey="gst") |
 | Settings (`/settings`) | `categories` | Categories (TabKey="categories") |
 | Settings (`/settings`) | `event-types` | Event Types (TabKey="event-types") |
 | Settings (`/settings`) | `backup` | Backup (TabKey="backup") |

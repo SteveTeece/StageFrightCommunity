@@ -15,13 +15,13 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
     private StageFrightDbContext _db = null!;
     private GLRepository _sut = null!;
 
-    // System category GUIDs (seeded by StageFrightDbContext migration)
-    private static readonly Guid CashCategoryId = new("00000000-0000-0000-0000-000000000001");
-    private static readonly Guid MemberReceivableCategoryId = new("00000000-0000-0000-0000-000000000002");
-    private static readonly Guid BadDebtCategoryId = new("00000000-0000-0000-0000-000000000003");
+    // System account GUIDs (seeded by StageFrightDbContext migration)
+    private static readonly Guid CashAccountId = new("00000000-0000-0000-0000-000000000001");
+    private static readonly Guid MemberReceivableAccountId = new("00000000-0000-0000-0000-000000000002");
+    private static readonly Guid BadDebtAccountId = new("00000000-0000-0000-0000-000000000003");
 
-    // Test-only income category seeded in InitializeAsync
-    private static readonly Guid IncomeCategoryId = new("00000000-0000-0000-0000-000000000010");
+    // Test-only income account seeded in InitializeAsync
+    private static readonly Guid IncomeAccountId = new("00000000-0000-0000-0000-000000000010");
 
     public async Task InitializeAsync()
     {
@@ -33,11 +33,11 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         await _db.Database.OpenConnectionAsync();
         await _db.Database.MigrateAsync();
 
-        // Seed a test income category for GL transactions
-        _db.Categories.Add(new Category
+        // Seed a test income account for GL transactions
+        _db.Accounts.Add(new Account
         {
-            Id = IncomeCategoryId, Name = "Test Income", Type = CategoryType.Income,
-            GLAccount = "1000", SortOrder = 10, IsSystem = false,
+            Id = IncomeAccountId, Name = "Test Income", Type = AccountType.Income,
+            AccountNumber = "1000", SortOrder = 10, IsSystem = false,
             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         });
@@ -71,8 +71,8 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
 
         // Fee accrual: Debit MemberReceivable $50 / Credit Income $50
         await AddGLPairAsync(
-            debitAccount: "0101", debitCategoryId: MemberReceivableCategoryId, debitAmount: 50m, debitMemberId: memberId,
-            creditAccount: "1000", creditCategoryId: IncomeCategoryId, creditAmount: 50m, creditMemberId: null);
+            debitAccount: "0101", debitAccountId: MemberReceivableAccountId, debitAmount: 50m, debitMemberId: memberId,
+            creditAccount: "1000", creditAccountId: IncomeAccountId, creditAmount: 50m, creditMemberId: null);
 
         var balance = await _sut.GetMemberBalanceAsync(memberId);
 
@@ -85,12 +85,12 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         var memberId = await SeedMemberAsync();
 
         // Fee accrual
-        await AddGLPairAsync("0101", MemberReceivableCategoryId, 50m, memberId,
-                              "1000", IncomeCategoryId, 50m, null);
+        await AddGLPairAsync("0101", MemberReceivableAccountId, 50m, memberId,
+                              "1000", IncomeAccountId, 50m, null);
 
         // Payment pair: Debit Cash / Credit MemberReceivable
-        await AddGLPairAsync("0100", CashCategoryId, 30m, memberId,
-                              "0101", MemberReceivableCategoryId, 30m, memberId);
+        await AddGLPairAsync("0100", CashAccountId, 30m, memberId,
+                              "0101", MemberReceivableAccountId, 30m, memberId);
 
         var balance = await _sut.GetMemberBalanceAsync(memberId);
 
@@ -103,11 +103,11 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         var member1 = await SeedMemberAsync();
         var member2 = await SeedMemberAsync();
 
-        await AddGLPairAsync("0101", MemberReceivableCategoryId, 100m, member1,
-                              "1000", IncomeCategoryId, 100m, null);
+        await AddGLPairAsync("0101", MemberReceivableAccountId, 100m, member1,
+                              "1000", IncomeAccountId, 100m, null);
 
-        await AddGLPairAsync("0101", MemberReceivableCategoryId, 75m, member2,
-                              "1000", IncomeCategoryId, 75m, null);
+        await AddGLPairAsync("0101", MemberReceivableAccountId, 75m, member2,
+                              "1000", IncomeAccountId, 75m, null);
 
         var balance1 = await _sut.GetMemberBalanceAsync(member1);
         var balance2 = await _sut.GetMemberBalanceAsync(member2);
@@ -132,11 +132,11 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         var member1 = await SeedMemberAsync();
         var member2 = await SeedMemberAsync();
 
-        await AddGLPairAsync("0101", MemberReceivableCategoryId, 50m, member1,
-                              "1000", IncomeCategoryId, 50m, null);
+        await AddGLPairAsync("0101", MemberReceivableAccountId, 50m, member1,
+                              "1000", IncomeAccountId, 50m, null);
 
-        await AddGLPairAsync("0101", MemberReceivableCategoryId, 80m, member2,
-                              "1000", IncomeCategoryId, 80m, null);
+        await AddGLPairAsync("0101", MemberReceivableAccountId, 80m, member2,
+                              "1000", IncomeAccountId, 80m, null);
 
         var total = await _sut.GetTotalOutstandingAsync();
 
@@ -148,12 +148,12 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
     {
         var memberId = await SeedMemberAsync();
 
-        await AddGLPairAsync("0101", MemberReceivableCategoryId, 100m, memberId,
-                              "1000", IncomeCategoryId, 100m, null);
+        await AddGLPairAsync("0101", MemberReceivableAccountId, 100m, memberId,
+                              "1000", IncomeAccountId, 100m, null);
 
         // Payment reduces outstanding
-        await AddGLPairAsync("0100", CashCategoryId, 40m, memberId,
-                              "0101", MemberReceivableCategoryId, 40m, memberId);
+        await AddGLPairAsync("0100", CashAccountId, 40m, memberId,
+                              "0101", MemberReceivableAccountId, 40m, memberId);
 
         var total = await _sut.GetTotalOutstandingAsync();
 
@@ -208,8 +208,8 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
     {
         var memberId = await SeedMemberAsync();
 
-        await AddGLPairAsync("0101", MemberReceivableCategoryId, 100m, memberId,
-                              "1000", IncomeCategoryId, 100m, null);
+        await AddGLPairAsync("0101", MemberReceivableAccountId, 100m, memberId,
+                              "1000", IncomeAccountId, 100m, null);
 
         var from = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var to = new DateTime(2026, 12, 31, 0, 0, 0, DateTimeKind.Utc);
@@ -226,12 +226,12 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         var memberId = await SeedMemberAsync();
 
         // Fee accrual pair
-        await AddGLPairAsync("0101", MemberReceivableCategoryId, 50m, memberId,
-                              "1000", IncomeCategoryId, 50m, null);
+        await AddGLPairAsync("0101", MemberReceivableAccountId, 50m, memberId,
+                              "1000", IncomeAccountId, 50m, null);
 
         // Payment pair
-        await AddGLPairAsync("0100", CashCategoryId, 30m, memberId,
-                              "0101", MemberReceivableCategoryId, 30m, memberId);
+        await AddGLPairAsync("0100", CashAccountId, 30m, memberId,
+                              "0101", MemberReceivableAccountId, 30m, memberId);
 
         var from = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var to = new DateTime(2026, 12, 31, 0, 0, 0, DateTimeKind.Utc);
@@ -254,19 +254,115 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
             _sut.AddPairAsync(
                 new Transaction
                 {
-                    Id = Guid.NewGuid(), Date = date, CategoryId = MemberReceivableCategoryId,
+                    Id = Guid.NewGuid(), Date = date, AccountId = MemberReceivableAccountId,
                     DebitAmount = 50m, CreditAmount = 0m, GLAccount = "0101",
                     MemberId = memberId, CreatedAt = date
                 },
                 new Transaction
                 {
-                    Id = Guid.NewGuid(), Date = date, CategoryId = IncomeCategoryId,
+                    Id = Guid.NewGuid(), Date = date, AccountId = IncomeAccountId,
                     DebitAmount = 0m, CreditAmount = 40m, GLAccount = "1000",
                     MemberId = null, CreatedAt = date
                 }));
     }
 
+    // --- GetOutstandingByFeeTypeAsync ---
+
+    [Fact]
+    public async Task GetOutstandingByFeeType_ReturnsZero_WhenNoFeeLinkedTransactions()
+    {
+        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync();
+
+        Assert.Equal(0m, attendance);
+        Assert.Equal(0m, annual);
+    }
+
+    [Fact]
+    public async Task GetOutstandingByFeeType_SplitsBalancesByFeeType_WithPartialPayment()
+    {
+        var memberId = await SeedMemberAsync();
+        var annualFeeId = await SeedFeeAsync(memberId, FeeType.Annual, 100m);
+        var attendanceFeeId = await SeedFeeAsync(memberId, FeeType.Attendance, 20m);
+
+        await AddFeeLinkedAccrualAsync(memberId, annualFeeId, 100m);
+        await AddFeeLinkedAccrualAsync(memberId, attendanceFeeId, 20m);
+
+        // Partially pay the annual fee — FIFO allocation tags the payment with the fee it clears.
+        await AddFeeLinkedPaymentAsync(memberId, annualFeeId, 40m);
+
+        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync();
+
+        Assert.Equal(20m, attendance);
+        Assert.Equal(60m, annual);
+    }
+
+    [Fact]
+    public async Task GetOutstandingByFeeType_ExcludesOverpaymentLines_WithNullFeeId()
+    {
+        var memberId = await SeedMemberAsync();
+        var annualFeeId = await SeedFeeAsync(memberId, FeeType.Annual, 50m);
+        await AddFeeLinkedAccrualAsync(memberId, annualFeeId, 50m);
+
+        // Overpayment credit carries no FeeId (per PaymentService) — must not distort the total.
+        await AddGLPairAsync("0100", CashAccountId, 30m, memberId,
+                              "0101", MemberReceivableAccountId, 30m, memberId);
+
+        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync();
+
+        Assert.Equal(0m, attendance);
+        Assert.Equal(50m, annual);
+    }
+
     // --- Helpers ---
+
+    private async Task<Guid> SeedFeeAsync(Guid memberId, FeeType feeType, decimal amount)
+    {
+        var date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc);
+        var fee = new Fee
+        {
+            Id = Guid.NewGuid(), MemberId = memberId, FeeType = feeType, Amount = amount,
+            FeeDate = date, DueDate = date, PaidAtCreation = false, CreatedAt = date
+        };
+        _db.Fees.Add(fee);
+        await _db.SaveChangesAsync();
+        return fee.Id;
+    }
+
+    private async Task AddFeeLinkedAccrualAsync(Guid memberId, Guid feeId, decimal amount)
+    {
+        var date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc);
+        await _sut.AddPairAsync(
+            new Transaction
+            {
+                Id = Guid.NewGuid(), Date = date, AccountId = MemberReceivableAccountId,
+                DebitAmount = amount, CreditAmount = 0m, GLAccount = "0101",
+                MemberId = memberId, FeeId = feeId, CreatedAt = date
+            },
+            new Transaction
+            {
+                Id = Guid.NewGuid(), Date = date, AccountId = IncomeAccountId,
+                DebitAmount = 0m, CreditAmount = amount, GLAccount = "1000",
+                MemberId = null, FeeId = feeId, CreatedAt = date
+            });
+    }
+
+    private async Task AddFeeLinkedPaymentAsync(Guid memberId, Guid feeId, decimal amount)
+    {
+        var date = new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc);
+        await _sut.AddPairAsync(
+            new Transaction
+            {
+                Id = Guid.NewGuid(), Date = date, AccountId = CashAccountId,
+                DebitAmount = amount, CreditAmount = 0m, GLAccount = "0100",
+                MemberId = memberId, FeeId = feeId, CreatedAt = date
+            },
+            new Transaction
+            {
+                Id = Guid.NewGuid(), Date = date, AccountId = MemberReceivableAccountId,
+                DebitAmount = 0m, CreditAmount = amount, GLAccount = "0101",
+                MemberId = memberId, FeeId = feeId, CreatedAt = date
+            });
+    }
 
     private async Task<Guid> SeedMemberAsync()
     {
@@ -284,21 +380,21 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
     }
 
     private async Task AddGLPairAsync(
-        string debitAccount, Guid debitCategoryId, decimal debitAmount, Guid? debitMemberId,
-        string creditAccount, Guid creditCategoryId, decimal creditAmount, Guid? creditMemberId)
+        string debitAccount, Guid debitAccountId, decimal debitAmount, Guid? debitMemberId,
+        string creditAccount, Guid creditAccountId, decimal creditAmount, Guid? creditMemberId)
     {
         var date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc);
 
         await _sut.AddPairAsync(
             new Transaction
             {
-                Id = Guid.NewGuid(), Date = date, CategoryId = debitCategoryId,
+                Id = Guid.NewGuid(), Date = date, AccountId = debitAccountId,
                 DebitAmount = debitAmount, CreditAmount = 0m, GLAccount = debitAccount,
                 MemberId = debitMemberId, CreatedAt = date
             },
             new Transaction
             {
-                Id = Guid.NewGuid(), Date = date, CategoryId = creditCategoryId,
+                Id = Guid.NewGuid(), Date = date, AccountId = creditAccountId,
                 DebitAmount = 0m, CreditAmount = creditAmount, GLAccount = creditAccount,
                 MemberId = creditMemberId, CreatedAt = date
             });
@@ -309,13 +405,13 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         await _sut.AddPairAsync(
             new Transaction
             {
-                Id = Guid.NewGuid(), Date = date, CategoryId = MemberReceivableCategoryId,
+                Id = Guid.NewGuid(), Date = date, AccountId = MemberReceivableAccountId,
                 DebitAmount = amount, CreditAmount = 0m, GLAccount = "0101",
                 MemberId = memberId, CreatedAt = date
             },
             new Transaction
             {
-                Id = Guid.NewGuid(), Date = date, CategoryId = IncomeCategoryId,
+                Id = Guid.NewGuid(), Date = date, AccountId = IncomeAccountId,
                 DebitAmount = 0m, CreditAmount = amount, GLAccount = "1000",
                 MemberId = memberId, CreatedAt = date
             });

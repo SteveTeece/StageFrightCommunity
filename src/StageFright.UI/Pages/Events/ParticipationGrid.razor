@@ -39,7 +39,18 @@ else
                 <thead>
                     <tr>
                         <th scope="col">Member</th>
-                        <th scope="col" class="text-center">Participated</th>
+                        <th scope="col" class="text-center">
+                            <div class="d-flex flex-column align-items-center gap-1">
+                                <span>Participated</span>
+                                <span class="select-all-inline small text-muted">
+                                    (<input type="checkbox" class="form-check-input" id="select-all-participants"
+                                            checked="@_selectAll"
+                                            @onchange="ToggleSelectAll"
+                                            aria-label="Select all participants" />
+                                    <label class="form-check-label mb-0" for="select-all-participants">Select All</label>)
+                                </span>
+                            </div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,7 +61,7 @@ else
                             <td class="text-center">
                                 <input type="checkbox" class="form-check-input" id="participated-@row.MemberId"
                                        checked="@row.Participated"
-                                       @onchange="e => row.Participated = (bool)(e.Value ?? false)"
+                                       @onchange="e => SetRowParticipated(row, (bool)(e.Value ?? false))"
                                        aria-label="@row.MemberName participated" />
                             </td>
                         </tr>

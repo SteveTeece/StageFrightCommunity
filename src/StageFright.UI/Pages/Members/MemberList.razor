@@ -62,7 +62,7 @@ else
             <RadzenDataGridColumn TItem="Member" Property="StreetAddress" Title="Address" />
             <RadzenDataGridColumn TItem="Member" Property="Phone" Title="Phone" Width="130px" />
             <RadzenDataGridColumn TItem="Member" Property="Email" Title="Email" Width="200px" />
-            <RadzenDataGridColumn TItem="Member" Title="Age" Width="70px">
+            <RadzenDataGridColumn TItem="Member" Title="Age" Width="90px">
                 <Template Context="member">
                     @if (member.DateOfBirth.HasValue)
                     {
@@ -74,7 +74,7 @@ else
                     }
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Member" Title="Actions" Width="80px" Sortable="false">
+            <RadzenDataGridColumn TItem="Member" Title="Actions" Width="110px" Sortable="false">
                 <Template Context="member">
                     <button class="btn btn-primary btn-sm"
                             @onclick="() => EditMember(member.Id)"

@@ -92,6 +92,89 @@ public class ParticipationGridTests : BunitContext
         Assert.DoesNotContain("Mark as", cut.Markup, StringComparison.OrdinalIgnoreCase);
     }
 
+    // --- Select All ---
+
+    [Fact]
+    public void Renders_SelectAllCheckbox_BelowParticipatedColumnTitle_InParentheses()
+    {
+        var cut = RenderWithId();
+
+        var header = cut.Find("thead th:last-child");
+        Assert.NotNull(header.QuerySelector("#select-all-participants"));
+        Assert.Contains("Select All", header.TextContent);
+        Assert.Contains("Participated", header.TextContent);
+        Assert.True(
+            header.TextContent.IndexOf("Participated", StringComparison.Ordinal) <
+            header.TextContent.IndexOf("Select All", StringComparison.Ordinal),
+            "Participated should appear before the Select All control in the header's text content.");
+
+        var inline = header.QuerySelector(".select-all-inline");
+        Assert.NotNull(inline);
+        Assert.StartsWith("(", inline!.TextContent.TrimStart());
+        Assert.EndsWith(")", inline.TextContent.TrimEnd());
+    }
+
+    [Fact]
+    public void CheckingSelectAll_ChecksAllRowCheckboxes()
+    {
+        var cut = RenderWithId();
+
+        cut.Find("#select-all-participants").Change(true);
+
+        var checkboxes = cut.FindAll("input[type=checkbox][id^='participated-']");
+        Assert.All(checkboxes, cb => Assert.True(cb.HasAttribute("checked")));
+    }
+
+    [Fact]
+    public void UncheckingSelectAll_ClearsAllRowCheckboxes()
+    {
+        var cut = RenderWithId();
+        cut.Find("#select-all-participants").Change(true);
+
+        cut.Find("#select-all-participants").Change(false);
+
+        var checkboxes = cut.FindAll("input[type=checkbox][id^='participated-']");
+        Assert.All(checkboxes, cb => Assert.False(cb.HasAttribute("checked")));
+    }
+
+    [Fact]
+    public void UncheckingOneRow_AfterSelectAll_UnchecksSelectAll()
+    {
+        var cut = RenderWithId();
+        cut.Find("#select-all-participants").Change(true);
+
+        cut.Find("input[type=checkbox][id^='participated-']").Change(false);
+
+        Assert.False(cut.Find("#select-all-participants").HasAttribute("checked"));
+    }
+
+    [Fact]
+    public void CheckingEveryRowIndividually_ChecksSelectAll()
+    {
+        var cut = RenderWithId();
+
+        var count = cut.FindAll("input[type=checkbox][id^='participated-']").Count;
+        for (var i = 0; i < count; i++)
+            cut.FindAll("input[type=checkbox][id^='participated-']")[i].Change(true);
+
+        Assert.True(cut.Find("#select-all-participants").HasAttribute("checked"));
+    }
+
+    [Fact]
+    public async Task ClickSave_AfterSelectAll_SendsAllParticipantsAsParticipated()
+    {
+        var cut = RenderWithId();
+        cut.Find("#select-all-participants").Change(true);
+
+        await cut.Find("button.btn-primary").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        await _eventService.Received(1).RecordParticipationAsync(
+            EventId,
+            Arg.Is<IReadOnlyList<ParticipationBatchItem>>(items =>
+                items.Count == 2 && items.All(i => i.Participated)),
+            Arg.Any<CancellationToken>());
+    }
+
     [Fact]
     public void Renders_SaveButton()
     {

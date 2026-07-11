@@ -1,0 +1,144 @@
+@page "/finance/expenses"
+
+<PageTitle>Record Expense</PageTitle>
+
+<div class="expense-payment-page container-fluid py-2">
+    <h4 class="mb-2">Record Expense</h4>
+
+    @if (_loading)
+    {
+        <p role="status" aria-live="polite">Loading…</p>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+        }
+
+        @if (_successMessage is not null)
+        {
+            <div class="alert alert-success py-1 mb-2 small" role="status">
+                @_successMessage
+                <div class="mt-1">
+                    <button class="btn btn-sm btn-outline-success" @onclick="RecordAnother">Record Another</button>
+                </div>
+            </div>
+        }
+
+        @if (_successMessage is null)
+        {
+            @if (_expenseAccounts.Count == 0)
+            {
+                <div class="alert alert-warning py-1 mb-2 small" role="alert">
+                    No expense accounts are configured. Please add an expense account in the
+                    <a href="/finance/accounts">Chart of Accounts</a> before recording an expense.
+                </div>
+            }
+            else
+            {
+                <div class="card mb-2">
+                    <div class="card-body py-2">
+                        <EditForm Model="_form" OnValidSubmit="SaveAsync">
+                            <div class="row g-2">
+
+                                <div class="col-md-4">
+                                    <label class="form-label" for="expenseDate">Date <span aria-hidden="true">*</span></label>
+                                    <InputDate id="expenseDate" class="form-control form-control-sm" @bind-Value="_form.Date" />
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label" for="expenseAmount">Amount <span aria-hidden="true">*</span></label>
+                                    <div class="input-group input-group-sm @(_errors.ContainsKey("Amount") ? "has-validation" : "")">
+                                        <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
+                                        <InputNumber id="expenseAmount"
+                                                     class="@(_errors.ContainsKey("Amount") ? "form-control is-invalid" : "form-control")"
+                                                     @bind-Value="_form.Amount"
+                                                     @bind-Value:format="N2" />
+                                        @if (_errors.TryGetValue("Amount", out var amtErr))
+                                        {
+                                            <div class="invalid-feedback">@amtErr</div>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label" for="bankAccount">Paid from <span aria-hidden="true">*</span></label>
+                                    <InputSelect id="bankAccount"
+                                                 class="@(_errors.ContainsKey("BankAccountId") ? "form-select form-select-sm is-invalid" : "form-select form-select-sm")"
+                                                 @bind-Value="_form.BankAccountId">
+                                        <option value="@Guid.Empty">— select —</option>
+                                        @foreach (var bank in _bankAccounts)
+                                        {
+                                            <option value="@bank.Id">@bank.AccountNumber @bank.Name</option>
+                                        }
+                                    </InputSelect>
+                                    @if (_errors.TryGetValue("BankAccountId", out var bankErr))
+                                    {
+                                        <div class="invalid-feedback d-block">@bankErr</div>
+                                    }
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label" for="expenseAccount">Expense account <span aria-hidden="true">*</span></label>
+                                    <InputSelect id="expenseAccount"
+                                                 class="@(_errors.ContainsKey("ExpenseAccountId") ? "form-select form-select-sm is-invalid" : "form-select form-select-sm")"
+                                                 @bind-Value="_form.ExpenseAccountId">
+                                        <option value="@Guid.Empty">— select —</option>
+                                        @foreach (var acc in _expenseAccounts)
+                                        {
+                                            <option value="@acc.Id">@acc.Name</option>
+                                        }
+                                    </InputSelect>
+                                    @if (_errors.TryGetValue("ExpenseAccountId", out var accErr))
+                                    {
+                                        <div class="invalid-feedback d-block">@accErr</div>
+                                    }
+                                </div>
+
+                                @if (_isGstRegistered)
+                                {
+                                    <div class="col-md-4">
+                                        <label class="form-label" for="expenseGstCode">GST Treatment</label>
+                                        <InputSelect id="expenseGstCode" class="form-select form-select-sm" @bind-Value="_form.GstCode">
+                                            <option value="">GST-free (default)</option>
+                                            <option value="@StageFright.Core.Enums.GstCode.Gst">Taxable (GST)</option>
+                                            <option value="@StageFright.Core.Enums.GstCode.GstFree">GST-free</option>
+                                            <option value="@StageFright.Core.Enums.GstCode.InputTaxed">Input-taxed</option>
+                                        </InputSelect>
+                                        @if (GstInclusiveHint is not null)
+                                        {
+                                            <div class="form-text small">@GstInclusiveHint</div>
+                                        }
+                                    </div>
+                                }
+
+                                <div class="col-md-8">
+                                    <label class="form-label" for="payee">Payee</label>
+                                    <InputText id="payee" class="form-control form-control-sm"
+                                               @bind-Value="_form.Payee"
+                                               placeholder="Who was paid, e.g. Scout Hall Trust" />
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label" for="expenseDescription">Description</label>
+                                    <InputTextArea id="expenseDescription" class="form-control form-control-sm" rows="2"
+                                                   @bind-Value="_form.Description"
+                                                   placeholder="e.g. Hall hire for March rehearsals…" />
+                                </div>
+
+                            </div>
+
+                            <div class="d-flex gap-2 mt-2">
+                                <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
+                                    @(_saving ? "Saving…" : "Record Expense")
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="RecordAnother">Clear</button>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            }
+        }
+    }
+</div>

@@ -25,6 +25,12 @@ public interface IDashboardTileProvider
     /// <summary>Optional Blazor route to navigate to when the tile card is clicked. Null disables click-through.</summary>
     string? NavigateRoute => null;
 
+    /// <summary>
+    /// Optional label for the header action link (e.g. "View Members"). Rendered only when
+    /// both this and <see cref="NavigateRoute"/> are non-null. Null hides the link.
+    /// </summary>
+    string? ActionText => null;
+
     /// <summary>Loads tile metric data asynchronously. Exceptions are caught by the dashboard.</summary>
     Task<TileData> GetTileDataAsync(CancellationToken ct);
 }

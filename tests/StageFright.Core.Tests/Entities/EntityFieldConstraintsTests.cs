@@ -48,7 +48,7 @@ public class EntityFieldConstraintsTests : TestBase
     [InlineData(typeof(Event))]
     [InlineData(typeof(EventType))]
     [InlineData(typeof(ParticipationRecord))]
-    [InlineData(typeof(Category))]
+    [InlineData(typeof(Account))]
     [InlineData(typeof(Settings))]
     public void SoftDeletableEntities_HaveIsDeletedField(Type entityType)
     {
@@ -61,7 +61,7 @@ public class EntityFieldConstraintsTests : TestBase
     [InlineData(typeof(Member))]
     [InlineData(typeof(CommitteeMembership))]
     [InlineData(typeof(Rehearsal))]
-    [InlineData(typeof(Category))]
+    [InlineData(typeof(Account))]
     [InlineData(typeof(Settings))]
     public void SoftDeletableEntities_HaveDeletedAtField(Type entityType)
     {
@@ -74,7 +74,7 @@ public class EntityFieldConstraintsTests : TestBase
     [InlineData(typeof(Member))]
     [InlineData(typeof(CommitteeMembership))]
     [InlineData(typeof(Rehearsal))]
-    [InlineData(typeof(Category))]
+    [InlineData(typeof(Account))]
     [InlineData(typeof(Settings))]
     public void SoftDeletableEntities_HaveDeletedByField(Type entityType)
     {
@@ -124,7 +124,7 @@ public class EntityFieldConstraintsTests : TestBase
     [InlineData(typeof(Fee))]
     [InlineData(typeof(Payment))]
     [InlineData(typeof(Transaction))]
-    [InlineData(typeof(Category))]
+    [InlineData(typeof(Account))]
     [InlineData(typeof(Settings))]
     [InlineData(typeof(AuditTrailEntry))]
     public void AllEntities_HaveGuidIdProperty(Type entityType)

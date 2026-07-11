@@ -1,3 +1,5 @@
+using StageFright.Core.Enums;
+
 namespace StageFright.Core.Entities;
 
 /// <summary>
@@ -15,8 +17,8 @@ public class Transaction
     /// <summary>UTC date of the transaction (matches the source operation date).</summary>
     public DateTime Date { get; set; }
 
-    /// <summary>FK to the income/expense/asset category that determines the GL account.</summary>
-    public Guid CategoryId { get; set; }
+    /// <summary>FK to the chart-of-accounts entry this row is posted to.</summary>
+    public Guid AccountId { get; set; }
 
     /// <summary>
     /// Debit amount. Exactly one of DebitAmount / CreditAmount is non-zero per row.
@@ -31,9 +33,10 @@ public class Transaction
     public decimal CreditAmount { get; set; }
 
     /// <summary>
-    /// GL account number stored denormalized at creation time (e.g., "0100" Cash,
-    /// "0101" MemberReceivable, "10xx" income, "20xx" expense, "9900" write-off).
-    /// Immutable once set.
+    /// Account number stored denormalized at posting time. Historical rows keep whatever
+    /// number was current when they were posted (legacy "0100"/"0101"/"10xx"/"20xx"/"9900"
+    /// or current "1100"/"1200"/"4xxx"/"6xxx" ranges) — this is a snapshot and is NEVER
+    /// updated; all aggregation keys on <see cref="AccountId"/> instead.
     /// </summary>
     public string GLAccount { get; set; } = string.Empty;
 
@@ -47,6 +50,18 @@ public class Transaction
     public Guid? FeeId { get; set; }
 
     /// <summary>
+    /// FK to the journal entry header that grouped this posting. Null for pair-based
+    /// postings (fees, payments, forgiveness) and all rows created before journal entries existed.
+    /// </summary>
+    public Guid? JournalEntryId { get; set; }
+
+    /// <summary>
+    /// GST treatment stamped at posting time. Null on rows posted while unregistered
+    /// and on all historical rows — never updated after posting.
+    /// </summary>
+    public GstCode? GstCode { get; set; }
+
+    /// <summary>
     /// Optional description. Reversing entries MUST state what was reversed and why
     /// (Constitution §3.6).
     /// </summary>
@@ -57,8 +72,8 @@ public class Transaction
 
     // --- Navigation ---
 
-    /// <summary>The category that classifies this transaction.</summary>
-    public Category Category { get; set; } = null!;
+    /// <summary>The account this transaction is posted to.</summary>
+    public Account Account { get; set; } = null!;
 
     /// <summary>The member this transaction relates to, if any.</summary>
     public Member? Member { get; set; }
@@ -68,4 +83,7 @@ public class Transaction
 
     /// <summary>The fee associated with this transaction, if any.</summary>
     public Fee? Fee { get; set; }
+
+    /// <summary>The journal entry that grouped this posting, if any.</summary>
+    public JournalEntry? JournalEntry { get; set; }
 }

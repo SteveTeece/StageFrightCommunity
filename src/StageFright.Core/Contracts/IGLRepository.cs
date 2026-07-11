@@ -14,6 +14,13 @@ public interface IGLRepository
     /// </summary>
     Task AddPairAsync(Transaction debit, Transaction credit, CancellationToken ct = default);
 
+    /// <summary>
+    /// Inserts a balanced multi-line GL set atomically. Requires at least two lines,
+    /// exactly one non-zero (positive) side per line, and Σdebits == Σcredits;
+    /// otherwise throws GLBalanceException and nothing is inserted.
+    /// </summary>
+    Task AddBalancedSetAsync(IReadOnlyList<Transaction> lines, CancellationToken ct = default);
+
     /// <summary>Returns the outstanding balance for the member: Σdebits − Σcredits.</summary>
     Task<decimal> GetMemberBalanceAsync(Guid memberId, CancellationToken ct = default);
 
@@ -33,9 +40,38 @@ public interface IGLRepository
     Task<IReadOnlyList<Transaction>> GetByFeeAsync(Guid feeId, CancellationToken ct = default);
 
     /// <summary>
+    /// Returns the net balance (Σdebits − Σcredits) of a single account for all
+    /// transactions dated on or before <paramref name="asAt"/>. Positive = net debit.
+    /// </summary>
+    Task<decimal> GetAccountBalanceAsync(Guid accountId, DateTime asAt, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns per-account debit/credit movement totals for transactions within the
+    /// inclusive date range, keyed by AccountId.
+    /// </summary>
+    Task<IReadOnlyDictionary<Guid, (decimal Debits, decimal Credits)>> GetAccountMovementsAsync(
+        DateTime from, DateTime to, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns the account's GL transactions not yet cleared by any non-deleted bank
+    /// reconciliation, optionally limited to transactions dated on or before
+    /// <paramref name="upTo"/>. Ordered by date then creation time.
+    /// </summary>
+    Task<IReadOnlyList<Transaction>> GetUnreconciledByAccountAsync(
+        Guid accountId, DateTime? upTo = null, CancellationToken ct = default);
+
+    /// <summary>
     /// Returns the total outstanding fee amounts grouped into standard aging buckets as of today.
     /// Buckets: Current (not yet due), 30 days (1–30 days overdue), 60 days (31–60 days overdue),
     /// 90+ days (61+ days overdue). Uses Fee.DueDate and Fee.PaidAtCreation, consistent with reports.
     /// </summary>
     Task<(decimal Current, decimal Days30, decimal Days60, decimal Days90Plus)> GetAgingBucketsAsync(CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns outstanding balances (Σdebits − Σcredits on the Member Receivable account)
+    /// split by FeeType, for fee-linked transactions only. Overpayment/adjustment lines
+    /// (FeeId == null) are excluded from the split but still count toward per-member and
+    /// total-outstanding figures elsewhere (GetMemberBalanceAsync/GetTotalOutstandingAsync).
+    /// </summary>
+    Task<(decimal Attendance, decimal Annual)> GetOutstandingByFeeTypeAsync(CancellationToken ct = default);
 }

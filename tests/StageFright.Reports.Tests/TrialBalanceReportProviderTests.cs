@@ -18,12 +18,13 @@ namespace StageFright.Reports.Tests;
 public class TrialBalanceReportProviderTests
 {
     private readonly IGLRepository _gl = Substitute.For<IGLRepository>();
-    private readonly ICategoryRepository _categories = Substitute.For<ICategoryRepository>();
+    private readonly IAccountRepository _accounts = Substitute.For<IAccountRepository>();
+    private readonly ISettingsRepository _settings = Substitute.For<ISettingsRepository>();
     private readonly TrialBalanceReportProvider _sut;
 
     public TrialBalanceReportProviderTests()
     {
-        _sut = new TrialBalanceReportProvider(_gl, _categories);
+        _sut = new TrialBalanceReportProvider(_gl, _accounts, _settings);
     }
 
     [Fact]
@@ -42,7 +43,7 @@ public class TrialBalanceReportProviderTests
     public async Task GenerateAsync_WhenBalanced_ReturnsReport()
     {
         SetupBalanceTotals(1000m, 1000m);
-        SetupCategories();
+        SetupAccounts();
 
         var result = await _sut.GenerateAsync(CurrentYearFilters());
 
@@ -54,7 +55,7 @@ public class TrialBalanceReportProviderTests
     public async Task GenerateAsync_WhenBalanced_HasAssetsSection()
     {
         SetupBalanceTotals(500m, 500m);
-        SetupCategories();
+        SetupAccounts();
 
         var result = await _sut.GenerateAsync(CurrentYearFilters());
 
@@ -65,7 +66,7 @@ public class TrialBalanceReportProviderTests
     public async Task GenerateAsync_WhenBalanced_HasIncomeSection()
     {
         SetupBalanceTotals(200m, 200m);
-        SetupCategories(MakeCategory(Guid.NewGuid(), "Dues", CategoryType.Income, "1000"));
+        SetupAccounts(MakeAccount(Guid.NewGuid(), "Dues", AccountType.Income, "1000"));
 
         var result = await _sut.GenerateAsync(CurrentYearFilters());
 
@@ -76,7 +77,7 @@ public class TrialBalanceReportProviderTests
     public async Task GenerateAsync_WhenBalanced_HasExpensesSection()
     {
         SetupBalanceTotals(300m, 300m);
-        SetupCategories(MakeCategory(Guid.NewGuid(), "Hall", CategoryType.Expense, "2000"));
+        SetupAccounts(MakeAccount(Guid.NewGuid(), "Hall", AccountType.Expense, "2000"));
 
         var result = await _sut.GenerateAsync(CurrentYearFilters());
 
@@ -87,7 +88,7 @@ public class TrialBalanceReportProviderTests
     public async Task GenerateAsync_ReportHasDebitAndCreditColumns()
     {
         SetupBalanceTotals(0m, 0m);
-        SetupCategories();
+        SetupAccounts();
 
         var result = await _sut.GenerateAsync(CurrentYearFilters());
 
@@ -99,7 +100,7 @@ public class TrialBalanceReportProviderTests
     public async Task GenerateAsync_WhenImbalanced_ThrowsGLBalanceException()
     {
         SetupBalanceTotals(1000m, 950m); // $50 imbalance
-        SetupCategories();
+        SetupAccounts();
 
         var ex = await Assert.ThrowsAsync<GLBalanceException>(
             () => _sut.GenerateAsync(CurrentYearFilters()));
@@ -111,7 +112,7 @@ public class TrialBalanceReportProviderTests
     public async Task GenerateAsync_WhenImbalanced_ExceptionMessage_MatchesFR034()
     {
         SetupBalanceTotals(1000m, 950m);
-        SetupCategories();
+        SetupAccounts();
 
         var ex = await Assert.ThrowsAsync<GLBalanceException>(
             () => _sut.GenerateAsync(CurrentYearFilters()));
@@ -127,7 +128,7 @@ public class TrialBalanceReportProviderTests
     {
         // Exactly 0.01 difference should still pass (within tolerance)
         SetupBalanceTotals(100.00m, 100.00m);
-        SetupCategories();
+        SetupAccounts();
 
         var result = await _sut.GenerateAsync(CurrentYearFilters());
 
@@ -138,7 +139,7 @@ public class TrialBalanceReportProviderTests
     public async Task GenerateAsync_GrandTotalRow_ShowsTotalDebitsAndCredits()
     {
         SetupBalanceTotals(500m, 500m);
-        SetupCategories();
+        SetupAccounts();
 
         var result = await _sut.GenerateAsync(CurrentYearFilters());
 
@@ -155,16 +156,16 @@ public class TrialBalanceReportProviderTests
             .Returns((debits, credits));
     }
 
-    private void SetupCategories(params Category[] cats)
+    private void SetupAccounts(params Account[] cats)
     {
-        _categories.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<Category>>(cats.ToList()));
+        _accounts.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<Account>>(cats.ToList()));
         _gl.GetByDateRangeAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<Transaction>>(Array.Empty<Transaction>().ToList()));
     }
 
-    private static Category MakeCategory(Guid id, string name, CategoryType type, string glAccount)
-        => new() { Id = id, Name = name, Type = type, GLAccount = glAccount, CreatedAt = DateTime.UtcNow };
+    private static Account MakeAccount(Guid id, string name, AccountType type, string glAccount)
+        => new() { Id = id, Name = name, Type = type, AccountNumber = glAccount, CreatedAt = DateTime.UtcNow };
 
     private static ReportFilterValues CurrentYearFilters()
     {

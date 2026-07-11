@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Members;
 
 namespace StageFright.UI.Pages.Members;
@@ -50,10 +51,11 @@ public partial class MemberDetail : ComponentBase
             foreach (var fee in fees)
             {
                 var transactions = await GLRepository.GetByFeeAsync(fee.Id);
-                // Only credits to MemberReceivable (0101) represent actual payments clearing the debt.
+                // Only credits to Member Receivable represent actual payments clearing the debt.
                 // The accrual entry credits Income — that must not be counted as payment received.
+                // Match by AccountId (not the GLAccount snapshot string, which is legacy on older rows).
                 var totalCredits = transactions
-                    .Where(t => t.GLAccount == "0101" && t.CreditAmount > 0)
+                    .Where(t => t.AccountId == SystemAccounts.MemberReceivableId && t.CreditAmount > 0)
                     .Sum(t => t.CreditAmount);
                 bool isPaid = totalCredits >= fee.Amount;
 

@@ -16,6 +16,7 @@ public class DashboardMenuItemProvider : IMenuItemProvider
         {
             Title = "Dashboard",
             Route = "/dashboard",
+            ShortLabel = "HOME",
             DisplayOrder = 0
         }
     ];

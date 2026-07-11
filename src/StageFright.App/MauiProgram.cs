@@ -1,4 +1,4 @@
-using System.Data.Common;
+﻿using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
@@ -16,7 +16,10 @@ using StageFright.Core.Modules.Members;
 using StageFright.Core.Modules.Rehearsals;
 using StageFright.Core.Modules.Settings;
 using StageFright.Data;
-using StageFright.UI.Modules.Dashboard;
+using StageFright.UI.Modules.Events;
+using StageFright.UI.Modules.Finance;
+using StageFright.UI.Modules.Members;
+using StageFright.UI.Modules.Rehearsals;
 using StageFright.UI.Pages.Settings;
 using StageFright.Data.PluginData;
 using StageFright.Data.Repositories;
@@ -57,9 +60,8 @@ public static class MauiProgram
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
-#endif
-
         builder.Services.AddScoped<IDebugDataSeeder, DebugDataSeeder>();
+#endif
 
         builder.Logging.AddSerilog(dispose: true);
 
@@ -138,7 +140,9 @@ public static class MauiProgram
         services.AddScoped<IFeeRepository, FeeRepository>();
         services.AddScoped<IPaymentRepository, PaymentRepository>();
         services.AddScoped<IGLRepository, GLRepository>();
-        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IJournalEntryRepository, JournalEntryRepository>();
+        services.AddScoped<IBankReconciliationRepository, BankReconciliationRepository>();
+        services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<ISettingsRepository, SettingsRepository>();
         services.AddScoped<IAuditTrailRepository, AuditTrailRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -148,7 +152,7 @@ public static class MauiProgram
     {
         services.AddScoped<IAuditTrailService, AuditTrailService>();
         services.AddScoped<ISetupService, SetupService>();
-        services.AddScoped<GLAccountAssignmentService>();
+        services.AddScoped<AccountNumberAssignmentService>();
 
         // Settings service
         services.AddScoped<ISettingsService, SettingsService>();
@@ -173,10 +177,20 @@ public static class MauiProgram
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IReactivationForgivenessService, ReactivationForgivenessService>();
         services.AddScoped<IMemberBalanceService, MemberBalanceService>();
+        services.AddScoped<IFinanceSummaryService, FinanceSummaryService>();
         services.AddScoped<IIncomeEntryService, IncomeEntryService>();
 
-        // Category management module (Phase 7)
-        services.AddScoped<ICategoryService, CategoryService>();
+        // Finance expansion — posting engine + money-out workflows (spec 002 US2)
+        services.AddScoped<IExpensePaymentService, ExpensePaymentService>();
+        services.AddScoped<IAccountTransferService, AccountTransferService>();
+        services.AddScoped<IGeneralJournalService, GeneralJournalService>();
+        services.AddScoped<IOpeningBalanceService, OpeningBalanceService>();
+
+        // Finance expansion — bank reconciliation (spec 002 US3)
+        services.AddScoped<IBankReconciliationService, BankReconciliationService>();
+
+        // Account management module (Phase 7)
+        services.AddScoped<IAccountService, AccountService>();
 
         // Dashboard service (Phase 8)
         services.AddScoped<IDashboardService, DashboardService>();
@@ -191,6 +205,9 @@ public static class MauiProgram
         services.AddScoped<IDashboardTileProvider, RehearsalsDashboardTileProvider>();
         services.AddScoped<IDashboardTileProvider, EventsDashboardTileProvider>();
         services.AddScoped<IDashboardTileProvider, FinanceDashboardTileProvider>();
+        services.AddScoped<IDashboardTileProvider, CashFlowDashboardTileProvider>();
+        services.AddScoped<IDashboardTileProvider, OutstandingBalancesDashboardTileProvider>();
+        services.AddScoped<IDashboardTileProvider, AttendanceTrendDashboardTileProvider>();
 
         // Backup service (Phase 13)
         services.AddScoped<IBackupRepository, BackupRepository>();
@@ -203,6 +220,10 @@ public static class MauiProgram
         services.AddScoped<IReportProvider, MemberAccountSummaryReportProvider>();
         services.AddScoped<IReportProvider, MemberListReportProvider>();
         services.AddScoped<IReportProvider, CommitteeReportProvider>();
+        services.AddScoped<IReportProvider, BankReconciliationReportProvider>();
+        services.AddScoped<IReportProvider, BasSummaryReportProvider>();
+        services.AddScoped<IReportProvider, BalanceSheetReportProvider>();
+        services.AddScoped<IReportProvider, GeneralLedgerReportProvider>();
         services.AddScoped<IReportProviderRegistry, ReportProviderRegistry>();
         services.AddScoped<IPdfReportRenderer, PdfReportRenderer>();
         services.AddScoped<ICsvReportExporter, CsvReportExporter>();

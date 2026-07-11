@@ -55,7 +55,7 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
 
             // Verify manifest
             var manifest = await svc.GetManifestAsync(path);
-            Assert.Equal("1.0.0", manifest.SchemaVersion);
+            Assert.Equal("1.1.0", manifest.SchemaVersion);
             Assert.Equal(2, manifest.EntityCounts["Members"]);
 
             // Clear active members (simulate fresh restore target)
@@ -105,13 +105,13 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
         {
             await svc.ExportAsync(path);
 
-            // Tamper: remove Categories from EntityCounts to simulate a missing entity type
+            // Tamper: remove Accounts from EntityCounts to simulate a missing entity type
             var envelope = ReadEnvelope(path);
-            envelope.EntityCounts.Remove("Categories");
+            envelope.EntityCounts.Remove("Accounts");
             WriteEnvelope(path, envelope);
 
             var ex = await Assert.ThrowsAsync<ImportException>(() => svc.ImportAsync(path));
-            Assert.Contains("Import file incomplete: missing Categories", ex.Message);
+            Assert.Contains("Import file incomplete: missing Accounts", ex.Message);
         }
         finally
         {

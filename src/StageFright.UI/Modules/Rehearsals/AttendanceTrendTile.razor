@@ -1,0 +1,18 @@
+@inherits ComponentBase
+
+@if (_loading)
+{
+    <span class="text-muted small">Loading...</span>
+}
+else if (_error)
+{
+    <span class="text-danger small">Unable to load</span>
+}
+else if (!_hasData)
+{
+    <span class="text-muted small">No attendance recorded in the last 6 months</span>
+}
+else
+{
+    <LineChart @ref="_chart" Height="110" />
+}

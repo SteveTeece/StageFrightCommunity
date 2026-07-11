@@ -1,18 +1,13 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using StageFright.Core.Contracts;
-using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Dashboard;
-using StageFright.Core.Modules.Finance;
-using StageFright.Core.Modules.Members;
-using StageFright.Core.Modules.Rehearsals;
-using StageFright.Data;
-using StageFright.Data.Repositories;
 using StageFright.Plugins.Contracts;
 using StageFright.TestPlugin;
-using StageFright.UI.Modules.Dashboard;
+using StageFright.UI.Modules.Events;
+using StageFright.UI.Modules.Finance;
+using StageFright.UI.Modules.Members;
+using StageFright.UI.Modules.Rehearsals;
 
 namespace StageFright.Integration.Tests.Scenarios;
 
@@ -21,28 +16,11 @@ namespace StageFright.Integration.Tests.Scenarios;
 /// Verifies that core tiles load in parallel, a failing provider is isolated,
 /// the TestPlugin tile appears in the Extensions section (DisplayOrder 100+),
 /// and missing-dependency plugins are skipped without blocking others.
-/// Uses real tile providers wired to a real in-memory database.
+/// Core tile providers are self-contained (design 3a); their tile components
+/// own data loading, so no database wiring is required here.
 /// </summary>
-public sealed class V8_DashboardPluginTests : IAsyncLifetime
+public sealed class V8_DashboardPluginTests
 {
-    private StageFrightDbContext _db = null!;
-
-    public async Task InitializeAsync()
-    {
-        var options = new DbContextOptionsBuilder<StageFrightDbContext>()
-            .UseSqlite("Data Source=:memory:")
-            .Options;
-
-        _db = new StageFrightDbContext(options);
-        await _db.Database.OpenConnectionAsync();
-        await _db.Database.MigrateAsync();
-    }
-
-    public async Task DisposeAsync()
-    {
-        await _db.Database.CloseConnectionAsync();
-        await _db.DisposeAsync();
-    }
 
     // --- Core tiles load ---
 
@@ -70,7 +48,7 @@ public sealed class V8_DashboardPluginTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task LoadTileAsync_MembersTile_ReturnsMetrics()
+    public async Task LoadTileAsync_MembersTile_ReturnsNavigableTileData()
     {
         var svc = BuildDashboardService();
         var tiles = await svc.GetTilesAsync();
@@ -80,11 +58,11 @@ public sealed class V8_DashboardPluginTests : IAsyncLifetime
 
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Data);
-        Assert.NotEmpty(result.Data!.Metrics);
+        Assert.Equal("/members", result.Data!.NavigateRoute);
     }
 
     [Fact]
-    public async Task LoadTileAsync_RehearsalsTile_ReturnsMetrics()
+    public async Task LoadTileAsync_RehearsalsTile_ReturnsNavigableTileData()
     {
         var svc = BuildDashboardService();
         var tiles = await svc.GetTilesAsync();
@@ -93,11 +71,11 @@ public sealed class V8_DashboardPluginTests : IAsyncLifetime
         var result = await svc.LoadTileAsync(tile);
 
         Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Data);
+        Assert.Equal("/rehearsals", result.Data!.NavigateRoute);
     }
 
     [Fact]
-    public async Task LoadTileAsync_FinanceTile_ReturnsMetrics()
+    public async Task LoadTileAsync_FinanceTile_ReturnsNavigableTileData()
     {
         var svc = BuildDashboardService();
         var tiles = await svc.GetTilesAsync();
@@ -106,7 +84,22 @@ public sealed class V8_DashboardPluginTests : IAsyncLifetime
         var result = await svc.LoadTileAsync(tile);
 
         Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Data);
+        Assert.Equal("/finance", result.Data!.NavigateRoute);
+    }
+
+    [Fact]
+    public async Task GetTilesAsync_IncludesChartTiles_WithoutNavigation()
+    {
+        var svc = BuildDashboardService();
+
+        var tiles = await svc.GetTilesAsync();
+
+        var cashFlow = tiles.Single(t => t.TileId == "finance-cashflow");
+        var trend = tiles.Single(t => t.TileId == "rehearsals-attendance-trend");
+        Assert.Null(cashFlow.NavigateRoute);
+        Assert.Null(trend.NavigateRoute);
+        Assert.Null(cashFlow.ActionText);
+        Assert.Null(trend.ActionText);
     }
 
     // --- Parallel load isolation ---
@@ -232,43 +225,22 @@ public sealed class V8_DashboardPluginTests : IAsyncLifetime
 
     // --- Helpers ---
 
-    private DashboardService BuildDashboardService(
+    private static DashboardService BuildDashboardService(
         IEnumerable<IDashboardTileProvider>? extraProviders = null)
     {
-        var memberRepo = new MemberRepository(_db);
-        var rehearsalRepo = new RehearsalRepository(_db);
-        var glRepo = new GLRepository(_db);
-        var auditRepo = new AuditTrailRepository(_db);
-        var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        var settingsRepo = new SettingsRepository(_db);
-        var unitOfWork = new UnitOfWork(_db);
-
-        var memberSvc = BuildMemberService(memberRepo, settingsRepo, auditSvc, unitOfWork);
-        var rehearsalSvc = new RehearsalService(rehearsalRepo, memberRepo, auditSvc, unitOfWork);
-
         var providers = new List<IDashboardTileProvider>
         {
-            new MembersDashboardTileProvider(memberSvc),
-            new RehearsalsDashboardTileProvider(rehearsalSvc),
-            new FinanceDashboardTileProvider(glRepo)
+            new MembersDashboardTileProvider(),
+            new RehearsalsDashboardTileProvider(),
+            new EventsDashboardTileProvider(),
+            new FinanceDashboardTileProvider(),
+            new CashFlowDashboardTileProvider(),
+            new AttendanceTrendDashboardTileProvider()
         };
 
         if (extraProviders is not null)
             providers.AddRange(extraProviders);
 
         return new DashboardService(providers, NullLogger<DashboardService>.Instance);
-    }
-
-    private static IMemberService BuildMemberService(
-        IMemberRepository memberRepo,
-        ISettingsRepository settingsRepo,
-        IAuditTrailService auditSvc,
-        IUnitOfWork unitOfWork)
-    {
-        var ageCalc = new AgeCalculationService();
-        var validation = new MemberValidationService(ageCalc);
-        var committeeRepo = Substitute.For<ICommitteeMembershipRepository>();
-
-        return new MemberService(memberRepo, committeeRepo, validation, settingsRepo, auditSvc, unitOfWork);
     }
 }

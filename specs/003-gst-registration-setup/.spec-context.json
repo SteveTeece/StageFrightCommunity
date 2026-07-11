@@ -1,0 +1,17 @@
+{
+  "workflow": "speckit",
+  "specName": "003-gst-registration-setup",
+  "branch": "003-gst-registration-setup",
+  "selectedAt": "2026-07-09T02:34:20.694Z",
+  "currentStep": "implement",
+  "status": "implemented",
+  "history": [
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "user",
+      "at": "2026-07-09T02:34:29.634Z"
+    }
+  ]
+}

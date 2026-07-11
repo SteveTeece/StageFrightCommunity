@@ -12,10 +12,19 @@ public class MenuItem
     /// <summary>Optional icon name or CSS class.</summary>
     public string? Icon { get; set; }
 
+    /// <summary>
+    /// Optional short label (≤4 chars, e.g. "MEMB") for compact navigation surfaces.
+    /// The current sidebar shows the full <see cref="Title"/> and ignores this.
+    /// </summary>
+    public string? ShortLabel { get; set; }
+
     /// <summary>Sort order within the module's menu items.</summary>
     public int DisplayOrder { get; set; }
 
-    /// <summary>Nested sub-items rendered as a dropdown. Empty list = no dropdown.</summary>
+    /// <summary>
+    /// Nested sub-items. The shell sidebar renders items with sub-items as an
+    /// expandable group that auto-expands while a child route is active.
+    /// </summary>
     public List<MenuItem> SubItems { get; set; } = new();
 
     /// <summary>Optional badge text (e.g., count of pending items). Null = no badge.</summary>

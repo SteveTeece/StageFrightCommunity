@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Finance;
 
 namespace StageFright.Data.Repositories;
 
@@ -21,20 +23,50 @@ public class GLRepository : IGLRepository
                 "GL transaction pair imbalanced; operation cancelled.",
                 nameof(Transaction), nameof(AddPairAsync));
 
-        await _db.Transactions.AddRangeAsync(new[] { debit, credit }, ct);
+        await AddBalancedSetAsync(new[] { debit, credit }, ct);
+    }
+
+    public async Task AddBalancedSetAsync(IReadOnlyList<Transaction> lines, CancellationToken ct = default)
+    {
+        if (lines.Count < 2)
+            throw new GLBalanceException(
+                "A GL posting requires at least two lines.",
+                nameof(Transaction), nameof(AddBalancedSetAsync));
+
+        foreach (var line in lines)
+        {
+            if (line.DebitAmount < 0m || line.CreditAmount < 0m)
+                throw new GLBalanceException(
+                    "GL line amounts cannot be negative.",
+                    nameof(Transaction), nameof(AddBalancedSetAsync));
+
+            if ((line.DebitAmount != 0m) == (line.CreditAmount != 0m))
+                throw new GLBalanceException(
+                    "Each GL line must have exactly one non-zero side (debit or credit).",
+                    nameof(Transaction), nameof(AddBalancedSetAsync));
+        }
+
+        if (lines.Sum(l => l.DebitAmount) != lines.Sum(l => l.CreditAmount))
+            throw new GLBalanceException(
+                "GL set imbalanced (Σdebits ≠ Σcredits); operation cancelled.",
+                nameof(Transaction), nameof(AddBalancedSetAsync));
+
+        await _db.Transactions.AddRangeAsync(lines, ct);
         await _db.SaveChangesAsync(ct);
     }
 
     public async Task<decimal> GetMemberBalanceAsync(Guid memberId, CancellationToken ct = default)
     {
-        // Outstanding = net balance of the MemberReceivable account (GL#0101) for this member.
-        // Debits to 0101 create the receivable; credits to 0101 clear it on payment/forgiveness.
+        // Outstanding = net balance of the Member Receivable account for this member.
+        // Debits create the receivable; credits clear it on payment/forgiveness.
+        // Keyed on AccountId — the denormalized GLAccount string is a posting-time
+        // snapshot and legacy rows still carry the old "0101" number.
         var debits = await _db.Transactions
-            .Where(t => t.MemberId == memberId && t.GLAccount == "0101")
+            .Where(t => t.MemberId == memberId && t.AccountId == SystemAccounts.MemberReceivableId)
             .SumAsync(t => t.DebitAmount, ct);
 
         var credits = await _db.Transactions
-            .Where(t => t.MemberId == memberId && t.GLAccount == "0101")
+            .Where(t => t.MemberId == memberId && t.AccountId == SystemAccounts.MemberReceivableId)
             .SumAsync(t => t.CreditAmount, ct);
 
         return debits - credits;
@@ -42,18 +74,48 @@ public class GLRepository : IGLRepository
 
     public async Task<decimal> GetTotalOutstandingAsync(CancellationToken ct = default)
     {
-        // Outstanding across all members = net balance of the MemberReceivable account (GL#0101).
+        // Outstanding across all members = net balance of the Member Receivable account.
         // In a balanced double-entry GL, summing ALL accounts yields zero; we project only the
         // receivable account to get the meaningful "members owe" figure for the Finance tile.
         var debits = await _db.Transactions
-            .Where(t => t.GLAccount == "0101")
+            .Where(t => t.AccountId == SystemAccounts.MemberReceivableId)
             .SumAsync(t => t.DebitAmount, ct);
 
         var credits = await _db.Transactions
-            .Where(t => t.GLAccount == "0101")
+            .Where(t => t.AccountId == SystemAccounts.MemberReceivableId)
             .SumAsync(t => t.CreditAmount, ct);
 
         return debits - credits;
+    }
+
+    public async Task<decimal> GetAccountBalanceAsync(Guid accountId, DateTime asAt, CancellationToken ct = default)
+    {
+        var debits = await _db.Transactions
+            .Where(t => t.AccountId == accountId && t.Date <= asAt)
+            .SumAsync(t => t.DebitAmount, ct);
+
+        var credits = await _db.Transactions
+            .Where(t => t.AccountId == accountId && t.Date <= asAt)
+            .SumAsync(t => t.CreditAmount, ct);
+
+        return debits - credits;
+    }
+
+    public async Task<IReadOnlyDictionary<Guid, (decimal Debits, decimal Credits)>> GetAccountMovementsAsync(
+        DateTime from, DateTime to, CancellationToken ct = default)
+    {
+        var movements = await _db.Transactions
+            .Where(t => t.Date >= from && t.Date <= to)
+            .GroupBy(t => t.AccountId)
+            .Select(g => new
+            {
+                AccountId = g.Key,
+                Debits = g.Sum(t => t.DebitAmount),
+                Credits = g.Sum(t => t.CreditAmount)
+            })
+            .ToListAsync(ct);
+
+        return movements.ToDictionary(m => m.AccountId, m => (m.Debits, m.Credits));
     }
 
     public async Task<IReadOnlyList<Transaction>> GetByDateRangeAsync(DateTime from, DateTime to, CancellationToken ct = default)
@@ -96,6 +158,24 @@ public class GLRepository : IGLRepository
             .ToListAsync(ct);
     }
 
+    public async Task<IReadOnlyList<Transaction>> GetUnreconciledByAccountAsync(
+        Guid accountId, DateTime? upTo = null, CancellationToken ct = default)
+    {
+        // The global query filter on ReconciliationLine excludes lines belonging to
+        // soft-deleted reconciliations, so those transactions reappear as unreconciled.
+        var query = _db.Transactions
+            .Where(t => t.AccountId == accountId)
+            .Where(t => !_db.ReconciliationLines.Any(l => l.TransactionId == t.Id));
+
+        if (upTo is not null)
+            query = query.Where(t => t.Date <= upTo);
+
+        return await query
+            .OrderBy(t => t.Date)
+            .ThenBy(t => t.CreatedAt)
+            .ToListAsync(ct);
+    }
+
     public async Task<(decimal Current, decimal Days30, decimal Days60, decimal Days90Plus)> GetAgingBucketsAsync(CancellationToken ct = default)
     {
         var today = DateTime.UtcNow.Date;
@@ -114,5 +194,23 @@ public class GLRepository : IGLRepository
             else days90Plus += fee.Amount;
         }
         return (current, days30, days60, days90Plus);
+    }
+
+    public async Task<(decimal Attendance, decimal Annual)> GetOutstandingByFeeTypeAsync(CancellationToken ct = default)
+    {
+        // Fee-linked Member Receivable movements only — overpayment/adjustment lines carry no
+        // FeeId and are intentionally excluded here (they still count in GetMemberBalanceAsync).
+        var byType = await (
+            from t in _db.Transactions
+            where t.AccountId == SystemAccounts.MemberReceivableId && t.FeeId != null
+            join f in _db.Fees on t.FeeId equals f.Id
+            group t by f.FeeType into g
+            select new { FeeType = g.Key, Balance = g.Sum(t => t.DebitAmount) - g.Sum(t => t.CreditAmount) })
+            .ToListAsync(ct);
+
+        var attendance = byType.FirstOrDefault(x => x.FeeType == FeeType.Attendance)?.Balance ?? 0m;
+        var annual = byType.FirstOrDefault(x => x.FeeType == FeeType.Annual)?.Balance ?? 0m;
+
+        return (attendance, annual);
     }
 }

@@ -1,0 +1,35 @@
+@inherits ComponentBase
+
+@if (_loading)
+{
+    <span class="text-muted small">Loading...</span>
+}
+else if (_error)
+{
+    <span class="text-danger small">Unable to load</span>
+}
+else
+{
+    <div class="tile-stats">
+        <div>
+            <div class="tile-stat-value">@_activeCount</div>
+            <div class="tile-stat-label">Active</div>
+        </div>
+        <div>
+            <div class="tile-stat-value dim">@_inactiveCount</div>
+            <div class="tile-stat-label">Inactive</div>
+        </div>
+        <div>
+            <div class="tile-stat-value">@(_activeCount + _inactiveCount)</div>
+            <div class="tile-stat-label">Total</div>
+        </div>
+    </div>
+    @if (_outstandingCount > 0)
+    {
+        <div class="tile-chip-alert">Outstanding fees · <b>@_outstandingCount @(_outstandingCount == 1 ? "member" : "members")</b></div>
+    }
+    else
+    {
+        <div class="tile-note">No outstanding fees</div>
+    }
+}

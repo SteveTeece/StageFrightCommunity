@@ -11,25 +11,22 @@ namespace StageFright.Core.Modules.Finance;
 /// </summary>
 public class ReactivationForgivenessService : IReactivationForgivenessService
 {
-    private static readonly Guid BadDebtCategoryId = new("00000000-0000-0000-0000-000000000003");
-    private static readonly Guid MemberReceivableCategoryId = new("00000000-0000-0000-0000-000000000002");
-
-    private const string BadDebtGLAccount = "9900";
-    private const string MemberReceivableGLAccount = "0101";
-
     private readonly IFeeRepository _feeRepo;
     private readonly IGLRepository _glRepo;
+    private readonly IMemberRepository _memberRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
 
     public ReactivationForgivenessService(
         IFeeRepository feeRepo,
         IGLRepository glRepo,
+        IMemberRepository memberRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork)
     {
         _feeRepo = feeRepo;
         _glRepo = glRepo;
+        _memberRepo = memberRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
     }
@@ -62,6 +59,8 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
 
         var fees = await _feeRepo.GetByMemberAsync(memberId, ct);
         var feeMap = fees.ToDictionary(f => f.Id);
+        var member = await _memberRepo.GetByIdAsync(memberId, ct);
+        var memberName = member?.Name ?? "Unknown Member";
 
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
@@ -72,35 +71,64 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
                 if (!feeMap.TryGetValue(feeId, out var fee))
                     continue;
 
-                // Write-off pair: Debit BadDebtExpense / Credit MemberReceivable
-                await _glRepo.AddPairAsync(
-                    new Transaction
+                // Write-off: Debit BadDebtExpense / Credit MemberReceivable gross.
+                // Taxable fees (Fee.GstCode = Gst) also debit GST Collected — a bad-debt
+                // decreasing adjustment reversing the GST accrued with the fee.
+                var (badDebtAmount, gstAdjustment) = fee.GstCode == GstCode.Gst
+                    ? GstCalculator.SplitInclusive(fee.Amount)
+                    : (fee.Amount, 0m);
+
+                var lines = new List<Transaction>
+                {
+                    new()
                     {
                         Id = Guid.NewGuid(),
                         Date = now,
-                        CategoryId = BadDebtCategoryId,
-                        DebitAmount = fee.Amount,
+                        AccountId = SystemAccounts.BadDebtId,
+                        DebitAmount = badDebtAmount,
                         CreditAmount = 0m,
-                        GLAccount = BadDebtGLAccount,
+                        GLAccount = SystemAccounts.BadDebtNumber,
                         MemberId = memberId,
                         FeeId = feeId,
-                        Description = $"Reactivation forgiveness write-off for fee {feeId}",
+                        GstCode = fee.GstCode,
+                        Description = $"Reactivation forgiveness write-off for {memberName}",
                         CreatedAt = now
                     },
-                    new Transaction
+                    new()
                     {
                         Id = Guid.NewGuid(),
                         Date = now,
-                        CategoryId = MemberReceivableCategoryId,
+                        AccountId = SystemAccounts.MemberReceivableId,
                         DebitAmount = 0m,
                         CreditAmount = fee.Amount,
-                        GLAccount = MemberReceivableGLAccount,
+                        GLAccount = SystemAccounts.MemberReceivableNumber,
                         MemberId = memberId,
                         FeeId = feeId,
-                        Description = $"Reactivation forgiveness — receivable cleared for fee {feeId}",
+                        GstCode = fee.GstCode,
+                        Description = $"Reactivation forgiveness — receivable cleared for {memberName}",
                         CreatedAt = now
-                    },
-                    innerCt);
+                    }
+                };
+
+                if (gstAdjustment != 0m)
+                {
+                    lines.Add(new Transaction
+                    {
+                        Id = Guid.NewGuid(),
+                        Date = now,
+                        AccountId = SystemAccounts.GstCollectedId,
+                        DebitAmount = gstAdjustment,
+                        CreditAmount = 0m,
+                        GLAccount = SystemAccounts.GstCollectedNumber,
+                        MemberId = memberId,
+                        FeeId = feeId,
+                        GstCode = fee.GstCode,
+                        Description = $"GST decreasing adjustment — forgiveness for {memberName}",
+                        CreatedAt = now
+                    });
+                }
+
+                await _glRepo.AddBalancedSetAsync(lines, innerCt);
 
                 await _audit.LogAsync(
                     nameof(Fee), feeId, AuditAction.Forgiveness,

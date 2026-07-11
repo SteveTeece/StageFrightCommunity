@@ -115,7 +115,7 @@ public class BackupServiceTests : TestBase
         var snapshot = new BackupSnapshot
         {
             Members = [BuildMember(), BuildMember()],
-            Categories = [BuildCategory(), BuildCategory(), BuildCategory()]
+            Accounts = [BuildAccount(), BuildAccount(), BuildAccount()]
         };
         _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
         var svc = CreateService();
@@ -126,7 +126,7 @@ public class BackupServiceTests : TestBase
             await svc.ExportAsync(path, Ct);
             var manifest = await svc.GetManifestAsync(path, Ct);
             Assert.Equal(2, manifest.EntityCounts["Members"]);
-            Assert.Equal(3, manifest.EntityCounts["Categories"]);
+            Assert.Equal(3, manifest.EntityCounts["Accounts"]);
         }
         finally
         {
@@ -181,7 +181,7 @@ public class BackupServiceTests : TestBase
     }
 
     [Fact]
-    public async Task ImportAsync_ThrowsImportException_WhenCategoriesNull()
+    public async Task ImportAsync_ThrowsImportException_WhenAccountsNull()
     {
         var snapshot = BuildMinimalSnapshot();
         _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
@@ -192,13 +192,13 @@ public class BackupServiceTests : TestBase
         {
             await svc.ExportAsync(path, Ct);
 
-            // Tamper: remove Categories from EntityCounts to simulate a missing entity type
+            // Tamper: remove Accounts from EntityCounts to simulate a missing entity type
             var envelope = ReadEnvelope(path);
-            envelope.EntityCounts.Remove("Categories");
+            envelope.EntityCounts.Remove("Accounts");
             WriteEnvelope(path, envelope);
 
             var ex = await Assert.ThrowsAsync<ImportException>(() => svc.ImportAsync(path, Ct));
-            Assert.Contains("missing Categories", ex.Message);
+            Assert.Contains("missing Accounts", ex.Message);
         }
         finally
         {
@@ -288,7 +288,7 @@ public class BackupServiceTests : TestBase
         Fees = [],
         Payments = [],
         Transactions = [],
-        Categories = [],
+        Accounts = [],
         Settings = null,
         AuditTrailEntries = []
     };
@@ -300,10 +300,10 @@ public class BackupServiceTests : TestBase
         CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
 
-    private static Category BuildCategory() => new()
+    private static Account BuildAccount() => new()
     {
-        Id = Guid.NewGuid(), Name = "Test Cat", Type = CategoryType.Income,
-        GLAccount = "1000", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        Id = Guid.NewGuid(), Name = "Test Cat", Type = AccountType.Income,
+        AccountNumber = "4000", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
 
     private static BackupEnvelope ReadEnvelope(string path)

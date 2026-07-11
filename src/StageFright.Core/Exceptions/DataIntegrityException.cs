@@ -2,7 +2,7 @@ namespace StageFright.Core.Exceptions;
 
 /// <summary>
 /// Thrown when a referential integrity or business-rule invariant is violated
-/// (e.g., attempting to archive a Category referenced by active Transactions).
+/// (e.g., attempting to archive a Account referenced by active Transactions).
 /// </summary>
 public sealed class DataIntegrityException : Exception
 {

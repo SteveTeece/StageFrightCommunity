@@ -1,0 +1,17 @@
+{
+  "workflow": "speckit",
+  "specName": "002-finance-expansion",
+  "branch": "002-finance-expansion",
+  "selectedAt": "2026-07-09T02:32:52.638Z",
+  "currentStep": "implement",
+  "status": "implemented",
+  "history": [
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "user",
+      "at": "2026-07-09T02:34:16.381Z"
+    }
+  ]
+}

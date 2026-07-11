@@ -3,7 +3,7 @@ using StageFright.Plugins.Contracts;
 namespace StageFright.Core.Modules.Members;
 
 /// <summary>
-/// Contributes the Members navigation section: top-level "/members" with sub-items.
+/// Contributes the top-level Members navigation item.
 /// DisplayOrder=1 places Members after Dashboard (0) and before other modules.
 /// </summary>
 public class MemberMenuItemProvider : IMenuItemProvider
@@ -17,12 +17,8 @@ public class MemberMenuItemProvider : IMenuItemProvider
         {
             Title = "Members",
             Route = "/members",
-            DisplayOrder = 0,
-            SubItems =
-            [
-                new MenuItem { Title = "Active Members", Route = "/members", DisplayOrder = 0 },
-                new MenuItem { Title = "Add Member", Route = "/members/new", DisplayOrder = 1 }
-            ]
+            ShortLabel = "MEMB",
+            DisplayOrder = 0
         }
     ];
 }

@@ -125,7 +125,7 @@ public class BackupService : IBackupService
         envelope.Fees ??= [];
         envelope.Payments ??= [];
         envelope.Transactions ??= [];
-        envelope.Categories ??= [];
+        envelope.Accounts ??= [];
         envelope.AuditTrailEntries ??= [];
         envelope.EntityCounts ??= new Dictionary<string, int>();
 
@@ -161,7 +161,8 @@ public class BackupService : IBackupService
         if (!counts.ContainsKey("Fees")) Fail("Fees");
         if (!counts.ContainsKey("Payments")) Fail("Payments");
         if (!counts.ContainsKey("Transactions")) Fail("Transactions");
-        if (!counts.ContainsKey("Categories")) Fail("Categories");
+        // Pre-expansion backups wrote this collection under "Categories"; accept both keys.
+        if (!counts.ContainsKey("Accounts") && !counts.ContainsKey("Categories")) Fail("Accounts");
         if (!counts.ContainsKey("AuditTrailEntries")) Fail("AuditTrailEntries");
 
         static void Fail(string entityType) =>
@@ -191,7 +192,7 @@ public class BackupService : IBackupService
         var fees = snapshot.Fees.Select(MapFee).ToList();
         var payments = snapshot.Payments.Select(MapPayment).ToList();
         var transactions = snapshot.Transactions.Select(MapTransaction).ToList();
-        var categories = snapshot.Categories.Select(MapCategory).ToList();
+        var accounts = snapshot.Accounts.Select(MapAccount).ToList();
         var settings = snapshot.Settings is not null ? MapSettings(snapshot.Settings) : null;
         var auditEntries = snapshot.AuditTrailEntries.Select(MapAuditEntry).ToList();
 
@@ -207,14 +208,14 @@ public class BackupService : IBackupService
             ["Fees"] = fees.Count,
             ["Payments"] = payments.Count,
             ["Transactions"] = transactions.Count,
-            ["Categories"] = categories.Count,
+            ["Accounts"] = accounts.Count,
             ["Settings"] = settings is null ? 0 : 1,
             ["AuditTrailEntries"] = auditEntries.Count
         };
 
         return new BackupEnvelope
         {
-            SchemaVersion = "1.0.0",
+            SchemaVersion = "1.1.0",
             GeneratedAt = DateTime.UtcNow,
             ApplicationVersion = "1.0.0",
             Members = members,
@@ -224,7 +225,7 @@ public class BackupService : IBackupService
             Fees = fees,
             Payments = payments,
             Transactions = transactions,
-            Categories = categories,
+            Accounts = accounts,
             Settings = settings,
             AuditTrailEntries = auditEntries,
             EntityCounts = counts
@@ -260,7 +261,7 @@ public class BackupService : IBackupService
             Fees = env.Fees!.Select(MapFeeFromDto).ToList(),
             Payments = env.Payments!.Select(MapPaymentFromDto).ToList(),
             Transactions = env.Transactions!.Select(MapTransactionFromDto).ToList(),
-            Categories = env.Categories!.Select(MapCategoryFromDto).ToList(),
+            Accounts = env.Accounts!.Select(MapAccountFromDto).ToList(),
             Settings = env.Settings is not null ? MapSettingsFromDto(env.Settings) : null,
             AuditTrailEntries = env.AuditTrailEntries!.Select(MapAuditEntryFromDto).ToList()
         };
@@ -343,16 +344,16 @@ public class BackupService : IBackupService
 
     private static TransactionBackupDto MapTransaction(Transaction t) => new()
     {
-        Id = t.Id, Date = t.Date, CategoryId = t.CategoryId,
+        Id = t.Id, Date = t.Date, AccountId = t.AccountId,
         DebitAmount = t.DebitAmount, CreditAmount = t.CreditAmount,
         GLAccount = t.GLAccount, MemberId = t.MemberId, PaymentId = t.PaymentId,
         FeeId = t.FeeId, Description = t.Description, CreatedAt = t.CreatedAt
     };
 
-    private static CategoryBackupDto MapCategory(Category c) => new()
+    private static AccountBackupDto MapAccount(Account c) => new()
     {
-        Id = c.Id, Name = c.Name, Type = c.Type, GLAccount = c.GLAccount,
-        SortOrder = c.SortOrder, IsSystem = c.IsSystem,
+        Id = c.Id, Name = c.Name, Type = c.Type, AccountNumber = c.AccountNumber,
+        SortOrder = c.SortOrder, IsSystem = c.IsSystem, IsBankAccount = c.IsBankAccount,
         IsDeleted = c.IsDeleted, DeletedAt = c.DeletedAt, DeletedBy = c.DeletedBy,
         CreatedAt = c.CreatedAt, UpdatedAt = c.UpdatedAt
     };
@@ -449,16 +450,16 @@ public class BackupService : IBackupService
 
     private static Transaction MapTransactionFromDto(TransactionBackupDto d) => new()
     {
-        Id = d.Id, Date = d.Date, CategoryId = d.CategoryId,
+        Id = d.Id, Date = d.Date, AccountId = d.AccountId,
         DebitAmount = d.DebitAmount, CreditAmount = d.CreditAmount,
         GLAccount = d.GLAccount, MemberId = d.MemberId, PaymentId = d.PaymentId,
         FeeId = d.FeeId, Description = d.Description, CreatedAt = d.CreatedAt
     };
 
-    private static Category MapCategoryFromDto(CategoryBackupDto d) => new()
+    private static Account MapAccountFromDto(AccountBackupDto d) => new()
     {
-        Id = d.Id, Name = d.Name, Type = d.Type, GLAccount = d.GLAccount,
-        SortOrder = d.SortOrder, IsSystem = d.IsSystem,
+        Id = d.Id, Name = d.Name, Type = d.Type, AccountNumber = d.AccountNumber,
+        SortOrder = d.SortOrder, IsSystem = d.IsSystem, IsBankAccount = d.IsBankAccount,
         IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy,
         CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
     };

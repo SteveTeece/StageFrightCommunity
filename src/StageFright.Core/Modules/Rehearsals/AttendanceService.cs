@@ -2,23 +2,20 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Finance;
 
 namespace StageFright.Core.Modules.Rehearsals;
 
 /// <summary>
 /// Records batch attendance for a rehearsal in a single atomic transaction.
 /// GL pair logic:
-///   Accrual: Debit MemberReceivable (0101) / Credit first-available Income category.
+///   Accrual: Debit MemberReceivable (0101) / Credit first-available Income account.
 ///   Payment: Debit Cash (0100) / Credit MemberReceivable (0101) — only when PaidAtCreation=true.
-/// System category GUIDs are the seeded fixed values from StageFrightDbContext.
+/// System account GUIDs are the seeded fixed values from StageFrightDbContext.
 /// </summary>
 public class AttendanceService : IAttendanceService
 {
-    private static readonly Guid CashCategoryId = new("00000000-0000-0000-0000-000000000001");
-    private static readonly Guid MemberReceivableCategoryId = new("00000000-0000-0000-0000-000000000002");
 
-    private const string CashGLAccount = "0100";
-    private const string MemberReceivableGLAccount = "0101";
 
     private readonly IRehearsalRepository _rehearsalRepo;
     private readonly IAttendanceRepository _attendanceRepo;
@@ -26,7 +23,7 @@ public class AttendanceService : IAttendanceService
     private readonly IFeeRepository _feeRepo;
     private readonly IPaymentRepository _paymentRepo;
     private readonly IGLRepository _glRepo;
-    private readonly ICategoryRepository _categoryRepo;
+    private readonly IAccountRepository _accountRepo;
     private readonly ISettingsRepository _settingsRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
@@ -39,7 +36,7 @@ public class AttendanceService : IAttendanceService
         IFeeRepository feeRepo,
         IPaymentRepository paymentRepo,
         IGLRepository glRepo,
-        ICategoryRepository categoryRepo,
+        IAccountRepository accountRepo,
         ISettingsRepository settingsRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork,
@@ -51,7 +48,7 @@ public class AttendanceService : IAttendanceService
         _feeRepo = feeRepo;
         _paymentRepo = paymentRepo;
         _glRepo = glRepo;
-        _categoryRepo = categoryRepo;
+        _accountRepo = accountRepo;
         _settingsRepo = settingsRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
@@ -71,12 +68,21 @@ public class AttendanceService : IAttendanceService
         var settings = await _settingsRepo.GetAsync(ct)
             ?? throw new ValidationException("Application settings are not configured.", "Settings", nameof(RecordBatchAsync));
 
-        // Resolve income category once for the whole batch
-        var categories = await _categoryRepo.GetAllAsync(ct);
-        var incomeCategory = categories.FirstOrDefault(c => c.Type == CategoryType.Income && !c.IsSystem)
+        // Resolve income account once for the whole batch
+        var accounts = await _accountRepo.GetAllAsync(ct);
+        var incomeAccount = accounts.FirstOrDefault(c => c.Type == AccountType.Income && !c.IsSystem)
             ?? throw new ValidationException(
-                "No income category configured. Please set up categories in Settings before recording attendance.",
-                "Category", nameof(RecordBatchAsync));
+                "No income account configured. Please set up accounts in Settings before recording attendance.",
+                "Account", nameof(RecordBatchAsync));
+
+        // Per-fee-type GST treatment, stamped on each Fee at accrual. GST is recognised
+        // at accrual only — the payment pair below always clears the gross receivable.
+        var gstCode = settings.IsGstRegistered
+            ? settings.AttendanceFeeGstCode ?? GstCode.GstFree
+            : (GstCode?)null;
+        var (incomeAmount, gstAmount) = gstCode == GstCode.Gst
+            ? GstCalculator.SplitInclusive(settings.AttendanceFee)
+            : (settings.AttendanceFee, 0m);
 
         int presentCount = 0;
         var attendanceRecords = new List<AttendanceRecord>();
@@ -124,39 +130,64 @@ public class AttendanceService : IAttendanceService
                     DueDate = rehearsal.Date,
                     PaidAtCreation = paidAtCreation,
                     RehearsalId = rehearsalId,
+                    GstCode = gstCode,
                     CreatedAt = now
                 };
                 var savedFee = await _feeRepo.AddAsync(fee, innerCt);
 
-                // GL accrual pair: Debit MemberReceivable / Credit Income
-                await _glRepo.AddPairAsync(
-                    new Transaction
+                // GL accrual: Debit MemberReceivable gross / Credit Income net
+                // (+ Credit GST Collected when the fee is taxable while registered).
+                var accrualLines = new List<Transaction>
+                {
+                    new()
                     {
                         Id = Guid.NewGuid(),
                         Date = rehearsal.Date,
-                        CategoryId = MemberReceivableCategoryId,
+                        AccountId = SystemAccounts.MemberReceivableId,
                         DebitAmount = settings.AttendanceFee,
                         CreditAmount = 0m,
-                        GLAccount = MemberReceivableGLAccount,
+                        GLAccount = SystemAccounts.MemberReceivableNumber,
                         MemberId = item.MemberId,
                         FeeId = savedFee.Id,
+                        GstCode = gstCode,
                         Description = "Attendance fee accrual",
                         CreatedAt = now
                     },
-                    new Transaction
+                    new()
                     {
                         Id = Guid.NewGuid(),
                         Date = rehearsal.Date,
-                        CategoryId = incomeCategory.Id,
+                        AccountId = incomeAccount.Id,
                         DebitAmount = 0m,
-                        CreditAmount = settings.AttendanceFee,
-                        GLAccount = incomeCategory.GLAccount,
+                        CreditAmount = incomeAmount,
+                        GLAccount = incomeAccount.AccountNumber,
                         MemberId = item.MemberId,
                         FeeId = savedFee.Id,
+                        GstCode = gstCode,
                         Description = "Attendance fee income",
                         CreatedAt = now
-                    },
-                    innerCt);
+                    }
+                };
+
+                if (gstAmount != 0m)
+                {
+                    accrualLines.Add(new Transaction
+                    {
+                        Id = Guid.NewGuid(),
+                        Date = rehearsal.Date,
+                        AccountId = SystemAccounts.GstCollectedId,
+                        DebitAmount = 0m,
+                        CreditAmount = gstAmount,
+                        GLAccount = SystemAccounts.GstCollectedNumber,
+                        MemberId = item.MemberId,
+                        FeeId = savedFee.Id,
+                        GstCode = gstCode,
+                        Description = "GST collected — attendance fee",
+                        CreatedAt = now
+                    });
+                }
+
+                await _glRepo.AddBalancedSetAsync(accrualLines, innerCt);
 
                 if (paidAtCreation)
                 {
@@ -180,10 +211,10 @@ public class AttendanceService : IAttendanceService
                         {
                             Id = Guid.NewGuid(),
                             Date = rehearsal.Date,
-                            CategoryId = CashCategoryId,
+                            AccountId = SystemAccounts.CashId,
                             DebitAmount = settings.AttendanceFee,
                             CreditAmount = 0m,
-                            GLAccount = CashGLAccount,
+                            GLAccount = SystemAccounts.CashNumber,
                             MemberId = item.MemberId,
                             PaymentId = savedPayment.Id,
                             FeeId = savedFee.Id,
@@ -194,10 +225,10 @@ public class AttendanceService : IAttendanceService
                         {
                             Id = Guid.NewGuid(),
                             Date = rehearsal.Date,
-                            CategoryId = MemberReceivableCategoryId,
+                            AccountId = SystemAccounts.MemberReceivableId,
                             DebitAmount = 0m,
                             CreditAmount = settings.AttendanceFee,
-                            GLAccount = MemberReceivableGLAccount,
+                            GLAccount = SystemAccounts.MemberReceivableNumber,
                             MemberId = item.MemberId,
                             PaymentId = savedPayment.Id,
                             FeeId = savedFee.Id,
