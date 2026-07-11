@@ -188,6 +188,53 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
         Assert.Null(updateAsyncMethod);
     }
 
+    // --- Sequential payments (FeeId re-allocation regression) ---
+
+    [Fact]
+    public async Task SecondPayment_DoesNotReallocateToFeeAlreadySettledByFirstPayment()
+    {
+        var member = await AddActiveMemberAsync("Frank");
+
+        var fee2025Id = await ApplyFeeForMemberAsync(member.Id, 2025, 50m);
+        var fee2026Id = await ApplyFeeForMemberAsync(member.Id, 2026, 60m);
+
+        var paymentSvc = BuildPaymentService();
+
+        // First payment exactly clears the older (2025) fee.
+        await paymentSvc.RecordAsync(new RecordPaymentRequest
+        {
+            MemberId = member.Id,
+            Date = new DateTime(2025, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            Amount = 50m,
+            PaymentMethod = PaymentMethod.Cash,
+            PaymentType = PaymentType.Annual
+        });
+
+        // Second payment should clear the 2026 fee — not re-touch the already-settled 2025 fee.
+        await paymentSvc.RecordAsync(new RecordPaymentRequest
+        {
+            MemberId = member.Id,
+            Date = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            Amount = 60m,
+            PaymentMethod = PaymentMethod.Cash,
+            PaymentType = PaymentType.Annual
+        });
+
+        var glRepo = new GLRepository(_db);
+        var balance = await glRepo.GetMemberBalanceAsync(member.Id);
+        Assert.Equal(0m, balance);
+
+        var fee2025Credits = await _db.Transactions
+            .Where(t => t.FeeId == fee2025Id && t.AccountId == MemberReceivableAccountId)
+            .SumAsync(t => t.CreditAmount);
+        var fee2026Credits = await _db.Transactions
+            .Where(t => t.FeeId == fee2026Id && t.AccountId == MemberReceivableAccountId)
+            .SumAsync(t => t.CreditAmount);
+
+        Assert.Equal(50m, fee2025Credits);
+        Assert.Equal(60m, fee2026Credits);
+    }
+
     // --- GL pair linkage ---
 
     [Fact]
@@ -233,7 +280,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
         return new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
     }
 
-    private async Task ApplyFeeForMemberAsync(Guid memberId, int year, decimal amount)
+    private async Task<Guid> ApplyFeeForMemberAsync(Guid memberId, int year, decimal amount)
     {
         // Directly seed Fee + GL debit (avoids FeeService complexity)
         var feeId = Guid.NewGuid();
@@ -264,6 +311,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             });
 
         await _db.SaveChangesAsync();
+        return feeId;
     }
 
     private async Task<Member> AddActiveMemberAsync(string name)
