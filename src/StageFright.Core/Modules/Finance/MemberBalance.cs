@@ -16,6 +16,6 @@ public class MemberBalance
     /// <summary>Outstanding balance from GL: Σdebits(0101) − Σcredits(0101).</summary>
     public decimal Balance { get; set; }
 
-    /// <summary>All fee records for the member (for expanded breakdown view).</summary>
+    /// <summary>Outstanding (unpaid) fee records for the member, FIFO ordered (for expanded breakdown view).</summary>
     public IReadOnlyList<Fee> Fees { get; set; } = [];
 }
