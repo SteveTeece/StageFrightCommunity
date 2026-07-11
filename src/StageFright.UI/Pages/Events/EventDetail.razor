@@ -49,34 +49,31 @@ else if (_event is not null)
     {
         <section aria-label="Attendance">
             <h2 class="h6 mb-1">Attendance</h2>
-            <div class="table-responsive">
-                <table class="table table-sm table-hover align-middle" aria-label="Attendance list">
-                    <thead>
-                        <tr>
-                            <th scope="col">Member</th>
-                            <th scope="col" class="text-center">Participated</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var record in _event.ParticipationRecords.OrderBy(p => p.Member?.Name))
-                        {
-                            <tr>
-                                <td>@(record.Member?.Name ?? "—")</td>
-                                <td class="text-center">
-                                    @if (record.Participated)
-                                    {
-                                        <span class="badge bg-success" aria-label="Participated">Yes</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary" aria-label="Did not participate">No</span>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+            <RadzenDataGrid Data="@_event.ParticipationRecords.OrderBy(p => p.Member?.Name)" TItem="ParticipationRecord"
+                            AllowSorting="true" AllowPaging="true" PageSize="15"
+                            class="rz-shadow-0">
+                <Columns>
+                    <RadzenDataGridColumn TItem="ParticipationRecord" Title="Member">
+                        <Template Context="record">
+                            @(record.Member?.Name ?? "—")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ParticipationRecord" Title="Participated" Width="140px" Sortable="false">
+                        <Template Context="record">
+                            <div class="text-center">
+                                @if (record.Participated)
+                                {
+                                    <span class="badge bg-success" aria-label="Participated">Yes</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary" aria-label="Did not participate">No</span>
+                                }
+                            </div>
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
         </section>
     }
     else if (_event.StoredParticipationRate.HasValue)

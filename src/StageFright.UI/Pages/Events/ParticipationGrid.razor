@@ -34,41 +34,35 @@ else
     }
     else
     {
-        <div class="table-responsive">
-            <table class="table table-sm table-hover align-middle" aria-label="Participation grid">
-                <thead>
-                    <tr>
-                        <th scope="col">Member</th>
-                        <th scope="col" class="text-center">
-                            <div class="d-flex flex-column align-items-center gap-1">
-                                <span>Participated</span>
-                                <span class="select-all-inline small text-muted">
-                                    (<input type="checkbox" class="form-check-input" id="select-all-participants"
-                                            checked="@_selectAll"
-                                            @onchange="ToggleSelectAll"
-                                            aria-label="Select all participants" />
-                                    <label class="form-check-label mb-0" for="select-all-participants">Select All</label>)
-                                </span>
-                            </div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var row in _rows)
-                    {
-                        <tr>
-                            <td>@row.MemberName</td>
-                            <td class="text-center">
-                                <input type="checkbox" class="form-check-input" id="participated-@row.MemberId"
-                                       checked="@row.Participated"
-                                       @onchange="e => SetRowParticipated(row, (bool)(e.Value ?? false))"
-                                       aria-label="@row.MemberName participated" />
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+        <RadzenDataGrid Data="@_rows" TItem="ParticipationRow"
+                        AllowSorting="true" AllowPaging="true" PageSize="15"
+                        class="rz-shadow-0">
+            <Columns>
+                <RadzenDataGridColumn TItem="ParticipationRow" Property="MemberName" Title="Member" />
+                <RadzenDataGridColumn TItem="ParticipationRow" Title="Participated" Width="160px" Sortable="false">
+                    <HeaderTemplate>
+                        <div class="d-flex flex-column align-items-center gap-1">
+                            <span>Participated</span>
+                            <span class="select-all-inline small text-muted">
+                                (<input type="checkbox" class="form-check-input" id="select-all-participants"
+                                        checked="@_selectAll"
+                                        @onchange="ToggleSelectAll"
+                                        aria-label="Select all participants" />
+                                <label class="form-check-label mb-0" for="select-all-participants">Select All</label>)
+                            </span>
+                        </div>
+                    </HeaderTemplate>
+                    <Template Context="row">
+                        <div class="text-center">
+                            <input type="checkbox" class="form-check-input" id="participated-@row.MemberId"
+                                   checked="@row.Participated"
+                                   @onchange="e => SetRowParticipated(row, (bool)(e.Value ?? false))"
+                                   aria-label="@row.MemberName participated" />
+                        </div>
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
 
         <div class="d-flex gap-2 mt-2">
             <button class="btn btn-primary btn-sm" @onclick="SaveParticipation" disabled="@_saving">

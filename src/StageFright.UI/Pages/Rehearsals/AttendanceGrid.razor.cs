@@ -17,8 +17,6 @@ public partial class AttendanceGrid
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
 
-    private const int PageSize = 15;
-
     private bool _loading = true;
     private bool _saving;
     private bool _alreadyRecorded;
@@ -28,16 +26,6 @@ public partial class AttendanceGrid
     private List<AttendanceRow> _rows = new();
     private List<AttendanceRecord> _recordedAttendance = new();
     private decimal _attendanceFee;
-    private int _currentPage = 1;
-
-    private int TotalRows => _alreadyRecorded ? _recordedAttendance.Count : _rows.Count;
-    private int TotalPages => (int)Math.Ceiling(TotalRows / (double)PageSize);
-
-    private IEnumerable<AttendanceRow> PagedRows =>
-        _rows.Skip((_currentPage - 1) * PageSize).Take(PageSize);
-
-    private IEnumerable<AttendanceRecord> PagedRecords =>
-        _recordedAttendance.Skip((_currentPage - 1) * PageSize).Take(PageSize);
 
     protected override async Task OnInitializedAsync()
     {
@@ -91,12 +79,6 @@ public partial class AttendanceGrid
     {
         foreach (var row in _rows)
             row.Attended = value;
-    }
-
-    private void GoToPage(int page)
-    {
-        if (page >= 1 && page <= TotalPages)
-            _currentPage = page;
     }
 
     private async Task SaveAttendance()
