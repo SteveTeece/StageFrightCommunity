@@ -175,6 +175,42 @@ public class PaymentServiceTests : TestBase
     }
 
     [Fact]
+    public async Task RecordAsync_SkipsFeesAlreadySettledByPriorPayments()
+    {
+        // Fee1 ($30) was fully settled by an earlier payment; only Fee2 ($80) is still owed.
+        // GetUnpaidOrderedFifoAsync (per its real repository implementation) returns the
+        // member's FULL fee history regardless of payment status — RecordAsync must consult
+        // the GL per fee before allocating, not assume the list is already unpaid-only.
+        _glRepo.GetMemberBalanceAsync(MemberId, Arg.Any<CancellationToken>())
+            .Returns(80m);
+
+        _glRepo.GetByFeeAsync(Fee1Id, Arg.Any<CancellationToken>())
+            .Returns(new List<Transaction>
+            {
+                new() { AccountId = SystemAccounts.MemberReceivableId, DebitAmount = 30m, CreditAmount = 0m, FeeId = Fee1Id },
+                new() { AccountId = SystemAccounts.MemberReceivableId, DebitAmount = 0m, CreditAmount = 30m, FeeId = Fee1Id },
+            });
+        _glRepo.GetByFeeAsync(Fee2Id, Arg.Any<CancellationToken>())
+            .Returns(new List<Transaction>
+            {
+                new() { AccountId = SystemAccounts.MemberReceivableId, DebitAmount = 80m, CreditAmount = 0m, FeeId = Fee2Id },
+            });
+
+        // A new $80 payment should go entirely to Fee2 — Fee1 must not be touched again.
+        await _sut.RecordAsync(MakeRequest(80m), Ct);
+
+        await _glRepo.Received(1).AddPairAsync(
+            Arg.Is<Transaction>(t => t.DebitAmount == 80m && t.GLAccount == "1100" && t.FeeId == Fee2Id),
+            Arg.Is<Transaction>(t => t.CreditAmount == 80m && t.GLAccount == "1200" && t.FeeId == Fee2Id),
+            Arg.Any<CancellationToken>());
+
+        await _glRepo.DidNotReceive().AddPairAsync(
+            Arg.Is<Transaction>(t => t.FeeId == Fee1Id),
+            Arg.Any<Transaction>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task RecordAsync_GLPairs_LinkPaymentId()
     {
         var payment = await _sut.RecordAsync(MakeRequest(30m), Ct);

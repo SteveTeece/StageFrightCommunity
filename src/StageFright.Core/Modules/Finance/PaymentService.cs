@@ -75,14 +75,26 @@ public class PaymentService : IPaymentService
 
             if (outstandingBalance > 0m && fees.Count > 0)
             {
-                // Allocate against fees in FIFO order (oldest first)
+                // Allocate against fees in FIFO order (oldest first). GetUnpaidOrderedFifoAsync
+                // returns the member's full fee history, not just what's unpaid — fees carry no
+                // paid flag (GL is authoritative), so each fee's already-settled amount (from prior
+                // payments or forgiveness write-offs) must be read back from the GL before allocating.
                 foreach (var fee in fees)
                 {
                     if (remainingPayment <= 0m)
                         break;
 
-                    // Amount to apply to this fee: limited by payment remaining and fee face value
-                    decimal allocation = Math.Min(remainingPayment, fee.Amount);
+                    var feeTransactions = await _glRepo.GetByFeeAsync(fee.Id, innerCt);
+                    var alreadySettled = feeTransactions
+                        .Where(t => t.AccountId == SystemAccounts.MemberReceivableId)
+                        .Sum(t => t.CreditAmount);
+                    var remainingOwedOnFee = fee.Amount - alreadySettled;
+
+                    if (remainingOwedOnFee <= 0m)
+                        continue;
+
+                    // Amount to apply to this fee: limited by payment remaining and what's still owed
+                    decimal allocation = Math.Min(remainingPayment, remainingOwedOnFee);
 
                     await _glRepo.AddPairAsync(
                         new Transaction
