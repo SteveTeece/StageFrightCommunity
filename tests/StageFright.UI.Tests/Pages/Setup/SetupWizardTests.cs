@@ -68,6 +68,18 @@ public class SetupWizardTests : BunitContext
     }
 
     [Fact]
+    public void Next_Blocked_WhenAbnEmpty()
+    {
+        var cut = Render<SetupWizard>();
+
+        cut.Find("#orgName").Change("My Choir");
+        cut.Find("#btn-next").Click();
+
+        Assert.Contains("Step 1 of 4", cut.Markup);
+    }
+
+#if !DEBUG
+    [Fact]
     public void Next_Blocked_WhenAbnInvalid()
     {
         var cut = Render<SetupWizard>();
@@ -78,6 +90,21 @@ public class SetupWizardTests : BunitContext
 
         Assert.Contains("Step 1 of 4", cut.Markup);
     }
+#else
+    [Fact]
+    public void Next_AllowsMalformedAbn_InDebugBuild()
+    {
+        // ABN checksum validation is disabled in Debug builds (see SetupFormModel.Abn) so
+        // developers can click through setup without a real, checksum-valid ABN.
+        var cut = Render<SetupWizard>();
+
+        cut.Find("#orgName").Change("My Choir");
+        cut.Find("#abn").Change("12345");
+        cut.Find("#btn-next").Click();
+
+        Assert.Contains("Step 2 of 4", cut.Markup);
+    }
+#endif
 
     [Fact]
     public void Next_AdvancesThroughAllSteps_ToReview()

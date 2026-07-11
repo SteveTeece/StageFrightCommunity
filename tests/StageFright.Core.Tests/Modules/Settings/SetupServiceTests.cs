@@ -69,6 +69,7 @@ public class SetupServiceTests : TestBase
         await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
     }
 
+#if !DEBUG
     [Fact]
     public async Task InitializeAsync_Throws_WhenAbnChecksumInvalid()
     {
@@ -78,6 +79,19 @@ public class SetupServiceTests : TestBase
         var request = ValidRequest() with { Abn = "12345678901" };
         await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
     }
+#else
+    [Fact]
+    public async Task InitializeAsync_AllowsAbnChecksumInvalid_InDebugBuild()
+    {
+        // ABN checksum validation is disabled in Debug builds (see SetupService.Validate)
+        // so developers can complete setup without a real, checksum-valid ABN.
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var request = ValidRequest() with { Abn = "12345678901" };
+        await svc.InitializeAsync(request, Ct);
+    }
+#endif
 
     [Fact]
     public async Task InitializeAsync_ForcesGstCodesNull_WhenNotRegistered()

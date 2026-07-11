@@ -104,8 +104,14 @@ public class SetupService : ISetupService
         if (string.IsNullOrWhiteSpace(request.OrganizationName))
             throw new ValidationException("OrganizationName is required.", "Settings", nameof(InitializeAsync));
 
-        if (string.IsNullOrWhiteSpace(request.Abn) || !AbnValidator.IsValid(request.Abn.Trim()))
+        if (string.IsNullOrWhiteSpace(request.Abn))
             throw new ValidationException("A valid ABN is required.", "Settings", nameof(InitializeAsync));
+
+#if !DEBUG
+        // ABN checksum validation is skipped in Debug builds — see SetupFormModel.Abn.
+        if (!AbnValidator.IsValid(request.Abn.Trim()))
+            throw new ValidationException("A valid ABN is required.", "Settings", nameof(InitializeAsync));
+#endif
 
         if (request.AnnualFee < 0)
             throw new ValidationException("AnnualFee must be zero or greater.", "Settings", nameof(InitializeAsync));

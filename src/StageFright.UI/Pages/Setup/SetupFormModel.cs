@@ -11,7 +11,11 @@ internal sealed class SetupFormModel
     public string? OrganizationName { get; set; }
 
     [Required(ErrorMessage = "ABN is required.")]
+#if !DEBUG
+    // ABN checksum validation is skipped in Debug builds so developers can click through
+    // setup with a placeholder ABN instead of needing a real, checksum-valid one.
     [Abn]
+#endif
     public string? Abn { get; set; }
 
     [Range(0, double.MaxValue, ErrorMessage = "Annual fee must be zero or greater.")]
