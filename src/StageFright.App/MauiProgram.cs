@@ -227,7 +227,7 @@ public static class MauiProgram
         services.AddScoped<IReportProviderRegistry, ReportProviderRegistry>();
         services.AddScoped<IPdfReportRenderer, PdfReportRenderer>();
         services.AddScoped<ICsvReportExporter, CsvReportExporter>();
-        services.AddSingleton<IMenuItemProvider, ReportMenuItemProvider>();
+        services.AddScoped<IMenuItemProvider, ReportMenuItemProvider>();
         services.AddSingleton<IMenuItemProvider, SettingsMenuItemProvider>();
     }
 

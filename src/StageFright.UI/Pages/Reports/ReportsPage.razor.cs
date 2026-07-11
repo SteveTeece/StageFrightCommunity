@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
 
 namespace StageFright.UI.Pages.Reports;
@@ -10,12 +9,10 @@ public partial class ReportsPage : ComponentBase
 
     [Inject] private IReportProviderRegistry Registry { get; set; } = null!;
 
-    private IReadOnlyList<ReportMenuSection> _sections = Array.Empty<ReportMenuSection>();
     private IReportProvider? _currentProvider;
 
     protected override void OnInitialized()
     {
-        _sections = Registry.GetMenuSections();
         UpdateCurrentProvider();
     }
 

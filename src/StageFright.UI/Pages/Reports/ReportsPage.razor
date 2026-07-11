@@ -7,48 +7,17 @@
     <h1 class="h3 mb-0">Reports</h1>
 </div>
 
-<div class="row g-2">
-    <div class="col-md-3">
-        <div class="list-group mb-2" role="navigation" aria-label="Report sections">
-            @foreach (var section in _sections)
-            {
-                <div class="list-group-item list-group-item-action disabled fw-semibold py-1 small"
-                     aria-disabled="true">
-                    @section.ModuleName
-                </div>
-
-                @foreach (var entry in section.Reports)
-                {
-                    <a class="list-group-item list-group-item-action ps-4 py-1 small @(ReportId == entry.ReportId ? "active" : "")"
-                       href="/reports/@entry.ReportId"
-                       role="button"
-                       aria-current="@(ReportId == entry.ReportId ? "page" : null)">
-                        @entry.ReportName
-                    </a>
-                }
-            }
-
-            @if (!_sections.Any())
-            {
-                <span class="list-group-item text-muted small">No reports available.</span>
-            }
-        </div>
+@if (_currentProvider != null)
+{
+    <ReportViewer Provider="_currentProvider" />
+}
+else if (!string.IsNullOrEmpty(ReportId))
+{
+    <div class="alert alert-warning py-1 mb-2 small" role="alert">
+        Report "@ReportId" not found.
     </div>
-
-    <div class="col-md-9">
-        @if (_currentProvider != null)
-        {
-            <ReportViewer Provider="_currentProvider" />
-        }
-        else if (!string.IsNullOrEmpty(ReportId))
-        {
-            <div class="alert alert-warning py-1 mb-2 small" role="alert">
-                Report "@ReportId" not found.
-            </div>
-        }
-        else
-        {
-            <p class="text-muted small mt-1">Select a report from the list to generate it.</p>
-        }
-    </div>
-</div>
+}
+else
+{
+    <p class="text-muted small mt-1">Select a report from the navigation menu to generate it.</p>
+}
