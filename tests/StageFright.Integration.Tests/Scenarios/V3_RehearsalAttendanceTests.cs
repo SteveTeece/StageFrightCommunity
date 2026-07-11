@@ -19,9 +19,9 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
 {
     private StageFrightDbContext _db = null!;
 
-    // System category GUIDs (seeded)
-    private static readonly Guid CashCategoryId = new("00000000-0000-0000-0000-000000000001");
-    private static readonly Guid MemberReceivableCategoryId = new("00000000-0000-0000-0000-000000000002");
+    // System account GUIDs (seeded)
+    private static readonly Guid CashAccountId = new("00000000-0000-0000-0000-000000000001");
+    private static readonly Guid MemberReceivableAccountId = new("00000000-0000-0000-0000-000000000002");
 
     public async Task InitializeAsync()
     {
@@ -33,13 +33,13 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         await _db.Database.OpenConnectionAsync();
         await _db.Database.MigrateAsync();
 
-        // Seed an income category for GL pairs
-        _db.Categories.Add(new Category
+        // Seed an income account for GL pairs
+        _db.Accounts.Add(new Account
         {
             Id = Guid.NewGuid(),
             Name = "Attendance Income",
-            Type = CategoryType.Income,
-            GLAccount = "1000",
+            Type = AccountType.Income,
+            AccountNumber = "1000",
             SortOrder = 0,
             IsSystem = false,
             CreatedAt = DateTime.UtcNow,
@@ -121,13 +121,13 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         Assert.Equal(4, transactions.Count);
 
         // Accrual debit: MemberReceivable
-        Assert.Contains(transactions, t => t.DebitAmount == 10m && t.CategoryId == MemberReceivableCategoryId);
-        // Accrual credit: Income category
+        Assert.Contains(transactions, t => t.DebitAmount == 10m && t.AccountId == MemberReceivableAccountId);
+        // Accrual credit: Income account
         Assert.Contains(transactions, t => t.CreditAmount == 10m && t.GLAccount == "1000");
         // Payment debit: Cash
-        Assert.Contains(transactions, t => t.DebitAmount == 10m && t.CategoryId == CashCategoryId);
+        Assert.Contains(transactions, t => t.DebitAmount == 10m && t.AccountId == CashAccountId);
         // Payment credit: MemberReceivable
-        Assert.Contains(transactions, t => t.CreditAmount == 10m && t.CategoryId == MemberReceivableCategoryId);
+        Assert.Contains(transactions, t => t.CreditAmount == 10m && t.AccountId == MemberReceivableAccountId);
 
         // Payment record auto-created
         var payment = await _db.Payments.FirstOrDefaultAsync(p => p.MemberId == member.Id);
@@ -269,12 +269,12 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var paymentRepo = new PaymentRepository(_db, auditSvc);
         var glRepo = new GLRepository(_db);
-        var categoryRepo = new CategoryRepository(_db);
+        var accountRepo = new AccountRepository(_db);
         var settingsRepo = new SettingsRepository(_db);
         var unitOfWork = new UnitOfWork(_db);
         var rehearsalSvc = BuildRehearsalService();
         return new AttendanceService(rehearsalRepo, attendanceRepo, memberRepo, feeRepo, paymentRepo,
-            glRepo, categoryRepo, settingsRepo, auditSvc, unitOfWork, rehearsalSvc);
+            glRepo, accountRepo, settingsRepo, auditSvc, unitOfWork, rehearsalSvc);
     }
 
     private async Task<Member> AddActiveMember(string name)

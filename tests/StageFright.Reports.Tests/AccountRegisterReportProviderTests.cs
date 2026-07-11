@@ -12,17 +12,17 @@ namespace StageFright.Reports.Tests;
 /// - Transactions in chronological order
 /// - Running balance correct after each row
 /// - Date-range filter applied
-/// - Category filter applied
+/// - Account filter applied
 /// </summary>
 public class AccountRegisterReportProviderTests
 {
     private readonly IGLRepository _gl = Substitute.For<IGLRepository>();
-    private readonly ICategoryRepository _categories = Substitute.For<ICategoryRepository>();
+    private readonly IAccountRepository _accounts = Substitute.For<IAccountRepository>();
     private readonly AccountRegisterReportProvider _sut;
 
     public AccountRegisterReportProviderTests()
     {
-        _sut = new AccountRegisterReportProvider(_gl, _categories);
+        _sut = new AccountRegisterReportProvider(_gl, _accounts);
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class AccountRegisterReportProviderTests
     public async Task GenerateAsync_TransactionsInChronologicalOrder()
     {
         var catId = Guid.NewGuid();
-        SetupCategories(MakeCategory(catId, "Dues", CategoryType.Income, "1000"));
+        SetupAccounts(MakeAccount(catId, "Dues", AccountType.Income, "1000"));
 
         var t1 = MakeTransaction(catId, "Dues", 0, 100m, new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc));
         var t2 = MakeTransaction(catId, "Dues", 0, 50m, new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
@@ -60,7 +60,7 @@ public class AccountRegisterReportProviderTests
     public async Task GenerateAsync_RunningBalance_CorrectAfterEachRow()
     {
         var catId = Guid.NewGuid();
-        SetupCategories(MakeCategory(catId, "Dues", CategoryType.Income, "1000"));
+        SetupAccounts(MakeAccount(catId, "Dues", AccountType.Income, "1000"));
 
         _gl.GetByDateRangeAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<Transaction>>(new[]
@@ -81,7 +81,7 @@ public class AccountRegisterReportProviderTests
     [Fact]
     public async Task GenerateAsync_EmptyDateRange_ReturnsEmptyReport()
     {
-        SetupCategories();
+        SetupAccounts();
         _gl.GetByDateRangeAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<Transaction>>(Array.Empty<Transaction>().ToList()));
 
@@ -94,7 +94,7 @@ public class AccountRegisterReportProviderTests
     [Fact]
     public async Task GenerateAsync_DateRangeFilter_Applied()
     {
-        SetupCategories();
+        SetupAccounts();
         _gl.GetByDateRangeAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<Transaction>>(Array.Empty<Transaction>().ToList()));
 
@@ -113,7 +113,7 @@ public class AccountRegisterReportProviderTests
     [Fact]
     public async Task GenerateAsync_ReportHasRunningBalanceColumn()
     {
-        SetupCategories();
+        SetupAccounts();
         _gl.GetByDateRangeAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<Transaction>>(Array.Empty<Transaction>().ToList()));
 
@@ -124,21 +124,21 @@ public class AccountRegisterReportProviderTests
 
     // --- Helpers ---
 
-    private void SetupCategories(params Category[] cats)
+    private void SetupAccounts(params Account[] cats)
     {
-        _categories.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<Category>>(cats.ToList()));
+        _accounts.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<Account>>(cats.ToList()));
     }
 
-    private static Category MakeCategory(Guid id, string name, CategoryType type, string glAccount)
-        => new() { Id = id, Name = name, Type = type, GLAccount = glAccount, CreatedAt = DateTime.UtcNow };
+    private static Account MakeAccount(Guid id, string name, AccountType type, string glAccount)
+        => new() { Id = id, Name = name, Type = type, AccountNumber = glAccount, CreatedAt = DateTime.UtcNow };
 
     private static Transaction MakeTransaction(Guid catId, string desc, decimal debit, decimal credit, DateTime date)
     {
-        var cat = new Category { Id = catId, Name = desc, Type = CategoryType.Income, GLAccount = "1000", CreatedAt = DateTime.UtcNow };
+        var cat = new Account { Id = catId, Name = desc, Type = AccountType.Income, AccountNumber = "1000", CreatedAt = DateTime.UtcNow };
         return new Transaction
         {
-            Id = Guid.NewGuid(), CategoryId = catId, Category = cat,
+            Id = Guid.NewGuid(), AccountId = catId, Account = cat,
             GLAccount = "1000", DebitAmount = debit, CreditAmount = credit,
             Date = date, Description = desc, CreatedAt = DateTime.UtcNow
         };

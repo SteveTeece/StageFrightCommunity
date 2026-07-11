@@ -12,12 +12,12 @@ namespace StageFright.Reports.Providers;
 public class AccountRegisterReportProvider : IReportProvider
 {
     private readonly IGLRepository _gl;
-    private readonly ICategoryRepository _categories;
+    private readonly IAccountRepository _accounts;
 
-    public AccountRegisterReportProvider(IGLRepository gl, ICategoryRepository categories)
+    public AccountRegisterReportProvider(IGLRepository gl, IAccountRepository accounts)
     {
         _gl = gl;
-        _categories = categories;
+        _accounts = accounts;
     }
 
     public string ReportId => "account-register";
@@ -34,8 +34,11 @@ public class AccountRegisterReportProvider : IReportProvider
     public async Task<ReportData> GenerateAsync(ReportFilterValues filters, CancellationToken ct = default)
     {
         var (from, to) = ParseDateRange(filters);
-        var allCategories = await _categories.GetAllAsync(ct);
-        var catById = allCategories.ToDictionary(c => c.Id);
+        // Include archived accounts so historical transactions still resolve a name.
+        var allAccounts = (await _accounts.GetAllAsync(ct))
+            .Concat(await _accounts.GetArchivedAsync(ct))
+            .ToList();
+        var catById = allAccounts.ToDictionary(c => c.Id);
 
         var transactions = await _gl.GetByDateRangeAsync(from, to, ct);
         var ordered = transactions.OrderBy(t => t.Date).ThenBy(t => t.CreatedAt).ToList();
@@ -45,15 +48,15 @@ public class AccountRegisterReportProvider : IReportProvider
         foreach (var txn in ordered)
         {
             runningBalance += txn.CreditAmount - txn.DebitAmount;
-            var categoryName = catById.TryGetValue(txn.CategoryId, out var cat) ? cat.Name : txn.GLAccount;
+            var accountName = catById.TryGetValue(txn.AccountId, out var cat) ? cat.Name : txn.GLAccount;
 
             rows.Add(new ReportRow
             {
                 Cells =
                 [
                     txn.Date.ToString("yyyy-MM-dd"),
-                    txn.Description ?? categoryName,
-                    categoryName,
+                    txn.Description ?? accountName,
+                    accountName,
                     txn.DebitAmount > 0 ? FormatCurrency(txn.DebitAmount) : string.Empty,
                     txn.CreditAmount > 0 ? FormatCurrency(txn.CreditAmount) : string.Empty,
                     FormatCurrency(runningBalance)
@@ -70,7 +73,7 @@ public class AccountRegisterReportProvider : IReportProvider
             [
                 new ReportColumn { Header = "Date", Alignment = ReportColumnAlignment.Left, Format = ReportColumnFormat.Date },
                 new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Category", Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
                 new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
                 new ReportColumn { Header = "Running Balance", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }

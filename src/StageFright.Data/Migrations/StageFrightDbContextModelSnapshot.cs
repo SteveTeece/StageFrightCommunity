@@ -17,6 +17,151 @@ namespace StageFright.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
 
+            modelBuilder.Entity("StageFright.Core.Entities.Account", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsBankAccount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsSystem")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountNumber")
+                        .IsUnique();
+
+                    b.ToTable("Accounts", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            AccountNumber = "1100",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsBankAccount = true,
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Cash on Hand",
+                            SortOrder = 0,
+                            Type = "Asset",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
+                            AccountNumber = "1200",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsBankAccount = false,
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Member Receivable",
+                            SortOrder = 1,
+                            Type = "Asset",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000003"),
+                            AccountNumber = "6999",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsBankAccount = false,
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Bad Debt Expense",
+                            SortOrder = 999,
+                            Type = "Expense",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000004"),
+                            AccountNumber = "2310",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsBankAccount = false,
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "GST Collected",
+                            SortOrder = 10,
+                            Type = "Liability",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000005"),
+                            AccountNumber = "2320",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsBankAccount = false,
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "GST Paid",
+                            SortOrder = 11,
+                            Type = "Liability",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000006"),
+                            AccountNumber = "3100",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsBankAccount = false,
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Opening Balance Equity",
+                            SortOrder = 20,
+                            Type = "Equity",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000007"),
+                            AccountNumber = "3200",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsBankAccount = false,
+                            IsDeleted = false,
+                            IsSystem = true,
+                            Name = "Accumulated Surplus",
+                            SortOrder = 21,
+                            Type = "Equity",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
+                });
+
             modelBuilder.Entity("StageFright.Core.Entities.AttendanceRecord", b =>
                 {
                     b.Property<Guid>("Id")
@@ -89,10 +234,13 @@ namespace StageFright.Data.Migrations
                     b.ToTable("AuditTrailEntries");
                 });
 
-            modelBuilder.Entity("StageFright.Core.Entities.Category", b =>
+            modelBuilder.Entity("StageFright.Core.Entities.BankReconciliation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("AccountId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
@@ -104,24 +252,27 @@ namespace StageFright.Data.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("GLAccount")
-                        .IsRequired()
+                    b.Property<DateTime?>("FinalisedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsSystem")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
+                    b.Property<string>("Notes")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("OpeningBalance")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("Type")
+                    b.Property<decimal>("StatementClosingBalance")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("StatementDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -130,45 +281,9 @@ namespace StageFright.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.HasIndex("AccountId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            GLAccount = "0100",
-                            IsDeleted = false,
-                            IsSystem = true,
-                            Name = "Cash",
-                            SortOrder = 0,
-                            Type = "Income",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            GLAccount = "0101",
-                            IsDeleted = false,
-                            IsSystem = true,
-                            Name = "Member Receivable",
-                            SortOrder = 1,
-                            Type = "Income",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000003"),
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            GLAccount = "9900",
-                            IsDeleted = false,
-                            IsSystem = true,
-                            Name = "Bad Debt Expense",
-                            SortOrder = 999,
-                            Type = "Expense",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        });
+                    b.ToTable("BankReconciliations", (string)null);
                 });
 
             modelBuilder.Entity("StageFright.Core.Entities.CommitteeMembership", b =>
@@ -313,6 +428,9 @@ namespace StageFright.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("GstCode")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("MemberId")
                         .HasColumnType("TEXT");
 
@@ -329,6 +447,32 @@ namespace StageFright.Data.Migrations
                     b.HasIndex("RehearsalId");
 
                     b.ToTable("Fees");
+                });
+
+            modelBuilder.Entity("StageFright.Core.Entities.JournalEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Type");
+
+                    b.ToTable("JournalEntries");
                 });
 
             modelBuilder.Entity("StageFright.Core.Entities.Member", b =>
@@ -465,6 +609,31 @@ namespace StageFright.Data.Migrations
                     b.ToTable("Payments");
                 });
 
+            modelBuilder.Entity("StageFright.Core.Entities.ReconciliationLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ReconciliationId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransactionId");
+
+                    b.HasIndex("ReconciliationId", "TransactionId")
+                        .IsUnique();
+
+                    b.ToTable("ReconciliationLines", (string)null);
+                });
+
             modelBuilder.Entity("StageFright.Core.Entities.Rehearsal", b =>
                 {
                     b.Property<Guid>("Id")
@@ -510,12 +679,21 @@ namespace StageFright.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Abn")
+                        .HasColumnType("TEXT");
+
                     b.Property<decimal>("AnnualFee")
                         .HasPrecision(18, 2)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("AnnualFeeGstCode")
+                        .HasColumnType("TEXT");
+
                     b.Property<decimal>("AttendanceFee")
                         .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AttendanceFeeGstCode")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("CommitteeRenewalMonth")
@@ -530,8 +708,16 @@ namespace StageFright.Data.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("FinancialYearStartMonth")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsGstRegistered")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
 
                     b.Property<int?>("LastCommitteeResetYear")
                         .HasColumnType("INTEGER");
@@ -574,7 +760,7 @@ namespace StageFright.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("CategoryId")
+                    b.Property<Guid>("AccountId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
@@ -601,6 +787,12 @@ namespace StageFright.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("GstCode")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("JournalEntryId")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid?>("MemberId")
                         .HasColumnType("TEXT");
 
@@ -609,9 +801,11 @@ namespace StageFright.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("AccountId");
 
                     b.HasIndex("FeeId");
+
+                    b.HasIndex("JournalEntryId");
 
                     b.HasIndex("MemberId");
 
@@ -637,6 +831,17 @@ namespace StageFright.Data.Migrations
                     b.Navigation("Member");
 
                     b.Navigation("Rehearsal");
+                });
+
+            modelBuilder.Entity("StageFright.Core.Entities.BankReconciliation", b =>
+                {
+                    b.HasOne("StageFright.Core.Entities.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("StageFright.Core.Entities.CommitteeMembership", b =>
@@ -709,17 +914,41 @@ namespace StageFright.Data.Migrations
                     b.Navigation("Member");
                 });
 
+            modelBuilder.Entity("StageFright.Core.Entities.ReconciliationLine", b =>
+                {
+                    b.HasOne("StageFright.Core.Entities.BankReconciliation", "Reconciliation")
+                        .WithMany("Lines")
+                        .HasForeignKey("ReconciliationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StageFright.Core.Entities.Transaction", "Transaction")
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Reconciliation");
+
+                    b.Navigation("Transaction");
+                });
+
             modelBuilder.Entity("StageFright.Core.Entities.Transaction", b =>
                 {
-                    b.HasOne("StageFright.Core.Entities.Category", "Category")
+                    b.HasOne("StageFright.Core.Entities.Account", "Account")
                         .WithMany("Transactions")
-                        .HasForeignKey("CategoryId")
+                        .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("StageFright.Core.Entities.Fee", "Fee")
                         .WithMany()
                         .HasForeignKey("FeeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("StageFright.Core.Entities.JournalEntry", "JournalEntry")
+                        .WithMany("Transactions")
+                        .HasForeignKey("JournalEntryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("StageFright.Core.Entities.Member", "Member")
@@ -732,18 +961,25 @@ namespace StageFright.Data.Migrations
                         .HasForeignKey("PaymentId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("Category");
+                    b.Navigation("Account");
 
                     b.Navigation("Fee");
+
+                    b.Navigation("JournalEntry");
 
                     b.Navigation("Member");
 
                     b.Navigation("Payment");
                 });
 
-            modelBuilder.Entity("StageFright.Core.Entities.Category", b =>
+            modelBuilder.Entity("StageFright.Core.Entities.Account", b =>
                 {
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("StageFright.Core.Entities.BankReconciliation", b =>
+                {
+                    b.Navigation("Lines");
                 });
 
             modelBuilder.Entity("StageFright.Core.Entities.Event", b =>
@@ -754,6 +990,11 @@ namespace StageFright.Data.Migrations
             modelBuilder.Entity("StageFright.Core.Entities.EventType", b =>
                 {
                     b.Navigation("Events");
+                });
+
+            modelBuilder.Entity("StageFright.Core.Entities.JournalEntry", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("StageFright.Core.Entities.Member", b =>

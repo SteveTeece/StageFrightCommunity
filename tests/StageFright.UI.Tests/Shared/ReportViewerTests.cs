@@ -4,6 +4,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Enums;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
 using StageFright.Reports.Rendering;
@@ -199,4 +200,87 @@ public class ReportViewerTests : BunitContext
         Assert.DoesNotContain("Row 011", cut.Markup);
     }
 
+    // --- Filter type rendering ---
+
+    [Fact]
+    public async Task Should_RenderDropdown_When_FilterTypeIsSelect()
+    {
+        _provider.Filters.Returns(
+        [
+            new ReportFilterDefinition { Key = "status", Type = ReportFilterType.Select, Label = "Status", Options = ["Active", "Archived"], DefaultValue = "Active" }
+        ]);
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>()).Returns(SampleReport);
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        var select = cut.Find("select");
+        Assert.Equal(2, select.Children.Length);
+    }
+
+    [Fact]
+    public async Task Should_RegenerateWithChosenOption_When_SelectChangedAndApplyClicked()
+    {
+        _provider.Filters.Returns(
+        [
+            new ReportFilterDefinition { Key = "status", Type = ReportFilterType.Select, Label = "Status", Options = ["Active", "Archived"], DefaultValue = "Active" }
+        ]);
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>()).Returns(SampleReport);
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        cut.Find("select").Change("Archived");
+        cut.Find("button.btn-primary").Click();
+
+        await _provider.Received().GenerateAsync(
+            Arg.Is<ReportFilterValues>(f => f.Get("status") == "Archived"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_RenderCheckbox_When_FilterTypeIsBoolean()
+    {
+        _provider.Filters.Returns(
+        [
+            new ReportFilterDefinition { Key = "compare", Type = ReportFilterType.Boolean, Label = "Compare", DefaultValue = "false" }
+        ]);
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>()).Returns(SampleReport);
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        var checkbox = cut.Find("input[type=checkbox]");
+        Assert.False(checkbox.HasAttribute("checked"));
+    }
+
+    [Fact]
+    public async Task Should_RenderTextInput_When_FilterTypeIsText()
+    {
+        _provider.Filters.Returns(
+        [
+            new ReportFilterDefinition { Key = "account", Type = ReportFilterType.Text, Label = "Account", DefaultValue = "" }
+        ]);
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>()).Returns(SampleReport);
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        Assert.NotNull(cut.Find("input[type=text]"));
+    }
+
+    [Fact]
+    public async Task Should_RenderDateInput_When_FilterTypeIsDate()
+    {
+        _provider.Filters.Returns(
+        [
+            new ReportFilterDefinition { Key = "asAt", Type = ReportFilterType.Date, Label = "As at", DefaultValue = "2026-06-30" }
+        ]);
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>()).Returns(SampleReport);
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        Assert.NotNull(cut.Find("input[type=date]"));
+    }
 }

@@ -38,6 +38,11 @@ public class SettingsRepository : ISettingsRepository
                 existing.MaxAgeRangeYears = settings.MaxAgeRangeYears;
                 existing.MinimumMemberAge = settings.MinimumMemberAge;
                 existing.Theme = settings.Theme;
+                existing.ShowParticipationGraphs = settings.ShowParticipationGraphs;
+                existing.FinancialYearStartMonth = settings.FinancialYearStartMonth;
+                existing.IsGstRegistered = settings.IsGstRegistered;
+                existing.AnnualFeeGstCode = settings.AnnualFeeGstCode;
+                existing.AttendanceFeeGstCode = settings.AttendanceFeeGstCode;
                 existing.LastCommitteeResetYear = settings.LastCommitteeResetYear;
                 existing.SchemaVersion = settings.SchemaVersion;
                 existing.UpdatedAt = DateTime.UtcNow;

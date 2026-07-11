@@ -17,7 +17,7 @@ public partial class AttendanceGrid
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
 
-    private const int PageSize = 10;
+    private const int PageSize = 15;
 
     private bool _loading = true;
     private bool _saving;

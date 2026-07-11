@@ -33,10 +33,21 @@ else
     <EditForm Model="s" OnValidSubmit="HandleSaveAsync">
         <DataAnnotationsValidator />
 
-        <div class="mb-2">
-            <label for="orgName" class="form-label">Organisation Name <span class="text-danger">*</span></label>
-            <InputText id="orgName" class="form-control form-control-sm" @bind-Value="s.OrganizationName" />
-            <ValidationMessage For="() => s.OrganizationName" />
+        <div class="row g-2 mb-2">
+            <div class="col-md-6">
+                <label for="orgName" class="form-label">Organisation Name <span class="text-danger">*</span></label>
+                <InputText id="orgName" class="form-control form-control-sm" @bind-Value="s.OrganizationName" />
+                <ValidationMessage For="() => s.OrganizationName" />
+            </div>
+            <div class="col-md-6">
+                <label for="abn" class="form-label">ABN</label>
+                <AbnInput id="abn" class="form-control form-control-sm" @bind-Value="s.Abn" />
+                <ValidationMessage For="() => s.Abn" />
+                @if (string.IsNullOrEmpty(s.Abn))
+                {
+                    <div class="form-text small">ABN not on file.</div>
+                }
+            </div>
         </div>
 
         <div class="row g-2 mb-2">
@@ -59,7 +70,7 @@ else
         </div>
 
         <div class="row g-2 mb-2">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <label for="membershipRenewalMonth" class="form-label">Membership Renewal Month <span class="text-danger">*</span></label>
                 <InputSelect id="membershipRenewalMonth" class="form-select form-select-sm" @bind-Value="s.MembershipRenewalMonth">
                     @for (var m = 1; m <= 12; m++)
@@ -70,7 +81,7 @@ else
                 </InputSelect>
                 <ValidationMessage For="() => s.MembershipRenewalMonth" />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <label for="committeeRenewalMonth" class="form-label">Committee Renewal Month</label>
                 <InputSelect id="committeeRenewalMonth" class="form-select form-select-sm" @bind-Value="s.CommitteeRenewalMonth">
                     @for (var m = 1; m <= 12; m++)
@@ -80,6 +91,18 @@ else
                     }
                 </InputSelect>
                 <ValidationMessage For="() => s.CommitteeRenewalMonth" />
+            </div>
+            <div class="col-md-4">
+                <label for="financialYearStartMonth" class="form-label">Financial Year Start Month</label>
+                <InputSelect id="financialYearStartMonth" class="form-select form-select-sm" @bind-Value="s.FinancialYearStartMonth">
+                    @for (var m = 1; m <= 12; m++)
+                    {
+                        var month = m;
+                        <option value="@month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
+                    }
+                </InputSelect>
+                <div class="form-text small">Default July — Australian financial year.</div>
+                <ValidationMessage For="() => s.FinancialYearStartMonth" />
             </div>
         </div>
 
@@ -96,32 +119,33 @@ else
             </div>
         </div>
 
-        <div class="mb-2">
-            <label class="form-label">Theme</label>
-            <div>
-                <button type="button" class="btn btn-outline-secondary btn-sm" id="theme-toggle-btn"
-                        @onclick="HandleThemeToggleAsync">
-                    @if (s.Theme == StageFright.Core.Enums.Theme.Light)
-                    {
-                        <span>Switch to Dark Mode</span>
-                    }
-                    else
-                    {
-                        <span>Switch to Light Mode</span>
-                    }
-                </button>
-                <span class="ms-2 text-muted small">Current: @s.Theme</span>
+        <div class="row g-2 mb-2">
+            <div class="col-md-6">
+                <label class="form-label">Theme</label>
+                <div>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="theme-toggle-btn"
+                            @onclick="HandleThemeToggleAsync">
+                        @if (s.Theme == StageFright.Core.Enums.Theme.Light)
+                        {
+                            <span>Switch to Dark Mode</span>
+                        }
+                        else
+                        {
+                            <span>Switch to Light Mode</span>
+                        }
+                    </button>
+                    <span class="ms-2 text-muted small">Current: @s.Theme</span>
+                </div>
             </div>
-        </div>
-
-        <div class="mb-2">
-            <label class="form-label">Dashboard</label>
-            <div class="form-check">
-                <InputCheckbox id="showParticipationGraphs" class="form-check-input"
-                               @bind-Value="s.ShowParticipationGraphs" />
-                <label class="form-check-label small" for="showParticipationGraphs">
-                    Show year-to-date participation graphs on Rehearsals and Events tiles
-                </label>
+            <div class="col-md-6">
+                <label class="form-label">Dashboard</label>
+                <div class="form-check">
+                    <InputCheckbox id="showParticipationGraphs" class="form-check-input"
+                                   @bind-Value="s.ShowParticipationGraphs" />
+                    <label class="form-check-label small" for="showParticipationGraphs">
+                        Show year-to-date participation graphs on Rehearsals and Events tiles
+                    </label>
+                </div>
             </div>
         </div>
 

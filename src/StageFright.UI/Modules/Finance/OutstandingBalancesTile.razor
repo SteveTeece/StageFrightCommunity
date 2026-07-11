@@ -1,0 +1,35 @@
+@inherits ComponentBase
+
+@if (_loading)
+{
+    <span class="text-muted small">Loading...</span>
+}
+else if (_error)
+{
+    <span class="text-danger small">Unable to load</span>
+}
+else
+{
+    <div class="tile-stats">
+        <div>
+            <div class="tile-stat-value">@_memberCount</div>
+            <div class="tile-stat-label">Members Owing</div>
+        </div>
+        <div>
+            <div class="tile-stat-value dim">@_attendanceOutstanding.ToString("C")</div>
+            <div class="tile-stat-label">Attendance</div>
+        </div>
+        <div>
+            <div class="tile-stat-value dim">@_annualOutstanding.ToString("C")</div>
+            <div class="tile-stat-label">Annual</div>
+        </div>
+    </div>
+    @if (_hasChartData)
+    {
+        <LineChart @ref="_chart" Height="90" />
+    }
+    else
+    {
+        <div class="tile-note">No outstanding balances this year</div>
+    }
+}

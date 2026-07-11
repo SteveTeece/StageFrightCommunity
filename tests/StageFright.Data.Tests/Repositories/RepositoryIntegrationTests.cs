@@ -216,22 +216,22 @@ public class RepositoryIntegrationTests : IDisposable
     public async Task GLRepository_AddPairAsync_ThrowsOnImbalancedAmounts()
     {
         using var db = _factory.CreateContext();
-        var categoryRepo = new CategoryRepository(db);
-        var categories = await categoryRepo.GetAllAsync();
-        var cat = categories.First();
+        var accountRepo = new AccountRepository(db);
+        var accounts = await accountRepo.GetAllAsync();
+        var cat = accounts.First();
 
         var repo = new GLRepository(db);
 
         var debit = new Transaction
         {
             Id = Guid.NewGuid(), Date = DateTime.UtcNow,
-            CategoryId = cat.Id, GLAccount = cat.GLAccount,
+            AccountId = cat.Id, GLAccount = cat.AccountNumber,
             DebitAmount = 100m, CreditAmount = 0m, CreatedAt = DateTime.UtcNow
         };
         var credit = new Transaction
         {
             Id = Guid.NewGuid(), Date = DateTime.UtcNow,
-            CategoryId = cat.Id, GLAccount = cat.GLAccount,
+            AccountId = cat.Id, GLAccount = cat.AccountNumber,
             DebitAmount = 0m, CreditAmount = 50m, CreatedAt = DateTime.UtcNow  // Intentionally wrong
         };
 
@@ -239,26 +239,26 @@ public class RepositoryIntegrationTests : IDisposable
             () => repo.AddPairAsync(debit, credit));
     }
 
-    // --- Category repository ---
+    // --- Account repository ---
 
     [Fact]
-    public async Task CategoryRepository_SystemCategoriesSeeded_PresentsInGetAll()
+    public async Task AccountRepository_SystemAccountsSeeded_PresentsInGetAll()
     {
         using var db = _factory.CreateContext();
-        var repo = new CategoryRepository(db);
+        var repo = new AccountRepository(db);
 
         var all = await repo.GetAllAsync();
 
-        Assert.Contains(all, c => c.GLAccount == "0100" && c.IsSystem);
-        Assert.Contains(all, c => c.GLAccount == "0101" && c.IsSystem);
-        Assert.Contains(all, c => c.GLAccount == "9900" && c.IsSystem);
+        Assert.Contains(all, c => c.AccountNumber == "1100" && c.IsSystem);
+        Assert.Contains(all, c => c.AccountNumber == "1200" && c.IsSystem);
+        Assert.Contains(all, c => c.AccountNumber == "6999" && c.IsSystem);
     }
 
     [Fact]
-    public async Task CategoryRepository_ArchiveSystemCategory_ThrowsValidationException()
+    public async Task AccountRepository_ArchiveSystemAccount_ThrowsValidationException()
     {
         using var db = _factory.CreateContext();
-        var repo = new CategoryRepository(db);
+        var repo = new AccountRepository(db);
 
         var systemCat = (await repo.GetAllAsync()).First(c => c.IsSystem);
 
@@ -267,26 +267,26 @@ public class RepositoryIntegrationTests : IDisposable
     }
 
     [Fact]
-    public async Task CategoryRepository_GetNextGLAccountAsync_IsSequential()
+    public async Task AccountRepository_GetNextAccountNumberAsync_IsSequential()
     {
         using var db = _factory.CreateContext();
-        var repo = new CategoryRepository(db);
+        var repo = new AccountRepository(db);
 
-        var first = await repo.GetNextGLAccountAsync(CategoryType.Income);
-        Assert.Equal("1000", first);
+        var first = await repo.GetNextAccountNumberAsync(AccountType.Income, false);
+        Assert.Equal("4000", first);
 
-        // Add a user income category
-        var cat = new Category
+        // Add a user income account
+        var cat = new Account
         {
             Id = Guid.NewGuid(), Name = "Test Income",
-            Type = CategoryType.Income, GLAccount = "1000",
+            Type = AccountType.Income, AccountNumber = "4000",
             SortOrder = 10, IsSystem = false,
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         };
         await repo.AddAsync(cat);
 
-        var second = await repo.GetNextGLAccountAsync(CategoryType.Income);
-        Assert.Equal("1001", second);
+        var second = await repo.GetNextAccountNumberAsync(AccountType.Income, false);
+        Assert.Equal("4001", second);
     }
 
     // --- Helpers ---

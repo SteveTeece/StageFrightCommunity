@@ -30,7 +30,7 @@ public class BackupEnvelope
     [ProtoMember(13)] public List<FeeBackupDto>? Fees { get; set; }
     [ProtoMember(14)] public List<PaymentBackupDto>? Payments { get; set; }
     [ProtoMember(15)] public List<TransactionBackupDto>? Transactions { get; set; }
-    [ProtoMember(16)] public List<CategoryBackupDto>? Categories { get; set; }
+    [ProtoMember(16)] public List<AccountBackupDto>? Accounts { get; set; }
     [ProtoMember(17)] public SettingsBackupDto? Settings { get; set; }
     [ProtoMember(18)] public List<CommitteeMembershipBackupDto>? CommitteeMemberships { get; set; }
     [ProtoMember(19)] public List<AuditTrailBackupDto>? AuditTrailEntries { get; set; }

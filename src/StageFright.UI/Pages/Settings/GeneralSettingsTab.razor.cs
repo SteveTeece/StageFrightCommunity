@@ -81,6 +81,16 @@ public partial class GeneralSettingsTab : ComponentBase
 
         try
         {
+            // Merge in the fields owned by the GST/BAS tab, so a stale in-memory copy
+            // here never clobbers a concurrent GST-registration save made there.
+            var current = await SettingsService.GetAsync();
+            if (current is not null)
+            {
+                _settings.IsGstRegistered = current.IsGstRegistered;
+                _settings.AnnualFeeGstCode = current.AnnualFeeGstCode;
+                _settings.AttendanceFeeGstCode = current.AttendanceFeeGstCode;
+            }
+
             await SettingsService.SaveAsync(_settings);
             _successMessage = "Settings saved successfully.";
         }

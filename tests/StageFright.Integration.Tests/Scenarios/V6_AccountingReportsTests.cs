@@ -33,9 +33,9 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
         await _db.Database.OpenConnectionAsync();
         await _db.Database.MigrateAsync();
 
-        _db.Categories.AddRange(
-            new Category { Id = IncomeCatId, Name = "Membership Dues", Type = CategoryType.Income, GLAccount = "1000", SortOrder = 0, IsSystem = false, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new Category { Id = ExpenseCatId, Name = "Hall Hire", Type = CategoryType.Expense, GLAccount = "2000", SortOrder = 0, IsSystem = false, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+        _db.Accounts.AddRange(
+            new Account { Id = IncomeCatId, Name = "Membership Dues", Type = AccountType.Income, AccountNumber = "1000", SortOrder = 0, IsSystem = false, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new Account { Id = ExpenseCatId, Name = "Hall Hire", Type = AccountType.Expense, AccountNumber = "2000", SortOrder = 0, IsSystem = false, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
         );
 
         _db.Members.Add(new Member
@@ -48,10 +48,10 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
 
         // Balanced GL: debit MemberReceivable / credit Income = 100, debit Cash / credit MemberReceivable = 100
         _db.Transactions.AddRange(
-            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), CategoryId = IncomeCatId, GLAccount = "1000", DebitAmount = 0, CreditAmount = 100m, MemberId = MemberId, Description = "Annual fee", CreatedAt = DateTime.UtcNow },
-            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), CategoryId = IncomeCatId, GLAccount = "1000", DebitAmount = 100m, CreditAmount = 0, MemberId = MemberId, Description = "Annual fee offset", CreatedAt = DateTime.UtcNow },
-            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 4, 1, 0, 0, 0, DateTimeKind.Utc), CategoryId = ExpenseCatId, GLAccount = "2000", DebitAmount = 50m, CreditAmount = 0, Description = "Hall hire", CreatedAt = DateTime.UtcNow },
-            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 4, 1, 0, 0, 0, DateTimeKind.Utc), CategoryId = ExpenseCatId, GLAccount = "2000", DebitAmount = 0, CreditAmount = 50m, Description = "Hall hire payment", CreatedAt = DateTime.UtcNow }
+            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), AccountId = IncomeCatId, GLAccount = "1000", DebitAmount = 0, CreditAmount = 100m, MemberId = MemberId, Description = "Annual fee", CreatedAt = DateTime.UtcNow },
+            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), AccountId = IncomeCatId, GLAccount = "1000", DebitAmount = 100m, CreditAmount = 0, MemberId = MemberId, Description = "Annual fee offset", CreatedAt = DateTime.UtcNow },
+            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 4, 1, 0, 0, 0, DateTimeKind.Utc), AccountId = ExpenseCatId, GLAccount = "2000", DebitAmount = 50m, CreditAmount = 0, Description = "Hall hire", CreatedAt = DateTime.UtcNow },
+            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 4, 1, 0, 0, 0, DateTimeKind.Utc), AccountId = ExpenseCatId, GLAccount = "2000", DebitAmount = 0, CreditAmount = 50m, Description = "Hall hire payment", CreatedAt = DateTime.UtcNow }
         );
 
         await _db.SaveChangesAsync();
@@ -69,9 +69,9 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     public async Task IncomeStatement_GeneratesReport_WithIncomeAndExpenseSections()
     {
         var sut = BuildIncomeStatementProvider();
-        var result = await sut.GenerateAsync(CurrentYearFilters());
+        var result = await sut.GenerateAsync(CurrentYearCustomPeriodFilters());
 
-        Assert.Equal("Income Statement", result.Title);
+        Assert.Equal("Statement of Income & Expenditure", result.Title);
         Assert.Contains(result.Sections, s => s.Heading == "Income");
         Assert.Contains(result.Sections, s => s.Heading == "Expenses");
     }
@@ -80,7 +80,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     public async Task IncomeStatement_IncomeSection_ContainsMembershipDues()
     {
         var sut = BuildIncomeStatementProvider();
-        var result = await sut.GenerateAsync(CurrentYearFilters());
+        var result = await sut.GenerateAsync(CurrentYearCustomPeriodFilters());
 
         var incomeSection = result.Sections.First(s => s.Heading == "Income");
         Assert.Contains(incomeSection.Rows, r => r.Cells.Any(c => c.Contains("Membership Dues")));
@@ -107,7 +107,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
         {
             Id = Guid.NewGuid(),
             Date = new DateTime(2026, 5, 1, 0, 0, 0, DateTimeKind.Utc),
-            CategoryId = IncomeCatId, GLAccount = "1000",
+            AccountId = IncomeCatId, GLAccount = "1000",
             DebitAmount = 0, CreditAmount = 999m, // unbalanced
             Description = "Imbalance test", CreatedAt = DateTime.UtcNow
         });
@@ -164,7 +164,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     public async Task PdfRenderer_Render_ReturnsNonEmptyBytes()
     {
         var sut = BuildIncomeStatementProvider();
-        var report = await sut.GenerateAsync(CurrentYearFilters());
+        var report = await sut.GenerateAsync(CurrentYearCustomPeriodFilters());
         var renderer = new PdfReportRenderer();
 
         var bytes = renderer.Render(report);
@@ -178,7 +178,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     public async Task CsvExporter_Export_FirstRowIsHeaders()
     {
         var sut = BuildIncomeStatementProvider();
-        var report = await sut.GenerateAsync(CurrentYearFilters());
+        var report = await sut.GenerateAsync(CurrentYearCustomPeriodFilters());
         var exporter = new CsvReportExporter();
 
         var csv = exporter.Export(report);
@@ -215,21 +215,21 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     private IncomeStatementReportProvider BuildIncomeStatementProvider()
     {
         var gl = new GLRepository(_db);
-        var cat = new CategoryRepository(_db);
-        return new IncomeStatementReportProvider(gl, cat);
+        var cat = new AccountRepository(_db);
+        return new IncomeStatementReportProvider(gl, cat, new SettingsRepository(_db));
     }
 
     private TrialBalanceReportProvider BuildTrialBalanceProvider()
     {
         var gl = new GLRepository(_db);
-        var cat = new CategoryRepository(_db);
-        return new TrialBalanceReportProvider(gl, cat);
+        var cat = new AccountRepository(_db);
+        return new TrialBalanceReportProvider(gl, cat, new SettingsRepository(_db));
     }
 
     private AccountRegisterReportProvider BuildAccountRegisterProvider()
     {
         var gl = new GLRepository(_db);
-        var cat = new CategoryRepository(_db);
+        var cat = new AccountRepository(_db);
         return new AccountRegisterReportProvider(gl, cat);
     }
 
@@ -246,6 +246,14 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
         var f = new ReportFilterValues();
         f.Set("dateFrom", $"{DateTime.UtcNow.Year}-01-01");
         f.Set("dateTo", $"{DateTime.UtcNow.Year}-12-31");
+        return f;
+    }
+
+    /// <summary>Calendar-year custom period, for IncomeStatementReportProvider (defaults to "This FY" otherwise).</summary>
+    private static ReportFilterValues CurrentYearCustomPeriodFilters()
+    {
+        var f = CurrentYearFilters();
+        f.Set("period", "Custom");
         return f;
     }
 }

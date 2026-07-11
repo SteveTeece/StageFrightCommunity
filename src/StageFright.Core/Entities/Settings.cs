@@ -1,4 +1,5 @@
 using StageFright.Core.Enums;
+using StageFright.Core.Modules.Settings;
 
 namespace StageFright.Core.Entities;
 
@@ -14,6 +15,17 @@ public class Settings
     /// <summary>Display name of the performing arts group. Required (setup wizard).</summary>
     public string OrganizationName { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Australian Business Number, stored as a plain 11-digit string (no spaces). A standing
+    /// organisation-identity fact — unlike the GST properties below, never nulled by GST toggling.
+    /// Required for new installs (setup wizard); existing installs may have none on file.
+    /// </summary>
+#if !DEBUG
+    // ABN checksum validation is skipped in Debug builds — see SetupFormModel.Abn.
+    [Abn]
+#endif
+    public string? Abn { get; set; }
+
     /// <summary>Annual membership fee amount. Required. Precision: decimal(18,2). Must be ≥ 0.</summary>
     public decimal AnnualFee { get; set; }
 
@@ -25,6 +37,30 @@ public class Settings
 
     /// <summary>Month (1–12) when committee positions are reviewed. Default: 1 (January).</summary>
     public int CommitteeRenewalMonth { get; set; } = 1;
+
+    /// <summary>
+    /// First month (1–12) of the financial year used by reports and FY presets.
+    /// Default: 7 (Australian financial year, 1 July – 30 June).
+    /// </summary>
+    public int FinancialYearStartMonth { get; set; } = 7;
+
+    /// <summary>
+    /// True when the organisation is registered for GST. When false all GST UI is
+    /// hidden, postings are 2-line, and GST codes stay null. Default: false.
+    /// </summary>
+    public bool IsGstRegistered { get; set; }
+
+    /// <summary>
+    /// GST treatment applied to annual fee accruals while registered.
+    /// Null means GST-free (the default for NFP membership fees).
+    /// </summary>
+    public GstCode? AnnualFeeGstCode { get; set; }
+
+    /// <summary>
+    /// GST treatment applied to attendance fee accruals while registered.
+    /// Null means GST-free.
+    /// </summary>
+    public GstCode? AttendanceFeeGstCode { get; set; }
 
     /// <summary>Maximum member age accepted by the system (years). Default: 150.</summary>
     public int MaxAgeRangeYears { get; set; } = 150;
@@ -49,7 +85,7 @@ public class Settings
     public int? LastCommitteeResetYear { get; set; }
 
     /// <summary>Semver schema version recorded by migrations and backup manifests (NFR-002).</summary>
-    public string SchemaVersion { get; set; } = "1.0.0";
+    public string SchemaVersion { get; set; } = "1.1.0";
 
     // --- Soft-delete fields (never set; singleton row) ---
 

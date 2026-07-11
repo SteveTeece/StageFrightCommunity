@@ -10,23 +10,23 @@ namespace StageFright.Core.Modules.Settings;
 /// <summary>
 /// Handles first-run initialization. Validates the setup request, creates the Settings singleton,
 /// seeds default event types, and audits the event.
-/// System categories (Cash/MemberReceivable/BadDebtExpense) are seeded by EF migrations.
+/// System accounts (Cash/MemberReceivable/BadDebtExpense) are seeded by EF migrations.
 /// </summary>
 public class SetupService : ISetupService
 {
     private readonly ISettingsRepository _settingsRepo;
-    private readonly ICategoryRepository _categoryRepo;
+    private readonly IAccountRepository _accountRepo;
     private readonly IEventTypeRepository _eventTypeRepo;
     private readonly IAuditTrailService _audit;
 
     public SetupService(
         ISettingsRepository settingsRepo,
-        ICategoryRepository categoryRepo,
+        IAccountRepository accountRepo,
         IEventTypeRepository eventTypeRepo,
         IAuditTrailService audit)
     {
         _settingsRepo = settingsRepo;
-        _categoryRepo = categoryRepo;
+        _accountRepo = accountRepo;
         _eventTypeRepo = eventTypeRepo;
         _audit = audit;
     }
@@ -45,18 +45,27 @@ public class SetupService : ISetupService
 
         Validate(request);
 
+        // GST codes only ever apply while registered — force them null otherwise, regardless
+        // of what the wizard happened to have selected before the user toggled registration off.
+        var annualFeeGstCode = request.IsGstRegistered ? request.AnnualFeeGstCode : null;
+        var attendanceFeeGstCode = request.IsGstRegistered ? request.AttendanceFeeGstCode : null;
+
         var settings = new SettingsEntity
         {
             Id = Guid.NewGuid(),
             OrganizationName = request.OrganizationName.Trim(),
+            Abn = request.Abn.Trim(),
             AnnualFee = request.AnnualFee,
             AttendanceFee = request.AttendanceFee,
             MembershipRenewalMonth = request.MembershipRenewalMonth,
+            IsGstRegistered = request.IsGstRegistered,
+            AnnualFeeGstCode = annualFeeGstCode,
+            AttendanceFeeGstCode = attendanceFeeGstCode,
             CommitteeRenewalMonth = 1,
             MaxAgeRangeYears = 150,
             MinimumMemberAge = 0,
             Theme = Theme.Light,
-            SchemaVersion = "1.0.0",
+            SchemaVersion = "1.1.0",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -94,6 +103,15 @@ public class SetupService : ISetupService
     {
         if (string.IsNullOrWhiteSpace(request.OrganizationName))
             throw new ValidationException("OrganizationName is required.", "Settings", nameof(InitializeAsync));
+
+        if (string.IsNullOrWhiteSpace(request.Abn))
+            throw new ValidationException("A valid ABN is required.", "Settings", nameof(InitializeAsync));
+
+#if !DEBUG
+        // ABN checksum validation is skipped in Debug builds — see SetupFormModel.Abn.
+        if (!AbnValidator.IsValid(request.Abn.Trim()))
+            throw new ValidationException("A valid ABN is required.", "Settings", nameof(InitializeAsync));
+#endif
 
         if (request.AnnualFee < 0)
             throw new ValidationException("AnnualFee must be zero or greater.", "Settings", nameof(InitializeAsync));

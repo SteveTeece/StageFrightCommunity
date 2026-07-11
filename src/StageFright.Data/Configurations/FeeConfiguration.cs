@@ -11,6 +11,7 @@ public class FeeConfiguration : IEntityTypeConfiguration<Fee>
         builder.HasKey(f => f.Id);
 
         builder.Property(f => f.FeeType).HasConversion<string>();
+        builder.Property(f => f.GstCode).HasConversion<string>();
         builder.Property(f => f.Amount).HasPrecision(18, 2).IsRequired();
         builder.Property(f => f.FeeDate).IsRequired();
         builder.Property(f => f.DueDate).IsRequired();

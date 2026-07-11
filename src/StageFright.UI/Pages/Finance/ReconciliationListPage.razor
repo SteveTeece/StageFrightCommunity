@@ -1,0 +1,133 @@
+@page "/finance/reconciliation"
+@using StageFright.Core.Entities
+@using StageFright.Core.Enums
+
+<PageTitle>Bank Reconciliation</PageTitle>
+
+<div class="reconciliation-list-page container-fluid py-2">
+    <h4 class="mb-2">Bank Reconciliation</h4>
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+    }
+
+    @if (_loading)
+    {
+        <p role="status" aria-live="polite">Loading…</p>
+    }
+    else if (!_bankAccounts.Any())
+    {
+        <p class="text-muted">
+            No bank or cash accounts exist yet.
+            Create one on the <a href="/finance/accounts">Chart of Accounts</a> page first.
+        </p>
+    }
+    else
+    {
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <label for="account-picker" class="form-label small mb-0">Account:</label>
+            <select id="account-picker" class="form-select form-select-sm w-auto"
+                    value="@_selectedAccountId" @onchange="OnAccountChangedAsync"
+                    aria-label="Bank account to reconcile">
+                <option value="">Select an account…</option>
+                @foreach (var account in _bankAccounts)
+                {
+                    <option value="@account.Id">@account.AccountNumber — @account.Name</option>
+                }
+            </select>
+        </div>
+
+        @if (_selectedAccountId is not null)
+        {
+            @if (_draft is not null)
+            {
+                <div class="alert alert-info py-2 mb-3 d-flex align-items-center justify-content-between" role="status">
+                    <span>
+                        A draft reconciliation to <strong>@_draft.StatementDate.ToString("d MMM yyyy")</strong> is in progress.
+                    </span>
+                    <button class="btn btn-primary btn-sm" @onclick="ResumeDraft">Resume Draft</button>
+                </div>
+            }
+            else
+            {
+                <div class="card mb-3">
+                    <div class="card-body py-2">
+                        <h6 class="card-title mb-2">New Reconciliation</h6>
+                        <EditForm Model="_startModel" OnValidSubmit="StartDraftAsync">
+                            <DataAnnotationsValidator />
+                            <div class="row g-2 align-items-start">
+                                <div class="col-auto">
+                                    <label for="statement-date" class="form-label small mb-0">Statement date</label>
+                                    <InputDate id="statement-date" class="form-control form-control-sm"
+                                               @bind-Value="_startModel.StatementDate" />
+                                </div>
+                                <div class="col-auto">
+                                    <label for="closing-balance" class="form-label small mb-0">Statement closing balance</label>
+                                    <InputNumber id="closing-balance" class="form-control form-control-sm"
+                                                 @bind-Value="_startModel.StatementClosingBalance" />
+                                </div>
+                                <div class="col">
+                                    <label for="rec-notes" class="form-label small mb-0">Notes (optional)</label>
+                                    <InputText id="rec-notes" class="form-control form-control-sm"
+                                               @bind-Value="_startModel.Notes" />
+                                </div>
+                                <div class="col-auto d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary btn-sm" disabled="@_starting">
+                                        @(_starting ? "Starting…" : "Start Reconciliation")
+                                    </button>
+                                </div>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            }
+
+            <section aria-labelledby="history-heading">
+                <h6 id="history-heading" class="mb-1">History</h6>
+                @if (!_history.Any())
+                {
+                    <p class="text-muted small mb-0">No reconciliations for this account yet.</p>
+                }
+                else
+                {
+                    <RadzenDataGrid Data="@_history" TItem="BankReconciliation"
+                                    AllowSorting="false" AllowPaging="true" PageSize="15"
+                                    class="rz-shadow-0">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="BankReconciliation" Title="Statement Date" Width="140px">
+                                <Template Context="rec">@rec.StatementDate.ToString("d MMM yyyy")</Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="BankReconciliation" Title="Opening" Width="120px">
+                                <Template Context="rec">@rec.OpeningBalance.ToString("C")</Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="BankReconciliation" Title="Closing" Width="120px">
+                                <Template Context="rec">@rec.StatementClosingBalance.ToString("C")</Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="BankReconciliation" Title="Status" Width="110px">
+                                <Template Context="rec">
+                                    @if (rec.Status == ReconciliationStatus.Finalised)
+                                    {
+                                        <span class="badge bg-success">Finalised</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Draft</span>
+                                    }
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="BankReconciliation" Title="" Width="110px" Sortable="false">
+                                <Template Context="rec">
+                                    <button class="btn btn-outline-secondary btn-sm"
+                                            @onclick="() => OpenWorkspace(rec.Id)">
+                                        @(rec.Status == ReconciliationStatus.Draft ? "Resume" : "View")
+                                    </button>
+                                </Template>
+                            </RadzenDataGridColumn>
+                        </Columns>
+                    </RadzenDataGrid>
+                }
+            </section>
+        }
+    }
+</div>

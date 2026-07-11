@@ -19,7 +19,7 @@ public sealed class BackupSnapshot
     public IReadOnlyList<Fee> Fees { get; init; } = Array.Empty<Fee>();
     public IReadOnlyList<Payment> Payments { get; init; } = Array.Empty<Payment>();
     public IReadOnlyList<Transaction> Transactions { get; init; } = Array.Empty<Transaction>();
-    public IReadOnlyList<Category> Categories { get; init; } = Array.Empty<Category>();
+    public IReadOnlyList<Account> Accounts { get; init; } = Array.Empty<Account>();
     public SettingsEntity? Settings { get; init; }
     public IReadOnlyList<AuditTrailEntry> AuditTrailEntries { get; init; } = Array.Empty<AuditTrailEntry>();
 }

@@ -221,7 +221,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
     private IReportProviderRegistry BuildRegistryWithAllProviders()
     {
         var glRepo = new GLRepository(_db);
-        var catRepo = new CategoryRepository(_db);
+        var catRepo = new AccountRepository(_db);
         var memberRepo = new MemberRepository(_db);
         var feeRepo = new FeeRepository(_db);
         var committeeRepo = new CommitteeMembershipRepository(_db);
@@ -229,8 +229,8 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
         return new ReportProviderRegistry(
             new IReportProvider[]
             {
-                new IncomeStatementReportProvider(glRepo, catRepo),
-                new TrialBalanceReportProvider(glRepo, catRepo),
+                new IncomeStatementReportProvider(glRepo, catRepo, new SettingsRepository(_db)),
+                new TrialBalanceReportProvider(glRepo, catRepo, new SettingsRepository(_db)),
                 new AccountRegisterReportProvider(glRepo, catRepo),
                 new MemberAccountSummaryReportProvider(glRepo, memberRepo, feeRepo),
                 new MemberListReportProvider(memberRepo),

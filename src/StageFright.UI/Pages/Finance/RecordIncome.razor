@@ -21,11 +21,11 @@ else
 
     @if (_successMessage is null)
     {
-        @if (_categories.Count == 0)
+        @if (_accounts.Count == 0)
         {
             <div class="alert alert-warning py-1 mb-2 small" role="alert">
-                No income categories are configured. Please add an income category in
-                <a href="/settings?tab=categories">Settings → Categories</a> before recording income.
+                No income accounts are configured. Please add an income account in the
+                <a href="/finance/accounts">Chart of Accounts</a> before recording income.
             </div>
         }
         else
@@ -56,21 +56,49 @@ else
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label" for="category">Category <span aria-hidden="true">*</span></label>
-                                <InputSelect id="category"
-                                             class="@(_errors.ContainsKey("CategoryId") ? "form-select form-select-sm is-invalid" : "form-select form-select-sm")"
-                                             @bind-Value="_form.CategoryId">
+                                <label class="form-label" for="account">Account <span aria-hidden="true">*</span></label>
+                                <InputSelect id="account"
+                                             class="@(_errors.ContainsKey("AccountId") ? "form-select form-select-sm is-invalid" : "form-select form-select-sm")"
+                                             @bind-Value="_form.AccountId">
                                     <option value="@Guid.Empty">— select —</option>
-                                    @foreach (var cat in _categories)
+                                    @foreach (var cat in _accounts)
                                     {
                                         <option value="@cat.Id">@cat.Name</option>
                                     }
                                 </InputSelect>
-                                @if (_errors.TryGetValue("CategoryId", out var catErr))
+                                @if (_errors.TryGetValue("AccountId", out var catErr))
                                 {
                                     <div class="invalid-feedback d-block">@catErr</div>
                                 }
                             </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label" for="depositAccount">Deposit to</label>
+                                <InputSelect id="depositAccount" class="form-select form-select-sm"
+                                             @bind-Value="_form.DepositAccountId">
+                                    @foreach (var bank in _bankAccounts)
+                                    {
+                                        <option value="@bank.Id">@bank.AccountNumber @bank.Name</option>
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            @if (_isGstRegistered)
+                            {
+                                <div class="col-md-4">
+                                    <label class="form-label" for="gstCode">GST Treatment</label>
+                                    <InputSelect id="gstCode" class="form-select form-select-sm" @bind-Value="_form.GstCode">
+                                        <option value="">GST-free (default)</option>
+                                        <option value="@StageFright.Core.Enums.GstCode.Gst">Taxable (GST)</option>
+                                        <option value="@StageFright.Core.Enums.GstCode.GstFree">GST-free</option>
+                                        <option value="@StageFright.Core.Enums.GstCode.InputTaxed">Input-taxed</option>
+                                    </InputSelect>
+                                    @if (GstInclusiveHint is not null)
+                                    {
+                                        <div class="form-text small">@GstInclusiveHint</div>
+                                    }
+                                </div>
+                            }
 
                             <div class="col-12">
                                 <label class="form-label" for="description">Description</label>

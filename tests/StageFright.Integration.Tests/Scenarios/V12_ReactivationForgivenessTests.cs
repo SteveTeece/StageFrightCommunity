@@ -19,9 +19,9 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
 {
     private StageFrightDbContext _db = null!;
 
-    private static readonly Guid MemberReceivableCategoryId = new("00000000-0000-0000-0000-000000000002");
-    private static readonly Guid BadDebtCategoryId = new("00000000-0000-0000-0000-000000000003");
-    private static readonly Guid IncomeCategoryId = Guid.NewGuid();
+    private static readonly Guid MemberReceivableAccountId = new("00000000-0000-0000-0000-000000000002");
+    private static readonly Guid BadDebtAccountId = new("00000000-0000-0000-0000-000000000003");
+    private static readonly Guid IncomeAccountId = Guid.NewGuid();
 
     private static readonly int CurrentYear = DateTime.UtcNow.Year;
 
@@ -35,10 +35,10 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
         await _db.Database.OpenConnectionAsync();
         await _db.Database.MigrateAsync();
 
-        _db.Categories.Add(new Category
+        _db.Accounts.Add(new Account
         {
-            Id = IncomeCategoryId, Name = "Membership Income",
-            Type = CategoryType.Income, GLAccount = "1000",
+            Id = IncomeAccountId, Name = "Membership Income",
+            Type = AccountType.Income, AccountNumber = "1000",
             SortOrder = 0, IsSystem = false,
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         });
@@ -101,7 +101,7 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
 
         // GL pair created: Debit BadDebt / Credit MemberReceivable
         var forgivenessTxns = await _db.Transactions
-            .Where(t => t.FeeId == fee2024Id && t.CategoryId == BadDebtCategoryId)
+            .Where(t => t.FeeId == fee2024Id && t.AccountId == BadDebtAccountId)
             .ToListAsync();
 
         Assert.Single(forgivenessTxns);
@@ -138,7 +138,7 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
         await svc.ApplyForgivenessAsync(member.Id, new[] { fee2024Id, fee2025Id });
 
         var badDebtTxns = await _db.Transactions
-            .Where(t => t.CategoryId == BadDebtCategoryId && t.MemberId == member.Id)
+            .Where(t => t.AccountId == BadDebtAccountId && t.MemberId == member.Id)
             .ToListAsync();
 
         Assert.Equal(2, badDebtTxns.Count);
@@ -176,10 +176,11 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
     {
         var feeRepo = new FeeRepository(_db);
         var glRepo = new GLRepository(_db);
+        var memberRepo = new MemberRepository(_db);
         var auditRepo = NSubstitute.Substitute.For<StageFright.Core.Contracts.IAuditTrailRepository>();
         var audit = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var unitOfWork = new UnitOfWork(_db);
-        return new ReactivationForgivenessService(feeRepo, glRepo, audit, unitOfWork);
+        return new ReactivationForgivenessService(feeRepo, glRepo, memberRepo, audit, unitOfWork);
     }
 
     private async Task<decimal> GetBalanceAsync(Guid memberId)
@@ -209,13 +210,13 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
         _db.Transactions.AddRange(
             new Transaction
             {
-                Id = Guid.NewGuid(), Date = date, CategoryId = MemberReceivableCategoryId,
+                Id = Guid.NewGuid(), Date = date, AccountId = MemberReceivableAccountId,
                 DebitAmount = amount, CreditAmount = 0m, GLAccount = "0101",
                 MemberId = memberId, FeeId = feeId, CreatedAt = date
             },
             new Transaction
             {
-                Id = Guid.NewGuid(), Date = date, CategoryId = IncomeCategoryId,
+                Id = Guid.NewGuid(), Date = date, AccountId = IncomeAccountId,
                 DebitAmount = 0m, CreditAmount = amount, GLAccount = "1000",
                 MemberId = null, FeeId = feeId, CreatedAt = date
             });

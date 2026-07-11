@@ -17,6 +17,7 @@ public partial class ParticipationGrid
 
     private bool _loading = true;
     private bool _saving;
+    private bool _selectAll;
     private bool _alreadyRecorded;
     private string? _errorMessage;
     private Event? _event;
@@ -61,6 +62,19 @@ public partial class ParticipationGrid
         {
             _loading = false;
         }
+    }
+
+    private void ToggleSelectAll(ChangeEventArgs e)
+    {
+        _selectAll = (bool)(e.Value ?? false);
+        foreach (var row in _rows)
+            row.Participated = _selectAll;
+    }
+
+    private void SetRowParticipated(ParticipationRow row, bool participated)
+    {
+        row.Participated = participated;
+        _selectAll = _rows.Count > 0 && _rows.All(r => r.Participated);
     }
 
     private async Task SaveParticipation()

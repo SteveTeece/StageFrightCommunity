@@ -4,96 +4,98 @@
 
 <ThemeProvider @ref="_themeProvider">
     <div class="shell-container">
-        <!-- Dark brand strip -->
-        <header class="shell-brand" role="banner">
-            <span class="brand-wordmark">StageFright</span>
-            <div class="brand-actions">
-                <button class="btn-theme-toggle"
-                        type="button"
-                        @onclick="ToggleThemeAsync"
-                        aria-label="@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? "Switch to dark mode" : "Switch to light mode")">
-                    @if (_themeProvider?.CurrentTheme == Core.Enums.Theme.Light)
-                    {
-                        <span aria-hidden="true">&#9788;</span><span class="visually-hidden">Light</span>
-                    }
-                    else
-                    {
-                        <span aria-hidden="true">&#9790;</span><span class="visually-hidden">Dark</span>
-                    }
-                </button>
+        <!-- Fixed vertical sidebar navigation -->
+        <nav class="shell-sidebar" role="navigation" aria-label="Main navigation">
+            <div class="sidebar-brand">
+                <div class="sidebar-logo" aria-hidden="true"></div>
+                <span class="sidebar-brand-text">StageFright</span>
             </div>
-        </header>
-
-        <!-- Horizontal navigation bar -->
-        <nav class="shell-nav" role="navigation" aria-label="Main navigation">
-            <ul class="nav-list" role="list">
+            <ul class="sidebar-list" role="list">
                 @foreach (var provider in MenuProviders.OrderBy(p => p.DisplayOrder))
                 {
                     @foreach (var item in provider.GetMenuItems().OrderBy(i => i.DisplayOrder))
                     {
-                        <li class="nav-item">
-                            <a class="nav-link @(IsActive(item.Route) ? "active" : "")"
-                               href="@item.Route"
-                               @onclick:preventDefault
-                               @onclick="() => Navigate(item.Route)"
-                               tabindex="0">
-                                @if (!string.IsNullOrEmpty(item.Icon))
+                        @if (item.SubItems.Count > 0)
+                        {
+                            <li class="sidebar-item sidebar-group">
+                                <div class="sidebar-link sidebar-group-header @(IsParentActive(item) ? "active" : "")">
+                                    <a class="sidebar-group-link"
+                                       href="@item.Route"
+                                       title="@item.Title"
+                                       aria-label="@item.Title"
+                                       @onclick:preventDefault
+                                       @onclick="() => Navigate(item.Route)"
+                                       tabindex="0">
+                                        <span class="nav-icon @IconClass(item.Route)" aria-hidden="true"></span>
+                                        <span class="sidebar-label">@item.Title</span>
+                                    </a>
+                                    <button class="sidebar-chevron @(IsGroupExpanded(item) ? "expanded" : "")"
+                                            type="button"
+                                            aria-label="@(IsGroupExpanded(item) ? $"Collapse {item.Title}" : $"Expand {item.Title}")"
+                                            aria-expanded="@(IsGroupExpanded(item) ? "true" : "false")"
+                                            @onclick="() => ToggleGroup(item.Route)"
+                                            @onclick:stopPropagation>
+                                    </button>
+                                </div>
+                                @if (IsGroupExpanded(item))
                                 {
-                                    <span class="nav-icon @item.Icon" aria-hidden="true"></span>
-                                }
-                                @item.Title
-                                @if (!string.IsNullOrEmpty(item.BadgeText))
-                                {
-                                    <span class="nav-badge" role="status" aria-label="@item.BadgeText items">@item.BadgeText</span>
-                                }
-                                @if (item.SubItems.Any())
-                                {
-                                    <span class="nav-caret" aria-hidden="true">&#9660;</span>
-                                }
-                            </a>
-                            @if (item.SubItems.Any())
-                            {
-                                <ul class="nav-subitems" role="list">
-                                    @foreach (var sub in item.SubItems.OrderBy(s => s.DisplayOrder))
-                                    {
-                                        <li class="nav-sub-item">
-                                            <a class="nav-sublink @(IsActive(sub.Route) ? "active" : "")"
-                                               href="@sub.Route"
-                                               @onclick:preventDefault
-                                               @onclick="() => Navigate(sub.Route)"
-                                               tabindex="0">
-                                                @sub.Title
-                                                @if (sub.SubItems.Any())
-                                                {
-                                                    <span class="nav-flyout-caret" aria-hidden="true">&#9658;</span>
-                                                }
-                                            </a>
-                                            @if (sub.SubItems.Any())
-                                            {
-                                                <ul class="nav-sub-subitems" role="list">
-                                                    @foreach (var deep in sub.SubItems.OrderBy(d => d.DisplayOrder))
+                                    <ul class="sidebar-sublist" role="list">
+                                        @foreach (var sub in item.SubItems.OrderBy(s => s.DisplayOrder))
+                                        {
+                                            <li class="sidebar-item">
+                                                <a class="sidebar-link sidebar-sublink @(IsActive(sub.Route) ? "active" : "")"
+                                                   href="@sub.Route"
+                                                   title="@sub.Title"
+                                                   aria-label="@sub.Title"
+                                                   @onclick:preventDefault
+                                                   @onclick="() => Navigate(sub.Route)"
+                                                   tabindex="0">
+                                                    <span class="sidebar-label">@sub.Title</span>
+                                                    @if (!string.IsNullOrEmpty(sub.BadgeText))
                                                     {
-                                                        <li>
-                                                            <a class="nav-sublink @(IsActive(deep.Route) ? "active" : "")"
-                                                               href="@deep.Route"
-                                                               @onclick:preventDefault
-                                                               @onclick="() => Navigate(deep.Route)"
-                                                               tabindex="0">
-                                                                @deep.Title
-                                                            </a>
-                                                        </li>
+                                                        <span class="sidebar-badge" role="status" aria-label="@sub.BadgeText items">@sub.BadgeText</span>
                                                     }
-                                                </ul>
-                                            }
-                                        </li>
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="sidebar-item">
+                                <a class="sidebar-link @(IsActive(item.Route) ? "active" : "")"
+                                   href="@item.Route"
+                                   title="@item.Title"
+                                   aria-label="@item.Title"
+                                   @onclick:preventDefault
+                                   @onclick="() => Navigate(item.Route)"
+                                   tabindex="0">
+                                    <span class="nav-icon @IconClass(item.Route)" aria-hidden="true"></span>
+                                    <span class="sidebar-label">@item.Title</span>
+                                    @if (!string.IsNullOrEmpty(item.BadgeText))
+                                    {
+                                        <span class="sidebar-badge" role="status" aria-label="@item.BadgeText items">@item.BadgeText</span>
                                     }
-                                </ul>
-                            }
-                        </li>
+                                </a>
+                            </li>
+                        }
                     }
                 }
             </ul>
         </nav>
+
+        <!-- Top bar: shared light/dark toggle -->
+        <header class="shell-topbar" role="banner">
+            <button class="btn-theme-toggle"
+                    type="button"
+                    @onclick="ToggleThemeAsync"
+                    aria-label="@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? "Switch to dark mode" : "Switch to light mode")">
+                <span class="theme-toggle-dot" aria-hidden="true"></span>
+                @(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? "Light" : "Dark")
+            </button>
+        </header>
 
         <!-- Main content area -->
         <main class="shell-content" role="main">

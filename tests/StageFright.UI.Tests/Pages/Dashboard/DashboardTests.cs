@@ -144,6 +144,50 @@ public class DashboardTests : BunitContext
 
     // --- Helpers ---
 
+    // --- Header action links (design 3a) ---
+
+    [Fact]
+    public void Should_RenderHeaderActionLink_When_ProviderHasActionTextAndRoute()
+    {
+        SetupProviders(MakeLinkedProvider("members", 10, "/members", "View Members"));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        var link = cut.Find(".tile-action-link");
+        Assert.Equal("View Members", link.TextContent);
+        Assert.Equal("/members", link.GetAttribute("href"));
+    }
+
+    [Fact]
+    public void Should_NotRenderHeaderActionLink_When_ProviderHasNoActionText()
+    {
+        SetupProviders(MakeCoreProvider("members", 10));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        Assert.Empty(cut.FindAll(".tile-action-link"));
+    }
+
+    [Fact]
+    public void Should_ApplyTileIdClassToCard_When_TileRenders()
+    {
+        SetupProviders(MakeCoreProvider("finance", 40));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        Assert.NotNull(cut.Find(".card.tile-finance"));
+        Assert.NotNull(cut.Find(".card.sf-dash-tile"));
+    }
+
+    private static IDashboardTileProvider MakeLinkedProvider(
+        string id, int displayOrder, string route, string actionText)
+    {
+        var p = MakeCoreProvider(id, displayOrder);
+        p.NavigateRoute.Returns(route);
+        p.ActionText.Returns(actionText);
+        return p;
+    }
+
     private void SetupProviders(params IDashboardTileProvider[] providers)
     {
         var list = (IReadOnlyList<IDashboardTileProvider>)providers.ToList();

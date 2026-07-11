@@ -16,7 +16,7 @@ public class FeeServiceTests : TestBase
     private readonly IMemberRepository _memberRepo = Substitute.For<IMemberRepository>();
     private readonly IFeeRepository _feeRepo = Substitute.For<IFeeRepository>();
     private readonly IGLRepository _glRepo = Substitute.For<IGLRepository>();
-    private readonly ICategoryRepository _categoryRepo = Substitute.For<ICategoryRepository>();
+    private readonly IAccountRepository _accountRepo = Substitute.For<IAccountRepository>();
     private readonly ISettingsRepository _settingsRepo = Substitute.For<ISettingsRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
@@ -24,9 +24,9 @@ public class FeeServiceTests : TestBase
     private static readonly Guid ActiveMember1Id = Guid.NewGuid();
     private static readonly Guid ActiveMember2Id = Guid.NewGuid();
     private static readonly Guid InactiveMemberId = Guid.NewGuid();
-    private static readonly Guid IncomeCategoryId = Guid.NewGuid();
+    private static readonly Guid IncomeAccountId = Guid.NewGuid();
 
-    private static readonly Guid MemberReceivableCategoryId = new("00000000-0000-0000-0000-000000000002");
+    private static readonly Guid MemberReceivableAccountId = new("00000000-0000-0000-0000-000000000002");
 
     private readonly FeeService _sut;
 
@@ -46,15 +46,15 @@ public class FeeServiceTests : TestBase
                 CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
             });
 
-        var incomeCategory = new Category
+        var incomeAccount = new Account
         {
-            Id = IncomeCategoryId, Name = "Membership Income",
-            Type = CategoryType.Income, GLAccount = "1000",
+            Id = IncomeAccountId, Name = "Membership Income",
+            Type = AccountType.Income, AccountNumber = "4000",
             IsSystem = false, SortOrder = 0,
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         };
-        _categoryRepo.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(new List<Category> { incomeCategory });
+        _accountRepo.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Account> { incomeAccount });
 
         _memberRepo.GetByStatusAsync(MemberStatus.Active, Arg.Any<CancellationToken>())
             .Returns(new List<Member>
@@ -71,7 +71,7 @@ public class FeeServiceTests : TestBase
             .Returns(ci => ci.ArgAt<Fee>(0));
 
         _sut = new FeeService(
-            _memberRepo, _feeRepo, _glRepo, _categoryRepo, _settingsRepo, _audit, _unitOfWork);
+            _memberRepo, _feeRepo, _glRepo, _accountRepo, _settingsRepo, _audit, _unitOfWork);
     }
 
     // --- GetEligibleMembersAsync ---
@@ -128,9 +128,10 @@ public class FeeServiceTests : TestBase
                 f.PaidAtCreation == false),
             Arg.Any<CancellationToken>());
 
-        await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 50m && t.GLAccount == "0101"),
-            Arg.Is<Transaction>(t => t.CreditAmount == 50m && t.GLAccount == "1000"),
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines.Any(t => t.DebitAmount == 50m && t.GLAccount == "1200") &&
+                lines.Any(t => t.CreditAmount == 50m && t.GLAccount == "4000")),
             Arg.Any<CancellationToken>());
     }
 
@@ -168,8 +169,8 @@ public class FeeServiceTests : TestBase
 
         Assert.Equal(2, count);
         await _feeRepo.Received(2).AddAsync(Arg.Any<Fee>(), Arg.Any<CancellationToken>());
-        await _glRepo.Received(2).AddPairAsync(
-            Arg.Any<Transaction>(), Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
+        await _glRepo.Received(2).AddBalancedSetAsync(
+            Arg.Any<IReadOnlyList<Transaction>>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -192,6 +193,68 @@ public class FeeServiceTests : TestBase
             Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>());
     }
 
+    // --- GST ---
+
+    [Fact]
+    public async Task ApplyAnnualFees_NotRegistered_StampsNullGstCode_OnFeeAndGLLines()
+    {
+        // settings default from ctor has IsGstRegistered == false
+        await _sut.ApplyAnnualFeesAsync(new[] { ActiveMember1Id }, Ct);
+
+        await _feeRepo.Received(1).AddAsync(
+            Arg.Is<Fee>(f => f.GstCode == null),
+            Arg.Any<CancellationToken>());
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.Count == 2 && lines.All(t => t.GstCode == null)),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ApplyAnnualFees_RegisteredAndTaxable_Posts3Lines_SplitsGstToClearing()
+    {
+        SetSettings(isGstRegistered: true, annualFeeGstCode: GstCode.Gst, annualFee: 110m);
+
+        await _sut.ApplyAnnualFeesAsync(new[] { ActiveMember1Id }, Ct);
+
+        await _feeRepo.Received(1).AddAsync(
+            Arg.Is<Fee>(f => f.GstCode == GstCode.Gst && f.Amount == 110m),
+            Arg.Any<CancellationToken>());
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines.Count == 3
+                && lines.Any(t => t.DebitAmount == 110m && t.GLAccount == "1200")
+                && lines.Any(t => t.CreditAmount == 100m && t.GLAccount == "4000")
+                && lines.Any(t => t.CreditAmount == 10m && t.AccountId == SystemAccounts.GstCollectedId)),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(GstCode.GstFree)]
+    [InlineData(GstCode.InputTaxed)]
+    public async Task ApplyAnnualFees_RegisteredButNotTaxable_Posts2Lines_NoGstSplit(GstCode code)
+    {
+        SetSettings(isGstRegistered: true, annualFeeGstCode: code, annualFee: 50m);
+
+        await _sut.ApplyAnnualFeesAsync(new[] { ActiveMember1Id }, Ct);
+
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines.Count == 2 && lines.All(t => t.GstCode == code)),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ApplyAnnualFees_RegisteredWithNoFeeGstCodeSet_DefaultsToGstFree()
+    {
+        SetSettings(isGstRegistered: true, annualFeeGstCode: null, annualFee: 50m);
+
+        await _sut.ApplyAnnualFeesAsync(new[] { ActiveMember1Id }, Ct);
+
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.GstCode == GstCode.GstFree)),
+            Arg.Any<CancellationToken>());
+    }
+
     [Fact]
     public async Task ApplyAnnualFees_EmptyList_ReturnsZero()
     {
@@ -202,6 +265,18 @@ public class FeeServiceTests : TestBase
     }
 
     // --- Helpers ---
+
+    private void SetSettings(bool isGstRegistered, GstCode? annualFeeGstCode, decimal annualFee) =>
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>())
+            .Returns(new Settings
+            {
+                Id = Guid.NewGuid(), OrganizationName = "Test Choir",
+                AnnualFee = annualFee, AttendanceFee = 10m,
+                MembershipRenewalMonth = 1, MaxAgeRangeYears = 150,
+                MinimumMemberAge = 0, SchemaVersion = "1.1.0",
+                IsGstRegistered = isGstRegistered, AnnualFeeGstCode = annualFeeGstCode,
+                CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+            });
 
     private static Member ActiveMember(Guid id, string name) => new()
     {

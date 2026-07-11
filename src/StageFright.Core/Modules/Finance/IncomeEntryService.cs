@@ -7,35 +7,40 @@ namespace StageFright.Core.Modules.Finance;
 
 /// <summary>
 /// Records non-member income (raffles, donations, fundraising) directly to the GL.
-/// GL pair: Debit Cash (0100) / Credit selected Income category.
+/// GL pair under an Income journal entry: Debit the chosen deposit bank account
+/// (default Cash on Hand 1100) / Credit selected Income account.
 /// </summary>
 public class IncomeEntryService : IIncomeEntryService
 {
-    private static readonly Guid CashCategoryId = new("00000000-0000-0000-0000-000000000001");
-    private const string CashGLAccount = "0100";
 
-    private readonly ICategoryRepository _categoryRepo;
+    private readonly IAccountRepository _accountRepo;
     private readonly IGLRepository _glRepo;
+    private readonly IJournalEntryRepository _journalRepo;
+    private readonly ISettingsRepository _settingsRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
 
     public IncomeEntryService(
-        ICategoryRepository categoryRepo,
+        IAccountRepository accountRepo,
         IGLRepository glRepo,
+        IJournalEntryRepository journalRepo,
+        ISettingsRepository settingsRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork)
     {
-        _categoryRepo = categoryRepo;
+        _accountRepo = accountRepo;
         _glRepo = glRepo;
+        _journalRepo = journalRepo;
+        _settingsRepo = settingsRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IReadOnlyList<Category>> GetIncomeCategoriesAsync(CancellationToken ct = default)
+    public async Task<IReadOnlyList<Account>> GetIncomeAccountsAsync(CancellationToken ct = default)
     {
-        var all = await _categoryRepo.GetAllAsync(ct);
+        var all = await _accountRepo.GetAllAsync(ct);
         return all
-            .Where(c => c.Type == CategoryType.Income && !c.IsSystem)
+            .Where(c => c.Type == AccountType.Income && !c.IsSystem)
             .OrderBy(c => c.SortOrder)
             .ThenBy(c => c.Name)
             .ToList();
@@ -47,61 +52,107 @@ public class IncomeEntryService : IIncomeEntryService
             throw new ValidationException(
                 "Income amount must be greater than zero.", nameof(Transaction), nameof(RecordIncomeAsync));
 
-        var all = await _categoryRepo.GetAllAsync(ct);
-        var category = all.FirstOrDefault(c => c.Id == request.CategoryId)
+        var all = await _accountRepo.GetAllAsync(ct);
+        var account = all.FirstOrDefault(c => c.Id == request.AccountId)
             ?? throw new EntityNotFoundException(
-                nameof(Category), request.CategoryId, nameof(RecordIncomeAsync));
+                nameof(Account), request.AccountId, nameof(RecordIncomeAsync));
 
-        if (category.Type != CategoryType.Income)
+        if (account.Type != AccountType.Income)
             throw new ValidationException(
-                "Selected category is not an Income category.", nameof(Category), nameof(RecordIncomeAsync));
+                "Selected account is not an Income account.", nameof(Account), nameof(RecordIncomeAsync));
 
-        if (category.IsSystem)
+        if (account.IsSystem)
             throw new ValidationException(
-                "System categories cannot be used for manual income entries.", nameof(Category), nameof(RecordIncomeAsync));
+                "System accounts cannot be used for manual income entries.", nameof(Account), nameof(RecordIncomeAsync));
+
+        var depositAccountId = request.DepositAccountId ?? SystemAccounts.CashId;
+        var depositAccount = all.FirstOrDefault(a => a.Id == depositAccountId)
+            ?? throw new EntityNotFoundException(
+                nameof(Account), depositAccountId, nameof(RecordIncomeAsync));
+
+        if (!depositAccount.IsBankAccount)
+            throw new ValidationException(
+                "The deposit account must be a bank/cash account.", nameof(Account), nameof(RecordIncomeAsync));
+
+        var settings = await _settingsRepo.GetAsync(ct);
+        var isRegistered = settings?.IsGstRegistered ?? false;
+        var gstCode = isRegistered ? (request.GstCode ?? GstCode.GstFree) : (GstCode?)null;
 
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
             var now = DateTime.UtcNow;
             var description = string.IsNullOrWhiteSpace(request.Description)
-                ? $"Income — {category.Name}"
+                ? $"Income — {account.Name}"
                 : request.Description.Trim();
 
-            await _glRepo.AddPairAsync(
-                new Transaction
+            var entry = await _journalRepo.AddAsync(new JournalEntry
+            {
+                Id = Guid.NewGuid(),
+                Type = JournalEntryType.Income,
+                Date = request.Date,
+                Description = description,
+                CreatedAt = now
+            }, innerCt);
+
+            // Taxable while registered: DR Bank gross / CR Income net / CR GST Collected.
+            // Otherwise a 2-line pair; unregistered postings carry no GST code at all.
+            var (incomeAmount, gstAmount) = gstCode == GstCode.Gst
+                ? GstCalculator.SplitInclusive(request.Amount)
+                : (request.Amount, 0m);
+
+            var lines = new List<Transaction>
+            {
+                new()
                 {
                     Id = Guid.NewGuid(),
                     Date = request.Date,
-                    CategoryId = CashCategoryId,
+                    AccountId = depositAccount.Id,
                     DebitAmount = request.Amount,
                     CreditAmount = 0m,
-                    GLAccount = CashGLAccount,
-                    MemberId = null,
-                    PaymentId = null,
-                    FeeId = null,
+                    GLAccount = depositAccount.AccountNumber,
+                    JournalEntryId = entry.Id,
+                    GstCode = gstCode,
                     Description = description,
                     CreatedAt = now
                 },
-                new Transaction
+                new()
                 {
                     Id = Guid.NewGuid(),
                     Date = request.Date,
-                    CategoryId = category.Id,
+                    AccountId = account.Id,
                     DebitAmount = 0m,
-                    CreditAmount = request.Amount,
-                    GLAccount = category.GLAccount,
-                    MemberId = null,
-                    PaymentId = null,
-                    FeeId = null,
+                    CreditAmount = incomeAmount,
+                    GLAccount = account.AccountNumber,
+                    JournalEntryId = entry.Id,
+                    GstCode = gstCode,
                     Description = description,
                     CreatedAt = now
-                },
-                innerCt);
+                }
+            };
+
+            if (gstAmount != 0m)
+            {
+                lines.Add(new Transaction
+                {
+                    Id = Guid.NewGuid(),
+                    Date = request.Date,
+                    AccountId = SystemAccounts.GstCollectedId,
+                    DebitAmount = 0m,
+                    CreditAmount = gstAmount,
+                    GLAccount = SystemAccounts.GstCollectedNumber,
+                    JournalEntryId = entry.Id,
+                    GstCode = gstCode,
+                    Description = $"GST collected — {description}",
+                    CreatedAt = now
+                });
+            }
+
+            await _glRepo.AddBalancedSetAsync(lines, innerCt);
 
             await _audit.LogAsync(
                 nameof(Transaction), Guid.Empty, AuditAction.Create,
                 oldValue: null,
-                newValue: $"Other income {request.Amount:C} to category '{category.Name}' on {request.Date:yyyy-MM-dd}",
+                newValue: $"Other income {request.Amount:C} to account '{account.Name}' deposited to '{depositAccount.Name}' on {request.Date:yyyy-MM-dd}",
                 ct: innerCt);
 
         }, ct);

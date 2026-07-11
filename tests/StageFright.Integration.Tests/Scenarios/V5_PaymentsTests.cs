@@ -19,9 +19,9 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
 {
     private StageFrightDbContext _db = null!;
 
-    private static readonly Guid IncomeCategoryId = Guid.NewGuid();
-    private static readonly Guid CashCategoryId = new("00000000-0000-0000-0000-000000000001");
-    private static readonly Guid MemberReceivableCategoryId = new("00000000-0000-0000-0000-000000000002");
+    private static readonly Guid IncomeAccountId = Guid.NewGuid();
+    private static readonly Guid CashAccountId = new("00000000-0000-0000-0000-000000000001");
+    private static readonly Guid MemberReceivableAccountId = new("00000000-0000-0000-0000-000000000002");
 
     public async Task InitializeAsync()
     {
@@ -33,10 +33,10 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
         await _db.Database.OpenConnectionAsync();
         await _db.Database.MigrateAsync();
 
-        _db.Categories.Add(new Category
+        _db.Accounts.Add(new Account
         {
-            Id = IncomeCategoryId, Name = "Membership Income",
-            Type = CategoryType.Income, GLAccount = "1000",
+            Id = IncomeAccountId, Name = "Membership Income",
+            Type = AccountType.Income, AccountNumber = "1000",
             SortOrder = 0, IsSystem = false,
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         });
@@ -221,9 +221,10 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
         var feeRepo = new FeeRepository(_db);
         var paymentRepo = new PaymentRepository(_db, BuildAuditService());
         var glRepo = new GLRepository(_db);
+        var memberRepo = new MemberRepository(_db);
         var audit = BuildAuditService();
         var unitOfWork = new UnitOfWork(_db);
-        return new PaymentService(feeRepo, paymentRepo, glRepo, audit, unitOfWork);
+        return new PaymentService(feeRepo, paymentRepo, glRepo, memberRepo, audit, unitOfWork);
     }
 
     private static AuditTrailService BuildAuditService()
@@ -251,13 +252,13 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
         _db.Transactions.AddRange(
             new Transaction
             {
-                Id = Guid.NewGuid(), Date = feeDate, CategoryId = MemberReceivableCategoryId,
+                Id = Guid.NewGuid(), Date = feeDate, AccountId = MemberReceivableAccountId,
                 DebitAmount = amount, CreditAmount = 0m, GLAccount = "0101",
                 MemberId = memberId, FeeId = feeId, CreatedAt = now
             },
             new Transaction
             {
-                Id = Guid.NewGuid(), Date = feeDate, CategoryId = IncomeCategoryId,
+                Id = Guid.NewGuid(), Date = feeDate, AccountId = IncomeAccountId,
                 DebitAmount = 0m, CreditAmount = amount, GLAccount = "1000",
                 MemberId = null, FeeId = feeId, CreatedAt = now
             });

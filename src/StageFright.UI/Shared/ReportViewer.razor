@@ -1,3 +1,4 @@
+@using StageFright.Core.Enums
 @using StageFright.Reports.Models
 @using StageFright.Reports.Registry
 
@@ -64,10 +65,40 @@ else if (_report != null)
                         {
                             <div class="col-auto">
                                 <label class="form-label mb-1 small">@filter.Label</label>
-                                <input type="date"
-                                       class="form-control form-control-sm"
-                                       value="@_filterValues.Get(filter.Key)"
-                                       @onchange="e => OnFilterChanged(filter.Key, e.Value?.ToString())" />
+                                @if (filter.Type == ReportFilterType.Select)
+                                {
+                                    <select class="form-select form-select-sm"
+                                            value="@_filterValues.Get(filter.Key)"
+                                            @onchange="e => OnFilterChanged(filter.Key, e.Value?.ToString())">
+                                        @foreach (var option in filter.Options)
+                                        {
+                                            <option value="@option">@option</option>
+                                        }
+                                    </select>
+                                }
+                                else if (filter.Type == ReportFilterType.Boolean)
+                                {
+                                    <div class="form-check mt-1">
+                                        <input type="checkbox"
+                                               class="form-check-input"
+                                               checked="@(_filterValues.Get(filter.Key) == "true")"
+                                               @onchange="e => OnFilterChanged(filter.Key, ((bool)e.Value!).ToString().ToLowerInvariant())" />
+                                    </div>
+                                }
+                                else if (filter.Type == ReportFilterType.Text)
+                                {
+                                    <input type="text"
+                                           class="form-control form-control-sm"
+                                           value="@_filterValues.Get(filter.Key)"
+                                           @onchange="e => OnFilterChanged(filter.Key, e.Value?.ToString())" />
+                                }
+                                else
+                                {
+                                    <input type="date"
+                                           class="form-control form-control-sm"
+                                           value="@_filterValues.Get(filter.Key)"
+                                           @onchange="e => OnFilterChanged(filter.Key, e.Value?.ToString())" />
+                                }
                             </div>
                         }
                         <div class="col-auto">

@@ -105,11 +105,14 @@ else
                     <tr>
                         <th scope="col" class="text-center" style="width: 1%;">
                             <div class="d-flex flex-column align-items-center gap-1">
-                                <input type="checkbox" class="form-check-input" id="select-all-attended"
-                                       checked="@AllAttended"
-                                       @onchange="e => { ToggleSelectAll((bool)(e.Value ?? false)); StateHasChanged(); }"
-                                       aria-label="Select all members as attended" />
-                                <label class="form-label mb-0 small fw-semibold" for="select-all-attended">Attended</label>
+                                <span>Attended</span>
+                                <span class="select-all-inline small text-muted">
+                                    (<input type="checkbox" class="form-check-input" id="select-all-attended"
+                                            checked="@AllAttended"
+                                            @onchange="e => { ToggleSelectAll((bool)(e.Value ?? false)); StateHasChanged(); }"
+                                            aria-label="Select all members as attended" />
+                                    <label class="form-check-label mb-0" for="select-all-attended">Select All</label>)
+                                </span>
                             </div>
                         </th>
                         <th scope="col" class="text-center" style="width: 1%;">Paid</th>

@@ -46,6 +46,13 @@ public class Fee
     /// </summary>
     public Guid? RehearsalId { get; set; }
 
+    /// <summary>
+    /// GST treatment in force when the fee was accrued. Null for fees created while
+    /// unregistered (or before GST support existed). Immutable — drives the GST
+    /// proportions of forgiveness adjustments and BAS reporting.
+    /// </summary>
+    public GstCode? GstCode { get; set; }
+
     /// <summary>UTC timestamp when the record was created. Used as FIFO tiebreaker.</summary>
     public DateTime CreatedAt { get; set; }
 
