@@ -34,54 +34,33 @@ else if (_alreadyRecorded)
     }
     else
     {
-        <div class="table-responsive">
-            <table class="table table-sm table-hover align-middle" aria-label="Recorded attendance">
-                <thead>
-                    <tr>
-                        <th scope="col" class="text-center" style="width: 1%;">Attended</th>
-                        <th scope="col" class="text-center" style="width: 1%;">Paid</th>
-                        <th scope="col">Member</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var record in PagedRecords)
-                    {
-                        <tr>
-                            <td class="text-center">
-                                <input type="checkbox" class="form-check-input" checked="@record.Attended" disabled
-                                       aria-label="@record.Member.Name attended" />
-                            </td>
-                            <td class="text-center">
-                                <input type="checkbox" class="form-check-input" checked="@record.Attended" disabled
-                                       aria-label="@record.Member.Name paid" />
-                            </td>
-                            <td>@record.Member.Name</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-
-        @if (TotalPages > 1)
-        {
-            <nav aria-label="Attendance pagination">
-                <ul class="pagination pagination-sm">
-                    <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
-                        <button class="page-link" @onclick="() => GoToPage(_currentPage - 1)" disabled="@(_currentPage == 1)">Previous</button>
-                    </li>
-                    @for (var p = 1; p <= TotalPages; p++)
-                    {
-                        var pageNum = p;
-                        <li class="page-item @(_currentPage == pageNum ? "active" : "")">
-                            <button class="page-link" @onclick="() => GoToPage(pageNum)">@pageNum</button>
-                        </li>
-                    }
-                    <li class="page-item @(_currentPage == TotalPages ? "disabled" : "")">
-                        <button class="page-link" @onclick="() => GoToPage(_currentPage + 1)" disabled="@(_currentPage == TotalPages)">Next</button>
-                    </li>
-                </ul>
-            </nav>
-        }
+        <RadzenDataGrid Data="@_recordedAttendance" TItem="AttendanceRecord"
+                        AllowSorting="true" AllowPaging="true" PageSize="15"
+                        class="rz-shadow-0">
+            <Columns>
+                <RadzenDataGridColumn TItem="AttendanceRecord" Title="Attended" Width="100px" Sortable="false">
+                    <Template Context="record">
+                        <div class="text-center">
+                            <input type="checkbox" class="form-check-input" checked="@record.Attended" disabled
+                                   aria-label="@record.Member.Name attended" />
+                        </div>
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="AttendanceRecord" Title="Paid" Width="90px" Sortable="false">
+                    <Template Context="record">
+                        <div class="text-center">
+                            <input type="checkbox" class="form-check-input" checked="@record.Attended" disabled
+                                   aria-label="@record.Member.Name paid" />
+                        </div>
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="AttendanceRecord" Title="Member">
+                    <Template Context="record">
+                        @record.Member.Name
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
     }
 
     <a href="/rehearsals" class="btn btn-outline-secondary btn-sm mt-2">Back to Rehearsals</a>
@@ -99,86 +78,65 @@ else
     }
     else
     {
-        <div class="table-responsive">
-            <table class="table table-sm table-hover align-middle" aria-label="Attendance grid">
-                <thead>
-                    <tr>
-                        <th scope="col" class="text-center" style="width: 1%;">
-                            <div class="d-flex flex-column align-items-center gap-1">
-                                <span>Attended</span>
-                                <span class="select-all-inline small text-muted">
-                                    (<input type="checkbox" class="form-check-input" id="select-all-attended"
-                                            checked="@AllAttended"
-                                            @onchange="e => { ToggleSelectAll((bool)(e.Value ?? false)); StateHasChanged(); }"
-                                            aria-label="Select all members as attended" />
-                                    <label class="form-check-label mb-0" for="select-all-attended">Select All</label>)
-                                </span>
-                            </div>
-                        </th>
-                        <th scope="col" class="text-center" style="width: 1%;">Paid</th>
-                        <th scope="col">Member</th>
-                        <th scope="col" class="text-end">Fee</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var row in PagedRows)
-                    {
-                        <tr>
-                            <td class="text-center">
-                                <input type="checkbox" class="form-check-input" id="attended-@row.MemberId"
-                                       checked="@row.Attended"
-                                       @onchange="e => { row.Attended = (bool)(e.Value ?? false); StateHasChanged(); }"
-                                       aria-label="@row.MemberName attended" />
-                            </td>
-                            <td class="text-center">
-                                <input type="checkbox" class="form-check-input" id="paid-@row.MemberId"
-                                       checked="@row.Paid"
-                                       disabled="@(!row.Attended)"
-                                       @onchange="e => row.Paid = (bool)(e.Value ?? false)"
-                                       aria-label="Mark @row.MemberName as paid" />
-                            </td>
-                            <td>@row.MemberName</td>
-                            <td class="text-end">
-                                @if (row.Attended && row.Paid)
-                                {
-                                    <span>@_attendanceFee.ToString("C")</span>
-                                }
-                                else if (row.Attended && !row.Paid)
-                                {
-                                    <span class="text-warning fw-semibold">@_attendanceFee.ToString("C")</span>
-                                    <span class="badge bg-warning text-dark ms-1">Owed</span>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">—</span>
-                                }
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-
-        @if (TotalPages > 1)
-        {
-            <nav aria-label="Attendance pagination">
-                <ul class="pagination pagination-sm">
-                    <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
-                        <button class="page-link" @onclick="() => GoToPage(_currentPage - 1)" disabled="@(_currentPage == 1)">Previous</button>
-                    </li>
-                    @for (var p = 1; p <= TotalPages; p++)
-                    {
-                        var pageNum = p;
-                        <li class="page-item @(_currentPage == pageNum ? "active" : "")">
-                            <button class="page-link" @onclick="() => GoToPage(pageNum)">@pageNum</button>
-                        </li>
-                    }
-                    <li class="page-item @(_currentPage == TotalPages ? "disabled" : "")">
-                        <button class="page-link" @onclick="() => GoToPage(_currentPage + 1)" disabled="@(_currentPage == TotalPages)">Next</button>
-                    </li>
-                </ul>
-            </nav>
-        }
+        <RadzenDataGrid Data="@_rows" TItem="AttendanceRow"
+                        AllowSorting="true" AllowPaging="true" PageSize="15"
+                        class="rz-shadow-0">
+            <Columns>
+                <RadzenDataGridColumn TItem="AttendanceRow" Title="Attended" Width="120px" Sortable="false">
+                    <HeaderTemplate>
+                        <div class="d-flex flex-column align-items-center gap-1">
+                            <span>Attended</span>
+                            <span class="select-all-inline small text-muted">
+                                (<input type="checkbox" class="form-check-input" id="select-all-attended"
+                                        checked="@AllAttended"
+                                        @onchange="e => { ToggleSelectAll((bool)(e.Value ?? false)); StateHasChanged(); }"
+                                        aria-label="Select all members as attended" />
+                                <label class="form-check-label mb-0" for="select-all-attended">Select All</label>)
+                            </span>
+                        </div>
+                    </HeaderTemplate>
+                    <Template Context="row">
+                        <div class="text-center">
+                            <input type="checkbox" class="form-check-input" id="attended-@row.MemberId"
+                                   checked="@row.Attended"
+                                   @onchange="e => { row.Attended = (bool)(e.Value ?? false); StateHasChanged(); }"
+                                   aria-label="@row.MemberName attended" />
+                        </div>
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="AttendanceRow" Title="Paid" Width="90px" Sortable="false">
+                    <Template Context="row">
+                        <div class="text-center">
+                            <input type="checkbox" class="form-check-input" id="paid-@row.MemberId"
+                                   checked="@row.Paid"
+                                   disabled="@(!row.Attended)"
+                                   @onchange="e => row.Paid = (bool)(e.Value ?? false)"
+                                   aria-label="Mark @row.MemberName as paid" />
+                        </div>
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="AttendanceRow" Property="MemberName" Title="Member" />
+                <RadzenDataGridColumn TItem="AttendanceRow" Title="Fee" Width="120px" Sortable="false">
+                    <Template Context="row">
+                        <div class="text-end">
+                            @if (row.Attended && row.Paid)
+                            {
+                                <span>@_attendanceFee.ToString("C")</span>
+                            }
+                            else if (row.Attended && !row.Paid)
+                            {
+                                <span class="text-warning fw-semibold">@_attendanceFee.ToString("C")</span>
+                                <span class="badge bg-warning text-dark ms-1">Owed</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                        </div>
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
 
         <div class="d-flex gap-2 mt-2">
             <button class="btn btn-primary btn-sm" @onclick="SaveAttendance" disabled="@_saving">

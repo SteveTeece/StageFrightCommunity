@@ -91,9 +91,8 @@
             }
             else
             {
-                <div class="table-responsive">
                 <RadzenDataGrid Data="@FilteredAccounts" TItem="Account"
-                                AllowSorting="false" AllowPaging="true" PageSize="15"
+                                AllowSorting="true" AllowPaging="true" PageSize="15"
                                 class="rz-shadow-0">
                     <Columns>
                         <RadzenDataGridColumn TItem="Account" Title="No." Width="70px">
@@ -150,7 +149,6 @@
                         </RadzenDataGridColumn>
                     </Columns>
                 </RadzenDataGrid>
-                </div>
             }
         </section>
 
@@ -159,9 +157,8 @@
         {
             <section aria-labelledby="archived-heading" class="mb-2">
                 <h6 id="archived-heading" class="mb-1">Archived Accounts</h6>
-                <div class="table-responsive">
                 <RadzenDataGrid Data="@_archivedAccounts" TItem="Account"
-                                AllowSorting="true" AllowPaging="true" PageSize="10"
+                                AllowSorting="true" AllowPaging="true" PageSize="15"
                                 class="rz-shadow-0">
                     <Columns>
                         <RadzenDataGridColumn TItem="Account" Title="No." Width="90px">
@@ -181,7 +178,6 @@
                         </RadzenDataGridColumn>
                     </Columns>
                 </RadzenDataGrid>
-                </div>
             </section>
         }
     }

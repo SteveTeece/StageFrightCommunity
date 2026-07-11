@@ -14,7 +14,6 @@ else if (_balances.Count == 0)
 }
 else
 {
-    <div class="table-responsive">
     <RadzenDataGrid Data="@_balances" TItem="MemberBalance"
                     AllowSorting="true" AllowPaging="true" PageSize="15"
                     class="rz-shadow-0">
@@ -61,5 +60,4 @@ else
             </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
-    </div>
 }
