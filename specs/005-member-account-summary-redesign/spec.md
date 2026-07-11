@@ -56,17 +56,17 @@ A committee member normally only cares about current members' balances and wants
 
 ---
 
-### User Story 4 - Committee member reads a member's history newest-first (Priority: P3)
+### User Story 4 - Committee member reads a member's history in standard accounting order (Priority: P3)
 
-When reviewing an expanded member's transactions, the committee member wants to see the most recent activity first, matching how they'd expect a statement to read (most relevant information up top).
+When reviewing an expanded member's transactions, the committee member wants to see activity in standard accounting/ledger order — chronological, oldest to newest, building up to the closing balance — matching how a statement or ledger is conventionally read.
 
-**Why this priority**: A readability/ordering improvement on top of Stories 1–2; the report is still useful without it, but it's a small, explicitly requested change.
+**Why this priority**: A readability/ordering confirmation on top of Stories 1–2; the report is still useful without it, but it's a small, explicitly requested detail.
 
-**Independent Test**: Seed a member with transactions on at least three different dates, expand that member, and confirm transactions are listed from newest date to oldest date. Opening Balance remains the first row and Closing Balance remains the last row (before the aging summary), unchanged from today's ordering.
+**Independent Test**: Seed a member with transactions on at least three different dates, expand that member, and confirm transactions are listed from oldest date to newest date. Opening Balance remains the first row and Closing Balance remains the last row (before the aging summary), unchanged from today's ordering.
 
 **Acceptance Scenarios**:
 
-1. **Given** a member has transactions dated 2026-01-01, 2026-02-09, and 2026-02-16, **When** that member's row is expanded, **Then** the transactions are listed in the order 2026-02-16, 2026-02-09, 2026-01-01 — Opening Balance still appears above them and Closing Balance still appears below them.
+1. **Given** a member has transactions dated 2026-01-01, 2026-02-09, and 2026-02-16, **When** that member's row is expanded, **Then** the transactions are listed in the order 2026-01-01, 2026-02-09, 2026-02-16 — Opening Balance still appears above them and Closing Balance still appears below them.
 
 ---
 
@@ -86,7 +86,7 @@ When reviewing an expanded member's transactions, the committee member wants to 
 - **FR-003**: By default, the report MUST render one collapsed row per member showing the member's name and their current/30-day/60-day/90+-day aging totals, with no transaction-level detail visible.
 - **FR-004**: A committee member MUST be able to click/activate a member's row to expand it in place, revealing that member's opening balance, every transaction in the selected period, the closing balance, and the aging breakdown — the same information the report shows today, just collapsed by default.
 - **FR-005**: Expanding one member's row MUST NOT affect the expand/collapse state of any other member's row.
-- **FR-006**: Within an expanded member's detail, transactions MUST be sorted by date newest-first. Opening Balance remains the first row and Closing Balance remains the row immediately preceding the aging summary, unchanged from today.
+- **FR-006**: Within an expanded member's detail, transactions MUST be sorted in standard accounting order — chronological, oldest-first — consistent with how the report already orders transactions today. Opening Balance remains the first row and Closing Balance remains the row immediately preceding the aging summary, unchanged from today.
 - **FR-007**: Print/PDF and CSV exports MUST continue to include full transaction detail for every member in scope (per the archived-members filter), regardless of on-screen expand/collapse state.
 - **FR-008**: The on-screen member list MUST use the same `RadzenDataGrid` component, paging (`PageSize="15"`), and visual conventions used elsewhere in the system (e.g. the Members grid), to the extent that a dynamic, per-report column layout allows. Native column-header sorting is not required for this grid; the list is ordered alphabetically by member name.
 - **FR-009**: This redesign MUST NOT change the underlying GL/aging calculations already used by the report — only how the results are filtered, ordered, and presented.
@@ -103,9 +103,9 @@ When reviewing an expanded member's transactions, the committee member wants to 
 ### Measurable Outcomes
 
 - **SC-001**: On first load, a committee member sees one row per in-scope member with name and aging only, with zero transaction rows visible, in 100% of tested scenarios.
-- **SC-002**: Clicking any member's row reveals that member's full historical detail — identical in content to what the report showed before this redesign, only reordered (newest-first transactions) — in 100% of tested scenarios.
+- **SC-002**: Clicking any member's row reveals that member's full historical detail — identical in content and transaction order to what the report showed before this redesign — in 100% of tested scenarios.
 - **SC-003**: With the archived-members filter off (default), no archived member appears anywhere in the on-screen list; with it on, archived members appear exactly as they did before this redesign.
-- **SC-004**: Print/PDF and CSV exports generated after this redesign contain byte-for-byte the same per-member financial detail as they would have before the redesign (aside from the newest-first transaction ordering and the default archived-member exclusion), verified by comparing exported content against the on-screen expanded detail.
+- **SC-004**: Print/PDF and CSV exports generated after this redesign contain byte-for-byte the same per-member financial detail as they would have before the redesign (aside from the default archived-member exclusion, which the committee member controls via the same filter used for the on-screen view), verified by comparing exported content against the on-screen expanded detail.
 
 ## Assumptions
 
