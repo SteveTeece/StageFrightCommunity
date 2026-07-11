@@ -65,6 +65,33 @@ public class MemberBalanceServiceTests : TestBase
     }
 
     [Fact]
+    public async Task GetAllMemberBalancesAsync_FiltersOutFeesAlreadyCoveredByPayments()
+    {
+        // Repository has no per-fee paid flag, so it returns full FIFO history (paid + unpaid).
+        // The service must derive which prefix is paid off from the GL balance.
+        var memberId = Guid.NewGuid();
+        _memberRepo.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Member> { MakeMember(memberId, "Mixed History") });
+        _glRepo.GetMemberBalanceAsync(memberId, Arg.Any<CancellationToken>())
+            .Returns(4m); // 3 fees of $2 each = $6 total; $2 already paid off the oldest fee
+
+        var oldestPaidFee = MakeFee(memberId, 2m);
+        var unpaidFee1 = MakeFee(memberId, 2m);
+        var unpaidFee2 = MakeFee(memberId, 2m);
+        _feeRepo.GetUnpaidOrderedFifoAsync(memberId, Arg.Any<CancellationToken>())
+            .Returns(new List<Fee> { oldestPaidFee, unpaidFee1, unpaidFee2 });
+
+        var result = await _sut.GetAllMemberBalancesAsync(Ct);
+
+        var balance = Assert.Single(result, b => b.MemberId == memberId);
+        Assert.Equal(4m, balance.Balance);
+        Assert.Equal(2, balance.Fees.Count);
+        Assert.DoesNotContain(oldestPaidFee, balance.Fees);
+        Assert.Contains(unpaidFee1, balance.Fees);
+        Assert.Contains(unpaidFee2, balance.Fees);
+    }
+
+    [Fact]
     public async Task GetBalanceAsync_DelegatesToGLRepository()
     {
         var balance = await _sut.GetBalanceAsync(MemberWithBalanceId, Ct);

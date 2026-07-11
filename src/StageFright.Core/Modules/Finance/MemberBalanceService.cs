@@ -1,4 +1,5 @@
 using StageFright.Core.Contracts;
+using StageFright.Core.Entities;
 
 namespace StageFright.Core.Modules.Finance;
 
@@ -43,10 +44,32 @@ public class MemberBalanceService : IMemberBalanceService
                 MemberId = member.Id,
                 Name = member.Name,
                 Balance = balance,
-                Fees = fees
+                Fees = SelectOutstandingFees(fees, balance)
             });
         }
 
         return balances;
+    }
+
+    /// <summary>
+    /// Fees carry no per-record paid flag — the GL balance is authoritative. Given fees in
+    /// FIFO order and the member's current outstanding balance, the fees already covered by
+    /// payments are exactly the oldest prefix summing to (total fees − balance), since payments
+    /// are allocated FIFO. This walks that prefix off and returns only the still-owed tail.
+    /// </summary>
+    private static IReadOnlyList<Fee> SelectOutstandingFees(IReadOnlyList<Fee> feesFifoOrder, decimal balance)
+    {
+        var paidAmount = feesFifoOrder.Sum(f => f.Amount) - balance;
+
+        var outstanding = new List<Fee>();
+        foreach (var fee in feesFifoOrder)
+        {
+            if (paidAmount >= fee.Amount)
+                paidAmount -= fee.Amount;
+            else
+                outstanding.Add(fee);
+        }
+
+        return outstanding;
     }
 }
