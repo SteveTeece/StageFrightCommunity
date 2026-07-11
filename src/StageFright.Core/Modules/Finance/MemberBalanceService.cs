@@ -36,7 +36,7 @@ public class MemberBalanceService : IMemberBalanceService
             if (balance <= 0m)
                 continue;
 
-            var fees = await _feeRepo.GetByMemberAsync(member.Id, ct);
+            var fees = await _feeRepo.GetUnpaidOrderedFifoAsync(member.Id, ct);
 
             balances.Add(new MemberBalance
             {

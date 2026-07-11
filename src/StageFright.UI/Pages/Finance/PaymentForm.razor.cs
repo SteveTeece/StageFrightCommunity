@@ -105,5 +105,5 @@ public partial class PaymentForm : ComponentBase
         }
     }
 
-    private void Cancel() => Nav.NavigateTo("/finance?tab=balances");
+    private void Cancel() => Nav.NavigateTo("/finance?tab=outstanding");
 }
