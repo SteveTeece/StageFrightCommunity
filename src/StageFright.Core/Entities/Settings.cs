@@ -20,7 +20,10 @@ public class Settings
     /// organisation-identity fact — unlike the GST properties below, never nulled by GST toggling.
     /// Required for new installs (setup wizard); existing installs may have none on file.
     /// </summary>
+#if !DEBUG
+    // ABN checksum validation is skipped in Debug builds — see SetupFormModel.Abn.
     [Abn]
+#endif
     public string? Abn { get; set; }
 
     /// <summary>Annual membership fee amount. Required. Precision: decimal(18,2). Must be ≥ 0.</summary>

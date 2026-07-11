@@ -40,6 +40,7 @@ public class SettingsServiceTests : TestBase
         await _settingsRepo.Received(1).SaveAsync(settings, Arg.Any<CancellationToken>());
     }
 
+#if !DEBUG
     [Fact]
     public async Task SaveAsync_Throws_WhenAbnMalformed()
     {
@@ -51,6 +52,20 @@ public class SettingsServiceTests : TestBase
 
         await _settingsRepo.DidNotReceive().SaveAsync(Arg.Any<Settings>(), Arg.Any<CancellationToken>());
     }
+#else
+    [Fact]
+    public async Task SaveAsync_AllowsMalformedAbn_InDebugBuild()
+    {
+        // ABN checksum validation is disabled in Debug builds (see Settings.Abn).
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var settings = ValidSettings("12345678901");
+        await svc.SaveAsync(settings, Ct); // must not throw
+
+        await _settingsRepo.Received(1).SaveAsync(settings, Arg.Any<CancellationToken>());
+    }
+#endif
 
     [Fact]
     public async Task SaveAsync_Saves_WhenAbnValid()

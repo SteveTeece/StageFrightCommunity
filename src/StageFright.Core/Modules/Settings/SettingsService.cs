@@ -25,8 +25,11 @@ public class SettingsService : ISettingsService
 
     public async Task SaveAsync(global::StageFright.Core.Entities.Settings settings, CancellationToken ct = default)
     {
+#if !DEBUG
+        // ABN checksum validation is skipped in Debug builds — see SetupFormModel.Abn.
         if (!string.IsNullOrEmpty(settings.Abn) && !AbnValidator.IsValid(settings.Abn))
             throw new ValidationException("The ABN is not valid.", "Settings", nameof(SaveAsync));
+#endif
 
         var existing = await _repository.GetAsync(ct);
 
