@@ -1,4 +1,4 @@
-# Feature Specification: Member Account Summary Report Redesign
+c# Feature Specification: Member Account Summary Report Redesign
 
 **Feature Branch**: `005-member-account-summary-redesign`
 
@@ -7,6 +7,13 @@
 **Status**: Draft
 
 **Input**: User description: "Change the Member Activity Report. Add a filter to select if archived members are displayed. List each member's name and current aging by default. Clicking on a member expands that member to list full transactions. Sort all transactions by date with the newest entries first. Migrate the data grid into standard format if it makes sense for the page redesign."
+
+## Clarifications
+
+### Session 2026-07-12
+
+- Q: When the archived-members filter is toggled and the report regenerates, should previously-expanded member rows reset to collapsed, or try to stay expanded for members still present in the new result? → A: Reset all rows to collapsed whenever the report regenerates (filter change, Refresh) — consistent with existing page-reset behavior.
+- Q: Should the expand/collapse interaction have an explicit, testable accessibility requirement (keyboard-operable toggle + aria-expanded attribute)? → A: Yes — require it explicitly and verify it with a dedicated test.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -76,6 +83,7 @@ When reviewing an expanded member's transactions, the committee member wants to 
 - What happens when every member is fully paid up (no outstanding fees at all)? The report still renders one collapsed row per member with all aging columns at zero — it does not hide itself or show an empty state.
 - What happens to Print/PDF and CSV export? They continue to include full opening balance, every transaction, closing balance, and aging detail for every member (active, and archived if the filter was on when generated) regardless of which rows are expanded/collapsed on screen — the collapse/expand behavior is a screen-only convenience, not a change to the exported document.
 - How does paging interact with per-member expansion? Paging operates over one row per member (not one row per transaction), so a page always shows a whole number of members; expanding a member does not change how many members are shown per page.
+- What happens to expanded rows when the committee member changes the archived-members filter and applies it, or clicks Refresh? All rows reset to collapsed on regeneration, regardless of what was expanded beforehand (see FR-011).
 
 ## Requirements *(mandatory)*
 
@@ -91,11 +99,13 @@ When reviewing an expanded member's transactions, the committee member wants to 
 - **FR-008**: The on-screen member list MUST use the same `RadzenDataGrid` component, paging (`PageSize="15"`), and visual conventions used elsewhere in the system (e.g. the Members grid), to the extent that a dynamic, per-report column layout allows. Native column-header sorting is not required for this grid; the list is ordered alphabetically by member name.
 - **FR-009**: This redesign MUST NOT change the underlying GL/aging calculations already used by the report — only how the results are filtered, ordered, and presented.
 - **FR-010**: The report generation pipeline (`ReportData`/`ReportSection`) MUST gain this master/detail capability as an optional, backward-compatible extension, such that the other five existing reports (which do not use it) render exactly as they do today.
+- **FR-011**: Whenever the report regenerates (filter change followed by Apply, or Refresh), all member rows MUST reset to collapsed, regardless of any row's expand state prior to regeneration.
+- **FR-012**: The expand/collapse control for each member row MUST be keyboard-operable (focusable and toggleable without a pointer device) and MUST expose its expanded/collapsed state via an `aria-expanded` attribute, consistent with the constitution's accessibility requirements for interactive elements.
 
 ### Key Entities
 
 - **Member Summary Row**: A derived, collapsed representation of one member — name (with archived suffix if applicable), current/30/60/90+ day aging totals, and closing balance — shown by default in place of that member's full transaction detail.
-- **Member Detail (expanded)**: The existing per-member breakdown — opening balance, period transactions (now newest-first), closing balance, aging summary — unchanged in content, only in default visibility and transaction order.
+- **Member Detail (expanded)**: The existing per-member breakdown — opening balance, period transactions (standard chronological, oldest-first — unchanged from today), closing balance, aging summary — unchanged in content, only in default visibility.
 - **Archived-Members Filter**: A report filter, defaulting to off, controlling whether archived (soft-deleted) members are included in the member list at all.
 
 ## Success Criteria *(mandatory)*
@@ -106,6 +116,7 @@ When reviewing an expanded member's transactions, the committee member wants to 
 - **SC-002**: Clicking any member's row reveals that member's full historical detail — identical in content and transaction order to what the report showed before this redesign — in 100% of tested scenarios.
 - **SC-003**: With the archived-members filter off (default), no archived member appears anywhere in the on-screen list; with it on, archived members appear exactly as they did before this redesign.
 - **SC-004**: Print/PDF and CSV exports generated after this redesign contain byte-for-byte the same per-member financial detail as they would have before the redesign (aside from the default archived-member exclusion, which the committee member controls via the same filter used for the on-screen view), verified by comparing exported content against the on-screen expanded detail.
+- **SC-005**: Every member row's expand/collapse control can be operated using only the keyboard and exposes its current state via `aria-expanded`, verified by an automated test, in 100% of tested scenarios.
 
 ## Assumptions
 
