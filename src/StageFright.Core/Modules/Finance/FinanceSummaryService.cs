@@ -76,6 +76,32 @@ public class FinanceSummaryService : IFinanceSummaryService
         return result;
     }
 
+    public async Task<OutstandingFeeSummary> GetOutstandingFeeSummaryAsync(CancellationToken ct = default)
+    {
+        var (attendance, annual) = await _glRepository.GetOutstandingByFeeTypeAsync(ct);
+
+        return new OutstandingFeeSummary
+        {
+            OutstandingAttendanceFees = attendance,
+            OutstandingAnnualFees = annual
+        };
+    }
+
+    public async Task<IReadOnlyList<MonthlyOutstandingBalance>> GetOutstandingBalanceTrendAsync(DateTime asOf, CancellationToken ct = default)
+    {
+        var result = new List<MonthlyOutstandingBalance>(asOf.Month);
+
+        for (var month = 1; month <= asOf.Month; month++)
+        {
+            var endOfMonth = new DateTime(asOf.Year, month, 1, 0, 0, 0, asOf.Kind).AddMonths(1).AddTicks(-1);
+            var balance = await _glRepository.GetAccountBalanceAsync(SystemAccounts.MemberReceivableId, endOfMonth, ct);
+
+            result.Add(new MonthlyOutstandingBalance { Year = asOf.Year, Month = month, OutstandingBalance = balance });
+        }
+
+        return result;
+    }
+
     private async Task<(HashSet<Guid> IncomeIds, HashSet<Guid> ExpenseIds)> GetUserAccountIdsAsync(CancellationToken ct)
     {
         var accounts = await _accountRepository.GetAllAsync(ct);

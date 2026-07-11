@@ -206,6 +206,7 @@ public static class MauiProgram
         services.AddScoped<IDashboardTileProvider, EventsDashboardTileProvider>();
         services.AddScoped<IDashboardTileProvider, FinanceDashboardTileProvider>();
         services.AddScoped<IDashboardTileProvider, CashFlowDashboardTileProvider>();
+        services.AddScoped<IDashboardTileProvider, OutstandingBalancesDashboardTileProvider>();
         services.AddScoped<IDashboardTileProvider, AttendanceTrendDashboardTileProvider>();
 
         // Backup service (Phase 13)

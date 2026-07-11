@@ -197,6 +197,66 @@ public class FinanceSummaryServiceTests
             () => _service.GetMonthlyCashFlowAsync(AsOf, months));
     }
 
+    // --- GetOutstandingFeeSummaryAsync ---
+
+    [Fact]
+    public async Task Should_MapRepositoryTupleOntoModel_When_GettingOutstandingFeeSummary()
+    {
+        _glRepository.GetOutstandingByFeeTypeAsync(Arg.Any<CancellationToken>())
+            .Returns((Attendance: 120m, Annual: 480m));
+
+        var summary = await _service.GetOutstandingFeeSummaryAsync();
+
+        Assert.Equal(120m, summary.OutstandingAttendanceFees);
+        Assert.Equal(480m, summary.OutstandingAnnualFees);
+    }
+
+    [Fact]
+    public async Task Should_ReturnZeroSummary_When_NoOutstandingFees()
+    {
+        _glRepository.GetOutstandingByFeeTypeAsync(Arg.Any<CancellationToken>())
+            .Returns((Attendance: 0m, Annual: 0m));
+
+        var summary = await _service.GetOutstandingFeeSummaryAsync();
+
+        Assert.Equal(0m, summary.OutstandingAttendanceFees);
+        Assert.Equal(0m, summary.OutstandingAnnualFees);
+    }
+
+    // --- GetOutstandingBalanceTrendAsync ---
+
+    [Fact]
+    public async Task Should_ReturnOneEntryPerMonth_When_AsOfIsMidYear()
+    {
+        var asOf = new DateTime(2026, 7, 4, 0, 0, 0, DateTimeKind.Utc);
+        _glRepository.GetAccountBalanceAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo => (decimal)((DateTime)callInfo[1]).Month * 10m);
+
+        var trend = await _service.GetOutstandingBalanceTrendAsync(asOf);
+
+        Assert.Equal(7, trend.Count);
+        for (var i = 0; i < trend.Count; i++)
+        {
+            Assert.Equal(2026, trend[i].Year);
+            Assert.Equal(i + 1, trend[i].Month);
+            Assert.Equal((i + 1) * 10m, trend[i].OutstandingBalance);
+        }
+    }
+
+    [Fact]
+    public async Task Should_ReturnSingleJanuaryEntry_When_AsOfIsJanuary()
+    {
+        var asOf = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc);
+        _glRepository.GetAccountBalanceAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
+            .Returns(250m);
+
+        var trend = await _service.GetOutstandingBalanceTrendAsync(asOf);
+
+        var entry = Assert.Single(trend);
+        Assert.Equal(1, entry.Month);
+        Assert.Equal(250m, entry.OutstandingBalance);
+    }
+
     // --- Helpers ---
 
     private void SetupTransactions(params Transaction[] transactions)

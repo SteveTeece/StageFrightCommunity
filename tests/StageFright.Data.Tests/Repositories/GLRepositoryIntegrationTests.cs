@@ -266,7 +266,103 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
                 }));
     }
 
+    // --- GetOutstandingByFeeTypeAsync ---
+
+    [Fact]
+    public async Task GetOutstandingByFeeType_ReturnsZero_WhenNoFeeLinkedTransactions()
+    {
+        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync();
+
+        Assert.Equal(0m, attendance);
+        Assert.Equal(0m, annual);
+    }
+
+    [Fact]
+    public async Task GetOutstandingByFeeType_SplitsBalancesByFeeType_WithPartialPayment()
+    {
+        var memberId = await SeedMemberAsync();
+        var annualFeeId = await SeedFeeAsync(memberId, FeeType.Annual, 100m);
+        var attendanceFeeId = await SeedFeeAsync(memberId, FeeType.Attendance, 20m);
+
+        await AddFeeLinkedAccrualAsync(memberId, annualFeeId, 100m);
+        await AddFeeLinkedAccrualAsync(memberId, attendanceFeeId, 20m);
+
+        // Partially pay the annual fee — FIFO allocation tags the payment with the fee it clears.
+        await AddFeeLinkedPaymentAsync(memberId, annualFeeId, 40m);
+
+        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync();
+
+        Assert.Equal(20m, attendance);
+        Assert.Equal(60m, annual);
+    }
+
+    [Fact]
+    public async Task GetOutstandingByFeeType_ExcludesOverpaymentLines_WithNullFeeId()
+    {
+        var memberId = await SeedMemberAsync();
+        var annualFeeId = await SeedFeeAsync(memberId, FeeType.Annual, 50m);
+        await AddFeeLinkedAccrualAsync(memberId, annualFeeId, 50m);
+
+        // Overpayment credit carries no FeeId (per PaymentService) — must not distort the total.
+        await AddGLPairAsync("0100", CashAccountId, 30m, memberId,
+                              "0101", MemberReceivableAccountId, 30m, memberId);
+
+        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync();
+
+        Assert.Equal(0m, attendance);
+        Assert.Equal(50m, annual);
+    }
+
     // --- Helpers ---
+
+    private async Task<Guid> SeedFeeAsync(Guid memberId, FeeType feeType, decimal amount)
+    {
+        var date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc);
+        var fee = new Fee
+        {
+            Id = Guid.NewGuid(), MemberId = memberId, FeeType = feeType, Amount = amount,
+            FeeDate = date, DueDate = date, PaidAtCreation = false, CreatedAt = date
+        };
+        _db.Fees.Add(fee);
+        await _db.SaveChangesAsync();
+        return fee.Id;
+    }
+
+    private async Task AddFeeLinkedAccrualAsync(Guid memberId, Guid feeId, decimal amount)
+    {
+        var date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc);
+        await _sut.AddPairAsync(
+            new Transaction
+            {
+                Id = Guid.NewGuid(), Date = date, AccountId = MemberReceivableAccountId,
+                DebitAmount = amount, CreditAmount = 0m, GLAccount = "0101",
+                MemberId = memberId, FeeId = feeId, CreatedAt = date
+            },
+            new Transaction
+            {
+                Id = Guid.NewGuid(), Date = date, AccountId = IncomeAccountId,
+                DebitAmount = 0m, CreditAmount = amount, GLAccount = "1000",
+                MemberId = null, FeeId = feeId, CreatedAt = date
+            });
+    }
+
+    private async Task AddFeeLinkedPaymentAsync(Guid memberId, Guid feeId, decimal amount)
+    {
+        var date = new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc);
+        await _sut.AddPairAsync(
+            new Transaction
+            {
+                Id = Guid.NewGuid(), Date = date, AccountId = CashAccountId,
+                DebitAmount = amount, CreditAmount = 0m, GLAccount = "0100",
+                MemberId = memberId, FeeId = feeId, CreatedAt = date
+            },
+            new Transaction
+            {
+                Id = Guid.NewGuid(), Date = date, AccountId = MemberReceivableAccountId,
+                DebitAmount = 0m, CreditAmount = amount, GLAccount = "0101",
+                MemberId = memberId, FeeId = feeId, CreatedAt = date
+            });
+    }
 
     private async Task<Guid> SeedMemberAsync()
     {

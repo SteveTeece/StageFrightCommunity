@@ -20,4 +20,15 @@ public interface IFinanceSummaryService
     /// are included with zero totals.
     /// </summary>
     Task<IReadOnlyList<MonthlyCashFlow>> GetMonthlyCashFlowAsync(DateTime asOf, int months, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns outstanding member fee balances split by fee type (Attendance vs. Annual).
+    /// </summary>
+    Task<OutstandingFeeSummary> GetOutstandingFeeSummaryAsync(CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns one outstanding-balance snapshot per calendar month, from January through
+    /// the month of <paramref name="asOf"/>, for the year of <paramref name="asOf"/>.
+    /// </summary>
+    Task<IReadOnlyList<MonthlyOutstandingBalance>> GetOutstandingBalanceTrendAsync(DateTime asOf, CancellationToken ct = default);
 }

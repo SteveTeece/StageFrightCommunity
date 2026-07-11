@@ -66,4 +66,12 @@ public interface IGLRepository
     /// 90+ days (61+ days overdue). Uses Fee.DueDate and Fee.PaidAtCreation, consistent with reports.
     /// </summary>
     Task<(decimal Current, decimal Days30, decimal Days60, decimal Days90Plus)> GetAgingBucketsAsync(CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns outstanding balances (Σdebits − Σcredits on the Member Receivable account)
+    /// split by FeeType, for fee-linked transactions only. Overpayment/adjustment lines
+    /// (FeeId == null) are excluded from the split but still count toward per-member and
+    /// total-outstanding figures elsewhere (GetMemberBalanceAsync/GetTotalOutstandingAsync).
+    /// </summary>
+    Task<(decimal Attendance, decimal Annual)> GetOutstandingByFeeTypeAsync(CancellationToken ct = default);
 }
