@@ -32,7 +32,8 @@ public class MemberAccountSummaryReportProvider : IReportProvider
     public IReadOnlyList<ReportFilterDefinition> Filters =>
     [
         new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = "From", DefaultValue = $"{DateTime.UtcNow.Year}-01-01" },
-        new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = "To", DefaultValue = $"{DateTime.UtcNow.Year}-12-31" }
+        new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = "To", DefaultValue = $"{DateTime.UtcNow.Year}-12-31" },
+        new ReportFilterDefinition { Key = "includeArchived", Type = ReportFilterType.Boolean, Label = "Show Archived Members", DefaultValue = "false" }
     ];
 
     public async Task<ReportData> GenerateAsync(ReportFilterValues filters, CancellationToken ct = default)
@@ -40,8 +41,13 @@ public class MemberAccountSummaryReportProvider : IReportProvider
         var (from, to) = ParseDateRange(filters);
 
         var activeMembers = await _members.GetAllAsync(ct);
-        var archivedMembers = await _members.GetArchivedAsync(ct);
-        var allMembers = activeMembers.Concat(archivedMembers).OrderBy(m => m.Name).ToList();
+        var allMembers = activeMembers.ToList();
+        if (filters.Get("includeArchived") == "true")
+        {
+            var archivedMembers = await _members.GetArchivedAsync(ct);
+            allMembers.AddRange(archivedMembers);
+        }
+        allMembers = allMembers.OrderBy(m => m.Name).ToList();
 
         var today = DateTime.UtcNow.Date;
         var sections = new List<ReportSection>();
@@ -107,7 +113,19 @@ public class MemberAccountSummaryReportProvider : IReportProvider
             });
 
             var label = member.IsDeleted ? $"{member.Name} (Archived)" : member.Name;
-            sections.Add(new ReportSection { Heading = label, Rows = rows });
+            var summaryRow = new ReportRow
+            {
+                Cells =
+                [
+                    label,
+                    $"Current: {FormatCurrency(aging0)}",
+                    $"30 days: {FormatCurrency(aging30)}",
+                    $"60 days: {FormatCurrency(aging60)}",
+                    $"90+ days: {FormatCurrency(aging90Plus)}",
+                    FormatCurrency(closingBalance)
+                ]
+            };
+            sections.Add(new ReportSection { Heading = label, Rows = rows, SummaryRow = summaryRow });
         }
 
         return new ReportData
@@ -122,6 +140,15 @@ public class MemberAccountSummaryReportProvider : IReportProvider
                 new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
                 new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
                 new ReportColumn { Header = "Aging", Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = "Balance", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
+            ],
+            SummaryColumns =
+            [
+                new ReportColumn { Header = "Member", Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = "Current", Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = "30 Days", Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = "60 Days", Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = "90+ Days", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "Balance", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
             ],
             Sections = sections

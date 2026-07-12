@@ -67,9 +67,25 @@ public class MemberAccountSummaryReportProviderTests
         SetupMemberTransactions(archived.Id);
         SetupFees(archived.Id);
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var filters = CurrentYearFilters();
+        filters.Set("includeArchived", "true");
+        var result = await _sut.GenerateAsync(filters);
 
         Assert.Contains(result.Sections, s => s.Heading != null && s.Heading.Contains("Old Member"));
+    }
+
+    [Fact]
+    public async Task GenerateAsync_ExcludesArchivedMembers_ByDefault()
+    {
+        var archived = MakeMember(Guid.NewGuid(), "Old Member", isDeleted: true);
+        SetupMembers(archived);
+        SetupBalance(archived.Id, 10m);
+        SetupMemberTransactions(archived.Id);
+        SetupFees(archived.Id);
+
+        var result = await _sut.GenerateAsync(CurrentYearFilters());
+
+        Assert.DoesNotContain(result.Sections, s => s.Heading != null && s.Heading.Contains("Old Member"));
     }
 
     [Fact]
@@ -131,6 +147,32 @@ public class MemberAccountSummaryReportProviderTests
     }
 
     [Fact]
+    public async Task GenerateAsync_TransactionsWithinMember_AreOrderedOldestFirst()
+    {
+        var memberId = Guid.NewGuid();
+        var member = MakeMember(memberId, "Ledger Reader", false);
+        SetupMembers(member);
+        SetupBalance(memberId, 300m);
+        SetupFees(memberId);
+
+        // Seeded in shuffled (non-chronological) input order deliberately.
+        var mid = MakeTransaction(memberId, new DateTime(2026, 2, 9, 0, 0, 0, DateTimeKind.Utc), "Mid");
+        var newest = MakeTransaction(memberId, new DateTime(2026, 2, 16, 0, 0, 0, DateTimeKind.Utc), "Newest");
+        var oldest = MakeTransaction(memberId, new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc), "Oldest");
+        SetupMemberTransactions(memberId, newest, oldest, mid);
+
+        var result = await _sut.GenerateAsync(CurrentYearFilters());
+
+        var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Ledger Reader"));
+        Assert.Equal("Opening Balance", section.Rows[0].Cells[0]);
+        Assert.Equal("2026-01-01", section.Rows[1].Cells[0]);
+        Assert.Equal("2026-02-09", section.Rows[2].Cells[0]);
+        Assert.Equal("2026-02-16", section.Rows[3].Cells[0]);
+        Assert.Equal("Closing Balance", section.Rows[4].Cells[0]);
+        Assert.Equal("Aging", section.Rows[5].Cells[0]);
+    }
+
+    [Fact]
     public async Task GenerateAsync_ReportTitle_IsMemberAccountSummary()
     {
         SetupMembers();
@@ -138,12 +180,52 @@ public class MemberAccountSummaryReportProviderTests
         Assert.Equal("Member Account Summary", result.Title);
     }
 
+    [Fact]
+    public async Task GenerateAsync_SummaryColumns_HasSixHeadersAndEverySectionHasMatchingSummaryRow()
+    {
+        var m1 = MakeMember(Guid.NewGuid(), "Alice", false);
+        var m2 = MakeMember(Guid.NewGuid(), "Bob", false);
+        SetupMembers(m1, m2);
+        SetupBalance(m1.Id, 50m);
+        SetupBalance(m2.Id, 0m);
+        SetupMemberTransactions(m1.Id);
+        SetupMemberTransactions(m2.Id);
+        SetupFees(m1.Id);
+        SetupFees(m2.Id);
+
+        var result = await _sut.GenerateAsync(CurrentYearFilters());
+
+        Assert.Equal(6, result.SummaryColumns?.Count);
+        Assert.Equal(["Member", "Current", "30 Days", "60 Days", "90+ Days", "Balance"],
+            result.SummaryColumns!.Select(c => c.Header));
+        Assert.All(result.Sections, s => Assert.Equal(result.SummaryColumns!.Count, s.SummaryRow!.Cells.Count));
+    }
+
+    [Fact]
+    public async Task GenerateAsync_MemberWithNoOutstandingFees_StillGetsSummaryRowWithZeroAgingCells()
+    {
+        var member = MakeMember(Guid.NewGuid(), "Paid Up", false);
+        SetupMembers(member);
+        SetupBalance(member.Id, 0m);
+        SetupMemberTransactions(member.Id);
+        SetupFees(member.Id);
+
+        var result = await _sut.GenerateAsync(CurrentYearFilters());
+
+        var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Paid Up"));
+        Assert.NotNull(section.SummaryRow);
+        Assert.Equal("Current: 0.00", section.SummaryRow!.Cells[1]);
+        Assert.Equal("30 days: 0.00", section.SummaryRow.Cells[2]);
+        Assert.Equal("60 days: 0.00", section.SummaryRow.Cells[3]);
+        Assert.Equal("90+ days: 0.00", section.SummaryRow.Cells[4]);
+    }
+
     // --- Helpers ---
 
     private void SetupMembers(params Member[] members)
     {
         _members.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<Member>>(members.ToList()));
+            .Returns(Task.FromResult<IReadOnlyList<Member>>(members.Where(m => !m.IsDeleted).ToList()));
         _members.GetArchivedAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<Member>>(members.Where(m => m.IsDeleted).ToList()));
     }
@@ -153,11 +235,18 @@ public class MemberAccountSummaryReportProviderTests
         _gl.GetMemberBalanceAsync(memberId, Arg.Any<CancellationToken>()).Returns(balance);
     }
 
-    private void SetupMemberTransactions(Guid memberId)
+    private void SetupMemberTransactions(Guid memberId, params Transaction[] transactions)
     {
         _gl.GetByMemberAsync(memberId, Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<Transaction>>(Array.Empty<Transaction>().ToList()));
+            .Returns(Task.FromResult<IReadOnlyList<Transaction>>(transactions.ToList()));
     }
+
+    private static Transaction MakeTransaction(Guid memberId, DateTime date, string description)
+        => new()
+        {
+            Id = Guid.NewGuid(), MemberId = memberId, Date = date, Description = description,
+            DebitAmount = 0m, CreditAmount = 10m, GLAccount = "1100", CreatedAt = DateTime.UtcNow
+        };
 
     private void SetupFees(Guid memberId, params Fee[] fees)
     {

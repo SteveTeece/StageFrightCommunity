@@ -20,4 +20,11 @@ public class ReportData
 
     /// <summary>Optional grand-total row rendered after all sections.</summary>
     public ReportRow? GrandTotal { get; init; }
+
+    /// <summary>
+    /// Optional column headers for a collapsed master view (one row per section).
+    /// Null/empty ⇒ report has no master-detail view; <c>ReportViewer</c> renders the flat table.
+    /// When non-empty, every section in <see cref="Sections"/> must set <see cref="ReportSection.SummaryRow"/>.
+    /// </summary>
+    public IReadOnlyList<ReportColumn>? SummaryColumns { get; init; }
 }
