@@ -28,7 +28,7 @@ Single existing solution (`StageFrightCommunity.slnx`), no new projects. All pat
 
 **Purpose**: Confirm a clean baseline before making changes
 
-- [ ] T001 Run `dotnet build` and `dotnet test` (full suite) from the repo root and confirm everything is green before starting, per CLAUDE.md's build/test verification requirement
+- [X] T001 Run `dotnet build` and `dotnet test` (full suite) from the repo root and confirm everything is green before starting, per CLAUDE.md's build/test verification requirement
 
 ---
 
@@ -38,8 +38,8 @@ Single existing solution (`StageFrightCommunity.slnx`), no new projects. All pat
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T002 [P] Add `SummaryColumns` property (`IReadOnlyList<ReportColumn>?`, nullable/default empty) to `src/StageFright.Reports/Models/ReportData.cs`, per data-model.md
-- [ ] T003 [P] Add `SummaryRow` property (`ReportRow?`, nullable) to `src/StageFright.Reports/Models/ReportSection.cs`, per data-model.md
+- [X] T002 [P] Add `SummaryColumns` property (`IReadOnlyList<ReportColumn>?`, nullable/default empty) to `src/StageFright.Reports/Models/ReportData.cs`, per data-model.md
+- [X] T003 [P] Add `SummaryRow` property (`ReportRow?`, nullable) to `src/StageFright.Reports/Models/ReportSection.cs`, per data-model.md
 
 **Checkpoint**: Model supports the optional master-detail contract; all five other report providers are unaffected since they never set these new properties (FR-010).
 
@@ -53,15 +53,15 @@ Single existing solution (`StageFrightCommunity.slnx`), no new projects. All pat
 
 ### Tests for User Story 1
 
-- [ ] T004 [P] [US1] Add test in `tests/StageFright.Reports.Tests/MemberAccountSummaryReportProviderTests.cs` asserting `ReportData.SummaryColumns` has 6 headers (Member/Current/30 Days/60 Days/90+ Days/Balance) and every returned `ReportSection.SummaryRow!.Cells.Count` equals `SummaryColumns.Count`
-- [ ] T005 [P] [US1] Add test in `tests/StageFright.Reports.Tests/MemberAccountSummaryReportProviderTests.cs` asserting a member with no outstanding fees still gets a `SummaryRow` with all four aging cells formatted as zero (e.g. `"Current: 0.00"`) rather than being omitted
-- [ ] T006 [P] [US1] Add bUnit test in `tests/StageFright.UI.Tests/Shared/ReportViewerTests.cs` asserting that when `ReportData.SummaryColumns` is populated, `ReportViewer` renders one row per section via `RadzenDataGrid` and no `Rows`/transaction-detail content is visible in the initial markup
+- [X] T004 [P] [US1] Add test in `tests/StageFright.Reports.Tests/MemberAccountSummaryReportProviderTests.cs` asserting `ReportData.SummaryColumns` has 6 headers (Member/Current/30 Days/60 Days/90+ Days/Balance) and every returned `ReportSection.SummaryRow!.Cells.Count` equals `SummaryColumns.Count`
+- [X] T005 [P] [US1] Add test in `tests/StageFright.Reports.Tests/MemberAccountSummaryReportProviderTests.cs` asserting a member with no outstanding fees still gets a `SummaryRow` with all four aging cells formatted as zero (e.g. `"Current: 0.00"`) rather than being omitted
+- [X] T006 [P] [US1] Add bUnit test in `tests/StageFright.UI.Tests/Shared/ReportViewerTests.cs` asserting that when `ReportData.SummaryColumns` is populated, `ReportViewer` renders one row per section via `RadzenDataGrid` and no `Rows`/transaction-detail content is visible in the initial markup
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] In `src/StageFright.Reports/Providers/MemberAccountSummaryReportProvider.cs`, populate `ReportData.SummaryColumns` (`Member`, `Current`, `30 Days`, `60 Days`, `90+ Days`, `Balance` — last one right-aligned currency) and set each `ReportSection.SummaryRow` to `[name-with-archived-suffix, "Current: {aging0}", "30 days: {aging30}", "60 days: {aging60}", "90+ days: {aging90Plus}", FormatCurrency(closingBalance)]`, reusing the existing aging computation (depends on T002, T003)
-- [ ] T008 [US1] In `src/StageFright.UI/Shared/ReportViewer.razor.cs`, add a computed property `UseMasterDetail => _report?.SummaryColumns?.Count > 0` to select the rendering path
-- [ ] T009 [US1] In `src/StageFright.UI/Shared/ReportViewer.razor`, add a `RadzenDataGrid<ReportSection>` rendering path (`AllowPaging="true" PageSize="15" class="rz-shadow-0" AllowSorting="false"`) guarded by `UseMasterDetail`, with one dynamically-generated `RadzenDataGridColumn` per `_report.SummaryColumns` entry (`Template` indexing into `context.SummaryRow!.Cells[i]`); leave the existing hand-rolled flat-table path unchanged for `!UseMasterDetail` (depends on T008)
+- [X] T007 [US1] In `src/StageFright.Reports/Providers/MemberAccountSummaryReportProvider.cs`, populate `ReportData.SummaryColumns` (`Member`, `Current`, `30 Days`, `60 Days`, `90+ Days`, `Balance` — last one right-aligned currency) and set each `ReportSection.SummaryRow` to `[name-with-archived-suffix, "Current: {aging0}", "30 days: {aging30}", "60 days: {aging60}", "90+ days: {aging90Plus}", FormatCurrency(closingBalance)]`, reusing the existing aging computation (depends on T002, T003)
+- [X] T008 [US1] In `src/StageFright.UI/Shared/ReportViewer.razor.cs`, add a computed property `UseMasterDetail => _report?.SummaryColumns?.Count > 0` to select the rendering path
+- [X] T009 [US1] In `src/StageFright.UI/Shared/ReportViewer.razor`, add a `RadzenDataGrid<ReportSection>` rendering path (`AllowPaging="true" PageSize="15" class="rz-shadow-0" AllowSorting="false"`) guarded by `UseMasterDetail`, with one dynamically-generated `RadzenDataGridColumn` per `_report.SummaryColumns` entry (`Template` indexing into `context.SummaryRow!.Cells[i]`); leave the existing hand-rolled flat-table path unchanged for `!UseMasterDetail` (depends on T008)
 
 **Checkpoint**: Loading the Member Account Summary report shows one collapsed row per member with aging totals; the other five reports still render exactly as before.
 
@@ -75,14 +75,14 @@ Single existing solution (`StageFrightCommunity.slnx`), no new projects. All pat
 
 ### Tests for User Story 2
 
-- [ ] T010 [P] [US2] Add bUnit test in `tests/StageFright.UI.Tests/Shared/ReportViewerTests.cs` that expands a member's row (via the Radzen expand toggle) and asserts the markup then contains that member's Opening Balance, transaction rows, Closing Balance, and Aging row content
-- [ ] T011 [P] [US2] Add bUnit test in `tests/StageFright.UI.Tests/Shared/ReportViewerTests.cs` with two members' rows, expanding one and asserting the other's row remains collapsed (its detail content is absent from the markup)
-- [ ] T012 [P] [US2] Add bUnit test in `tests/StageFright.UI.Tests/Shared/ReportViewerTests.cs` asserting the expand/collapse control element is keyboard-focusable (e.g. a `<button>` or has `tabindex`) and exposes an `aria-expanded` attribute reflecting its current state, per FR-012/SC-005
+- [X] T010 [P] [US2] Add bUnit test in `tests/StageFright.UI.Tests/Shared/ReportViewerTests.cs` that expands a member's row (via the Radzen expand toggle) and asserts the markup then contains that member's Opening Balance, transaction rows, Closing Balance, and Aging row content
+- [X] T011 [P] [US2] Add bUnit test in `tests/StageFright.UI.Tests/Shared/ReportViewerTests.cs` with two members' rows, expanding one and asserting the other's row remains collapsed (its detail content is absent from the markup)
+- [X] T012 [P] [US2] Add bUnit test in `tests/StageFright.UI.Tests/Shared/ReportViewerTests.cs` asserting the expand/collapse control element is keyboard-focusable (e.g. a `<button>` or has `tabindex`) and exposes an `aria-expanded` attribute reflecting its current state, per FR-012/SC-005
 
 ### Implementation for User Story 2
 
-- [ ] T013 [US2] In `src/StageFright.UI/Shared/ReportViewer.razor`, add the `<Template Context="section">` master-detail block to the `RadzenDataGrid` from T009, rendering the existing flat detail table (`section.Rows`/`section.Subtotal`, heading suppressed since the master row already shows the name) inside the expand panel (depends on T009)
-- [ ] T014 [US2] Verify/adjust the Radzen master-detail expand toggle markup in `src/StageFright.UI/Shared/ReportViewer.razor` so it is keyboard-operable and carries an `aria-expanded` attribute reflecting expand state, satisfying FR-012 (depends on T013)
+- [X] T013 [US2] In `src/StageFright.UI/Shared/ReportViewer.razor`, add the `<Template Context="section">` master-detail block to the `RadzenDataGrid` from T009, rendering the existing flat detail table (`section.Rows`/`section.Subtotal`, heading suppressed since the master row already shows the name) inside the expand panel (depends on T009)
+- [X] T014 [US2] Verify/adjust the Radzen master-detail expand toggle markup in `src/StageFright.UI/Shared/ReportViewer.razor` so it is keyboard-operable and carries an `aria-expanded` attribute reflecting expand state, satisfying FR-012 (depends on T013)
 
 **Checkpoint**: User Stories 1 and 2 together deliver the core redesign — collapsed-by-default rows that expand independently to full detail, keyboard-accessible.
 
@@ -96,13 +96,13 @@ Single existing solution (`StageFrightCommunity.slnx`), no new projects. All pat
 
 ### Tests for User Story 3
 
-- [ ] T015 [P] [US3] Update `GenerateAsync_IncludesArchivedMembers` in `tests/StageFright.Reports.Tests/MemberAccountSummaryReportProviderTests.cs` to explicitly set `includeArchived=true` in the filters it passes, since archived members are no longer included by default
-- [ ] T016 [P] [US3] Add test `GenerateAsync_ExcludesArchivedMembers_ByDefault` in `tests/StageFright.Reports.Tests/MemberAccountSummaryReportProviderTests.cs` asserting that with default filters (no `includeArchived` key set), an archived member's section is absent from `result.Sections`
+- [X] T015 [P] [US3] Update `GenerateAsync_IncludesArchivedMembers` in `tests/StageFright.Reports.Tests/MemberAccountSummaryReportProviderTests.cs` to explicitly set `includeArchived=true` in the filters it passes, since archived members are no longer included by default
+- [X] T016 [P] [US3] Add test `GenerateAsync_ExcludesArchivedMembers_ByDefault` in `tests/StageFright.Reports.Tests/MemberAccountSummaryReportProviderTests.cs` asserting that with default filters (no `includeArchived` key set), an archived member's section is absent from `result.Sections`
 
 ### Implementation for User Story 3
 
-- [ ] T017 [US3] In `src/StageFright.Reports/Providers/MemberAccountSummaryReportProvider.cs`, add `includeArchived` to the `Filters` list (`ReportFilterType.Boolean`, Label `"Show Archived Members"`, `DefaultValue = "false"`)
-- [ ] T018 [US3] In `MemberAccountSummaryReportProvider.GenerateAsync`, only concatenate `archivedMembers` into `allMembers` when `filters.Get("includeArchived") == "true"` (depends on T017)
+- [X] T017 [US3] In `src/StageFright.Reports/Providers/MemberAccountSummaryReportProvider.cs`, add `includeArchived` to the `Filters` list (`ReportFilterType.Boolean`, Label `"Show Archived Members"`, `DefaultValue = "false"`)
+- [X] T018 [US3] In `MemberAccountSummaryReportProvider.GenerateAsync`, only concatenate `archivedMembers` into `allMembers` when `filters.Get("includeArchived") == "true"` (depends on T017)
 
 **Checkpoint**: Archived members are hidden by default and shown on request, without touching any GL/aging calculation (FR-009).
 
@@ -116,11 +116,11 @@ Single existing solution (`StageFrightCommunity.slnx`), no new projects. All pat
 
 ### Tests for User Story 4
 
-- [ ] T019 [P] [US4] Add test in `tests/StageFright.Reports.Tests/MemberAccountSummaryReportProviderTests.cs` seeding transactions dated 2026-01-01, 2026-02-09, and 2026-02-16 in reverse/shuffled input order, and asserting `section.Rows` reads Opening Balance, then the three transaction rows oldest-to-newest, then Closing Balance, then Aging
+- [X] T019 [P] [US4] Add test in `tests/StageFright.Reports.Tests/MemberAccountSummaryReportProviderTests.cs` seeding transactions dated 2026-01-01, 2026-02-09, and 2026-02-16 in reverse/shuffled input order, and asserting `section.Rows` reads Opening Balance, then the three transaction rows oldest-to-newest, then Closing Balance, then Aging
 
 ### Implementation for User Story 4
 
-- [ ] T020 [US4] Confirm `periodTxns.OrderBy(t => t.Date)` in `MemberAccountSummaryReportProvider.GenerateAsync` already produces oldest-first ordering (no code change expected); this task exists to lock the behavior in with the T019 regression test
+- [X] T020 [US4] Confirm `periodTxns.OrderBy(t => t.Date)` in `MemberAccountSummaryReportProvider.GenerateAsync` already produces oldest-first ordering (no code change expected); this task exists to lock the behavior in with the T019 regression test
 
 **Checkpoint**: All four user stories are independently implemented and testable; the redesign is functionally complete.
 
@@ -130,11 +130,11 @@ Single existing solution (`StageFrightCommunity.slnx`), no new projects. All pat
 
 **Purpose**: Confirm no regressions in adjacent tests/reports and validate end-to-end
 
-- [ ] T021 [P] Review `tests/StageFright.Integration.Tests/Scenarios/V6_AccountingReportsTests.cs` `MemberAccountSummary_GeneratesReport_WithMemberSection` test against the new default-excludes-archived behavior; update only if its seed data includes an archived member this test relies on
-- [ ] T022 [P] Review `tests/StageFright.Integration.Tests/Scenarios/V11_ReportsMenuTests.cs` for any assertions on Member Account Summary report content beyond registration/menu presence; update only if found
-- [ ] T023 Run the full `dotnet test` suite and confirm the five unaffected reports (Income Statement, Trial Balance, Account Register, Member List, Committee) still pass unchanged, plus all new/updated tests from T004–T022
-- [ ] T024 Run `dotnet build` and `dotnet test` (full suite, no `--no-build`) one final time and report results, per CLAUDE.md's build/test verification requirement
-- [ ] T025 Execute the manual validation checklist in `quickstart.md` against the running app (`dotnet run --project src/StageFright.App/`)
+- [X] T021 [P] Review `tests/StageFright.Integration.Tests/Scenarios/V6_AccountingReportsTests.cs` `MemberAccountSummary_GeneratesReport_WithMemberSection` test against the new default-excludes-archived behavior; update only if its seed data includes an archived member this test relies on
+- [X] T022 [P] Review `tests/StageFright.Integration.Tests/Scenarios/V11_ReportsMenuTests.cs` for any assertions on Member Account Summary report content beyond registration/menu presence; update only if found
+- [X] T023 Run the full `dotnet test` suite and confirm the five unaffected reports (Income Statement, Trial Balance, Account Register, Member List, Committee) still pass unchanged, plus all new/updated tests from T004–T022
+- [X] T024 Run `dotnet build` and `dotnet test` (full suite, no `--no-build`) one final time and report results, per CLAUDE.md's build/test verification requirement
+- [X] T025 Execute the manual validation checklist in `quickstart.md` against the running app (`dotnet run --project src/StageFright.App/`)
 
 ---
 

@@ -109,89 +109,142 @@ else if (_report != null)
             </div>
         }
 
-        @* Report table *@
-        <div class="table-responsive">
-            <table class="table table-sm table-bordered">
-                <thead>
-                    <tr>
-                        @foreach (var col in _report.Columns)
-                        {
-                            <th class="@AlignClass(col.Alignment)">@col.Header</th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var section in GetPagedSections())
+        @if (UseMasterDetail)
+        {
+            <RadzenDataGrid @key="_masterDetailGeneration" Data="@_report.Sections" TItem="ReportSection"
+                             AllowPaging="true" PageSize="15" class="rz-shadow-0" AllowSorting="false"
+                             ExpandMode="DataGridExpandMode.Multiple">
+                <Columns>
+                    @for (var i = 0; i < _report.SummaryColumns!.Count; i++)
                     {
-                        @if (!string.IsNullOrEmpty(section.Heading))
-                        {
-                            <tr class="table-secondary">
-                                <td colspan="@_report.Columns.Count" class="fw-bold">@section.Heading</td>
-                            </tr>
-                        }
-
-                        @foreach (var row in section.Rows)
-                        {
-                            <tr class="@(row.IsEmphasized ? "fw-bold" : "")">
-                                @for (var i = 0; i < _report.Columns.Count; i++)
-                                {
-                                    var col = _report.Columns[i];
-                                    var value = i < row.Cells.Count ? row.Cells[i] : string.Empty;
-                                    <td class="@AlignClass(col.Alignment)">@value</td>
-                                }
-                            </tr>
-                        }
-
-                        @if (section.Subtotal != null)
-                        {
-                            <tr class="fw-bold table-light">
-                                @for (var i = 0; i < _report.Columns.Count; i++)
-                                {
-                                    var col = _report.Columns[i];
-                                    var value = i < section.Subtotal.Cells.Count ? section.Subtotal.Cells[i] : string.Empty;
-                                    <td class="@AlignClass(col.Alignment)">@value</td>
-                                }
-                            </tr>
-                        }
+                        var colIndex = i;
+                        var summaryCol = _report.SummaryColumns[colIndex];
+                        <RadzenDataGridColumn TItem="ReportSection" Title="@summaryCol.Header" Sortable="false">
+                            <Template Context="section">
+                                <span class="@AlignClass(summaryCol.Alignment)">@(colIndex < section.SummaryRow!.Cells.Count ? section.SummaryRow.Cells[colIndex] : string.Empty)</span>
+                            </Template>
+                        </RadzenDataGridColumn>
                     }
+                </Columns>
+                <Template Context="section">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered mb-0">
+                            <tbody>
+                                @foreach (var row in section.Rows)
+                                {
+                                    <tr class="@(row.IsEmphasized ? "fw-bold" : "")">
+                                        @for (var i = 0; i < _report.Columns.Count; i++)
+                                        {
+                                            var col = _report.Columns[i];
+                                            var value = i < row.Cells.Count ? row.Cells[i] : string.Empty;
+                                            <td class="@AlignClass(col.Alignment)">@value</td>
+                                        }
+                                    </tr>
+                                }
 
-                    @if (_report.GrandTotal != null && (!UsePaging || _currentPage == TotalPages))
-                    {
-                        <tr class="fw-bold table-dark">
-                            @for (var i = 0; i < _report.Columns.Count; i++)
+                                @if (section.Subtotal != null)
+                                {
+                                    <tr class="fw-bold table-light">
+                                        @for (var i = 0; i < _report.Columns.Count; i++)
+                                        {
+                                            var col = _report.Columns[i];
+                                            var value = i < section.Subtotal.Cells.Count ? section.Subtotal.Cells[i] : string.Empty;
+                                            <td class="@AlignClass(col.Alignment)">@value</td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </Template>
+            </RadzenDataGrid>
+        }
+        else
+        {
+            @* Report table *@
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr>
+                            @foreach (var col in _report.Columns)
                             {
-                                var col = _report.Columns[i];
-                                var value = i < _report.GrandTotal.Cells.Count ? _report.GrandTotal.Cells[i] : string.Empty;
-                                <td class="@AlignClass(col.Alignment)">@value</td>
+                                <th class="@AlignClass(col.Alignment)">@col.Header</th>
                             }
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach (var section in GetPagedSections())
+                        {
+                            @if (!string.IsNullOrEmpty(section.Heading))
+                            {
+                                <tr class="table-secondary">
+                                    <td colspan="@_report.Columns.Count" class="fw-bold">@section.Heading</td>
+                                </tr>
+                            }
 
-        @if (UsePaging)
-        {
-            <div class="d-flex justify-content-between align-items-center mt-1">
-                <small class="text-muted">
-                    Rows @(PageStartIndex + 1)–@(Math.Min(PageEndIndex, TotalDataRows)) of @TotalDataRows
-                </small>
-                <nav aria-label="Report page navigation">
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
-                            <button class="page-link" @onclick="PrevPage" disabled="@(_currentPage == 1)"
-                                    aria-label="Previous page">‹ Prev</button>
-                        </li>
-                        <li class="page-item disabled">
-                            <span class="page-link">Page @_currentPage of @TotalPages</span>
-                        </li>
-                        <li class="page-item @(_currentPage == TotalPages ? "disabled" : "")">
-                            <button class="page-link" @onclick="NextPage" disabled="@(_currentPage == TotalPages)"
-                                    aria-label="Next page">Next ›</button>
-                        </li>
-                    </ul>
-                </nav>
+                            @foreach (var row in section.Rows)
+                            {
+                                <tr class="@(row.IsEmphasized ? "fw-bold" : "")">
+                                    @for (var i = 0; i < _report.Columns.Count; i++)
+                                    {
+                                        var col = _report.Columns[i];
+                                        var value = i < row.Cells.Count ? row.Cells[i] : string.Empty;
+                                        <td class="@AlignClass(col.Alignment)">@value</td>
+                                    }
+                                </tr>
+                            }
+
+                            @if (section.Subtotal != null)
+                            {
+                                <tr class="fw-bold table-light">
+                                    @for (var i = 0; i < _report.Columns.Count; i++)
+                                    {
+                                        var col = _report.Columns[i];
+                                        var value = i < section.Subtotal.Cells.Count ? section.Subtotal.Cells[i] : string.Empty;
+                                        <td class="@AlignClass(col.Alignment)">@value</td>
+                                    }
+                                </tr>
+                            }
+                        }
+
+                        @if (_report.GrandTotal != null && (!UsePaging || _currentPage == TotalPages))
+                        {
+                            <tr class="fw-bold table-dark">
+                                @for (var i = 0; i < _report.Columns.Count; i++)
+                                {
+                                    var col = _report.Columns[i];
+                                    var value = i < _report.GrandTotal.Cells.Count ? _report.GrandTotal.Cells[i] : string.Empty;
+                                    <td class="@AlignClass(col.Alignment)">@value</td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
+
+            @if (UsePaging)
+            {
+                <div class="d-flex justify-content-between align-items-center mt-1">
+                    <small class="text-muted">
+                        Rows @(PageStartIndex + 1)–@(Math.Min(PageEndIndex, TotalDataRows)) of @TotalDataRows
+                    </small>
+                    <nav aria-label="Report page navigation">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                                <button class="page-link" @onclick="PrevPage" disabled="@(_currentPage == 1)"
+                                        aria-label="Previous page">‹ Prev</button>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">Page @_currentPage of @TotalPages</span>
+                            </li>
+                            <li class="page-item @(_currentPage == TotalPages ? "disabled" : "")">
+                                <button class="page-link" @onclick="NextPage" disabled="@(_currentPage == TotalPages)"
+                                        aria-label="Next page">Next ›</button>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
         }
     </div>
 }

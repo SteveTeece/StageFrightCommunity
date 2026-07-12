@@ -11,4 +11,12 @@ public class ReportSection
 
     /// <summary>Optional subtotal row appended after the last data row. Null = no subtotal.</summary>
     public ReportRow? Subtotal { get; init; }
+
+    /// <summary>
+    /// Optional collapsed one-line representation of this section for master-detail rendering.
+    /// Null ⇒ section always renders in full. Non-null ⇒ section is a master row, expandable to
+    /// reveal <see cref="Heading"/>/<see cref="Rows"/>/<see cref="Subtotal"/>. Cell count must match
+    /// the parent <see cref="ReportData.SummaryColumns"/> count.
+    /// </summary>
+    public ReportRow? SummaryRow { get; init; }
 }

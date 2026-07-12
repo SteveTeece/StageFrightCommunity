@@ -38,6 +38,66 @@ public class ReportViewerTests : BunitContext
         ]
     };
 
+    private static readonly ReportData MasterDetailReport = new()
+    {
+        Title = "Member Account Summary",
+        GeneratedAt = DateTime.UtcNow,
+        Columns =
+        [
+            new ReportColumn { Header = "Date / Item" },
+            new ReportColumn { Header = "Description" },
+            new ReportColumn { Header = "Debit" },
+            new ReportColumn { Header = "Credit" },
+            new ReportColumn { Header = "Aging" },
+            new ReportColumn { Header = "Balance" }
+        ],
+        SummaryColumns =
+        [
+            new ReportColumn { Header = "Member" },
+            new ReportColumn { Header = "Current" },
+            new ReportColumn { Header = "30 Days" },
+            new ReportColumn { Header = "60 Days" },
+            new ReportColumn { Header = "90+ Days" },
+            new ReportColumn { Header = "Balance" }
+        ],
+        Sections =
+        [
+            new ReportSection
+            {
+                Heading = "Amanda Scott",
+                SummaryRow = new ReportRow { Cells = ["Amanda Scott", "Current: 0.00", "30 days: 0.00", "60 days: 0.00", "90+ days: 0.00", "5.00"] },
+                Rows =
+                [
+                    new ReportRow { Cells = ["Opening Balance", "", "", "", "", "0.00"] },
+                    new ReportRow { Cells = ["Closing Balance", "", "", "", "", "5.00"], IsEmphasized = true }
+                ]
+            }
+        ]
+    };
+
+    private static readonly ReportData TwoMemberMasterDetailReport = new()
+    {
+        Title = "Member Account Summary",
+        GeneratedAt = DateTime.UtcNow,
+        Columns = MasterDetailReport.Columns,
+        SummaryColumns = MasterDetailReport.SummaryColumns,
+        Sections =
+        [
+            new ReportSection
+            {
+                Heading = "Amanda Scott",
+                SummaryRow = new ReportRow { Cells = ["Amanda Scott", "Current: 0.00", "30 days: 0.00", "60 days: 0.00", "90+ days: 0.00", "5.00"] },
+                Rows = [new ReportRow { Cells = ["Amanda Detail Marker", "", "", "", "", "0.00"] }]
+            },
+            new ReportSection
+            {
+                Heading = "Bob Jones",
+                SummaryRow = new ReportRow { Cells = ["Bob Jones", "Current: 0.00", "30 days: 0.00", "60 days: 0.00", "90+ days: 0.00", "10.00"] },
+                Rows = [new ReportRow { Cells = ["Bob Detail Marker", "", "", "", "", "0.00"] }]
+            }
+        ]
+    };
+
     public ReportViewerTests()
     {
         Services.AddSingleton(_pdfRenderer);
@@ -112,6 +172,111 @@ public class ReportViewerTests : BunitContext
         var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, (IReportProvider?)null));
 
         Assert.DoesNotContain("Generating", cut.Markup, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task WhenMemberRowExpanded_ShowsOpeningClosingAndTransactionDetail()
+    {
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
+            .Returns(MasterDetailReport);
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        cut.Find("button[aria-label='Expand child item']").Click();
+
+        Assert.Contains("Opening Balance", cut.Markup);
+        Assert.Contains("Closing Balance", cut.Markup);
+    }
+
+    [Fact]
+    public async Task WhenOneMemberRowExpanded_OtherMemberRowRemainsCollapsed()
+    {
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
+            .Returns(TwoMemberMasterDetailReport);
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        cut.FindAll("button[aria-label='Expand child item']")[0].Click();
+
+        Assert.Contains("Amanda Detail Marker", cut.Markup);
+        Assert.DoesNotContain("Bob Detail Marker", cut.Markup);
+    }
+
+    [Fact]
+    public async Task ExpandToggle_IsButtonWithAriaExpandedReflectingState()
+    {
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
+            .Returns(MasterDetailReport);
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        var button = cut.Find("button[aria-label='Expand child item']");
+        Assert.Equal("button", button.TagName.ToLowerInvariant());
+        Assert.Equal("false", button.GetAttribute("aria-expanded"));
+
+        button.Click();
+
+        button = cut.Find("button[aria-label='Expand child item']");
+        Assert.Equal("true", button.GetAttribute("aria-expanded"));
+    }
+
+    [Fact]
+    public async Task WhenReportRegenerates_PreviouslyExpandedRowResetsToCollapsed()
+    {
+        // A real provider builds fresh ReportSection instances on every call; simulate that here
+        // rather than returning the same static object, since Radzen's expand tracking keys off
+        // item identity — reusing the same instance wouldn't exercise FR-011's reset behavior.
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
+            .Returns(_ => BuildFreshMasterDetailReport());
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        cut.Find("button[aria-label='Expand child item']").Click();
+        Assert.Contains("Opening Balance", cut.Markup);
+
+        cut.FindAll("button").Single(b => b.TextContent.Trim() == "Refresh").Click();
+        await cut.InvokeAsync(() => { });
+
+        Assert.DoesNotContain("Opening Balance", cut.Markup);
+    }
+
+    private static ReportData BuildFreshMasterDetailReport() => new()
+    {
+        Title = "Member Account Summary",
+        GeneratedAt = DateTime.UtcNow,
+        Columns = MasterDetailReport.Columns,
+        SummaryColumns = MasterDetailReport.SummaryColumns,
+        Sections =
+        [
+            new ReportSection
+            {
+                Heading = "Amanda Scott",
+                SummaryRow = new ReportRow { Cells = ["Amanda Scott", "Current: 0.00", "30 days: 0.00", "60 days: 0.00", "90+ days: 0.00", "5.00"] },
+                Rows =
+                [
+                    new ReportRow { Cells = ["Opening Balance", "", "", "", "", "0.00"] },
+                    new ReportRow { Cells = ["Closing Balance", "", "", "", "", "5.00"], IsEmphasized = true }
+                ]
+            }
+        ]
+    };
+
+    [Fact]
+    public async Task WhenSummaryColumnsPopulated_RendersOneRowPerSectionWithNoDetailVisible()
+    {
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
+            .Returns(MasterDetailReport);
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        Assert.Contains("Amanda Scott", cut.Markup);
+        Assert.DoesNotContain("Opening Balance", cut.Markup);
+        Assert.DoesNotContain("Closing Balance", cut.Markup);
     }
 
     private static ReportData MakeReport(int rowCount) => new()
