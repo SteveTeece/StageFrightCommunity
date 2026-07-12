@@ -85,7 +85,7 @@ public partial class OutstandingBalancesTile : ComponentBase
                 };
 
                 _chartOptions = new LineChartOptions { Responsive = true };
-                _chartOptions.Plugins.Legend!.Display = false;
+                _chartOptions.Plugins.Legend!.Display = true;
                 _hasChartData = true;
             }
         }
