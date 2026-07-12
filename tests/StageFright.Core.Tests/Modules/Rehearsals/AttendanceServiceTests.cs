@@ -2,6 +2,7 @@ using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Rehearsals;
 using StageFright.Core.Tests.Fixtures;
@@ -275,6 +276,47 @@ public class AttendanceServiceTests : TestBase
             Arg.Is<IReadOnlyList<AttendanceRecord>>(list => list.Any(r => r.MemberId == InactiveMemberId)),
             Arg.Any<CancellationToken>());
         await _feeRepo.DidNotReceive().AddAsync(Arg.Any<Fee>(), Arg.Any<CancellationToken>());
+    }
+
+    // --- Future-dated rehearsal ---
+
+    [Fact]
+    public async Task RecordBatch_RehearsalDateInFuture_ThrowsValidationException()
+    {
+        var futureRehearsalId = Guid.NewGuid();
+        _rehearsalRepo.GetByIdAsync(futureRehearsalId, Arg.Any<CancellationToken>()).Returns(new Rehearsal
+        {
+            Id = futureRehearsalId,
+            Date = DateTime.UtcNow.Date.AddDays(1),
+            Time = TimeSpan.FromHours(19),
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        });
+
+        var svc = CreateService();
+        var items = new[] { new AttendanceBatchItem { MemberId = ActiveMemberId, Attended = true } };
+
+        await Assert.ThrowsAsync<ValidationException>(() => svc.RecordBatchAsync(futureRehearsalId, items, Ct));
+        await _attendanceRepo.DidNotReceive().AddBatchAsync(Arg.Any<IReadOnlyList<AttendanceRecord>>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RecordBatch_RehearsalDateIsToday_Succeeds()
+    {
+        var todayRehearsalId = Guid.NewGuid();
+        _rehearsalRepo.GetByIdAsync(todayRehearsalId, Arg.Any<CancellationToken>()).Returns(new Rehearsal
+        {
+            Id = todayRehearsalId,
+            Date = DateTime.UtcNow.Date,
+            Time = TimeSpan.FromHours(19),
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        });
+
+        var svc = CreateService();
+        var items = new[] { new AttendanceBatchItem { MemberId = ActiveMemberId, Attended = true } };
+
+        await svc.RecordBatchAsync(todayRehearsalId, items, Ct);
+
+        await _feeRepo.Received(1).AddAsync(Arg.Is<Fee>(f => f.MemberId == ActiveMemberId), Arg.Any<CancellationToken>());
     }
 
     // --- Not attended ---

@@ -65,6 +65,11 @@ public class AttendanceService : IAttendanceService
         var rehearsal = await _rehearsalRepo.GetByIdAsync(rehearsalId, ct)
             ?? throw new EntityNotFoundException("Rehearsal", rehearsalId, nameof(RecordBatchAsync));
 
+        if (rehearsal.Date.Date > DateTime.UtcNow.Date)
+            throw new ValidationException(
+                "Attendance cannot be recorded before the rehearsal date.",
+                "Rehearsal", nameof(RecordBatchAsync), rehearsalId);
+
         var settings = await _settingsRepo.GetAsync(ct)
             ?? throw new ValidationException("Application settings are not configured.", "Settings", nameof(RecordBatchAsync));
 

@@ -41,6 +41,15 @@ public class AttendanceGridTests : BunitContext
         CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
 
+    private static readonly Rehearsal FutureRehearsal = new()
+    {
+        Id = RehearsalId,
+        Date = DateTime.UtcNow.Date.AddDays(1),
+        Time = TimeSpan.FromHours(19),
+        StoredAttendanceRate = null,
+        CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+    };
+
     public AttendanceGridTests()
     {
         Services.AddSingleton(_rehearsalService);
@@ -193,6 +202,18 @@ public class AttendanceGridTests : BunitContext
         var cut = RenderWithId();
 
         Assert.Contains("immutable", cut.Markup, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(cut.FindAll("button.btn-primary"));
+    }
+
+    [Fact]
+    public void WhenRehearsalDateInFuture_ShowsNotYetMessage_AndNoSaveButton()
+    {
+        _rehearsalService.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Rehearsal> { FutureRehearsal });
+
+        var cut = RenderWithId();
+
+        Assert.Contains("Attendance can be recorded starting", cut.Markup);
         Assert.Empty(cut.FindAll("button.btn-primary"));
     }
 

@@ -23,7 +23,7 @@ public class ParticipationGridTests : BunitContext
     private static readonly Event OpenEvent = new()
     {
         Id = EventId,
-        Date = new DateTime(2026, 8, 1, 0, 0, 0, DateTimeKind.Utc),
+        Date = DateTime.UtcNow.Date.AddDays(-1),
         EventTypeId = EventTypeId,
         EventType = new EventType { Id = EventTypeId, Name = "Performance" },
         StoredParticipationRate = null,
@@ -34,10 +34,21 @@ public class ParticipationGridTests : BunitContext
     private static readonly Event LockedEvent = new()
     {
         Id = EventId,
-        Date = new DateTime(2026, 8, 1, 0, 0, 0, DateTimeKind.Utc),
+        Date = DateTime.UtcNow.Date.AddDays(-1),
         EventTypeId = EventTypeId,
         EventType = new EventType { Id = EventTypeId, Name = "Performance" },
         StoredParticipationRate = 75m,
+        CreatedAt = DateTime.UtcNow,
+        UpdatedAt = DateTime.UtcNow
+    };
+
+    private static readonly Event FutureEvent = new()
+    {
+        Id = EventId,
+        Date = DateTime.UtcNow.Date.AddDays(1),
+        EventTypeId = EventTypeId,
+        EventType = new EventType { Id = EventTypeId, Name = "Performance" },
+        StoredParticipationRate = null,
         CreatedAt = DateTime.UtcNow,
         UpdatedAt = DateTime.UtcNow
     };
@@ -204,6 +215,18 @@ public class ParticipationGridTests : BunitContext
         var cut = RenderWithId();
 
         Assert.Contains("immutable", cut.Markup, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(cut.FindAll("button.btn-primary"));
+    }
+
+    [Fact]
+    public void WhenEventDateInFuture_ShowsNotYetMessage_AndNoSaveButton()
+    {
+        _eventService.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Event> { FutureEvent });
+
+        var cut = RenderWithId();
+
+        Assert.Contains("Participation can be recorded starting", cut.Markup);
         Assert.Empty(cut.FindAll("button.btn-primary"));
     }
 
