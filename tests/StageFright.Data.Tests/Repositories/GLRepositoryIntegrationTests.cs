@@ -271,7 +271,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task GetOutstandingByFeeType_ReturnsZero_WhenNoFeeLinkedTransactions()
     {
-        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync();
+        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync(DateTime.MaxValue);
 
         Assert.Equal(0m, attendance);
         Assert.Equal(0m, annual);
@@ -290,7 +290,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         // Partially pay the annual fee — FIFO allocation tags the payment with the fee it clears.
         await AddFeeLinkedPaymentAsync(memberId, annualFeeId, 40m);
 
-        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync();
+        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync(DateTime.MaxValue);
 
         Assert.Equal(20m, attendance);
         Assert.Equal(60m, annual);
@@ -307,10 +307,62 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         await AddGLPairAsync("0100", CashAccountId, 30m, memberId,
                               "0101", MemberReceivableAccountId, 30m, memberId);
 
-        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync();
+        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync(DateTime.MaxValue);
 
         Assert.Equal(0m, attendance);
         Assert.Equal(50m, annual);
+    }
+
+    [Fact]
+    public async Task GetOutstandingByFeeType_ExcludesTransactionsAfterAsAt_WhenDated()
+    {
+        var memberId = await SeedMemberAsync();
+        var annualFeeId = await SeedFeeAsync(memberId, FeeType.Annual, 100m);
+        await AddFeeLinkedAccrualAsync(memberId, annualFeeId, 100m); // dated 2026-03-01
+
+        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync(new DateTime(2026, 2, 28, 0, 0, 0, DateTimeKind.Utc));
+
+        Assert.Equal(0m, attendance);
+        Assert.Equal(0m, annual);
+    }
+
+    // --- GetOutstandingMemberCountAsync ---
+
+    [Fact]
+    public async Task GetOutstandingMemberCount_ReturnsZero_WhenNoTransactions()
+    {
+        var count = await _sut.GetOutstandingMemberCountAsync(DateTime.MaxValue);
+
+        Assert.Equal(0, count);
+    }
+
+    [Fact]
+    public async Task GetOutstandingMemberCount_CountsDistinctMembersWithPositiveBalance()
+    {
+        var memberA = await SeedMemberAsync();
+        var memberB = await SeedMemberAsync();
+        var feeIdA = await SeedFeeAsync(memberA, FeeType.Annual, 50m);
+        var feeIdB = await SeedFeeAsync(memberB, FeeType.Attendance, 20m);
+
+        await AddFeeLinkedAccrualAsync(memberA, feeIdA, 50m);
+        await AddFeeLinkedAccrualAsync(memberB, feeIdB, 20m);
+        await AddFeeLinkedPaymentAsync(memberB, feeIdB, 20m); // fully paid — no longer outstanding
+
+        var count = await _sut.GetOutstandingMemberCountAsync(DateTime.MaxValue);
+
+        Assert.Equal(1, count);
+    }
+
+    [Fact]
+    public async Task GetOutstandingMemberCount_ExcludesTransactionsAfterAsAt_WhenDated()
+    {
+        var memberId = await SeedMemberAsync();
+        var feeId = await SeedFeeAsync(memberId, FeeType.Annual, 50m);
+        await AddFeeLinkedAccrualAsync(memberId, feeId, 50m); // dated 2026-03-01
+
+        var count = await _sut.GetOutstandingMemberCountAsync(new DateTime(2026, 2, 28, 0, 0, 0, DateTimeKind.Utc));
+
+        Assert.Equal(0, count);
     }
 
     // --- Helpers ---

@@ -78,7 +78,8 @@ public class FinanceSummaryService : IFinanceSummaryService
 
     public async Task<OutstandingFeeSummary> GetOutstandingFeeSummaryAsync(CancellationToken ct = default)
     {
-        var (attendance, annual) = await _glRepository.GetOutstandingByFeeTypeAsync(ct);
+        // No cutoff — the current snapshot includes every fee-linked transaction to date.
+        var (attendance, annual) = await _glRepository.GetOutstandingByFeeTypeAsync(DateTime.MaxValue, ct);
 
         return new OutstandingFeeSummary
         {
@@ -94,9 +95,18 @@ public class FinanceSummaryService : IFinanceSummaryService
         for (var month = 1; month <= asOf.Month; month++)
         {
             var endOfMonth = new DateTime(asOf.Year, month, 1, 0, 0, 0, asOf.Kind).AddMonths(1).AddTicks(-1);
-            var balance = await _glRepository.GetAccountBalanceAsync(SystemAccounts.MemberReceivableId, endOfMonth, ct);
 
-            result.Add(new MonthlyOutstandingBalance { Year = asOf.Year, Month = month, OutstandingBalance = balance });
+            var memberCount = await _glRepository.GetOutstandingMemberCountAsync(endOfMonth, ct);
+            var (attendance, annual) = await _glRepository.GetOutstandingByFeeTypeAsync(endOfMonth, ct);
+
+            result.Add(new MonthlyOutstandingBalance
+            {
+                Year = asOf.Year,
+                Month = month,
+                MemberCount = memberCount,
+                OutstandingAttendanceFees = attendance,
+                OutstandingAnnualFees = annual
+            });
         }
 
         return result;
