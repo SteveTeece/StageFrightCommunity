@@ -365,6 +365,21 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         Assert.Equal(0, count);
     }
 
+    [Fact]
+    public async Task GetOutstandingMemberCount_IncludesAdjustmentLines_WithNullFeeId()
+    {
+        var memberId = await SeedMemberAsync();
+
+        // Adjustment debit carries no FeeId — must still count toward the member's outstanding
+        // balance here, unlike GetOutstandingByFeeTypeAsync which excludes null-FeeId lines.
+        await AddGLPairAsync("0101", MemberReceivableAccountId, 25m, memberId,
+                              "1000", IncomeAccountId, 25m, null);
+
+        var count = await _sut.GetOutstandingMemberCountAsync(DateTime.MaxValue);
+
+        Assert.Equal(1, count);
+    }
+
     // --- Helpers ---
 
     private async Task<Guid> SeedFeeAsync(Guid memberId, FeeType feeType, decimal amount)

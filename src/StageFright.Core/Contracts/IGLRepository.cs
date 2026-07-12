@@ -79,7 +79,10 @@ public interface IGLRepository
     /// <summary>
     /// Returns the number of distinct members with a positive net Member Receivable balance
     /// (Σdebits − Σcredits &gt; 0), for transactions dated on or before <paramref name="asAt"/>.
-    /// Scoped to the Member Receivable account only, like GetOutstandingByFeeTypeAsync.
+    /// Scoped to the Member Receivable account, but unlike GetOutstandingByFeeTypeAsync this
+    /// includes overpayment/adjustment lines (FeeId == null) — it counts every Member
+    /// Receivable transaction for a member, consistent with the authoritative per-member
+    /// balance computed by GetMemberBalanceAsync.
     /// </summary>
     Task<int> GetOutstandingMemberCountAsync(DateTime asAt, CancellationToken ct = default);
 }
