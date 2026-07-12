@@ -216,6 +216,9 @@ public class GLRepository : IGLRepository
 
     public async Task<int> GetOutstandingMemberCountAsync(DateTime asAt, CancellationToken ct = default)
     {
+        // Deliberately no FeeId filter (unlike GetOutstandingByFeeTypeAsync): overpayment/
+        // adjustment lines are part of a member's true outstanding balance, so this must stay
+        // consistent with GetMemberBalanceAsync's Σdebits − Σcredits definition.
         var balances = await _db.Transactions
             .Where(t => t.AccountId == SystemAccounts.MemberReceivableId && t.MemberId != null && t.Date <= asAt)
             .GroupBy(t => t.MemberId)
