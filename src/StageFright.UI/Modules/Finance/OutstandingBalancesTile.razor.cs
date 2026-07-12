@@ -8,7 +8,8 @@ namespace StageFright.UI.Modules.Finance;
 /// <summary>
 /// Dashboard tile body for outstanding member fee balances (design 4): member count and
 /// per-fee-type outstanding totals, plus a calendar-year trend chart plotting all three
-/// metrics (members owing, Attendance $, Annual $) as separate lines.
+/// metrics (Total Owed $, Attendance $, Annual $) as separate lines. All three lines are
+/// currency values so they share a single readable y-axis.
 /// </summary>
 public partial class OutstandingBalancesTile : ComponentBase
 {
@@ -56,8 +57,8 @@ public partial class OutstandingBalancesTile : ComponentBase
                     {
                         new LineChartDataset
                         {
-                            Label = "Members Owing",
-                            Data = trend.Select(m => (double?)m.MemberCount).ToList(),
+                            Label = "Total Owed",
+                            Data = trend.Select(m => (double?)(double)(m.OutstandingAttendanceFees + m.OutstandingAnnualFees)).ToList(),
                             BorderColor = "#8a8fff",
                             BackgroundColor = "rgba(138, 143, 255, 0.15)",
                             PointBackgroundColor = new List<string> { "#8a8fff" },
