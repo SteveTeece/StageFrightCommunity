@@ -20,6 +20,7 @@ public partial class AttendanceGrid
     private bool _loading = true;
     private bool _saving;
     private bool _alreadyRecorded;
+    private bool _isFutureDate;
     private string? _errorMessage;
     private Rehearsal? _rehearsal;
     private List<Member> _members = new();
@@ -44,6 +45,12 @@ public partial class AttendanceGrid
             {
                 _alreadyRecorded = true;
                 _recordedAttendance = (await AttendanceService.GetByRehearsalAsync(RehearsalId)).ToList();
+                return;
+            }
+
+            if (_rehearsal.Date.Date > DateTime.UtcNow.Date)
+            {
+                _isFutureDate = true;
                 return;
             }
 

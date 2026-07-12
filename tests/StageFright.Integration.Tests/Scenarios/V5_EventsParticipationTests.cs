@@ -131,7 +131,7 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
         var eventSvc = BuildEventService();
         var agm = await eventSvc.ScheduleAsync(new ScheduleEventRequest
         {
-            Date = new DateTime(2026, 11, 1, 0, 0, 0, DateTimeKind.Utc),
+            Date = DateTime.UtcNow.Date.AddDays(-1),
             EventTypeId = agmType.Id
         });
 
@@ -159,7 +159,7 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
         var eventSvc = BuildEventService();
         var evt = await eventSvc.ScheduleAsync(new ScheduleEventRequest
         {
-            Date = new DateTime(2026, 8, 15, 0, 0, 0, DateTimeKind.Utc),
+            Date = DateTime.UtcNow.Date.AddDays(-1),
             EventTypeId = eventType.Id
         });
 
@@ -184,7 +184,7 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
         var eventSvc = BuildEventService();
         var evt = await eventSvc.ScheduleAsync(new ScheduleEventRequest
         {
-            Date = new DateTime(2026, 8, 15, 0, 0, 0, DateTimeKind.Utc),
+            Date = DateTime.UtcNow.Date.AddDays(-1),
             EventTypeId = eventType.Id
         });
 
@@ -205,7 +205,7 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
         var eventSvc = BuildEventService();
         var evt = await eventSvc.ScheduleAsync(new ScheduleEventRequest
         {
-            Date = new DateTime(2026, 8, 10, 0, 0, 0, DateTimeKind.Utc),
+            Date = DateTime.UtcNow.Date.AddDays(-1),
             EventTypeId = eventType.Id
         });
 
