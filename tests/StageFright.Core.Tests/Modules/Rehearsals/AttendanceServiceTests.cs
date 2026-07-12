@@ -306,7 +306,7 @@ public class AttendanceServiceTests : TestBase
         _rehearsalRepo.GetByIdAsync(todayRehearsalId, Arg.Any<CancellationToken>()).Returns(new Rehearsal
         {
             Id = todayRehearsalId,
-            Date = DateTime.UtcNow.Date,
+            Date = DateTime.Today,
             Time = TimeSpan.FromHours(19),
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         });

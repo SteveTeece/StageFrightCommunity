@@ -44,7 +44,7 @@ public partial class ParticipationGrid
                 return;
             }
 
-            if (_event.Date.Date > DateTime.UtcNow.Date)
+            if (_event.Date.Date > DateTime.Today)
             {
                 _isFutureDate = true;
                 return;
