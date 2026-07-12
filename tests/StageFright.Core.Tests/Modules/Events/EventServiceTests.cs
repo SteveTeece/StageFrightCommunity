@@ -215,7 +215,7 @@ public class EventServiceTests : TestBase
         var evt = new Event
         {
             Id = todayEventId,
-            Date = DateTime.UtcNow.Date,
+            Date = DateTime.Today,
             EventTypeId = EventTypeId,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow

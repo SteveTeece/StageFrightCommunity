@@ -48,7 +48,7 @@ public partial class AttendanceGrid
                 return;
             }
 
-            if (_rehearsal.Date.Date > DateTime.UtcNow.Date)
+            if (_rehearsal.Date.Date > DateTime.Today)
             {
                 _isFutureDate = true;
                 return;
