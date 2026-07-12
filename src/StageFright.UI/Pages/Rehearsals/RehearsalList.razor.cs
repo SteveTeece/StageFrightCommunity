@@ -21,12 +21,26 @@ public partial class RehearsalList
                 r.Date.ToString("d MMM yyyy").Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
                 (r.Notes?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false));
 
+    private const int MaxFutureRehearsals = 3;
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            var today = DateTime.Today;
             var result = await RehearsalService.GetAllAsync();
-            _rehearsals = result
+
+            var futureRehearsals = result
+                .Where(r => r.Date.Date >= today)
+                .OrderBy(r => r.Date)
+                .ThenBy(r => r.Time)
+                .Take(MaxFutureRehearsals);
+
+            var pastRehearsals = result
+                .Where(r => r.Date.Date < today && r.Date.Year == today.Year);
+
+            _rehearsals = futureRehearsals
+                .Concat(pastRehearsals)
                 .OrderByDescending(r => r.Date)
                 .ThenByDescending(r => r.Time)
                 .ToList();

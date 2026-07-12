@@ -2,6 +2,7 @@ using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.Events;
 using StageFright.Core.Tests.Fixtures;
 
@@ -182,6 +183,54 @@ public class EventServiceTests : TestBase
         await _audit.DidNotReceive().LogAsync(
             Arg.Any<string>(), Arg.Any<Guid>(), AuditAction.Create,
             Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    // --- Future-dated event ---
+
+    [Fact]
+    public async Task RecordParticipationAsync_EventDateInFuture_ThrowsValidationException()
+    {
+        var futureEventId = Guid.NewGuid();
+        var evt = new Event
+        {
+            Id = futureEventId,
+            Date = DateTime.UtcNow.Date.AddDays(1),
+            EventTypeId = EventTypeId,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        _eventRepo.GetByIdAsync(futureEventId, Arg.Any<CancellationToken>()).Returns(evt);
+
+        var items = new[] { new ParticipationBatchItem { MemberId = Guid.NewGuid(), Participated = true } };
+
+        var svc = CreateService();
+        await Assert.ThrowsAsync<ValidationException>(() => svc.RecordParticipationAsync(futureEventId, items, Ct));
+        await _participationRepo.DidNotReceive().AddBatchAsync(Arg.Any<IReadOnlyList<ParticipationRecord>>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RecordParticipationAsync_EventDateIsToday_Succeeds()
+    {
+        var todayEventId = Guid.NewGuid();
+        var evt = new Event
+        {
+            Id = todayEventId,
+            Date = DateTime.Today,
+            EventTypeId = EventTypeId,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        _eventRepo.GetByIdAsync(todayEventId, Arg.Any<CancellationToken>()).Returns(evt);
+        _memberRepo.GetActiveAsOfAsync(evt.Date, Arg.Any<CancellationToken>())
+            .Returns(new List<Member> { ActiveMember() });
+        _participationRepo.ExistsAsync(todayEventId, Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(false);
+
+        var items = new[] { new ParticipationBatchItem { MemberId = Guid.NewGuid(), Participated = true } };
+
+        var svc = CreateService();
+        await svc.RecordParticipationAsync(todayEventId, items, Ct);
+
+        await _eventRepo.Received(1).UpdateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>());
     }
 
     // --- AgmExistsInYearAsync ---

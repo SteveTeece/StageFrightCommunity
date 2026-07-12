@@ -57,7 +57,7 @@ public partial class CashFlowTile : ComponentBase
                 };
 
                 _chartOptions = new BarChartOptions { Responsive = true };
-                _chartOptions.Plugins.Legend!.Display = false;
+                _chartOptions.Plugins.Legend!.Display = true;
                 _hasData = true;
             }
         }

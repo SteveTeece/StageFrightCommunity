@@ -7,7 +7,9 @@ namespace StageFright.UI.Modules.Finance;
 
 /// <summary>
 /// Dashboard tile body for outstanding member fee balances (design 4): member count and
-/// per-fee-type outstanding totals, plus a calendar-year outstanding-balance trend chart.
+/// per-fee-type outstanding totals, plus a calendar-year trend chart plotting all three
+/// metrics (Total Owed $, Attendance $, Annual $) as separate lines. All three lines are
+/// currency values so they share a single readable y-axis.
 /// </summary>
 public partial class OutstandingBalancesTile : ComponentBase
 {
@@ -44,7 +46,7 @@ public partial class OutstandingBalancesTile : ComponentBase
             _attendanceOutstanding = summary.OutstandingAttendanceFees;
             _annualOutstanding = summary.OutstandingAnnualFees;
 
-            if (trend.Any(m => m.OutstandingBalance != 0m))
+            if (trend.Any(m => m.MemberCount != 0 || m.OutstandingAttendanceFees != 0m || m.OutstandingAnnualFees != 0m))
             {
                 _chartData = new ChartData
                 {
@@ -55,18 +57,36 @@ public partial class OutstandingBalancesTile : ComponentBase
                     {
                         new LineChartDataset
                         {
-                            Label = "Outstanding",
-                            Data = trend.Select(m => (double?)(double)m.OutstandingBalance).ToList(),
+                            Label = "Total Owed",
+                            Data = trend.Select(m => (double?)(double)(m.OutstandingAttendanceFees + m.OutstandingAnnualFees)).ToList(),
+                            BorderColor = "#8a8fff",
+                            BackgroundColor = "rgba(138, 143, 255, 0.15)",
+                            PointBackgroundColor = new List<string> { "#8a8fff" },
+                            BorderWidth = 2
+                        },
+                        new LineChartDataset
+                        {
+                            Label = "Attendance",
+                            Data = trend.Select(m => (double?)(double)m.OutstandingAttendanceFees).ToList(),
                             BorderColor = "#ff7d92",
                             BackgroundColor = "rgba(255, 125, 146, 0.15)",
                             PointBackgroundColor = new List<string> { "#ff7d92" },
-                            BorderWidth = 2.5
+                            BorderWidth = 2
+                        },
+                        new LineChartDataset
+                        {
+                            Label = "Annual",
+                            Data = trend.Select(m => (double?)(double)m.OutstandingAnnualFees).ToList(),
+                            BorderColor = "#ffb020",
+                            BackgroundColor = "rgba(255, 176, 32, 0.15)",
+                            PointBackgroundColor = new List<string> { "#ffb020" },
+                            BorderWidth = 2
                         }
                     }
                 };
 
                 _chartOptions = new LineChartOptions { Responsive = true };
-                _chartOptions.Plugins.Legend!.Display = false;
+                _chartOptions.Plugins.Legend!.Display = true;
                 _hasChartData = true;
             }
         }

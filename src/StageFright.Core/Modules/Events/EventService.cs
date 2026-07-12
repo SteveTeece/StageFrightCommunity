@@ -75,6 +75,11 @@ public class EventService : IEventService
         var evt = await _eventRepo.GetByIdAsync(eventId, ct)
             ?? throw new EntityNotFoundException("Event", eventId, nameof(RecordParticipationAsync));
 
+        if (evt.Date.Date > DateTime.Today)
+            throw new ValidationException(
+                "Participation cannot be recorded before the event date.",
+                "Event", nameof(RecordParticipationAsync), eventId);
+
         int participatedCount = 0;
         var records = new List<ParticipationRecord>();
 
