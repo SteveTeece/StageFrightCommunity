@@ -202,7 +202,7 @@ public class FinanceSummaryServiceTests
     [Fact]
     public async Task Should_MapRepositoryTupleOntoModel_When_GettingOutstandingFeeSummary()
     {
-        _glRepository.GetOutstandingByFeeTypeAsync(Arg.Any<CancellationToken>())
+        _glRepository.GetOutstandingByFeeTypeAsync(Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns((Attendance: 120m, Annual: 480m));
 
         var summary = await _service.GetOutstandingFeeSummaryAsync();
@@ -214,7 +214,7 @@ public class FinanceSummaryServiceTests
     [Fact]
     public async Task Should_ReturnZeroSummary_When_NoOutstandingFees()
     {
-        _glRepository.GetOutstandingByFeeTypeAsync(Arg.Any<CancellationToken>())
+        _glRepository.GetOutstandingByFeeTypeAsync(Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns((Attendance: 0m, Annual: 0m));
 
         var summary = await _service.GetOutstandingFeeSummaryAsync();
@@ -229,8 +229,10 @@ public class FinanceSummaryServiceTests
     public async Task Should_ReturnOneEntryPerMonth_When_AsOfIsMidYear()
     {
         var asOf = new DateTime(2026, 7, 4, 0, 0, 0, DateTimeKind.Utc);
-        _glRepository.GetAccountBalanceAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
-            .Returns(callInfo => (decimal)((DateTime)callInfo[1]).Month * 10m);
+        _glRepository.GetOutstandingMemberCountAsync(Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo => ((DateTime)callInfo[0]).Month);
+        _glRepository.GetOutstandingByFeeTypeAsync(Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo => ((decimal)((DateTime)callInfo[0]).Month * 10m, (decimal)((DateTime)callInfo[0]).Month * 20m));
 
         var trend = await _service.GetOutstandingBalanceTrendAsync(asOf);
 
@@ -239,7 +241,9 @@ public class FinanceSummaryServiceTests
         {
             Assert.Equal(2026, trend[i].Year);
             Assert.Equal(i + 1, trend[i].Month);
-            Assert.Equal((i + 1) * 10m, trend[i].OutstandingBalance);
+            Assert.Equal(i + 1, trend[i].MemberCount);
+            Assert.Equal((i + 1) * 10m, trend[i].OutstandingAttendanceFees);
+            Assert.Equal((i + 1) * 20m, trend[i].OutstandingAnnualFees);
         }
     }
 
@@ -247,14 +251,18 @@ public class FinanceSummaryServiceTests
     public async Task Should_ReturnSingleJanuaryEntry_When_AsOfIsJanuary()
     {
         var asOf = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc);
-        _glRepository.GetAccountBalanceAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
-            .Returns(250m);
+        _glRepository.GetOutstandingMemberCountAsync(Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
+            .Returns(4);
+        _glRepository.GetOutstandingByFeeTypeAsync(Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
+            .Returns((Attendance: 100m, Annual: 150m));
 
         var trend = await _service.GetOutstandingBalanceTrendAsync(asOf);
 
         var entry = Assert.Single(trend);
         Assert.Equal(1, entry.Month);
-        Assert.Equal(250m, entry.OutstandingBalance);
+        Assert.Equal(4, entry.MemberCount);
+        Assert.Equal(100m, entry.OutstandingAttendanceFees);
+        Assert.Equal(150m, entry.OutstandingAnnualFees);
     }
 
     // --- Helpers ---

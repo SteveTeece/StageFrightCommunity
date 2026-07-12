@@ -65,6 +65,13 @@ else if (_alreadyRecorded)
 
     <a href="/rehearsals" class="btn btn-outline-secondary btn-sm mt-2">Back to Rehearsals</a>
 }
+else if (_isFutureDate)
+{
+    <div class="alert alert-info py-1 mb-2 small" role="alert">
+        Attendance can be recorded starting @_rehearsal?.Date.ToString("dddd, d MMMM yyyy").
+    </div>
+    <a href="/rehearsals" class="btn btn-outline-secondary btn-sm">Back to Rehearsals</a>
+}
 else
 {
     @if (!string.IsNullOrEmpty(_errorMessage))

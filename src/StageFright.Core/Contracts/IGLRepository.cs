@@ -69,9 +69,20 @@ public interface IGLRepository
 
     /// <summary>
     /// Returns outstanding balances (Σdebits − Σcredits on the Member Receivable account)
-    /// split by FeeType, for fee-linked transactions only. Overpayment/adjustment lines
-    /// (FeeId == null) are excluded from the split but still count toward per-member and
-    /// total-outstanding figures elsewhere (GetMemberBalanceAsync/GetTotalOutstandingAsync).
+    /// split by FeeType, for fee-linked transactions dated on or before <paramref name="asAt"/>.
+    /// Overpayment/adjustment lines (FeeId == null) are excluded from the split but still count
+    /// toward per-member and total-outstanding figures elsewhere
+    /// (GetMemberBalanceAsync/GetTotalOutstandingAsync).
     /// </summary>
-    Task<(decimal Attendance, decimal Annual)> GetOutstandingByFeeTypeAsync(CancellationToken ct = default);
+    Task<(decimal Attendance, decimal Annual)> GetOutstandingByFeeTypeAsync(DateTime asAt, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns the number of distinct members with a positive net Member Receivable balance
+    /// (Σdebits − Σcredits &gt; 0), for transactions dated on or before <paramref name="asAt"/>.
+    /// Scoped to the Member Receivable account, but unlike GetOutstandingByFeeTypeAsync this
+    /// includes overpayment/adjustment lines (FeeId == null) — it counts every Member
+    /// Receivable transaction for a member, consistent with the authoritative per-member
+    /// balance computed by GetMemberBalanceAsync.
+    /// </summary>
+    Task<int> GetOutstandingMemberCountAsync(DateTime asAt, CancellationToken ct = default);
 }

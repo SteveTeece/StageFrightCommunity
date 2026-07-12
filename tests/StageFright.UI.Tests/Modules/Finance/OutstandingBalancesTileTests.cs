@@ -148,7 +148,7 @@ public class OutstandingBalancesTileTests : BunitContext
 
     private static IReadOnlyList<MonthlyOutstandingBalance> MakeTrend(params decimal[] monthlyBalances) =>
         monthlyBalances
-            .Select((balance, i) => new MonthlyOutstandingBalance { Year = 2026, Month = i + 1, OutstandingBalance = balance })
+            .Select((balance, i) => new MonthlyOutstandingBalance { Year = 2026, Month = i + 1, OutstandingAttendanceFees = balance })
             .ToList();
 
     private void SetupBalances(params MemberBalance[] balances)

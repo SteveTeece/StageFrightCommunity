@@ -19,6 +19,7 @@ public partial class ParticipationGrid
     private bool _saving;
     private bool _selectAll;
     private bool _alreadyRecorded;
+    private bool _isFutureDate;
     private string? _errorMessage;
     private Event? _event;
     private List<Member> _members = new();
@@ -40,6 +41,12 @@ public partial class ParticipationGrid
             if (_event.StoredParticipationRate.HasValue)
             {
                 _alreadyRecorded = true;
+                return;
+            }
+
+            if (_event.Date.Date > DateTime.Today)
+            {
+                _isFutureDate = true;
                 return;
             }
 
