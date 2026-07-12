@@ -196,13 +196,13 @@ public class GLRepository : IGLRepository
         return (current, days30, days60, days90Plus);
     }
 
-    public async Task<(decimal Attendance, decimal Annual)> GetOutstandingByFeeTypeAsync(CancellationToken ct = default)
+    public async Task<(decimal Attendance, decimal Annual)> GetOutstandingByFeeTypeAsync(DateTime asAt, CancellationToken ct = default)
     {
         // Fee-linked Member Receivable movements only — overpayment/adjustment lines carry no
         // FeeId and are intentionally excluded here (they still count in GetMemberBalanceAsync).
         var byType = await (
             from t in _db.Transactions
-            where t.AccountId == SystemAccounts.MemberReceivableId && t.FeeId != null
+            where t.AccountId == SystemAccounts.MemberReceivableId && t.FeeId != null && t.Date <= asAt
             join f in _db.Fees on t.FeeId equals f.Id
             group t by f.FeeType into g
             select new { FeeType = g.Key, Balance = g.Sum(t => t.DebitAmount) - g.Sum(t => t.CreditAmount) })
@@ -212,5 +212,16 @@ public class GLRepository : IGLRepository
         var annual = byType.FirstOrDefault(x => x.FeeType == FeeType.Annual)?.Balance ?? 0m;
 
         return (attendance, annual);
+    }
+
+    public async Task<int> GetOutstandingMemberCountAsync(DateTime asAt, CancellationToken ct = default)
+    {
+        var balances = await _db.Transactions
+            .Where(t => t.AccountId == SystemAccounts.MemberReceivableId && t.MemberId != null && t.Date <= asAt)
+            .GroupBy(t => t.MemberId)
+            .Select(g => g.Sum(t => t.DebitAmount) - g.Sum(t => t.CreditAmount))
+            .ToListAsync(ct);
+
+        return balances.Count(b => b > 0m);
     }
 }
