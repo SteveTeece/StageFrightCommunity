@@ -121,20 +121,12 @@ else
 
         <div class="row g-2 mb-2">
             <div class="col-md-6">
-                <label class="form-label">Theme</label>
-                <div>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" id="theme-toggle-btn"
-                            @onclick="HandleThemeToggleAsync">
-                        @if (s.Theme == StageFright.Core.Enums.Theme.Light)
-                        {
-                            <span>Switch to Dark Mode</span>
-                        }
-                        else
-                        {
-                            <span>Switch to Light Mode</span>
-                        }
-                    </button>
-                    <span class="ms-2 text-muted small">Current: @s.Theme</span>
+                <label for="theme-toggle-switch" class="form-label">Theme</label>
+                <div class="d-flex align-items-center gap-2">
+                    <RadzenSwitch Name="theme-toggle-switch"
+                                  Value="@(s.Theme == StageFright.Core.Enums.Theme.Dark)"
+                                  Change="@(async (bool _) => await HandleThemeToggleAsync())" />
+                    <span class="text-muted small">Current: @s.Theme</span>
                 </div>
             </div>
             <div class="col-md-6">
