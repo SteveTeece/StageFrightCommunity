@@ -268,7 +268,7 @@ public class ShellLayoutTests : BunitContext
         AddProvider(0, new MenuItem { Title = "Dashboard", Route = "/dashboard" });
 
         var cut = Render<ShellLayout>();
-        cut.Find(".btn-theme-toggle").Click();
+        cut.Find(".btn-theme-toggle [role=switch]").Click();
 
         Assert.Equal("dark", cut.Find("[data-bs-theme]").GetAttribute("data-bs-theme"));
         Assert.Contains("Dark", cut.Find(".btn-theme-toggle").TextContent);

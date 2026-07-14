@@ -44,7 +44,7 @@ public class MemberListTests : BunitContext
     {
         var cut = Render<MemberList>();
 
-        var switchInput = cut.Find("#showInactiveSwitch");
+        var switchInput = cut.Find("input[type=checkbox]");
         Assert.False(switchInput.HasAttribute("checked"));
 
         Assert.Contains("Alice Active", cut.Markup);
@@ -56,7 +56,7 @@ public class MemberListTests : BunitContext
     {
         var cut = Render<MemberList>();
 
-        cut.Find("#showInactiveSwitch").Change(true);
+        cut.Find("[role=switch]").Click();
 
         Assert.Contains("Alice Active", cut.Markup);
         Assert.Contains("Bob Inactive (Inactive)", cut.Markup);
@@ -67,8 +67,8 @@ public class MemberListTests : BunitContext
     {
         var cut = Render<MemberList>();
 
-        cut.Find("#showInactiveSwitch").Change(true);
-        cut.Find("#showInactiveSwitch").Change(false);
+        cut.Find("[role=switch]").Click();
+        cut.Find("[role=switch]").Click();
 
         Assert.Contains("Alice Active", cut.Markup);
         Assert.DoesNotContain("Bob Inactive", cut.Markup);
@@ -95,7 +95,7 @@ public class MemberListTests : BunitContext
 
         var cut = Render<MemberList>();
 
-        cut.Find("#showInactiveSwitch").Change(true);
+        cut.Find("[role=switch]").Click();
 
         Assert.Contains("No members found.", cut.Markup);
         Assert.DoesNotContain("No active members found.", cut.Markup);
