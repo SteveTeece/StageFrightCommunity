@@ -35,6 +35,32 @@ public class GeneralSettingsTabTests : BunitContext
     };
 
     [Fact]
+    public void ThemeSwitch_IsUnchecked_WhenThemeIsLight()
+    {
+        var settings = MakeSettings();
+        settings.Theme = Theme.Light;
+        _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(settings);
+
+        var cut = Render<GeneralSettingsTab>();
+
+        var themeSwitch = cut.Find("#theme-toggle-switch");
+        Assert.Equal("false", themeSwitch.GetAttribute("aria-checked"));
+    }
+
+    [Fact]
+    public void ThemeSwitch_IsChecked_WhenThemeIsDark()
+    {
+        var settings = MakeSettings();
+        settings.Theme = Theme.Dark;
+        _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(settings);
+
+        var cut = Render<GeneralSettingsTab>();
+
+        var themeSwitch = cut.Find("#theme-toggle-switch");
+        Assert.Equal("true", themeSwitch.GetAttribute("aria-checked"));
+    }
+
+    [Fact]
     public void GstControls_AreAbsent()
     {
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings());
