@@ -159,7 +159,7 @@ html, body {
     padding: .5rem 1.25rem 1rem calc(var(--sf-sidebar-w) + 1.25rem);
 }
 
-/* Theme toggle pill (mock: glowing dot + current theme name) */
+/* Theme toggle pill (current theme name + RadzenSwitch) */
 .btn-theme-toggle {
     display: flex;
     align-items: center;
@@ -170,17 +170,8 @@ html, body {
     background: var(--sf-glass2);
     color: var(--sf-text);
     font: 500 .75rem 'Saira Semi Condensed', sans-serif;
-    cursor: pointer;
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
-}
-
-.theme-toggle-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--sf-accent2);
-    box-shadow: 0 0 8px var(--sf-accent2);
 }
 
 /* --- Fixed vertical sidebar --- */
