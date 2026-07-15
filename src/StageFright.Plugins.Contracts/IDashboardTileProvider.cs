@@ -31,6 +31,12 @@ public interface IDashboardTileProvider
     /// </summary>
     string? ActionText => null;
 
+    /// <summary>
+    /// Pre-set size the tile should render at on the Dashboard grid. Defaults to 1x1
+    /// (OneByOne) for providers that don't override it, matching current behaviour.
+    /// </summary>
+    DashboardTileSize TileSize => DashboardTileSize.OneByOne;
+
     /// <summary>Loads tile metric data asynchronously. Exceptions are caught by the dashboard.</summary>
     Task<TileData> GetTileDataAsync(CancellationToken ct);
 }

@@ -68,7 +68,7 @@ public partial class AttendanceTrendTile : ComponentBase
                     }
                 };
 
-                _chartOptions = new LineChartOptions { Responsive = true };
+                _chartOptions = new LineChartOptions { Responsive = true, MaintainAspectRatio = false };
                 _chartOptions.Plugins.Legend!.Display = false;
                 _chartOptions.Scales.Y!.Min = 0;
                 _chartOptions.Scales.Y.Max = 100;

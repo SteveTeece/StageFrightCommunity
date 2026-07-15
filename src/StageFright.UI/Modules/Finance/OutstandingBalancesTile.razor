@@ -10,7 +10,7 @@ else if (_error)
 }
 else
 {
-    <div class="tile-stats">
+    <div class="tile-stats tile-stats-lg">
         <div>
             <div class="tile-stat-value">@_memberCount</div>
             <div class="tile-stat-label">Members Owing</div>
@@ -26,7 +26,7 @@ else
     </div>
     @if (_hasChartData)
     {
-        <LineChart @ref="_chart" Height="90" />
+        <LineChart @ref="_chart" Height="220" />
     }
     else
     {

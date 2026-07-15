@@ -21,6 +21,14 @@ public partial class Dashboard
             NavigationManager.NavigateTo(route);
     }
 
+    private static string GetTileSizeClass(DashboardTileSize size) => size switch
+    {
+        DashboardTileSize.OneByTwo => "tile-size-1x2",
+        DashboardTileSize.TwoByOne => "tile-size-2x1",
+        DashboardTileSize.TwoByTwo => "tile-size-2x2",
+        _ => "tile-size-1x1"
+    };
+
     // OnParametersSetAsync fires on every navigation to /dashboard (component recreated OR reused),
     // ensuring tiles always reload fresh data rather than showing stale state from a prior visit.
     protected override async Task OnParametersSetAsync()

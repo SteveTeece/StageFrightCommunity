@@ -14,6 +14,7 @@ public class AttendanceTrendDashboardTileProvider : IDashboardTileProvider
     public string ModuleName => "Rehearsals";
     public int DisplayOrder => 60;
     public Type TileComponentType => typeof(AttendanceTrendTile);
+    public DashboardTileSize TileSize => DashboardTileSize.OneByTwo;
 
     public Task<TileData> GetTileDataAsync(CancellationToken ct) =>
         Task.FromResult(new TileData());
