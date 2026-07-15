@@ -14,6 +14,7 @@ public class CashFlowDashboardTileProvider : IDashboardTileProvider
     public string ModuleName => "Finance";
     public int DisplayOrder => 50;
     public Type TileComponentType => typeof(CashFlowTile);
+    public DashboardTileSize TileSize => DashboardTileSize.TwoByOne;
 
     public Task<TileData> GetTileDataAsync(CancellationToken ct) =>
         Task.FromResult(new TileData());
