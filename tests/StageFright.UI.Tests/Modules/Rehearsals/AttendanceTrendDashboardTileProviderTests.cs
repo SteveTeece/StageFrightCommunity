@@ -18,6 +18,7 @@ public class AttendanceTrendDashboardTileProviderTests
         Assert.Null(_provider.NavigateRoute);
         Assert.Null(_provider.ActionText);
         Assert.Equal(typeof(AttendanceTrendTile), _provider.TileComponentType);
+        Assert.Equal(DashboardTileSize.OneByTwo, _provider.TileSize);
     }
 
     [Fact]

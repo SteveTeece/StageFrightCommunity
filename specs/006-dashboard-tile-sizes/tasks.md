@@ -32,7 +32,7 @@ laid out in `plan.md` → Project Structure.
 
 **Purpose**: Confirm a clean starting point before making changes
 
-- [ ] T001 Run `dotnet build` and `dotnet test` from the repo root on branch `006-dashboard-tile-sizes`
+- [X] T001 Run `dotnet build` and `dotnet test` from the repo root on branch `006-dashboard-tile-sizes`
       to confirm a green baseline before implementation begins
 
 ---
@@ -44,23 +44,23 @@ infrastructure that every user story depends on
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T002 [P] Create `DashboardTileSize` enum (`OneByOne`, `OneByTwo`, `TwoByOne`, `TwoByTwo`) in
+- [X] T002 [P] Create `DashboardTileSize` enum (`OneByOne`, `OneByTwo`, `TwoByOne`, `TwoByTwo`) in
       `src/StageFright.Plugins.Contracts/DashboardTileSize.cs` per `data-model.md`
-- [ ] T003 Add the `TileSize` default interface member
+- [X] T003 Add the `TileSize` default interface member
       (`DashboardTileSize TileSize => DashboardTileSize.OneByOne;`) to
       `src/StageFright.Plugins.Contracts/IDashboardTileProvider.cs` per `contracts/IDashboardTileProvider.md`
       (depends on T002)
-- [ ] T004 [P] Add a contract-level regression test asserting a provider that does not override
+- [X] T004 [P] Add a contract-level regression test asserting a provider that does not override
       `TileSize` reports `DashboardTileSize.OneByOne`, alongside the existing `NavigateRoute`/`ActionText`
       default-member assertions in `tests/StageFright.Integration.Tests/Scenarios/V8_DashboardPluginTests.cs`
       (depends on T003)
-- [ ] T005 [P] Add a `GetTileSizeClass(DashboardTileSize size)` helper to
+- [X] T005 [P] Add a `GetTileSizeClass(DashboardTileSize size)` helper to
       `src/StageFright.UI/Pages/Dashboard/Dashboard.razor.cs` mapping each enum value to its CSS class
       (`tile-size-1x1`, `tile-size-1x2`, `tile-size-2x1`, `tile-size-2x2`) (depends on T002)
-- [ ] T006 [P] Add a `.sf-dash-grid` container rule (`display: grid`, `grid-template-columns`, `gap`)
+- [X] T006 [P] Add a `.sf-dash-grid` container rule (`display: grid`, `grid-template-columns`, `gap`)
       and `.tile-size-1x1/1x2/2x1/2x2` (`grid-column`/`grid-row` span) rules to
       `src/StageFright.App/wwwroot/app.css`, next to the existing `.sf-dash-tile` rules
-- [ ] T007 Update `src/StageFright.UI/Pages/Dashboard/Dashboard.razor`: replace the
+- [X] T007 Update `src/StageFright.UI/Pages/Dashboard/Dashboard.razor`: replace the
       `row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-2` container with `sf-dash-grid` in both the Core
       Metrics and Extensions sections, and apply `GetTileSizeClass(tile.TileSize)` to each tile card's
       CSS class list (depends on T005, T006)
@@ -84,18 +84,18 @@ readable.
 
 > Write these tests FIRST, ensure they FAIL before implementation
 
-- [ ] T008 [P] [US1] bUnit test `Should_ApplyDefaultSizeClass_When_ProviderDoesNotOverrideTileSize` in
+- [X] T008 [P] [US1] bUnit test `Should_ApplyDefaultSizeClass_When_ProviderDoesNotOverrideTileSize` in
       `tests/StageFright.UI.Tests/Pages/Dashboard/DashboardTests.cs`
-- [ ] T009 [P] [US1] bUnit test `Should_ApplyConfiguredSizeClass_When_ProviderOverridesTileSize` in
+- [X] T009 [P] [US1] bUnit test `Should_ApplyConfiguredSizeClass_When_ProviderOverridesTileSize` in
       `tests/StageFright.UI.Tests/Pages/Dashboard/DashboardTests.cs` (extend the provider test helpers
       to set a specific `TileSize`)
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Override `TileSize => DashboardTileSize.OneByTwo` on
+- [X] T010 [US1] Override `TileSize => DashboardTileSize.OneByTwo` on
       `src/StageFright.UI/Modules/Rehearsals/AttendanceTrendDashboardTileProvider.cs` so the chart tile
       renders double-width (depends on T003, T007)
-- [ ] T011 [US1] Add a case to
+- [X] T011 [US1] Add a case to
       `tests/StageFright.UI.Tests/Modules/Rehearsals/AttendanceTrendDashboardTileProviderTests.cs`
       asserting `TileSize == DashboardTileSize.OneByTwo` (depends on T010)
 
@@ -114,25 +114,25 @@ overlap/gaps, then narrow the window and confirm every tile stacks to one column
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T012 [P] [US2] bUnit test asserting the Core Metrics and Extensions sections each render their
+- [X] T012 [P] [US2] bUnit test asserting the Core Metrics and Extensions sections each render their
       own independent `.sf-dash-grid` container, in
       `tests/StageFright.UI.Tests/Pages/Dashboard/DashboardTests.cs`
-- [ ] T013 [P] [US2] bUnit test rendering a mix of 1x1/1x2/2x1/2x2 core tiles together and asserting
+- [X] T013 [P] [US2] bUnit test rendering a mix of 1x1/1x2/2x1/2x2 core tiles together and asserting
       each carries its own distinct `.tile-size-*` class simultaneously, in
       `tests/StageFright.UI.Tests/Pages/Dashboard/DashboardTests.cs`
 
 ### Implementation for User Story 2
 
-- [ ] T014 [US2] Add `grid-auto-flow: dense` to `.sf-dash-grid` in
+- [X] T014 [US2] Add `grid-auto-flow: dense` to `.sf-dash-grid` in
       `src/StageFright.App/wwwroot/app.css` so mixed-size tiles backfill gaps instead of leaving them
       (depends on T006)
-- [ ] T015 [US2] Add a narrow-width `@media` rule for `.sf-dash-grid` in
+- [X] T015 [US2] Add a narrow-width `@media` rule for `.sf-dash-grid` in
       `src/StageFright.App/wwwroot/app.css` collapsing every `.tile-size-*` tile to a single
       full-width column (depends on T006)
-- [ ] T016 [US2] Override `TileSize => DashboardTileSize.TwoByOne` on
+- [X] T016 [US2] Override `TileSize => DashboardTileSize.TwoByOne` on
       `src/StageFright.UI/Modules/Finance/CashFlowDashboardTileProvider.cs` so the Dashboard exercises
       1x1 + 1x2 + 2x1 tiles together (depends on T003, T007)
-- [ ] T017 [US2] Add a case to
+- [X] T017 [US2] Add a case to
       `tests/StageFright.UI.Tests/Modules/Finance/CashFlowDashboardTileProviderTests.cs` asserting
       `TileSize == DashboardTileSize.TwoByOne` (depends on T016)
 
@@ -153,10 +153,10 @@ the Dashboard reflects the new size on next load without other tiles being affec
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T018 [P] [US3] bUnit test asserting a plugin-provided tile (`DisplayOrder >= 100`) that overrides
+- [X] T018 [P] [US3] bUnit test asserting a plugin-provided tile (`DisplayOrder >= 100`) that overrides
       `TileSize` renders with the matching size class inside the Extensions section, in
       `tests/StageFright.UI.Tests/Pages/Dashboard/DashboardTests.cs`
-- [ ] T019 [P] [US3] xUnit test in
+- [X] T019 [P] [US3] xUnit test in
       `tests/StageFright.Integration.Tests/Scenarios/V8_DashboardPluginTests.cs` asserting the core
       `rehearsals-attendance-trend` tile and the plugin `test-tile` can both declare non-default
       `TileSize` values simultaneously without affecting `DisplayOrder`-based Core/Extensions grouping
@@ -164,7 +164,7 @@ the Dashboard reflects the new size on next load without other tiles being affec
 
 ### Implementation for User Story 3
 
-- [ ] T020 [US3] Override `TileSize => DashboardTileSize.OneByTwo` on
+- [X] T020 [US3] Override `TileSize => DashboardTileSize.OneByTwo` on
       `tests/StageFright.TestPlugin/TestTileProvider.cs` to prove a plugin-style assembly can opt into
       a non-default size (depends on T003)
 
@@ -178,11 +178,11 @@ correctly.
 
 **Purpose**: Final verification across all stories
 
-- [ ] T021 [P] Run `dotnet build` and the full `dotnet test` suite from the repo root to confirm no
+- [X] T021 [P] Run `dotnet build` and the full `dotnet test` suite from the repo root to confirm no
       regressions in any project (per CLAUDE.md Build & Test Verification)
-- [ ] T022 Execute the manual verification steps in `specs/006-dashboard-tile-sizes/quickstart.md`
+- [X] T022 Execute the manual verification steps in `specs/006-dashboard-tile-sizes/quickstart.md`
       (visual check of tile sizing, gap-free packing, and narrow-window single-column collapse)
-- [ ] T023 [P] Review `src/StageFright.App/wwwroot/app.css` for any `.row.row-cols-*`/`.g-2` Bootstrap
+- [X] T023 [P] Review `src/StageFright.App/wwwroot/app.css` for any `.row.row-cols-*`/`.g-2` Bootstrap
       grid classes left over from the Dashboard's old layout that are no longer referenced anywhere,
       and remove them if unused
 
