@@ -12,6 +12,7 @@ public class TestTileProvider : IDashboardTileProvider
     public string Title => "Test Tile";
     public string ModuleName => "TestPlugin";
     public int DisplayOrder => 100;
+    public DashboardTileSize TileSize => DashboardTileSize.OneByTwo;
 
     /// <summary>
     /// Returns typeof(object) as a placeholder — the TestPlugin has no Blazor dependency.

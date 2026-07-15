@@ -179,6 +179,73 @@ public class DashboardTests : BunitContext
         Assert.NotNull(cut.Find(".card.sf-dash-tile"));
     }
 
+    // --- Tile size classes ---
+
+    [Fact]
+    public void Should_ApplyDefaultSizeClass_When_ProviderDoesNotOverrideTileSize()
+    {
+        SetupProviders(MakeCoreProvider("members", 10));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        Assert.NotNull(cut.Find(".card.tile-members.tile-size-1x1"));
+    }
+
+    [Fact]
+    public void Should_ApplyConfiguredSizeClass_When_ProviderOverridesTileSize()
+    {
+        SetupProviders(MakeSizedProvider("rehearsals-attendance-trend", 60, DashboardTileSize.OneByTwo));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        Assert.NotNull(cut.Find(".card.tile-rehearsals-attendance-trend.tile-size-1x2"));
+    }
+
+    [Fact]
+    public void Should_RenderIndependentGridContainers_ForCoreAndExtensionsSections()
+    {
+        SetupProviders(
+            MakeCoreProvider("members", 10),
+            MakePluginProvider("test-tile", 100));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        var coreSection = cut.Find("[aria-label='Core Metrics']");
+        var extensionsSection = cut.Find("[aria-label='Extensions']");
+        Assert.NotNull(coreSection.QuerySelector(".sf-dash-grid"));
+        Assert.NotNull(extensionsSection.QuerySelector(".sf-dash-grid"));
+    }
+
+    [Fact]
+    public void Should_ApplyDistinctSizeClasses_When_CoreTilesHaveMixedSizes()
+    {
+        SetupProviders(
+            MakeSizedProvider("members", 10, DashboardTileSize.OneByOne),
+            MakeSizedProvider("rehearsals-attendance-trend", 60, DashboardTileSize.OneByTwo),
+            MakeSizedProvider("finance-cashflow", 50, DashboardTileSize.TwoByOne),
+            MakeSizedProvider("finance", 40, DashboardTileSize.TwoByTwo));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        Assert.NotNull(cut.Find(".card.tile-members.tile-size-1x1"));
+        Assert.NotNull(cut.Find(".card.tile-rehearsals-attendance-trend.tile-size-1x2"));
+        Assert.NotNull(cut.Find(".card.tile-finance-cashflow.tile-size-2x1"));
+        Assert.NotNull(cut.Find(".card.tile-finance.tile-size-2x2"));
+    }
+
+    [Fact]
+    public void Should_ApplySizeClass_When_PluginTileOverridesTileSize_InExtensionsSection()
+    {
+        SetupProviders(
+            MakeCoreProvider("members", 10),
+            MakeSizedProvider("test-tile", 100, DashboardTileSize.OneByTwo));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        var extensionsSection = cut.Find("[aria-label='Extensions']");
+        Assert.NotNull(extensionsSection.QuerySelector(".card.tile-test-tile.tile-size-1x2"));
+    }
+
     private static IDashboardTileProvider MakeLinkedProvider(
         string id, int displayOrder, string route, string actionText)
     {
@@ -210,6 +277,13 @@ public class DashboardTests : BunitContext
         p.ModuleName.Returns(id);
         p.DisplayOrder.Returns(displayOrder);
         p.TileComponentType.Returns(typeof(object));
+        return p;
+    }
+
+    private static IDashboardTileProvider MakeSizedProvider(string id, int displayOrder, DashboardTileSize size)
+    {
+        var p = MakeCoreProvider(id, displayOrder);
+        p.TileSize.Returns(size);
         return p;
     }
 

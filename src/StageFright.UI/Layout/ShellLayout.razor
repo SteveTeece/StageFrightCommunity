@@ -88,13 +88,13 @@
 
         <!-- Top bar: shared light/dark toggle -->
         <header class="shell-topbar" role="banner">
-            <button class="btn-theme-toggle"
-                    type="button"
-                    @onclick="ToggleThemeAsync"
-                    aria-label="@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? "Switch to dark mode" : "Switch to light mode")">
-                <span class="theme-toggle-dot" aria-hidden="true"></span>
-                @(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? "Light" : "Dark")
-            </button>
+            <div class="btn-theme-toggle"
+                 aria-label="@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? "Switch to dark mode" : "Switch to light mode")">
+                <span>@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? "Light" : "Dark")</span>
+                <RadzenSwitch Name="themeToggleSwitch"
+                              Value="@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Dark)"
+                              Change="@(async (bool _) => await ToggleThemeAsync())" />
+            </div>
         </header>
 
         <!-- Main content area -->
