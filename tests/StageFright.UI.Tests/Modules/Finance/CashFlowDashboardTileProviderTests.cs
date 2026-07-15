@@ -18,6 +18,7 @@ public class CashFlowDashboardTileProviderTests
         Assert.Null(_provider.NavigateRoute);
         Assert.Null(_provider.ActionText);
         Assert.Equal(typeof(CashFlowTile), _provider.TileComponentType);
+        Assert.Equal(DashboardTileSize.TwoByTwo, _provider.TileSize);
     }
 
     [Fact]
