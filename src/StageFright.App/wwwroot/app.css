@@ -529,6 +529,16 @@ a {
     color: var(--sf-sub);
 }
 
+/* Larger stats row for tiles rendered at 2x2 — more gap and bigger numbers to fill the space. */
+.tile-stats-lg {
+    gap: 32px;
+    margin-top: 6px;
+}
+
+.tile-stats-lg .tile-stat-value {
+    font-size: 1.9rem;
+}
+
 .tile-stat-label {
     font-size: .63rem;
     font-weight: 400;

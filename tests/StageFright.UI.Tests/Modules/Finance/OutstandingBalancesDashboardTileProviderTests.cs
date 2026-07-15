@@ -18,6 +18,7 @@ public class OutstandingBalancesDashboardTileProviderTests
         Assert.Equal("/reports/member-account-summary", _provider.NavigateRoute);
         Assert.Equal("View Report", _provider.ActionText);
         Assert.Equal(typeof(OutstandingBalancesTile), _provider.TileComponentType);
+        Assert.Equal(DashboardTileSize.TwoByTwo, _provider.TileSize);
     }
 
     [Fact]
