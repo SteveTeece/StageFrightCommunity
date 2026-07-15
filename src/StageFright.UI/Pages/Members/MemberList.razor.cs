@@ -12,7 +12,7 @@ public partial class MemberList : ComponentBase
     [Inject] private NavigationManager Nav { get; set; } = null!;
 
     private readonly AgeCalculationService _ageCalc = new();
-    private MemberStatus _filter = MemberStatus.Active;
+    private bool _showInactive;
     private List<Member> _members = new();
     private string _searchTerm = string.Empty;
     private bool _loading = true;
@@ -31,19 +31,21 @@ public partial class MemberList : ComponentBase
         await LoadAsync();
     }
 
-    private async Task SetFilter(MemberStatus status)
-    {
-        _filter = status;
-        await LoadAsync();
-    }
-
     private async Task LoadAsync()
     {
         _loading = true;
         try
         {
-            var result = await MemberService.GetByStatusAsync(_filter);
-            _members = result.ToList();
+            var active = await MemberService.GetByStatusAsync(MemberStatus.Active);
+            if (_showInactive)
+            {
+                var inactive = await MemberService.GetByStatusAsync(MemberStatus.Inactive);
+                _members = active.Concat(inactive).ToList();
+            }
+            else
+            {
+                _members = active.ToList();
+            }
         }
         finally
         {

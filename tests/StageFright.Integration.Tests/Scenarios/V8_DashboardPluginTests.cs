@@ -102,6 +102,17 @@ public sealed class V8_DashboardPluginTests
         Assert.Null(trend.ActionText);
     }
 
+    [Fact]
+    public async Task GetTilesAsync_ProviderWithoutTileSizeOverride_DefaultsToOneByOne()
+    {
+        var svc = BuildDashboardService();
+
+        var tiles = await svc.GetTilesAsync();
+
+        var membersTile = tiles.Single(t => t.TileId == "members");
+        Assert.Equal(DashboardTileSize.OneByOne, membersTile.TileSize);
+    }
+
     // --- Parallel load isolation ---
 
     [Fact]
@@ -201,6 +212,23 @@ public sealed class V8_DashboardPluginTests
 
         Assert.True(result.IsSuccess);
         Assert.Contains("Test Metric", result.Data!.Metrics.Keys);
+    }
+
+    [Fact]
+    public async Task GetTilesAsync_CoreAndPluginTiles_BothDeclareNonDefaultTileSize_GroupingUnaffected()
+    {
+        var testProvider = new TestTileProvider();
+        var svc = BuildDashboardService(extraProviders: [testProvider]);
+
+        var tiles = await svc.GetTilesAsync();
+
+        var trend = tiles.Single(t => t.TileId == "rehearsals-attendance-trend");
+        var plugin = tiles.Single(t => t.TileId == "test-tile");
+
+        Assert.Equal(DashboardTileSize.OneByTwo, trend.TileSize);
+        Assert.Equal(DashboardTileSize.OneByTwo, plugin.TileSize);
+        Assert.True(trend.DisplayOrder < 100, "Core tile grouping should be unaffected by TileSize");
+        Assert.True(plugin.DisplayOrder >= 100, "Plugin tile grouping should be unaffected by TileSize");
     }
 
     [Fact]
