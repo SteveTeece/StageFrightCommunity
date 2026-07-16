@@ -20,10 +20,9 @@ public partial class FinancePage : ComponentBase
         SelectedMemberId = MemberIdQuery ?? Guid.Empty;
         DefaultTabIndex = TabQuery?.ToLowerInvariant() switch
         {
-            "record-payment" => 1,
-            "record-income" => 2,
-            "record-expense" => 3,
-            "annual-fees" => 4,
+            "record-income" => 1,
+            "record-expense" => 2,
+            "annual-fees" => 3,
             _ => 0
         };
     }

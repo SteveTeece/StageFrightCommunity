@@ -38,5 +38,5 @@ public partial class MemberBalanceList : ComponentBase
     }
 
     private void GoToPayment(Guid memberId) =>
-        Nav.NavigateTo($"/finance?tab=record-payment&memberId={memberId}");
+        Nav.NavigateTo($"/finance?tab=outstanding&memberId={memberId}");
 }

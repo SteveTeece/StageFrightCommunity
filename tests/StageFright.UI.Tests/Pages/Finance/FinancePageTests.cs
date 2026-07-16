@@ -14,7 +14,8 @@ namespace StageFright.UI.Tests.Pages.Finance;
 /// <summary>
 /// bUnit tests for FinancePage — the Finance Overview tabbed screen. Verifies the
 /// "Record Expense" tab's position, content, and query-string navigation state
-/// (FR-008/FR-009/FR-011).
+/// (FR-008/FR-009/FR-011), and that recording a member payment happens inline on the
+/// Outstanding tab (no separate "Record Member Payment" tab).
 /// </summary>
 public class FinancePageTests : BunitContext
 {
@@ -71,16 +72,15 @@ public class FinancePageTests : BunitContext
         var cut = Render<FinancePage>();
 
         var outstandingIndex = cut.Markup.IndexOf("Outstanding", StringComparison.Ordinal);
-        var recordPaymentIndex = cut.Markup.IndexOf("Record Member Payment", StringComparison.Ordinal);
         var recordIncomeIndex = cut.Markup.IndexOf("Record Income", StringComparison.Ordinal);
         var recordExpenseIndex = cut.Markup.IndexOf("Record Expense", StringComparison.Ordinal);
         var annualFeesIndex = cut.Markup.IndexOf("Apply Annual Fees", StringComparison.Ordinal);
 
         Assert.True(outstandingIndex >= 0);
-        Assert.True(recordPaymentIndex > outstandingIndex);
-        Assert.True(recordIncomeIndex > recordPaymentIndex);
+        Assert.True(recordIncomeIndex > outstandingIndex);
         Assert.True(recordExpenseIndex > recordIncomeIndex);
         Assert.True(annualFeesIndex > recordExpenseIndex);
+        Assert.DoesNotContain("Record Member Payment", cut.Markup);
     }
 
     [Fact]
@@ -99,10 +99,9 @@ public class FinancePageTests : BunitContext
     [Theory]
     [InlineData(null, 0)]
     [InlineData("outstanding", 0)]
-    [InlineData("record-payment", 1)]
-    [InlineData("record-income", 2)]
-    [InlineData("record-expense", 3)]
-    [InlineData("annual-fees", 4)]
+    [InlineData("record-income", 1)]
+    [InlineData("record-expense", 2)]
+    [InlineData("annual-fees", 3)]
     public void OnInitialized_SetsDefaultTabIndex_FromTabQuery(string? tabQuery, int expectedIndex)
     {
         var page = CreateUninitializedPage(tabQuery);
@@ -110,6 +109,27 @@ public class FinancePageTests : BunitContext
         InvokeOnInitialized(page);
 
         Assert.Equal(expectedIndex, GetPrivateProperty<int>(page, "DefaultTabIndex"));
+    }
+
+    [Fact]
+    public void OnInitialized_SetsSelectedMemberId_FromMemberIdQuery()
+    {
+        var memberId = Guid.NewGuid();
+        var page = CreateUninitializedPage(tabQuery: "outstanding", memberIdQuery: memberId);
+
+        InvokeOnInitialized(page);
+
+        Assert.Equal(memberId, GetPrivateProperty<Guid>(page, "SelectedMemberId"));
+    }
+
+    [Fact]
+    public void OnInitialized_DefaultsSelectedMemberIdToEmpty_WhenNoMemberIdQuery()
+    {
+        var page = CreateUninitializedPage(tabQuery: null);
+
+        InvokeOnInitialized(page);
+
+        Assert.Equal(Guid.Empty, GetPrivateProperty<Guid>(page, "SelectedMemberId"));
     }
 
     [Fact]
@@ -128,13 +148,15 @@ public class FinancePageTests : BunitContext
     // --- Reflection helpers: [SupplyParameterFromQuery]/[Inject] properties are private,
     // and there's no Router pipeline in a bare bUnit render to populate TabQuery from the URL. ---
 
-    private static FinancePage CreateUninitializedPage(string? tabQuery)
+    private static FinancePage CreateUninitializedPage(string? tabQuery, Guid? memberIdQuery = null)
     {
         var page = new FinancePage();
         var type = typeof(FinancePage);
 
         type.GetProperty("TabQuery", BindingFlags.NonPublic | BindingFlags.Instance)!
             .SetValue(page, tabQuery);
+        type.GetProperty("MemberIdQuery", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(page, memberIdQuery);
 
         return page;
     }

@@ -4,8 +4,9 @@ namespace StageFright.Core.Modules.Finance;
 
 /// <summary>
 /// Contributes the Finance navigation group. The Overview page keeps its tabs
-/// (Outstanding / Record Member Payment / Record Income / Record Expense / Apply Annual
-/// Fees); the expanded accounting surfaces are sub-items.
+/// (Outstanding / Record Income / Record Expense / Apply Annual Fees — recording a member
+/// payment happens inline on the Outstanding tab); the expanded accounting surfaces are
+/// sub-items.
 /// DisplayOrder=4 places Finance after Events (3) and before Reports (5).
 /// </summary>
 public class FinanceMenuItemProvider : IMenuItemProvider

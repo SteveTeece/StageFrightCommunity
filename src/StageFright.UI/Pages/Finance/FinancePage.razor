@@ -10,16 +10,9 @@
     <Tab Title="Outstanding" OnShown="@(() => NavToTab("outstanding"))">
         <Content>
             <div class="pt-2">
-                <MemberBalanceList />
-            </div>
-        </Content>
-    </Tab>
-    <Tab Title="Record Member Payment" OnShown="@(() => NavToTab("record-payment"))">
-        <Content>
-            <div class="pt-2">
                 @if (SelectedMemberId == Guid.Empty)
                 {
-                    <p class="text-muted small">Select a member from the Balances tab to record a payment.</p>
+                    <MemberBalanceList />
                 }
                 else
                 {
