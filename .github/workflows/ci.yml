@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [master, main, "001-initial-mvp"]
+    branches: [master, main, dev, "001-initial-mvp"]
   pull_request:
-    branches: [master, main]
+    branches: [master, main, dev]
 
 jobs:
   build-and-test:

@@ -257,7 +257,7 @@ public async Task<Member?> GetMemberAsync(int id)
 
 ### GitHub Actions
 
-The project uses GitHub Actions for CI/CD. The workflow file `.github/workflows/build-and-test.yml`:
+The project uses GitHub Actions for CI/CD. The workflow file `.github/workflows/ci.yml`:
 
 1. **Restores** NuGet packages
 2. **Builds** the solution in Release configuration
@@ -265,8 +265,10 @@ The project uses GitHub Actions for CI/CD. The workflow file `.github/workflows/
 4. **Uploads** test results as artifacts
 
 Workflows run automatically on:
-- Push to `master`, `main`, or `develop` branches
+- Push to `master`, `main`, or `dev` branches
 - Pull requests to these branches
+
+> All pull requests must target `dev`, not `master`. PRs opened against `master` will be rejected — see [CONTRIBUTING.md](../CONTRIBUTING.md#pull-request-process).
 
 ### Running Workflows Locally
 
