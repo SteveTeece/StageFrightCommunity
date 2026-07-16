@@ -191,6 +191,7 @@ public static class MauiProgram
 
         // Account management module (Phase 7)
         services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<IAccountBalanceService, AccountBalanceService>();
 
         // Dashboard service (Phase 8)
         services.AddScoped<IDashboardService, DashboardService>();
