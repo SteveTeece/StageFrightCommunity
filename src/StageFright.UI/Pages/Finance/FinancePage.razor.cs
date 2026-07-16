@@ -22,7 +22,8 @@ public partial class FinancePage : ComponentBase
         {
             "record-payment" => 1,
             "record-income" => 2,
-            "annual-fees" => 3,
+            "record-expense" => 3,
+            "annual-fees" => 4,
             _ => 0
         };
     }
