@@ -4,8 +4,8 @@ namespace StageFright.Core.Modules.Finance;
 
 /// <summary>
 /// Contributes the Finance navigation group. The Overview page keeps its tabs
-/// (Balances / Record Member Payment / Record Income / Apply Annual Fees);
-/// the expanded accounting surfaces are sub-items.
+/// (Outstanding / Record Member Payment / Record Income / Record Expense / Apply Annual
+/// Fees); the expanded accounting surfaces are sub-items.
 /// DisplayOrder=4 places Finance after Events (3) and before Reports (5).
 /// </summary>
 public class FinanceMenuItemProvider : IMenuItemProvider
@@ -25,7 +25,6 @@ public class FinanceMenuItemProvider : IMenuItemProvider
             [
                 new MenuItem { Title = "Overview", Route = "/finance", DisplayOrder = 0 },
                 new MenuItem { Title = "Chart of Accounts", Route = "/finance/accounts", DisplayOrder = 1 },
-                new MenuItem { Title = "Record Expense", Route = "/finance/expenses", DisplayOrder = 2 },
                 new MenuItem { Title = "Transfers", Route = "/finance/transfers", DisplayOrder = 3 },
                 new MenuItem { Title = "Journal Entries", Route = "/finance/journal", DisplayOrder = 4 },
                 new MenuItem { Title = "Reconciliation", Route = "/finance/reconciliation", DisplayOrder = 5 },

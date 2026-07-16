@@ -35,6 +35,13 @@
             </div>
         </Content>
     </Tab>
+    <Tab Title="Record Expense" OnShown="@(() => NavToTab("record-expense"))">
+        <Content>
+            <div class="pt-2">
+                <ExpensePaymentPage />
+            </div>
+        </Content>
+    </Tab>
     <Tab Title="Apply Annual Fees" OnShown="@(() => NavToTab("annual-fees"))">
         <Content>
             <div class="pt-2">
