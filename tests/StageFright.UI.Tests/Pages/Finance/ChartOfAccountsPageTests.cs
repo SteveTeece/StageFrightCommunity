@@ -5,6 +5,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Finance;
 using StageFright.UI.Pages.Finance;
 
 namespace StageFright.UI.Tests.Pages.Finance;
@@ -12,26 +13,36 @@ namespace StageFright.UI.Tests.Pages.Finance;
 /// <summary>
 /// bUnit tests for ChartOfAccountsPage — renders accounts across all five types with
 /// filter, add form (bank flag only for Asset), rename, archive blocking with error
-/// message, restore, and system account read-only enforcement.
+/// message, restore, system account read-only enforcement, and the Balance column
+/// (currency rendering, sorting, and per-row error indicator).
 /// </summary>
 public class ChartOfAccountsPageTests : BunitContext
 {
     private readonly IAccountService _accountService = Substitute.For<IAccountService>();
+    private readonly IAccountBalanceService _accountBalanceService = Substitute.For<IAccountBalanceService>();
 
     private static readonly Guid IncomeAccountId = Guid.NewGuid();
     private static readonly Guid BankAccountId = Guid.NewGuid();
     private static readonly Guid SystemAccountId = new("00000000-0000-0000-0000-000000000001");
     private static readonly Guid ArchivedAccountId = Guid.NewGuid();
+    private static readonly Guid ErrorAccountId = Guid.NewGuid();
 
     public ChartOfAccountsPageTests()
     {
         Services.AddSingleton(_accountService);
+        Services.AddSingleton(_accountBalanceService);
 
         _accountService.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(DefaultActiveAccounts());
 
         _accountService.GetArchivedAsync(Arg.Any<CancellationToken>())
             .Returns(new List<Account>());
+
+        _accountBalanceService.GetActiveAccountBalancesAsync(Arg.Any<CancellationToken>())
+            .Returns(DefaultActiveAccountBalances());
+
+        _accountBalanceService.GetArchivedAccountBalancesAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<AccountBalance>());
 
         _accountService.CreateAsync(Arg.Any<string>(), Arg.Any<AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
             .Returns(ci => new Account
@@ -111,12 +122,106 @@ public class ChartOfAccountsPageTests : BunitContext
     [Fact]
     public void Should_ShowErrorAlert_When_LoadFails()
     {
-        _accountService.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns<Task<IReadOnlyList<Account>>>(_ => throw new InvalidOperationException("boom"));
+        _accountBalanceService.GetActiveAccountBalancesAsync(Arg.Any<CancellationToken>())
+            .Returns<Task<IReadOnlyList<AccountBalance>>>(_ => throw new InvalidOperationException("boom"));
 
         var cut = Render<ChartOfAccountsPage>();
 
         Assert.Contains("Failed to load accounts", cut.Markup);
+    }
+
+    // --- Balance column ---
+
+    [Fact]
+    public void Should_RenderCurrencyFormattedBalance_When_PageLoads()
+    {
+        var cut = Render<ChartOfAccountsPage>();
+
+        Assert.Contains("$500.00", cut.Markup);   // Cash on Hand
+        Assert.Contains("$1,000.00", cut.Markup); // Operating Account
+        Assert.Contains("$250.00", cut.Markup);   // Membership Fees
+    }
+
+    [Fact]
+    public void Should_ShowErrorIndicator_When_AccountBalanceHasError()
+    {
+        var balances = DefaultActiveAccountBalances().ToList();
+        balances.Add(new AccountBalance
+        {
+            AccountId = ErrorAccountId,
+            AccountNumber = "6001",
+            Name = "Broken Account",
+            Type = AccountType.Expense,
+            IsSystem = false,
+            IsBankAccount = false,
+            Balance = null,
+            HasError = true
+        });
+        _accountBalanceService.GetActiveAccountBalancesAsync(Arg.Any<CancellationToken>())
+            .Returns(balances);
+        _accountService.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(DefaultActiveAccounts().Concat(
+            [
+                new Account
+                {
+                    Id = ErrorAccountId, Name = "Broken Account", Type = AccountType.Expense,
+                    AccountNumber = "6001", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+                }
+            ]).ToList());
+
+        var cut = Render<ChartOfAccountsPage>();
+
+        Assert.Contains("Broken Account", cut.Markup);
+        Assert.Contains("—", cut.Markup);
+        Assert.Contains("Balance could not be calculated for this account", cut.Markup);
+        // Other rows are unaffected — their balances still render.
+        Assert.Contains("$500.00", cut.Markup);
+    }
+
+    [Fact]
+    public void Should_ShowBalanceForArchivedAccounts_When_ArchivedListLoads()
+    {
+        _accountBalanceService.GetArchivedAccountBalancesAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<AccountBalance>
+            {
+                new()
+                {
+                    AccountId = ArchivedAccountId, AccountNumber = "4009", Name = "Old Fund",
+                    Type = AccountType.Income, Balance = 42m, HasError = false
+                }
+            });
+        _accountService.GetArchivedAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Account>
+            {
+                new()
+                {
+                    Id = ArchivedAccountId, Name = "Old Fund", Type = AccountType.Income,
+                    AccountNumber = "4009", IsDeleted = true,
+                    CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+                }
+            });
+
+        var cut = Render<ChartOfAccountsPage>();
+
+        Assert.Contains("Old Fund", cut.Markup);
+        Assert.Contains("$42.00", cut.Markup);
+    }
+
+    [Fact]
+    public void Should_SortByBalance_When_BalanceColumnHeaderClicked()
+    {
+        var cut = Render<ChartOfAccountsPage>();
+
+        var header = cut.FindAll("th").First(th => th.TextContent.Contains("Balance"));
+        header.QuerySelector("div")!.Click();
+
+        var cells = cut.FindAll("code");
+        // Before sort, rows appear in the order the service returned them: 1100, 1110, 4000
+        // (Balances 500, 1000, 250). After ascending sort by Balance (250, 500, 1000) the
+        // account-number column should reorder to 4000, 1100, 1110.
+        Assert.Equal("4000", cells[0].TextContent.Trim());
+        Assert.Equal("1100", cells[1].TextContent.Trim());
+        Assert.Equal("1110", cells[2].TextContent.Trim());
     }
 
     // --- Add form ---
@@ -234,6 +339,15 @@ public class ChartOfAccountsPageTests : BunitContext
                     CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
                 }
             });
+        _accountBalanceService.GetArchivedAccountBalancesAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<AccountBalance>
+            {
+                new()
+                {
+                    AccountId = ArchivedAccountId, AccountNumber = "4009", Name = "Old Fund",
+                    Type = AccountType.Income, Balance = 0m, HasError = false
+                }
+            });
 
         var cut = Render<ChartOfAccountsPage>();
         cut.FindAll("button").First(b => b.TextContent.Contains("Restore")).Click();
@@ -263,6 +377,25 @@ public class ChartOfAccountsPageTests : BunitContext
             Id = IncomeAccountId, Name = "Membership Fees", Type = AccountType.Income,
             AccountNumber = "4000",
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        }
+    };
+
+    private static IReadOnlyList<AccountBalance> DefaultActiveAccountBalances() => new List<AccountBalance>
+    {
+        new()
+        {
+            AccountId = SystemAccountId, AccountNumber = "1100", Name = "Cash on Hand",
+            Type = AccountType.Asset, IsSystem = true, IsBankAccount = true, Balance = 500m, HasError = false
+        },
+        new()
+        {
+            AccountId = BankAccountId, AccountNumber = "1110", Name = "Operating Account",
+            Type = AccountType.Asset, IsBankAccount = true, Balance = 1000m, HasError = false
+        },
+        new()
+        {
+            AccountId = IncomeAccountId, AccountNumber = "4000", Name = "Membership Fees",
+            Type = AccountType.Income, Balance = 250m, HasError = false
         }
     };
 }
