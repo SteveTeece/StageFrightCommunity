@@ -25,6 +25,35 @@ public class MemberBalanceService : IMemberBalanceService
     public Task<decimal> GetBalanceAsync(Guid memberId, CancellationToken ct = default)
         => _glRepo.GetMemberBalanceAsync(memberId, ct);
 
+    public async Task<IReadOnlyList<OutstandingFee>> GetOutstandingFeesAsync(Guid memberId, CancellationToken ct = default)
+    {
+        var fees = await _feeRepo.GetUnpaidOrderedFifoAsync(memberId, ct);
+
+        var outstanding = new List<OutstandingFee>();
+        foreach (var fee in fees.OrderBy(f => f.FeeDate).ThenBy(f => f.CreatedAt).ThenBy(f => f.Id))
+        {
+            var feeTransactions = await _glRepo.GetByFeeAsync(fee.Id, ct);
+            var alreadySettled = feeTransactions
+                .Where(t => t.AccountId == SystemAccounts.MemberReceivableId)
+                .Sum(t => t.CreditAmount);
+            var remainingAmount = fee.Amount - alreadySettled;
+
+            if (remainingAmount <= 0m)
+                continue;
+
+            outstanding.Add(new OutstandingFee
+            {
+                FeeId = fee.Id,
+                FeeType = fee.FeeType,
+                FeeDate = fee.FeeDate,
+                DueDate = fee.DueDate,
+                RemainingAmount = remainingAmount
+            });
+        }
+
+        return outstanding;
+    }
+
     public async Task<IReadOnlyList<MemberBalance>> GetAllMemberBalancesAsync(CancellationToken ct = default)
     {
         var members = await _memberRepo.GetAllAsync(ct);
