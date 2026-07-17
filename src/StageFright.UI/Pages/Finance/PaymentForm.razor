@@ -23,6 +23,9 @@ else
 
     <div class="card mb-2">
         <div class="card-body py-2">
+            <OutstandingFeeSelectionGrid @ref="_feeGrid" Fees="_outstandingFees" ReadOnly="_saved"
+                                          SelectionChanged="OutstandingFeesSelectionChanged" />
+
             <EditForm Model="_form" OnValidSubmit="SaveAsync">
                 <div class="row g-2">
 
@@ -79,7 +82,7 @@ else
                 @if (!_saved)
                 {
                     <div class="d-flex gap-2 mt-2">
-                        <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
+                        <button type="submit" class="btn btn-primary btn-sm" disabled="@(_saving || _outstandingFees.Count == 0)">
                             @(_saving ? "Saving…" : "Record Member Payment")
                         </button>
                         <button type="button" class="btn btn-outline-secondary btn-sm"

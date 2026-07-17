@@ -10,6 +10,7 @@ public partial class PaymentForm : ComponentBase
 
     [Inject] private IPaymentService PaymentService { get; set; } = null!;
     [Inject] private IMemberService MemberService { get; set; } = null!;
+    [Inject] private IMemberBalanceService MemberBalanceService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
 
     private readonly PaymentFormModel _form = new();
@@ -21,6 +22,8 @@ public partial class PaymentForm : ComponentBase
     private Guid? _savedPaymentId;
     private string? _errorMessage;
     private string? _successMessage;
+    private IReadOnlyList<OutstandingFee> _outstandingFees = [];
+    private OutstandingFeeSelectionGrid? _feeGrid;
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,6 +31,7 @@ public partial class PaymentForm : ComponentBase
         {
             var member = await MemberService.GetByIdAsync(MemberId);
             _memberName = member?.Name;
+            _outstandingFees = await MemberBalanceService.GetOutstandingFeesAsync(MemberId);
         }
         catch (Exception ex)
         {
@@ -37,6 +41,11 @@ public partial class PaymentForm : ComponentBase
         {
             _loading = false;
         }
+    }
+
+    private void OutstandingFeesSelectionChanged(decimal selectedTotal)
+    {
+        _form.Amount = selectedTotal;
     }
 
     private async Task SaveAsync()
@@ -56,6 +65,24 @@ public partial class PaymentForm : ComponentBase
             return;
         }
 
+        var selectedFeeIds = _feeGrid?.GetSelectedFeeIds() ?? [];
+
+        if (selectedFeeIds.Count == 0)
+        {
+            _errors["Amount"] = "At least one outstanding fee must be selected.";
+            return;
+        }
+
+        var selectedTotal = _outstandingFees
+            .Where(f => selectedFeeIds.Contains(f.FeeId))
+            .Sum(f => f.RemainingAmount);
+
+        if (_form.Amount > selectedTotal)
+        {
+            _errors["Amount"] = "Amount exceeds the selected fees' remaining total.";
+            return;
+        }
+
         _saving = true;
         try
         {
@@ -66,7 +93,8 @@ public partial class PaymentForm : ComponentBase
                 Amount = _form.Amount,
                 PaymentMethod = _form.PaymentMethod,
                 PaymentType = _form.PaymentType,
-                Notes = string.IsNullOrWhiteSpace(_form.Notes) ? null : _form.Notes.Trim()
+                Notes = string.IsNullOrWhiteSpace(_form.Notes) ? null : _form.Notes.Trim(),
+                SelectedFeeIds = selectedFeeIds
             };
 
             var payment = await PaymentService.RecordAsync(request);

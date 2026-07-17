@@ -24,4 +24,10 @@ public class RecordPaymentRequest
 
     /// <summary>Optional free-text notes.</summary>
     public string? Notes { get; set; }
+
+    /// <summary>
+    /// Fee IDs to allocate this payment against, oldest-first. Null (default) preserves
+    /// legacy FIFO-across-all-fees behavior. An explicitly empty list is rejected.
+    /// </summary>
+    public IReadOnlyList<Guid>? SelectedFeeIds { get; set; }
 }

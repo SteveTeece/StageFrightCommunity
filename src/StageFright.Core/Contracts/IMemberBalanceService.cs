@@ -15,4 +15,11 @@ public interface IMemberBalanceService
     /// who have a positive balance.
     /// </summary>
     Task<IReadOnlyList<MemberBalance>> GetAllMemberBalancesAsync(CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns a member's outstanding fees with their true remaining amounts owed
+    /// (original amount minus prior GL settlements), oldest-first. Fully-settled fees
+    /// are excluded. Returns an empty list for a member with no outstanding fees.
+    /// </summary>
+    Task<IReadOnlyList<OutstandingFee>> GetOutstandingFeesAsync(Guid memberId, CancellationToken ct = default);
 }
