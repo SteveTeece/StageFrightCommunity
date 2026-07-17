@@ -18,6 +18,7 @@
 - Q: When Amount is less than the sum of checked fees, in what order is it applied across them? → A: Oldest fee first (by FeeDate/DueDate), fully settling each before moving to the next — consistent with the FIFO convention already used in GL posting.
 - Q: The request said "left of the member's name" — but each grid row is an outstanding fee for the one already-selected member, not a list of members. What does the checkbox sit to the left of? → A: The checkbox is the leftmost column, before Fee Type/Amount/Due Date — same layout convention as the existing AttendanceGrid/ParticipationGrid checkbox columns.
 - Q: Should recording a payment require at least one checked fee? → A: Yes — Save is blocked if Amount > 0 but no fee is checked, since allocation is now driven entirely by the checkboxes.
+- Q: Should the overpayment-vs-selection and empty-selection validations be enforced only in the UI, or also at the service layer? → A: Both — the UI blocks Save immediately, and `IPaymentService.RecordAsync` independently enforces the same rules, throwing a `ValidationException` before any GL transaction is written. This mirrors the existing `Amount <= 0` check already performed at the top of `RecordAsync` and protects GL integrity even if a future caller bypasses the UI.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -72,8 +73,8 @@ Having selected which fees a payment covers, the user needs to actually save tha
 - **FR-003**: The outstanding fees grid MUST provide a "select all" control that checks/unchecks every listed fee.
 - **FR-004**: Whenever the set of checked fees changes, the Amount field MUST be updated to the sum of the checked fees' remaining amounts owed.
 - **FR-005**: The Amount field MUST remain editable after being updated from a selection, allowing the user to reduce it below the checked total to record a partial payment.
-- **FR-006**: The form MUST block saving (with a validation message) if Amount exceeds the sum of the checked fees' remaining amounts.
-- **FR-007**: The form MUST block saving (with a validation message) if no fee is checked.
+- **FR-006**: The form MUST block saving (with a validation message) if Amount exceeds the sum of the checked fees' remaining amounts. `IPaymentService.RecordAsync` MUST independently enforce this same rule, throwing a `ValidationException` before any GL transaction is written, so the rule holds even if invoked by a caller other than this form.
+- **FR-007**: The form MUST block saving (with a validation message) if no fee is checked. `IPaymentService.RecordAsync` MUST independently enforce this same rule, throwing a `ValidationException` before any GL transaction is written, if ever invoked with an empty fee selection alongside a positive Amount.
 - **FR-008**: When a payment is saved with a set of checked fees, the amount MUST be applied to those fees in oldest-first order (by FeeDate/DueDate), fully settling each fee before applying any remainder to the next.
 - **FR-009**: Recording a payment against selected fees MUST NOT allocate any part of the payment to fees that were not checked.
 - **FR-010**: After a payment is successfully saved, the outstanding fees grid MUST become read-only (checkboxes disabled), consistent with the existing post-save behavior of the rest of the form.
