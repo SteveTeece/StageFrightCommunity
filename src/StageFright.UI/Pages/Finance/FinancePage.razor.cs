@@ -17,7 +17,6 @@ public partial class FinancePage : ComponentBase
 
     protected override void OnInitialized()
     {
-        SelectedMemberId = MemberIdQuery ?? Guid.Empty;
         DefaultTabIndex = TabQuery?.ToLowerInvariant() switch
         {
             "record-income" => 1,
@@ -25,6 +24,14 @@ public partial class FinancePage : ComponentBase
             "annual-fees" => 3,
             _ => 0
         };
+    }
+
+    // Router reuses this component instance for same-route query-string navigation (e.g.
+    // clicking "Record Member Payment"), so OnInitialized never re-fires — SelectedMemberId
+    // must be recomputed here on every parameter update instead.
+    protected override void OnParametersSet()
+    {
+        SelectedMemberId = MemberIdQuery ?? Guid.Empty;
     }
 
     private void NavToTab(string key) =>
