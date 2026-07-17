@@ -112,24 +112,45 @@ public class FinancePageTests : BunitContext
     }
 
     [Fact]
-    public void OnInitialized_SetsSelectedMemberId_FromMemberIdQuery()
+    public void OnParametersSet_SetsSelectedMemberId_FromMemberIdQuery()
     {
         var memberId = Guid.NewGuid();
         var page = CreateUninitializedPage(tabQuery: "outstanding", memberIdQuery: memberId);
 
         InvokeOnInitialized(page);
+        InvokeOnParametersSet(page);
 
         Assert.Equal(memberId, GetPrivateProperty<Guid>(page, "SelectedMemberId"));
     }
 
     [Fact]
-    public void OnInitialized_DefaultsSelectedMemberIdToEmpty_WhenNoMemberIdQuery()
+    public void OnParametersSet_DefaultsSelectedMemberIdToEmpty_WhenNoMemberIdQuery()
     {
         var page = CreateUninitializedPage(tabQuery: null);
 
         InvokeOnInitialized(page);
+        InvokeOnParametersSet(page);
 
         Assert.Equal(Guid.Empty, GetPrivateProperty<Guid>(page, "SelectedMemberId"));
+    }
+
+    [Fact]
+    public void OnParametersSet_UpdatesSelectedMemberId_WhenMemberIdQueryChangesAfterInitialRender()
+    {
+        // Regression test for #249: clicking "Record Member Payment" navigates within the
+        // same /finance route (query-string-only change), so the Router reuses the existing
+        // FinancePage instance and only re-runs OnParametersSet, never OnInitialized again.
+        var page = CreateUninitializedPage(tabQuery: "outstanding");
+        InvokeOnInitialized(page);
+        InvokeOnParametersSet(page);
+        Assert.Equal(Guid.Empty, GetPrivateProperty<Guid>(page, "SelectedMemberId"));
+
+        var memberId = Guid.NewGuid();
+        typeof(FinancePage).GetProperty("MemberIdQuery", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(page, memberId);
+        InvokeOnParametersSet(page);
+
+        Assert.Equal(memberId, GetPrivateProperty<Guid>(page, "SelectedMemberId"));
     }
 
     [Fact]
@@ -163,6 +184,10 @@ public class FinancePageTests : BunitContext
 
     private static void InvokeOnInitialized(FinancePage page) =>
         typeof(FinancePage).GetMethod("OnInitialized", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .Invoke(page, null);
+
+    private static void InvokeOnParametersSet(FinancePage page) =>
+        typeof(FinancePage).GetMethod("OnParametersSet", BindingFlags.NonPublic | BindingFlags.Instance)!
             .Invoke(page, null);
 
     private static T GetPrivateProperty<T>(FinancePage page, string name) =>
