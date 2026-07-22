@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Enums;
 using StageFright.Plugins.Contracts;
 using StageFright.UI.Layout;
 
@@ -18,12 +19,15 @@ namespace StageFright.UI.Tests.Layout;
 public class ShellLayoutTests : BunitContext
 {
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
+    private readonly IDeviceThemePreferenceProvider _deviceThemeProvider = Substitute.For<IDeviceThemePreferenceProvider>();
 
     public ShellLayoutTests()
     {
         Services.AddSingleton(_settingsService);
+        Services.AddSingleton(_deviceThemeProvider);
         _settingsService.GetAsync(Arg.Any<CancellationToken>())
             .Returns((Settings?)null);
+        _deviceThemeProvider.GetPreference().Returns(PlatformThemePreference.Light);
     }
 
     // --- Sidebar items ---

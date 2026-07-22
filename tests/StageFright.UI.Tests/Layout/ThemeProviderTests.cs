@@ -10,30 +10,38 @@ namespace StageFright.UI.Tests.Layout;
 
 /// <summary>
 /// bUnit tests for ThemeProvider — verifies data-bs-theme attribute changes on toggle,
-/// Light default, and preference persistence via SettingsService.
+/// the OS-preference-driven fallback (Dark when unspecified), and preference persistence
+/// via SettingsService.
 /// </summary>
 public class ThemeProviderTests : BunitContext
 {
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
+    private readonly IDeviceThemePreferenceProvider _deviceThemeProvider = Substitute.For<IDeviceThemePreferenceProvider>();
 
     public ThemeProviderTests()
     {
         Services.AddSingleton(_settingsService);
+        Services.AddSingleton(_deviceThemeProvider);
+        _deviceThemeProvider.GetPreference().Returns(PlatformThemePreference.Unspecified);
     }
 
-    // --- Default theme ---
+    // --- Default theme (no Settings row yet — pre-setup fallback) ---
 
-    [Fact]
-    public void Renders_DataBsTheme_Light_ByDefault_WhenSettingsNull()
+    [Theory]
+    [InlineData(PlatformThemePreference.Light, "light")]
+    [InlineData(PlatformThemePreference.Dark, "dark")]
+    [InlineData(PlatformThemePreference.Unspecified, "dark")]
+    public void Renders_DataBsTheme_FromDevicePreference_WhenSettingsNull(PlatformThemePreference preference, string expectedAttr)
     {
         _settingsService.GetAsync(Arg.Any<CancellationToken>())
             .Returns((Settings?)null);
+        _deviceThemeProvider.GetPreference().Returns(preference);
 
         var cut = Render<ThemeProvider>(p =>
             p.AddChildContent("<span class='child'>Content</span>"));
 
         var attr = cut.Find("[data-bs-theme]").GetAttribute("data-bs-theme");
-        Assert.Equal("light", attr);
+        Assert.Equal(expectedAttr, attr);
     }
 
     [Fact]
@@ -159,16 +167,20 @@ public class ThemeProviderTests : BunitContext
 
     // --- CurrentTheme ---
 
-    [Fact]
-    public void CurrentTheme_IsLight_WhenSettingsNull()
+    [Theory]
+    [InlineData(PlatformThemePreference.Light, Theme.Light)]
+    [InlineData(PlatformThemePreference.Dark, Theme.Dark)]
+    [InlineData(PlatformThemePreference.Unspecified, Theme.Dark)]
+    public void CurrentTheme_FollowsDevicePreference_WhenSettingsNull(PlatformThemePreference preference, Theme expectedTheme)
     {
         _settingsService.GetAsync(Arg.Any<CancellationToken>())
             .Returns((Settings?)null);
+        _deviceThemeProvider.GetPreference().Returns(preference);
 
         var cut = Render<ThemeProvider>(p =>
             p.AddChildContent("<span>Content</span>"));
 
-        Assert.Equal(Theme.Light, cut.Instance.CurrentTheme);
+        Assert.Equal(expectedTheme, cut.Instance.CurrentTheme);
     }
 
     [Fact]
