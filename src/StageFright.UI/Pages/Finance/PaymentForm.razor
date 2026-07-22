@@ -23,9 +23,6 @@ else
 
     <div class="card mb-2">
         <div class="card-body py-2">
-            <OutstandingFeeSelectionGrid @ref="_feeGrid" Fees="_outstandingFees" ReadOnly="_saved"
-                                          SelectionChanged="OutstandingFeesSelectionChanged" />
-
             <EditForm Model="_form" OnValidSubmit="SaveAsync">
                 <div class="row g-2">
 
@@ -69,6 +66,11 @@ else
                                 <option value="@type">@type</option>
                             }
                         </InputSelect>
+                    </div>
+
+                    <div class="col-12">
+                        <OutstandingFeeSelectionGrid @ref="_feeGrid" Fees="_outstandingFees" ReadOnly="_saved"
+                                                      SelectionChanged="OutstandingFeesSelectionChanged" />
                     </div>
 
                     <div class="col-12">
