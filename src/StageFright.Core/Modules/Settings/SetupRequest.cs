@@ -11,4 +11,5 @@ public record SetupRequest(
     int MembershipRenewalMonth,
     bool IsGstRegistered,
     GstCode? AnnualFeeGstCode,
-    GstCode? AttendanceFeeGstCode);
+    GstCode? AttendanceFeeGstCode,
+    Theme Theme);
