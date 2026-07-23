@@ -139,87 +139,10 @@ public sealed class V14_ExpensesTransfersTests : IAsyncLifetime
         Assert.Equal(0, await _db.Transactions.CountAsync());
     }
 
-    // --- Transfers ---
-
-    [Fact]
-    public async Task RecordTransfer_CreatesDebitDestination_CreditSource_UnderJournalEntry()
-    {
-        var svc = BuildTransferService();
-        await svc.RecordTransferAsync(new RecordTransferRequest
-        {
-            Date = Today, Amount = 200m,
-            FromAccountId = SystemAccounts.CashId,
-            ToAccountId = SavingsAccountId,
-            Description = "Move float to savings"
-        });
-
-        var entry = Assert.Single(await _db.JournalEntries.ToListAsync());
-        Assert.Equal(JournalEntryType.Transfer, entry.Type);
-
-        var lines = await _db.Transactions.Where(t => t.JournalEntryId == entry.Id).ToListAsync();
-        Assert.Equal(2, lines.Count);
-
-        var debit = Assert.Single(lines, t => t.DebitAmount > 0m);
-        Assert.Equal(SavingsAccountId, debit.AccountId);
-        Assert.Equal(200m, debit.DebitAmount);
-
-        var credit = Assert.Single(lines, t => t.CreditAmount > 0m);
-        Assert.Equal(SystemAccounts.CashId, credit.AccountId);
-        Assert.Equal(200m, credit.CreditAmount);
-    }
-
-    [Fact]
-    public async Task RecordTransfer_MovesBalanceBetweenBankAccounts()
-    {
-        var svc = BuildTransferService();
-        await svc.RecordTransferAsync(new RecordTransferRequest
-        {
-            Date = Today, Amount = 300m,
-            FromAccountId = SystemAccounts.CashId,
-            ToAccountId = SavingsAccountId
-        });
-
-        var glRepo = new GLRepository(_db);
-        Assert.Equal(-300m, await glRepo.GetAccountBalanceAsync(SystemAccounts.CashId, Today));
-        Assert.Equal(300m, await glRepo.GetAccountBalanceAsync(SavingsAccountId, Today));
-    }
-
-    [Fact]
-    public async Task RecordTransfer_NonBankAccount_ThrowsAndPersistsNothing()
-    {
-        var svc = BuildTransferService();
-
-        await Assert.ThrowsAsync<ValidationException>(() => svc.RecordTransferAsync(new RecordTransferRequest
-        {
-            Date = Today, Amount = 50m,
-            FromAccountId = SystemAccounts.CashId,
-            ToAccountId = VenueHireAccountId // expense, not a bank account
-        }));
-
-        Assert.Equal(0, await _db.JournalEntries.CountAsync());
-        Assert.Equal(0, await _db.Transactions.CountAsync());
-    }
-
-    [Fact]
-    public async Task RecordTransfer_SameAccount_ThrowsAndPersistsNothing()
-    {
-        var svc = BuildTransferService();
-
-        await Assert.ThrowsAsync<ValidationException>(() => svc.RecordTransferAsync(new RecordTransferRequest
-        {
-            Date = Today, Amount = 50m,
-            FromAccountId = SystemAccounts.CashId,
-            ToAccountId = SystemAccounts.CashId
-        }));
-
-        Assert.Equal(0, await _db.JournalEntries.CountAsync());
-        Assert.Equal(0, await _db.Transactions.CountAsync());
-    }
-
     // --- Combined journey ---
 
     [Fact]
-    public async Task ExpenseThenTransfer_LedgerDebitsEqualCredits_AndEachEntryBalances()
+    public async Task ExpenseThenBankDeposit_LedgerDebitsEqualCredits_AndEachEntryBalances()
     {
         await BuildExpenseService().RecordExpenseAsync(new RecordExpenseRequest
         {
@@ -228,10 +151,9 @@ public sealed class V14_ExpensesTransfersTests : IAsyncLifetime
             ExpenseAccountId = VenueHireAccountId
         });
 
-        await BuildTransferService().RecordTransferAsync(new RecordTransferRequest
+        await BuildBankDepositService().RecordDepositAsync(new RecordBankDepositRequest
         {
             Date = Today, Amount = 250m,
-            FromAccountId = SystemAccounts.CashId,
             ToAccountId = SavingsAccountId
         });
 
@@ -254,7 +176,7 @@ public sealed class V14_ExpensesTransfersTests : IAsyncLifetime
         new(new AccountRepository(_db), new GLRepository(_db), new JournalEntryRepository(_db),
             new SettingsRepository(_db), BuildAuditService(), new UnitOfWork(_db));
 
-    private AccountTransferService BuildTransferService() =>
+    private BankDepositService BuildBankDepositService() =>
         new(new AccountRepository(_db), new GLRepository(_db), new JournalEntryRepository(_db),
             BuildAuditService(), new UnitOfWork(_db));
 

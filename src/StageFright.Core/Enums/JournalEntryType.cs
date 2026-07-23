@@ -14,6 +14,9 @@ public enum JournalEntryType
     /// <summary>Movement of funds between two bank accounts.</summary>
     Transfer,
 
+    /// <summary>Cash on Hand deposited into a bank account.</summary>
+    BankDeposit,
+
     /// <summary>Manually entered multi-line general journal.</summary>
     GeneralJournal,
 

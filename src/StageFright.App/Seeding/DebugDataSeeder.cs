@@ -45,7 +45,7 @@ public class DebugDataSeeder : IDebugDataSeeder
     private readonly IAccountService _accountService;
     private readonly IIncomeEntryService _incomeEntryService;
     private readonly IExpensePaymentService _expensePaymentService;
-    private readonly IAccountTransferService _accountTransferService;
+    private readonly IBankDepositService _bankDepositService;
     private readonly ISettingsService _settingsService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<DebugDataSeeder> _logger;
@@ -64,7 +64,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         IAccountService accountService,
         IIncomeEntryService incomeEntryService,
         IExpensePaymentService expensePaymentService,
-        IAccountTransferService accountTransferService,
+        IBankDepositService bankDepositService,
         ISettingsService settingsService,
         IUnitOfWork unitOfWork,
         ILogger<DebugDataSeeder> logger)
@@ -82,7 +82,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         _accountService = accountService;
         _incomeEntryService = incomeEntryService;
         _expensePaymentService = expensePaymentService;
-        _accountTransferService = accountTransferService;
+        _bankDepositService = bankDepositService;
         _settingsService = settingsService;
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -488,11 +488,10 @@ public class DebugDataSeeder : IDebugDataSeeder
             var pettyCashBalance = await _glRepository.GetAccountBalanceAsync(SystemAccounts.CashId, sweepDate, ct);
             if (pettyCashBalance > PettyCashFloat)
             {
-                await _accountTransferService.RecordTransferAsync(new RecordTransferRequest
+                await _bankDepositService.RecordDepositAsync(new RecordBankDepositRequest
                 {
                     Date = sweepDate,
                     Amount = Math.Round(pettyCashBalance - PettyCashFloat, 2),
-                    FromAccountId = SystemAccounts.CashId,
                     ToAccountId = bankAccount.Id,
                     Description = "Banking of rehearsal attendance fees"
                 }, ct);

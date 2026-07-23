@@ -183,7 +183,7 @@ public static class MauiProgram
 
         // Finance expansion — posting engine + money-out workflows (spec 002 US2)
         services.AddScoped<IExpensePaymentService, ExpensePaymentService>();
-        services.AddScoped<IAccountTransferService, AccountTransferService>();
+        services.AddScoped<IBankDepositService, BankDepositService>();
         services.AddScoped<IGeneralJournalService, GeneralJournalService>();
         services.AddScoped<IOpeningBalanceService, OpeningBalanceService>();
 
