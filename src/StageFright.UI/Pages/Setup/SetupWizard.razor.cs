@@ -1,13 +1,17 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using StageFright.Core.Contracts;
+using StageFright.Core.Enums;
 using StageFright.Core.Modules.Settings;
+using StageFright.UI.Layout;
 
 namespace StageFright.UI.Pages.Setup;
 
 public partial class SetupWizard : ComponentBase
 {
     [Inject] private IServiceProvider ServiceProvider { get; set; } = null!;
+
+    [CascadingParameter] private ThemeProvider? ThemeProvider { get; set; }
 
     private readonly SetupFormModel _model = new();
     private EditContext _editContext = null!;
@@ -50,6 +54,12 @@ public partial class SetupWizard : ComponentBase
         }
     }
 
+    private async Task HandleThemeToggleAsync()
+    {
+        if (ThemeProvider is not null)
+            await ThemeProvider.ToggleAsync();
+    }
+
     private async Task HandleValidSubmitAsync()
     {
         _submitting = true;
@@ -65,7 +75,8 @@ public partial class SetupWizard : ComponentBase
                 MembershipRenewalMonth: _model.MembershipRenewalMonth,
                 IsGstRegistered: _model.IsGstRegistered,
                 AnnualFeeGstCode: _model.AnnualFeeGstCode,
-                AttendanceFeeGstCode: _model.AttendanceFeeGstCode);
+                AttendanceFeeGstCode: _model.AttendanceFeeGstCode,
+                Theme: ThemeProvider?.CurrentTheme ?? Theme.Dark);
 
             await SetupService.InitializeAsync(request);
 
