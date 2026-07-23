@@ -8,6 +8,13 @@
 
 **Input**: User description: "create a new spec (and branch) based on issue #237 — The Transfer and Journal Entry pages in the finance module do effectively the same thing. The Transfer tab probably should be refactored to record bank deposits of cash collected. This should reduce the total in the cash account and increase the balance of the bank account per standard accounting conventions."
 
+## Clarifications
+
+### Session 2026-07-23
+
+- Q: When a bank deposit is recorded, should it be classified under the same record type as historical generic transfers, or given its own distinct classification? → A: Its own distinct classification — bank deposits are recorded as a distinct kind of financial record, separate from the historical "transfer" classification, even though both still post matching debit/credit entries the same way.
+- Q: What should the page previously labeled "Transfer" be titled/labeled going forward? → A: "Record Bank Deposit".
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Record a bank deposit of collected cash (Priority: P1)
@@ -36,7 +43,7 @@ A treasurer needs to move money into the bank and wants one obvious workflow for
 
 **Acceptance Scenarios**:
 
-1. **Given** the finance navigation, **When** the treasurer opens the page previously labeled "Transfer", **Then** they see a bank-deposit-specific form (cash source fixed, destination bank account picker, amount, optional description) rather than a generic any-account-to-any-account picker.
+1. **Given** the finance navigation, **When** the treasurer opens the page previously labeled "Transfer" (now titled "Record Bank Deposit"), **Then** they see a bank-deposit-specific form (cash source fixed, destination bank account picker, amount, optional description) rather than a generic any-account-to-any-account picker.
 2. **Given** a treasurer wants to correct a misallocated entry between two bank accounts (not a cash deposit), **When** they look for that capability, **Then** they find it available via the existing Journal Entry page, unchanged.
 
 ---
@@ -72,13 +79,14 @@ A treasurer or auditor reviewing historical financial reports (e.g., Account Reg
 - **FR-005**: System MUST allow an optional description for each deposit, defaulting to a standard label when left blank.
 - **FR-006**: Upon recording a deposit, system MUST decrease the Cash on Hand balance and increase the selected bank account balance by the exact deposit amount, keeping the books balanced (total debits equal total credits).
 - **FR-007**: System MUST prevent recording a deposit when no eligible bank account (other than Cash on Hand) exists, and MUST direct the user to add one before proceeding.
-- **FR-008**: System MUST retire the prior generic "transfer between any two accounts" workflow from the page previously labeled "Transfer," so that moving funds between two accounts for reasons other than depositing collected cash continues to be handled through the existing Journal Entry workflow.
+- **FR-008**: System MUST retire the prior generic "transfer between any two accounts" workflow from the page previously labeled "Transfer" — now titled "Record Bank Deposit" — so that moving funds between two accounts for reasons other than depositing collected cash continues to be handled through the existing Journal Entry workflow.
 - **FR-009**: System MUST preserve all previously recorded transfer transactions and continue to display them accurately in existing financial reports after this change ships.
 - **FR-010**: System MUST record an audit trail entry for every bank deposit, consistent with how other financial transactions are audited.
+- **FR-011**: System MUST classify each bank deposit as its own distinct kind of financial record, separate from the historical generic "transfer" classification used by transactions recorded before this change, even though both post matching debit/credit entries in the same way.
 
 ### Key Entities *(include if feature involves data)*
 
-- **Bank Deposit**: A record of cash moved from the Cash on Hand balance into a specific bank account; includes date, amount, destination bank account, and an optional description.
+- **Bank Deposit**: A record of cash moved from the Cash on Hand balance into a specific bank account; includes date, amount, destination bank account, and an optional description. Recorded as its own distinct classification of financial record, separate from the historical generic "transfer" classification (see FR-011).
 - **Bank Account**: An account designated to receive deposits; distinguished from other financial accounts by being flagged as a bank account.
 - **Cash on Hand**: The club's single designated holding account for cash collected before it is deposited at the bank; the fixed source for every bank deposit.
 
