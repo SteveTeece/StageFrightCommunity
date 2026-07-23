@@ -278,6 +278,17 @@ public class ShellLayoutTests : BunitContext
         Assert.Contains("Dark", cut.Find(".btn-theme-toggle").TextContent);
     }
 
+    [Fact]
+    public void Should_NotRenderThemeToggle_When_OnSetupRoute()
+    {
+        AddProvider(0, new MenuItem { Title = "Dashboard", Route = "/dashboard" });
+        Services.GetRequiredService<BunitNavigationManager>().NavigateTo("/setup");
+
+        var cut = Render<ShellLayout>();
+
+        Assert.Empty(cut.FindAll(".btn-theme-toggle"));
+    }
+
     // --- Brand ---
 
     [Fact]

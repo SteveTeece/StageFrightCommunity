@@ -37,12 +37,22 @@ public partial class ThemeProvider : ComponentBase
         }
     }
 
-    private Theme FallbackTheme() => DeviceThemePreferenceProvider.GetPreference() switch
+    private Theme FallbackTheme()
     {
-        PlatformThemePreference.Light => Theme.Light,
-        PlatformThemePreference.Dark => Theme.Dark,
-        _ => Theme.Dark
-    };
+        try
+        {
+            return DeviceThemePreferenceProvider.GetPreference() switch
+            {
+                PlatformThemePreference.Light => Theme.Light,
+                PlatformThemePreference.Dark => Theme.Dark,
+                _ => Theme.Dark
+            };
+        }
+        catch (Exception)
+        {
+            return Theme.Dark;
+        }
+    }
 
     /// <summary>
     /// Toggles the theme between Light and Dark, persists the choice to Settings,
