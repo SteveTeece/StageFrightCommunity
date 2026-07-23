@@ -44,7 +44,7 @@ public class AttendanceGridTests : BunitContext
     private static readonly Rehearsal FutureRehearsal = new()
     {
         Id = RehearsalId,
-        Date = DateTime.UtcNow.Date.AddDays(1),
+        Date = DateTime.Today.AddDays(1),
         Time = TimeSpan.FromHours(19),
         StoredAttendanceRate = null,
         CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
