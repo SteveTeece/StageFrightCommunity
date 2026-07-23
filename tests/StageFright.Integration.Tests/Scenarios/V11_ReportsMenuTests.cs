@@ -4,6 +4,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Modules.Finance;
 using StageFright.Data;
 using StageFright.Data.Repositories;
 using StageFright.Reports.Models;
@@ -232,7 +233,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
                 new IncomeStatementReportProvider(glRepo, catRepo, new SettingsRepository(_db)),
                 new TrialBalanceReportProvider(glRepo, catRepo, new SettingsRepository(_db)),
                 new AccountRegisterReportProvider(glRepo, catRepo),
-                new MemberAccountSummaryReportProvider(glRepo, memberRepo, feeRepo),
+                new MemberAccountSummaryReportProvider(glRepo, memberRepo, new MemberBalanceService(memberRepo, feeRepo, glRepo)),
                 new MemberListReportProvider(memberRepo),
                 new CommitteeReportProvider(committeeRepo, memberRepo)
             },
