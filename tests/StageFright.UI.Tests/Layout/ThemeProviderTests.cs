@@ -75,6 +75,23 @@ public class ThemeProviderTests : BunitContext
         Assert.Equal("dark", attr);
     }
 
+    [Theory]
+    [InlineData(PlatformThemePreference.Light, "light")]
+    [InlineData(PlatformThemePreference.Dark, "dark")]
+    [InlineData(PlatformThemePreference.Unspecified, "dark")]
+    public void Renders_DataBsTheme_FromDevicePreference_WhenSettingsThrows(PlatformThemePreference preference, string expectedAttr)
+    {
+        _settingsService.GetAsync(Arg.Any<CancellationToken>())
+            .Returns<Settings?>(_ => throw new InvalidOperationException("DB unavailable"));
+        _deviceThemeProvider.GetPreference().Returns(preference);
+
+        var cut = Render<ThemeProvider>(p =>
+            p.AddChildContent("<span class='child'>Content</span>"));
+
+        var attr = cut.Find("[data-bs-theme]").GetAttribute("data-bs-theme");
+        Assert.Equal(expectedAttr, attr);
+    }
+
     // --- Toggle ---
 
     [Fact]
