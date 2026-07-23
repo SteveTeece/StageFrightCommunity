@@ -65,6 +65,7 @@ public class MemberAccountSummaryReportProvider : IReportProvider
             var openingBalance = closingBalance - periodChange;
 
             var outstandingFees = await _balances.GetOutstandingFeesAsync(member.Id, ct);
+            var outstandingFeeIds = outstandingFees.Select(f => f.FeeId).ToHashSet();
 
             // Any receivable credit not allocated to a specific fee (e.g. overpayment)
             // is walked off the oldest fees first so the buckets sum to the GL balance.
@@ -95,7 +96,12 @@ public class MemberAccountSummaryReportProvider : IReportProvider
                 new() { Cells = ["Opening Balance", string.Empty, string.Empty, string.Empty, string.Empty, FormatCurrency(openingBalance)] }
             };
 
-            foreach (var txn in periodTxns.OrderBy(t => t.Date))
+            // Only show line items still relevant to what's owed: transactions tied to a fee
+            // that's fully settled are hidden, since the opening/closing balance rows already
+            // account for them; adjustments with no FeeId (e.g. overpayments) always show.
+            var displayedTxns = periodTxns.Where(t => t.FeeId is null || outstandingFeeIds.Contains(t.FeeId.Value));
+
+            foreach (var txn in displayedTxns.OrderBy(t => t.Date))
             {
                 rows.Add(new ReportRow
                 {

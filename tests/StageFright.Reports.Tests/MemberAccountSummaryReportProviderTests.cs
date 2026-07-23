@@ -226,6 +226,71 @@ public class MemberAccountSummaryReportProviderTests
     }
 
     [Fact]
+    public async Task Should_ExcludeTransactionRows_When_LinkedFeeIsFullyPaid()
+    {
+        var memberId = Guid.NewGuid();
+        var paidFeeId = Guid.NewGuid();
+        var unpaidFeeId = Guid.NewGuid();
+        SetupMembers(MakeMember(memberId, "Mixed History", false));
+        SetupBalance(memberId, 30m);
+        SetupMemberTransactions(memberId,
+            MakeDebitTransaction(memberId, Today.AddMonths(-2), "Paid fee accrual", 20m, paidFeeId),
+            MakeCreditTransaction(memberId, Today.AddMonths(-2), "Paid fee cleared", 20m, paidFeeId),
+            MakeDebitTransaction(memberId, Today.AddMonths(-1), "Unpaid fee accrual", 30m, unpaidFeeId));
+        SetupOutstandingFees(memberId, MakeOutstandingFee(30m, Today.AddDays(10), feeId: unpaidFeeId));
+
+        var result = await _sut.GenerateAsync(CurrentYearFilters());
+
+        var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Mixed History"));
+        var descriptions = section.Rows.SelectMany(r => r.Cells).ToList();
+        Assert.DoesNotContain("Paid fee accrual", descriptions);
+        Assert.DoesNotContain("Paid fee cleared", descriptions);
+        Assert.Contains("Unpaid fee accrual", descriptions);
+    }
+
+    [Fact]
+    public async Task Should_IncludeTransactionRow_When_NotLinkedToAnyFee()
+    {
+        var memberId = Guid.NewGuid();
+        SetupMembers(MakeMember(memberId, "Adjustment Case", false));
+        SetupBalance(memberId, 10m);
+        SetupMemberTransactions(memberId,
+            MakeCreditTransaction(memberId, Today.AddMonths(-1), "Overpayment credit", 5m));
+        SetupOutstandingFees(memberId, MakeOutstandingFee(10m, Today.AddDays(10)));
+
+        var result = await _sut.GenerateAsync(CurrentYearFilters());
+
+        var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Adjustment Case"));
+        var descriptions = section.Rows.SelectMany(r => r.Cells).ToList();
+        Assert.Contains("Overpayment credit", descriptions);
+    }
+
+    [Fact]
+    public async Task Should_KeepOpeningAndClosingBalanceAccurate_When_SomeTransactionsAreHiddenAsFullyPaid()
+    {
+        var memberId = Guid.NewGuid();
+        var paidFeeId = Guid.NewGuid();
+        var unpaidFeeId = Guid.NewGuid();
+        SetupMembers(MakeMember(memberId, "Reconciled Debtor", false));
+        // Closing balance = 30 (only the unpaid fee). The paid fee's accrual/clear pair nets to
+        // zero, so the hidden rows must not distort Opening Balance even though they're not shown.
+        SetupBalance(memberId, 30m);
+        SetupMemberTransactions(memberId,
+            MakeDebitTransaction(memberId, Today.AddMonths(-2), "Paid fee accrual", 20m, paidFeeId),
+            MakeCreditTransaction(memberId, Today.AddMonths(-2), "Paid fee cleared", 20m, paidFeeId),
+            MakeDebitTransaction(memberId, Today.AddMonths(-1), "Unpaid fee accrual", 30m, unpaidFeeId));
+        SetupOutstandingFees(memberId, MakeOutstandingFee(30m, Today.AddDays(10), feeId: unpaidFeeId));
+
+        var result = await _sut.GenerateAsync(CurrentYearFilters());
+
+        var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Reconciled Debtor"));
+        Assert.Equal("Opening Balance", section.Rows[0].Cells[0]);
+        Assert.Equal("0.00", section.Rows[0].Cells[5]);
+        Assert.Equal("Closing Balance", section.Rows.Last(r => r.Cells[0] == "Closing Balance").Cells[0]);
+        Assert.Equal("30.00", section.Rows.Single(r => r.Cells[0] == "Closing Balance").Cells[5]);
+    }
+
+    [Fact]
     public async Task GenerateAsync_TransactionsWithinMember_AreOrderedOldestFirst()
     {
         var memberId = Guid.NewGuid();
@@ -309,18 +374,18 @@ public class MemberAccountSummaryReportProviderTests
             DebitAmount = 0m, CreditAmount = 10m, GLAccount = "1100", CreatedAt = DateTime.UtcNow
         };
 
-    private static Transaction MakeDebitTransaction(Guid memberId, DateTime date, string description, decimal amount)
+    private static Transaction MakeDebitTransaction(Guid memberId, DateTime date, string description, decimal amount, Guid? feeId = null)
         => new()
         {
             Id = Guid.NewGuid(), MemberId = memberId, Date = date, Description = description,
-            DebitAmount = amount, CreditAmount = 0m, GLAccount = "1200", CreatedAt = DateTime.UtcNow
+            DebitAmount = amount, CreditAmount = 0m, GLAccount = "1200", FeeId = feeId, CreatedAt = DateTime.UtcNow
         };
 
-    private static Transaction MakeCreditTransaction(Guid memberId, DateTime date, string description, decimal amount)
+    private static Transaction MakeCreditTransaction(Guid memberId, DateTime date, string description, decimal amount, Guid? feeId = null)
         => new()
         {
             Id = Guid.NewGuid(), MemberId = memberId, Date = date, Description = description,
-            DebitAmount = 0m, CreditAmount = amount, GLAccount = "1200", CreatedAt = DateTime.UtcNow
+            DebitAmount = 0m, CreditAmount = amount, GLAccount = "1200", FeeId = feeId, CreatedAt = DateTime.UtcNow
         };
 
     private void SetupOutstandingFees(Guid memberId, params OutstandingFee[] fees)
@@ -339,10 +404,10 @@ public class MemberAccountSummaryReportProviderTests
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         };
 
-    private static OutstandingFee MakeOutstandingFee(decimal remaining, DateTime dueDate, DateTime? feeDate = null)
+    private static OutstandingFee MakeOutstandingFee(decimal remaining, DateTime dueDate, DateTime? feeDate = null, Guid? feeId = null)
         => new()
         {
-            FeeId = Guid.NewGuid(), FeeType = FeeType.Annual,
+            FeeId = feeId ?? Guid.NewGuid(), FeeType = FeeType.Annual,
             FeeDate = feeDate ?? dueDate, DueDate = dueDate, RemainingAmount = remaining
         };
 

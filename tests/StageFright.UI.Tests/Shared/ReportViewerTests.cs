@@ -190,6 +190,22 @@ public class ReportViewerTests : BunitContext
     }
 
     [Fact]
+    public async Task WhenMemberRowExpanded_ShowsDebitAndCreditColumnHeaders()
+    {
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
+            .Returns(MasterDetailReport);
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        cut.Find("button[aria-label='Expand child item']").Click();
+
+        var headerText = cut.FindAll("table thead th").Select(th => th.TextContent.Trim()).ToList();
+        Assert.Contains("Debit", headerText);
+        Assert.Contains("Credit", headerText);
+    }
+
+    [Fact]
     public async Task WhenOneMemberRowExpanded_OtherMemberRowRemainsCollapsed()
     {
         _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
