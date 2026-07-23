@@ -93,7 +93,7 @@ public class MemberAccountSummaryReportProvider : IReportProvider
 
             var rows = new List<ReportRow>
             {
-                new() { Cells = ["Opening Balance", string.Empty, string.Empty, string.Empty, string.Empty, FormatCurrency(openingBalance)] }
+                new() { Cells = ["Opening Balance", string.Empty, string.Empty, string.Empty, FormatCurrency(openingBalance)] }
             };
 
             // Only show line items still relevant to what's owed: transactions tied to a fee
@@ -111,7 +111,6 @@ public class MemberAccountSummaryReportProvider : IReportProvider
                         txn.Description ?? string.Empty,
                         txn.DebitAmount > 0 ? FormatCurrency(txn.DebitAmount) : string.Empty,
                         txn.CreditAmount > 0 ? FormatCurrency(txn.CreditAmount) : string.Empty,
-                        string.Empty,
                         string.Empty
                     ]
                 });
@@ -119,23 +118,12 @@ public class MemberAccountSummaryReportProvider : IReportProvider
 
             rows.Add(new ReportRow
             {
-                Cells = ["Closing Balance", string.Empty, string.Empty, string.Empty, string.Empty, FormatCurrency(closingBalance)],
+                Cells = ["Closing Balance", string.Empty, string.Empty, string.Empty, FormatCurrency(closingBalance)],
                 IsEmphasized = true
             });
 
-            rows.Add(new ReportRow
-            {
-                Cells =
-                [
-                    "Aging",
-                    $"Current: {FormatCurrency(aging0)}",
-                    $"30 days: {FormatCurrency(aging30)}",
-                    $"60 days: {FormatCurrency(aging60)}",
-                    $"90+ days: {FormatCurrency(aging90Plus)}",
-                    string.Empty
-                ]
-            });
-
+            // Aging is not repeated here — it's already shown per-bucket on the collapsed
+            // member summary row (SummaryRow below).
             var label = member.IsDeleted ? $"{member.Name} (Archived)" : member.Name;
             var summaryRow = new ReportRow
             {
@@ -163,7 +151,6 @@ public class MemberAccountSummaryReportProvider : IReportProvider
                 new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
                 new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
-                new ReportColumn { Header = "Aging", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "Balance", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
             ],
             SummaryColumns =
