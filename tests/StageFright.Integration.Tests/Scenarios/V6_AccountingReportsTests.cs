@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Finance;
 using StageFright.Data;
 using StageFright.Data.Repositories;
 using StageFright.Reports.Models;
@@ -45,6 +46,19 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
             ActivateDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         });
+
+        // Alice has an outstanding 25.00 annual fee: debit MemberReceivable / credit Income (balanced pair)
+        var feeId = Guid.NewGuid();
+        _db.Fees.Add(new Fee
+        {
+            Id = feeId, MemberId = MemberId, FeeType = FeeType.Annual, Amount = 25m,
+            FeeDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            DueDate = new DateTime(2026, 12, 31, 0, 0, 0, DateTimeKind.Utc),
+            PaidAtCreation = false, CreatedAt = DateTime.UtcNow
+        });
+        _db.Transactions.AddRange(
+            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc), AccountId = SystemAccounts.MemberReceivableId, GLAccount = SystemAccounts.MemberReceivableNumber, DebitAmount = 25m, CreditAmount = 0, MemberId = MemberId, FeeId = feeId, Description = "Annual fee accrual", CreatedAt = DateTime.UtcNow },
+            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc), AccountId = IncomeCatId, GLAccount = "1000", DebitAmount = 0, CreditAmount = 25m, MemberId = MemberId, FeeId = feeId, Description = "Annual fee income", CreatedAt = DateTime.UtcNow });
 
         // Balanced GL: debit MemberReceivable / credit Income = 100, debit Cash / credit MemberReceivable = 100
         _db.Transactions.AddRange(
@@ -238,7 +252,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
         var gl = new GLRepository(_db);
         var members = new MemberRepository(_db);
         var fees = new FeeRepository(_db);
-        return new MemberAccountSummaryReportProvider(gl, members, fees);
+        return new MemberAccountSummaryReportProvider(gl, members, new MemberBalanceService(members, fees, gl));
     }
 
     private static ReportFilterValues CurrentYearFilters()

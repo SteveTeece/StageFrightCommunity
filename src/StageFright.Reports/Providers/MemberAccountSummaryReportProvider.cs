@@ -8,20 +8,22 @@ namespace StageFright.Reports.Providers;
 /// <summary>
 /// Generates the Member Account Summary report.
 /// Per member: opening balance, period transactions, closing balance,
-/// fee aging by DueDate (current / 30 / 60 / 90+ days as of today).
+/// fee aging by DueDate (current / 30 / 60 / 90+ days as of today) computed from
+/// GL-derived remaining amounts so buckets always sum to the member's balance (issue #244).
+/// Only members with an outstanding (positive) balance appear.
 /// Includes archived members per FR-036.
 /// </summary>
 public class MemberAccountSummaryReportProvider : IReportProvider
 {
     private readonly IGLRepository _gl;
     private readonly IMemberRepository _members;
-    private readonly IFeeRepository _fees;
+    private readonly IMemberBalanceService _balances;
 
-    public MemberAccountSummaryReportProvider(IGLRepository gl, IMemberRepository members, IFeeRepository fees)
+    public MemberAccountSummaryReportProvider(IGLRepository gl, IMemberRepository members, IMemberBalanceService balances)
     {
         _gl = gl;
         _members = members;
-        _fees = fees;
+        _balances = balances;
     }
 
     public string ReportId => "member-account-summary";
@@ -54,22 +56,38 @@ public class MemberAccountSummaryReportProvider : IReportProvider
 
         foreach (var member in allMembers)
         {
-            var periodTxns = await _gl.GetByMemberAsync(member.Id, from, to, ct);
             var closingBalance = await _gl.GetMemberBalanceAsync(member.Id, ct);
+            if (closingBalance <= 0m)
+                continue;
+
+            var periodTxns = await _gl.GetByMemberAsync(member.Id, from, to, ct);
             var periodNet = periodTxns.Sum(t => t.CreditAmount - t.DebitAmount);
             var openingBalance = closingBalance - periodNet;
 
-            var memberFees = await _fees.GetByMemberAsync(member.Id, ct);
-            var outstandingFees = memberFees.Where(f => !f.PaidAtCreation).ToList();
+            var outstandingFees = await _balances.GetOutstandingFeesAsync(member.Id, ct);
+
+            // Any receivable credit not allocated to a specific fee (e.g. overpayment)
+            // is walked off the oldest fees first so the buckets sum to the GL balance.
+            var unallocatedCredit = outstandingFees.Sum(f => f.RemainingAmount) - closingBalance;
 
             decimal aging0 = 0, aging30 = 0, aging60 = 0, aging90Plus = 0;
             foreach (var fee in outstandingFees)
             {
+                var remaining = fee.RemainingAmount;
+                if (unallocatedCredit > 0m)
+                {
+                    var applied = Math.Min(unallocatedCredit, remaining);
+                    remaining -= applied;
+                    unallocatedCredit -= applied;
+                }
+                if (remaining <= 0m)
+                    continue;
+
                 var daysOverdue = (today - fee.DueDate.Date).Days;
-                if (daysOverdue <= 0) aging0 += fee.Amount;
-                else if (daysOverdue <= 30) aging30 += fee.Amount;
-                else if (daysOverdue <= 60) aging60 += fee.Amount;
-                else aging90Plus += fee.Amount;
+                if (daysOverdue <= 0) aging0 += remaining;
+                else if (daysOverdue <= 30) aging30 += remaining;
+                else if (daysOverdue <= 60) aging60 += remaining;
+                else aging90Plus += remaining;
             }
 
             var rows = new List<ReportRow>
