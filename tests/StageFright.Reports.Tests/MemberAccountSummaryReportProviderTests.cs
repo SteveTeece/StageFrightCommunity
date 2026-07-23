@@ -204,7 +204,7 @@ public class MemberAccountSummaryReportProviderTests
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("New Debtor"));
         Assert.Equal("Opening Balance", section.Rows[0].Cells[0]);
-        Assert.Equal("0.00", section.Rows[0].Cells[5]);
+        Assert.Equal("0.00", section.Rows[0].Cells[4]);
     }
 
     [Fact]
@@ -222,7 +222,7 @@ public class MemberAccountSummaryReportProviderTests
         var result = await _sut.GenerateAsync(CurrentYearFilters());
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Partial Settler"));
-        Assert.Equal("100.00", section.Rows[0].Cells[5]);
+        Assert.Equal("100.00", section.Rows[0].Cells[4]);
     }
 
     [Fact]
@@ -285,9 +285,9 @@ public class MemberAccountSummaryReportProviderTests
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Reconciled Debtor"));
         Assert.Equal("Opening Balance", section.Rows[0].Cells[0]);
-        Assert.Equal("0.00", section.Rows[0].Cells[5]);
+        Assert.Equal("0.00", section.Rows[0].Cells[4]);
         Assert.Equal("Closing Balance", section.Rows.Last(r => r.Cells[0] == "Closing Balance").Cells[0]);
-        Assert.Equal("30.00", section.Rows.Single(r => r.Cells[0] == "Closing Balance").Cells[5]);
+        Assert.Equal("30.00", section.Rows.Single(r => r.Cells[0] == "Closing Balance").Cells[4]);
     }
 
     [Fact]
@@ -313,7 +313,7 @@ public class MemberAccountSummaryReportProviderTests
         Assert.Equal("2026-02-09", section.Rows[2].Cells[0]);
         Assert.Equal("2026-02-16", section.Rows[3].Cells[0]);
         Assert.Equal("Closing Balance", section.Rows[4].Cells[0]);
-        Assert.Equal("Aging", section.Rows[5].Cells[0]);
+        Assert.Equal(5, section.Rows.Count);
     }
 
     [Fact]
@@ -322,6 +322,25 @@ public class MemberAccountSummaryReportProviderTests
         SetupMembers();
         var result = await _sut.GenerateAsync(CurrentYearFilters());
         Assert.Equal("Member Account Summary", result.Title);
+    }
+
+    [Fact]
+    public async Task Should_NotIncludeAgingColumnOrRow_When_AgingAlreadyShownOnSummaryLine()
+    {
+        var memberId = Guid.NewGuid();
+        SetupMembers(MakeMember(memberId, "No Duplicate Aging", false));
+        SetupBalance(memberId, 20m);
+        SetupMemberTransactions(memberId);
+        SetupOutstandingFees(memberId, MakeOutstandingFee(20m, Today.AddDays(-45)));
+
+        var result = await _sut.GenerateAsync(CurrentYearFilters());
+
+        Assert.Equal(["Date / Item", "Description", "Debit", "Credit", "Balance"],
+            result.Columns.Select(c => c.Header));
+
+        var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("No Duplicate Aging"));
+        Assert.DoesNotContain(section.Rows, r => r.Cells[0] == "Aging");
+        Assert.All(section.Rows, r => Assert.Equal(result.Columns.Count, r.Cells.Count));
     }
 
     [Fact]
