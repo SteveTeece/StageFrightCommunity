@@ -26,7 +26,7 @@ public class FinanceMenuItemProvider : IMenuItemProvider
             [
                 new MenuItem { Title = "Overview", Route = "/finance", DisplayOrder = 0 },
                 new MenuItem { Title = "Chart of Accounts", Route = "/finance/accounts", DisplayOrder = 1 },
-                new MenuItem { Title = "Transfers", Route = "/finance/transfers", DisplayOrder = 3 },
+                new MenuItem { Title = "Record Bank Deposit", Route = "/finance/bank-deposit", DisplayOrder = 3 },
                 new MenuItem { Title = "Journal Entries", Route = "/finance/journal", DisplayOrder = 4 },
                 new MenuItem { Title = "Reconciliation", Route = "/finance/reconciliation", DisplayOrder = 5 },
                 new MenuItem { Title = "Opening Balances", Route = "/finance/opening-balances", DisplayOrder = 6 }

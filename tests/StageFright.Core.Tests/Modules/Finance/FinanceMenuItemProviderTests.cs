@@ -22,7 +22,7 @@ public class FinanceMenuItemProviderTests
     [Theory]
     [InlineData("Overview")]
     [InlineData("Chart of Accounts")]
-    [InlineData("Transfers")]
+    [InlineData("Record Bank Deposit")]
     [InlineData("Journal Entries")]
     [InlineData("Reconciliation")]
     [InlineData("Opening Balances")]
@@ -40,5 +40,14 @@ public class FinanceMenuItemProviderTests
 
         var chartOfAccounts = Assert.Single(financeItem.SubItems!, item => item.Title == "Chart of Accounts");
         Assert.Equal("/finance/accounts", chartOfAccounts.Route);
+    }
+
+    [Fact]
+    public void GetMenuItems_RecordBankDeposit_RoutesToFinanceBankDeposit()
+    {
+        var financeItem = Assert.Single(_sut.GetMenuItems());
+
+        var bankDeposit = Assert.Single(financeItem.SubItems!, item => item.Title == "Record Bank Deposit");
+        Assert.Equal("/finance/bank-deposit", bankDeposit.Route);
     }
 }

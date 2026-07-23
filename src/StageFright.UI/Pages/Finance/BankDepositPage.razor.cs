@@ -5,14 +5,14 @@ using StageFright.Core.Modules.Finance;
 
 namespace StageFright.UI.Pages.Finance;
 
-public partial class TransferPage : ComponentBase
+public partial class BankDepositPage : ComponentBase
 {
-    [Inject] private IAccountTransferService TransferService { get; set; } = null!;
+    [Inject] private IBankDepositService BankDepositService { get; set; } = null!;
     [Inject] private IAccountService AccountService { get; set; } = null!;
 
-    private readonly TransferModel _form = new();
+    private readonly BankDepositModel _form = new();
     private readonly Dictionary<string, string> _errors = new();
-    private IReadOnlyList<Account> _bankAccounts = [];
+    private IReadOnlyList<Account> _destinationAccounts = [];
     private bool _loading = true;
     private bool _saving;
     private string? _successMessage;
@@ -22,7 +22,8 @@ public partial class TransferPage : ComponentBase
     {
         try
         {
-            _bankAccounts = await AccountService.GetBankAccountsAsync();
+            var bankAccounts = await AccountService.GetBankAccountsAsync();
+            _destinationAccounts = bankAccounts.Where(a => a.Id != SystemAccounts.CashId).ToList();
         }
         catch (Exception ex)
         {
@@ -42,14 +43,8 @@ public partial class TransferPage : ComponentBase
         if (_form.Amount <= 0m)
             _errors["Amount"] = "Amount must be greater than zero.";
 
-        if (_form.FromAccountId == Guid.Empty)
-            _errors["FromAccountId"] = "Please select the source account.";
-
         if (_form.ToAccountId == Guid.Empty)
             _errors["ToAccountId"] = "Please select the destination account.";
-
-        if (_form.FromAccountId != Guid.Empty && _form.FromAccountId == _form.ToAccountId)
-            _errors["ToAccountId"] = "The source and destination accounts must differ.";
 
         if (_errors.Count > 0)
             return;
@@ -57,21 +52,20 @@ public partial class TransferPage : ComponentBase
         _saving = true;
         try
         {
-            var request = new RecordTransferRequest
+            var request = new RecordBankDepositRequest
             {
                 Date = _form.Date,
                 Amount = _form.Amount,
-                FromAccountId = _form.FromAccountId,
                 ToAccountId = _form.ToAccountId,
                 Description = string.IsNullOrWhiteSpace(_form.Description) ? null : _form.Description.Trim()
             };
 
-            await TransferService.RecordTransferAsync(request);
-            _successMessage = $"Transfer of {request.Amount:C} recorded successfully.";
+            await BankDepositService.RecordDepositAsync(request);
+            _successMessage = $"Deposit of {request.Amount:C} recorded successfully.";
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to record transfer: {ex.Message}";
+            _errorMessage = $"Failed to record deposit: {ex.Message}";
         }
         finally
         {
