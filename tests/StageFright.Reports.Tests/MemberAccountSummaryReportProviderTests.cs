@@ -189,6 +189,43 @@ public class MemberAccountSummaryReportProviderTests
     }
 
     [Fact]
+    public async Task Should_ComputeZeroOpeningBalance_When_EntireBalanceAccruedDuringPeriod()
+    {
+        var memberId = Guid.NewGuid();
+        SetupMembers(MakeMember(memberId, "New Debtor", false));
+        // The member's whole $100 history is a single debit dated inside the report period —
+        // before the period started they owed nothing, so Opening Balance must be 0.00.
+        SetupBalance(memberId, 100m);
+        SetupMemberTransactions(memberId,
+            MakeDebitTransaction(memberId, new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), "Fee accrued", 100m));
+        SetupOutstandingFees(memberId, MakeOutstandingFee(100m, Today.AddDays(10)));
+
+        var result = await _sut.GenerateAsync(CurrentYearFilters());
+
+        var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("New Debtor"));
+        Assert.Equal("Opening Balance", section.Rows[0].Cells[0]);
+        Assert.Equal("0.00", section.Rows[0].Cells[5]);
+    }
+
+    [Fact]
+    public async Task Should_ComputeOpeningBalance_When_PaymentDuringPeriodReducesPriorDebt()
+    {
+        var memberId = Guid.NewGuid();
+        SetupMembers(MakeMember(memberId, "Partial Settler", false));
+        // Balance today is 60; the only period activity is a 40 payment credit, so before the
+        // period the member owed 100 (60 + 40), not 20 (60 - 40, the pre-fix sign-flipped result).
+        SetupBalance(memberId, 60m);
+        SetupMemberTransactions(memberId,
+            MakeCreditTransaction(memberId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), "Payment", 40m));
+        SetupOutstandingFees(memberId, MakeOutstandingFee(60m, Today.AddDays(10)));
+
+        var result = await _sut.GenerateAsync(CurrentYearFilters());
+
+        var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Partial Settler"));
+        Assert.Equal("100.00", section.Rows[0].Cells[5]);
+    }
+
+    [Fact]
     public async Task GenerateAsync_TransactionsWithinMember_AreOrderedOldestFirst()
     {
         var memberId = Guid.NewGuid();
@@ -270,6 +307,20 @@ public class MemberAccountSummaryReportProviderTests
         {
             Id = Guid.NewGuid(), MemberId = memberId, Date = date, Description = description,
             DebitAmount = 0m, CreditAmount = 10m, GLAccount = "1100", CreatedAt = DateTime.UtcNow
+        };
+
+    private static Transaction MakeDebitTransaction(Guid memberId, DateTime date, string description, decimal amount)
+        => new()
+        {
+            Id = Guid.NewGuid(), MemberId = memberId, Date = date, Description = description,
+            DebitAmount = amount, CreditAmount = 0m, GLAccount = "1200", CreatedAt = DateTime.UtcNow
+        };
+
+    private static Transaction MakeCreditTransaction(Guid memberId, DateTime date, string description, decimal amount)
+        => new()
+        {
+            Id = Guid.NewGuid(), MemberId = memberId, Date = date, Description = description,
+            DebitAmount = 0m, CreditAmount = amount, GLAccount = "1200", CreatedAt = DateTime.UtcNow
         };
 
     private void SetupOutstandingFees(Guid memberId, params OutstandingFee[] fees)

@@ -61,8 +61,8 @@ public class MemberAccountSummaryReportProvider : IReportProvider
                 continue;
 
             var periodTxns = await _gl.GetByMemberAsync(member.Id, from, to, ct);
-            var periodNet = periodTxns.Sum(t => t.CreditAmount - t.DebitAmount);
-            var openingBalance = closingBalance - periodNet;
+            var periodChange = periodTxns.Sum(t => t.DebitAmount - t.CreditAmount);
+            var openingBalance = closingBalance - periodChange;
 
             var outstandingFees = await _balances.GetOutstandingFeesAsync(member.Id, ct);
 

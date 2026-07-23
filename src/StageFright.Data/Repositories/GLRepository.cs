@@ -129,8 +129,13 @@ public class GLRepository : IGLRepository
 
     public async Task<IReadOnlyList<Transaction>> GetByMemberAsync(Guid memberId, DateTime from, DateTime to, CancellationToken ct = default)
     {
+        // Scoped to the Member Receivable account only. Posting services vary in which legs
+        // of a balanced pair they tag with MemberId — e.g. PaymentService tags both the Cash
+        // and Receivable legs — so filtering on MemberId alone would leak unrelated-account
+        // rows into what is meant to be a per-member receivable ledger.
         return await _db.Transactions
-            .Where(t => t.MemberId == memberId && t.Date >= from && t.Date <= to)
+            .Where(t => t.MemberId == memberId && t.AccountId == SystemAccounts.MemberReceivableId
+                && t.Date >= from && t.Date <= to)
             .OrderBy(t => t.Date)
             .ThenBy(t => t.CreatedAt)
             .ToListAsync(ct);

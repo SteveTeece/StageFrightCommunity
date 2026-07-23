@@ -201,6 +201,30 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         Assert.Empty(txns);
     }
 
+    // --- GetByMemberAsync ---
+
+    [Fact]
+    public async Task GetByMember_ReturnsOnlyMemberReceivableLegs_ExcludingOtherAccountsSharingMemberId()
+    {
+        var memberId = await SeedMemberAsync();
+        var from = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var to = new DateTime(2026, 12, 31, 0, 0, 0, DateTimeKind.Utc);
+
+        // Fee accrual: only the MemberReceivable leg is tagged with MemberId (matches FeeService).
+        await AddGLPairAsync("0101", MemberReceivableAccountId, 50m, memberId,
+                              "1000", IncomeAccountId, 50m, null);
+
+        // Payment: BOTH legs are tagged with MemberId (matches PaymentService) — the Cash leg
+        // must not leak into the member's receivable ledger.
+        await AddGLPairAsync("0100", CashAccountId, 30m, memberId,
+                              "0101", MemberReceivableAccountId, 30m, memberId);
+
+        var txns = await _sut.GetByMemberAsync(memberId, from, to);
+
+        Assert.Equal(2, txns.Count);
+        Assert.All(txns, t => Assert.Equal(MemberReceivableAccountId, t.AccountId));
+    }
+
     // --- GetBalanceTotalsAsync ---
 
     [Fact]
