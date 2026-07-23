@@ -24,26 +24,29 @@ Theme persistence across sessions is already fully implemented (see "Existing be
 
 ## Change 2: First-run default in `SetupService`
 
-`SetupService.InitializeAsync` (`src/StageFright.Core/Modules/Settings/SetupService.cs:67`) currently sets `Theme = Theme.Light` unconditionally. It changes to inject `IDeviceThemePreferenceProvider` and map:
+**Superseded during implementation — see addendum below.** `SetupService.InitializeAsync` (`src/StageFright.Core/Modules/Settings/SetupService.cs:67`) currently sets `Theme = Theme.Light` unconditionally. It changes to persist `request.Theme` verbatim (a new field on `SetupRequest`) rather than computing the OS-preference mapping itself — that mapping now lives solely in `ThemeProvider` (Change 3), whose `CurrentTheme` the Setup Wizard reads when building the request. See the addendum for why.
+
+## Change 3: Pre-setup fallback in `ThemeProvider`
+
+Before the Settings row exists (i.e., while the user is still filling out the Setup Wizard itself), `ThemeProvider.OnInitializedAsync` (`src/StageFright.UI/Layout/ThemeProvider.razor.cs:29,33`) currently falls back to `Theme.Light`. It changes to inject `IDeviceThemePreferenceProvider` and map:
 
 - `PlatformThemePreference.Light` → `Theme.Light`
 - `PlatformThemePreference.Dark` → `Theme.Dark`
 - `PlatformThemePreference.Unspecified` → `Theme.Dark` (fallback)
 
-This is the value written to the `Settings` row and is what persists from the very first launch onward.
-
-## Change 3: Pre-setup fallback in `ThemeProvider`
-
-Before the Settings row exists (i.e., while the user is still filling out the Setup Wizard itself), `ThemeProvider.OnInitializedAsync` (`src/StageFright.UI/Layout/ThemeProvider.razor.cs:29,33`) currently falls back to `Theme.Light`. It changes to use the same `IDeviceThemePreferenceProvider` + fallback-to-Dark mapping as Change 2, so the Setup Wizard itself renders in the OS-preferred/Dark theme rather than flashing Light and then switching after setup completes.
+so the Setup Wizard itself renders in the OS-preferred/Dark theme rather than flashing Light and then switching after setup completes. `ThemeProvider.CurrentTheme` (this same fallback value, or the user's in-wizard toggle choice — see addendum) is what the Setup Wizard passes into `SetupRequest.Theme` for `SetupService` to persist (Change 2).
 
 ## Testing
 
-- `SetupServiceTests`: three new/updated cases covering `PlatformThemePreference.Light`, `.Dark`, and `.Unspecified` (mocked `IDeviceThemePreferenceProvider`), asserting the resulting `Settings.Theme`.
+- `SetupServiceTests`: a new theory covering `Theme.Light` and `Theme.Dark` requested via `SetupRequest.Theme`, asserting the resulting `Settings.Theme` matches verbatim.
 - `ThemeProviderTests`: replace the two tests that currently assert a hardcoded Light fallback (`Renders_DataBsTheme_Light_ByDefault_WhenSettingsNull`, `CurrentTheme_IsLight_WhenSettingsNull`) with equivalents covering all three `PlatformThemePreference` branches via a mocked provider.
-- `V10_ThemeTests.DefaultTheme_IsLight_AfterFirstRunSetup`: rename/rewrite — Light is no longer the unconditional post-setup default; assert the OS-preference-driven behavior instead (e.g. parameterized over the three preference values, or split into `DefaultTheme_FollowsOsPreference_AfterFirstRunSetup` / `DefaultTheme_IsDark_WhenOsPreferenceUnspecified_AfterFirstRunSetup`).
+- `V10_ThemeTests.DefaultTheme_IsLight_AfterFirstRunSetup`: renamed/rewritten to `DefaultTheme_MatchesRequestedTheme_AfterFirstRunSetup`, a theory over `Theme.Light`/`Theme.Dark` that calls `SetupService.InitializeAsync` directly (the original version never exercised `SetupService` at all).
 - No new tests needed for persistence across sessions — already covered.
 
 ## Out of scope
 
 - No MAUI-level (`Application.Current.UserAppTheme`) app-wide theme switching — theming stays entirely CSS/Blazor-level as it is today (`data-bs-theme` + Bootstrap variables + conditional Radzen dark CSS).
-- No new UI for choosing a theme during the Setup Wizard — the default is applied silently; the user can still toggle it afterward via the existing sidebar/Settings controls.
+
+## Addendum: Setup Wizard theme toggle (added during implementation)
+
+GitHub issue #248 explicitly asked for a theme toggle on the Setup Wizard itself, which this design's original "no new UI" scoping missed. Confirmed with the user mid-implementation before writing the implementation plan; the plan's Task 3 added a `RadzenSwitch` toggle to `SetupWizard.razor`, bound to the cascaded `ThemeProvider.CurrentTheme`/`ToggleAsync()`. This is why `SetupService` was changed to trust `SetupRequest.Theme` verbatim (Change 2) instead of independently recomputing the OS-preference mapping: the wizard's `ThemeProvider` instance is the single source of truth for "what theme is currently selected," whether that's still the OS-preference default or the user's in-wizard override.
