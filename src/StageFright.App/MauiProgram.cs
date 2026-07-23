@@ -152,6 +152,7 @@ public static class MauiProgram
     {
         services.AddScoped<IAuditTrailService, AuditTrailService>();
         services.AddScoped<ISetupService, SetupService>();
+        services.AddSingleton<IDeviceThemePreferenceProvider, MauiDeviceThemePreferenceProvider>();
         services.AddScoped<AccountNumberAssignmentService>();
 
         // Settings service
