@@ -214,6 +214,24 @@ public class SetupServiceTests : TestBase
             () => svc.InitializeAsync(ValidRequest(), Ct));
     }
 
+    [Theory]
+    [InlineData(Theme.Light)]
+    [InlineData(Theme.Dark)]
+    public async Task InitializeAsync_PersistsRequestedTheme(Theme requestedTheme)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        var request = ValidRequest() with { Theme = requestedTheme };
+        await svc.InitializeAsync(request, Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s.Theme == requestedTheme),
+            Arg.Any<CancellationToken>());
+    }
+
     private static SetupRequest ValidRequest() => new(
         OrganizationName: "Test Org",
         Abn: "51824753556",
@@ -222,5 +240,6 @@ public class SetupServiceTests : TestBase
         MembershipRenewalMonth: 1,
         IsGstRegistered: false,
         AnnualFeeGstCode: null,
-        AttendanceFeeGstCode: null);
+        AttendanceFeeGstCode: null,
+        Theme: Theme.Dark);
 }
