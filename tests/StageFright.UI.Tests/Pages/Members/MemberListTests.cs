@@ -100,4 +100,31 @@ public class MemberListTests : BunitContext
         Assert.Contains("No members found.", cut.Markup);
         Assert.DoesNotContain("No active members found.", cut.Markup);
     }
+
+    [Fact]
+    public void MemberWithDateOfBirth_AgeColumn_ShowsCalculatedAge()
+    {
+        var dob = DateTime.UtcNow.Date.AddYears(-40).AddDays(-1); // birthday already passed
+        var withDob = new Member
+        {
+            Id = Guid.NewGuid(), Name = "Carol WithDob", StreetAddress = "3 Test St",
+            Status = MemberStatus.Active, JoinDate = DateTime.UtcNow, DateOfBirth = dob,
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        _memberService.GetByStatusAsync(MemberStatus.Active, Arg.Any<CancellationToken>())
+            .Returns((IReadOnlyList<Member>)new List<Member> { withDob });
+
+        var cut = Render<MemberList>();
+
+        Assert.Contains(">40<", cut.Markup);
+    }
+
+    [Fact]
+    public void MemberWithoutDateOfBirth_AgeColumn_ShowsEmDash()
+    {
+        // _activeMember (default setup) has no DateOfBirth.
+        var cut = Render<MemberList>();
+
+        Assert.Contains("—", cut.Markup);
+    }
 }

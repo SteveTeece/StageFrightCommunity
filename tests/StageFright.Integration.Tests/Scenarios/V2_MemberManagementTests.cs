@@ -138,6 +138,89 @@ public sealed class V2_MemberManagementTests : IAsyncLifetime
             }));
     }
 
+    [Fact]
+    public async Task CreateMember_DobExceedsMaxAgeRange_ThrowsValidationException()
+    {
+        await SeedSettingsAsync(maxAgeRangeYears: 100, minimumMemberAge: 0);
+        var svc = BuildMemberService();
+
+        var ex = await Assert.ThrowsAsync<ValidationException>(() =>
+            svc.CreateAsync(new CreateMemberRequest
+            {
+                Name = "Very Old Person",
+                StreetAddress = "1 Ancient Ln",
+                JoinDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                DateOfBirth = DateTime.UtcNow.Date.AddYears(-101)
+            }));
+
+        Assert.Contains("100", ex.Message);
+    }
+
+    [Fact]
+    public async Task CreateMember_DobBelowMinimumAge_ThrowsValidationException()
+    {
+        await SeedSettingsAsync(maxAgeRangeYears: 150, minimumMemberAge: 18);
+        var svc = BuildMemberService();
+
+        var ex = await Assert.ThrowsAsync<ValidationException>(() =>
+            svc.CreateAsync(new CreateMemberRequest
+            {
+                Name = "Young Person",
+                StreetAddress = "1 Youth Ln",
+                JoinDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                DateOfBirth = DateTime.UtcNow.Date.AddYears(-10)
+            }));
+
+        Assert.Contains("18", ex.Message);
+    }
+
+    [Fact]
+    public async Task UpdateMember_DobExceedsMaxAgeRange_ThrowsValidationException()
+    {
+        var svc = BuildMemberService();
+        var member = await svc.CreateAsync(new CreateMemberRequest
+        {
+            Name = "Update Target",
+            StreetAddress = "1 Update St",
+            JoinDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+        });
+
+        await SeedSettingsAsync(maxAgeRangeYears: 100, minimumMemberAge: 0);
+
+        await Assert.ThrowsAsync<ValidationException>(() =>
+            svc.UpdateAsync(member.Id, new UpdateMemberRequest
+            {
+                Name = member.Name,
+                StreetAddress = member.StreetAddress,
+                JoinDate = member.JoinDate,
+                DateOfBirth = DateTime.UtcNow.Date.AddYears(-101)
+            }));
+    }
+
+    [Fact]
+    public async Task UpdateMember_ValidDob_UpdatesSuccessfully()
+    {
+        var svc = BuildMemberService();
+        var member = await svc.CreateAsync(new CreateMemberRequest
+        {
+            Name = "Update Target",
+            StreetAddress = "1 Update St",
+            JoinDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+        });
+
+        var dob = DateTime.UtcNow.Date.AddYears(-40);
+        await svc.UpdateAsync(member.Id, new UpdateMemberRequest
+        {
+            Name = member.Name,
+            StreetAddress = member.StreetAddress,
+            JoinDate = member.JoinDate,
+            DateOfBirth = dob
+        });
+
+        var updated = await svc.GetByIdAsync(member.Id);
+        Assert.Equal(dob, updated!.DateOfBirth);
+    }
+
     // --- Status transitions ---
 
     [Fact]
@@ -259,6 +342,21 @@ public sealed class V2_MemberManagementTests : IAsyncLifetime
         var unitOfWork = new UnitOfWork(_db);
 
         return new MemberService(memberRepo, committeeRepo, validation, settingsRepo, auditSvc, unitOfWork);
+    }
+
+    private async Task SeedSettingsAsync(int maxAgeRangeYears, int minimumMemberAge)
+    {
+        var settingsRepo = new SettingsRepository(_db);
+        await settingsRepo.SaveAsync(new StageFright.Core.Entities.Settings
+        {
+            Id = Guid.NewGuid(),
+            OrganizationName = "Test Org",
+            AnnualFee = 50m,
+            AttendanceFee = 5m,
+            MembershipRenewalMonth = 1,
+            MaxAgeRangeYears = maxAgeRangeYears,
+            MinimumMemberAge = minimumMemberAge
+        });
     }
 
     private CommitteeService BuildCommitteeService()

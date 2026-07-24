@@ -58,6 +58,37 @@ public class MemberFormTests : BunitContext
     }
 
     [Fact]
+    public void Renders_DateOfBirthField_ForNewMember()
+    {
+        var cut = Render<MemberForm>();
+
+        cut.Find("#dob");
+    }
+
+    [Fact]
+    public async Task SubmitWithDobViolatingAgeRange_ShowsValidationError_FromService()
+    {
+        _memberService.CreateAsync(Arg.Any<CreateMemberRequest>(), Arg.Any<CancellationToken>())
+            .Returns<Member>(_ => throw new ValidationException(
+                "Date of birth implies an age of 200 years, which exceeds the maximum allowed range of 150 years.",
+                "Member", "CreateAsync"));
+
+        var cut = Render<MemberForm>();
+
+        cut.Find("#name").Change("Jane Doe");
+        cut.Find("#address").Change("1 Main St");
+        await cut.Find("form").SubmitAsync();
+
+        var alert = cut.Find(".alert-danger");
+        Assert.Contains("exceeds the maximum allowed range", alert.TextContent);
+
+        // Age-range violations only reach the global banner today — the DOB field itself
+        // never gets an is-invalid class or its own <div class="invalid-feedback">.
+        var dob = cut.Find("#dob");
+        Assert.DoesNotContain("is-invalid", dob.ClassList);
+    }
+
+    [Fact]
     public async Task SubmitWithEmptyName_ShowsValidationError_FromService()
     {
         _memberService.CreateAsync(Arg.Any<CreateMemberRequest>(), Arg.Any<CancellationToken>())
