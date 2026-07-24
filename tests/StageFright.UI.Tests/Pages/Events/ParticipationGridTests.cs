@@ -45,7 +45,7 @@ public class ParticipationGridTests : BunitContext
     private static readonly Event FutureEvent = new()
     {
         Id = EventId,
-        Date = DateTime.UtcNow.Date.AddDays(1),
+        Date = DateTime.Today.AddDays(1),
         EventTypeId = EventTypeId,
         EventType = new EventType { Id = EventTypeId, Name = "Performance" },
         StoredParticipationRate = null,

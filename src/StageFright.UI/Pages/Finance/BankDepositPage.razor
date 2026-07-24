@@ -1,9 +1,9 @@
-@page "/finance/transfers"
+@page "/finance/bank-deposit"
 
-<PageTitle>Transfer Between Accounts</PageTitle>
+<PageTitle>Record Bank Deposit</PageTitle>
 
-<div class="transfer-page container-fluid py-2">
-    <h4 class="mb-2">Transfer Between Accounts</h4>
+<div class="bank-deposit-page container-fluid py-2">
+    <h4 class="mb-2">Record Bank Deposit</h4>
 
     @if (_loading)
     {
@@ -28,10 +28,10 @@
 
         @if (_successMessage is null)
         {
-            @if (_bankAccounts.Count < 2)
+            @if (_destinationAccounts.Count == 0)
             {
                 <div class="alert alert-warning py-1 mb-2 small" role="alert">
-                    Transfers need at least two bank/cash accounts. Please add a bank account in the
+                    Bank deposits need at least one bank account other than Cash on Hand. Please add a bank account in the
                     <a href="/finance/accounts">Chart of Accounts</a> first.
                 </div>
             }
@@ -43,15 +43,15 @@
                             <div class="row g-2">
 
                                 <div class="col-md-4">
-                                    <label class="form-label" for="transferDate">Date <span aria-hidden="true">*</span></label>
-                                    <InputDate id="transferDate" class="form-control form-control-sm" @bind-Value="_form.Date" />
+                                    <label class="form-label" for="depositDate">Date <span aria-hidden="true">*</span></label>
+                                    <InputDate id="depositDate" class="form-control form-control-sm" @bind-Value="_form.Date" />
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label class="form-label" for="transferAmount">Amount <span aria-hidden="true">*</span></label>
+                                    <label class="form-label" for="depositAmount">Amount <span aria-hidden="true">*</span></label>
                                     <div class="input-group input-group-sm @(_errors.ContainsKey("Amount") ? "has-validation" : "")">
                                         <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
-                                        <InputNumber id="transferAmount"
+                                        <InputNumber id="depositAmount"
                                                      class="@(_errors.ContainsKey("Amount") ? "form-control is-invalid" : "form-control")"
                                                      @bind-Value="_form.Amount"
                                                      @bind-Value:format="N2" />
@@ -63,20 +63,8 @@
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label class="form-label" for="fromAccount">From <span aria-hidden="true">*</span></label>
-                                    <InputSelect id="fromAccount"
-                                                 class="@(_errors.ContainsKey("FromAccountId") ? "form-select form-select-sm is-invalid" : "form-select form-select-sm")"
-                                                 @bind-Value="_form.FromAccountId">
-                                        <option value="@Guid.Empty">— select —</option>
-                                        @foreach (var bank in _bankAccounts)
-                                        {
-                                            <option value="@bank.Id">@bank.AccountNumber @bank.Name</option>
-                                        }
-                                    </InputSelect>
-                                    @if (_errors.TryGetValue("FromAccountId", out var fromErr))
-                                    {
-                                        <div class="invalid-feedback d-block">@fromErr</div>
-                                    }
+                                    <label class="form-label" for="depositFrom">From</label>
+                                    <input id="depositFrom" class="form-control form-control-sm" value="Cash on Hand" disabled />
                                 </div>
 
                                 <div class="col-md-4">
@@ -85,7 +73,7 @@
                                                  class="@(_errors.ContainsKey("ToAccountId") ? "form-select form-select-sm is-invalid" : "form-select form-select-sm")"
                                                  @bind-Value="_form.ToAccountId">
                                         <option value="@Guid.Empty">— select —</option>
-                                        @foreach (var bank in _bankAccounts)
+                                        @foreach (var bank in _destinationAccounts)
                                         {
                                             <option value="@bank.Id">@bank.AccountNumber @bank.Name</option>
                                         }
@@ -97,17 +85,17 @@
                                 </div>
 
                                 <div class="col-12">
-                                    <label class="form-label" for="transferDescription">Description</label>
-                                    <InputTextArea id="transferDescription" class="form-control form-control-sm" rows="2"
+                                    <label class="form-label" for="depositDescription">Description</label>
+                                    <InputTextArea id="depositDescription" class="form-control form-control-sm" rows="2"
                                                    @bind-Value="_form.Description"
-                                                   placeholder="e.g. Move float back to operating account…" />
+                                                   placeholder="e.g. Banking of rehearsal attendance fees…" />
                                 </div>
 
                             </div>
 
                             <div class="d-flex gap-2 mt-2">
                                 <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
-                                    @(_saving ? "Saving…" : "Record Transfer")
+                                    @(_saving ? "Saving…" : "Record Deposit")
                                 </button>
                                 <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="RecordAnother">Clear</button>
                             </div>
