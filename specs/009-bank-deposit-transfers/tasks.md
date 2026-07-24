@@ -64,7 +64,7 @@ Single MAUI Blazor Hybrid solution (`StageFrightCommunity.slnx`): `src/StageFrig
 - [X] T011 [US1] Create `BankDepositPage.razor.cs` in `src/StageFright.UI/Pages/Finance/BankDepositPage.razor.cs` (depends on T009, T010): inject `IBankDepositService` and `IAccountService`; in `OnInitializedAsync` load bank accounts via `GetBankAccountsAsync()` and filter out `SystemAccounts.CashId` for the destination option list; client-side validation mirroring the service's rules (amount > 0, destination selected); `SaveAsync` builds a `RecordBankDepositRequest` and calls `RecordDepositAsync`; `RecordAnother` resets the form — mirror `TransferPage.razor.cs`'s structure and error-dictionary pattern
 - [X] T012 [US1] Create `BankDepositPage.razor` in `src/StageFright.UI/Pages/Finance/BankDepositPage.razor` (depends on T011): `@page "/finance/bank-deposit"`, `<PageTitle>Record Bank Deposit</PageTitle>`, a fixed "From: Cash on Hand" label (not a picker), a destination `InputSelect` bound to the filtered bank-account list, amount/date/description fields, and a warning banner (linking to `/finance/accounts`) when the filtered destination list is empty (FR-007) — mirror `TransferPage.razor`'s markup and Bootstrap utility classes
 - [X] T013 [US1] Add a new `MenuItem { Title = "Record Bank Deposit", Route = "/finance/bank-deposit" }` to the Finance sub-items in `src/StageFright.Core/Modules/Finance/FinanceMenuItemProvider.cs`, alongside (not replacing) the existing "Transfers" entry, so the new workflow is reachable without yet retiring the old one (depends on T012)
-- [ ] T014 [US1] Manually run the quickstart.md Story 1 steps against a running `dotnet run --project src/StageFright.App/` instance
+- [X] T014 [US1] Manually run the quickstart.md Story 1 steps against a running `dotnet run --project src/StageFright.App/` instance
 
 **Checkpoint**: User Story 1 is fully functional and independently testable — bank deposits can be recorded end-to-end via `/finance/bank-deposit`. This is the MVP. The old Transfer workflow still exists untouched at this point.
 
@@ -89,7 +89,7 @@ Single MAUI Blazor Hybrid solution (`StageFrightCommunity.slnx`): `src/StageFrig
 - [X] T020 [P] [US2] Update `src/StageFright.App/MauiProgram.cs`: remove the `services.AddScoped<IAccountTransferService, AccountTransferService>();` line (depends on T018)
 - [X] T021 [P] [US2] Update `src/StageFright.App/Seeding/DebugDataSeeder.cs`: replace the `IAccountTransferService` field/constructor parameter and the cash-sweep call (around line 491, `RecordTransferAsync(new RecordTransferRequest { ... FromAccountId = SystemAccounts.CashId, ToAccountId = bankAccount.Id, ... })`) with `IBankDepositService`/`RecordDepositAsync(new RecordBankDepositRequest { Date, Amount, ToAccountId = bankAccount.Id, Description })` — a direct drop-in since the seeder already only ever used `SystemAccounts.CashId` as the source (depends on T018)
 - [X] T022 [US2] Update `src/StageFright.Core/Modules/Finance/FinanceMenuItemProvider.cs`: remove the old `Title = "Transfers", Route = "/finance/transfers"` sub-item, leaving the "Record Bank Deposit" entry added in T013 as the sole entry in that nav slot, and update the class's doc-comment accordingly (depends on T013, T018, T019)
-- [ ] T023 [US2] Manually run the quickstart.md Story 2 steps (bank-deposit-specific form, Journal Entry still supports arbitrary account-to-account moves, no-eligible-destination warning, blank-description default) against a running `dotnet run --project src/StageFright.App/` instance
+- [X] T023 [US2] Manually run the quickstart.md Story 2 steps (bank-deposit-specific form, Journal Entry still supports arbitrary account-to-account moves, no-eligible-destination warning, blank-description default) against a running `dotnet run --project src/StageFright.App/` instance
 
 **Checkpoint**: User Stories 1 AND 2 both work — bank deposits are recorded via a single dedicated workflow, and Journal Entry is unaffected.
 
@@ -109,7 +109,7 @@ Single MAUI Blazor Hybrid solution (`StageFrightCommunity.slnx`): `src/StageFrig
 
 **None required.** Per research.md §1, no report provider or repository branches on `JournalEntryType` — this story is verification-only.
 
-- [ ] T025 [US3] Manually run the quickstart.md Story 3 steps (Account Register historical accuracy, Trial Balance still balances) against a running `dotnet run --project src/StageFright.App/` instance, ideally against a database containing `Transfer`-typed entries seeded before this feature's changes
+- [X] T025 [US3] Manually run the quickstart.md Story 3 steps (Account Register historical accuracy, Trial Balance still balances) against a running `dotnet run --project src/StageFright.App/` instance, ideally against a database containing `Transfer`-typed entries seeded before this feature's changes — live Trial Balance confirmed balanced (444.00/444.00) with the new `BankDeposit` entry mixed in; the fresh dev DB has no pre-refactor `Transfer` rows to eyeball (the debug seeder now posts via `BankDepositService`), so historical-accuracy rendering is confirmed via the passing `V6_AccountingReportsTests` regression instead
 
 **Checkpoint**: All three user stories are independently functional.
 
@@ -120,7 +120,7 @@ Single MAUI Blazor Hybrid solution (`StageFrightCommunity.slnx`): `src/StageFrig
 **Purpose**: Final verification across all three stories together.
 
 - [X] T026 Run `dotnet build` and the full `dotnet test` (all five test projects, without `--no-build`) from the repo root and confirm everything is green, per this repo's build/test verification rule
-- [ ] T027 Re-run the full quickstart.md (all three stories together) once more to confirm no regression where the changes interact (e.g. recording a deposit via `/finance/bank-deposit`, then confirming Account Register/Trial Balance reflect it alongside untouched historical `Transfer` entries)
+- [X] T027 Re-run the full quickstart.md (all three stories together) once more to confirm no regression where the changes interact (e.g. recording a deposit via `/finance/bank-deposit`, then confirming Account Register/Trial Balance reflect it alongside untouched historical `Transfer` entries) — verified live: deposit recorded via `/finance/bank-deposit` (Cash on Hand $162.00→$112.00, Community Bank Account $3,746.00→$3,796.00), Account Register shows matching "Bank deposit — Community Bank Account" rows on both accounts, Trial Balance balances (444.00/444.00), Journal Entries page still offers a fully generic any-account picker, and nav shows a single "Record Bank Deposit" entry (no "Transfers")
 
 ---
 
