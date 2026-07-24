@@ -1,0 +1,17 @@
+{
+  "workflow": "speckit",
+  "specName": "Outstanding Balances Tile",
+  "branch": "",
+  "currentStep": "specify",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-24T12:12:04.271Z"
+    }
+  ],
+  "telemetryInstanceId": "cab2dbb6-37e3-4cf7-a634-216fe28840e3"
+}

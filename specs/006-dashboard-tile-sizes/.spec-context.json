@@ -1,0 +1,17 @@
+{
+  "workflow": "speckit",
+  "specName": "Dashboard Tile Sizes",
+  "branch": "",
+  "currentStep": "specify",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-24T12:12:27.650Z"
+    }
+  ],
+  "telemetryInstanceId": "d454313b-00fd-411d-a284-2fc62379d42a"
+}
