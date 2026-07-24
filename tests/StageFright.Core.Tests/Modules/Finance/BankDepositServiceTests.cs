@@ -9,11 +9,11 @@ using StageFright.Core.Tests.Fixtures;
 namespace StageFright.Core.Tests.Modules.Finance;
 
 /// <summary>
-/// Unit tests for AccountTransferService — bank-to-bank transfers with a journal
-/// entry + balanced GL set (DR To / CR From), bank-only + from≠to validation,
-/// and audit logging.
+/// Unit tests for BankDepositService — Cash on Hand deposited into a bank account,
+/// with a journal entry + balanced GL set (DR destination / CR Cash on Hand),
+/// bank-destination + destination≠Cash validation, and audit logging.
 /// </summary>
-public class AccountTransferServiceTests : TestBase
+public class BankDepositServiceTests : TestBase
 {
     private readonly IAccountRepository _accountRepo = Substitute.For<IAccountRepository>();
     private readonly IGLRepository _glRepo = Substitute.For<IGLRepository>();
@@ -25,9 +25,9 @@ public class AccountTransferServiceTests : TestBase
     private static readonly Guid BankAccountId = Guid.NewGuid();
     private static readonly Guid NonBankAssetAccountId = Guid.NewGuid();
 
-    private readonly AccountTransferService _sut;
+    private readonly BankDepositService _sut;
 
-    public AccountTransferServiceTests()
+    public BankDepositServiceTests()
     {
         _unitOfWork
             .ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
@@ -44,7 +44,7 @@ public class AccountTransferServiceTests : TestBase
                 MakeAccount(NonBankAssetAccountId, "Equipment", "1300")
             });
 
-        _sut = new AccountTransferService(_accountRepo, _glRepo, _journalRepo, _audit, _unitOfWork);
+        _sut = new BankDepositService(_accountRepo, _glRepo, _journalRepo, _audit, _unitOfWork);
     }
 
     // --- Validation ---
@@ -53,57 +53,43 @@ public class AccountTransferServiceTests : TestBase
     public async Task Should_ThrowValidation_When_AmountIsZero()
     {
         await Assert.ThrowsAsync<ValidationException>(
-            () => _sut.RecordTransferAsync(MakeRequest(0m), Ct));
+            () => _sut.RecordDepositAsync(MakeRequest(0m), Ct));
     }
 
     [Fact]
     public async Task Should_ThrowValidation_When_AmountIsNegative()
     {
         await Assert.ThrowsAsync<ValidationException>(
-            () => _sut.RecordTransferAsync(MakeRequest(-10m), Ct));
-    }
-
-    [Fact]
-    public async Task Should_ThrowValidation_When_SourceEqualsDestination()
-    {
-        await Assert.ThrowsAsync<ValidationException>(
-            () => _sut.RecordTransferAsync(MakeRequest(50m, from: BankAccountId, to: BankAccountId), Ct));
-    }
-
-    [Fact]
-    public async Task Should_ThrowEntityNotFound_When_SourceAccountDoesNotExist()
-    {
-        await Assert.ThrowsAsync<EntityNotFoundException>(
-            () => _sut.RecordTransferAsync(MakeRequest(50m, from: Guid.NewGuid()), Ct));
+            () => _sut.RecordDepositAsync(MakeRequest(-10m), Ct));
     }
 
     [Fact]
     public async Task Should_ThrowEntityNotFound_When_DestinationAccountDoesNotExist()
     {
         await Assert.ThrowsAsync<EntityNotFoundException>(
-            () => _sut.RecordTransferAsync(MakeRequest(50m, to: Guid.NewGuid()), Ct));
-    }
-
-    [Fact]
-    public async Task Should_ThrowValidation_When_SourceIsNotABankAccount()
-    {
-        await Assert.ThrowsAsync<ValidationException>(
-            () => _sut.RecordTransferAsync(MakeRequest(50m, from: NonBankAssetAccountId), Ct));
+            () => _sut.RecordDepositAsync(MakeRequest(50m, to: Guid.NewGuid()), Ct));
     }
 
     [Fact]
     public async Task Should_ThrowValidation_When_DestinationIsNotABankAccount()
     {
         await Assert.ThrowsAsync<ValidationException>(
-            () => _sut.RecordTransferAsync(MakeRequest(50m, to: NonBankAssetAccountId), Ct));
+            () => _sut.RecordDepositAsync(MakeRequest(50m, to: NonBankAssetAccountId), Ct));
+    }
+
+    [Fact]
+    public async Task Should_ThrowValidation_When_DestinationEqualsCashOnHand()
+    {
+        await Assert.ThrowsAsync<ValidationException>(
+            () => _sut.RecordDepositAsync(MakeRequest(50m, to: CashAccountId), Ct));
     }
 
     // --- Posting ---
 
     [Fact]
-    public async Task Should_PostDebitDestinationCreditSource_When_TransferRecorded()
+    public async Task Should_PostDebitDestinationCreditCash_When_DepositRecorded()
     {
-        await _sut.RecordTransferAsync(MakeRequest(200m), Ct);
+        await _sut.RecordDepositAsync(MakeRequest(200m), Ct);
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
@@ -114,14 +100,14 @@ public class AccountTransferServiceTests : TestBase
     }
 
     [Fact]
-    public async Task Should_CreateTransferJournalEntry_When_TransferRecorded()
+    public async Task Should_CreateBankDepositJournalEntry_When_DepositRecorded()
     {
         var request = MakeRequest(200m);
 
-        await _sut.RecordTransferAsync(request, Ct);
+        await _sut.RecordDepositAsync(request, Ct);
 
         await _journalRepo.Received(1).AddAsync(
-            Arg.Is<JournalEntry>(j => j.Type == JournalEntryType.Transfer && j.Date == request.Date),
+            Arg.Is<JournalEntry>(j => j.Type == JournalEntryType.BankDeposit && j.Date == request.Date),
             Arg.Any<CancellationToken>());
 
         await _glRepo.Received(1).AddBalancedSetAsync(
@@ -130,29 +116,43 @@ public class AccountTransferServiceTests : TestBase
     }
 
     [Fact]
-    public async Task Should_DefaultDescriptionToAccountNames_When_NoDescriptionProvided()
+    public async Task Should_DefaultDescriptionToDestinationAccountName_When_NoDescriptionProvided()
     {
-        await _sut.RecordTransferAsync(MakeRequest(200m), Ct);
+        await _sut.RecordDepositAsync(MakeRequest(200m), Ct);
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.All(t => t.Description!.Contains("Cash on Hand") && t.Description.Contains("Operating Account"))),
+                lines.All(t => t.Description!.Contains("Bank deposit") && t.Description.Contains("Operating Account"))),
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Should_RunInsideUnitOfWork_When_TransferRecorded()
+    public async Task Should_UseSuppliedDescription_When_DescriptionProvided()
     {
-        await _sut.RecordTransferAsync(MakeRequest(200m), Ct);
+        var request = MakeRequest(200m);
+        request.Description = "  Rehearsal fee banking  ";
+
+        await _sut.RecordDepositAsync(request, Ct);
+
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines.All(t => t.Description == "Rehearsal fee banking")),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_RunInsideUnitOfWork_When_DepositRecorded()
+    {
+        await _sut.RecordDepositAsync(MakeRequest(200m), Ct);
 
         await _unitOfWork.Received(1).ExecuteInTransactionAsync(
             Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Should_WriteAuditEntry_When_TransferRecorded()
+    public async Task Should_WriteAuditEntry_When_DepositRecorded()
     {
-        await _sut.RecordTransferAsync(MakeRequest(200m), Ct);
+        await _sut.RecordDepositAsync(MakeRequest(200m), Ct);
 
         await _audit.Received(1).LogAsync(
             Arg.Any<string>(), Arg.Any<Guid>(), AuditAction.Create,
@@ -162,12 +162,11 @@ public class AccountTransferServiceTests : TestBase
 
     // --- Helpers ---
 
-    private static RecordTransferRequest MakeRequest(decimal amount, Guid? from = null, Guid? to = null) =>
+    private static RecordBankDepositRequest MakeRequest(decimal amount, Guid? to = null) =>
         new()
         {
             Date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc),
             Amount = amount,
-            FromAccountId = from ?? CashAccountId,
             ToAccountId = to ?? BankAccountId
         };
 

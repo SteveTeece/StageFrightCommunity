@@ -1,0 +1,17 @@
+{
+  "workflow": "speckit",
+  "specName": "Outstanding Fee Payment Allocation",
+  "branch": "",
+  "currentStep": "specify",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-24T12:13:13.980Z"
+    }
+  ],
+  "telemetryInstanceId": "fea2e45f-071b-4041-933e-5ff72c714e16"
+}
