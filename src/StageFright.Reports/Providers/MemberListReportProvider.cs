@@ -1,5 +1,6 @@
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
+using StageFright.Core.Modules.Members;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
 
@@ -13,10 +14,12 @@ namespace StageFright.Reports.Providers;
 public class MemberListReportProvider : IReportProvider
 {
     private readonly IMemberRepository _members;
+    private readonly AgeCalculationService _ageCalc;
 
-    public MemberListReportProvider(IMemberRepository members)
+    public MemberListReportProvider(IMemberRepository members, AgeCalculationService ageCalc)
     {
         _members = members;
+        _ageCalc = ageCalc;
     }
 
     public string ReportId => "member-list";
@@ -53,13 +56,7 @@ public class MemberListReportProvider : IReportProvider
             .OrderBy(m => m.Name)
             .Select(m =>
             {
-                string? ageStr = null;
-                if (m.DateOfBirth.HasValue)
-                {
-                    var age = today.Year - m.DateOfBirth.Value.Year;
-                    if (today < m.DateOfBirth.Value.AddYears(age)) age--;
-                    ageStr = age.ToString();
-                }
+                var ageStr = _ageCalc.Calculate(m.DateOfBirth, today)?.ToString();
 
                 return new ReportRow
                 {

@@ -78,4 +78,72 @@ public class SettingsServiceTests : TestBase
 
         await _settingsRepo.Received(1).SaveAsync(settings, Arg.Any<CancellationToken>());
     }
+
+    [Fact]
+    public async Task SaveAsync_Throws_WhenMinimumMemberAgeNegative()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var settings = ValidSettings(null);
+        settings.MinimumMemberAge = -1;
+
+        await Assert.ThrowsAsync<ValidationException>(() => svc.SaveAsync(settings, Ct));
+        await _settingsRepo.DidNotReceive().SaveAsync(Arg.Any<Settings>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SaveAsync_Throws_WhenMaxAgeRangeYearsNegative()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var settings = ValidSettings(null);
+        settings.MaxAgeRangeYears = -1;
+
+        await Assert.ThrowsAsync<ValidationException>(() => svc.SaveAsync(settings, Ct));
+        await _settingsRepo.DidNotReceive().SaveAsync(Arg.Any<Settings>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SaveAsync_Throws_WhenMinimumMemberAgeExceedsMaxAgeRangeYears()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var settings = ValidSettings(null);
+        settings.MinimumMemberAge = 20;
+        settings.MaxAgeRangeYears = 19;
+
+        await Assert.ThrowsAsync<ValidationException>(() => svc.SaveAsync(settings, Ct));
+        await _settingsRepo.DidNotReceive().SaveAsync(Arg.Any<Settings>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SaveAsync_Saves_WhenMinimumMemberAgeEqualsMaxAgeRangeYears()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var settings = ValidSettings(null);
+        settings.MinimumMemberAge = 18;
+        settings.MaxAgeRangeYears = 18;
+
+        await svc.SaveAsync(settings, Ct); // must not throw
+        await _settingsRepo.Received(1).SaveAsync(settings, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SaveAsync_Saves_WhenMinimumMemberAgeIsZero_AndMaxIsZero()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var settings = ValidSettings(null);
+        settings.MinimumMemberAge = 0;
+        settings.MaxAgeRangeYears = 0;
+
+        await svc.SaveAsync(settings, Ct); // must not throw
+        await _settingsRepo.Received(1).SaveAsync(settings, Arg.Any<CancellationToken>());
+    }
 }

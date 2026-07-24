@@ -5,6 +5,7 @@ using NSubstitute.ExceptionExtensions;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Modules.Finance;
+using StageFright.Core.Modules.Members;
 using StageFright.Data;
 using StageFright.Data.Repositories;
 using StageFright.Reports.Models;
@@ -178,7 +179,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
             MakeMember("Charlie", MemberStatus.Active, isDeleted: true));
         await _db.SaveChangesAsync();
 
-        var provider = new MemberListReportProvider(new MemberRepository(_db));
+        var provider = new MemberListReportProvider(new MemberRepository(_db), new AgeCalculationService());
         var filters = new ReportFilterValues();
         filters.Set("memberStatus", "Active");
 
@@ -234,7 +235,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
                 new TrialBalanceReportProvider(glRepo, catRepo, new SettingsRepository(_db)),
                 new AccountRegisterReportProvider(glRepo, catRepo),
                 new MemberAccountSummaryReportProvider(glRepo, memberRepo, new MemberBalanceService(memberRepo, feeRepo, glRepo)),
-                new MemberListReportProvider(memberRepo),
+                new MemberListReportProvider(memberRepo, new AgeCalculationService()),
                 new CommitteeReportProvider(committeeRepo, memberRepo)
             },
             NullLogger<ReportProviderRegistry>.Instance);
