@@ -28,7 +28,7 @@ A treasurer has collected cash (e.g., door sales at an event, cash membership fe
 **Acceptance Scenarios**:
 
 1. **Given** a Cash on Hand balance of $500 and a bank account "Operating Account" with a balance of $2,000, **When** the treasurer records a $300 deposit into Operating Account, **Then** Cash on Hand shows $200 and Operating Account shows $2,300.
-2. **Given** the bank deposit form, **When** the treasurer enters an amount of $0 or a negative amount, **Then** the system rejects the entry with a clear validation message and no ledger entry is created.
+2. **Given** the bank deposit form, **When** the treasurer enters an amount of $0 or a negative amount, **Then** the system rejects the entry with a validation message stating the amount must be greater than zero, and no ledger entry is created.
 3. **Given** a successfully recorded deposit, **When** the treasurer views the account activity for Cash on Hand and the destination bank account, **Then** both show the deposit with a matching date, amount, and description.
 
 ---
@@ -64,7 +64,7 @@ A treasurer or auditor reviewing historical financial reports (e.g., Account Reg
 
 ### Edge Cases
 
-- What happens when no bank account exists yet other than Cash on Hand (nowhere to deposit to)? The system must clearly indicate no deposit destination is available and direct the treasurer to add a bank account first, rather than allowing an invalid submission.
+- What happens when no bank account exists yet other than Cash on Hand (nowhere to deposit to)? The system must display a message stating no destination bank account is available and link the treasurer to the accounts page to add one, rather than allowing an invalid submission.
 - What happens when the deposit amount exceeds the current Cash on Hand balance? The system still records the deposit (consistent with today's transfer behavior, which does not enforce a sufficient-funds check), resulting in a negative Cash on Hand balance the treasurer can identify and investigate.
 - What happens if the treasurer leaves the description blank? The system records the deposit with a standard default description (e.g., "Bank deposit") so the entry is still identifiable in reports.
 
