@@ -42,6 +42,7 @@ public class DebugDataSeeder : IDebugDataSeeder
     private readonly IPaymentService _paymentService;
     private readonly IFeeRepository _feeRepository;
     private readonly IGLRepository _glRepository;
+    private readonly IJournalEntryRepository _journalEntryRepository;
     private readonly IAccountService _accountService;
     private readonly IIncomeEntryService _incomeEntryService;
     private readonly IExpensePaymentService _expensePaymentService;
@@ -61,6 +62,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         IPaymentService paymentService,
         IFeeRepository feeRepository,
         IGLRepository glRepository,
+        IJournalEntryRepository journalEntryRepository,
         IAccountService accountService,
         IIncomeEntryService incomeEntryService,
         IExpensePaymentService expensePaymentService,
@@ -79,6 +81,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         _paymentService = paymentService;
         _feeRepository = feeRepository;
         _glRepository = glRepository;
+        _journalEntryRepository = journalEntryRepository;
         _accountService = accountService;
         _incomeEntryService = incomeEntryService;
         _expensePaymentService = expensePaymentService;
@@ -134,6 +137,9 @@ public class DebugDataSeeder : IDebugDataSeeder
 
         var random = new Random(20250101); // fixed seed — deterministic across runs
         var attendanceProfile = BuildAttendanceProfile(activeMembers, random);
+
+        progress?.Report("Seeding historical transfers (pre-spec 009)…");
+        await SeedHistoricalTransfersAsync(bankAccount, ct);
 
         foreach (var year in new[] { 2025, 2026 })
         {
@@ -316,6 +322,112 @@ public class DebugDataSeeder : IDebugDataSeeder
     }
 
     // -------------------------------------------------------------------------
+    // Historical transfers (pre-spec 009 regression testing)
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Seeds a few historical Transfer entries (JournalEntryType.Transfer) to test regression
+    /// scenarios. These predate the spec 009 refactor that replaced the generic Transfer page
+    /// with a dedicated BankDeposit workflow. Verifies they still display correctly in reports.
+    /// </summary>
+    private async Task SeedHistoricalTransfersAsync(Account bankAccount, CancellationToken ct)
+    {
+        var historyDate1 = Utc(2025, 1, 15);
+        var historyDate2 = Utc(2025, 3, 10);
+
+        if (historyDate1 > SeedCurrentDate)
+            return; // too far in the future — no transfers to seed
+
+        await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
+        {
+            var now = DateTime.UtcNow;
+
+            // Historical transfer 1: small transfer between bank accounts (old workflow)
+            var entry1 = new JournalEntry
+            {
+                Id = Guid.NewGuid(),
+                Type = JournalEntryType.Transfer,
+                Date = historyDate1,
+                Description = "Historical transfer: Float sweep to bank",
+                CreatedAt = now
+            };
+            var savedEntry1 = await _journalEntryRepository.AddAsync(entry1, innerCt);
+
+            await _glRepository.AddBalancedSetAsync(new[]
+            {
+                new Transaction
+                {
+                    Id = Guid.NewGuid(),
+                    Date = historyDate1,
+                    AccountId = bankAccount.Id,
+                    DebitAmount = 150m,
+                    CreditAmount = 0m,
+                    GLAccount = bankAccount.AccountNumber,
+                    JournalEntryId = savedEntry1.Id,
+                    Description = "Historical transfer: Float sweep to bank",
+                    CreatedAt = now
+                },
+                new Transaction
+                {
+                    Id = Guid.NewGuid(),
+                    Date = historyDate1,
+                    AccountId = SystemAccounts.CashId,
+                    DebitAmount = 0m,
+                    CreditAmount = 150m,
+                    GLAccount = SystemAccounts.CashNumber,
+                    JournalEntryId = savedEntry1.Id,
+                    Description = "Historical transfer: Float sweep to bank",
+                    CreatedAt = now
+                }
+            }, innerCt);
+
+            // Historical transfer 2: larger transfer from bank to cash (cash withdrawal)
+            if (historyDate2 <= SeedCurrentDate)
+            {
+                var entry2 = new JournalEntry
+                {
+                    Id = Guid.NewGuid(),
+                    Type = JournalEntryType.Transfer,
+                    Date = historyDate2,
+                    Description = "Historical transfer: Cash withdrawal from bank",
+                    CreatedAt = now
+                };
+                var savedEntry2 = await _journalEntryRepository.AddAsync(entry2, innerCt);
+
+                await _glRepository.AddBalancedSetAsync(new[]
+                {
+                    new Transaction
+                    {
+                        Id = Guid.NewGuid(),
+                        Date = historyDate2,
+                        AccountId = SystemAccounts.CashId,
+                        DebitAmount = 500m,
+                        CreditAmount = 0m,
+                        GLAccount = SystemAccounts.CashNumber,
+                        JournalEntryId = savedEntry2.Id,
+                        Description = "Historical transfer: Cash withdrawal from bank",
+                        CreatedAt = now
+                    },
+                    new Transaction
+                    {
+                        Id = Guid.NewGuid(),
+                        Date = historyDate2,
+                        AccountId = bankAccount.Id,
+                        DebitAmount = 0m,
+                        CreditAmount = 500m,
+                        GLAccount = bankAccount.AccountNumber,
+                        JournalEntryId = savedEntry2.Id,
+                        Description = "Historical transfer: Cash withdrawal from bank",
+                        CreatedAt = now
+                    }
+                }, innerCt);
+            }
+        }, ct);
+
+        _logger.LogInformation("Seeded 2 historical Transfer entries for regression testing (spec 009).");
+    }
+
+    // -------------------------------------------------------------------------
     // Annual fees
     // -------------------------------------------------------------------------
 
@@ -488,12 +600,16 @@ public class DebugDataSeeder : IDebugDataSeeder
             var pettyCashBalance = await _glRepository.GetAccountBalanceAsync(SystemAccounts.CashId, sweepDate, ct);
             if (pettyCashBalance > PettyCashFloat)
             {
+                var depositAmount = Math.Round(pettyCashBalance - PettyCashFloat, 2);
+                // Most deposits include a description, but occasionally test default description handling
+                var shouldUseDefaultDescription = random.NextDouble() < 0.05; // 5% of deposits use default
+
                 await _bankDepositService.RecordDepositAsync(new RecordBankDepositRequest
                 {
                     Date = sweepDate,
-                    Amount = Math.Round(pettyCashBalance - PettyCashFloat, 2),
+                    Amount = depositAmount,
                     ToAccountId = bankAccount.Id,
-                    Description = "Banking of rehearsal attendance fees"
+                    Description = shouldUseDefaultDescription ? null : "Banking of rehearsal attendance fees"
                 }, ct);
             }
         }
