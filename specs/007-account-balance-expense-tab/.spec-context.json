@@ -1,0 +1,18 @@
+{
+  "workflow": "speckit",
+  "specName": "007-account-balance-expense-tab",
+  "branch": "007-account-balance-expense-tab",
+  "selectedAt": "2026-07-24T12:12:43.763Z",
+  "currentStep": "specify",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-24T12:13:01.330Z"
+    }
+  ],
+  "telemetryInstanceId": "fe36566b-663f-4ff3-9517-c561a996a3e4"
+}
