@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Committee Report Year Summary",
   "branch": "010-committee-report-year-summary",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "implement",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,404 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-07-25T01:00:49.527Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-25T01:35:04.270Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-25T01:37:59.582Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:40:15.710Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:45:02.865Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:45:03.134Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:45:03.447Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:45:03.668Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:45:03.947Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:45:04.267Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:47:46.131Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:47:47.103Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:47:48.002Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:47:48.903Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:47:49.697Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:47:50.619Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:49:34.946Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:51:03.404Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:51:03.712Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:51:04.014Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:51:04.261Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:52:32.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T01:54:23.943Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-25T02:01:39.364Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-25T02:01:39.673Z"
     }
-  ]
+  ],
+  "currentTask": "T021",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Confirmed clean baseline: dotnet build succeeds, all 1272 tests pass across 5 test projects"
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Created CommitteeReportProviderTests.cs with US1 test asserting sections grouped by year, descending",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "Added test asserting SummaryColumns/SummaryRow shape and record count",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Added test asserting Member Status filter scopes year record counts",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Added test asserting years with no matching records under filter are omitted",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Added test asserting empty-filter result yields empty Sections",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Rewrote GenerateAsync to group flattened (Member, CommitteeMembership) records by year desc, building SummaryColumns/SummaryRow with interim per-record detail rows; all 5 US1 tests pass",
+      "files": [
+        "src/StageFright.Reports/Providers/CommitteeReportProvider.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Added test asserting President/Secretary/Treasurer lines always present, Vacant when unfilled",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Added test asserting other position labels ordered after named roles, alphabetically",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Added test asserting blank positions grouped as General Committee Members, sorted alphabetically, last",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Added test asserting case-insensitive/trimmed matching collapses position variants",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Added test asserting duplicate position holders are both listed together",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Added test asserting multi-member lines are sorted alphabetically, not by insertion order",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Implemented BuildPositionLines: case-insensitive/trimmed grouping, named roles always emitted with Vacant fallback, other positions alphabetical, General Committee Members last; all 11 US1+US2 tests pass",
+      "files": [
+        "src/StageFright.Reports/Providers/CommitteeReportProvider.cs"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Added test asserting every ReportRow Cells[0] equals its section's year",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Added test piping provider output through the existing CsvReportExporter, asserting year+position+member on every data row",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "Added test piping provider output through the existing PdfReportRenderer, asserting non-empty byte array",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "Confirmed via T015-T017 passing against the unmodified CsvReportExporter/PdfReportRenderer: no renderer source changes were needed"
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "Updated CommitteeReport_DefaultFilter_ReturnsActiveOnly to assert member names via Cells[2] (new [Year,Position,Member(s)] shape) instead of Cells[0]",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V11_ReportsMenuTests.cs"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "Full solution build succeeded and dotnet test (no --no-build) passed 1286/1286 across all 5 test projects"
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Live-verified via CDP against the running app (seeded 2025/2026 committee data): year-summary shows 2026|9 and 2025|9; expanding 2026 shows President=Margaret Thompson, Secretary=Patricia Robinson, Treasurer=Susan Williams, then alphabetical Committee Member (5 names, alpha-sorted) and Welfare Officer lines; Archived Only filter correctly shows the existing empty-state grid message"
+    }
+  },
+  "verified": [
+    {
+      "what": "Full solution build and test suite",
+      "command": "dotnet build && dotnet test",
+      "result": "Build succeeded, 1286/1286 tests passed across 5 test projects (14 new CommitteeReportProviderTests, 1 updated V11 integration test)",
+      "warnings": [
+        "Pre-existing NU1902 AngleSharp advisory and unrelated PRI249/CS8765 warnings, unaffected by this change"
+      ]
+    },
+    {
+      "what": "Live manual validation via WebView2 CDP against running app",
+      "command": "dotnet run (StageFright.App.exe) + Runtime.evaluate over CDP",
+      "result": "Year summary shows 2026|9 and 2025|9; expand shows President/Secretary/Treasurer then alphabetical Committee Member/Welfare Officer lines with alpha-sorted members; Archived Only filter shows existing No records to display empty state",
+      "warnings": []
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "Split GenerateAsync rewrite into an interim per-record row shape (US1/T007) later replaced by full position-line aggregation (US2/T014)",
+      "why": "Lets US1s independent test (year grouping/count) be validated before the harder case-insensitive/named-role/duplicate-member aggregation logic is built, matching spec-kit per-story independent testability",
+      "rejected": "Writing the full aggregation in one pass under T007, which would make US1 and US2 impossible to checkpoint independently"
+    }
+  ],
+  "coverage": {
+    "FR-003": {
+      "tests": [
+        "CommitteeReportProviderTests.cs::GenerateAsync_NamedRoles_AlwaysPresent_VacantWhenUnfilled"
+      ]
+    },
+    "FR-004": {
+      "tests": [
+        "CommitteeReportProviderTests.cs::GenerateAsync_NamedRoles_AlwaysPresent_VacantWhenUnfilled"
+      ]
+    },
+    "FR-005": {
+      "tests": [
+        "CommitteeReportProviderTests.cs::GenerateAsync_NamedRoles_AlwaysPresent_VacantWhenUnfilled"
+      ]
+    },
+    "FR-006": {
+      "tests": [
+        "CommitteeReportProviderTests.cs::GenerateAsync_OtherPositionLabels_OrderedAfterNamedRoles_Alphabetically"
+      ]
+    },
+    "FR-006a": {
+      "tests": [
+        "CommitteeReportProviderTests.cs::GenerateAsync_BlankPositions_GroupedAsGeneralCommitteeMembers_SortedAlphabetical_Last"
+      ]
+    },
+    "FR-007": {
+      "tests": [
+        "CommitteeReportProviderTests.cs::GenerateAsync_CaseInsensitiveTrimmedMatching_CollapsesVariants"
+      ]
+    },
+    "FR-008": {
+      "tests": [
+        "CommitteeReportProviderTests.cs::GenerateAsync_MemberStatusFilter_ScopesYearRecordCount"
+      ]
+    },
+    "FR-009": {
+      "tests": [
+        "CommitteeReportProviderTests.cs::GenerateAsync_YearWithNoMatchingRecordsUnderFilter_IsOmitted"
+      ]
+    },
+    "FR-010": {
+      "tests": [
+        "CommitteeReportProviderTests.cs::GenerateAsync_DuplicatePositionHolders_BothListedTogether",
+        "CommitteeReportProviderTests.cs::GenerateAsync_MultiMemberLine_MembersSortedAlphabetically_NotInsertionOrder"
+      ]
+    }
+  }
 }
