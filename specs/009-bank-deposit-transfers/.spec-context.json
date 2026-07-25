@@ -1,0 +1,18 @@
+{
+  "workflow": "speckit",
+  "specName": "009-bank-deposit-transfers",
+  "branch": "009-bank-deposit-transfers",
+  "selectedAt": "2026-07-25T00:12:22.439Z",
+  "currentStep": "specify",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-25T00:12:52.235Z"
+    }
+  ],
+  "telemetryInstanceId": "8447b238-724e-4ad7-b157-c1b8f7d3ef82"
+}
