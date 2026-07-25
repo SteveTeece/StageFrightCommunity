@@ -1,0 +1,16 @@
+{
+  "workflow": "speckit",
+  "specName": "Committee Report Year Summary",
+  "branch": "010-committee-report-year-summary",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-25T00:28:53.089Z"
+    }
+  ]
+}
