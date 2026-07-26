@@ -32,7 +32,7 @@ public class CommitteeReportProviderTests
     // --- User Story 1: Year-grouped committee overview ---
 
     [Fact]
-    public async Task GenerateAsync_GroupsSectionsByYear_MostRecentFirst()
+    public async Task Should_OrderSectionsMostRecentYearFirst_When_MultipleYearsExist()
     {
         var alice = MakeMember("Alice");
         var bob = MakeMember("Bob");
@@ -50,7 +50,7 @@ public class CommitteeReportProviderTests
     }
 
     [Fact]
-    public async Task GenerateAsync_SummaryRow_ShowsYearAndRecordCount()
+    public async Task Should_ShowYearAndRecordCountInSummaryRow_When_SingleYearHasMultipleRecords()
     {
         var alice = MakeMember("Alice");
         var bob = MakeMember("Bob");
@@ -68,7 +68,7 @@ public class CommitteeReportProviderTests
     }
 
     [Fact]
-    public async Task GenerateAsync_MemberStatusFilter_ScopesYearRecordCount()
+    public async Task Should_ScopeYearRecordCountToFilter_When_MemberStatusFilterApplied()
     {
         var active = MakeMember("Active Member", status: MemberStatus.Active, isDeleted: false);
         var archived = MakeMember("Archived Member", status: MemberStatus.Inactive, isDeleted: true);
@@ -84,7 +84,7 @@ public class CommitteeReportProviderTests
     }
 
     [Fact]
-    public async Task GenerateAsync_YearWithNoMatchingRecordsUnderFilter_IsOmitted()
+    public async Task Should_OmitYear_When_NoRecordsMatchFilter()
     {
         var active = MakeMember("Active Member", status: MemberStatus.Active, isDeleted: false);
         var archived = MakeMember("Archived Member", status: MemberStatus.Inactive, isDeleted: true);
@@ -99,7 +99,7 @@ public class CommitteeReportProviderTests
     }
 
     [Fact]
-    public async Task GenerateAsync_NoMatchingRecordsAtAll_ReturnsEmptySections()
+    public async Task Should_ReturnEmptySections_When_NoRecordsExist()
     {
         SetupMembers();
 
@@ -111,7 +111,7 @@ public class CommitteeReportProviderTests
     // --- User Story 2: Role breakdown within each year ---
 
     [Fact]
-    public async Task GenerateAsync_NamedRoles_AlwaysPresent_VacantWhenUnfilled()
+    public async Task Should_ShowNamedRolesAsVacantOrFilled_When_YearGenerated()
     {
         var carol = MakeMember("Carol");
         SetupMembers(carol);
@@ -126,7 +126,7 @@ public class CommitteeReportProviderTests
     }
 
     [Fact]
-    public async Task GenerateAsync_OtherPositionLabels_OrderedAfterNamedRoles_Alphabetically()
+    public async Task Should_OrderOtherPositionsAlphabeticallyAfterNamedRoles_When_NonNamedPositionsExist()
     {
         var alice = MakeMember("Alice");
         var bob = MakeMember("Bob");
@@ -145,7 +145,7 @@ public class CommitteeReportProviderTests
     }
 
     [Fact]
-    public async Task GenerateAsync_BlankPositions_GroupedAsGeneralCommitteeMembers_SortedAlphabetical_Last()
+    public async Task Should_GroupBlankPositionsAsGeneralCommitteeMembersLast_When_PositionIsBlank()
     {
         var alice = MakeMember("Alice");
         var zoe = MakeMember("Zoe");
@@ -164,7 +164,7 @@ public class CommitteeReportProviderTests
     }
 
     [Fact]
-    public async Task GenerateAsync_CaseInsensitiveTrimmedMatching_CollapsesVariants()
+    public async Task Should_CollapsePositionVariants_When_MatchingIsCaseInsensitiveAndTrimmed()
     {
         var alice = MakeMember("Alice");
         var bob = MakeMember("Bob");
@@ -190,7 +190,7 @@ public class CommitteeReportProviderTests
     }
 
     [Fact]
-    public async Task GenerateAsync_DuplicatePositionHolders_BothListedTogether()
+    public async Task Should_ListDuplicatePositionHoldersTogether_When_MultipleMembersShareAPosition()
     {
         var alice = MakeMember("Alice");
         var bob = MakeMember("Bob");
@@ -206,7 +206,7 @@ public class CommitteeReportProviderTests
     }
 
     [Fact]
-    public async Task GenerateAsync_MultiMemberLine_MembersSortedAlphabetically_NotInsertionOrder()
+    public async Task Should_SortMembersAlphabetically_When_MultipleMembersShareAPositionLine()
     {
         var bob = MakeMember("Bob");
         var alice = MakeMember("Alice");
@@ -224,7 +224,7 @@ public class CommitteeReportProviderTests
     // --- User Story 3: Exportable, consistent output ---
 
     [Fact]
-    public async Task GenerateAsync_EveryRowCellZero_IsTheSectionYear()
+    public async Task Should_SetFirstCellToSectionYear_When_RowsAreGenerated()
     {
         var alice = MakeMember("Alice");
         var bob = MakeMember("Bob");
@@ -242,7 +242,7 @@ public class CommitteeReportProviderTests
     }
 
     [Fact]
-    public async Task GenerateAsync_ExportedToCsv_EveryDataRow_ContainsYearAndPositionAndMembers()
+    public async Task Should_ContainYearPositionAndMembers_When_ExportedToCsv()
     {
         var alice = MakeMember("Alice");
         var bob = MakeMember("Bob");
@@ -259,7 +259,7 @@ public class CommitteeReportProviderTests
     }
 
     [Fact]
-    public async Task GenerateAsync_RenderedToPdf_ReturnsNonEmptyByteArray()
+    public async Task Should_ReturnNonEmptyByteArray_When_RenderedToPdf()
     {
         var alice = MakeMember("Alice");
         var bob = MakeMember("Bob");

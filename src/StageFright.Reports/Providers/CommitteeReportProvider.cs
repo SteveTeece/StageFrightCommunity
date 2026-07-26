@@ -7,7 +7,10 @@ namespace StageFright.Reports.Providers;
 
 /// <summary>
 /// Generates the Committee Report for the Members module.
-/// Columns: Member Name, Year, Position — ordered year DESC.
+/// One section per year (most recent first), columns [Year, Position, Member(s)], with a
+/// SummaryRow showing the year's record count. President/Secretary/Treasurer lines are always
+/// shown ("Vacant" when unfilled); other positions follow alphabetically; blank positions are
+/// grouped under "General Committee Members" last. Matching is case-insensitive and trimmed.
 /// Supports filter: Active Only (default) | Archived Only | All.
 /// </summary>
 public class CommitteeReportProvider : IReportProvider
