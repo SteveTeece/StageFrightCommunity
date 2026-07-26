@@ -10,6 +10,16 @@
 
 **Source**: GitHub issue #260 — "Separate Member names into First an[d] Last" ("Seperate teh Member Name field into Firstname and Lastname.")
 
+## Clarifications
+
+### Session 2026-07-26
+
+- Q: What should the maximum length be for the new First Name and Last Name fields individually? → A: 100 characters each (First Name max 100, Last Name max 100).
+- Q: During the automatic conversion (FR-006), what should happen if a split First Name or Last Name value is longer than the new per-field maximum length? → A: Truncate the overlong value to fit the new max length so the upgrade always completes for every record.
+- Q: Should the system prevent two different members from having the same First Name + Last Name combination? → A: No — duplicates are allowed; the system does not enforce uniqueness on full names (matching current behavior, which has no uniqueness constraint on the combined Name field).
+- Q: For CSV exports and printed/PDF reports (Member List, Member Account Summary, Committee) that previously showed one combined Name column, should the new output use two separate First Name/Last Name columns or one combined Full Name column? → A: Single combined Full Name column, displayed as "Last Name, First Name" (matching the FR-005 sort order).
+- Q: When splitting an existing combined Name value that has irregular spacing (leading/trailing spaces, multiple spaces between words), how should the conversion normalize it? → A: Trim leading/trailing whitespace and collapse multiple internal spaces to one before splitting on the first space.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Enter first and last name separately (Priority: P1)
@@ -63,11 +73,11 @@ When the application is upgraded to this version, every existing member's curren
 
 - What happens when an existing member's combined Name value contains only one word (no space), such as a mononym or a data-entry error?
 - What happens when an existing member's combined Name value contains more than two words (e.g. a middle name, double-barrelled surname, or suffix like "Jr.")?
-- What happens when an existing member's combined Name value has irregular spacing (leading/trailing spaces, multiple spaces between words)?
-- How does the system handle a First Name or Last Name value that is very long, at or near the previous 255-character combined-name limit?
+- Resolved: An existing combined Name value with irregular spacing (leading/trailing spaces, multiple internal spaces) is trimmed and collapsed to single spaces before being split on the first space (FR-006).
+- Resolved: If a First Name or Last Name value produced by conversion exceeds the 100-character per-field maximum (FR-009), it is truncated to 100 characters so the upgrade still completes for that record (FR-006).
 - How do archived (inactive/soft-deleted) member records behave during the conversion — are they converted the same way as active members?
-- What happens when two different members end up with the same First Name and Last Name combination?
-- How do existing exported/printed reports and backups that referenced a single "Name" column behave after the change (do they show a combined name, or two columns)?
+- Resolved: Two different members may end up with the same First Name and Last Name combination; the system does not enforce uniqueness on member names, consistent with the current combined Name field having no uniqueness constraint.
+- Resolved: Existing exported/printed reports and backups display a single combined Full Name column (formatted "Last Name, First Name"), not two separate First Name/Last Name columns (FR-003).
 
 ## Requirements *(mandatory)*
 
@@ -75,13 +85,13 @@ When the application is upgraded to this version, every existing member's curren
 
 - **FR-001**: The system MUST capture a member's First Name and Last Name as two distinct pieces of information wherever a member record is created or edited, replacing the single combined Name field.
 - **FR-002**: The system MUST require both First Name and Last Name to be provided before a member record can be saved.
-- **FR-003**: The system MUST display a member's full name (First Name and Last Name combined) everywhere a single combined name was previously shown, including the Member List, Member Detail, Add/Edit Member confirmation, dashboard tiles, Attendance and Participation grids, and printed/exported reports (Member List, Member Account Summary, Committee).
+- **FR-003**: The system MUST display a member's full name (First Name and Last Name combined) everywhere a single combined name was previously shown, including the Member List, Member Detail, Add/Edit Member confirmation, dashboard tiles, Attendance and Participation grids, and printed/exported reports (Member List, Member Account Summary, Committee). Printed/exported reports and CSV exports MUST retain a single combined Full Name column (formatted "Last Name, First Name," consistent with FR-005) rather than splitting into separate First Name and Last Name columns.
 - **FR-004**: The system MUST allow administrators to search for members by First Name, by Last Name, or by full name from the Member List search box.
 - **FR-005**: The system MUST sort member listings and reports alphabetically by Last Name, then First Name, and MUST display names in "Last Name, First Name" order in sorted lists and reports; the Add/Edit Member form and Member Detail header MUST display/enter names in "First Name Last Name" order.
-- **FR-006**: The system MUST automatically convert every existing member's current combined Name value into separate First Name and Last Name values as part of the upgrade, without requiring manual re-entry by an administrator. The conversion MUST split each existing Name value on its first space: the text before the first space becomes First Name, and the remaining text (if any) becomes Last Name.
+- **FR-006**: The system MUST automatically convert every existing member's current combined Name value into separate First Name and Last Name values as part of the upgrade, without requiring manual re-entry by an administrator. The conversion MUST first trim leading/trailing whitespace and collapse multiple internal spaces to a single space, then split the resulting value on its first space: the text before the first space becomes First Name, and the remaining text (if any) becomes Last Name. If a resulting First Name or Last Name value exceeds the 100-character maximum defined in FR-009, the conversion MUST truncate that value to 100 characters so the upgrade completes for every record without failure.
 - **FR-007**: The conversion described in FR-006 MUST NOT lose, duplicate, or corrupt any existing member data; every existing member record MUST still exist, in the same status (active/inactive/archived), after conversion.
 - **FR-008**: When an existing combined Name value contains no space (a single word), the conversion MUST place the entire value in First Name and leave Last Name blank for administrators to complete later, without blocking the upgrade or hiding the affected member from normal views.
-- **FR-009**: The system MUST enforce a reasonable maximum length on First Name and Last Name individually so that combined they cannot exceed the previous 255-character combined-name limit.
+- **FR-009**: The system MUST enforce a maximum length of 100 characters on First Name and 100 characters on Last Name, each validated independently.
 - **FR-010**: All existing member-related functionality that referenced the combined name — search, sort, filters, attendance and participation tracking, committee reporting, member balance/financial reporting, audit trail history, and data backup/export — MUST continue to work correctly using the new First Name and Last Name fields.
 - **FR-011**: The system MUST record changes to First Name and Last Name in the member's audit history the same way other member field edits are tracked today.
 
@@ -102,7 +112,7 @@ When the application is upgraded to this version, every existing member's curren
 ## Assumptions
 
 - Existing member records must be preserved exactly as required by the project's data-preservation rules for members; the name-field conversion is additive/structural and does not delete or archive any member.
-- The 255-character maximum that currently applies to the combined Name field is treated as the practical ceiling for First Name and Last Name combined; a reasonable per-field maximum (e.g. up to 100 characters each) is assumed sufficient for realistic names.
+- First Name and Last Name are each capped at 100 characters (FR-009); real member names are not expected to routinely approach this length, so truncation during conversion (FR-006) is expected to affect a negligible number of legacy records, if any.
 - This feature covers the Member entity only. Other entities that store a "Name" (Events, Event Types, Chart of Accounts, Categories, etc.) are out of scope and are not affected.
-- Existing reports, exports, and backups that reference member names will be updated to use First Name/Last Name (or a full-name display column) rather than requiring a new "combined name" field to be reintroduced.
+- Existing reports, exports, and backups that reference member names will be updated to show a single combined Full Name column (derived from First Name/Last Name, formatted "Last Name, First Name") rather than requiring a new "combined name" field to be reintroduced or splitting into two output columns.
 - Archived (inactive/soft-deleted) member records are included in the automatic conversion described in User Story 3, consistent with the project's requirement that inactive members retain all historical data.
