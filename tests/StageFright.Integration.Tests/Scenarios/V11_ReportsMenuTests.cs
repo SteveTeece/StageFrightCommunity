@@ -212,7 +212,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
         filters.Set("memberFilter", "Active Only");
 
         var result = await provider.GenerateAsync(filters);
-        var names = result.Sections.SelectMany(s => s.Rows).Select(r => r.Cells[0]).ToList();
+        var names = result.Sections.SelectMany(s => s.Rows).Select(r => r.Cells[2]).ToList();
 
         Assert.Contains("Active Member", names);
         Assert.DoesNotContain("Archived Member", names);
