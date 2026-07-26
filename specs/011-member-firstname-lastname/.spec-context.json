@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Split Member Name into First Name and Last Name",
   "branch": "011-member-firstname-lastname",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-07-26T01:31:33.728Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-26T01:48:01.441Z"
     }
   ]
 }
