@@ -57,7 +57,7 @@ public class CommitteeReportProvider : IReportProvider
 
         // Flatten every filtered member's committee memberships into (Member, CommitteeMembership) pairs
         var records = new List<(Core.Entities.Member Member, Core.Entities.CommitteeMembership Membership)>();
-        foreach (var member in memberMap.Values.OrderBy(m => m.Name))
+        foreach (var member in memberMap.Values.OrderBy(m => m.LastName).ThenBy(m => m.FirstName))
         {
             var memberships = await _committeeMemberships.GetByMemberAsync(member.Id, ct);
             records.AddRange(memberships.Select(membership => (member, membership)));
@@ -127,7 +127,7 @@ public class CommitteeReportProvider : IReportProvider
             var trimmed = membership.Position.Trim();
             if (trimmed.Length == 0)
             {
-                generalMembers.Add(member.Name);
+                generalMembers.Add(member.SortableFullName);
                 continue;
             }
 
@@ -138,7 +138,7 @@ public class CommitteeReportProvider : IReportProvider
                 group = (displayLabel, []);
                 positionGroups[key] = group;
             }
-            group.MemberNames.Add(member.Name);
+            group.MemberNames.Add(member.SortableFullName);
         }
 
         var rows = new List<ReportRow>();

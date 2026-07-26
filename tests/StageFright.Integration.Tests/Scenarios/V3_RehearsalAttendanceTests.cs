@@ -281,7 +281,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
     {
         var member = new Member
         {
-            Id = Guid.NewGuid(), Name = name, StreetAddress = "1 Test St",
+            Id = Guid.NewGuid(), FirstName = name, StreetAddress = "1 Test St",
             Status = MemberStatus.Active, ActivateDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             JoinDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
@@ -295,7 +295,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
     {
         var member = new Member
         {
-            Id = Guid.NewGuid(), Name = name, StreetAddress = "2 Test St",
+            Id = Guid.NewGuid(), FirstName = name, StreetAddress = "2 Test St",
             Status = MemberStatus.Inactive,
             InactivateDate = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc),
             JoinDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),

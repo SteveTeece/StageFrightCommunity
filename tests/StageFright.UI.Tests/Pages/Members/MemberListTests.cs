@@ -17,14 +17,14 @@ public class MemberListTests : BunitContext
 
     private readonly Member _activeMember = new()
     {
-        Id = Guid.NewGuid(), Name = "Alice Active", StreetAddress = "1 Test St",
+        Id = Guid.NewGuid(), FirstName = "Alice", LastName = "Anderson", StreetAddress = "1 Test St",
         Status = MemberStatus.Active, JoinDate = DateTime.UtcNow,
         CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
 
     private readonly Member _inactiveMember = new()
     {
-        Id = Guid.NewGuid(), Name = "Bob Inactive", StreetAddress = "2 Test St",
+        Id = Guid.NewGuid(), FirstName = "Bob", LastName = "Baker", StreetAddress = "2 Test St",
         Status = MemberStatus.Inactive, JoinDate = DateTime.UtcNow,
         CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
@@ -47,8 +47,8 @@ public class MemberListTests : BunitContext
         var switchInput = cut.Find("input[type=checkbox]");
         Assert.False(switchInput.HasAttribute("checked"));
 
-        Assert.Contains("Alice Active", cut.Markup);
-        Assert.DoesNotContain("Bob Inactive", cut.Markup);
+        Assert.Contains("Anderson, Alice", cut.Markup);
+        Assert.DoesNotContain("Baker, Bob", cut.Markup);
     }
 
     [Fact]
@@ -58,8 +58,8 @@ public class MemberListTests : BunitContext
 
         cut.Find("[role=switch]").Click();
 
-        Assert.Contains("Alice Active", cut.Markup);
-        Assert.Contains("Bob Inactive (Inactive)", cut.Markup);
+        Assert.Contains("Anderson, Alice", cut.Markup);
+        Assert.Contains("Baker, Bob (Inactive)", cut.Markup);
     }
 
     [Fact]
@@ -70,8 +70,8 @@ public class MemberListTests : BunitContext
         cut.Find("[role=switch]").Click();
         cut.Find("[role=switch]").Click();
 
-        Assert.Contains("Alice Active", cut.Markup);
-        Assert.DoesNotContain("Bob Inactive", cut.Markup);
+        Assert.Contains("Anderson, Alice", cut.Markup);
+        Assert.DoesNotContain("Baker, Bob", cut.Markup);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class MemberListTests : BunitContext
         var dob = DateTime.UtcNow.Date.AddYears(-40).AddDays(-1); // birthday already passed
         var withDob = new Member
         {
-            Id = Guid.NewGuid(), Name = "Carol WithDob", StreetAddress = "3 Test St",
+            Id = Guid.NewGuid(), FirstName = "Carol", LastName = "Carter", StreetAddress = "3 Test St",
             Status = MemberStatus.Active, JoinDate = DateTime.UtcNow, DateOfBirth = dob,
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         };
@@ -126,5 +126,35 @@ public class MemberListTests : BunitContext
         var cut = Render<MemberList>();
 
         Assert.Contains("—", cut.Markup);
+    }
+
+    [Fact]
+    public void Search_MatchesByFirstNameOnly()
+    {
+        var cut = Render<MemberList>();
+
+        cut.Find("input[type=search], input[placeholder*='earch' i]").Input("Alice");
+
+        Assert.Contains("Anderson, Alice", cut.Markup);
+    }
+
+    [Fact]
+    public void Search_MatchesByLastNameOnly()
+    {
+        var cut = Render<MemberList>();
+
+        cut.Find("input[type=search], input[placeholder*='earch' i]").Input("Anderson");
+
+        Assert.Contains("Anderson, Alice", cut.Markup);
+    }
+
+    [Fact]
+    public void Search_MatchesByFullName()
+    {
+        var cut = Render<MemberList>();
+
+        cut.Find("input[type=search], input[placeholder*='earch' i]").Input("Alice Anderson");
+
+        Assert.Contains("Anderson, Alice", cut.Markup);
     }
 }

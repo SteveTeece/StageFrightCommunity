@@ -96,8 +96,8 @@ dotnet run --project src/StageFright.App/
 
 ## Success criteria checklist (from spec.md)
 
-- [ ] SC-001: 100% of existing member records retain non-empty First Name and correct status after upgrade; zero lost/duplicated
-- [ ] SC-002: Search by first name or last name returns correct results every time
-- [ ] SC-003: All six MVP reports/screens show accurate, correctly formatted full names
-- [ ] SC-004: Add/Edit Member with two fields takes no longer than the prior single-field flow (spot-check via manual timing, no added required steps)
-- [ ] SC-005: Every sorted list/report orders consistently by Last Name, then First Name
+- [x] SC-001: 100% of existing member records retain non-empty First Name and correct status after upgrade; zero lost/duplicated — verified by `SplitMemberNameIntoFirstLastNameTests` (migration integration tests: row count, mononym, whitespace, overlong, archived-member cases)
+- [x] SC-002: Search by first name or last name returns correct results every time — verified by `MemberListTests.Search_MatchesBy*` (automated)
+- [x] SC-003: All six MVP reports/screens show accurate, correctly formatted full names — verified by Reports.Tests + UI.Tests grid/report assertions (automated)
+- [ ] SC-004: Add/Edit Member with two fields takes no longer than the prior single-field flow (spot-check via manual timing, no added required steps) — **not verified**: requires manual UX timing against a running app, not exercised in this session (see T061)
+- [x] SC-005: Every sorted list/report orders consistently by Last Name, then First Name — verified by report/grid ordering tests plus the new `AttendanceRepository_GetByRehearsalAsync_OrdersByMemberLastNameThenFirstName` real-SQL regression test (T031)

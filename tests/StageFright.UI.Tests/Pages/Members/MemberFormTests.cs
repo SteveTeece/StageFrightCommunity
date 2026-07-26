@@ -28,7 +28,8 @@ public class MemberFormTests : BunitContext
             .Returns(new Member
             {
                 Id = Guid.NewGuid(),
-                Name = "Jane Doe",
+                FirstName = "Jane",
+                LastName = "Doe",
                 StreetAddress = "1 Main St",
                 Status = MemberStatus.Active,
                 JoinDate = DateTime.UtcNow,
@@ -51,7 +52,8 @@ public class MemberFormTests : BunitContext
     {
         var cut = Render<MemberForm>();
 
-        cut.Find("#name");
+        cut.Find("#firstName");
+        cut.Find("#lastName");
         cut.Find("#address");
         cut.Find("#joinDate");
         cut.Find("[type=submit]");
@@ -75,7 +77,8 @@ public class MemberFormTests : BunitContext
 
         var cut = Render<MemberForm>();
 
-        cut.Find("#name").Change("Jane Doe");
+        cut.Find("#firstName").Change("Jane");
+        cut.Find("#lastName").Change("Doe");
         cut.Find("#address").Change("1 Main St");
         await cut.Find("form").SubmitAsync();
 
@@ -89,18 +92,35 @@ public class MemberFormTests : BunitContext
     }
 
     [Fact]
-    public async Task SubmitWithEmptyName_ShowsValidationError_FromService()
+    public async Task SubmitWithEmptyFirstName_ShowsValidationError_FromService()
     {
         _memberService.CreateAsync(Arg.Any<CreateMemberRequest>(), Arg.Any<CancellationToken>())
-            .Returns<Member>(_ => throw new ValidationException("Name is required.", "Member", "CreateAsync"));
+            .Returns<Member>(_ => throw new ValidationException("First name is required.", "Member", "CreateAsync"));
 
         var cut = Render<MemberForm>();
 
+        cut.Find("#lastName").Change("Doe");
         cut.Find("#address").Change("1 Test St");
         await cut.Find("form").SubmitAsync();
 
         var alert = cut.Find(".alert-danger");
-        Assert.Contains("Name is required.", alert.TextContent);
+        Assert.Contains("First name is required.", alert.TextContent);
+    }
+
+    [Fact]
+    public async Task SubmitWithEmptyLastName_ShowsValidationError_FromService()
+    {
+        _memberService.CreateAsync(Arg.Any<CreateMemberRequest>(), Arg.Any<CancellationToken>())
+            .Returns<Member>(_ => throw new ValidationException("Last name is required.", "Member", "CreateAsync"));
+
+        var cut = Render<MemberForm>();
+
+        cut.Find("#firstName").Change("Jane");
+        cut.Find("#address").Change("1 Test St");
+        await cut.Find("form").SubmitAsync();
+
+        var alert = cut.Find(".alert-danger");
+        Assert.Contains("Last name is required.", alert.TextContent);
     }
 
     [Fact]
@@ -111,7 +131,8 @@ public class MemberFormTests : BunitContext
 
         var cut = Render<MemberForm>();
 
-        cut.Find("#name").Change("Jane Doe");
+        cut.Find("#firstName").Change("Jane");
+        cut.Find("#lastName").Change("Doe");
         cut.Find("#address").Change("1 Main St");
         cut.Find("#email").Change("not-an-email");
         await cut.Find("form").SubmitAsync();
@@ -137,7 +158,8 @@ public class MemberFormTests : BunitContext
         var cut = Render<MemberForm>();
 
         cut.Find("#isCommittee").Change(true);
-        cut.Find("#name").Change("Jane Doe");
+        cut.Find("#firstName").Change("Jane");
+        cut.Find("#lastName").Change("Doe");
         cut.Find("#address").Change("1 Main St");
 
         await cut.Find("form").SubmitAsync();
@@ -151,12 +173,13 @@ public class MemberFormTests : BunitContext
     {
         var cut = Render<MemberForm>();
 
-        cut.Find("#name").Change("Jane Doe");
+        cut.Find("#firstName").Change("Jane");
+        cut.Find("#lastName").Change("Doe");
         cut.Find("#address").Change("1 Main St");
         await cut.Find("form").SubmitAsync();
 
         await _memberService.Received(1).CreateAsync(
-            Arg.Is<CreateMemberRequest>(r => r.Name == "Jane Doe"),
+            Arg.Is<CreateMemberRequest>(r => r.FirstName == "Jane" && r.LastName == "Doe"),
             Arg.Any<CancellationToken>());
     }
 
@@ -165,7 +188,8 @@ public class MemberFormTests : BunitContext
     {
         var cut = Render<MemberForm>();
 
-        cut.Find("#name").Change("Jane Doe");
+        cut.Find("#firstName").Change("Jane");
+        cut.Find("#lastName").Change("Doe");
         cut.Find("#address").Change("1 Main St");
         await cut.Find("form").SubmitAsync();
 
@@ -179,7 +203,8 @@ public class MemberFormTests : BunitContext
         var cut = Render<MemberForm>();
 
         cut.Find("#isCommittee").Change(true);
-        cut.Find("#name").Change("Jane Doe");
+        cut.Find("#firstName").Change("Jane");
+        cut.Find("#lastName").Change("Doe");
         cut.Find("#address").Change("1 Main St");
         cut.Find("#position").Change("President");
         await cut.Find("form").SubmitAsync();
@@ -188,6 +213,57 @@ public class MemberFormTests : BunitContext
             Arg.Any<Guid>(),
             Arg.Is<int>(y => y == DateTime.UtcNow.Year),
             Arg.Is<string>(p => p == "President"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public void EditMember_PrePopulates_FirstNameAndLastName_Independently()
+    {
+        var memberId = Guid.NewGuid();
+        _memberService.GetByIdAsync(memberId, Arg.Any<CancellationToken>())
+            .Returns(new Member
+            {
+                Id = memberId,
+                FirstName = "Existing",
+                LastName = "Member",
+                StreetAddress = "9 Old St",
+                Status = MemberStatus.Active,
+                JoinDate = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
+
+        var cut = Render<MemberForm>(parameters => parameters.Add(p => p.Id, memberId));
+
+        Assert.Equal("Existing", cut.Find("#firstName").GetAttribute("value"));
+        Assert.Equal("Member", cut.Find("#lastName").GetAttribute("value"));
+    }
+
+    [Fact]
+    public async Task EditMember_ValidSubmit_CallsUpdateAsync_WithBothFieldsIndependently()
+    {
+        var memberId = Guid.NewGuid();
+        _memberService.GetByIdAsync(memberId, Arg.Any<CancellationToken>())
+            .Returns(new Member
+            {
+                Id = memberId,
+                FirstName = "Existing",
+                LastName = "Member",
+                StreetAddress = "9 Old St",
+                Status = MemberStatus.Active,
+                JoinDate = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
+
+        var cut = Render<MemberForm>(parameters => parameters.Add(p => p.Id, memberId));
+
+        cut.Find("#firstName").Change("Updated");
+        await cut.Find("form").SubmitAsync();
+
+        await _memberService.Received(1).UpdateAsync(
+            memberId,
+            Arg.Is<UpdateMemberRequest>(r => r.FirstName == "Updated" && r.LastName == "Member"),
             Arg.Any<CancellationToken>());
     }
 }

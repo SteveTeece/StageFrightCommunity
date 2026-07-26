@@ -53,7 +53,7 @@ public class MemberListReportProvider : IReportProvider
         };
 
         var rows = members
-            .OrderBy(m => m.Name)
+            .OrderBy(m => m.LastName).ThenBy(m => m.FirstName)
             .Select(m =>
             {
                 var ageStr = _ageCalc.Calculate(m.DateOfBirth, today)?.ToString();
@@ -62,7 +62,7 @@ public class MemberListReportProvider : IReportProvider
                 {
                     Cells =
                     [
-                        m.Name,
+                        m.SortableFullName,
                         m.StreetAddress,
                         m.Phone ?? string.Empty,
                         m.Email ?? string.Empty,

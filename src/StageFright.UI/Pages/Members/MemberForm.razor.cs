@@ -33,7 +33,8 @@ public partial class MemberForm : ComponentBase
                 return;
             }
 
-            _form.Name = member.Name;
+            _form.FirstName = member.FirstName;
+            _form.LastName = member.LastName;
             _form.StreetAddress = member.StreetAddress;
             _form.Phone = member.Phone;
             _form.Email = member.Email;
@@ -82,7 +83,8 @@ public partial class MemberForm : ComponentBase
             {
                 var request = new CreateMemberRequest
                 {
-                    Name = _form.Name,
+                    FirstName = _form.FirstName,
+                    LastName = _form.LastName,
                     StreetAddress = _form.StreetAddress,
                     Phone = _form.Phone,
                     Email = _form.Email,
@@ -100,7 +102,8 @@ public partial class MemberForm : ComponentBase
             {
                 var request = new UpdateMemberRequest
                 {
-                    Name = _form.Name,
+                    FirstName = _form.FirstName,
+                    LastName = _form.LastName,
                     StreetAddress = _form.StreetAddress,
                     Phone = _form.Phone,
                     Email = _form.Email,
@@ -134,7 +137,8 @@ public partial class MemberForm : ComponentBase
 
     private sealed class MemberFormModel
     {
-        public string Name { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
         public string StreetAddress { get; set; } = string.Empty;
         public string? Phone { get; set; }
         public string? Email { get; set; }

@@ -41,7 +41,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
 
         _db.Members.Add(new Member
         {
-            Id = MemberId, Name = "Alice Smith", StreetAddress = "1 Test St",
+            Id = MemberId, FirstName = "Alice", LastName = "Smith", StreetAddress = "1 Test St",
             Status = MemberStatus.Active, JoinDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             ActivateDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow

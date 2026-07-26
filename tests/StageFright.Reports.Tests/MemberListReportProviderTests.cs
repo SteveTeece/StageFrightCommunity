@@ -100,7 +100,7 @@ public class MemberListReportProviderTests
     private static Member MakeMember(string name, DateTime? dob) => new()
     {
         Id = Guid.NewGuid(),
-        Name = name,
+        FirstName = name,
         StreetAddress = "1 Test St",
         JoinDate = DateTime.UtcNow.Date,
         DateOfBirth = dob,

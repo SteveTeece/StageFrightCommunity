@@ -59,7 +59,8 @@ public class BackupImportTests_Integration : IDisposable
         var originalMember = new Member
         {
             Id = Guid.NewGuid(),
-            Name = "Original Member",
+            FirstName = "Original",
+            LastName = "Member",
             StreetAddress = "1 Old St",
             JoinDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             Status = MemberStatus.Active,
@@ -82,7 +83,8 @@ public class BackupImportTests_Integration : IDisposable
             var laterMember = new Member
             {
                 Id = Guid.NewGuid(),
-                Name = "Later Member",
+                FirstName = "Later",
+                LastName = "Member",
                 StreetAddress = "2 New St",
                 JoinDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                 Status = MemberStatus.Active,
@@ -178,7 +180,8 @@ public class BackupImportTests_Integration : IDisposable
         var member = new Member
         {
             Id = Guid.NewGuid(),
-            Name = "Restored Member",
+            FirstName = "Restored",
+            LastName = "Member",
             StreetAddress = "3 Backup Ave",
             JoinDate = new DateTime(2025, 6, 1, 0, 0, 0, DateTimeKind.Utc),
             Status = MemberStatus.Active,
@@ -206,11 +209,63 @@ public class BackupImportTests_Integration : IDisposable
             var restored = await targetDb.Members.IgnoreQueryFilters()
                 .FirstOrDefaultAsync(m => m.Id == member.Id);
             Assert.NotNull(restored);
-            Assert.Equal("Restored Member", restored!.Name);
+            Assert.Equal("Restored Member", restored!.FullName);
         }
         finally
         {
             CleanupTempFiles(backupPath);
+        }
+    }
+
+    [Fact]
+    public async Task ImportAsync_LegacyFormatBackup_RestoresNonEmptyNames_IntegrationPath()
+    {
+        using var db = _factory.CreateContext();
+        var member = new Member
+        {
+            Id = Guid.NewGuid(),
+            FirstName = "Placeholder",
+            LastName = "Name",
+            StreetAddress = "1 Legacy Rd",
+            JoinDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            Status = MemberStatus.Active,
+            ActivateDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        db.Members.Add(member);
+        await db.SaveChangesAsync();
+
+        var svc = BuildBackupService(db);
+        var path = TempFile();
+
+        try
+        {
+            await svc.ExportAsync(path);
+
+            // Tamper the export into a pre-feature (legacy) shape: clear FirstName/LastName,
+            // populate only the old combined LegacyName field.
+            using (var readStream = File.OpenRead(path))
+            {
+                var envelope = ProtoBuf.Serializer.Deserialize<StageFright.Core.Modules.Settings.Backup.BackupEnvelope>(readStream);
+                readStream.Close();
+                var dto = envelope.Members!.Single(m => m.Id == member.Id);
+                dto.FirstName = string.Empty;
+                dto.LastName = string.Empty;
+                dto.LegacyName = "Grace Hopper";
+                using var writeStream = File.Create(path);
+                ProtoBuf.Serializer.Serialize(writeStream, envelope);
+            }
+
+            await svc.ImportAsync(path);
+
+            db.ChangeTracker.Clear();
+            var restored = await db.Members.IgnoreQueryFilters().SingleAsync(m => m.Id == member.Id);
+            Assert.Equal("Grace", restored.FirstName);
+            Assert.Equal("Hopper", restored.LastName);
+        }
+        finally
+        {
+            CleanupTempFiles(path);
         }
     }
 
@@ -222,7 +277,8 @@ public class BackupImportTests_Integration : IDisposable
         var deletedMember = new Member
         {
             Id = Guid.NewGuid(),
-            Name = "Archived Member",
+            FirstName = "Archived",
+            LastName = "Member",
             StreetAddress = "0 Gone Lane",
             JoinDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             Status = MemberStatus.Inactive,

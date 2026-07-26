@@ -1,6 +1,6 @@
 @page "/members/{Id:guid}"
 
-<PageTitle>@(_member?.Name ?? "Member") — StageFright Community</PageTitle>
+<PageTitle>@(_member?.FullName ?? "Member") — StageFright Community</PageTitle>
 
 @if (_loading)
 {
@@ -13,7 +13,7 @@ else if (_member is null)
 else
 {
     <div class="page-header d-flex align-items-center justify-content-between mb-2">
-        <h1 class="h3 mb-0">@_member.Name</h1>
+        <h1 class="h3 mb-0">@_member.FullName</h1>
         <div class="d-flex gap-2">
             <button class="btn btn-outline-secondary btn-sm" @onclick="Edit">Edit</button>
             @if (_member.Status == StageFright.Core.Enums.MemberStatus.Active)
