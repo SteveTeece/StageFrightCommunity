@@ -96,7 +96,7 @@ public sealed class V13_CommitteeResetAgmBannerTests : IAsyncLifetime
         var memberId = Guid.NewGuid();
         var member = new Member
         {
-            Id = memberId, Name = "Test Member", StreetAddress = "1 St",
+            Id = memberId, FirstName = "Test", LastName = "Member", StreetAddress = "1 St",
             JoinDate = DateTime.UtcNow.AddYears(-2), Status = MemberStatus.Active,
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         };

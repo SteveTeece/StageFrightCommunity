@@ -237,7 +237,7 @@ public class ParticipationGridTests : BunitContext
 
     private static Member ActiveMember(string name) => new()
     {
-        Id = Guid.NewGuid(), Name = name, StreetAddress = "1 St",
+        Id = Guid.NewGuid(), FirstName = name, StreetAddress = "1 St",
         Status = MemberStatus.Active, ActivateDate = DateTime.UtcNow.Date,
         JoinDate = DateTime.UtcNow, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };

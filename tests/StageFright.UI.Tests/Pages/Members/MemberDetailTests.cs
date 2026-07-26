@@ -36,7 +36,7 @@ public class MemberDetailTests : BunitContext
         _memberService.GetByIdAsync(_memberId, Arg.Any<CancellationToken>())
             .Returns(new Member
             {
-                Id = _memberId, Name = "Alice Smith",
+                Id = _memberId, FirstName = "Alice", LastName = "Smith",
                 StreetAddress = "1 Test St", Status = MemberStatus.Active,
                 JoinDate = DateTime.UtcNow, ActivateDate = DateTime.UtcNow.Date,
                 CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
@@ -50,7 +50,7 @@ public class MemberDetailTests : BunitContext
         _memberService.GetByIdAsync(_memberId, Arg.Any<CancellationToken>())
             .Returns(new Member
             {
-                Id = _memberId, Name = "Bob Dob",
+                Id = _memberId, FirstName = "Bob", LastName = "Dob",
                 StreetAddress = "1 Test St", Status = MemberStatus.Active,
                 JoinDate = DateTime.UtcNow, ActivateDate = DateTime.UtcNow.Date,
                 DateOfBirth = dob,

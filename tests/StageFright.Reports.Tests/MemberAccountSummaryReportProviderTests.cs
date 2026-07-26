@@ -416,7 +416,7 @@ public class MemberAccountSummaryReportProviderTests
     private static Member MakeMember(Guid id, string name, bool isDeleted)
         => new()
         {
-            Id = id, Name = name, StreetAddress = "1 Test St",
+            Id = id, FirstName = name, StreetAddress = "1 Test St",
             Status = isDeleted ? MemberStatus.Inactive : MemberStatus.Active,
             IsDeleted = isDeleted,
             JoinDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),

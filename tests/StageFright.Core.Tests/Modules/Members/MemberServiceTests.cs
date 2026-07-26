@@ -65,12 +65,33 @@ public class MemberServiceTests : TestBase
     }
 
     [Fact]
-    public async Task CreateAsync_Throws_WhenNameIsEmpty()
+    public async Task CreateAsync_Throws_WhenFirstNameIsEmpty()
     {
         var svc = CreateService();
-        var request = ValidRequest() with { Name = "" };
+        var request = ValidRequest() with { FirstName = "" };
 
         await Assert.ThrowsAsync<ValidationException>(() => svc.CreateAsync(request, Ct));
+    }
+
+    [Fact]
+    public async Task CreateAsync_Throws_WhenLastNameIsEmpty()
+    {
+        var svc = CreateService();
+        var request = ValidRequest() with { LastName = "" };
+
+        await Assert.ThrowsAsync<ValidationException>(() => svc.CreateAsync(request, Ct));
+    }
+
+    [Fact]
+    public async Task CreateAsync_Trims_And_Maps_FirstNameAndLastName_Independently()
+    {
+        var svc = CreateService();
+        var request = ValidRequest() with { FirstName = "  Jane  ", LastName = "  Doe  " };
+
+        var member = await svc.CreateAsync(request, Ct);
+
+        Assert.Equal("Jane", member.FirstName);
+        Assert.Equal("Doe", member.LastName);
     }
 
     [Fact]
@@ -101,6 +122,52 @@ public class MemberServiceTests : TestBase
         await _audit.Received(1).LogAsync(
             "Member", Arg.Any<Guid>(), AuditAction.Create,
             Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    // --- UpdateAsync ---
+
+    [Fact]
+    public async Task UpdateAsync_Trims_And_Maps_FirstNameAndLastName_Independently()
+    {
+        var member = ActiveMember();
+        _memberRepo.GetByIdAsync(member.Id, Arg.Any<CancellationToken>()).Returns(member);
+        var svc = CreateService();
+        var request = ValidUpdateRequest() with { FirstName = "  Janet  ", LastName = "  Smith  " };
+
+        await svc.UpdateAsync(member.Id, request, Ct);
+
+        await _memberRepo.Received(1).UpdateAsync(
+            Arg.Is<Member>(m => m.FirstName == "Janet" && m.LastName == "Smith"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task UpdateAsync_WritesAuditEntry_WithOldAndNewNameValues()
+    {
+        var member = ActiveMember();
+        var oldFirstName = member.FirstName;
+        var oldLastName = member.LastName;
+        _memberRepo.GetByIdAsync(member.Id, Arg.Any<CancellationToken>()).Returns(member);
+        var svc = CreateService();
+        var request = ValidUpdateRequest() with { FirstName = "Janet", LastName = "Smith" };
+
+        await svc.UpdateAsync(member.Id, request, Ct);
+
+        await _audit.Received(1).LogAsync(
+            "Member", member.Id, AuditAction.Update,
+            $"{oldFirstName} {oldLastName}", "Janet Smith",
+            Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Throws_WhenMemberNotFound()
+    {
+        _memberRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns((Member?)null);
+        var svc = CreateService();
+
+        await Assert.ThrowsAsync<EntityNotFoundException>(
+            () => svc.UpdateAsync(Guid.NewGuid(), ValidUpdateRequest(), Ct));
     }
 
     // --- InactivateAsync ---
@@ -288,14 +355,23 @@ public class MemberServiceTests : TestBase
 
     private static CreateMemberRequest ValidRequest() => new()
     {
-        Name = "Jane Doe",
+        FirstName = "Jane",
+        LastName = "Doe",
+        StreetAddress = "1 Main St",
+        JoinDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+    };
+
+    private static UpdateMemberRequest ValidUpdateRequest() => new()
+    {
+        FirstName = "Jane",
+        LastName = "Doe",
         StreetAddress = "1 Main St",
         JoinDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
     };
 
     private static Member ActiveMember() => new()
     {
-        Id = Guid.NewGuid(), Name = "Active Member",
+        Id = Guid.NewGuid(), FirstName = "Active", LastName = "Member",
         StreetAddress = "1 Test St", Status = MemberStatus.Active,
         ActivateDate = DateTime.UtcNow.Date,
         JoinDate = DateTime.UtcNow, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
@@ -303,7 +379,7 @@ public class MemberServiceTests : TestBase
 
     private static Member InactiveMember() => new()
     {
-        Id = Guid.NewGuid(), Name = "Inactive Member",
+        Id = Guid.NewGuid(), FirstName = "Inactive", LastName = "Member",
         StreetAddress = "1 Test St", Status = MemberStatus.Inactive,
         InactivateDate = DateTime.UtcNow.Date,
         JoinDate = DateTime.UtcNow, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow

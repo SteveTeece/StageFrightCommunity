@@ -459,7 +459,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
     {
         var member = new Member
         {
-            Id = Guid.NewGuid(), Name = "Test Member", StreetAddress = "1 Test St",
+            Id = Guid.NewGuid(), FirstName = "Test", LastName = "Member", StreetAddress = "1 Test St",
             Status = MemberStatus.Active,
             ActivateDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             JoinDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),

@@ -270,7 +270,7 @@ public class RehearsalServiceTests : TestBase
 
     private static Member ActiveMember() => new()
     {
-        Id = Guid.NewGuid(), Name = "Active", StreetAddress = "1 St",
+        Id = Guid.NewGuid(), FirstName = "Active", LastName = "Member", StreetAddress = "1 St",
         Status = MemberStatus.Active, ActivateDate = DateTime.UtcNow.Date,
         JoinDate = DateTime.UtcNow, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };

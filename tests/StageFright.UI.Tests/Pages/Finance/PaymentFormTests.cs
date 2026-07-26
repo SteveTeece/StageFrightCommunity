@@ -274,7 +274,7 @@ public class PaymentFormTests : BunitContext
 
     private static Member MakeMember(Guid id) => new()
     {
-        Id = id, Name = "Test Member", StreetAddress = "1 Test St",
+        Id = id, FirstName = "Test", LastName = "Member", StreetAddress = "1 Test St",
         Status = MemberStatus.Active,
         JoinDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
         ActivateDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
