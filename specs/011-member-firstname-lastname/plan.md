@@ -8,7 +8,7 @@
 
 ## Summary
 
-Replace the single `Member.Name` string with two required fields, `FirstName` and `LastName` (100 chars max each), used everywhere a member's name is captured, searched, sorted, or displayed. A hand-written EF Core migration adds the two columns, backfills them from the existing `Name` value using a trim/collapse-whitespace-then-split-on-first-space rule (truncating to 100 chars if needed, leaving `LastName` blank for single-word names), and drops the old `Name` column. A derived, read-only `Member.FullName` computed property (`"{FirstName} {LastName}"` for entry contexts, formatted as `"{LastName}, {FirstName}"` for sorted lists/reports per FR-005) replaces every direct `member.Name` read across `StageFright.Core`, `StageFright.Data`, `StageFright.UI`, and `StageFright.Reports`. `MemberService.UpdateAsync` is extended to capture old/new FirstName/LastName values for the audit trail (FR-011), following the existing `AccountService.UpdateAsync` pattern.
+Replace the single `Member.Name` string with two required fields, `FirstName` and `LastName` (100 chars max each), used everywhere a member's name is captured, searched, sorted, or displayed. A hand-written EF Core migration adds the two columns, backfills them from the existing `Name` value using a trim/collapse-whitespace-then-split-on-first-space rule (truncating to 100 chars if needed, leaving `LastName` blank for single-word names), and drops the old `Name` column. A derived, read-only `Member.FullName` computed property (`"{FirstName} {LastName}"` for entry contexts, formatted as `"{LastName}, {FirstName}"` for sorted lists/reports per FR-005) replaces every direct `member.Name` read across `StageFright.Core`, `StageFright.Data`, `StageFright.UI`, and `StageFright.Reports`. `MemberService.UpdateAsync` is extended to capture old/new FirstName/LastName values for the audit trail (FR-011), following the existing `AccountService.UpdateAsync` pattern. `StageFright.App`'s opt-in `DebugDataSeeder` — the only place that constructs `CreateMemberRequest` with literal demo data — is updated in lockstep since it stops compiling the moment `Name` is removed from that DTO.
 
 ## Technical Context
 
@@ -28,7 +28,7 @@ Replace the single `Member.Name` string with two required fields, `FirstName` an
 
 **Constraints**: Zero data loss/corruption during the one-time conversion (FR-007, SC-001); migration must run safely against SQLite (no unsupported `ALTER COLUMN`, so old-column drop uses the table-rebuild EF Core already generates for SQLite); soft-deleted/inactive members must be converted identically to active ones; must satisfy the constitution's one-class-per-file, code-behind-only Blazor, and custom-exception-boundary rules
 
-**Scale/Scope**: Single entity change (`Member`) rippling through ~1 EF configuration, ~1 migration, 1 repository (no `Name`-specific methods to change), 1 service + 2 request DTOs, ~7 Razor UI pages/components (`MemberForm`, `MemberList`, `MemberDetail`, `EventDetail`, `ParticipationGrid`, `AttendanceGrid`, `MemberBalanceList`, `PaymentForm`), 3 report providers (`MemberList`, `MemberAccountSummary`, `Committee`), and ~29 existing test files across 5 test projects (per research.md §9) — sized for a community group's member roster (tens to low hundreds of records), not a high-volume dataset
+**Scale/Scope**: Single entity change (`Member`) rippling through ~1 EF configuration, ~1 migration, 1 repository (no `Name`-specific methods to change), 1 service + 2 request DTOs, ~7 Razor UI pages/components (`MemberForm`, `MemberList`, `MemberDetail`, `EventDetail`, `ParticipationGrid`, `AttendanceGrid`, `MemberBalanceList`, `PaymentForm`), 3 report providers (`MemberList`, `MemberAccountSummary`, `Committee`), the opt-in `DebugDataSeeder` (51 literal demo members constructed via `CreateMemberRequest`), and ~29 existing test files across 5 test projects (per research.md §9) — sized for a community group's member roster (tens to low hundreds of records), not a high-volume dataset
 
 ## Constitution Check
 
@@ -73,7 +73,8 @@ specs/[###-feature]/
 
 ```text
 src/
-├── StageFright.App/                          # MAUI Blazor Hybrid host (composition root — untouched by this feature)
+├── StageFright.App/
+│   └── Seeding/DebugDataSeeder.cs             # Opt-in dev/demo seed data: split each member's literal "First Last" tuple into FirstName/LastName
 ├── StageFright.Core/
 │   ├── Entities/
 │   │   └── Member.cs                         # Name -> FirstName + LastName + FullName (computed)
