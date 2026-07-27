@@ -151,7 +151,7 @@ description: "Task list template for feature implementation"
 
 **Purpose**: Final whole-solution verification once all three stories are in place.
 
-- [ ] T061 Walk through every manual validation step in [quickstart.md](./quickstart.md) (all three user stories plus the backup/restore compatibility check) against a running `dotnet run --project src/StageFright.App/` instance; while doing so, also opt into the Setup Wizard's seed-debug-data checkbox and confirm the 51 seeded demo members (T006) all show distinct, correctly-split First/Last names on Member List
+- [x] T061 Walk through every manual validation step in [quickstart.md](./quickstart.md) (all three user stories plus the backup/restore compatibility check) against a running `dotnet run --project src/StageFright.App/` instance; while doing so, also opt into the Setup Wizard's seed-debug-data checkbox and confirm the 51 seeded demo members (T006) all show distinct, correctly-split First/Last names on Member List
 - [x] T062 Run `dotnet build` and the full `dotnet test` suite (all five projects) from the repo root and confirm everything is green, per CLAUDE.md's build/test verification rule
 - [x] T063 [P] Tick off the success-criteria checklist (SC-001 through SC-005) at the bottom of quickstart.md based on the verification in T061/T062
 
