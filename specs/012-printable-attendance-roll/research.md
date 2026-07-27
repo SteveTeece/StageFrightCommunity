@@ -119,21 +119,32 @@ this chunking strategy produces by construction.
   renderer (not user-configurable), so a fixed, code-reviewable constant is simpler, deterministic,
   and just as correct as a runtime measurement for this fixed layout.
 
-### 4. Checkbox rendering: bordered box elements, not Unicode glyphs
+### 4. Checkbox rendering: bordered box, unchecked; bordered box + checkmark glyph, checked
 
 **Decision**: Render each checkbox cell as a small fixed-size `Container` with a border
 (`.Border(1).BorderColor(...).Width(Xpt).Height(Xpt)`), left empty for unchecked ("Attended",
-"Rehearsal Fee Paid", and an unpaid "Annual Fee Paid") and filled/marked (e.g. a centered bold "X"
-or a solid background) for a checked "Annual Fee Paid".
+"Rehearsal Fee Paid", and an unpaid "Annual Fee Paid"). A checked "Annual Fee Paid" renders the
+same bordered box with a centered bold "✓" (U+2713) checkmark glyph inside it — **not** a solid
+filled/black background (superseded; see below).
 
-**Rationale**: QuestPDF Community edition bundles a limited default font set; relying on Unicode
-box-drawing/checkbox glyphs (☐ U+2610 / ☑ U+2611) risks silent tofu/missing-glyph rendering on
-some platforms/fonts, which nothing in this codebase's existing `PdfReportRenderer` usage has ever
-had to handle (every existing cell is plain Latin text). A drawn border box is glyph-independent,
-guaranteed to render identically on Windows and macOS (the app's two supported desktop targets,
-per Technical Context), and is also the more print/handwriting-appropriate visual — attendees
-literally need an empty square to hand-tick with a pen, which a bordered box communicates more
-reliably than a small printed glyph.
+**Rationale**: QuestPDF Community edition bundles a limited default font set, so Unicode glyphs
+were initially avoided over a theoretical tofu/missing-glyph risk (see original rationale below).
+In practice the bundled default font renders "✓" cleanly on this project's target platforms — this
+was confirmed by direct visual inspection of generated PDFs before landing the change. A solid
+filled/black box (the first implementation) was replaced after user feedback that it looked
+visually unpolished for a print-and-tick document; a bordered box with a checkmark reads clearly
+as "this one's ticked" while an empty bordered box reads as "not yet ticked," matching the
+handwritten-tick metaphor the roll is designed around. This is now this project's standing
+preference for "checked" states across any future printable report using the same checkbox
+pattern — not just this one roll.
+
+**Superseded original rationale** (kept for context): relying on Unicode box-drawing/checkbox
+glyphs (☐ U+2610 / ☑ U+2611) risked silent tofu/missing-glyph rendering on some platforms/fonts,
+which nothing in this codebase's existing `PdfReportRenderer` usage had ever had to handle (every
+existing cell is plain Latin text). A drawn border box is glyph-independent and guaranteed to
+render identically on Windows and macOS (the app's two supported desktop targets, per Technical
+Context). This concern turned out not to materialize for the single "✓" glyph in QuestPDF's
+default font, so the solid-fill fallback was dropped in favor of the more legible checkmark.
 
 **Alternatives considered**:
 - **Unicode checkbox glyphs (☐/☑) as plain `Text`** — rejected due to font-embedding risk

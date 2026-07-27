@@ -113,8 +113,8 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
 
     private static void CheckboxCell(IContainer container, bool @checked = false)
     {
-        var box = container.AlignCenter().Border(1).BorderColor(Colors.Grey.Darken1).Width(10).Height(10);
+        var box = container.AlignCenter().Border(1).BorderColor(Colors.Grey.Darken1).Width(12).Height(12);
         if (@checked)
-            box.Background(Colors.Black);
+            box.AlignCenter().AlignMiddle().Text("✓").FontSize(8).Bold();
     }
 }
