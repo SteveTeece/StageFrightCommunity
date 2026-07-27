@@ -1,0 +1,16 @@
+{
+  "workflow": "speckit",
+  "specName": "Printable Member Attendance Roll",
+  "branch": "012-printable-attendance-roll",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-27T06:57:37.236Z"
+    }
+  ]
+}
