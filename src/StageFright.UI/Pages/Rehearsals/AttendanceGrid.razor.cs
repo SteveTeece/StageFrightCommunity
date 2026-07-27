@@ -58,13 +58,13 @@ public partial class AttendanceGrid
             _attendanceFee = settings?.AttendanceFee ?? 0m;
 
             _members = (await MemberService.GetByStatusAsync(MemberStatus.Active))
-                .OrderBy(m => m.Name)
+                .OrderBy(m => m.LastName).ThenBy(m => m.FirstName)
                 .ToList();
 
             _rows = _members.Select(m => new AttendanceRow
             {
                 MemberId = m.Id,
-                MemberName = m.Name,
+                MemberName = m.SortableFullName,
                 MemberIsActive = m.Status == MemberStatus.Active,
                 Attended = false,
                 Paid = false

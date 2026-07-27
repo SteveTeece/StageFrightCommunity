@@ -65,7 +65,7 @@ public class PaymentService : IPaymentService
             savedPayment = await _paymentRepo.AddAsync(payment, innerCt);
 
             var member = await _memberRepo.GetByIdAsync(request.MemberId, innerCt);
-            var memberName = member?.Name ?? "Unknown Member";
+            var memberName = member?.FullName ?? "Unknown Member";
 
             // 2. FIFO allocation: get outstanding balance and fees in order
             var outstandingBalance = await _glRepo.GetMemberBalanceAsync(request.MemberId, innerCt);

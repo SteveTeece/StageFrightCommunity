@@ -280,7 +280,7 @@ public class FeeServiceTests : TestBase
 
     private static Member ActiveMember(Guid id, string name) => new()
     {
-        Id = id, Name = name,
+        Id = id, FirstName = name, LastName = "Test",
         StreetAddress = "1 Test St",
         Status = MemberStatus.Active,
         JoinDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),

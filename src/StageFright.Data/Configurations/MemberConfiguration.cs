@@ -10,7 +10,8 @@ public class MemberConfiguration : IEntityTypeConfiguration<Member>
     {
         builder.HasKey(m => m.Id);
 
-        builder.Property(m => m.Name).IsRequired().HasMaxLength(255);
+        builder.Property(m => m.FirstName).IsRequired().HasMaxLength(100);
+        builder.Property(m => m.LastName).IsRequired().HasMaxLength(100);
         builder.Property(m => m.StreetAddress).IsRequired();
         builder.Property(m => m.Status).HasConversion<string>();
         builder.Property(m => m.CreatedAt).IsRequired();

@@ -60,7 +60,7 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
         var fees = await _feeRepo.GetByMemberAsync(memberId, ct);
         var feeMap = fees.ToDictionary(f => f.Id);
         var member = await _memberRepo.GetByIdAsync(memberId, ct);
-        var memberName = member?.Name ?? "Unknown Member";
+        var memberName = member?.FullName ?? "Unknown Member";
 
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {

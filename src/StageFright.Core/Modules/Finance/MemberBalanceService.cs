@@ -71,7 +71,7 @@ public class MemberBalanceService : IMemberBalanceService
             balances.Add(new MemberBalance
             {
                 MemberId = member.Id,
-                Name = member.Name,
+                Name = member.SortableFullName,
                 Balance = balance,
                 Fees = SelectOutstandingFees(fees, balance)
             });

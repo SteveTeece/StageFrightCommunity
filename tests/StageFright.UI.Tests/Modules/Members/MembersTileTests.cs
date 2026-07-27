@@ -119,6 +119,6 @@ public class MembersTileTests : BunitContext
 
     private static IReadOnlyList<Member> MakeMembers(int count) =>
         Enumerable.Range(0, count)
-            .Select(i => new Member { Id = Guid.NewGuid(), Name = $"Member {i}" })
+            .Select(i => new Member { Id = Guid.NewGuid(), FirstName = $"Member {i}" })
             .ToList();
 }

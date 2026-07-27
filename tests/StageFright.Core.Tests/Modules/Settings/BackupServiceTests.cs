@@ -51,7 +51,8 @@ public class BackupServiceTests : TestBase
         var member = new Member
         {
             Id = Guid.NewGuid(),
-            Name = "Alice",
+            FirstName = "Alice",
+            LastName = "Test",
             StreetAddress = "1 Main St",
             JoinDate = DateTime.UtcNow,
             Status = MemberStatus.Active,
@@ -80,13 +81,13 @@ public class BackupServiceTests : TestBase
     {
         var deletedMember = new Member
         {
-            Id = Guid.NewGuid(), Name = "Deleted", StreetAddress = "1 X St",
+            Id = Guid.NewGuid(), FirstName = "Deleted", LastName = "Test", StreetAddress = "1 X St",
             JoinDate = DateTime.UtcNow, IsDeleted = true, DeletedAt = DateTime.UtcNow,
             Status = MemberStatus.Inactive, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         };
         var activeMember = new Member
         {
-            Id = Guid.NewGuid(), Name = "Active", StreetAddress = "2 X St",
+            Id = Guid.NewGuid(), FirstName = "Active", LastName = "Test", StreetAddress = "2 X St",
             JoinDate = DateTime.UtcNow, Status = MemberStatus.Active,
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         };
@@ -274,6 +275,123 @@ public class BackupServiceTests : TestBase
         }
     }
 
+    // --- Member name export/restore (spec 011) ---
+
+    [Fact]
+    public async Task ExportAsync_PopulatesFirstNameAndLastName_LeavesLegacyNameBlank()
+    {
+        var member = BuildMember();
+        member.FirstName = "Jane";
+        member.LastName = "Doe";
+        var snapshot = new BackupSnapshot { Members = [member] };
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_export_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+            var envelope = ReadEnvelope(path);
+            var dto = Assert.Single(envelope.Members!);
+
+            Assert.Equal("Jane", dto.FirstName);
+            Assert.Equal("Doe", dto.LastName);
+            Assert.Equal(string.Empty, dto.LegacyName);
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public async Task ImportAsync_LegacyBackup_DerivesFirstNameAndLastName_ViaMemberNameSplitter()
+    {
+        var snapshot = new BackupSnapshot { Members = [BuildMember()] };
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
+        _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0])(Ct));
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_import_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+
+            // Tamper the export into a pre-feature (legacy) shape: no FirstName/LastName,
+            // only the old combined LegacyName field populated.
+            var envelope = ReadEnvelope(path);
+            var dto = envelope.Members!.Single();
+            dto.FirstName = string.Empty;
+            dto.LastName = string.Empty;
+            dto.LegacyName = "Janet Smith";
+            WriteEnvelope(path, envelope);
+
+            BackupSnapshot? upserted = null;
+            _backupRepo.UpsertSnapshotAsync(Arg.Do<BackupSnapshot>(s => upserted = s), Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask);
+
+            await svc.ImportAsync(path, Ct);
+
+            var restored = Assert.Single(upserted!.Members!);
+            Assert.Equal("Janet", restored.FirstName);
+            Assert.Equal("Smith", restored.LastName);
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+                File.Delete(f);
+        }
+    }
+
+    [Fact]
+    public async Task ImportAsync_CurrentFormatBackup_UsesFirstNameAndLastNameDirectly()
+    {
+        var member = BuildMember();
+        member.FirstName = "Janet";
+        member.LastName = "Smith";
+        var snapshot = new BackupSnapshot { Members = [member] };
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
+        _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0])(Ct));
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_import_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+
+            BackupSnapshot? upserted = null;
+            _backupRepo.UpsertSnapshotAsync(Arg.Do<BackupSnapshot>(s => upserted = s), Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask);
+
+            await svc.ImportAsync(path, Ct);
+
+            var restored = Assert.Single(upserted!.Members!);
+            Assert.Equal("Janet", restored.FirstName);
+            Assert.Equal("Smith", restored.LastName);
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+                File.Delete(f);
+        }
+    }
+
+    private static BackupEnvelope ReadEnvelope(string path)
+    {
+        using var fs = File.OpenRead(path);
+        return Serializer.Deserialize<BackupEnvelope>(fs);
+    }
+
+    private static void WriteEnvelope(string path, BackupEnvelope envelope)
+    {
+        using var fs = File.Create(path);
+        Serializer.Serialize(fs, envelope);
+    }
+
     // --- Helpers ---
 
     private static BackupSnapshot BuildMinimalSnapshot() => new()
@@ -295,7 +413,7 @@ public class BackupServiceTests : TestBase
 
     private static Member BuildMember() => new()
     {
-        Id = Guid.NewGuid(), Name = "Test", StreetAddress = "1 St",
+        Id = Guid.NewGuid(), FirstName = "Test", LastName = "Member", StreetAddress = "1 St",
         JoinDate = DateTime.UtcNow, Status = MemberStatus.Active,
         CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
@@ -305,16 +423,4 @@ public class BackupServiceTests : TestBase
         Id = Guid.NewGuid(), Name = "Test Cat", Type = AccountType.Income,
         AccountNumber = "4000", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
-
-    private static BackupEnvelope ReadEnvelope(string path)
-    {
-        using var fs = File.OpenRead(path);
-        return Serializer.Deserialize<BackupEnvelope>(fs);
-    }
-
-    private static void WriteEnvelope(string path, BackupEnvelope envelope)
-    {
-        using var fs = File.Create(path);
-        Serializer.Serialize(fs, envelope);
-    }
 }

@@ -4,6 +4,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Members;
 using StageFright.Core.Modules.Settings.Backup;
 using SettingsEntity = StageFright.Core.Entities.Settings;
 
@@ -271,7 +272,7 @@ public class BackupService : IBackupService
 
     private static MemberBackupDto MapMember(Member m) => new()
     {
-        Id = m.Id, Name = m.Name, StreetAddress = m.StreetAddress,
+        Id = m.Id, FirstName = m.FirstName, LastName = m.LastName, StreetAddress = m.StreetAddress,
         Phone = m.Phone, Email = m.Email, JoinDate = m.JoinDate,
         DateOfBirth = m.DateOfBirth, Status = m.Status,
         ActivateDate = m.ActivateDate, InactivateDate = m.InactivateDate,
@@ -380,15 +381,22 @@ public class BackupService : IBackupService
 
     // --- DTO → Entity mappers ---
 
-    private static Member MapMemberFromDto(MemberBackupDto d) => new()
+    private static Member MapMemberFromDto(MemberBackupDto d)
     {
-        Id = d.Id, Name = d.Name, StreetAddress = d.StreetAddress,
-        Phone = d.Phone, Email = d.Email, JoinDate = d.JoinDate,
-        DateOfBirth = d.DateOfBirth, Status = d.Status,
-        ActivateDate = d.ActivateDate, InactivateDate = d.InactivateDate,
-        IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy,
-        CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
-    };
+        var (firstName, lastName) = !string.IsNullOrEmpty(d.FirstName) || !string.IsNullOrEmpty(d.LastName)
+            ? (d.FirstName, d.LastName)
+            : MemberNameSplitter.Split(d.LegacyName);
+
+        return new Member
+        {
+            Id = d.Id, FirstName = firstName, LastName = lastName, StreetAddress = d.StreetAddress,
+            Phone = d.Phone, Email = d.Email, JoinDate = d.JoinDate,
+            DateOfBirth = d.DateOfBirth, Status = d.Status,
+            ActivateDate = d.ActivateDate, InactivateDate = d.InactivateDate,
+            IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy,
+            CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
+        };
+    }
 
     private static CommitteeMembership MapCommitteeFromDto(CommitteeMembershipBackupDto d) => new()
     {

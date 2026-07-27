@@ -23,7 +23,7 @@ public class AttendanceRepository : BaseRepository<AttendanceRecord>, IAttendanc
             return await _db.AttendanceRecords
                 .Include(a => a.Member)
                 .Where(a => a.RehearsalId == rehearsalId)
-                .OrderBy(a => a.Member.Name)
+                .OrderBy(a => a.Member.LastName).ThenBy(a => a.Member.FirstName)
                 .ToListAsync(ct);
         }
         catch (Exception ex) when (ex is not DataAccessException)
