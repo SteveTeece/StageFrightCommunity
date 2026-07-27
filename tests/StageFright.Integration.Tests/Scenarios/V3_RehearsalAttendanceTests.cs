@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Modules.AuditTrail;
+using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Members;
 using StageFright.Core.Modules.Rehearsals;
 using StageFright.Data;
@@ -247,7 +248,150 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         Assert.Equal(before, after);
     }
 
+    // --- AttendanceRollService (issue #257) ---
+
+    [Fact]
+    public async Task GenerateAsync_Throws_EntityNotFoundException_ForUnknownRehearsalId()
+    {
+        var svc = BuildAttendanceRollService();
+
+        await Assert.ThrowsAsync<StageFright.Core.Exceptions.EntityNotFoundException>(
+            () => svc.GenerateAsync(Guid.NewGuid()));
+    }
+
+    [Fact]
+    public async Task GenerateAsync_Returns_OnlyActiveMembers_SortedBySurnameThenFirstName_ExcludingSoftDeleted()
+    {
+        var smithBob = await AddActiveMember("Bob");
+        smithBob.LastName = "Smith";
+        var smithAlice = await AddActiveMember("Alice");
+        smithAlice.LastName = "Smith";
+        var jones = await AddActiveMember("Zoe");
+        jones.LastName = "Jones";
+        await _db.SaveChangesAsync();
+
+        var deletedMember = await AddActiveMember("Deleted");
+        deletedMember.LastName = "Ghost";
+        deletedMember.IsDeleted = true;
+        deletedMember.DeletedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
+
+        var rehearsal = await ScheduleRehearsal();
+        var svc = BuildAttendanceRollService();
+
+        var result = await svc.GenerateAsync(rehearsal.Id);
+
+        Assert.Equal(3, result.Members.Count);
+        Assert.Equal("Jones", result.Members[0].LastName);
+        Assert.Equal("Smith", result.Members[1].LastName);
+        Assert.Equal("Alice", result.Members[1].FirstName);
+        Assert.Equal("Smith", result.Members[2].LastName);
+        Assert.Equal("Bob", result.Members[2].FirstName);
+        Assert.DoesNotContain(result.Members, m => m.LastName == "Ghost");
+    }
+
+    [Fact]
+    public async Task GenerateAsync_Returns_EmptyList_WhenNoActiveMembers()
+    {
+        var rehearsal = await ScheduleRehearsal();
+        var svc = BuildAttendanceRollService();
+
+        var result = await svc.GenerateAsync(rehearsal.Id);
+
+        Assert.Empty(result.Members);
+    }
+
+    [Fact]
+    public async Task GenerateAsync_AnnualFeePaid_ReflectsRealGLSettlementState()
+    {
+        var fullyPaidMember = await AddActiveMember("Fully Paid");
+        var unpaidMember = await AddActiveMember("Unpaid");
+        var noRecordMember = await AddActiveMember("No Record");
+
+        var feeSvc = BuildFeeService();
+        await feeSvc.ApplyAnnualFeesAsync(new[] { fullyPaidMember.Id, unpaidMember.Id });
+        // noRecordMember intentionally gets no annual fee applied
+
+        var paymentSvc = BuildPaymentService();
+        await paymentSvc.RecordAsync(new RecordPaymentRequest
+        {
+            MemberId = fullyPaidMember.Id,
+            Date = DateTime.UtcNow,
+            Amount = 50m,
+            PaymentMethod = PaymentMethod.Cash,
+            PaymentType = PaymentType.Annual
+        });
+
+        var rehearsal = await ScheduleRehearsal();
+        var svc = BuildAttendanceRollService();
+
+        var result = await svc.GenerateAsync(rehearsal.Id);
+
+        Assert.True(result.Members.Single(m => m.FirstName == "Fully Paid").AnnualFeePaid);
+        Assert.False(result.Members.Single(m => m.FirstName == "Unpaid").AnnualFeePaid);
+        Assert.False(result.Members.Single(m => m.FirstName == "No Record").AnnualFeePaid);
+    }
+
     // --- Helpers ---
+
+    private AttendanceRollService BuildAttendanceRollService()
+    {
+        var rehearsalRepo = new RehearsalRepository(_db);
+        var memberSvc = BuildMemberService();
+        var memberBalanceSvc = BuildMemberBalanceService();
+        var feeRepo = new FeeRepository(_db);
+        return new AttendanceRollService(rehearsalRepo, memberSvc, memberBalanceSvc, feeRepo);
+    }
+
+    private MemberBalanceService BuildMemberBalanceService()
+    {
+        var memberRepo = new MemberRepository(_db);
+        var feeRepo = new FeeRepository(_db);
+        var glRepo = new GLRepository(_db);
+        return new MemberBalanceService(memberRepo, feeRepo, glRepo);
+    }
+
+    private FeeService BuildFeeService()
+    {
+        var memberRepo = new MemberRepository(_db);
+        var feeRepo = new FeeRepository(_db);
+        var glRepo = new GLRepository(_db);
+        var accountRepo = new AccountRepository(_db);
+        var settingsRepo = new SettingsRepository(_db);
+        var auditRepo = new AuditTrailRepository(_db);
+        var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
+        var unitOfWork = new UnitOfWork(_db);
+        return new FeeService(memberRepo, feeRepo, glRepo, accountRepo, settingsRepo, auditSvc, unitOfWork);
+    }
+
+    private PaymentService BuildPaymentService()
+    {
+        var feeRepo = new FeeRepository(_db);
+        var paymentRepo = new PaymentRepository(_db, BuildAuditService());
+        var glRepo = new GLRepository(_db);
+        var memberRepo = new MemberRepository(_db);
+        var unitOfWork = new UnitOfWork(_db);
+        return new PaymentService(feeRepo, paymentRepo, glRepo, memberRepo, BuildAuditService(), unitOfWork);
+    }
+
+    private AuditTrailService BuildAuditService()
+    {
+        var auditRepo = new AuditTrailRepository(_db);
+        return new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
+    }
+
+    private MemberService BuildMemberService()
+    {
+        var memberRepo = new MemberRepository(_db);
+        var committeeRepo = new CommitteeMembershipRepository(_db);
+        var settingsRepo = new SettingsRepository(_db);
+        var auditRepo = new AuditTrailRepository(_db);
+        var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
+        var ageCalc = new AgeCalculationService();
+        var validation = new MemberValidationService(ageCalc);
+        var unitOfWork = new UnitOfWork(_db);
+        return new MemberService(memberRepo, committeeRepo, validation, settingsRepo, auditSvc, unitOfWork);
+    }
 
     private RehearsalService BuildRehearsalService()
     {
