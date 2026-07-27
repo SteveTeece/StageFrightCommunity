@@ -66,7 +66,7 @@ else
                 </Template>
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="Rehearsal" Property="Notes" Title="Notes" />
-            <RadzenDataGridColumn TItem="Rehearsal" Title="Actions" Width="160px" Sortable="false">
+            <RadzenDataGridColumn TItem="Rehearsal" Title="Actions" Width="220px" Sortable="false">
                 <Template Context="r">
                     @if (!r.StoredAttendanceRate.HasValue)
                     {
@@ -80,6 +80,11 @@ else
                     {
                         <span class="text-muted small">Recorded</span>
                     }
+                    <button class="btn btn-outline-secondary btn-sm ms-1"
+                            @onclick="() => PrintRoll(r.Id)"
+                            aria-label="Print roll for @r.Date.ToString("d MMM yyyy")">
+                        Print Roll
+                    </button>
                 </Template>
             </RadzenDataGridColumn>
         </Columns>
@@ -89,4 +94,9 @@ else
 @if (!string.IsNullOrEmpty(_errorMessage))
 {
     <div class="alert alert-danger py-1 mb-2 small mt-2" role="alert">@_errorMessage</div>
+}
+
+@if (!string.IsNullOrEmpty(_rollMessage))
+{
+    <div class="alert alert-warning py-1 mb-2 small mt-2" role="alert">@_rollMessage</div>
 }

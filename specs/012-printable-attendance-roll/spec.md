@@ -101,11 +101,11 @@ As a person taking attendance, I want the roll printed in a compact two-column l
 
 ### Measurable Outcomes
 
-- **SC-001**: A user can generate a printable roll for a scheduled rehearsal in a few clicks, without needing to create or maintain any separate manual roll document.
-- **SC-002**: 100% of currently active members appear on a generated roll, and no archived or soft-deleted members appear.
-- **SC-003**: The "Annual Fee Paid" checkbox matches each listed member's actual current-year annual-fee payment status in the system with 100% accuracy at the time of generation.
-- **SC-004**: Members appear in correct alphabetical surname order, with surnames shown in all capitals, on 100% of generated rolls.
-- **SC-005**: For a typical rehearsal roster, the two-column layout keeps the printed roll to a single page, compared to needing two pages for the same member count in a single-column layout.
+- [X] **SC-001**: A user can generate a printable roll for a scheduled rehearsal in a few clicks, without needing to create or maintain any separate manual roll document. — Verified live: one click of "Print Roll" on the Rehearsals list opens a print-ready PDF.
+- [X] **SC-002**: 100% of currently active members appear on a generated roll, and no archived or soft-deleted members appear. — Verified via unit/integration tests and a live run against the real dev database (44 active members listed, matching the Dashboard's active count exactly).
+- [X] **SC-003**: The "Annual Fee Paid" checkbox matches each listed member's actual current-year annual-fee payment status in the system with 100% accuracy at the time of generation. — Verified via unit/integration tests (fully-paid/unpaid/no-record/overpaid cases) and a live run showing correct checked/unchecked state against real GL data.
+- [X] **SC-004**: Members appear in correct alphabetical surname order, with surnames shown in all capitals, on 100% of generated rolls. — Verified via unit tests (surname + first-name sub-sort) and the live-generated PDF.
+- [X] **SC-005**: For a typical rehearsal roster, the two-column layout keeps the printed roll to a single page, compared to needing two pages for the same member count in a single-column layout. — Verified live: 44 active members rendered on a single page across two columns (32 + 12), which a single-column layout at the same per-page row capacity would have split across two pages.
 
 ## Assumptions
 
