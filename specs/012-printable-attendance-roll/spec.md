@@ -8,6 +8,12 @@
 
 **Input**: User description: "Add a printed members roll (attendance sheet) that can be generated as part of the create-rehearsal workflow, listing active members sorted by surname with Attended, Rehearsal Fee Paid, and Annual Fee Paid checkboxes. Sourced from GitHub issue #257: the person taking attendance currently records it on paper and maintains a separate manually-updated roll document; they want to print a roll of the currently active members for a rehearsal, with unchecked 'Attended' and 'Rehearsal Fee Paid' checkboxes, and an 'Annual Fee Paid' checkbox that reflects whether the member's current year's annual fee is already paid. Surnames shown in all capitals, members sorted by surname, laid out in two columns per page with the second column as overflow, minimal-width checkbox columns, and wrapping column headings."
 
+## Clarifications
+
+### Session 2026-07-27
+
+- Q: Should generating the printable roll require the rehearsal to already be scheduled (saved) in the system, or should it also be available directly from the "create rehearsal" form using the date being entered, before the rehearsal is saved? → A: Roll generation requires an already-scheduled (saved) rehearsal; the print action is surfaced afterward (e.g., from the rehearsal's list row or detail/attendance page), not from the in-progress create form.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Print a roll instead of maintaining a separate paper list (Priority: P1)
@@ -71,7 +77,7 @@ As a person taking attendance, I want the roll printed in a compact two-column l
 
 ### Functional Requirements
 
-- **FR-001**: System MUST allow a user to generate a printable member roll for any scheduled rehearsal.
+- **FR-001**: System MUST allow a user to generate a printable member roll for any already-scheduled (saved) rehearsal; the action is surfaced from an existing rehearsal (e.g., its list row or detail/attendance page), not from the in-progress "create rehearsal" form prior to saving.
 - **FR-002**: The roll MUST list every member whose status is active at the time the roll is generated; archived and soft-deleted members MUST be excluded, using the same active-member definition already used when recording attendance, so the printed roll and the later digital attendance entry always show the same set of members.
 - **FR-003**: The roll MUST display each member's surname in all capital letters, alongside their first name.
 - **FR-004**: Members on the roll MUST be sorted alphabetically by surname, then by first name for members who share a surname.
@@ -105,7 +111,7 @@ As a person taking attendance, I want the roll printed in a compact two-column l
 
 - The roll lists members who are active at generation time — the same live "who is active" definition already used by the digital attendance-entry screen — rather than a historical snapshot of who was active as of the rehearsal's date. This keeps the paper roll and the later digital entry in sync even if membership changes between printing and data entry.
 - "Current year's annual fee paid" means the member has an annual-type fee dated in the current calendar year with no outstanding balance owed. A member with no annual fee record yet for the current year is treated as unpaid (checkbox unchecked).
-- The roll can be generated, and re-generated, for a rehearsal at any point rather than being restricted to a single step of the creation workflow; the primary use case is generating it before attendance is taken, to bring to the rehearsal on paper. Exactly where the "print roll" action is surfaced (e.g., alongside the rehearsal in its list or detail view) is a presentation detail left to the implementation.
+- The roll can be generated, and re-generated, for a rehearsal at any point after it has been scheduled, rather than being restricted to a single step of the creation workflow; the primary use case is generating it before attendance is taken, to bring to the rehearsal on paper.
 - The roll is produced only as a printable document; no separate spreadsheet-style export is needed, since its value is the physical checkbox layout intended for handwriting.
 - Generating the roll is a read-only operation — it does not create, update, or delete any Member, Rehearsal, Fee, Payment, or Transaction record. Marks made by hand on the printed sheet are not captured by the system until separately entered through the existing attendance-recording screen.
 - This feature is the intended work for issue #257.
