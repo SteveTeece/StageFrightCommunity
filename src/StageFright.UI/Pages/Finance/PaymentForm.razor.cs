@@ -30,7 +30,7 @@ public partial class PaymentForm : ComponentBase
         try
         {
             var member = await MemberService.GetByIdAsync(MemberId);
-            _memberName = member?.Name;
+            _memberName = member?.FullName;
             _outstandingFees = await MemberBalanceService.GetOutstandingFeesAsync(MemberId);
         }
         catch (Exception ex)

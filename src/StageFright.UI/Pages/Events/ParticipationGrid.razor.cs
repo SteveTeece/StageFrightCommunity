@@ -52,12 +52,12 @@ public partial class ParticipationGrid
 
             var active = await MemberService.GetByStatusAsync(MemberStatus.Active);
             var inactive = await MemberService.GetByStatusAsync(MemberStatus.Inactive);
-            _members = active.Concat(inactive).OrderBy(m => m.Name).ToList();
+            _members = active.Concat(inactive).OrderBy(m => m.LastName).ThenBy(m => m.FirstName).ToList();
 
             _rows = _members.Select(m => new ParticipationRow
             {
                 MemberId = m.Id,
-                MemberName = m.Name,
+                MemberName = m.SortableFullName,
                 Participated = false
             }).ToList();
         }

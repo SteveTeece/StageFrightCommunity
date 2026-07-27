@@ -26,7 +26,8 @@ public class MemberValidationServiceTests : TestBase
 
     private static CreateMemberRequest MakeCreateRequest(DateTime? dob) => new()
     {
-        Name = "Jane Doe",
+        FirstName = "Jane",
+        LastName = "Doe",
         StreetAddress = "1 Main St",
         JoinDate = DateTime.UtcNow.Date,
         DateOfBirth = dob
@@ -34,7 +35,8 @@ public class MemberValidationServiceTests : TestBase
 
     private static UpdateMemberRequest MakeUpdateRequest(DateTime? dob) => new()
     {
-        Name = "Jane Doe",
+        FirstName = "Jane",
+        LastName = "Doe",
         StreetAddress = "1 Main St",
         JoinDate = DateTime.UtcNow.Date,
         DateOfBirth = dob
@@ -87,5 +89,77 @@ public class MemberValidationServiceTests : TestBase
         var request = MakeUpdateRequest(dob);
 
         _svc.Validate(request, settings); // must not throw
+    }
+
+    [Fact]
+    public void Validate_CreateRequest_Throws_WhenFirstNameIsBlank()
+    {
+        var settings = MakeSettings();
+        var request = MakeCreateRequest(null) with { FirstName = "   " };
+
+        Assert.Throws<ValidationException>(() => _svc.Validate(request, settings));
+    }
+
+    [Fact]
+    public void Validate_CreateRequest_Throws_WhenLastNameIsBlank()
+    {
+        var settings = MakeSettings();
+        var request = MakeCreateRequest(null) with { LastName = "   " };
+
+        Assert.Throws<ValidationException>(() => _svc.Validate(request, settings));
+    }
+
+    [Fact]
+    public void Validate_CreateRequest_Throws_WhenFirstNameExceedsMaxLength()
+    {
+        var settings = MakeSettings();
+        var request = MakeCreateRequest(null) with { FirstName = new string('A', 101) };
+
+        Assert.Throws<ValidationException>(() => _svc.Validate(request, settings));
+    }
+
+    [Fact]
+    public void Validate_CreateRequest_Throws_WhenLastNameExceedsMaxLength()
+    {
+        var settings = MakeSettings();
+        var request = MakeCreateRequest(null) with { LastName = new string('A', 101) };
+
+        Assert.Throws<ValidationException>(() => _svc.Validate(request, settings));
+    }
+
+    [Fact]
+    public void Validate_UpdateRequest_Throws_WhenFirstNameIsBlank()
+    {
+        var settings = MakeSettings();
+        var request = MakeUpdateRequest(null) with { FirstName = "   " };
+
+        Assert.Throws<ValidationException>(() => _svc.Validate(request, settings));
+    }
+
+    [Fact]
+    public void Validate_UpdateRequest_Throws_WhenLastNameIsBlank()
+    {
+        var settings = MakeSettings();
+        var request = MakeUpdateRequest(null) with { LastName = "   " };
+
+        Assert.Throws<ValidationException>(() => _svc.Validate(request, settings));
+    }
+
+    [Fact]
+    public void Validate_UpdateRequest_Throws_WhenFirstNameExceedsMaxLength()
+    {
+        var settings = MakeSettings();
+        var request = MakeUpdateRequest(null) with { FirstName = new string('A', 101) };
+
+        Assert.Throws<ValidationException>(() => _svc.Validate(request, settings));
+    }
+
+    [Fact]
+    public void Validate_UpdateRequest_Throws_WhenLastNameExceedsMaxLength()
+    {
+        var settings = MakeSettings();
+        var request = MakeUpdateRequest(null) with { LastName = new string('A', 101) };
+
+        Assert.Throws<ValidationException>(() => _svc.Validate(request, settings));
     }
 }

@@ -325,7 +325,7 @@ public class CommitteeReportProviderTests
         => new()
         {
             Id = Guid.NewGuid(),
-            Name = name,
+            FirstName = name,
             StreetAddress = "1 Test St",
             JoinDate = DateTime.UtcNow.AddYears(-1),
             Status = status,

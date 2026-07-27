@@ -198,7 +198,8 @@ public class MemberBalanceServiceTests : TestBase
     private static Member MakeMember(Guid id, string name) => new()
     {
         Id = id,
-        Name = name,
+        FirstName = name,
+        LastName = "Test",
         StreetAddress = "1 Test St",
         JoinDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
         CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),

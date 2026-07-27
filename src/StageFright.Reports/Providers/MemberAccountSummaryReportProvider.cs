@@ -49,7 +49,7 @@ public class MemberAccountSummaryReportProvider : IReportProvider
             var archivedMembers = await _members.GetArchivedAsync(ct);
             allMembers.AddRange(archivedMembers);
         }
-        allMembers = allMembers.OrderBy(m => m.Name).ToList();
+        allMembers = allMembers.OrderBy(m => m.LastName).ThenBy(m => m.FirstName).ToList();
 
         var today = DateTime.UtcNow.Date;
         var sections = new List<ReportSection>();
@@ -124,7 +124,7 @@ public class MemberAccountSummaryReportProvider : IReportProvider
 
             // Aging is not repeated here — it's already shown per-bucket on the collapsed
             // member summary row (SummaryRow below).
-            var label = member.IsDeleted ? $"{member.Name} (Archived)" : member.Name;
+            var label = member.IsDeleted ? $"{member.SortableFullName} (Archived)" : member.SortableFullName;
             var summaryRow = new ReportRow
             {
                 Cells =

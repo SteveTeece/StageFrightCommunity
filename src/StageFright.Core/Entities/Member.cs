@@ -11,8 +11,20 @@ public class Member
     /// <summary>Primary key (GUID).</summary>
     public Guid Id { get; set; }
 
-    /// <summary>Full display name of the member. Required, max 255 characters.</summary>
-    public string Name { get; set; } = string.Empty;
+    /// <summary>Given name of the member. Required, max 100 characters.</summary>
+    public string FirstName { get; set; } = string.Empty;
+
+    /// <summary>Family name of the member. Required, max 100 characters.</summary>
+    public string LastName { get; set; } = string.Empty;
+
+    /// <summary>Entry-order display name: "{FirstName} {LastName}". Not mapped by EF.</summary>
+    public string FullName => $"{FirstName} {LastName}".Trim();
+
+    /// <summary>Sortable display name: "{LastName}, {FirstName}" (or just one side when the other is empty). Not mapped by EF.</summary>
+    public string SortableFullName =>
+        string.IsNullOrEmpty(LastName) ? FirstName :
+        string.IsNullOrEmpty(FirstName) ? LastName :
+        $"{LastName}, {FirstName}";
 
     /// <summary>Street address. Required.</summary>
     public string StreetAddress { get; set; } = string.Empty;

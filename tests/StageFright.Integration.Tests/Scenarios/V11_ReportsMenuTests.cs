@@ -258,7 +258,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
     private static Member MakeMember(string name, MemberStatus status, bool isDeleted)
         => new()
         {
-            Id = Guid.NewGuid(), Name = name, StreetAddress = "1 Test St",
+            Id = Guid.NewGuid(), FirstName = name, StreetAddress = "1 Test St",
             Status = status, IsDeleted = isDeleted,
             JoinDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             ActivateDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),

@@ -64,7 +64,7 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
 
             // Both members should exist after restore
             var allMembers = await _db.Members.IgnoreQueryFilters().ToListAsync();
-            Assert.Contains(allMembers, m => m.Id == member.Id && m.Name == "Alice");
+            Assert.Contains(allMembers, m => m.Id == member.Id && m.FullName == "Alice");
             Assert.Contains(allMembers, m => m.Id == archivedMember.Id && m.IsDeleted);
         }
         finally
@@ -197,7 +197,7 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
 
             // Update name in DB after export
             var tracked = await _db.Members.FindAsync(member.Id);
-            tracked!.Name = "Updated Name";
+            tracked!.FirstName = "Updated Name";
             await _db.SaveChangesAsync();
 
             // Import should restore "Original Name"
@@ -205,7 +205,43 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
 
             _db.ChangeTracker.Clear();
             var restored = await _db.Members.IgnoreQueryFilters().FirstOrDefaultAsync(m => m.Id == member.Id);
-            Assert.Equal("Original Name", restored?.Name);
+            Assert.Equal("Original Name", restored?.FirstName);
+        }
+        finally
+        {
+            CleanupFiles(path);
+        }
+    }
+
+    [Fact]
+    public async Task Import_LegacyFormatBackup_RestoresCorrectlySplitNames()
+    {
+        var member = SeedMember("Placeholder", active: true);
+        _db.Members.Add(member);
+        await _db.SaveChangesAsync();
+
+        var svc = BuildService();
+        var path = TempPath();
+
+        try
+        {
+            await svc.ExportAsync(path);
+
+            // Tamper the export into a pre-feature (legacy) shape: clear FirstName/LastName,
+            // populate only the old combined LegacyName field.
+            var envelope = ReadEnvelope(path);
+            var dto = envelope.Members!.Single(m => m.Id == member.Id);
+            dto.FirstName = string.Empty;
+            dto.LastName = string.Empty;
+            dto.LegacyName = "Grace Hopper";
+            WriteEnvelope(path, envelope);
+
+            await svc.ImportAsync(path);
+
+            _db.ChangeTracker.Clear();
+            var restored = await _db.Members.IgnoreQueryFilters().SingleAsync(m => m.Id == member.Id);
+            Assert.Equal("Grace", restored.FirstName);
+            Assert.Equal("Hopper", restored.LastName);
         }
         finally
         {
@@ -252,7 +288,7 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
         return new Member
         {
             Id = Guid.NewGuid(),
-            Name = name,
+            FirstName = name,
             StreetAddress = "1 Test St",
             JoinDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             Status = active ? MemberStatus.Active : MemberStatus.Inactive,

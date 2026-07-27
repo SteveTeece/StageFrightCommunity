@@ -384,14 +384,14 @@ public class AttendanceServiceTests : TestBase
 
     private static Member ActiveMember(Guid id) => new()
     {
-        Id = id, Name = "Active", StreetAddress = "1 Test St",
+        Id = id, FirstName = "Active", LastName = "Member", StreetAddress = "1 Test St",
         Status = MemberStatus.Active, ActivateDate = DateTime.UtcNow.Date,
         JoinDate = DateTime.UtcNow, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
 
     private static Member InactiveMember(Guid id) => new()
     {
-        Id = id, Name = "Inactive", StreetAddress = "2 Test St",
+        Id = id, FirstName = "Inactive", LastName = "Member", StreetAddress = "2 Test St",
         Status = MemberStatus.Inactive, InactivateDate = DateTime.UtcNow.Date,
         JoinDate = DateTime.UtcNow, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
