@@ -34,7 +34,7 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
 
                 container.Page(page =>
                 {
-                    page.Margin(40);
+                    page.Margin(18); // minimum margin most printers can reliably print to (~0.25in)
                     page.Size(PageSizes.A4);
                     page.DefaultTextStyle(t => t.FontSize(10));
 
@@ -95,10 +95,10 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
 
             table.Header(header =>
             {
-                header.Cell().Background(Colors.Grey.Lighten3).Padding(4).Text("Name").Bold().FontSize(9);
-                header.Cell().Background(Colors.Grey.Lighten3).Padding(4).Text("Attended").Bold().FontSize(9);
-                header.Cell().Background(Colors.Grey.Lighten3).Padding(4).Text("Rehearsal Fee Paid").Bold().FontSize(9);
-                header.Cell().Background(Colors.Grey.Lighten3).Padding(4).Text("Annual Fee Paid").Bold().FontSize(9);
+                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text("Name").Bold().FontSize(9);
+                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text("Attended").Bold().FontSize(9);
+                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text("Rehearsal Fee Paid").Bold().FontSize(9);
+                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text("Annual Fee Paid").Bold().FontSize(9);
             });
 
             foreach (var member in members)
