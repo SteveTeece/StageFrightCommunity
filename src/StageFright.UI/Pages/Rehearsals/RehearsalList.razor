@@ -65,13 +65,13 @@ else
                     }
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Rehearsal" Property="Notes" Title="Notes" />
-            <RadzenDataGridColumn TItem="Rehearsal" Title="Actions" Width="220px" Sortable="false">
+            <RadzenDataGridColumn TItem="Rehearsal" Property="Notes" Title="Notes" Width="160px" />
+            <RadzenDataGridColumn TItem="Rehearsal" Title="Actions" Width="300px" Sortable="false">
                 <Template Context="r">
-                    <div class="d-flex flex-wrap gap-1">
+                    <div class="d-flex flex-nowrap align-items-center gap-1">
                         @if (!r.StoredAttendanceRate.HasValue)
                         {
-                            <button class="btn btn-primary btn-sm"
+                            <button class="btn btn-primary btn-sm text-nowrap"
                                     @onclick="() => RecordAttendance(r.Id)"
                                     aria-label="Record attendance for @r.Date.ToString("d MMM yyyy")">
                                 Record Attendance
@@ -79,9 +79,9 @@ else
                         }
                         else
                         {
-                            <span class="text-muted small align-self-center">Recorded</span>
+                            <span class="text-muted small">Recorded</span>
                         }
-                        <button class="btn btn-outline-secondary btn-sm"
+                        <button class="btn btn-outline-secondary btn-sm text-nowrap"
                                 @onclick="() => PrintRoll(r.Id)"
                                 aria-label="Print roll for @r.Date.ToString("d MMM yyyy")">
                             Print Roll
