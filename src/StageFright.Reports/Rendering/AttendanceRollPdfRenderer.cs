@@ -97,8 +97,8 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
             table.Header(header =>
             {
                 header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text("Name").Bold().FontSize(9);
-                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text("Present").Bold().FontSize(9);
-                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text(feeHeaderText).Bold().FontSize(9);
+                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).AlignCenter().Text("Present").Bold().FontSize(9);
+                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).AlignCenter().Text(feeHeaderText).Bold().FontSize(9);
             });
 
             foreach (var member in members)
