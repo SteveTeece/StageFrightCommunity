@@ -68,23 +68,25 @@ else
             <RadzenDataGridColumn TItem="Rehearsal" Property="Notes" Title="Notes" />
             <RadzenDataGridColumn TItem="Rehearsal" Title="Actions" Width="220px" Sortable="false">
                 <Template Context="r">
-                    @if (!r.StoredAttendanceRate.HasValue)
-                    {
-                        <button class="btn btn-primary btn-sm"
-                                @onclick="() => RecordAttendance(r.Id)"
-                                aria-label="Record attendance for @r.Date.ToString("d MMM yyyy")">
-                            Record Attendance
+                    <div class="d-flex flex-wrap gap-1">
+                        @if (!r.StoredAttendanceRate.HasValue)
+                        {
+                            <button class="btn btn-primary btn-sm"
+                                    @onclick="() => RecordAttendance(r.Id)"
+                                    aria-label="Record attendance for @r.Date.ToString("d MMM yyyy")">
+                                Record Attendance
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="text-muted small align-self-center">Recorded</span>
+                        }
+                        <button class="btn btn-outline-secondary btn-sm"
+                                @onclick="() => PrintRoll(r.Id)"
+                                aria-label="Print roll for @r.Date.ToString("d MMM yyyy")">
+                            Print Roll
                         </button>
-                    }
-                    else
-                    {
-                        <span class="text-muted small">Recorded</span>
-                    }
-                    <button class="btn btn-outline-secondary btn-sm ms-1"
-                            @onclick="() => PrintRoll(r.Id)"
-                            aria-label="Print roll for @r.Date.ToString("d MMM yyyy")">
-                        Print Roll
-                    </button>
+                    </div>
                 </Template>
             </RadzenDataGridColumn>
         </Columns>
