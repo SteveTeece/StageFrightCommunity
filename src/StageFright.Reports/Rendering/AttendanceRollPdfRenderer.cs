@@ -19,13 +19,14 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
     /// </summary>
     private const int RowsPerColumn = 32;
 
+    /// <summary>Static column heading for the fee-paid checkbox column — a short "Pd" (Paid) label, not a dollar amount.</summary>
+    private const string FeeHeaderText = "Pd";
+
     public byte[] Render(AttendanceRollData data, string organizationName = "")
     {
         var chunks = data.Members.Count == 0
             ? new[] { Array.Empty<AttendanceRollMember>() }
             : data.Members.Chunk(RowsPerColumn * 2).ToArray();
-
-        var feeHeaderText = data.AttendanceFeeAmount.ToString("C0");
 
         var document = Document.Create(container =>
         {
@@ -49,10 +50,10 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
                         if (left.Length == 0)
                             return;
 
-                        row.RelativeItem().Element(c => BuildMemberTable(c, left, feeHeaderText));
+                        row.RelativeItem().Element(c => BuildMemberTable(c, left));
 
                         if (right.Length > 0)
-                            row.RelativeItem().Element(c => BuildMemberTable(c, right, feeHeaderText));
+                            row.RelativeItem().Element(c => BuildMemberTable(c, right));
                         else
                             row.RelativeItem();
                     });
@@ -78,12 +79,10 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
         col.Item().Text("Attendance Roll").FontSize(16).Bold();
         col.Item().Text($"Rehearsal: {data.RehearsalDate:d MMMM yyyy} at {data.RehearsalTime:hh\\:mm}")
             .FontSize(11).FontColor(Colors.Grey.Darken1);
-        col.Item().Text($"Generated: {DateTime.UtcNow:d MMMM yyyy HH:mm} UTC")
-            .FontSize(9).FontColor(Colors.Grey.Medium);
         col.Item().PaddingTop(4).LineHorizontal(0.5f);
     }
 
-    private static void BuildMemberTable(IContainer container, IReadOnlyList<AttendanceRollMember> members, string feeHeaderText)
+    private static void BuildMemberTable(IContainer container, IReadOnlyList<AttendanceRollMember> members)
     {
         container.Table(table =>
         {
@@ -98,7 +97,7 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
             {
                 header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text("Name").Bold().FontSize(9);
                 header.Cell().Background(Colors.Grey.Lighten3).Padding(7).AlignCenter().Text("Present").Bold().FontSize(9);
-                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).AlignCenter().Text(feeHeaderText).Bold().FontSize(9);
+                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).AlignCenter().Text(FeeHeaderText).Bold().FontSize(9);
             });
 
             foreach (var member in members)

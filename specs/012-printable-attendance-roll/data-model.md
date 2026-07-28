@@ -7,9 +7,10 @@ No existing entity or table changes — this feature is entirely read-only (spec
 service in `StageFright.Core`, consumed by one new renderer in `StageFright.Reports`.
 
 > **Correction — 2026-07-28**: `AnnualFeePaid` is removed; `Attended` and `RehearsalFeePaid` are
-> added (both now carry real per-rehearsal data instead of being always-blank); `AttendanceRollData`
-> gains `AttendanceFeeAmount`. See spec.md's "Correction" clarification session and research.md
-> Decisions 5, 8–10.
+> added (both now carry real per-rehearsal data instead of being always-blank). `AttendanceRollData`
+> briefly gained `AttendanceFeeAmount` for a currency-amount fee header, then had it removed again
+> the same day once the fee header became a static "Pd" label instead. See spec.md's "Correction"
+> clarification session and research.md Decisions 5, 8–10.
 
 ## New DTO: `AttendanceRollData`
 
@@ -20,7 +21,6 @@ public sealed class AttendanceRollData
 {
     public DateTime RehearsalDate { get; init; }
     public TimeSpan RehearsalTime { get; init; }
-    public decimal AttendanceFeeAmount { get; init; }
     public IReadOnlyList<AttendanceRollMember> Members { get; init; } = Array.Empty<AttendanceRollMember>();
 }
 ```
@@ -28,9 +28,6 @@ public sealed class AttendanceRollData
 - `RehearsalDate` / `RehearsalTime`: copied from the `Rehearsal` entity so the printed sheet can be
   identified and matched to the correct rehearsal (FR-008). No `RehearsalId` is needed on the DTO —
   it exists only to carry data from service to renderer within a single call.
-- `AttendanceFeeAmount`: the current `Settings.AttendanceFee` value, read at generation time. The
-  renderer formats this as the fee column's header text (FR-006; research.md Decision 9) — it is
-  not a per-member value.
 - `Members`: already sorted by surname then first name (FR-004) by the time the service returns it
   — the renderer does not re-sort. Empty when there are no members active as of the rehearsal's
   date (FR-013's precondition; see research.md Decision 6 for who handles the empty state).
@@ -90,7 +87,8 @@ public interface IAttendanceRollService
 Dependencies (constructor-injected, all existing interfaces — no new repository/service is
 introduced): `IRehearsalRepository`, `IMemberRepository` (replaces `IMemberService`),
 `IAttendanceRepository` (new dependency on this service), `IMemberBalanceService`,
-`IFeeRepository`, `ISettingsRepository` (new dependency on this service).
+`IFeeRepository`. (`ISettingsRepository` was briefly added here for the superseded
+currency-amount fee header — see research.md Decision 9 — then removed again the same day.)
 
 ```csharp
 public async Task<AttendanceRollData> GenerateAsync(Guid rehearsalId, CancellationToken ct = default)
@@ -119,13 +117,10 @@ public async Task<AttendanceRollData> GenerateAsync(Guid rehearsalId, Cancellati
         });
     }
 
-    var settings = await _settingsRepo.GetAsync(ct);
-
     return new AttendanceRollData
     {
         RehearsalDate = rehearsal.Date,
         RehearsalTime = rehearsal.Time,
-        AttendanceFeeAmount = settings?.AttendanceFee ?? 0m,
         Members = rollMembers
     };
 }
@@ -182,17 +177,19 @@ public interface IAttendanceRollPdfRenderer
 `src/StageFright.Reports/Rendering/AttendanceRollPdfRenderer.cs`
 
 - Header block (mirrors `PdfReportRenderer`'s header for visual consistency, FR-012): organization
-  name, "Attendance Roll" title, rehearsal date/time subtitle (FR-008), generated-at timestamp.
+  name, "Attendance Roll" title, rehearsal date/time subtitle (FR-008). No "Generated: <timestamp>"
+  line — removed per direct follow-up feedback (FR-008).
 - `private const int RowsPerColumn = <tuned constant>;` (see research.md Decision 3 and Outstanding
   Risks — exact value confirmed via a manual visual check during implementation).
 - `data.Members.Chunk(RowsPerColumn * 2)` → one QuestPDF `container.Page(...)` per chunk; each page
   is a `Row` of two `Table` columns (left = first `RowsPerColumn` of the chunk, right = the rest).
 - Each column `Table`'s `ColumnsDefinition`: one wide "Name" column (`RelativeColumn(4)`) showing
   `$"{m.LastName.ToUpperInvariant()}, {m.FirstName}"`, then two minimal-width checkbox columns
-  (`RelativeColumn(1)` each, FR-010) — "Present" (empty or marked box per `m.Attended`) and a fee
-  column headed by `data.AttendanceFeeAmount.ToString("C0")` (e.g. "$5"; research.md Decision 9,
-  empty or marked box per `m.RehearsalFeePaid`). Column headers use QuestPDF's default text
-  wrapping within the narrow width (FR-011) — no explicit `\n` needed.
+  (`RelativeColumn(1)` each, FR-010) — "Present" (centered, empty or marked box per `m.Attended`)
+  and a fee column headed by the static `"Pd"` label (centered; research.md Decision 9, empty or
+  marked box per `m.RehearsalFeePaid`). Both checkbox headers are center-aligned to match the
+  centered checkbox cells below them. Column headers use QuestPDF's default text wrapping within
+  the narrow width (FR-011) — no explicit `\n` needed.
 - Checkbox cells: small bordered `Container` elements, not Unicode glyphs (research.md Decision 4).
 - Document-wide footer: "Page X of Y" exactly as `PdfReportRenderer` already does, spanning across
   the multiple `Page()` blocks emitted for a large roster.
@@ -205,9 +202,9 @@ public interface IAttendanceRollPdfRenderer
 
 - `AttendanceRollService` reads `Rehearsal` (via `IRehearsalRepository`), `Member` (via
   `IMemberRepository`), `AttendanceRecord` (via `IAttendanceRepository`), `Fee` (via
-  `IFeeRepository`), GL-derived balances (via `IMemberBalanceService`, itself backed by
-  `IGLRepository`), and `Settings` (via `ISettingsRepository`) — purely as read dependencies. No
-  foreign keys, navigation properties, or schema relationships are added.
+  `IFeeRepository`), and GL-derived balances (via `IMemberBalanceService`, itself backed by
+  `IGLRepository`) — purely as read dependencies. No foreign keys, navigation properties, or
+  schema relationships are added. `Settings` is no longer read by this feature.
 - `AttendanceRollPdfRenderer` has no dependency on any repository or DbContext — it is a pure
   function of `AttendanceRollData` (plus an organization-name string), exactly like
   `PdfReportRenderer`'s relationship to `ReportData`.
