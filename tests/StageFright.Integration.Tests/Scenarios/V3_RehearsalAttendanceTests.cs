@@ -302,34 +302,61 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GenerateAsync_AnnualFeePaid_ReflectsRealGLSettlementState()
+    public async Task GenerateAsync_ReflectsRealAttendanceAndFeePaymentState_AfterAttendanceRecorded()
     {
-        var fullyPaidMember = await AddActiveMember("Fully Paid");
+        var paidMember = await AddActiveMember("Paid");
         var unpaidMember = await AddActiveMember("Unpaid");
-        var noRecordMember = await AddActiveMember("No Record");
-
-        var feeSvc = BuildFeeService();
-        await feeSvc.ApplyAnnualFeesAsync(new[] { fullyPaidMember.Id, unpaidMember.Id });
-        // noRecordMember intentionally gets no annual fee applied
-
-        var paymentSvc = BuildPaymentService();
-        await paymentSvc.RecordAsync(new RecordPaymentRequest
-        {
-            MemberId = fullyPaidMember.Id,
-            Date = DateTime.UtcNow,
-            Amount = 50m,
-            PaymentMethod = PaymentMethod.Cash,
-            PaymentType = PaymentType.Annual
-        });
+        var absentMember = await AddActiveMember("Absent");
 
         var rehearsal = await ScheduleRehearsal();
-        var svc = BuildAttendanceRollService();
 
+        var attendanceSvc = BuildAttendanceService();
+        await attendanceSvc.RecordBatchAsync(rehearsal.Id, new[]
+        {
+            new AttendanceBatchItem { MemberId = paidMember.Id, Attended = true, MarkAsUnpaid = false },
+            new AttendanceBatchItem { MemberId = unpaidMember.Id, Attended = true, MarkAsUnpaid = true },
+            new AttendanceBatchItem { MemberId = absentMember.Id, Attended = false }
+        });
+
+        var svc = BuildAttendanceRollService();
         var result = await svc.GenerateAsync(rehearsal.Id);
 
-        Assert.True(result.Members.Single(m => m.FirstName == "Fully Paid").AnnualFeePaid);
-        Assert.False(result.Members.Single(m => m.FirstName == "Unpaid").AnnualFeePaid);
-        Assert.False(result.Members.Single(m => m.FirstName == "No Record").AnnualFeePaid);
+        var paidRow = result.Members.Single(m => m.FirstName == "Paid");
+        Assert.True(paidRow.Attended);
+        Assert.True(paidRow.RehearsalFeePaid);
+
+        var unpaidRow = result.Members.Single(m => m.FirstName == "Unpaid");
+        Assert.True(unpaidRow.Attended);
+        Assert.False(unpaidRow.RehearsalFeePaid);
+
+        var absentRow = result.Members.Single(m => m.FirstName == "Absent");
+        Assert.False(absentRow.Attended);
+        Assert.False(absentRow.RehearsalFeePaid);
+
+        Assert.Equal(10m, result.AttendanceFeeAmount);
+    }
+
+    [Fact]
+    public async Task GenerateAsync_MembershipIsPointInTime_NotBasedOnTodaysStatus()
+    {
+        var rehearsal = await ScheduleRehearsal(); // 2026-06-15
+
+        // Active as of the rehearsal date but inactivated afterward -> still on the roll
+        var laterInactivated = await AddActiveMember("StillOnRoll");
+        laterInactivated.Status = MemberStatus.Inactive;
+        laterInactivated.InactivateDate = new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc);
+        await _db.SaveChangesAsync();
+
+        // Not active until after the rehearsal date -> excluded from the roll
+        var joinedLater = await AddActiveMember("NotYetJoined");
+        joinedLater.ActivateDate = new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc);
+        await _db.SaveChangesAsync();
+
+        var svc = BuildAttendanceRollService();
+        var result = await svc.GenerateAsync(rehearsal.Id);
+
+        Assert.Contains(result.Members, m => m.FirstName == "StillOnRoll");
+        Assert.DoesNotContain(result.Members, m => m.FirstName == "NotYetJoined");
     }
 
     // --- Helpers ---
@@ -337,10 +364,12 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
     private AttendanceRollService BuildAttendanceRollService()
     {
         var rehearsalRepo = new RehearsalRepository(_db);
-        var memberSvc = BuildMemberService();
+        var memberRepo = new MemberRepository(_db);
+        var attendanceRepo = new AttendanceRepository(_db);
         var memberBalanceSvc = BuildMemberBalanceService();
         var feeRepo = new FeeRepository(_db);
-        return new AttendanceRollService(rehearsalRepo, memberSvc, memberBalanceSvc, feeRepo);
+        var settingsRepo = new SettingsRepository(_db);
+        return new AttendanceRollService(rehearsalRepo, memberRepo, attendanceRepo, memberBalanceSvc, feeRepo, settingsRepo);
     }
 
     private MemberBalanceService BuildMemberBalanceService()

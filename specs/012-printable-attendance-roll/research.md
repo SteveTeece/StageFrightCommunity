@@ -7,6 +7,11 @@ whether the roll requires an already-scheduled rehearsal — was resolved in spe
 Clarifications session). This phase focuses on *how* to implement each functional requirement
 given the constraints the existing codebase already imposes.
 
+> **Correction — 2026-07-28**: The original implementation's "Annual Fee Paid" column, and its
+> "always-live, always-blank" member/checkbox model, did not match the actual requirement (see
+> spec.md's "Correction" clarification session). Decisions 4 and 5 below are updated accordingly;
+> Decisions 8–10 are new.
+
 ## Codebase Inventory (baseline)
 
 | Area | File | Relevant existing behavior |
@@ -16,9 +21,11 @@ given the constraints the existing codebase already imposes.
 | PDF renderer | `src/StageFright.Reports/Rendering/PdfReportRenderer.cs` | One QuestPDF `Table` per report, auto-paginating across physical pages natively (confirmed by its single `container.Page(...)` + `Table` + `page.Footer()...CurrentPageNumber()/TotalPages()`); every cell rendered via `cell.Text(value)` — no shape/glyph drawing anywhere in this codebase today. |
 | Report trigger | `src/StageFright.UI/Pages/Reports/ReportsPage.razor`, `src/StageFright.UI/Shared/ReportViewer.razor(.cs)` | User picks a report from a menu → `/reports/{reportId}` → `ReportViewer` renders filters + a "Print / PDF" button. `PrintReport()` (`ReportViewer.razor.cs:147-168`) is the exact "render → write temp file → `Process.Start(UseShellExecute:true)`" pattern this feature reuses. No mechanism exists to pre-scope a report to one entity ID (e.g. a rehearsal) via this pipeline. |
 | Rehearsal list | `src/StageFright.UI/Pages/Rehearsals/RehearsalList.razor(.cs)` | Per-row Actions column already shows "Record Attendance" / "Recorded"; this is the only per-rehearsal action surface in the app (no separate rehearsal detail page exists). |
-| Active-member definition | `src/StageFright.UI/Pages/Rehearsals/AttendanceGrid.razor.cs:60-62` | `(await MemberService.GetByStatusAsync(MemberStatus.Active)).OrderBy(m => m.LastName).ThenBy(m => m.FirstName)` — this is the exact call the roll must reuse per FR-002. |
-| Annual-fee-paid signal | `src/StageFright.Core/Modules/Finance/MemberBalanceService.cs:28-55` | `GetOutstandingFeesAsync(memberId)` returns only fees with `RemainingAmount > 0` (fully-settled fees are silently excluded, since "fees carry no per-record paid flag — the GL balance is authoritative", per the method's own inline comment). |
-| Fee classification | `src/StageFright.Core/Enums/FeeType.cs` | `Annual` / `Attendance` / `Other` — `Annual` is the type to filter on. |
+| Point-in-time active membership | `src/StageFright.Data/Repositories/MemberRepository.cs` (`GetActiveAsOfAsync`), consumed by `src/StageFright.Core/Modules/Rehearsals/RehearsalService.cs` (`FreezeAttendanceRateAsync`) and `EventService.cs`'s equivalent participation-rate freeze | `IMemberRepository.GetActiveAsOfAsync(date)` — `(Status=Active AND ActivateDate <= date) OR (Status=Inactive AND ActivateDate <= date AND InactivateDate > date)`, excluding soft-deleted. Corrected 2026-07-28 (see Decision 8) to also match members who have since gone inactive but were active as of `date` — the original query only matched members whose *current* status was Active, which this feature's real-implementation testing surfaced as a gap versus its own doc comment. |
+| Recorded attendance lookup | `src/StageFright.Core/Contracts/IAttendanceRepository.cs:16` (`GetByRehearsalAsync`) | Returns all `AttendanceRecord`s for a rehearsal; used to populate the "Present" checkbox's real state per the corrected FR-005. |
+| Attendance-fee-paid signal | `src/StageFright.Core/Modules/Finance/MemberBalanceService.cs:28-55` (`GetOutstandingFeesAsync`) + `src/StageFright.Core/Contracts/IFeeRepository.cs:18` (`GetByMemberAsync`) | `GetOutstandingFeesAsync(memberId)` returns only fees with `RemainingAmount > 0`; cross-referencing against the member's `Fee` with `FeeType.Attendance` and matching `RehearsalId` (found via `GetByMemberAsync`) gives real per-rehearsal fee-paid state per the corrected FR-006. |
+| Fee classification | `src/StageFright.Core/Enums/FeeType.cs` | `Annual` / `Attendance` / `Other` — `Attendance` is the type to filter on (previously `Annual`, removed with the "Annual Fee Paid" column). |
+| Attendance fee amount | `src/StageFright.Core/Entities/Settings.cs:33` (`AttendanceFee`), also consumed by `src/StageFright.Core/Modules/Rehearsals/AttendanceService.cs:89-90` | Per-rehearsal attendance fee amount configured in Settings; sourced via `ISettingsRepository` for the fee column's header text per the corrected FR-006. |
 | Rehearsal lookup by id | `src/StageFright.Core/Modules/Rehearsals/RehearsalService.cs:71-91` (`FreezeAttendanceRateAsync`) | `_rehearsalRepo.GetByIdAsync(rehearsalId, ct) ?? throw new EntityNotFoundException("Rehearsal", rehearsalId, nameof(FreezeAttendanceRateAsync))` — `IRehearsalRepository` (via `ISoftDeletableRepository<Rehearsal>`) already exposes `GetByIdAsync`, even though `IRehearsalService` doesn't wrap it; this is the exact not-found precedent to follow. |
 | DI registration | `src/StageFright.App/MauiProgram.cs:169,180,230` | `IRehearsalService`, `IMemberBalanceService`, `IPdfReportRenderer` all registered `AddScoped` in `RegisterCoreServices` — new services/renderers follow the same pattern. |
 
@@ -122,10 +129,13 @@ this chunking strategy produces by construction.
 ### 4. Checkbox rendering: bordered box, unchecked; bordered box + checkmark glyph, checked
 
 **Decision**: Render each checkbox cell as a small fixed-size `Container` with a border
-(`.Border(1).BorderColor(...).Width(Xpt).Height(Xpt)`), left empty for unchecked ("Attended",
-"Rehearsal Fee Paid", and an unpaid "Annual Fee Paid"). A checked "Annual Fee Paid" renders the
-same bordered box with a centered bold "✓" (U+2713) checkmark glyph inside it — **not** a solid
-filled/black background (superseded; see below).
+(`.Border(1).BorderColor(...).Width(Xpt).Height(Xpt)`), left empty for unchecked ("Present" and
+the fee column, both before attendance is recorded and for any member not checked per the
+corrected FR-005/FR-006 rules). A checked cell renders the same bordered box with a centered bold
+"✓" (U+2713) checkmark glyph inside it — **not** a solid filled/black background (superseded; see
+below). Since the correction, "Present" and the fee checkbox are no longer always-blank: each is
+computed per member from real attendance/fee data (see the corrected Decision 5) and rendered
+checked or unchecked accordingly, using this same box-and-glyph presentation either way.
 
 **Rationale**: QuestPDF Community edition bundles a limited default font set, so Unicode glyphs
 were initially avoided over a theoretical tofu/missing-glyph risk (see original rationale below).
@@ -153,44 +163,51 @@ default font, so the solid-fill fallback was dropped in favor of the more legibl
   "checkbox" requirement (FR-005–FR-007) or the printed-sheet, hand-markable intent described in
   the feature request.
 
-### 5. Annual-fee-paid computation: derive from `GetOutstandingFeesAsync`, no new balance API
+### 5. "Present" and fee-paid computation: real per-rehearsal data, no new balance API
 
-**Decision**: For each active member, call the existing
-`IMemberBalanceService.GetOutstandingFeesAsync(memberId)` and set
-`AnnualFeePaid = !outstanding.Any(f => f.FeeType == FeeType.Annual && f.FeeDate.Year == DateTime.Today.Year)`.
+**Decision (corrected 2026-07-28)**: For each member on the roll, `AttendanceRollService` computes
+two independent, real-state fields instead of the old always-false "Attended"/"Rehearsal Fee Paid"
+and the old current-year "Annual Fee Paid":
 
-**Rationale**: `GetOutstandingFeesAsync` already returns exactly the "fees not yet fully settled by
-GL credits" set (fully-paid fees are filtered out inside that method, per its own inline
-comment — "Fees carry no per-record paid flag — the GL balance is authoritative"). This directly
-matches every acceptance scenario in User Story 2: a fully-paid current-year Annual fee produces
-no matching entry (→ checked); an unpaid/partially-paid one produces a matching entry with
-`RemainingAmount > 0` (→ unchecked); no current-year Annual fee record at all also produces no
-matching entry, but per the spec's explicit Edge Case ("no current-year annual fee record ...
-unchecked, the same as an unpaid fee") this needs an extra existence check, not just an absence
-check — see the calculation note below. An overpaid/credit balance also produces no outstanding
-entry (`RemainingAmount <= 0` is filtered out) → checked, matching the spec's explicit
-"overpaid... checkbox is shown checked" edge case.
+- `Attended`: look up the member's `AttendanceRecord` for this rehearsal (via
+  `IAttendanceRepository.GetByRehearsalAsync(rehearsalId)`, indexed by `MemberId`) and set `true`
+  only if a record exists with `Attended == true`; otherwise `false` (covers both "not yet
+  recorded" and "recorded absent").
+- `RehearsalFeePaid`: find the member's `Fee` with `FeeType == FeeType.Attendance` and matching
+  `RehearsalId` (via the existing `IFeeRepository.GetByMemberAsync(memberId)`, filtered
+  client-side — no new repository method needed), then set `true` only if that fee exists **and**
+  it does not appear in `IMemberBalanceService.GetOutstandingFeesAsync(memberId)` (matched by
+  `FeeId`); otherwise `false`.
 
-**Calculation note (resolves an apparent gap)**: "No annual fee has ever been created this year"
-and "the annual fee this year is fully paid" are indistinguishable from `GetOutstandingFeesAsync`
-alone (both produce zero matching entries), yet the spec requires the *first* case to be
-unchecked and the *second* checked. Resolving this requires also confirming a current-year Annual
-`Fee` record exists at all — `IFeeRepository` already exposes exactly this check,
-`AnnualFeeExistsAsync(memberId, year)` (doc-commented "Returns true if an annual fee already
-exists for the member in the given calendar year (paid or unpaid)"), so no new repository method
-is needed. The final rule implemented is: `AnnualFeePaid = AnnualFeeExistsAsync(memberId,
-currentYear) && !GetOutstandingFeesAsync(memberId).Any(f => f.FeeType == Annual && f.FeeDate.Year
-== currentYear)`. This is captured precisely in data-model.md's service description and must be
-covered by dedicated unit tests for all three edge cases (fully paid, unpaid/partial, no record at
-all).
+**Rationale**: This is the same "existence check + outstanding-balance exclusion" shape as the
+original Annual Fee Paid computation (kept below for context), just re-keyed to a specific
+rehearsal's `Attendance`-type fee instead of the current calendar year's `Annual`-type fee, and
+paired with a genuinely independent `Attended` field sourced from `AttendanceRecord` rather than
+always `false`. This directly matches every acceptance scenario in the corrected User Story 2:
+attendance not yet recorded → both blank; attended with fee paid → both checked; attended but fee
+marked unpaid (via the attendance grid's "mark as unpaid" option) → `Attended` checked,
+`RehearsalFeePaid` unchecked; not attended/no record → both unchecked. Reusing
+`GetOutstandingFeesAsync` (rather than a new balance query) keeps the same "GL balance is
+authoritative, fees carry no per-record paid flag" precedent this codebase already relies on for
+outstanding-balance checks elsewhere.
+
+**Superseded original decision** (kept for context — no longer implemented): the original
+"Annual Fee Paid" computation was `AnnualFeePaid = AnnualFeeExistsAsync(memberId, currentYear) &&
+!GetOutstandingFeesAsync(memberId).Any(f => f.FeeType == Annual && f.FeeDate.Year ==
+currentYear)`, using `IFeeRepository.AnnualFeeExistsAsync` for the existence check. This entire
+column and field were removed per the correction — Annual Fee Paid is out of scope for this spec.
 
 **Alternatives considered**:
-- **Add a new `IMemberBalanceService` method (e.g. `IsCurrentYearAnnualFeePaidAsync`)** —
-  considered but not required: the existing `GetOutstandingFeesAsync` plus one existence check via
-  the already-available `IFeeRepository` fully covers every acceptance scenario without widening
-  the `IMemberBalanceService` public contract for a single caller; keeping the computation local to
+- **Add a new `IMemberBalanceService` method (e.g. `IsRehearsalFeePaidAsync`)** — considered but
+  not required: the existing `GetOutstandingFeesAsync` plus a client-side filter over
+  `IFeeRepository.GetByMemberAsync` fully covers the corrected behavior without widening the
+  `IMemberBalanceService` public contract for a single caller; keeping the computation local to
   `AttendanceRollService` avoids adding Rehearsals-specific concerns to the Finance module's public
   interface (§3.3 separation of concerns — Finance shouldn't need to know about rehearsal rolls).
+- **Mirror `RehearsalFeePaid` directly off `Attended`** (checked whenever the member attended,
+  regardless of actual payment) — rejected: loses the "mark as unpaid" signal the system already
+  tracks per member per rehearsal, which the corrected spec explicitly calls out as a case the fee
+  checkbox must distinguish (Acceptance Scenario 3 of the corrected User Story 2).
 
 ### 6. Empty-state handling (FR-013): checked in the UI layer, not thrown as an exception
 
@@ -231,6 +248,83 @@ its own page-level error/alert state).
 **Alternatives considered**:
 - **Extract a shared `IPdfLauncher`/`TempFileLauncher` utility now** — rejected as premature for
   two call sites; revisit only if a third print-and-launch call site appears.
+
+### 8. Point-in-time membership: reuse `IMemberRepository.GetActiveAsOfAsync`, inject the repository directly
+
+**Decision**: `AttendanceRollService` replaces its `IMemberService` dependency with
+`IMemberRepository` and calls `GetActiveAsOfAsync(rehearsal.Date, ct)` instead of
+`GetByStatusAsync(MemberStatus.Active, ct)`.
+
+**Rationale**: `GetActiveAsOfAsync` already exists and already targets exactly the "who was active
+as of this rehearsal's date" semantics the corrected FR-002 requires — it's the same method
+`RehearsalService.FreezeAttendanceRateAsync` uses to compute the attendance-rate denominator for a
+rehearsal, so the roll's membership and the frozen attendance rate now agree by construction, for
+free. `AttendanceRollService` already injects other repositories directly (`IFeeRepository`,
+`IRehearsalRepository`), so injecting `IMemberRepository` instead of going through `IMemberService`
+(which has no equivalent point-in-time method) is consistent with that existing pattern, not a new
+one.
+
+**Correction note**: implementing and testing this decision surfaced a real gap in the existing
+`GetActiveAsOfAsync` query — it only matched members whose *current* status is Active, so a member
+who was active as of the rehearsal's date but has since gone inactive was silently excluded,
+contradicting both the method's own doc comment and this feature's approved point-in-time design.
+The query was corrected to `(Status=Active AND ActivateDate <= date) OR (Status=Inactive AND
+ActivateDate <= date AND InactivateDate > date)`, which also fixes the same latent gap for
+`FreezeAttendanceRateAsync`'s denominator. All four pre-existing `GetActiveAsOfAsync` integration
+tests in `MemberRepositoryIntegrationTests.cs` continued to pass unchanged under the corrected
+query; one new test (`GetActiveAsOfAsync_ReturnsMember_WhenInactivatedAfterDate`) was added to
+cover the newly-supported branch.
+
+**Alternatives considered**:
+- **Add a new point-in-time method to `IMemberService`** — rejected: `IMemberRepository` already
+  exposes the exact method needed; adding a pass-through on the service interface would be
+  duplication for no behavioral gain, and every other data-access call in this service already goes
+  through a repository directly.
+- **Leave `GetActiveAsOfAsync` as-is and narrow the roll's documented point-in-time behavior to
+  match its actual (buggy) output** — rejected: this would mean documenting and shipping behavior
+  the user explicitly did not approve (a currently-inactive member who was present at a past
+  rehearsal would silently vanish from a reprinted roll), for the sake of avoiding a small, safe,
+  additive query fix with no conflicting existing test coverage.
+
+### 9. Fee column heading: format as zero-decimal currency, computed once per render
+
+**Decision**: `AttendanceRollData` gains a `decimal AttendanceFeeAmount` field, populated by
+`AttendanceRollService` from `ISettingsRepository.GetAsync()` (a new dependency on this service).
+`AttendanceRollPdfRenderer` formats it once per `Render()` call as
+`AttendanceFeeAmount.ToString("C0")` (culture-default currency symbol, zero decimal places, e.g.
+`"$5"`) and uses that string as the fee column's header text instead of "Rehearsal Fee Paid".
+
+**Rationale**: `"C0"` directly produces the "$2" / "$5" zero-decimal, symbol-prefixed format called
+for by the correction, using the same culture-default currency formatting `ToString("C")` already
+uses elsewhere in the UI layer (e.g. `AttendanceGrid.razor`), just with the decimal count pinned to
+zero. Computing it once in the renderer (rather than per-member) is correct because the amount is
+roll-wide, not per-member — it's a Settings-level configuration value, not something that varies by
+row.
+
+**Alternatives considered**:
+- **Extract a shared currency-formatting helper now** — rejected as premature: this is the first
+  zero-decimal currency format needed anywhere in the codebase (the existing report-provider
+  `FormatCurrency` helpers are two-decimal, `"F2"`, with no `$` symbol at all); a single `ToString("C0")`
+  call inline does not yet justify a new shared utility for one call site.
+
+### 10. `AnnualFeePaid` and its supporting fields/methods: removed, not deprecated
+
+**Decision**: `AttendanceRollMember.AnnualFeePaid` and `AttendanceRollService`'s
+`IsCurrentYearAnnualFeePaidAsync` private method are deleted outright, along with the
+`IMemberBalanceService` dependency's use for that purpose (still retained, repurposed for the
+corrected `RehearsalFeePaid` computation — see Decision 5) and the fourth PDF column that rendered
+it.
+
+**Rationale**: The corrected spec explicitly states Annual Fee Paid "is not part of this spec" —
+this codebase's constitution favors removing code that's no longer required over leaving unused
+fields/branches behind "just in case" (§3.1 "simple over clever", CLAUDE.md's "don't add
+backwards-compatibility shims... if you are certain that something is unused, you can delete it
+completely"). No other feature reads `AnnualFeePaid` or `IsCurrentYearAnnualFeePaidAsync`.
+
+**Alternatives considered**:
+- **Keep the field but stop rendering it** — rejected: leaves dead, untested code path with no
+  caller, contradicting the "no half-finished implementations" guidance and this repo's exhaustive
+  test-coverage rule (an unused field with no rendering path has nothing meaningful to test).
 
 ## Outstanding Risks (carried into tasks.md, not blocking)
 

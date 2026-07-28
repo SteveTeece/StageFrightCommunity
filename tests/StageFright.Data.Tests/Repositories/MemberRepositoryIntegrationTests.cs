@@ -111,6 +111,23 @@ public class MemberRepositoryIntegrationTests : IDisposable
     }
 
     [Fact]
+    public async Task GetActiveAsOfAsync_ReturnsMember_WhenInactivatedAfterDate()
+    {
+        using var db = _factory.CreateContext();
+        var repo = new MemberRepository(db);
+
+        var refDate = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc);
+        var m = Member("Later Leaver", MemberStatus.Inactive);
+        m.ActivateDate = refDate.AddDays(-20);
+        m.InactivateDate = refDate.AddDays(10); // inactivated AFTER reference date -> was still active on refDate
+        await repo.AddAsync(m);
+
+        var result = await repo.GetActiveAsOfAsync(refDate);
+
+        Assert.Contains(result, r => r.Id == m.Id);
+    }
+
+    [Fact]
     public async Task GetActiveAsOfAsync_ExcludesArchivedMembers()
     {
         using var db = _factory.CreateContext();

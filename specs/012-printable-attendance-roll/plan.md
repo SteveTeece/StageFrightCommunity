@@ -8,11 +8,18 @@
 
 ## Summary
 
+**Correction — 2026-07-28**: this Summary and the Constraints/Scale sections below describe the
+original (superseded) "Annual Fee Paid" implementation. The corrected behavior — point-in-time
+active membership, real "Present"/fee-paid checkboxes, a fee-amount column heading, and the
+`AnnualFeePaid` removal — is documented in spec.md's "Correction" clarification session,
+research.md Decisions 5 and 8-10, and data-model.md; this plan's Constitution Check gates below
+remain valid unchanged (no new module, no schema change, same layering).
+
 Add a "Print Roll" action to each scheduled rehearsal (surfaced from `RehearsalList.razor`'s
-Actions column) that generates a printable PDF attendance roll: every currently-active member,
-sorted by surname then first name, surname in capitals, with blank "Attended" and "Rehearsal Fee
-Paid" checkboxes and a pre-computed "Annual Fee Paid" checkbox reflecting whether the member's
-current-calendar-year Annual fee has no outstanding GL balance. The roll is laid out in a
+Actions column) that generates a printable PDF attendance roll: every member active as of the
+rehearsal's date, sorted by surname then first name, surname in capitals, with "Present" and
+attendance-fee checkboxes that print blank before attendance is recorded and reflect real
+recorded attendance/fee-payment state once it has been. The roll is laid out in a
 print-optimized two-column format (second column as same-page overflow, minimal-width checkbox
 columns, wrapping headers) and paginates automatically for larger rosters. Because this layout
 (two columns, checkbox glyphs) cannot be expressed by the existing generic `ReportData`/
@@ -113,7 +120,7 @@ src/
 │       ├── IAttendanceRollService.cs      # Contract: GenerateAsync(rehearsalId) -> AttendanceRollData
 │       ├── AttendanceRollService.cs       # Assembles active members + annual-fee-paid flag for a rehearsal
 │       ├── AttendanceRollData.cs          # Rehearsal date/time + ordered member rows
-│       └── AttendanceRollMember.cs        # FirstName, LastName, AnnualFeePaid
+│       └── AttendanceRollMember.cs        # FirstName, LastName, Attended, RehearsalFeePaid
 ├── StageFright.Reports/Rendering/
 │   ├── IAttendanceRollPdfRenderer.cs      # Contract: Render(AttendanceRollData, organizationName) -> byte[]
 │   └── AttendanceRollPdfRenderer.cs       # QuestPDF two-column, checkbox-box, wrapping-header layout

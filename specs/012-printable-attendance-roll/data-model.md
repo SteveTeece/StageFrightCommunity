@@ -6,6 +6,11 @@ No existing entity or table changes — this feature is entirely read-only (spec
 "Generating the roll is a read-only operation"). It introduces two new plain DTOs and one new
 service in `StageFright.Core`, consumed by one new renderer in `StageFright.Reports`.
 
+> **Correction — 2026-07-28**: `AnnualFeePaid` is removed; `Attended` and `RehearsalFeePaid` are
+> added (both now carry real per-rehearsal data instead of being always-blank); `AttendanceRollData`
+> gains `AttendanceFeeAmount`. See spec.md's "Correction" clarification session and research.md
+> Decisions 5, 8–10.
+
 ## New DTO: `AttendanceRollData`
 
 `src/StageFright.Core/Modules/Rehearsals/AttendanceRollData.cs`
@@ -15,6 +20,7 @@ public sealed class AttendanceRollData
 {
     public DateTime RehearsalDate { get; init; }
     public TimeSpan RehearsalTime { get; init; }
+    public decimal AttendanceFeeAmount { get; init; }
     public IReadOnlyList<AttendanceRollMember> Members { get; init; } = Array.Empty<AttendanceRollMember>();
 }
 ```
@@ -22,9 +28,12 @@ public sealed class AttendanceRollData
 - `RehearsalDate` / `RehearsalTime`: copied from the `Rehearsal` entity so the printed sheet can be
   identified and matched to the correct rehearsal (FR-008). No `RehearsalId` is needed on the DTO —
   it exists only to carry data from service to renderer within a single call.
+- `AttendanceFeeAmount`: the current `Settings.AttendanceFee` value, read at generation time. The
+  renderer formats this as the fee column's header text (FR-006; research.md Decision 9) — it is
+  not a per-member value.
 - `Members`: already sorted by surname then first name (FR-004) by the time the service returns it
-  — the renderer does not re-sort. Empty when there are no active members (FR-013's precondition;
-  see research.md Decision 6 for who handles the empty state).
+  — the renderer does not re-sort. Empty when there are no members active as of the rehearsal's
+  date (FR-013's precondition; see research.md Decision 6 for who handles the empty state).
 
 ## New DTO: `AttendanceRollMember`
 
@@ -35,7 +44,8 @@ public sealed class AttendanceRollMember
 {
     public string FirstName { get; init; } = string.Empty;
     public string LastName { get; init; } = string.Empty;
-    public bool AnnualFeePaid { get; init; }
+    public bool Attended { get; init; }
+    public bool RehearsalFeePaid { get; init; }
 }
 ```
 
@@ -43,13 +53,17 @@ public sealed class AttendanceRollMember
   display (FR-003) is a rendering concern, applied by `AttendanceRollPdfRenderer` when it builds
   the PDF text cell — not baked into this DTO, so the DTO stays a pure data carrier reusable by any
   future consumer without assuming a display transform.
-- `AnnualFeePaid`: pre-computed boolean (FR-007) — see service description below for the exact
-  rule. No `MemberId` field is included; the roll is a print-only, one-shot artifact with no
-  interactive per-row action, so there's nothing downstream that needs to correlate a row back to
-  a member id.
-- No `Attended` / `RehearsalFeePaid` fields exist on this DTO — those two checkboxes are always
-  printed blank (FR-005, FR-006) and require no data; the renderer draws them empty for every row
-  unconditionally.
+- `Attended`: pre-computed boolean (FR-005) — `true` only if an `AttendanceRecord` exists for this
+  member and rehearsal with `Attended == true`; `false` when no attendance has been recorded yet,
+  or the member was recorded absent. See service description below for the exact rule.
+- `RehearsalFeePaid`: pre-computed boolean (FR-006) — `true` only if an `Attendance`-type `Fee`
+  exists for this member and rehearsal with no outstanding balance; `false` otherwise (including
+  when the member attended but the fee was marked unpaid). Independent of `Attended` — see service
+  description below.
+- No `MemberId` field is included; the roll is a print-only, one-shot artifact with no interactive
+  per-row action, so there's nothing downstream that needs to correlate a row back to a member id.
+- No `AnnualFeePaid` field exists on this DTO — that column was removed; Annual Fee Paid is out of
+  scope for this spec (research.md Decision 10).
 
 ## New service contract: `IAttendanceRollService`
 
@@ -59,9 +73,10 @@ public sealed class AttendanceRollMember
 public interface IAttendanceRollService
 {
     /// <summary>
-    /// Assembles the printable attendance roll for a scheduled rehearsal: every currently-active
-    /// member (FR-002), sorted by surname then first name (FR-004), each with a pre-computed
-    /// Annual Fee Paid flag (FR-007). Read-only — creates, updates, or deletes nothing.
+    /// Assembles the printable attendance roll for a scheduled rehearsal: every member active as
+    /// of the rehearsal's date (FR-002), sorted by surname then first name (FR-004), each with
+    /// pre-computed Present (FR-005) and RehearsalFeePaid (FR-006) flags reflecting any attendance
+    /// already recorded. Read-only — creates, updates, or deletes nothing.
     /// </summary>
     /// <exception cref="EntityNotFoundException">rehearsalId does not match a saved rehearsal.</exception>
     Task<AttendanceRollData> GenerateAsync(Guid rehearsalId, CancellationToken ct = default);
@@ -73,7 +88,9 @@ public interface IAttendanceRollService
 `src/StageFright.Core/Modules/Rehearsals/AttendanceRollService.cs`
 
 Dependencies (constructor-injected, all existing interfaces — no new repository/service is
-introduced): `IRehearsalRepository`, `IMemberService`, `IMemberBalanceService`, `IFeeRepository`.
+introduced): `IRehearsalRepository`, `IMemberRepository` (replaces `IMemberService`),
+`IAttendanceRepository` (new dependency on this service), `IMemberBalanceService`,
+`IFeeRepository`, `ISettingsRepository` (new dependency on this service).
 
 ```csharp
 public async Task<AttendanceRollData> GenerateAsync(Guid rehearsalId, CancellationToken ct = default)
@@ -81,46 +98,52 @@ public async Task<AttendanceRollData> GenerateAsync(Guid rehearsalId, Cancellati
     var rehearsal = await _rehearsalRepo.GetByIdAsync(rehearsalId, ct)
         ?? throw new EntityNotFoundException("Rehearsal", rehearsalId, nameof(GenerateAsync));
 
-    var members = (await _memberService.GetByStatusAsync(MemberStatus.Active, ct))
+    var members = (await _memberRepo.GetActiveAsOfAsync(rehearsal.Date, ct))
         .OrderBy(m => m.LastName).ThenBy(m => m.FirstName)
         .ToList();
+
+    var attendanceByMember = (await _attendanceRepo.GetByRehearsalAsync(rehearsalId, ct))
+        .ToDictionary(a => a.MemberId, a => a.Attended);
 
     var rollMembers = new List<AttendanceRollMember>();
     foreach (var member in members)
     {
-        var annualFeePaid = await IsCurrentYearAnnualFeePaidAsync(member.Id, ct);
+        var attended = attendanceByMember.TryGetValue(member.Id, out var wasAttended) && wasAttended;
+        var feePaid = await IsRehearsalFeePaidAsync(member.Id, rehearsalId, ct);
         rollMembers.Add(new AttendanceRollMember
         {
             FirstName = member.FirstName,
             LastName = member.LastName,
-            AnnualFeePaid = annualFeePaid
+            Attended = attended,
+            RehearsalFeePaid = feePaid
         });
     }
+
+    var settings = await _settingsRepo.GetAsync(ct);
 
     return new AttendanceRollData
     {
         RehearsalDate = rehearsal.Date,
         RehearsalTime = rehearsal.Time,
+        AttendanceFeeAmount = settings?.AttendanceFee ?? 0m,
         Members = rollMembers
     };
 }
 
-private async Task<bool> IsCurrentYearAnnualFeePaidAsync(Guid memberId, CancellationToken ct)
+private async Task<bool> IsRehearsalFeePaidAsync(Guid memberId, Guid rehearsalId, CancellationToken ct)
 {
-    var currentYear = DateTime.Today.Year;
-
-    var hasCurrentYearAnnualFee = await _feeRepo.AnnualFeeExistsAsync(memberId, currentYear, ct);
-    if (!hasCurrentYearAnnualFee)
-        return false; // Edge case: no annual fee record yet this year -> unchecked (spec Edge Cases)
+    var memberFees = await _feeRepo.GetByMemberAsync(memberId, ct);
+    var fee = memberFees.FirstOrDefault(f => f.FeeType == FeeType.Attendance && f.RehearsalId == rehearsalId);
+    if (fee is null)
+        return false; // No attendance fee recorded yet for this rehearsal -> unchecked (spec Edge Cases)
 
     var outstanding = await _memberBalanceService.GetOutstandingFeesAsync(memberId, ct);
-    return !outstanding.Any(f => f.FeeType == FeeType.Annual && f.FeeDate.Year == currentYear);
+    return !outstanding.Any(f => f.FeeId == fee.Id);
 }
 ```
 
-(`IFeeRepository.AnnualFeeExistsAsync(memberId, year)` — confirmed existing on the repository
-contract, doc-commented "Returns true if an annual fee already exists for the member in the given
-calendar year (paid or unpaid)" — is exactly the existence check research.md Decision 5 needs; no
+(`IFeeRepository.GetByMemberAsync(memberId)` and `IMemberBalanceService.GetOutstandingFeesAsync
+(memberId)` — both confirmed existing — are exactly the two calls research.md Decision 5 needs; no
 new repository method is required.)
 
 ### Validation / preconditions
@@ -128,7 +151,7 @@ new repository method is required.)
 | Rule | Requirement | Exception |
 |---|---|---|
 | Rehearsal must exist | `rehearsalId` matches a non-deleted `Rehearsal` | `EntityNotFoundException("Rehearsal", rehearsalId, nameof(GenerateAsync))` |
-| No other precondition | Any active-member count (including zero) is a valid result | — (empty `Members` list, not an exception; see research.md Decision 6) |
+| No other precondition | Any active-as-of-date member count (including zero) is a valid result | — (empty `Members` list, not an exception; see research.md Decision 6) |
 
 ### State / lifecycle
 
@@ -165,10 +188,11 @@ public interface IAttendanceRollPdfRenderer
 - `data.Members.Chunk(RowsPerColumn * 2)` → one QuestPDF `container.Page(...)` per chunk; each page
   is a `Row` of two `Table` columns (left = first `RowsPerColumn` of the chunk, right = the rest).
 - Each column `Table`'s `ColumnsDefinition`: one wide "Name" column (`RelativeColumn(4)`) showing
-  `$"{m.LastName.ToUpperInvariant()}, {m.FirstName}"`, then three minimal-width checkbox columns
-  (`RelativeColumn(1)` each, FR-010) — "Attended" (always empty box), "Rehearsal Fee Paid" (always
-  empty box), "Annual Fee Paid" (empty or marked box per `m.AnnualFeePaid`). Column headers use
-  QuestPDF's default text wrapping within the narrow width (FR-011) — no explicit `\n` needed.
+  `$"{m.LastName.ToUpperInvariant()}, {m.FirstName}"`, then two minimal-width checkbox columns
+  (`RelativeColumn(1)` each, FR-010) — "Present" (empty or marked box per `m.Attended`) and a fee
+  column headed by `data.AttendanceFeeAmount.ToString("C0")` (e.g. "$5"; research.md Decision 9,
+  empty or marked box per `m.RehearsalFeePaid`). Column headers use QuestPDF's default text
+  wrapping within the narrow width (FR-011) — no explicit `\n` needed.
 - Checkbox cells: small bordered `Container` elements, not Unicode glyphs (research.md Decision 4).
 - Document-wide footer: "Page X of Y" exactly as `PdfReportRenderer` already does, spanning across
   the multiple `Page()` blocks emitted for a large roster.
@@ -180,8 +204,9 @@ public interface IAttendanceRollPdfRenderer
 ## Relationships
 
 - `AttendanceRollService` reads `Rehearsal` (via `IRehearsalRepository`), `Member` (via
-  `IMemberService`), `Fee` (via `IFeeRepository`), and GL-derived balances (via
-  `IMemberBalanceService`, itself backed by `IGLRepository`) — purely as read dependencies. No
+  `IMemberRepository`), `AttendanceRecord` (via `IAttendanceRepository`), `Fee` (via
+  `IFeeRepository`), GL-derived balances (via `IMemberBalanceService`, itself backed by
+  `IGLRepository`), and `Settings` (via `ISettingsRepository`) — purely as read dependencies. No
   foreign keys, navigation properties, or schema relationships are added.
 - `AttendanceRollPdfRenderer` has no dependency on any repository or DbContext — it is a pure
   function of `AttendanceRollData` (plus an organization-name string), exactly like
