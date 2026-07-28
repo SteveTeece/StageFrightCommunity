@@ -25,6 +25,8 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
             ? new[] { Array.Empty<AttendanceRollMember>() }
             : data.Members.Chunk(RowsPerColumn * 2).ToArray();
 
+        var feeHeaderText = data.AttendanceFeeAmount.ToString("C0");
+
         var document = Document.Create(container =>
         {
             foreach (var chunk in chunks)
@@ -47,10 +49,10 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
                         if (left.Length == 0)
                             return;
 
-                        row.RelativeItem().Element(c => BuildMemberTable(c, left));
+                        row.RelativeItem().Element(c => BuildMemberTable(c, left, feeHeaderText));
 
                         if (right.Length > 0)
-                            row.RelativeItem().Element(c => BuildMemberTable(c, right));
+                            row.RelativeItem().Element(c => BuildMemberTable(c, right, feeHeaderText));
                         else
                             row.RelativeItem();
                     });
@@ -81,7 +83,7 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
         col.Item().PaddingTop(4).LineHorizontal(0.5f);
     }
 
-    private static void BuildMemberTable(IContainer container, IReadOnlyList<AttendanceRollMember> members)
+    private static void BuildMemberTable(IContainer container, IReadOnlyList<AttendanceRollMember> members, string feeHeaderText)
     {
         container.Table(table =>
         {
@@ -90,23 +92,20 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
                 def.RelativeColumn(4);
                 def.RelativeColumn(1);
                 def.RelativeColumn(1);
-                def.RelativeColumn(1);
             });
 
             table.Header(header =>
             {
                 header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text("Name").Bold().FontSize(9);
-                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text("Attended").Bold().FontSize(9);
-                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text("Rehearsal Fee Paid").Bold().FontSize(9);
-                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text("Annual Fee Paid").Bold().FontSize(9);
+                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text("Present").Bold().FontSize(9);
+                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text(feeHeaderText).Bold().FontSize(9);
             });
 
             foreach (var member in members)
             {
                 table.Cell().Padding(3).Text($"{member.LastName.ToUpperInvariant()}, {member.FirstName}");
-                table.Cell().Padding(3).Element(c => CheckboxCell(c));
-                table.Cell().Padding(3).Element(c => CheckboxCell(c));
-                table.Cell().Padding(3).Element(c => CheckboxCell(c, member.AnnualFeePaid));
+                table.Cell().Padding(3).Element(c => CheckboxCell(c, member.Attended));
+                table.Cell().Padding(3).Element(c => CheckboxCell(c, member.RehearsalFeePaid));
             }
         });
     }

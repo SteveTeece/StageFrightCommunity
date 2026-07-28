@@ -196,6 +196,28 @@ Because US2 and US3 each modify the same two core files (`AttendanceRollService.
 
 ---
 
+---
+
+## Phase 7: Correction — 2026-07-28 (Annual Fee Paid removed; real attendance/fee-paid state; point-in-time membership; fee-amount header)
+
+**Purpose**: The Phase 3-6 implementation above did not match the actual requirement — see spec.md's "Correction" clarification session, research.md Decisions 5, 8-10, and the corresponding rewrites of data-model.md and contracts/attendance-roll-contract.md. This phase corrects it.
+
+- [X] T026 Rewrite spec.md, research.md, data-model.md, contracts/attendance-roll-contract.md, and quickstart.md to describe the corrected behavior (point-in-time active membership, real "Present"/fee-paid state, removed Annual Fee Paid column, fee-amount column heading)
+- [X] T027 [P] Update `src/StageFright.Core/Modules/Rehearsals/AttendanceRollMember.cs`: remove `AnnualFeePaid`; add `bool Attended { get; init; }` and `bool RehearsalFeePaid { get; init; }`
+- [X] T028 [P] Update `src/StageFright.Core/Modules/Rehearsals/AttendanceRollData.cs`: add `decimal AttendanceFeeAmount { get; init; }`
+- [X] T029 [P] Update `src/StageFright.Core/Modules/Rehearsals/IAttendanceRollService.cs` XML doc to describe point-in-time membership and real Present/RehearsalFeePaid computation
+- [X] T030 Rewrite `src/StageFright.Core/Modules/Rehearsals/AttendanceRollService.cs`: replace `IMemberService` dependency with `IMemberRepository` (call `GetActiveAsOfAsync(rehearsal.Date, ct)` instead of `GetByStatusAsync(MemberStatus.Active, ct)`); add `IAttendanceRepository` dependency (`GetByRehearsalAsync(rehearsalId, ct)`, indexed by `MemberId`, to populate `Attended`); add `ISettingsRepository` dependency (`GetAsync(ct)` for `AttendanceFeeAmount`); replace `IsCurrentYearAnnualFeePaidAsync` with `IsRehearsalFeePaidAsync(memberId, rehearsalId, ct)` per data-model.md/research.md Decision 5 — depends on T027, T028
+- [X] T031 Update `src/StageFright.Reports/Rendering/AttendanceRollPdfRenderer.cs`: drop the fourth "Annual Fee Paid" column; rename "Attended" header to "Present" (checked per `m.Attended`); replace "Rehearsal Fee Paid" header text with `data.AttendanceFeeAmount.ToString("C0")` (checked per `m.RehearsalFeePaid`) — depends on T027, T028
+- [X] T032 [P] Rework `tests/StageFright.Core.Tests/Modules/Rehearsals/AttendanceRollServiceTests.cs`: replace Annual-Fee-Paid cases with Present/RehearsalFeePaid cases (not-yet-recorded → both blank; attended+paid → both checked; attended+marked-unpaid → Present checked/fee unchecked; absent/no-record → both unchecked); replace active-member mocking with `IMemberRepository.GetActiveAsOfAsync` mocking, including a case where a member's status changed after the rehearsal date
+- [X] T033 [P] Update `tests/StageFright.Reports.Tests/AttendanceRollPdfRendererTests.cs` test data construction for the new `AttendanceRollMember`/`AttendanceRollData` shape (no `AnnualFeePaid`, add `Attended`/`RehearsalFeePaid`/`AttendanceFeeAmount`)
+- [X] T034 [P] Rework the `V3_RehearsalAttendanceTests.cs` integration test that seeded Annual-Fee GL data into one that seeds a real `AttendanceRecord` and a real per-rehearsal `Attendance`-type `Fee` (paid and marked-unpaid cases) and asserts `Attended`/`RehearsalFeePaid` end-to-end
+- [X] T035 Run `dotnet build` and the full `dotnet test` suite from the repo root; fix any failures surfaced by T027-T034
+- [X] T036 Update the success-criteria list in spec.md (already rewritten in T026) to match verification performed in T035
+- [X] T037 Fix `src/StageFright.Data/Repositories/MemberRepository.cs`'s `GetActiveAsOfAsync`: a real integration-test failure (T035) surfaced that the existing query only matched members whose *current* status is Active, silently excluding a member who was active as of the given date but has since gone inactive — corrected to `(Status=Active AND ActivateDate <= date) OR (Status=Inactive AND ActivateDate <= date AND InactivateDate > date)`; see research.md Decision 8's correction note
+- [X] T038 [P] Add `GetActiveAsOfAsync_ReturnsMember_WhenInactivatedAfterDate` to `tests/StageFright.Data.Tests/Repositories/MemberRepositoryIntegrationTests.cs` covering the branch fixed in T037; confirmed all four pre-existing `GetActiveAsOfAsync` tests still pass unchanged
+
+---
+
 ## Notes
 
 - [P] tasks = different files, no dependencies

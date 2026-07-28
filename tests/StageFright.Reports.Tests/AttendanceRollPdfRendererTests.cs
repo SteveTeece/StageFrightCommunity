@@ -16,14 +16,16 @@ public class AttendanceRollPdfRendererTests
     {
         RehearsalDate = new DateTime(2026, 6, 15, 0, 0, 0, DateTimeKind.Utc),
         RehearsalTime = TimeSpan.FromHours(19),
+        AttendanceFeeAmount = 5m,
         Members = members
     };
 
-    private static AttendanceRollMember AMember(string firstName, string lastName, bool annualFeePaid = false) => new()
+    private static AttendanceRollMember AMember(string firstName, string lastName, bool attended = false, bool rehearsalFeePaid = false) => new()
     {
         FirstName = firstName,
         LastName = lastName,
-        AnnualFeePaid = annualFeePaid
+        Attended = attended,
+        RehearsalFeePaid = rehearsalFeePaid
     };
 
     [Fact]
@@ -59,11 +61,11 @@ public class AttendanceRollPdfRendererTests
     }
 
     [Fact]
-    public void Render_ReturnsNonEmptyByteArray_ForMixOfAnnualFeePaidStatuses()
+    public void Render_ReturnsNonEmptyByteArray_ForMixOfPresentAndFeePaidStatuses()
     {
         var data = MakeRoll(
-            AMember("Alice", "Anderson", annualFeePaid: true),
-            AMember("Bob", "Baker", annualFeePaid: false));
+            AMember("Alice", "Anderson", attended: true, rehearsalFeePaid: true),
+            AMember("Bob", "Baker", attended: true, rehearsalFeePaid: false));
 
         var bytes = _renderer.Render(data, "Test Choir");
 

@@ -24,15 +24,19 @@ public interface IAttendanceRollService
 
 **Postconditions**:
 - Returns an `AttendanceRollData` whose `Members` list contains exactly the members returned by
-  `IMemberService.GetByStatusAsync(MemberStatus.Active)` at call time (FR-002), ordered by
-  `LastName` then `FirstName` (FR-004), each with `AnnualFeePaid` computed per the rule in
-  data-model.md / research.md Decision 5 (FR-007).
-- Creates, updates, or deletes no `Member`, `Rehearsal`, `Fee`, `Payment`, `Transaction`, or GL
-  record — this call has no side effects (spec Assumptions).
+  `IMemberRepository.GetActiveAsOfAsync(rehearsal.Date)` at call time (FR-002 — corrected
+  2026-07-28 to a point-in-time snapshot, not a live "active right now" query), ordered by
+  `LastName` then `FirstName` (FR-004), each with `Attended` (FR-005) and `RehearsalFeePaid`
+  (FR-006) computed per the rules in data-model.md / research.md Decision 5.
+  `AttendanceRollData.AttendanceFeeAmount` reflects the current `Settings.AttendanceFee` value at
+  call time (FR-006; research.md Decision 9).
+- Creates, updates, or deletes no `Member`, `Rehearsal`, `AttendanceRecord`, `Fee`, `Payment`,
+  `Transaction`, or GL record — this call has no side effects (spec Assumptions).
 - Idempotent and side-effect-free: calling it twice in a row for the same rehearsal with no
-  intervening data changes returns equivalent data both times; calling it after data changes (a
-  member becomes inactive, a payment is recorded) reflects the new state, not a cached one (spec
-  Assumptions: "reflects the active member list at the time of that later generation").
+  intervening data changes returns equivalent data both times; calling it after data changes
+  (attendance is recorded, a fee payment is settled) reflects the new state, not a cached one (spec
+  Assumptions). Roll *membership* itself only changes if the point-in-time active-as-of-date result
+  changes — it is not re-derived from today's roster.
 
 **Failure modes**:
 - `EntityNotFoundException("Rehearsal", rehearsalId, nameof(GenerateAsync))` — `rehearsalId` does
@@ -86,8 +90,9 @@ blank printable roll" rule (FR-013) internally:
 
 - `IReportProvider` (`StageFright.Reports/Registry/IReportProvider.cs`) — unchanged; this feature
   deliberately does not implement or register against this contract (research.md Decision 1).
-- `IMemberService`, `IMemberBalanceService`, `IRehearsalRepository`, `IFeeRepository` — no
-  signature changes; `AttendanceRollService` only consumes their existing, published methods
-  (`GetByStatusAsync`, `GetOutstandingFeesAsync`, `GetByIdAsync`, `AnnualFeeExistsAsync`).
+- `IMemberRepository`, `IAttendanceRepository`, `IMemberBalanceService`, `IRehearsalRepository`,
+  `IFeeRepository`, `ISettingsRepository` — no signature changes; `AttendanceRollService` only
+  consumes their existing, published methods (`GetActiveAsOfAsync`, `GetByRehearsalAsync`,
+  `GetOutstandingFeesAsync`, `GetByIdAsync`, `GetByMemberAsync`, `GetAsync`).
 - `IPdfReportRenderer`/`PdfReportRenderer` — unchanged; `IAttendanceRollPdfRenderer` is a new,
   separate sibling contract, not a modification of the generic reports renderer.

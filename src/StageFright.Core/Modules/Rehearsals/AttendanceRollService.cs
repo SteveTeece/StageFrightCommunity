@@ -8,20 +8,26 @@ namespace StageFright.Core.Modules.Rehearsals;
 public class AttendanceRollService : IAttendanceRollService
 {
     private readonly IRehearsalRepository _rehearsalRepo;
-    private readonly IMemberService _memberService;
+    private readonly IMemberRepository _memberRepo;
+    private readonly IAttendanceRepository _attendanceRepo;
     private readonly IMemberBalanceService _memberBalanceService;
     private readonly IFeeRepository _feeRepo;
+    private readonly ISettingsRepository _settingsRepo;
 
     public AttendanceRollService(
         IRehearsalRepository rehearsalRepo,
-        IMemberService memberService,
+        IMemberRepository memberRepo,
+        IAttendanceRepository attendanceRepo,
         IMemberBalanceService memberBalanceService,
-        IFeeRepository feeRepo)
+        IFeeRepository feeRepo,
+        ISettingsRepository settingsRepo)
     {
         _rehearsalRepo = rehearsalRepo;
-        _memberService = memberService;
+        _memberRepo = memberRepo;
+        _attendanceRepo = attendanceRepo;
         _memberBalanceService = memberBalanceService;
         _feeRepo = feeRepo;
+        _settingsRepo = settingsRepo;
     }
 
     public async Task<AttendanceRollData> GenerateAsync(Guid rehearsalId, CancellationToken ct = default)
@@ -29,38 +35,45 @@ public class AttendanceRollService : IAttendanceRollService
         var rehearsal = await _rehearsalRepo.GetByIdAsync(rehearsalId, ct)
             ?? throw new EntityNotFoundException("Rehearsal", rehearsalId, nameof(GenerateAsync));
 
-        var activeMembers = (await _memberService.GetByStatusAsync(MemberStatus.Active, ct))
+        var activeMembers = (await _memberRepo.GetActiveAsOfAsync(rehearsal.Date, ct))
             .OrderBy(m => m.LastName).ThenBy(m => m.FirstName)
             .ToList();
+
+        var attendanceByMember = (await _attendanceRepo.GetByRehearsalAsync(rehearsalId, ct))
+            .ToDictionary(a => a.MemberId, a => a.Attended);
 
         var members = new List<AttendanceRollMember>();
         foreach (var member in activeMembers)
         {
+            var attended = attendanceByMember.TryGetValue(member.Id, out var wasAttended) && wasAttended;
             members.Add(new AttendanceRollMember
             {
                 FirstName = member.FirstName,
                 LastName = member.LastName,
-                AnnualFeePaid = await IsCurrentYearAnnualFeePaidAsync(member.Id, ct)
+                Attended = attended,
+                RehearsalFeePaid = await IsRehearsalFeePaidAsync(member.Id, rehearsalId, ct)
             });
         }
+
+        var settings = await _settingsRepo.GetAsync(ct);
 
         return new AttendanceRollData
         {
             RehearsalDate = rehearsal.Date,
             RehearsalTime = rehearsal.Time,
+            AttendanceFeeAmount = settings?.AttendanceFee ?? 0m,
             Members = members
         };
     }
 
-    private async Task<bool> IsCurrentYearAnnualFeePaidAsync(Guid memberId, CancellationToken ct)
+    private async Task<bool> IsRehearsalFeePaidAsync(Guid memberId, Guid rehearsalId, CancellationToken ct)
     {
-        var currentYear = DateTime.Today.Year;
-
-        var hasCurrentYearAnnualFee = await _feeRepo.AnnualFeeExistsAsync(memberId, currentYear, ct);
-        if (!hasCurrentYearAnnualFee)
+        var memberFees = await _feeRepo.GetByMemberAsync(memberId, ct);
+        var fee = memberFees.FirstOrDefault(f => f.FeeType == FeeType.Attendance && f.RehearsalId == rehearsalId);
+        if (fee is null)
             return false;
 
         var outstanding = await _memberBalanceService.GetOutstandingFeesAsync(memberId, ct);
-        return !outstanding.Any(f => f.FeeType == FeeType.Annual && f.FeeDate.Year == currentYear);
+        return !outstanding.Any(f => f.FeeId == fee.Id);
     }
 }
