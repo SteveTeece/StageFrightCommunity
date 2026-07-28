@@ -20,10 +20,9 @@ public class AttendanceRollServiceTests : TestBase
     private readonly IAttendanceRepository _attendanceRepo = Substitute.For<IAttendanceRepository>();
     private readonly IMemberBalanceService _memberBalanceService = Substitute.For<IMemberBalanceService>();
     private readonly IFeeRepository _feeRepo = Substitute.For<IFeeRepository>();
-    private readonly ISettingsRepository _settingsRepo = Substitute.For<ISettingsRepository>();
 
     private AttendanceRollService CreateService() =>
-        new(_rehearsalRepo, _memberRepo, _attendanceRepo, _memberBalanceService, _feeRepo, _settingsRepo);
+        new(_rehearsalRepo, _memberRepo, _attendanceRepo, _memberBalanceService, _feeRepo);
 
     private void SetupSingleMember(Rehearsal rehearsal, Member member)
     {
@@ -142,25 +141,6 @@ public class AttendanceRollServiceTests : TestBase
 
         Assert.Equal(rehearsal.Date, result.RehearsalDate);
         Assert.Equal(rehearsal.Time, result.RehearsalTime);
-    }
-
-    [Fact]
-    public async Task GenerateAsync_Copies_AttendanceFeeAmount_FromSettings()
-    {
-        var svc = CreateService();
-        var rehearsal = ARehearsal(Guid.NewGuid());
-
-        _rehearsalRepo.GetByIdAsync(rehearsal.Id, Arg.Any<CancellationToken>()).Returns(rehearsal);
-        _memberRepo.GetActiveAsOfAsync(rehearsal.Date, Arg.Any<CancellationToken>())
-            .Returns(new List<Member>());
-        _attendanceRepo.GetByRehearsalAsync(rehearsal.Id, Arg.Any<CancellationToken>())
-            .Returns(new List<AttendanceRecord>());
-        _settingsRepo.GetAsync(Arg.Any<CancellationToken>())
-            .Returns(new Settings { Id = Guid.NewGuid(), AttendanceFee = 5m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow });
-
-        var result = await svc.GenerateAsync(rehearsal.Id, Ct);
-
-        Assert.Equal(5m, result.AttendanceFeeAmount);
     }
 
     // --- Attended computation ---

@@ -286,26 +286,32 @@ cover the newly-supported branch.
   rehearsal would silently vanish from a reprinted roll), for the sake of avoiding a small, safe,
   additive query fix with no conflicting existing test coverage.
 
-### 9. Fee column heading: format as zero-decimal currency, computed once per render
+### 9. Fee column heading: static "Pd" label (superseded a zero-decimal currency amount)
 
-**Decision**: `AttendanceRollData` gains a `decimal AttendanceFeeAmount` field, populated by
-`AttendanceRollService` from `ISettingsRepository.GetAsync()` (a new dependency on this service).
-`AttendanceRollPdfRenderer` formats it once per `Render()` call as
-`AttendanceFeeAmount.ToString("C0")` (culture-default currency symbol, zero decimal places, e.g.
-`"$5"`) and uses that string as the fee column's header text instead of "Rehearsal Fee Paid".
+**Decision (corrected again, same day)**: The fee column's header is the fixed string `"Pd"`
+(a `private const string FeeHeaderText` in `AttendanceRollPdfRenderer`), not a computed value.
+`AttendanceRollData.AttendanceFeeAmount` and `AttendanceRollService`'s `ISettingsRepository`
+dependency, added for the superseded version of this decision, were removed outright — nothing
+else in this feature reads the configured attendance fee amount.
 
-**Rationale**: `"C0"` directly produces the "$2" / "$5" zero-decimal, symbol-prefixed format called
-for by the correction, using the same culture-default currency formatting `ToString("C")` already
-uses elsewhere in the UI layer (e.g. `AttendanceGrid.razor`), just with the decimal count pinned to
-zero. Computing it once in the renderer (rather than per-member) is correct because the amount is
-roll-wide, not per-member — it's a Settings-level configuration value, not something that varies by
-row.
+**Superseded original decision** (kept for context — no longer implemented): `AttendanceRollData`
+originally gained a `decimal AttendanceFeeAmount` field, populated by `AttendanceRollService` from
+`ISettingsRepository.GetAsync()`, and `AttendanceRollPdfRenderer` formatted it once per `Render()`
+call as `AttendanceFeeAmount.ToString("C0")` (e.g. `"$5"`) for the header text. This was replaced
+with the static "Pd" label per direct follow-up feedback, before this correction had been used in
+production — there was no migration concern, just a straightforward revert-and-simplify.
+
+**Rationale**: A static label needs no data dependency at all, so the `ISettingsRepository`
+injection this service briefly carried is removed along with the field, keeping
+`AttendanceRollService`'s dependency list exactly as small as its actual read set (rehearsal,
+point-in-time membership, attendance records, fees/GL balance) — no unused plumbing left behind,
+per this codebase's "if you're certain something is unused, delete it completely" convention.
 
 **Alternatives considered**:
-- **Extract a shared currency-formatting helper now** — rejected as premature: this is the first
-  zero-decimal currency format needed anywhere in the codebase (the existing report-provider
-  `FormatCurrency` helpers are two-decimal, `"F2"`, with no `$` symbol at all); a single `ToString("C0")`
-  call inline does not yet justify a new shared utility for one call site.
+- **Keep `AttendanceFeeAmount` on the DTO in case a future consumer needs it** — rejected:
+  speculative, unused fields for hypothetical future requirements are explicitly against this
+  project's conventions; if a future feature needs it, it can be re-added then with a real
+  consumer driving the design.
 
 ### 10. `AnnualFeePaid` and its supporting fields/methods: removed, not deprecated
 

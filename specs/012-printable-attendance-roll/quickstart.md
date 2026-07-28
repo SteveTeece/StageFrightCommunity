@@ -22,9 +22,6 @@ not an implementation spec (see tasks.md, generated separately by `/speckit-task
   - Enough active members to exceed one column's capacity on a page (to verify FR-009 overflow —
     see the `RowsPerColumn` constant in `AttendanceRollPdfRenderer` for the exact threshold once
     implemented).
-  - A non-zero `Settings.AttendanceFee` value configured (to verify the fee column's header shows
-    the correct amount).
-
 The bundled `DebugDataSeeder` (`src/StageFright.App/Seeding/DebugDataSeeder.cs`) already seeds
 demo members with a mix of fee/payment states and can be used as a starting point instead of
 manual data entry, if it covers these cases.
@@ -53,8 +50,9 @@ Run the app (`dotnet run --project src/StageFright.App/`) and navigate to **Rehe
 1. Find the not-yet-recorded rehearsal in the list; click its **Print Roll** action.
 2. **Expect**: a PDF opens (via the OS's default PDF viewer) listing every member active as of
    that rehearsal's date exactly once, sorted alphabetically by surname, each with blank
-   "Present" and fee checkbox boxes, and the fee column's header showing the configured
-   attendance fee (e.g. "$5").
+   "Present" and fee checkbox boxes, and the fee column's header showing the static "Pd" label,
+   centered over its checkbox. **Expect**: the header block shows only the organization name,
+   "Attendance Roll" title, and rehearsal date/time — no "Generated: <timestamp>" line.
 3. **Expect**: no archived/inactive member appears anywhere on the roll; a member who was
    inactive as of that rehearsal's date but is active today does not appear, and vice versa.
 

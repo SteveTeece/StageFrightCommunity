@@ -28,8 +28,6 @@ public interface IAttendanceRollService
   2026-07-28 to a point-in-time snapshot, not a live "active right now" query), ordered by
   `LastName` then `FirstName` (FR-004), each with `Attended` (FR-005) and `RehearsalFeePaid`
   (FR-006) computed per the rules in data-model.md / research.md Decision 5.
-  `AttendanceRollData.AttendanceFeeAmount` reflects the current `Settings.AttendanceFee` value at
-  call time (FR-006; research.md Decision 9).
 - Creates, updates, or deletes no `Member`, `Rehearsal`, `AttendanceRecord`, `Fee`, `Payment`,
   `Transaction`, or GL record — this call has no side effects (spec Assumptions).
 - Idempotent and side-effect-free: calling it twice in a row for the same rehearsal with no
@@ -91,8 +89,8 @@ blank printable roll" rule (FR-013) internally:
 - `IReportProvider` (`StageFright.Reports/Registry/IReportProvider.cs`) — unchanged; this feature
   deliberately does not implement or register against this contract (research.md Decision 1).
 - `IMemberRepository`, `IAttendanceRepository`, `IMemberBalanceService`, `IRehearsalRepository`,
-  `IFeeRepository`, `ISettingsRepository` — no signature changes; `AttendanceRollService` only
-  consumes their existing, published methods (`GetActiveAsOfAsync`, `GetByRehearsalAsync`,
-  `GetOutstandingFeesAsync`, `GetByIdAsync`, `GetByMemberAsync`, `GetAsync`).
+  `IFeeRepository` — no signature changes; `AttendanceRollService` only consumes their existing,
+  published methods (`GetActiveAsOfAsync`, `GetByRehearsalAsync`, `GetOutstandingFeesAsync`,
+  `GetByIdAsync`, `GetByMemberAsync`). `ISettingsRepository` is not a dependency of this feature.
 - `IPdfReportRenderer`/`PdfReportRenderer` — unchanged; `IAttendanceRollPdfRenderer` is a new,
   separate sibling contract, not a modification of the generic reports renderer.

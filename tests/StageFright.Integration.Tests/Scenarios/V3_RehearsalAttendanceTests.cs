@@ -332,8 +332,6 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         var absentRow = result.Members.Single(m => m.FirstName == "Absent");
         Assert.False(absentRow.Attended);
         Assert.False(absentRow.RehearsalFeePaid);
-
-        Assert.Equal(10m, result.AttendanceFeeAmount);
     }
 
     [Fact]
@@ -368,8 +366,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         var attendanceRepo = new AttendanceRepository(_db);
         var memberBalanceSvc = BuildMemberBalanceService();
         var feeRepo = new FeeRepository(_db);
-        var settingsRepo = new SettingsRepository(_db);
-        return new AttendanceRollService(rehearsalRepo, memberRepo, attendanceRepo, memberBalanceSvc, feeRepo, settingsRepo);
+        return new AttendanceRollService(rehearsalRepo, memberRepo, attendanceRepo, memberBalanceSvc, feeRepo);
     }
 
     private MemberBalanceService BuildMemberBalanceService()

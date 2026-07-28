@@ -218,6 +218,20 @@ Because US2 and US3 each modify the same two core files (`AttendanceRollService.
 
 ---
 
+## Phase 8: Follow-up UI/report polish (same-day, post-T038)
+
+**Purpose**: Direct user feedback on the live rendered output after Phase 7 landed — the Rehearsals grid's "Print Roll" button, column widths, header alignment, and the fee column's heading all needed adjustment once actually seen rendered.
+
+- [X] T039 Wrap the "Record Attendance"/"Recorded" + "Print Roll" controls in `src/StageFright.UI/Pages/Rehearsals/RehearsalList.razor`'s Actions column in a `flex` container (`d-flex flex-nowrap align-items-center gap-1`, `text-nowrap` on buttons) — the fixed-width column let the longer "Record Attendance" label crowd out "Print Roll" on unrecorded rows, though it was always present in the DOM (per the existing `PrintRollButton_Renders_ForEveryRow` bUnit test)
+- [X] T040 Tune the Rehearsals grid's Actions/Notes column widths (`RehearsalList.razor`) across several rounds of direct visual feedback: 220px/flex (button wrap) → 300px/160px (Actions too wide) → 260px/220px (still visible slack) → 180px/300px (final: Actions sized to just fit the buttons, remaining space given to Notes)
+- [X] T041 Center the "Present" and fee column header labels in `AttendanceRollPdfRenderer.BuildMemberTable` (`.AlignCenter()` added to both header `Text()` calls) — they were left-aligned while the checkbox cells below are centered, so the labels sat off to the side of the boxes they describe
+- [X] T042 Remove the "Generated: <timestamp>" line from `AttendanceRollPdfRenderer.BuildHeader`; replace the fee column's currency-amount heading (`data.AttendanceFeeAmount.ToString("C0")`, e.g. "$5") with a static `"Pd"` (Paid) label per direct follow-up feedback
+- [X] T043 Remove the now-unused `AttendanceRollData.AttendanceFeeAmount` field and `AttendanceRollService`'s `ISettingsRepository` dependency (nothing reads the fee amount anymore after T042) — update `AttendanceRollServiceTests.cs` (drop the settings-copy test and `_settingsRepo` field), `AttendanceRollPdfRendererTests.cs` (`MakeRoll` no longer sets `AttendanceFeeAmount`), and `V3_RehearsalAttendanceTests.cs` (`BuildAttendanceRollService` helper, drop the `AttendanceFeeAmount` assertion) accordingly
+- [X] T044 Update spec.md, research.md, data-model.md, contracts/attendance-roll-contract.md, and quickstart.md to describe the corrected behavior (static "Pd" fee header, no Settings dependency, no "Generated" line, centered checkbox headers)
+- [X] T045 Run `dotnet build` and the full `dotnet test` suite from the repo root; fix any failures surfaced by T039-T043
+
+---
+
 ## Notes
 
 - [P] tasks = different files, no dependencies

@@ -16,7 +16,6 @@ public class AttendanceRollPdfRendererTests
     {
         RehearsalDate = new DateTime(2026, 6, 15, 0, 0, 0, DateTimeKind.Utc),
         RehearsalTime = TimeSpan.FromHours(19),
-        AttendanceFeeAmount = 5m,
         Members = members
     };
 

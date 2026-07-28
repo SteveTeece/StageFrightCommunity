@@ -12,22 +12,19 @@ public class AttendanceRollService : IAttendanceRollService
     private readonly IAttendanceRepository _attendanceRepo;
     private readonly IMemberBalanceService _memberBalanceService;
     private readonly IFeeRepository _feeRepo;
-    private readonly ISettingsRepository _settingsRepo;
 
     public AttendanceRollService(
         IRehearsalRepository rehearsalRepo,
         IMemberRepository memberRepo,
         IAttendanceRepository attendanceRepo,
         IMemberBalanceService memberBalanceService,
-        IFeeRepository feeRepo,
-        ISettingsRepository settingsRepo)
+        IFeeRepository feeRepo)
     {
         _rehearsalRepo = rehearsalRepo;
         _memberRepo = memberRepo;
         _attendanceRepo = attendanceRepo;
         _memberBalanceService = memberBalanceService;
         _feeRepo = feeRepo;
-        _settingsRepo = settingsRepo;
     }
 
     public async Task<AttendanceRollData> GenerateAsync(Guid rehearsalId, CancellationToken ct = default)
@@ -55,13 +52,10 @@ public class AttendanceRollService : IAttendanceRollService
             });
         }
 
-        var settings = await _settingsRepo.GetAsync(ct);
-
         return new AttendanceRollData
         {
             RehearsalDate = rehearsal.Date,
             RehearsalTime = rehearsal.Time,
-            AttendanceFeeAmount = settings?.AttendanceFee ?? 0m,
             Members = members
         };
     }
