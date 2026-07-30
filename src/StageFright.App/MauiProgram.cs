@@ -168,6 +168,8 @@ public static class MauiProgram
         // Rehearsals module (Phase 5)
         services.AddScoped<IRehearsalService, RehearsalService>();
         services.AddScoped<IAttendanceService, AttendanceService>();
+        services.AddScoped<IAttendanceRollService, AttendanceRollService>();
+        services.AddScoped<IAttendanceRollPdfRenderer, AttendanceRollPdfRenderer>();
 
         // Events module (Phase 12)
         services.AddScoped<IEventTypeService, EventTypeService>();
