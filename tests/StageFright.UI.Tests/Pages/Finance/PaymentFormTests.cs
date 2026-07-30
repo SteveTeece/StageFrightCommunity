@@ -19,7 +19,7 @@ namespace StageFright.UI.Tests.Pages.Finance;
 /// - Outstanding-fees grid renders, drives Amount auto-calc, and gates Save (FR-006/FR-007/FR-013)
 /// - Submit calls PaymentService.RecordAsync
 /// </summary>
-public class PaymentFormTests : BunitContext
+public class PaymentFormTests : RadzenGridTestContext
 {
     private readonly IPaymentService _paymentService = Substitute.For<IPaymentService>();
     private readonly IMemberService _memberService = Substitute.For<IMemberService>();
