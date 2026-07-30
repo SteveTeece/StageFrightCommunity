@@ -1,7 +1,8 @@
 {
   "workflow": "speckit",
-  "specName": "Outstanding Balances Tile",
-  "branch": "",
+  "specName": "004-outstanding-balances-tile",
+  "branch": "004-outstanding-balances-tile",
+  "selectedAt": "2026-07-30T09:16:37.605Z",
   "currentStep": "specify",
   "status": "completed",
   "history": [
