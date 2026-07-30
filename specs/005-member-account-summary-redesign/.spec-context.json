@@ -1,0 +1,17 @@
+{
+  "workflow": "speckit",
+  "specName": "Member Account Summary Redesign",
+  "branch": "",
+  "currentStep": "specify",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-30T09:17:09.921Z"
+    }
+  ],
+  "telemetryInstanceId": "d39cf97c-d797-482d-8e26-8914ab94d395"
+}

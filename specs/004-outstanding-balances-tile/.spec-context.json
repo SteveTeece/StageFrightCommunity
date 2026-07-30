@@ -1,0 +1,18 @@
+{
+  "workflow": "speckit",
+  "specName": "004-outstanding-balances-tile",
+  "branch": "004-outstanding-balances-tile",
+  "selectedAt": "2026-07-30T09:16:37.605Z",
+  "currentStep": "specify",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-30T09:16:57.853Z"
+    }
+  ],
+  "telemetryInstanceId": "87f0813a-edd2-4e52-8919-4a0b2840546e"
+}
