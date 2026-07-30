@@ -3,7 +3,7 @@
   "specName": "Printable Member Attendance Roll",
   "branch": "012-printable-attendance-roll",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -218,7 +218,15 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-07-27T11:47:21.646Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-30T09:20:58.390Z"
     }
   ],
-  "currentTask": "T025"
+  "currentTask": "T025",
+  "telemetryInstanceId": "e5dcb187-d1f8-48d1-b2c6-286cb89118f4"
 }
