@@ -24,7 +24,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     private static readonly Guid ExpenseCatId = Guid.NewGuid();
     private static readonly Guid MemberId = Guid.NewGuid();
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -71,7 +71,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
         await _db.SaveChangesAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();

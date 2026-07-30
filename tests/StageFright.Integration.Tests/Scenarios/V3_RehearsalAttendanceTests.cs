@@ -24,7 +24,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
     private static readonly Guid CashAccountId = new("00000000-0000-0000-0000-000000000001");
     private static readonly Guid MemberReceivableAccountId = new("00000000-0000-0000-0000-000000000002");
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -67,7 +67,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         await _db.SaveChangesAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();

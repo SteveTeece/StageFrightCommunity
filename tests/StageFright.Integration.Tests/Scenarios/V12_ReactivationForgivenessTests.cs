@@ -25,7 +25,7 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
 
     private static readonly int CurrentYear = DateTime.UtcNow.Year;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -46,7 +46,7 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
         await _db.SaveChangesAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();
