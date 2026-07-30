@@ -23,7 +23,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
     // Test-only income account seeded in InitializeAsync
     private static readonly Guid IncomeAccountId = new("00000000-0000-0000-0000-000000000010");
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -46,7 +46,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         _sut = new GLRepository(_db);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();

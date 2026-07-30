@@ -19,7 +19,7 @@ public sealed class StartupSequenceTests : IAsyncLifetime
 {
     private StageFrightDbContext _db = null!;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -29,7 +29,7 @@ public sealed class StartupSequenceTests : IAsyncLifetime
         await _db.Database.MigrateAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();
