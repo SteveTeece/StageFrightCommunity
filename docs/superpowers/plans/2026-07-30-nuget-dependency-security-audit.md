@@ -67,43 +67,61 @@ routine staleness, included because "updates" were in scope of the original ask,
 
 ### Stage 1 — Fix the actual vulnerability (do first, isolated, low risk)
 
-- [ ] Bump `bunit` in `tests/StageFright.UI.Tests/StageFright.UI.Tests.csproj` from `2.7.2` →
+- [x] Bump `bunit` in `tests/StageFright.UI.Tests/StageFright.UI.Tests.csproj` from `2.7.2` →
       `2.8.6` (latest), which should pull a non-vulnerable `AngleSharp` transitively.
-- [ ] If the resolved `AngleSharp` version is still `< 1.6.0` after that bump, add an explicit
+- [x] If the resolved `AngleSharp` version is still `< 1.6.0` after that bump, add an explicit
       transitive override (`<PackageReference Include="AngleSharp" Version="1.6.0" />`) in that
-      same project only.
-- [ ] Verify: `dotnet list StageFrightCommunity.slnx package --vulnerable --include-transitive`
+      same project only. *(Not needed — bunit 2.8.6 alone resolved AngleSharp clean.)*
+- [x] Verify: `dotnet list StageFrightCommunity.slnx package --vulnerable --include-transitive`
       reports zero results.
-- [ ] Verify: `dotnet test tests/StageFright.UI.Tests/` green (409 tests currently) — confirms no
+- [x] Verify: `dotnet test tests/StageFright.UI.Tests/` green (409 tests currently) — confirms no
       bUnit API breakage from the minor version bump.
+
+Committed 2026-07-30 (f53d728).
 
 ### Stage 2 — Safe patch-level bumps (mechanical, low risk, broad)
 
-- [ ] Bump every `10.0.9` → `10.0.10` Microsoft.* direct reference across all 12 `.csproj` files.
-- [ ] Bump `QuestPDF` 2026.6.0 → 2026.7.2 in `StageFright.Reports` (re-check QuestPDF's
+- [x] Bump every `10.0.9` → `10.0.10` Microsoft.* direct reference across all 12 `.csproj` files.
+- [x] Bump `QuestPDF` 2026.6.0 → 2026.7.2 in `StageFright.Reports` (re-check QuestPDF's
       Community/Commercial license terms haven't changed for the new version).
-- [ ] Bump `SQLitePCLRaw.bundle_e_sqlite3`/`core` → 3.0.5 in Data/Data.Tests/TestPlugin.
-- [ ] Bump `Microsoft.NET.Test.Sdk` → 18.8.1 across all 5 test projects.
-- [ ] Verify: full `dotnet build` + `dotnet test` from repo root (all 5 test projects, ~1352
+- [x] Bump `SQLitePCLRaw.bundle_e_sqlite3`/`core` → 3.0.5 in Data/Data.Tests/TestPlugin. Also
+      bumped it in `Integration.Tests` (not originally enumerated here but has the same direct
+      reference — leaving it behind would recreate the exact drift problem this stage exists to
+      fix).
+- [x] Bump `Microsoft.NET.Test.Sdk` → 18.8.1 across all 5 test projects.
+- [x] Verify: full `dotnet build` + `dotnet test` from repo root (all 5 test projects, ~1352
       tests), per this repo's CLAUDE.md mandatory build/test verification rule.
+
+Committed 2026-07-30 (b04c64c). One `EventFormTests.DoesNotRender_FeeOrPaidFields` failure during
+the full run was the known pre-existing bUnit GUID-substring flake, confirmed by isolated re-run.
 
 ### Stage 3 — Higher-risk major-version bumps (evaluate and test individually — none are CVE-flagged, not urgent)
 
-- [ ] `NSubstitute` 5.3.0 → 6.0.0 across all 5 test projects — check changelog for mocking-API
-      breaking changes first.
-- [ ] `Radzen.Blazor` 10.4.9 → 11.1.9 in `StageFright.UI` — check breaking-changes doc; this is a
-      UI-rendering component library used across many pages, so per CLAUDE.md's UI-verification
-      rule this needs a manual browser smoke-test after bumping, not just green tests.
-- [ ] `Microsoft.Maui.Controls` / `Microsoft.AspNetCore.Components.WebView.Maui` 10.0.71 → 10.0.90
+- [x] `NSubstitute` 5.3.0 → 6.0.0 across all 5 test projects — check changelog for mocking-API
+      breaking changes first. No breaking-API usage found in this repo; build + full test suite
+      (1352 tests) green. Committed 2026-07-30 (4f4abfc).
+- [ ] `Radzen.Blazor` 10.4.9 → 11.1.9 in `StageFright.UI` — **attempted and reverted.** Compiles
+      clean, but `RadzenDataGrid` now issues a new JS interop call (`Radzen.createDataGrid`) from
+      `OnAfterRenderAsync` that bUnit's `BunitJSInterop` doesn't mock, failing 99 of 409
+      `StageFright.UI.Tests` (every test that renders a grid). 14 production components use
+      `RadzenDataGrid` per CLAUDE.md's data-grid standard, so fixing this properly means adding JS
+      interop setups across every affected bUnit test file — a broad test-infrastructure change,
+      not a version bump. Left at `10.4.9`; needs its own dedicated pass (bUnit JSInterop mock
+      updates) before this can move, plus the manual browser smoke-test called for below.
+- [x] `Microsoft.Maui.Controls` / `Microsoft.AspNetCore.Components.WebView.Maui` 10.0.71 → 10.0.90
       in `StageFright.App` — the biggest compatibility risk in the audit, since it also moves
       `Microsoft.WindowsAppSDK.*` from the `1.8.x` to `2.x.x` major line; may require a matching
       MAUI workload update (`dotnet workload update`) alongside the package bump. Do this in its
       own isolated change with a full manual app run (`dotnet run --project src/StageFright.App/`)
-      before merging.
-- [ ] `Humanizer.Core` / `Microsoft.CodeAnalysis.*` transitive bumps via
+      before merging. **Resolved WindowsAppSDK stayed on `1.8.x`** (no major jump materialized);
+      full build + test suite green; manually launched the app — starts cleanly, dashboard renders
+      correctly end-to-end (verified via screenshot). Committed 2026-07-30 (60d4a1b).
+- [x] `Humanizer.Core` / `Microsoft.CodeAnalysis.*` transitive bumps via
       `Microsoft.EntityFrameworkCore.Design` need no independent action — they'll move when EF
       Core Design itself is bumped in Stage 2, and since it's a dev-time-only tool
-      (`PrivateAssets=all`), there's no shipped-app risk.
+      (`PrivateAssets=all`), there's no shipped-app risk. *(Confirmed: still resolve to
+      `2.14.1`/`3.11.0`/`5.0.0` after the Stage 2 patch bump — EF Core Design's own dependency
+      range didn't move at the patch level. No action taken, per the no-risk rationale above.)*
 
 ### Stage 4 — Backlog, not part of this remediation
 
