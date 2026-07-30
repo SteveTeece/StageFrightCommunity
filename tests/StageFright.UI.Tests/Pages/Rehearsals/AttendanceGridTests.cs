@@ -14,7 +14,7 @@ namespace StageFright.UI.Tests.Pages.Rehearsals;
 /// <summary>
 /// bUnit tests for AttendanceGrid — member rendering, default checkbox state, save behavior, post-save lock.
 /// </summary>
-public class AttendanceGridTests : BunitContext
+public class AttendanceGridTests : RadzenGridTestContext
 {
     private readonly IRehearsalService _rehearsalService = Substitute.For<IRehearsalService>();
     private readonly IAttendanceService _attendanceService = Substitute.For<IAttendanceService>();
