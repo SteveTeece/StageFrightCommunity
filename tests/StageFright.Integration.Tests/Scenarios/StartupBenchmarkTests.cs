@@ -5,7 +5,6 @@ using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Settings;
 using StageFright.Data;
 using StageFright.Data.Repositories;
-using Xunit.Abstractions;
 
 namespace StageFright.Integration.Tests.Scenarios;
 
@@ -31,7 +30,7 @@ public sealed class StartupBenchmarkTests : IAsyncLifetime
         _output = output;
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -41,7 +40,7 @@ public sealed class StartupBenchmarkTests : IAsyncLifetime
         await _db.Database.MigrateAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();

@@ -25,7 +25,7 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
 
     private static readonly Guid IncomeAccountId = Guid.NewGuid();
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -68,7 +68,7 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         await _db.SaveChangesAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();

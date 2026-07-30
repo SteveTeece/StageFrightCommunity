@@ -25,7 +25,7 @@ public sealed class V15_GstBasTests : IAsyncLifetime
     private static readonly Guid ExpenseAccountId = Guid.NewGuid();
     private static readonly DateTime Today = DateTime.UtcNow.Date;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -54,7 +54,7 @@ public sealed class V15_GstBasTests : IAsyncLifetime
         await _db.SaveChangesAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();
