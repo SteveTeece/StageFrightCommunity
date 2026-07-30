@@ -24,7 +24,7 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
     private static readonly DateTime June30 = new(2026, 6, 30, 0, 0, 0, DateTimeKind.Utc);
     private static readonly DateTime July31 = new(2026, 7, 31, 0, 0, 0, DateTimeKind.Utc);
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -46,7 +46,7 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
         _glRepo = new GLRepository(_db);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();

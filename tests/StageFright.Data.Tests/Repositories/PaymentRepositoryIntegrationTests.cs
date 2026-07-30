@@ -20,7 +20,7 @@ public sealed class PaymentRepositoryIntegrationTests : IAsyncLifetime
     private PaymentRepository _sut = null!;
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -33,7 +33,7 @@ public sealed class PaymentRepositoryIntegrationTests : IAsyncLifetime
         _sut = new PaymentRepository(_db, _audit);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();
