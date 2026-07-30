@@ -3,7 +3,7 @@
   "specName": "Split Member Name into First Name and Last Name",
   "branch": "011-member-firstname-lastname",
   "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -25,6 +25,14 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-07-26T01:48:01.441Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-30T09:20:46.186Z"
     }
-  ]
+  ],
+  "telemetryInstanceId": "fb6f3d1d-06e6-4f6f-b2ba-2bd4d1baee2f"
 }
