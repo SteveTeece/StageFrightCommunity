@@ -6,10 +6,10 @@ using StageFright.Core.Exceptions;
 namespace StageFright.Core.Modules.Finance;
 
 /// <summary>
-/// Transfers funds between two bank/cash accounts.
-/// GL pair under a Transfer journal entry: Debit destination / Credit source.
+/// Records Cash on Hand deposited into a bank account.
+/// GL pair under a BankDeposit journal entry: Debit destination bank account / Credit Cash on Hand.
 /// </summary>
-public class AccountTransferService : IAccountTransferService
+public class BankDepositService : IBankDepositService
 {
     private readonly IAccountRepository _accountRepo;
     private readonly IGLRepository _glRepo;
@@ -17,7 +17,7 @@ public class AccountTransferService : IAccountTransferService
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
 
-    public AccountTransferService(
+    public BankDepositService(
         IAccountRepository accountRepo,
         IGLRepository glRepo,
         IJournalEntryRepository journalRepo,
@@ -31,39 +31,36 @@ public class AccountTransferService : IAccountTransferService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task RecordTransferAsync(RecordTransferRequest request, CancellationToken ct = default)
+    public async Task RecordDepositAsync(RecordBankDepositRequest request, CancellationToken ct = default)
     {
         if (request.Amount <= 0m)
             throw new ValidationException(
-                "Transfer amount must be greater than zero.", nameof(Transaction), nameof(RecordTransferAsync));
-
-        if (request.FromAccountId == request.ToAccountId)
-            throw new ValidationException(
-                "The source and destination accounts must differ.", nameof(Account), nameof(RecordTransferAsync));
+                "Deposit amount must be greater than zero.", nameof(Transaction), nameof(RecordDepositAsync));
 
         var all = await _accountRepo.GetAllAsync(ct);
 
-        var fromAccount = all.FirstOrDefault(a => a.Id == request.FromAccountId)
-            ?? throw new EntityNotFoundException(nameof(Account), request.FromAccountId, nameof(RecordTransferAsync));
-
         var toAccount = all.FirstOrDefault(a => a.Id == request.ToAccountId)
-            ?? throw new EntityNotFoundException(nameof(Account), request.ToAccountId, nameof(RecordTransferAsync));
+            ?? throw new EntityNotFoundException(nameof(Account), request.ToAccountId, nameof(RecordDepositAsync));
 
-        if (!fromAccount.IsBankAccount || !toAccount.IsBankAccount)
+        if (!toAccount.IsBankAccount)
             throw new ValidationException(
-                "Transfers are only permitted between bank/cash accounts.", nameof(Account), nameof(RecordTransferAsync));
+                "Deposits are only permitted into a bank account.", nameof(Account), nameof(RecordDepositAsync));
+
+        if (toAccount.Id == SystemAccounts.CashId)
+            throw new ValidationException(
+                "The destination account must differ from Cash on Hand.", nameof(Account), nameof(RecordDepositAsync));
 
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
             var now = DateTime.UtcNow;
             var description = string.IsNullOrWhiteSpace(request.Description)
-                ? $"Transfer — {fromAccount.Name} to {toAccount.Name}"
+                ? $"Bank deposit — {toAccount.Name}"
                 : request.Description.Trim();
 
             var entry = await _journalRepo.AddAsync(new JournalEntry
             {
                 Id = Guid.NewGuid(),
-                Type = JournalEntryType.Transfer,
+                Type = JournalEntryType.BankDeposit,
                 Date = request.Date,
                 Description = description,
                 CreatedAt = now
@@ -87,10 +84,10 @@ public class AccountTransferService : IAccountTransferService
                 {
                     Id = Guid.NewGuid(),
                     Date = request.Date,
-                    AccountId = fromAccount.Id,
+                    AccountId = SystemAccounts.CashId,
                     DebitAmount = 0m,
                     CreditAmount = request.Amount,
-                    GLAccount = fromAccount.AccountNumber,
+                    GLAccount = SystemAccounts.CashNumber,
                     JournalEntryId = entry.Id,
                     Description = description,
                     CreatedAt = now
@@ -100,7 +97,7 @@ public class AccountTransferService : IAccountTransferService
             await _audit.LogAsync(
                 nameof(JournalEntry), entry.Id, AuditAction.Create,
                 oldValue: null,
-                newValue: $"Transfer {request.Amount:C} from '{fromAccount.Name}' to '{toAccount.Name}' on {request.Date:yyyy-MM-dd}",
+                newValue: $"Bank deposit {request.Amount:C} to '{toAccount.Name}' on {request.Date:yyyy-MM-dd}",
                 ct: innerCt);
 
         }, ct);

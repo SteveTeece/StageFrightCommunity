@@ -42,7 +42,7 @@ else if (_alreadyRecorded)
                     <Template Context="record">
                         <div class="text-center">
                             <input type="checkbox" class="form-check-input" checked="@record.Attended" disabled
-                                   aria-label="@record.Member.Name attended" />
+                                   aria-label="@record.Member.SortableFullName attended" />
                         </div>
                     </Template>
                 </RadzenDataGridColumn>
@@ -50,13 +50,13 @@ else if (_alreadyRecorded)
                     <Template Context="record">
                         <div class="text-center">
                             <input type="checkbox" class="form-check-input" checked="@record.Attended" disabled
-                                   aria-label="@record.Member.Name paid" />
+                                   aria-label="@record.Member.SortableFullName paid" />
                         </div>
                     </Template>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="AttendanceRecord" Title="Member">
                     <Template Context="record">
-                        @record.Member.Name
+                        @record.Member.SortableFullName
                     </Template>
                 </RadzenDataGridColumn>
             </Columns>

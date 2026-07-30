@@ -132,7 +132,7 @@ public class AnnualFeeApplicationTests : BunitContext
 
     private static Member MakeMember(string name) => new()
     {
-        Id = Guid.NewGuid(), Name = name, StreetAddress = "1 St",
+        Id = Guid.NewGuid(), FirstName = name, StreetAddress = "1 St",
         Status = MemberStatus.Active,
         JoinDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
         ActivateDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),

@@ -43,7 +43,8 @@ public class MemberService : IMemberService
         var member = new Member
         {
             Id = Guid.NewGuid(),
-            Name = request.Name.Trim(),
+            FirstName = request.FirstName.Trim(),
+            LastName = request.LastName.Trim(),
             StreetAddress = request.StreetAddress.Trim(),
             Phone = request.Phone?.Trim(),
             Email = request.Email?.Trim(),
@@ -71,7 +72,11 @@ public class MemberService : IMemberService
         var settings = await RequireSettingsAsync(ct);
         _validation.Validate(request, settings);
 
-        member.Name = request.Name.Trim();
+        var oldFirstName = member.FirstName;
+        var oldLastName = member.LastName;
+
+        member.FirstName = request.FirstName.Trim();
+        member.LastName = request.LastName.Trim();
         member.StreetAddress = request.StreetAddress.Trim();
         member.Phone = request.Phone?.Trim();
         member.Email = request.Email?.Trim();
@@ -82,7 +87,10 @@ public class MemberService : IMemberService
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
             await _memberRepo.UpdateAsync(member, innerCt);
-            await _audit.LogAsync("Member", id, AuditAction.Update, ct: innerCt);
+            await _audit.LogAsync("Member", id, AuditAction.Update,
+                oldValue: $"{oldFirstName} {oldLastName}",
+                newValue: $"{request.FirstName} {request.LastName}",
+                ct: innerCt);
         }, ct);
     }
 

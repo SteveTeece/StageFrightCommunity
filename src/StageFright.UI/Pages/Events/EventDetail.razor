@@ -49,13 +49,13 @@ else if (_event is not null)
     {
         <section aria-label="Attendance">
             <h2 class="h6 mb-1">Attendance</h2>
-            <RadzenDataGrid Data="@_event.ParticipationRecords.OrderBy(p => p.Member?.Name)" TItem="ParticipationRecord"
+            <RadzenDataGrid Data="@_event.ParticipationRecords.OrderBy(p => p.Member?.SortableFullName)" TItem="ParticipationRecord"
                             AllowSorting="true" AllowPaging="true" PageSize="15"
                             class="rz-shadow-0">
                 <Columns>
                     <RadzenDataGridColumn TItem="ParticipationRecord" Title="Member">
                         <Template Context="record">
-                            @(record.Member?.Name ?? "—")
+                            @(record.Member?.SortableFullName ?? "—")
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="ParticipationRecord" Title="Participated" Width="140px" Sortable="false">

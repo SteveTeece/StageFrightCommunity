@@ -287,7 +287,7 @@ public class AttendanceServiceTests : TestBase
         _rehearsalRepo.GetByIdAsync(futureRehearsalId, Arg.Any<CancellationToken>()).Returns(new Rehearsal
         {
             Id = futureRehearsalId,
-            Date = DateTime.UtcNow.Date.AddDays(1),
+            Date = DateTime.Today.AddDays(1),
             Time = TimeSpan.FromHours(19),
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         });
@@ -384,14 +384,14 @@ public class AttendanceServiceTests : TestBase
 
     private static Member ActiveMember(Guid id) => new()
     {
-        Id = id, Name = "Active", StreetAddress = "1 Test St",
+        Id = id, FirstName = "Active", LastName = "Member", StreetAddress = "1 Test St",
         Status = MemberStatus.Active, ActivateDate = DateTime.UtcNow.Date,
         JoinDate = DateTime.UtcNow, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
 
     private static Member InactiveMember(Guid id) => new()
     {
-        Id = id, Name = "Inactive", StreetAddress = "2 Test St",
+        Id = id, FirstName = "Inactive", LastName = "Member", StreetAddress = "2 Test St",
         Status = MemberStatus.Inactive, InactivateDate = DateTime.UtcNow.Date,
         JoinDate = DateTime.UtcNow, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };

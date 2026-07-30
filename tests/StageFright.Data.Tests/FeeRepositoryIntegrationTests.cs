@@ -15,7 +15,7 @@ public sealed class FeeRepositoryIntegrationTests : IAsyncLifetime
     private StageFrightDbContext _db = null!;
     private FeeRepository _sut = null!;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -28,7 +28,7 @@ public sealed class FeeRepositoryIntegrationTests : IAsyncLifetime
         _sut = new FeeRepository(_db);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();
@@ -185,7 +185,7 @@ public sealed class FeeRepositoryIntegrationTests : IAsyncLifetime
     {
         var member = new Member
         {
-            Id = Guid.NewGuid(), Name = "Test Member",
+            Id = Guid.NewGuid(), FirstName = "Test", LastName = "Member",
             StreetAddress = "1 Test St",
             Status = MemberStatus.Active,
             JoinDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),

@@ -99,12 +99,107 @@ public class MemberBalanceServiceTests : TestBase
         Assert.Equal(80m, balance);
     }
 
+    // --- GetOutstandingFeesAsync ---
+
+    [Fact]
+    public async Task GetOutstandingFeesAsync_ReturnsTrueRemainingAmount_NotOriginalFeeAmount()
+    {
+        var memberId = Guid.NewGuid();
+        var fee = MakeFee(memberId, 100m);
+        _feeRepo.GetUnpaidOrderedFifoAsync(memberId, Arg.Any<CancellationToken>())
+            .Returns(new List<Fee> { fee });
+        _glRepo.GetByFeeAsync(fee.Id, Arg.Any<CancellationToken>())
+            .Returns(new List<Transaction>
+            {
+                new() { AccountId = SystemAccounts.MemberReceivableId, DebitAmount = 100m, CreditAmount = 0m, FeeId = fee.Id },
+                new() { AccountId = SystemAccounts.MemberReceivableId, DebitAmount = 0m, CreditAmount = 40m, FeeId = fee.Id },
+            });
+
+        var result = await _sut.GetOutstandingFeesAsync(memberId, Ct);
+
+        var outstandingFee = Assert.Single(result);
+        Assert.Equal(fee.Id, outstandingFee.FeeId);
+        Assert.Equal(60m, outstandingFee.RemainingAmount);
+    }
+
+    [Fact]
+    public async Task GetOutstandingFeesAsync_ExcludesFullySettledFees()
+    {
+        var memberId = Guid.NewGuid();
+        var settledFee = MakeFee(memberId, 50m);
+        var unsettledFee = MakeFee(memberId, 30m);
+        _feeRepo.GetUnpaidOrderedFifoAsync(memberId, Arg.Any<CancellationToken>())
+            .Returns(new List<Fee> { settledFee, unsettledFee });
+        _glRepo.GetByFeeAsync(settledFee.Id, Arg.Any<CancellationToken>())
+            .Returns(new List<Transaction>
+            {
+                new() { AccountId = SystemAccounts.MemberReceivableId, DebitAmount = 50m, CreditAmount = 0m, FeeId = settledFee.Id },
+                new() { AccountId = SystemAccounts.MemberReceivableId, DebitAmount = 0m, CreditAmount = 50m, FeeId = settledFee.Id },
+            });
+        _glRepo.GetByFeeAsync(unsettledFee.Id, Arg.Any<CancellationToken>())
+            .Returns(new List<Transaction>
+            {
+                new() { AccountId = SystemAccounts.MemberReceivableId, DebitAmount = 30m, CreditAmount = 0m, FeeId = unsettledFee.Id },
+            });
+
+        var result = await _sut.GetOutstandingFeesAsync(memberId, Ct);
+
+        var outstandingFee = Assert.Single(result);
+        Assert.Equal(unsettledFee.Id, outstandingFee.FeeId);
+    }
+
+    [Fact]
+    public async Task GetOutstandingFeesAsync_ReturnsEmptyList_ForMemberWithNoOutstandingFees()
+    {
+        var memberId = Guid.NewGuid();
+        _feeRepo.GetUnpaidOrderedFifoAsync(memberId, Arg.Any<CancellationToken>())
+            .Returns(new List<Fee>());
+
+        var result = await _sut.GetOutstandingFeesAsync(memberId, Ct);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task GetOutstandingFeesAsync_OrdersByFeeDateThenCreatedAtThenId()
+    {
+        var memberId = Guid.NewGuid();
+        var newerFee = new Fee
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            MemberId = memberId, FeeType = FeeType.Annual, Amount = 20m,
+            FeeDate = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            DueDate = new DateTime(2026, 12, 31, 0, 0, 0, DateTimeKind.Utc),
+            CreatedAt = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+        };
+        var olderFee = new Fee
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            MemberId = memberId, FeeType = FeeType.Annual, Amount = 10m,
+            FeeDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            DueDate = new DateTime(2025, 12, 31, 0, 0, 0, DateTimeKind.Utc),
+            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+        };
+        // Supplied out of order — service must re-sort.
+        _feeRepo.GetUnpaidOrderedFifoAsync(memberId, Arg.Any<CancellationToken>())
+            .Returns(new List<Fee> { newerFee, olderFee });
+        _glRepo.GetByFeeAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new List<Transaction>());
+
+        var result = await _sut.GetOutstandingFeesAsync(memberId, Ct);
+
+        Assert.Equal(2, result.Count);
+        Assert.Equal(olderFee.Id, result[0].FeeId);
+        Assert.Equal(newerFee.Id, result[1].FeeId);
+    }
+
     // --- Helpers ---
 
     private static Member MakeMember(Guid id, string name) => new()
     {
         Id = id,
-        Name = name,
+        FirstName = name,
+        LastName = "Test",
         StreetAddress = "1 Test St",
         JoinDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
         CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),

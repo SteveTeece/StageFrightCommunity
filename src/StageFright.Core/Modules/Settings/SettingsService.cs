@@ -31,6 +31,15 @@ public class SettingsService : ISettingsService
             throw new ValidationException("The ABN is not valid.", "Settings", nameof(SaveAsync));
 #endif
 
+        if (settings.MinimumMemberAge < 0)
+            throw new ValidationException("Minimum member age cannot be negative.", "Settings", nameof(SaveAsync));
+
+        if (settings.MaxAgeRangeYears < 0)
+            throw new ValidationException("Maximum age range cannot be negative.", "Settings", nameof(SaveAsync));
+
+        if (settings.MinimumMemberAge > settings.MaxAgeRangeYears)
+            throw new ValidationException("Minimum member age cannot exceed the maximum age range.", "Settings", nameof(SaveAsync));
+
         var existing = await _repository.GetAsync(ct);
 
         string? oldValue = existing is null

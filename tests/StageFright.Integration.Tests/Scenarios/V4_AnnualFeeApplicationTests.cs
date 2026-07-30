@@ -25,7 +25,7 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
 
     private static readonly Guid IncomeAccountId = Guid.NewGuid();
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -68,7 +68,7 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         await _db.SaveChangesAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();
@@ -250,7 +250,7 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
     {
         var member = new Member
         {
-            Id = Guid.NewGuid(), Name = name, StreetAddress = "1 Test St",
+            Id = Guid.NewGuid(), FirstName = name, StreetAddress = "1 Test St",
             Status = MemberStatus.Active,
             ActivateDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             JoinDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
@@ -265,7 +265,7 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
     {
         var member = new Member
         {
-            Id = Guid.NewGuid(), Name = name, StreetAddress = "2 Test St",
+            Id = Guid.NewGuid(), FirstName = name, StreetAddress = "2 Test St",
             Status = MemberStatus.Inactive,
             InactivateDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             JoinDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),

@@ -14,7 +14,7 @@ namespace StageFright.UI.Tests.Pages.Rehearsals;
 /// <summary>
 /// bUnit tests for AttendanceGrid — member rendering, default checkbox state, save behavior, post-save lock.
 /// </summary>
-public class AttendanceGridTests : BunitContext
+public class AttendanceGridTests : RadzenGridTestContext
 {
     private readonly IRehearsalService _rehearsalService = Substitute.For<IRehearsalService>();
     private readonly IAttendanceService _attendanceService = Substitute.For<IAttendanceService>();
@@ -44,7 +44,7 @@ public class AttendanceGridTests : BunitContext
     private static readonly Rehearsal FutureRehearsal = new()
     {
         Id = RehearsalId,
-        Date = DateTime.UtcNow.Date.AddDays(1),
+        Date = DateTime.Today.AddDays(1),
         Time = TimeSpan.FromHours(19),
         StoredAttendanceRate = null,
         CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
@@ -224,7 +224,7 @@ public class AttendanceGridTests : BunitContext
 
     private static Member ActiveMember(string name) => new()
     {
-        Id = Guid.NewGuid(), Name = name, StreetAddress = "1 St",
+        Id = Guid.NewGuid(), FirstName = name, StreetAddress = "1 St",
         Status = MemberStatus.Active, ActivateDate = DateTime.UtcNow.Date,
         JoinDate = DateTime.UtcNow, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };

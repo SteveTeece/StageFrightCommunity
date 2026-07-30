@@ -15,8 +15,8 @@ public class OutstandingBalancesDashboardTileProviderTests
         Assert.Equal("Outstanding Balances", _provider.Title);
         Assert.Equal("Finance", _provider.ModuleName);
         Assert.Equal(45, _provider.DisplayOrder);
-        Assert.Equal("/reports/member-account-summary", _provider.NavigateRoute);
-        Assert.Equal("View Report", _provider.ActionText);
+        Assert.Equal("/finance?tab=outstanding", _provider.NavigateRoute);
+        Assert.Equal("View Members", _provider.ActionText);
         Assert.Equal(typeof(OutstandingBalancesTile), _provider.TileComponentType);
         Assert.Equal(DashboardTileSize.TwoByTwo, _provider.TileSize);
     }
@@ -26,6 +26,6 @@ public class OutstandingBalancesDashboardTileProviderTests
     {
         var data = await _provider.GetTileDataAsync(CancellationToken.None);
 
-        Assert.Equal("/reports/member-account-summary", data.NavigateRoute);
+        Assert.Equal("/finance?tab=outstanding", data.NavigateRoute);
     }
 }

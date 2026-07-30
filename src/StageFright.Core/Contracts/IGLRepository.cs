@@ -30,7 +30,12 @@ public interface IGLRepository
     /// <summary>Returns all GL transactions within the specified date range (inclusive).</summary>
     Task<IReadOnlyList<Transaction>> GetByDateRangeAsync(DateTime from, DateTime to, CancellationToken ct = default);
 
-    /// <summary>Returns GL transactions for a specific member within the date range.</summary>
+    /// <summary>
+    /// Returns a member's Member Receivable account transactions within the date range —
+    /// the per-member receivable ledger, not every transaction tagged with the member's Id
+    /// (some posting services tag both legs of a pair, e.g. Cash and Receivable, with the
+    /// same MemberId; those other-account legs are excluded here).
+    /// </summary>
     Task<IReadOnlyList<Transaction>> GetByMemberAsync(Guid memberId, DateTime from, DateTime to, CancellationToken ct = default);
 
     /// <summary>Returns total debits and total credits for the Trial Balance within the date range.</summary>

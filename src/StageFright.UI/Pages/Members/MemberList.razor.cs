@@ -21,7 +21,9 @@ public partial class MemberList : ComponentBase
         string.IsNullOrWhiteSpace(_searchTerm)
             ? _members
             : _members.Where(m =>
-                (m.Name?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                m.FirstName.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                m.LastName.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                m.FullName.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
                 (m.Phone?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
                 (m.Email?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
                 (m.StreetAddress?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false));

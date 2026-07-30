@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Members;
 using StageFright.Data.Repositories;
 using StageFright.Data.Tests.Infrastructure;
 
@@ -28,7 +29,7 @@ public class RepositoryIntegrationTests : IDisposable
         var found = await repo.GetByIdAsync(added.Id);
 
         Assert.NotNull(found);
-        Assert.Equal("Test Member", found!.Name);
+        Assert.Equal("Test Member", found!.FullName);
     }
 
     [Fact]
@@ -289,13 +290,59 @@ public class RepositoryIntegrationTests : IDisposable
         Assert.Equal("4001", second);
     }
 
+    // --- Attendance repository ---
+
+    [Fact]
+    public async Task AttendanceRepository_GetByRehearsalAsync_OrdersByMemberLastNameThenFirstName()
+    {
+        using var db = _factory.CreateContext();
+        var memberRepo = new MemberRepository(db);
+        var rehearsalRepo = new RehearsalRepository(db);
+        var attendanceRepo = new AttendanceRepository(db);
+
+        var zoe = await memberRepo.AddAsync(CreateMemberWithNames("Zoe", "Adams"));
+        var alice = await memberRepo.AddAsync(CreateMemberWithNames("Alice", "Baker"));
+        var bob = await memberRepo.AddAsync(CreateMemberWithNames("Bob", "Adams"));
+
+        var rehearsal = await rehearsalRepo.AddAsync(new Rehearsal
+        {
+            Id = Guid.NewGuid(), Date = DateTime.UtcNow.Date, Time = new TimeSpan(19, 0, 0),
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        });
+
+        await attendanceRepo.AddBatchAsync(
+        [
+            new AttendanceRecord { Id = Guid.NewGuid(), RehearsalId = rehearsal.Id, MemberId = zoe.Id, Attended = true, CreatedAt = DateTime.UtcNow },
+            new AttendanceRecord { Id = Guid.NewGuid(), RehearsalId = rehearsal.Id, MemberId = alice.Id, Attended = true, CreatedAt = DateTime.UtcNow },
+            new AttendanceRecord { Id = Guid.NewGuid(), RehearsalId = rehearsal.Id, MemberId = bob.Id, Attended = false, CreatedAt = DateTime.UtcNow }
+        ]);
+
+        // Real EF-translated SQL query — must sort by the mapped LastName/FirstName columns,
+        // not the unmapped computed SortableFullName property (which would throw
+        // InvalidOperationException at runtime instead of translating to SQL; see T042).
+        var result = await attendanceRepo.GetByRehearsalAsync(rehearsal.Id);
+
+        Assert.Equal([bob.Id, zoe.Id, alice.Id], result.Select(r => r.MemberId));
+    }
+
     // --- Helpers ---
 
-    private static Member CreateMember(string name = "Test Member", MemberStatus status = MemberStatus.Active) =>
-        new()
+    private static Member CreateMemberWithNames(string firstName, string lastName) => new()
+    {
+        Id = Guid.NewGuid(), FirstName = firstName, LastName = lastName,
+        StreetAddress = "123 Test St", JoinDate = DateTime.UtcNow,
+        Status = MemberStatus.Active, ActivateDate = DateTime.UtcNow,
+        CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+    };
+
+    private static Member CreateMember(string name = "Test Member", MemberStatus status = MemberStatus.Active)
+    {
+        var (firstName, lastName) = MemberNameSplitter.Split(name);
+        return new()
         {
             Id = Guid.NewGuid(),
-            Name = name,
+            FirstName = firstName,
+            LastName = lastName,
             StreetAddress = "123 Test St",
             JoinDate = DateTime.UtcNow,
             Status = status,
@@ -303,6 +350,7 @@ public class RepositoryIntegrationTests : IDisposable
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
+    }
 
     private static Fee CreateFee(Guid memberId, FeeType type = FeeType.Annual, int year = 2026) =>
         new()

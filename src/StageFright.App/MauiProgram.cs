@@ -152,6 +152,7 @@ public static class MauiProgram
     {
         services.AddScoped<IAuditTrailService, AuditTrailService>();
         services.AddScoped<ISetupService, SetupService>();
+        services.AddSingleton<IDeviceThemePreferenceProvider, MauiDeviceThemePreferenceProvider>();
         services.AddScoped<AccountNumberAssignmentService>();
 
         // Settings service
@@ -167,6 +168,8 @@ public static class MauiProgram
         // Rehearsals module (Phase 5)
         services.AddScoped<IRehearsalService, RehearsalService>();
         services.AddScoped<IAttendanceService, AttendanceService>();
+        services.AddScoped<IAttendanceRollService, AttendanceRollService>();
+        services.AddScoped<IAttendanceRollPdfRenderer, AttendanceRollPdfRenderer>();
 
         // Events module (Phase 12)
         services.AddScoped<IEventTypeService, EventTypeService>();
@@ -182,7 +185,7 @@ public static class MauiProgram
 
         // Finance expansion — posting engine + money-out workflows (spec 002 US2)
         services.AddScoped<IExpensePaymentService, ExpensePaymentService>();
-        services.AddScoped<IAccountTransferService, AccountTransferService>();
+        services.AddScoped<IBankDepositService, BankDepositService>();
         services.AddScoped<IGeneralJournalService, GeneralJournalService>();
         services.AddScoped<IOpeningBalanceService, OpeningBalanceService>();
 
@@ -191,6 +194,7 @@ public static class MauiProgram
 
         // Account management module (Phase 7)
         services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<IAccountBalanceService, AccountBalanceService>();
 
         // Dashboard service (Phase 8)
         services.AddScoped<IDashboardService, DashboardService>();

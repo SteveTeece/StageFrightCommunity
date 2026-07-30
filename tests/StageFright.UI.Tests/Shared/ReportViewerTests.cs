@@ -20,7 +20,7 @@ namespace StageFright.UI.Tests.Shared;
 /// - Print button invokes IPdfReportRenderer
 /// - Export button invokes ICsvReportExporter
 /// </summary>
-public class ReportViewerTests : BunitContext
+public class ReportViewerTests : RadzenGridTestContext
 {
     private readonly IReportProvider _provider = Substitute.For<IReportProvider>();
     private readonly IPdfReportRenderer _pdfRenderer = Substitute.For<IPdfReportRenderer>();
@@ -187,6 +187,22 @@ public class ReportViewerTests : BunitContext
 
         Assert.Contains("Opening Balance", cut.Markup);
         Assert.Contains("Closing Balance", cut.Markup);
+    }
+
+    [Fact]
+    public async Task WhenMemberRowExpanded_ShowsDebitAndCreditColumnHeaders()
+    {
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
+            .Returns(MasterDetailReport);
+
+        var cut = Render<ReportViewer>(p => p.Add(x => x.Provider, _provider));
+        await cut.InvokeAsync(() => { });
+
+        cut.Find("button[aria-label='Expand child item']").Click();
+
+        var headerText = cut.FindAll("table thead th").Select(th => th.TextContent.Trim()).ToList();
+        Assert.Contains("Debit", headerText);
+        Assert.Contains("Credit", headerText);
     }
 
     [Fact]

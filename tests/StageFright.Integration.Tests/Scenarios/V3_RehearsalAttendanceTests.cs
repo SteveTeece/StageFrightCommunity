@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Modules.AuditTrail;
+using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Members;
 using StageFright.Core.Modules.Rehearsals;
 using StageFright.Data;
@@ -23,7 +24,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
     private static readonly Guid CashAccountId = new("00000000-0000-0000-0000-000000000001");
     private static readonly Guid MemberReceivableAccountId = new("00000000-0000-0000-0000-000000000002");
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -66,7 +67,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         await _db.SaveChangesAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();
@@ -247,7 +248,176 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         Assert.Equal(before, after);
     }
 
+    // --- AttendanceRollService (issue #257) ---
+
+    [Fact]
+    public async Task GenerateAsync_Throws_EntityNotFoundException_ForUnknownRehearsalId()
+    {
+        var svc = BuildAttendanceRollService();
+
+        await Assert.ThrowsAsync<StageFright.Core.Exceptions.EntityNotFoundException>(
+            () => svc.GenerateAsync(Guid.NewGuid()));
+    }
+
+    [Fact]
+    public async Task GenerateAsync_Returns_OnlyActiveMembers_SortedBySurnameThenFirstName_ExcludingSoftDeleted()
+    {
+        var smithBob = await AddActiveMember("Bob");
+        smithBob.LastName = "Smith";
+        var smithAlice = await AddActiveMember("Alice");
+        smithAlice.LastName = "Smith";
+        var jones = await AddActiveMember("Zoe");
+        jones.LastName = "Jones";
+        await _db.SaveChangesAsync();
+
+        var deletedMember = await AddActiveMember("Deleted");
+        deletedMember.LastName = "Ghost";
+        deletedMember.IsDeleted = true;
+        deletedMember.DeletedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
+
+        var rehearsal = await ScheduleRehearsal();
+        var svc = BuildAttendanceRollService();
+
+        var result = await svc.GenerateAsync(rehearsal.Id);
+
+        Assert.Equal(3, result.Members.Count);
+        Assert.Equal("Jones", result.Members[0].LastName);
+        Assert.Equal("Smith", result.Members[1].LastName);
+        Assert.Equal("Alice", result.Members[1].FirstName);
+        Assert.Equal("Smith", result.Members[2].LastName);
+        Assert.Equal("Bob", result.Members[2].FirstName);
+        Assert.DoesNotContain(result.Members, m => m.LastName == "Ghost");
+    }
+
+    [Fact]
+    public async Task GenerateAsync_Returns_EmptyList_WhenNoActiveMembers()
+    {
+        var rehearsal = await ScheduleRehearsal();
+        var svc = BuildAttendanceRollService();
+
+        var result = await svc.GenerateAsync(rehearsal.Id);
+
+        Assert.Empty(result.Members);
+    }
+
+    [Fact]
+    public async Task GenerateAsync_ReflectsRealAttendanceAndFeePaymentState_AfterAttendanceRecorded()
+    {
+        var paidMember = await AddActiveMember("Paid");
+        var unpaidMember = await AddActiveMember("Unpaid");
+        var absentMember = await AddActiveMember("Absent");
+
+        var rehearsal = await ScheduleRehearsal();
+
+        var attendanceSvc = BuildAttendanceService();
+        await attendanceSvc.RecordBatchAsync(rehearsal.Id, new[]
+        {
+            new AttendanceBatchItem { MemberId = paidMember.Id, Attended = true, MarkAsUnpaid = false },
+            new AttendanceBatchItem { MemberId = unpaidMember.Id, Attended = true, MarkAsUnpaid = true },
+            new AttendanceBatchItem { MemberId = absentMember.Id, Attended = false }
+        });
+
+        var svc = BuildAttendanceRollService();
+        var result = await svc.GenerateAsync(rehearsal.Id);
+
+        var paidRow = result.Members.Single(m => m.FirstName == "Paid");
+        Assert.True(paidRow.Attended);
+        Assert.True(paidRow.RehearsalFeePaid);
+
+        var unpaidRow = result.Members.Single(m => m.FirstName == "Unpaid");
+        Assert.True(unpaidRow.Attended);
+        Assert.False(unpaidRow.RehearsalFeePaid);
+
+        var absentRow = result.Members.Single(m => m.FirstName == "Absent");
+        Assert.False(absentRow.Attended);
+        Assert.False(absentRow.RehearsalFeePaid);
+    }
+
+    [Fact]
+    public async Task GenerateAsync_MembershipIsPointInTime_NotBasedOnTodaysStatus()
+    {
+        var rehearsal = await ScheduleRehearsal(); // 2026-06-15
+
+        // Active as of the rehearsal date but inactivated afterward -> still on the roll
+        var laterInactivated = await AddActiveMember("StillOnRoll");
+        laterInactivated.Status = MemberStatus.Inactive;
+        laterInactivated.InactivateDate = new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc);
+        await _db.SaveChangesAsync();
+
+        // Not active until after the rehearsal date -> excluded from the roll
+        var joinedLater = await AddActiveMember("NotYetJoined");
+        joinedLater.ActivateDate = new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc);
+        await _db.SaveChangesAsync();
+
+        var svc = BuildAttendanceRollService();
+        var result = await svc.GenerateAsync(rehearsal.Id);
+
+        Assert.Contains(result.Members, m => m.FirstName == "StillOnRoll");
+        Assert.DoesNotContain(result.Members, m => m.FirstName == "NotYetJoined");
+    }
+
     // --- Helpers ---
+
+    private AttendanceRollService BuildAttendanceRollService()
+    {
+        var rehearsalRepo = new RehearsalRepository(_db);
+        var memberRepo = new MemberRepository(_db);
+        var attendanceRepo = new AttendanceRepository(_db);
+        var memberBalanceSvc = BuildMemberBalanceService();
+        var feeRepo = new FeeRepository(_db);
+        return new AttendanceRollService(rehearsalRepo, memberRepo, attendanceRepo, memberBalanceSvc, feeRepo);
+    }
+
+    private MemberBalanceService BuildMemberBalanceService()
+    {
+        var memberRepo = new MemberRepository(_db);
+        var feeRepo = new FeeRepository(_db);
+        var glRepo = new GLRepository(_db);
+        return new MemberBalanceService(memberRepo, feeRepo, glRepo);
+    }
+
+    private FeeService BuildFeeService()
+    {
+        var memberRepo = new MemberRepository(_db);
+        var feeRepo = new FeeRepository(_db);
+        var glRepo = new GLRepository(_db);
+        var accountRepo = new AccountRepository(_db);
+        var settingsRepo = new SettingsRepository(_db);
+        var auditRepo = new AuditTrailRepository(_db);
+        var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
+        var unitOfWork = new UnitOfWork(_db);
+        return new FeeService(memberRepo, feeRepo, glRepo, accountRepo, settingsRepo, auditSvc, unitOfWork);
+    }
+
+    private PaymentService BuildPaymentService()
+    {
+        var feeRepo = new FeeRepository(_db);
+        var paymentRepo = new PaymentRepository(_db, BuildAuditService());
+        var glRepo = new GLRepository(_db);
+        var memberRepo = new MemberRepository(_db);
+        var unitOfWork = new UnitOfWork(_db);
+        return new PaymentService(feeRepo, paymentRepo, glRepo, memberRepo, BuildAuditService(), unitOfWork);
+    }
+
+    private AuditTrailService BuildAuditService()
+    {
+        var auditRepo = new AuditTrailRepository(_db);
+        return new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
+    }
+
+    private MemberService BuildMemberService()
+    {
+        var memberRepo = new MemberRepository(_db);
+        var committeeRepo = new CommitteeMembershipRepository(_db);
+        var settingsRepo = new SettingsRepository(_db);
+        var auditRepo = new AuditTrailRepository(_db);
+        var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
+        var ageCalc = new AgeCalculationService();
+        var validation = new MemberValidationService(ageCalc);
+        var unitOfWork = new UnitOfWork(_db);
+        return new MemberService(memberRepo, committeeRepo, validation, settingsRepo, auditSvc, unitOfWork);
+    }
 
     private RehearsalService BuildRehearsalService()
     {
@@ -281,7 +451,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
     {
         var member = new Member
         {
-            Id = Guid.NewGuid(), Name = name, StreetAddress = "1 Test St",
+            Id = Guid.NewGuid(), FirstName = name, StreetAddress = "1 Test St",
             Status = MemberStatus.Active, ActivateDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             JoinDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
@@ -295,7 +465,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
     {
         var member = new Member
         {
-            Id = Guid.NewGuid(), Name = name, StreetAddress = "2 Test St",
+            Id = Guid.NewGuid(), FirstName = name, StreetAddress = "2 Test St",
             Status = MemberStatus.Inactive,
             InactivateDate = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc),
             JoinDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),

@@ -4,6 +4,8 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Modules.Finance;
+using StageFright.Core.Modules.Members;
 using StageFright.Data;
 using StageFright.Data.Repositories;
 using StageFright.Reports.Models;
@@ -21,7 +23,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
 {
     private StageFrightDbContext _db = null!;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -32,7 +34,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
         await _db.Database.MigrateAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();
@@ -177,7 +179,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
             MakeMember("Charlie", MemberStatus.Active, isDeleted: true));
         await _db.SaveChangesAsync();
 
-        var provider = new MemberListReportProvider(new MemberRepository(_db));
+        var provider = new MemberListReportProvider(new MemberRepository(_db), new AgeCalculationService());
         var filters = new ReportFilterValues();
         filters.Set("memberStatus", "Active");
 
@@ -210,7 +212,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
         filters.Set("memberFilter", "Active Only");
 
         var result = await provider.GenerateAsync(filters);
-        var names = result.Sections.SelectMany(s => s.Rows).Select(r => r.Cells[0]).ToList();
+        var names = result.Sections.SelectMany(s => s.Rows).Select(r => r.Cells[2]).ToList();
 
         Assert.Contains("Active Member", names);
         Assert.DoesNotContain("Archived Member", names);
@@ -232,8 +234,8 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
                 new IncomeStatementReportProvider(glRepo, catRepo, new SettingsRepository(_db)),
                 new TrialBalanceReportProvider(glRepo, catRepo, new SettingsRepository(_db)),
                 new AccountRegisterReportProvider(glRepo, catRepo),
-                new MemberAccountSummaryReportProvider(glRepo, memberRepo, feeRepo),
-                new MemberListReportProvider(memberRepo),
+                new MemberAccountSummaryReportProvider(glRepo, memberRepo, new MemberBalanceService(memberRepo, feeRepo, glRepo)),
+                new MemberListReportProvider(memberRepo, new AgeCalculationService()),
                 new CommitteeReportProvider(committeeRepo, memberRepo)
             },
             NullLogger<ReportProviderRegistry>.Instance);
@@ -256,7 +258,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
     private static Member MakeMember(string name, MemberStatus status, bool isDeleted)
         => new()
         {
-            Id = Guid.NewGuid(), Name = name, StreetAddress = "1 Test St",
+            Id = Guid.NewGuid(), FirstName = name, StreetAddress = "1 Test St",
             Status = status, IsDeleted = isDeleted,
             JoinDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             ActivateDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),

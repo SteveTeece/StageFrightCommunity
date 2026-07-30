@@ -1,0 +1,38 @@
+{
+  "workflow": "speckit",
+  "specName": "Split Member Name into First Name and Last Name",
+  "branch": "011-member-firstname-lastname",
+  "currentStep": "tasks",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-26T00:46:00.832Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-26T01:31:33.728Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-26T01:48:01.441Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-30T09:20:46.186Z"
+    }
+  ],
+  "telemetryInstanceId": "fb6f3d1d-06e6-4f6f-b2ba-2bd4d1baee2f"
+}

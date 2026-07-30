@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
 using StageFright.Core.Contracts;
-using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Modules.Finance;
 using CoreValidationException = StageFright.Core.Exceptions.ValidationException;
 
 namespace StageFright.UI.Pages.Finance;
@@ -10,14 +10,15 @@ namespace StageFright.UI.Pages.Finance;
 public partial class ChartOfAccountsPage : ComponentBase
 {
     [Inject] private IAccountService AccountService { get; set; } = null!;
+    [Inject] private IAccountBalanceService AccountBalanceService { get; set; } = null!;
 
     private bool _loading = true;
     private bool _creating;
     private string? _errorMessage;
     private string? _successMessage;
 
-    private List<Account> _accounts = new();
-    private List<Account> _archivedAccounts = new();
+    private List<AccountBalance> _accounts = new();
+    private List<AccountBalance> _archivedAccounts = new();
     private AccountType? _typeFilter;
 
     private Guid? _editingId;
@@ -25,7 +26,7 @@ public partial class ChartOfAccountsPage : ComponentBase
 
     private NewAccountModel _newAccountModel = new();
 
-    private IEnumerable<Account> FilteredAccounts =>
+    private IEnumerable<AccountBalance> FilteredAccounts =>
         _typeFilter is null ? _accounts : _accounts.Where(a => a.Type == _typeFilter);
 
     protected override async Task OnInitializedAsync()
@@ -39,12 +40,8 @@ public partial class ChartOfAccountsPage : ComponentBase
         _errorMessage = null;
         try
         {
-            _accounts = (await AccountService.GetAllAsync())
-                .OrderBy(a => a.AccountNumber)
-                .ToList();
-            _archivedAccounts = (await AccountService.GetArchivedAsync())
-                .OrderBy(a => a.AccountNumber)
-                .ToList();
+            _accounts = (await AccountBalanceService.GetActiveAccountBalancesAsync()).ToList();
+            _archivedAccounts = (await AccountBalanceService.GetArchivedAccountBalancesAsync()).ToList();
         }
         catch (Exception ex)
         {
@@ -92,9 +89,9 @@ public partial class ChartOfAccountsPage : ComponentBase
         }
     }
 
-    private void StartRename(Account account)
+    private void StartRename(AccountBalance account)
     {
-        _editingId = account.Id;
+        _editingId = account.AccountId;
         _editName = account.Name;
         _errorMessage = null;
         _successMessage = null;

@@ -21,7 +21,7 @@ public sealed class BalancedSetIntegrationTests : IAsyncLifetime
 
     private static readonly Guid ExpenseAccountId = new("00000000-0000-0000-0000-000000000020");
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -44,7 +44,7 @@ public sealed class BalancedSetIntegrationTests : IAsyncLifetime
         _journalRepo = new JournalEntryRepository(_db);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();

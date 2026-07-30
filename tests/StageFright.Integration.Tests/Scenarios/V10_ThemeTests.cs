@@ -17,7 +17,7 @@ public sealed class V10_ThemeTests : IAsyncLifetime
 {
     private StageFrightDbContext _db = null!;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -27,7 +27,7 @@ public sealed class V10_ThemeTests : IAsyncLifetime
         await _db.Database.MigrateAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();
@@ -35,12 +35,18 @@ public sealed class V10_ThemeTests : IAsyncLifetime
 
     // --- Theme persistence ---
 
-    [Fact]
-    public async Task DefaultTheme_IsLight_AfterFirstRunSetup()
+    [Theory]
+    [InlineData(Theme.Light)]
+    [InlineData(Theme.Dark)]
+    public async Task DefaultTheme_MatchesRequestedTheme_AfterFirstRunSetup(Theme requestedTheme)
     {
-        await SeedSettingsAsync(Theme.Light);
-        var settings = await BuildSettingsService().GetAsync();
-        Assert.Equal(Theme.Light, settings!.Theme);
+        var svc = BuildSetupService();
+        var request = new SetupRequest("Test Choir", "51824753556", 60m, 5m, 1, false, null, null, requestedTheme);
+
+        await svc.InitializeAsync(request);
+
+        var settings = await new SettingsRepository(_db).GetAsync();
+        Assert.Equal(requestedTheme, settings!.Theme);
     }
 
     [Fact]
@@ -148,6 +154,16 @@ public sealed class V10_ThemeTests : IAsyncLifetime
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         return new SettingsService(repo, auditSvc);
+    }
+
+    private SetupService BuildSetupService()
+    {
+        var settingsRepo = new SettingsRepository(_db);
+        var accountRepo = new AccountRepository(_db);
+        var eventTypeRepo = new EventTypeRepository(_db);
+        var auditRepo = new AuditTrailRepository(_db);
+        var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
+        return new SetupService(settingsRepo, accountRepo, eventTypeRepo, auditService);
     }
 
     private static (int R, int G, int B) HslToRgb(double h, double s, double l)

@@ -129,6 +129,14 @@ else if (_report != null)
                 <Template Context="section">
                     <div class="table-responsive">
                         <table class="table table-sm table-bordered mb-0">
+                            <thead>
+                                <tr>
+                                    @foreach (var col in _report.Columns)
+                                    {
+                                        <th class="@AlignClass(col.Alignment)">@col.Header</th>
+                                    }
+                                </tr>
+                            </thead>
                             <tbody>
                                 @foreach (var row in section.Rows)
                                 {

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Finance;
 using StageFright.Data;
 using StageFright.Data.Repositories;
 using StageFright.Reports.Models;
@@ -23,7 +24,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     private static readonly Guid ExpenseCatId = Guid.NewGuid();
     private static readonly Guid MemberId = Guid.NewGuid();
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -40,11 +41,24 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
 
         _db.Members.Add(new Member
         {
-            Id = MemberId, Name = "Alice Smith", StreetAddress = "1 Test St",
+            Id = MemberId, FirstName = "Alice", LastName = "Smith", StreetAddress = "1 Test St",
             Status = MemberStatus.Active, JoinDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             ActivateDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         });
+
+        // Alice has an outstanding 25.00 annual fee: debit MemberReceivable / credit Income (balanced pair)
+        var feeId = Guid.NewGuid();
+        _db.Fees.Add(new Fee
+        {
+            Id = feeId, MemberId = MemberId, FeeType = FeeType.Annual, Amount = 25m,
+            FeeDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            DueDate = new DateTime(2026, 12, 31, 0, 0, 0, DateTimeKind.Utc),
+            PaidAtCreation = false, CreatedAt = DateTime.UtcNow
+        });
+        _db.Transactions.AddRange(
+            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc), AccountId = SystemAccounts.MemberReceivableId, GLAccount = SystemAccounts.MemberReceivableNumber, DebitAmount = 25m, CreditAmount = 0, MemberId = MemberId, FeeId = feeId, Description = "Annual fee accrual", CreatedAt = DateTime.UtcNow },
+            new Transaction { Id = Guid.NewGuid(), Date = new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc), AccountId = IncomeCatId, GLAccount = "1000", DebitAmount = 0, CreditAmount = 25m, MemberId = MemberId, FeeId = feeId, Description = "Annual fee income", CreatedAt = DateTime.UtcNow });
 
         // Balanced GL: debit MemberReceivable / credit Income = 100, debit Cash / credit MemberReceivable = 100
         _db.Transactions.AddRange(
@@ -57,7 +71,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
         await _db.SaveChangesAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();
@@ -158,6 +172,78 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
         Assert.Contains(result.Sections, s => s.Heading != null && s.Heading.Contains("Alice"));
     }
 
+    // --- Historical Transfer + new BankDeposit coexistence (spec 009 US3) ---
+
+    [Fact]
+    public async Task AccountRegisterAndTrialBalance_HistoricalTransferAndNewBankDeposit_BothAppearCorrectly()
+    {
+        var bankAccountId = Guid.NewGuid();
+        _db.Accounts.Add(new Account
+        {
+            Id = bankAccountId, Name = "Savings", Type = AccountType.Asset, AccountNumber = "1110",
+            IsBankAccount = true, SortOrder = 0, IsSystem = false,
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        });
+
+        // Historical, pre-refactor Transfer entry — seeded directly, never via a service call,
+        // representing data that existed before this feature shipped and must never be reclassified.
+        var historicalDate = new DateTime(2026, 5, 1, 0, 0, 0, DateTimeKind.Utc);
+        var historicalEntryId = Guid.NewGuid();
+        _db.JournalEntries.Add(new JournalEntry
+        {
+            Id = historicalEntryId, Type = JournalEntryType.Transfer, Date = historicalDate,
+            Description = "Historical transfer to savings", CreatedAt = DateTime.UtcNow
+        });
+        _db.Transactions.AddRange(
+            new Transaction { Id = Guid.NewGuid(), Date = historicalDate, AccountId = bankAccountId, GLAccount = "1110", DebitAmount = 150m, CreditAmount = 0m, JournalEntryId = historicalEntryId, Description = "Historical transfer to savings", CreatedAt = DateTime.UtcNow },
+            new Transaction { Id = Guid.NewGuid(), Date = historicalDate, AccountId = SystemAccounts.CashId, GLAccount = SystemAccounts.CashNumber, DebitAmount = 0m, CreditAmount = 150m, JournalEntryId = historicalEntryId, Description = "Historical transfer to savings", CreatedAt = DateTime.UtcNow }
+        );
+
+        // New-style BankDeposit entry, posted alongside the historical Transfer entry.
+        var depositDate = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc);
+        var depositEntryId = Guid.NewGuid();
+        _db.JournalEntries.Add(new JournalEntry
+        {
+            Id = depositEntryId, Type = JournalEntryType.BankDeposit, Date = depositDate,
+            Description = "Bank deposit — Savings", CreatedAt = DateTime.UtcNow
+        });
+        _db.Transactions.AddRange(
+            new Transaction { Id = Guid.NewGuid(), Date = depositDate, AccountId = bankAccountId, GLAccount = "1110", DebitAmount = 80m, CreditAmount = 0m, JournalEntryId = depositEntryId, Description = "Bank deposit — Savings", CreatedAt = DateTime.UtcNow },
+            new Transaction { Id = Guid.NewGuid(), Date = depositDate, AccountId = SystemAccounts.CashId, GLAccount = SystemAccounts.CashNumber, DebitAmount = 0m, CreditAmount = 80m, JournalEntryId = depositEntryId, Description = "Bank deposit — Savings", CreatedAt = DateTime.UtcNow }
+        );
+
+        await _db.SaveChangesAsync();
+
+        var filters = new ReportFilterValues();
+        filters.Set("dateFrom", "2026-05-01");
+        filters.Set("dateTo", "2026-05-31");
+
+        var registerResult = await BuildAccountRegisterProvider().GenerateAsync(filters);
+        var registerRows = registerResult.Sections.SelectMany(s => s.Rows).ToList();
+
+        // Historical Transfer entry displays unchanged: original accounts, amount, date, description.
+        Assert.Contains(registerRows, r =>
+            r.Cells[0] == "2026-05-01"
+            && r.Cells[1] == "Historical transfer to savings"
+            && r.Cells[2] == "Savings"
+            && r.Cells[3] == "150.00");
+        Assert.Contains(registerRows, r =>
+            r.Cells[0] == "2026-05-01"
+            && r.Cells[1] == "Historical transfer to savings"
+            && r.Cells[4] == "150.00");
+
+        // New BankDeposit entry appears correctly alongside it.
+        Assert.Contains(registerRows, r =>
+            r.Cells[0] == "2026-05-02"
+            && r.Cells[1] == "Bank deposit — Savings"
+            && r.Cells[2] == "Savings"
+            && r.Cells[3] == "80.00");
+
+        // Trial Balance still balances across both entry types together (no GLBalanceException).
+        var trialBalanceResult = await BuildTrialBalanceProvider().GenerateAsync(filters);
+        Assert.Equal("Trial Balance", trialBalanceResult.Title);
+    }
+
     // --- PDF Renderer ---
 
     [Fact]
@@ -238,7 +324,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
         var gl = new GLRepository(_db);
         var members = new MemberRepository(_db);
         var fees = new FeeRepository(_db);
-        return new MemberAccountSummaryReportProvider(gl, members, fees);
+        return new MemberAccountSummaryReportProvider(gl, members, new MemberBalanceService(members, fees, gl));
     }
 
     private static ReportFilterValues CurrentYearFilters()

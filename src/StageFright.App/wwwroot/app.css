@@ -733,7 +733,7 @@ a {
 
 /* --- Forms --- */
 .form-control, .form-select, .form-check-input {
-    background: var(--sf-glass2);
+    background-color: var(--sf-glass2);
     border: 1px solid var(--sf-brd);
     color: var(--sf-text);
 }

@@ -23,7 +23,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
     private static readonly Guid CashAccountId = new("00000000-0000-0000-0000-000000000001");
     private static readonly Guid MemberReceivableAccountId = new("00000000-0000-0000-0000-000000000002");
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -54,7 +54,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
         await _db.SaveChangesAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();
@@ -261,6 +261,106 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
         Assert.All(paymentTxns, t => Assert.Equal(payment.Id, t.PaymentId));
     }
 
+    // --- SelectedFeeIds allocation ---
+
+    [Fact]
+    public async Task SelectedFeeIds_FullAllocation_ClearsOnlyCheckedFees()
+    {
+        var member = await AddActiveMemberAsync("Grace");
+
+        var fee2025Id = await ApplyFeeForMemberAsync(member.Id, 2025, 50m);
+        var fee2026Id = await ApplyFeeForMemberAsync(member.Id, 2026, 60m);
+
+        var paymentSvc = BuildPaymentService();
+        var payment = await paymentSvc.RecordAsync(new RecordPaymentRequest
+        {
+            MemberId = member.Id,
+            Date = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            Amount = 110m,
+            PaymentMethod = PaymentMethod.Cash,
+            PaymentType = PaymentType.Annual,
+            SelectedFeeIds = [fee2025Id, fee2026Id]
+        });
+
+        var glRepo = new GLRepository(_db);
+        var balanceAfter = await glRepo.GetMemberBalanceAsync(member.Id);
+        Assert.Equal(0m, balanceAfter);
+
+        var paymentTxns = await _db.Transactions
+            .Where(t => t.PaymentId == payment.Id && t.FeeId != null)
+            .ToListAsync();
+        Assert.All(paymentTxns, t => Assert.True(t.FeeId == fee2025Id || t.FeeId == fee2026Id));
+    }
+
+    [Fact]
+    public async Task SelectedFeeIds_PartialAllocation_SettlesOldestCheckedFeeFirst_LeavesUncheckedFeeUntouched()
+    {
+        var member = await AddActiveMemberAsync("Henry");
+
+        var fee2025Id = await ApplyFeeForMemberAsync(member.Id, 2025, 50m);
+        var fee2026Id = await ApplyFeeForMemberAsync(member.Id, 2026, 60m);
+
+        var paymentSvc = BuildPaymentService();
+        await paymentSvc.RecordAsync(new RecordPaymentRequest
+        {
+            MemberId = member.Id,
+            Date = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            Amount = 30m,
+            PaymentMethod = PaymentMethod.Cash,
+            PaymentType = PaymentType.Annual,
+            SelectedFeeIds = [fee2025Id]
+        });
+
+        var fee2025Credits = await _db.Transactions
+            .Where(t => t.FeeId == fee2025Id && t.AccountId == MemberReceivableAccountId)
+            .SumAsync(t => t.CreditAmount);
+        var fee2026Credits = await _db.Transactions
+            .Where(t => t.FeeId == fee2026Id && t.AccountId == MemberReceivableAccountId)
+            .SumAsync(t => t.CreditAmount);
+
+        Assert.Equal(30m, fee2025Credits);
+        Assert.Equal(0m, fee2026Credits);
+    }
+
+    [Fact]
+    public async Task SelectedFeeIds_EmptySelection_ThrowsValidationException()
+    {
+        var member = await AddActiveMemberAsync("Iris");
+        await ApplyFeeForMemberAsync(member.Id, 2026, 50m);
+
+        var paymentSvc = BuildPaymentService();
+
+        await Assert.ThrowsAsync<ValidationException>(() => paymentSvc.RecordAsync(new RecordPaymentRequest
+        {
+            MemberId = member.Id,
+            Date = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            Amount = 50m,
+            PaymentMethod = PaymentMethod.Cash,
+            PaymentType = PaymentType.Annual,
+            SelectedFeeIds = []
+        }));
+    }
+
+    [Fact]
+    public async Task SelectedFeeIds_AmountExceedsSelectedTotal_ThrowsValidationException()
+    {
+        var member = await AddActiveMemberAsync("Jack");
+        var fee2025Id = await ApplyFeeForMemberAsync(member.Id, 2025, 50m);
+        await ApplyFeeForMemberAsync(member.Id, 2026, 60m);
+
+        var paymentSvc = BuildPaymentService();
+
+        await Assert.ThrowsAsync<ValidationException>(() => paymentSvc.RecordAsync(new RecordPaymentRequest
+        {
+            MemberId = member.Id,
+            Date = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            Amount = 70m, // exceeds the single selected fee's $50 remaining
+            PaymentMethod = PaymentMethod.Cash,
+            PaymentType = PaymentType.Annual,
+            SelectedFeeIds = [fee2025Id]
+        }));
+    }
+
     // --- Helpers ---
 
     private PaymentService BuildPaymentService()
@@ -318,7 +418,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
     {
         var member = new Member
         {
-            Id = Guid.NewGuid(), Name = name, StreetAddress = "1 Test St",
+            Id = Guid.NewGuid(), FirstName = name, StreetAddress = "1 Test St",
             Status = MemberStatus.Active,
             ActivateDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             JoinDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),

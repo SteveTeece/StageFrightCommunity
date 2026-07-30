@@ -65,11 +65,39 @@ public class PaymentService : IPaymentService
             savedPayment = await _paymentRepo.AddAsync(payment, innerCt);
 
             var member = await _memberRepo.GetByIdAsync(request.MemberId, innerCt);
-            var memberName = member?.Name ?? "Unknown Member";
+            var memberName = member?.FullName ?? "Unknown Member";
 
             // 2. FIFO allocation: get outstanding balance and fees in order
             var outstandingBalance = await _glRepo.GetMemberBalanceAsync(request.MemberId, innerCt);
             var fees = await _feeRepo.GetUnpaidOrderedFifoAsync(request.MemberId, innerCt);
+
+            if (request.SelectedFeeIds is not null)
+            {
+                if (request.SelectedFeeIds.Count == 0)
+                    throw new ValidationException(
+                        "At least one outstanding fee must be selected.", nameof(Payment), nameof(RecordAsync));
+
+                var selectedSet = request.SelectedFeeIds.ToHashSet();
+                var selectedFees = fees.Where(f => selectedSet.Contains(f.Id)).ToList();
+
+                decimal selectedRemainingTotal = 0m;
+                foreach (var fee in selectedFees)
+                {
+                    var feeTransactions = await _glRepo.GetByFeeAsync(fee.Id, innerCt);
+                    var alreadySettled = feeTransactions
+                        .Where(t => t.AccountId == SystemAccounts.MemberReceivableId)
+                        .Sum(t => t.CreditAmount);
+                    var remainingOwedOnFee = fee.Amount - alreadySettled;
+                    if (remainingOwedOnFee > 0m)
+                        selectedRemainingTotal += remainingOwedOnFee;
+                }
+
+                if (request.Amount > selectedRemainingTotal)
+                    throw new ValidationException(
+                        "Amount exceeds the selected fees' remaining total.", nameof(Payment), nameof(RecordAsync));
+
+                fees = selectedFees;
+            }
 
             decimal remainingPayment = request.Amount;
 
