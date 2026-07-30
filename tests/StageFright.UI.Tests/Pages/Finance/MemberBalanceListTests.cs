@@ -16,7 +16,7 @@ namespace StageFright.UI.Tests.Pages.Finance;
 /// navigates back to the Outstanding tab itself (with memberId set) rather than a
 /// separate tab, since that standalone tab was removed.
 /// </summary>
-public class MemberBalanceListTests : BunitContext
+public class MemberBalanceListTests : RadzenGridTestContext
 {
     private readonly IMemberBalanceService _balanceService = Substitute.For<IMemberBalanceService>();
 

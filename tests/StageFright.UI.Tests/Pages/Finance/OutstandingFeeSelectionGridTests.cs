@@ -9,7 +9,7 @@ namespace StageFright.UI.Tests.Pages.Finance;
 /// bUnit tests for OutstandingFeeSelectionGrid: initial render, per-row and select-all
 /// checkbox toggling, SelectionChanged sum, GetSelectedFeeIds, empty state, ReadOnly disabling.
 /// </summary>
-public class OutstandingFeeSelectionGridTests : BunitContext
+public class OutstandingFeeSelectionGridTests : RadzenGridTestContext
 {
     private static readonly Guid Fee1Id = Guid.NewGuid();
     private static readonly Guid Fee2Id = Guid.NewGuid();
