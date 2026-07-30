@@ -1,0 +1,55 @@
+@if (Fees.Count == 0)
+{
+    <div class="alert alert-warning py-1 mb-2 small">This member has no outstanding fees.</div>
+}
+else
+{
+    <RadzenDataGrid Data="@_rows" TItem="OutstandingFeeRow"
+                    AllowSorting="true" AllowPaging="true" PageSize="15"
+                    class="rz-shadow-0">
+        <Columns>
+            <RadzenDataGridColumn TItem="OutstandingFeeRow" Title="Select" Width="100px" Sortable="false">
+                <HeaderTemplate>
+                    <div class="d-flex flex-column align-items-center gap-1">
+                        <span>Select</span>
+                        <span class="select-all-inline small text-muted">
+                            (<input type="checkbox" class="form-check-input" id="select-all-outstanding-fees"
+                                    checked="@AllSelected" disabled="@ReadOnly"
+                                    @onchange="e => ToggleSelectAll((bool)(e.Value ?? false))"
+                                    aria-label="Select all outstanding fees" />
+                            <label class="form-check-label mb-0" for="select-all-outstanding-fees">All</label>)
+                        </span>
+                    </div>
+                </HeaderTemplate>
+                <Template Context="row">
+                    <div class="text-center">
+                        <input type="checkbox" class="form-check-input" id="fee-@row.Fee.FeeId"
+                               checked="@row.Selected" disabled="@ReadOnly"
+                               @onchange="e => ToggleRow(row, (bool)(e.Value ?? false))"
+                               aria-label="Select @row.Fee.FeeType fee dated @row.Fee.FeeDate.ToString("d")" />
+                    </div>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="OutstandingFeeRow" Title="Fee Type">
+                <Template Context="row">
+                    @row.Fee.FeeType
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="OutstandingFeeRow" Title="Fee Date">
+                <Template Context="row">
+                    @row.Fee.FeeDate.ToString("d MMM yyyy")
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="OutstandingFeeRow" Title="Due Date">
+                <Template Context="row">
+                    @row.Fee.DueDate.ToString("d MMM yyyy")
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="OutstandingFeeRow" Title="Remaining Amount">
+                <Template Context="row">
+                    <div class="text-end">@row.Fee.RemainingAmount.ToString("C")</div>
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+}

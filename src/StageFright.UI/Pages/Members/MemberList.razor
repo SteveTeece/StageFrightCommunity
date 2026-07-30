@@ -45,11 +45,11 @@ else
                     AllowSorting="true" AllowPaging="true" PageSize="15"
                     class="rz-shadow-0">
         <Columns>
-            <RadzenDataGridColumn TItem="Member" Property="Name" Title="Name" Width="200px">
+            <RadzenDataGridColumn TItem="Member" Property="SortableFullName" Title="Name" Width="200px">
                 <Template Context="member">
                     <a href="#" @onclick:preventDefault @onclick="() => ViewMember(member.Id)"
                        class="text-decoration-none fw-semibold">
-                        @member.Name@(member.Status == MemberStatus.Inactive ? " (Inactive)" : "")
+                        @member.SortableFullName@(member.Status == MemberStatus.Inactive ? " (Inactive)" : "")
                     </a>
                 </Template>
             </RadzenDataGridColumn>
@@ -72,7 +72,7 @@ else
                 <Template Context="member">
                     <button class="btn btn-primary btn-sm"
                             @onclick="() => EditMember(member.Id)"
-                            aria-label="Edit @member.Name">
+                            aria-label="Edit @member.SortableFullName">
                         Edit
                     </button>
                 </Template>

@@ -64,7 +64,7 @@ public class SetupService : ISetupService
             CommitteeRenewalMonth = 1,
             MaxAgeRangeYears = 150,
             MinimumMemberAge = 0,
-            Theme = Theme.Light,
+            Theme = request.Theme,
             SchemaVersion = "1.1.0",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow

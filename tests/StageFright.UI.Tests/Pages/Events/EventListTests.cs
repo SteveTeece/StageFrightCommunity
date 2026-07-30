@@ -10,7 +10,7 @@ namespace StageFright.UI.Tests.Pages.Events;
 /// <summary>
 /// bUnit tests for EventList — rendering, empty state, navigation triggers.
 /// </summary>
-public class EventListTests : BunitContext
+public class EventListTests : RadzenGridTestContext
 {
     private readonly IEventService _eventService = Substitute.For<IEventService>();
 

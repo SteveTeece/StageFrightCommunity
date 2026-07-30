@@ -36,11 +36,48 @@ public class MemberDetailTests : BunitContext
         _memberService.GetByIdAsync(_memberId, Arg.Any<CancellationToken>())
             .Returns(new Member
             {
-                Id = _memberId, Name = "Alice Smith",
+                Id = _memberId, FirstName = "Alice", LastName = "Smith",
                 StreetAddress = "1 Test St", Status = MemberStatus.Active,
                 JoinDate = DateTime.UtcNow, ActivateDate = DateTime.UtcNow.Date,
                 CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
             });
+    }
+
+    [Fact]
+    public void MemberWithDateOfBirth_RendersAgeAndDobRows()
+    {
+        var dob = DateTime.UtcNow.Date.AddYears(-40);
+        _memberService.GetByIdAsync(_memberId, Arg.Any<CancellationToken>())
+            .Returns(new Member
+            {
+                Id = _memberId, FirstName = "Bob", LastName = "Dob",
+                StreetAddress = "1 Test St", Status = MemberStatus.Active,
+                JoinDate = DateTime.UtcNow, ActivateDate = DateTime.UtcNow.Date,
+                DateOfBirth = dob,
+                CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+            });
+        _committeeService.GetHistoryAsync(_memberId, Arg.Any<CancellationToken>())
+            .Returns(new List<CommitteeMembership>());
+
+        var cut = Render<MemberDetail>(p => p.Add(m => m.Id, _memberId));
+
+        var terms = cut.FindAll("dt").Select(dt => dt.TextContent).ToList();
+        Assert.Contains("Date of Birth", terms);
+        Assert.Contains("Age", terms);
+    }
+
+    [Fact]
+    public void MemberWithoutDateOfBirth_DoesNotRenderAgeOrDobRows()
+    {
+        // _memberService default setup in the constructor returns a member with no DateOfBirth.
+        _committeeService.GetHistoryAsync(_memberId, Arg.Any<CancellationToken>())
+            .Returns(new List<CommitteeMembership>());
+
+        var cut = Render<MemberDetail>(p => p.Add(m => m.Id, _memberId));
+
+        var terms = cut.FindAll("dt").Select(dt => dt.TextContent).ToList();
+        Assert.DoesNotContain("Date of Birth", terms);
+        Assert.DoesNotContain("Age", terms);
     }
 
     [Fact]

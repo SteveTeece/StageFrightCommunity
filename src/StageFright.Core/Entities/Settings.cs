@@ -68,8 +68,8 @@ public class Settings
     /// <summary>Minimum member age accepted by the system (years). Default: 0 (no minimum).</summary>
     public int MinimumMemberAge { get; set; } = 0;
 
-    /// <summary>Current UI colour theme preference. Default: Light.</summary>
-    public Theme Theme { get; set; } = Theme.Light;
+    /// <summary>Current UI colour theme preference. Default: Dark.</summary>
+    public Theme Theme { get; set; } = Theme.Dark;
 
     /// <summary>
     /// When true, the Rehearsals and Events dashboard tiles display a year-to-date

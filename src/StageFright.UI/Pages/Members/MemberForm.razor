@@ -17,13 +17,24 @@ else
         <div class="row g-2 mb-2">
 
             <div class="col-md-6">
-                <label class="form-label" for="name">Full Name <span aria-hidden="true">*</span></label>
-                <InputText id="name"
-                           class="@(_errors.ContainsKey("Name") ? "form-control form-control-sm is-invalid" : "form-control form-control-sm")"
-                           @bind-Value="_form.Name" />
-                @if (_errors.TryGetValue("Name", out var nameErr))
+                <label class="form-label" for="firstName">First Name <span aria-hidden="true">*</span></label>
+                <InputText id="firstName"
+                           class="@(_errors.ContainsKey("FirstName") ? "form-control form-control-sm is-invalid" : "form-control form-control-sm")"
+                           @bind-Value="_form.FirstName" />
+                @if (_errors.TryGetValue("FirstName", out var firstNameErr))
                 {
-                    <div class="invalid-feedback">@nameErr</div>
+                    <div class="invalid-feedback">@firstNameErr</div>
+                }
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label" for="lastName">Last Name <span aria-hidden="true">*</span></label>
+                <InputText id="lastName"
+                           class="@(_errors.ContainsKey("LastName") ? "form-control form-control-sm is-invalid" : "form-control form-control-sm")"
+                           @bind-Value="_form.LastName" />
+                @if (_errors.TryGetValue("LastName", out var lastNameErr))
+                {
+                    <div class="invalid-feedback">@lastNameErr</div>
                 }
             </div>
 

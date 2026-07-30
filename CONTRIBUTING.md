@@ -779,7 +779,9 @@ Before submitting a pull request, verify:
 
 ## Pull Request Process
 
-1. **Branch**: Create feature branch from `master`
+> **Target branch**: All pull requests must be opened against `dev`, not `master`. PRs targeting `master` will be rejected.
+
+1. **Branch**: Create feature branch from `dev`
 2. **Implement**: Follow vertical slice pattern, write tests first
 3. **Commit**: Use clear, descriptive commit messages
    ```
@@ -797,7 +799,7 @@ Before submitting a pull request, verify:
    - Test coverage summary
    - Screenshots for UI changes
 6. **Review**: Address review feedback
-7. **Merge**: Squash merge to `master`
+7. **Merge**: Squash merge to `dev`
 
 ## Frequently Asked Questions
 

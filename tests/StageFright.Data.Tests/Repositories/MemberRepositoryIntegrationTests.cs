@@ -111,6 +111,23 @@ public class MemberRepositoryIntegrationTests : IDisposable
     }
 
     [Fact]
+    public async Task GetActiveAsOfAsync_ReturnsMember_WhenInactivatedAfterDate()
+    {
+        using var db = _factory.CreateContext();
+        var repo = new MemberRepository(db);
+
+        var refDate = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc);
+        var m = Member("Later Leaver", MemberStatus.Inactive);
+        m.ActivateDate = refDate.AddDays(-20);
+        m.InactivateDate = refDate.AddDays(10); // inactivated AFTER reference date -> was still active on refDate
+        await repo.AddAsync(m);
+
+        var result = await repo.GetActiveAsOfAsync(refDate);
+
+        Assert.Contains(result, r => r.Id == m.Id);
+    }
+
+    [Fact]
     public async Task GetActiveAsOfAsync_ExcludesArchivedMembers()
     {
         using var db = _factory.CreateContext();
@@ -147,17 +164,22 @@ public class MemberRepositoryIntegrationTests : IDisposable
 
     // --- Helpers ---
 
-    private static Member Member(string name, MemberStatus status = MemberStatus.Active) => new()
+    private static Member Member(string name, MemberStatus status = MemberStatus.Active)
     {
-        Id = Guid.NewGuid(),
-        Name = name,
-        StreetAddress = "1 Test St",
-        Status = status,
-        ActivateDate = DateTime.UtcNow.AddDays(-1),
-        JoinDate = DateTime.UtcNow,
-        CreatedAt = DateTime.UtcNow,
-        UpdatedAt = DateTime.UtcNow
-    };
+        var (firstName, lastName) = StageFright.Core.Modules.Members.MemberNameSplitter.Split(name);
+        return new()
+        {
+            Id = Guid.NewGuid(),
+            FirstName = firstName,
+            LastName = lastName,
+            StreetAddress = "1 Test St",
+            Status = status,
+            ActivateDate = DateTime.UtcNow.AddDays(-1),
+            JoinDate = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+    }
 
     public void Dispose() => _factory.Dispose();
 }

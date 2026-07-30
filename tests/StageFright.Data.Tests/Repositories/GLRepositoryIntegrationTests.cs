@@ -23,7 +23,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
     // Test-only income account seeded in InitializeAsync
     private static readonly Guid IncomeAccountId = new("00000000-0000-0000-0000-000000000010");
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var options = new DbContextOptionsBuilder<StageFrightDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -46,7 +46,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         _sut = new GLRepository(_db);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _db.Database.CloseConnectionAsync();
         await _db.DisposeAsync();
@@ -199,6 +199,30 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         var txns = await _sut.GetByDateRangeAsync(from, to);
 
         Assert.Empty(txns);
+    }
+
+    // --- GetByMemberAsync ---
+
+    [Fact]
+    public async Task GetByMember_ReturnsOnlyMemberReceivableLegs_ExcludingOtherAccountsSharingMemberId()
+    {
+        var memberId = await SeedMemberAsync();
+        var from = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var to = new DateTime(2026, 12, 31, 0, 0, 0, DateTimeKind.Utc);
+
+        // Fee accrual: only the MemberReceivable leg is tagged with MemberId (matches FeeService).
+        await AddGLPairAsync("0101", MemberReceivableAccountId, 50m, memberId,
+                              "1000", IncomeAccountId, 50m, null);
+
+        // Payment: BOTH legs are tagged with MemberId (matches PaymentService) — the Cash leg
+        // must not leak into the member's receivable ledger.
+        await AddGLPairAsync("0100", CashAccountId, 30m, memberId,
+                              "0101", MemberReceivableAccountId, 30m, memberId);
+
+        var txns = await _sut.GetByMemberAsync(memberId, from, to);
+
+        Assert.Equal(2, txns.Count);
+        Assert.All(txns, t => Assert.Equal(MemberReceivableAccountId, t.AccountId));
     }
 
     // --- GetBalanceTotalsAsync ---
@@ -435,7 +459,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
     {
         var member = new Member
         {
-            Id = Guid.NewGuid(), Name = "Test Member", StreetAddress = "1 Test St",
+            Id = Guid.NewGuid(), FirstName = "Test", LastName = "Member", StreetAddress = "1 Test St",
             Status = MemberStatus.Active,
             ActivateDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             JoinDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),

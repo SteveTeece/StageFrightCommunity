@@ -69,6 +69,11 @@ else
                     </div>
 
                     <div class="col-12">
+                        <OutstandingFeeSelectionGrid @ref="_feeGrid" Fees="_outstandingFees" ReadOnly="_saved"
+                                                      SelectionChanged="OutstandingFeesSelectionChanged" />
+                    </div>
+
+                    <div class="col-12">
                         <label class="form-label" for="notes">Notes</label>
                         <InputTextArea id="notes" class="form-control form-control-sm" rows="2"
                                        @bind-Value="_form.Notes" />
@@ -79,7 +84,7 @@ else
                 @if (!_saved)
                 {
                     <div class="d-flex gap-2 mt-2">
-                        <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
+                        <button type="submit" class="btn btn-primary btn-sm" disabled="@(_saving || _outstandingFees.Count == 0)">
                             @(_saving ? "Saving…" : "Record Member Payment")
                         </button>
                         <button type="button" class="btn btn-outline-secondary btn-sm"

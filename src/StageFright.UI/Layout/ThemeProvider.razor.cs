@@ -8,17 +8,20 @@ namespace StageFright.UI.Layout;
 /// Cascading component that owns the current UI theme.
 /// Wraps content in an element with data-bs-theme="light"|"dark" so Bootstrap 5.3
 /// applies the correct colour scheme to all descendants.
-/// Reads the initial theme from Settings on mount; exposes ToggleAsync to persist changes.
+/// Reads the initial theme from Settings on mount; when no Settings row exists yet
+/// (pre-setup), falls back to the device's OS theme preference, defaulting to Dark
+/// when that preference is unavailable. Exposes ToggleAsync to persist changes.
 /// </summary>
 public partial class ThemeProvider : ComponentBase
 {
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
+    [Inject] private IDeviceThemePreferenceProvider DeviceThemePreferenceProvider { get; set; } = null!;
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    private Theme _currentTheme = Theme.Light;
+    private Theme _currentTheme = Theme.Dark;
 
-    /// <summary>The active theme — read by ShellLayout and GeneralSettingsTab.</summary>
+    /// <summary>The active theme — read by ShellLayout, GeneralSettingsTab, and SetupWizard.</summary>
     public Theme CurrentTheme => _currentTheme;
 
     protected override async Task OnInitializedAsync()
@@ -26,11 +29,28 @@ public partial class ThemeProvider : ComponentBase
         try
         {
             var settings = await SettingsService.GetAsync();
-            _currentTheme = settings?.Theme ?? Theme.Light;
+            _currentTheme = settings?.Theme ?? FallbackTheme();
         }
         catch (Exception)
         {
-            _currentTheme = Theme.Light;
+            _currentTheme = FallbackTheme();
+        }
+    }
+
+    private Theme FallbackTheme()
+    {
+        try
+        {
+            return DeviceThemePreferenceProvider.GetPreference() switch
+            {
+                PlatformThemePreference.Light => Theme.Light,
+                PlatformThemePreference.Dark => Theme.Dark,
+                _ => Theme.Dark
+            };
+        }
+        catch (Exception)
+        {
+            return Theme.Dark;
         }
     }
 

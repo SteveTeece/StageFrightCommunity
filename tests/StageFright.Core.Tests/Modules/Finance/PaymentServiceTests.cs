@@ -221,6 +221,125 @@ public class PaymentServiceTests : TestBase
             Arg.Any<CancellationToken>());
     }
 
+    // --- RecordAsync: SelectedFeeIds ---
+
+    [Fact]
+    public async Task RecordAsync_SelectedFeeIds_FullAllocation_WhenAmountEqualsCombinedRemainingTotal()
+    {
+        var request = MakeRequest(110m);
+        request.SelectedFeeIds = [Fee1Id, Fee2Id];
+
+        await _sut.RecordAsync(request, Ct);
+
+        await _glRepo.Received(1).AddPairAsync(
+            Arg.Is<Transaction>(t => t.DebitAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Is<Transaction>(t => t.CreditAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Any<CancellationToken>());
+
+        await _glRepo.Received(1).AddPairAsync(
+            Arg.Is<Transaction>(t => t.DebitAmount == 80m && t.FeeId == Fee2Id),
+            Arg.Is<Transaction>(t => t.CreditAmount == 80m && t.FeeId == Fee2Id),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RecordAsync_SelectedFeeIds_PartialAllocation_OldestFirst_WhenAmountLessThanCombinedTotal()
+    {
+        var request = MakeRequest(50m);
+        request.SelectedFeeIds = [Fee1Id, Fee2Id];
+
+        await _sut.RecordAsync(request, Ct);
+
+        // Fee1 (oldest) fully settled at $30
+        await _glRepo.Received(1).AddPairAsync(
+            Arg.Is<Transaction>(t => t.DebitAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Is<Transaction>(t => t.CreditAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Any<CancellationToken>());
+
+        // Fee2 partially settled at $20 — remaining $60 untouched
+        await _glRepo.Received(1).AddPairAsync(
+            Arg.Is<Transaction>(t => t.DebitAmount == 20m && t.FeeId == Fee2Id),
+            Arg.Is<Transaction>(t => t.CreditAmount == 20m && t.FeeId == Fee2Id),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RecordAsync_SelectedFeeIds_UncheckedFee_ReceivesZeroAllocation_EvenIfChronologicallyNext()
+    {
+        // Fee1 ($30, oldest) is deliberately NOT selected — only Fee2 ($80) is checked.
+        var request = MakeRequest(80m);
+        request.SelectedFeeIds = [Fee2Id];
+
+        await _sut.RecordAsync(request, Ct);
+
+        await _glRepo.Received(1).AddPairAsync(
+            Arg.Is<Transaction>(t => t.DebitAmount == 80m && t.FeeId == Fee2Id),
+            Arg.Is<Transaction>(t => t.CreditAmount == 80m && t.FeeId == Fee2Id),
+            Arg.Any<CancellationToken>());
+
+        await _glRepo.DidNotReceive().AddPairAsync(
+            Arg.Is<Transaction>(t => t.FeeId == Fee1Id),
+            Arg.Any<Transaction>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RecordAsync_SelectedFeeIds_ThrowsValidation_WhenSelectionIsExplicitlyEmpty()
+    {
+        var request = MakeRequest(50m);
+        request.SelectedFeeIds = [];
+
+        await Assert.ThrowsAsync<Core.Exceptions.ValidationException>(
+            () => _sut.RecordAsync(request, Ct));
+    }
+
+    [Fact]
+    public async Task RecordAsync_SelectedFeeIds_ThrowsValidation_WhenAmountExceedsSelectedFeesRemainingTotal()
+    {
+        // Fee1's remaining total is $30 — request $50 against only Fee1.
+        var request = MakeRequest(50m);
+        request.SelectedFeeIds = [Fee1Id];
+
+        await Assert.ThrowsAsync<Core.Exceptions.ValidationException>(
+            () => _sut.RecordAsync(request, Ct));
+    }
+
+    [Fact]
+    public async Task RecordAsync_SelectedFeeIds_UnrecognizedFeeId_ContributesNothing_AndDoesNotThrow()
+    {
+        var unrecognizedFeeId = Guid.NewGuid();
+        var request = MakeRequest(30m);
+        request.SelectedFeeIds = [Fee1Id, unrecognizedFeeId];
+
+        var payment = await _sut.RecordAsync(request, Ct);
+
+        Assert.Equal(30m, payment.Amount);
+        await _glRepo.Received(1).AddPairAsync(
+            Arg.Is<Transaction>(t => t.DebitAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Is<Transaction>(t => t.CreditAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RecordAsync_SelectedFeeIdsNull_ReproducesUnfilteredFifoBehavior_ByteForByte()
+    {
+        // Regression: omitting SelectedFeeIds (null, the default) must behave exactly like
+        // today's unfiltered FIFO allocation across the member's full unpaid fee history.
+        var request = MakeRequest(110m);
+        Assert.Null(request.SelectedFeeIds);
+
+        await _sut.RecordAsync(request, Ct);
+
+        await _glRepo.Received(1).AddPairAsync(
+            Arg.Is<Transaction>(t => t.DebitAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Is<Transaction>(t => t.CreditAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Any<CancellationToken>());
+        await _glRepo.Received(1).AddPairAsync(
+            Arg.Is<Transaction>(t => t.DebitAmount == 80m && t.FeeId == Fee2Id),
+            Arg.Is<Transaction>(t => t.CreditAmount == 80m && t.FeeId == Fee2Id),
+            Arg.Any<CancellationToken>());
+    }
+
     // --- UpdateNotesAsync ---
 
     [Fact]

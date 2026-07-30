@@ -7,6 +7,11 @@ namespace StageFright.UI.Modules.Finance;
 /// The tile body (OutstandingBalancesTile) loads and renders its own data, so this
 /// provider returns static TileData; DisplayOrder=45 places it between Finance (40)
 /// and Cash flow (50). Renders at TwoByTwo so the trend chart has room to be legible.
+/// NavigateRoute points at the Finance "Outstanding" tab (MemberBalanceList) rather than
+/// the Member Account Summary report: both the tile's member count and that tab query
+/// IMemberBalanceService.GetAllMemberBalancesAsync(), so the two always agree. The report
+/// intentionally lists every member (including $0 balances, per spec 005) and would show a
+/// larger, mismatched count if linked here instead (issue #242).
 /// </summary>
 public class OutstandingBalancesDashboardTileProvider : IDashboardTileProvider
 {
@@ -14,8 +19,8 @@ public class OutstandingBalancesDashboardTileProvider : IDashboardTileProvider
     public string Title => "Outstanding Balances";
     public string ModuleName => "Finance";
     public int DisplayOrder => 45;
-    public string? NavigateRoute => "/reports/member-account-summary";
-    public string? ActionText => "View Report";
+    public string? NavigateRoute => "/finance?tab=outstanding";
+    public string? ActionText => "View Members";
     public Type TileComponentType => typeof(OutstandingBalancesTile);
     public DashboardTileSize TileSize => DashboardTileSize.TwoByTwo;
 

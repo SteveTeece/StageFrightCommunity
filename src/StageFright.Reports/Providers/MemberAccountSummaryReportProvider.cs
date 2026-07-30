@@ -8,20 +8,22 @@ namespace StageFright.Reports.Providers;
 /// <summary>
 /// Generates the Member Account Summary report.
 /// Per member: opening balance, period transactions, closing balance,
-/// fee aging by DueDate (current / 30 / 60 / 90+ days as of today).
+/// fee aging by DueDate (current / 30 / 60 / 90+ days as of today) computed from
+/// GL-derived remaining amounts so buckets always sum to the member's balance (issue #244).
+/// Only members with an outstanding (positive) balance appear.
 /// Includes archived members per FR-036.
 /// </summary>
 public class MemberAccountSummaryReportProvider : IReportProvider
 {
     private readonly IGLRepository _gl;
     private readonly IMemberRepository _members;
-    private readonly IFeeRepository _fees;
+    private readonly IMemberBalanceService _balances;
 
-    public MemberAccountSummaryReportProvider(IGLRepository gl, IMemberRepository members, IFeeRepository fees)
+    public MemberAccountSummaryReportProvider(IGLRepository gl, IMemberRepository members, IMemberBalanceService balances)
     {
         _gl = gl;
         _members = members;
-        _fees = fees;
+        _balances = balances;
     }
 
     public string ReportId => "member-account-summary";
@@ -47,37 +49,59 @@ public class MemberAccountSummaryReportProvider : IReportProvider
             var archivedMembers = await _members.GetArchivedAsync(ct);
             allMembers.AddRange(archivedMembers);
         }
-        allMembers = allMembers.OrderBy(m => m.Name).ToList();
+        allMembers = allMembers.OrderBy(m => m.LastName).ThenBy(m => m.FirstName).ToList();
 
         var today = DateTime.UtcNow.Date;
         var sections = new List<ReportSection>();
 
         foreach (var member in allMembers)
         {
-            var periodTxns = await _gl.GetByMemberAsync(member.Id, from, to, ct);
             var closingBalance = await _gl.GetMemberBalanceAsync(member.Id, ct);
-            var periodNet = periodTxns.Sum(t => t.CreditAmount - t.DebitAmount);
-            var openingBalance = closingBalance - periodNet;
+            if (closingBalance <= 0m)
+                continue;
 
-            var memberFees = await _fees.GetByMemberAsync(member.Id, ct);
-            var outstandingFees = memberFees.Where(f => !f.PaidAtCreation).ToList();
+            var periodTxns = await _gl.GetByMemberAsync(member.Id, from, to, ct);
+            var periodChange = periodTxns.Sum(t => t.DebitAmount - t.CreditAmount);
+            var openingBalance = closingBalance - periodChange;
+
+            var outstandingFees = await _balances.GetOutstandingFeesAsync(member.Id, ct);
+            var outstandingFeeIds = outstandingFees.Select(f => f.FeeId).ToHashSet();
+
+            // Any receivable credit not allocated to a specific fee (e.g. overpayment)
+            // is walked off the oldest fees first so the buckets sum to the GL balance.
+            var unallocatedCredit = outstandingFees.Sum(f => f.RemainingAmount) - closingBalance;
 
             decimal aging0 = 0, aging30 = 0, aging60 = 0, aging90Plus = 0;
             foreach (var fee in outstandingFees)
             {
+                var remaining = fee.RemainingAmount;
+                if (unallocatedCredit > 0m)
+                {
+                    var applied = Math.Min(unallocatedCredit, remaining);
+                    remaining -= applied;
+                    unallocatedCredit -= applied;
+                }
+                if (remaining <= 0m)
+                    continue;
+
                 var daysOverdue = (today - fee.DueDate.Date).Days;
-                if (daysOverdue <= 0) aging0 += fee.Amount;
-                else if (daysOverdue <= 30) aging30 += fee.Amount;
-                else if (daysOverdue <= 60) aging60 += fee.Amount;
-                else aging90Plus += fee.Amount;
+                if (daysOverdue <= 0) aging0 += remaining;
+                else if (daysOverdue <= 30) aging30 += remaining;
+                else if (daysOverdue <= 60) aging60 += remaining;
+                else aging90Plus += remaining;
             }
 
             var rows = new List<ReportRow>
             {
-                new() { Cells = ["Opening Balance", string.Empty, string.Empty, string.Empty, string.Empty, FormatCurrency(openingBalance)] }
+                new() { Cells = ["Opening Balance", string.Empty, string.Empty, string.Empty, FormatCurrency(openingBalance)] }
             };
 
-            foreach (var txn in periodTxns.OrderBy(t => t.Date))
+            // Only show line items still relevant to what's owed: transactions tied to a fee
+            // that's fully settled are hidden, since the opening/closing balance rows already
+            // account for them; adjustments with no FeeId (e.g. overpayments) always show.
+            var displayedTxns = periodTxns.Where(t => t.FeeId is null || outstandingFeeIds.Contains(t.FeeId.Value));
+
+            foreach (var txn in displayedTxns.OrderBy(t => t.Date))
             {
                 rows.Add(new ReportRow
                 {
@@ -87,7 +111,6 @@ public class MemberAccountSummaryReportProvider : IReportProvider
                         txn.Description ?? string.Empty,
                         txn.DebitAmount > 0 ? FormatCurrency(txn.DebitAmount) : string.Empty,
                         txn.CreditAmount > 0 ? FormatCurrency(txn.CreditAmount) : string.Empty,
-                        string.Empty,
                         string.Empty
                     ]
                 });
@@ -95,24 +118,13 @@ public class MemberAccountSummaryReportProvider : IReportProvider
 
             rows.Add(new ReportRow
             {
-                Cells = ["Closing Balance", string.Empty, string.Empty, string.Empty, string.Empty, FormatCurrency(closingBalance)],
+                Cells = ["Closing Balance", string.Empty, string.Empty, string.Empty, FormatCurrency(closingBalance)],
                 IsEmphasized = true
             });
 
-            rows.Add(new ReportRow
-            {
-                Cells =
-                [
-                    "Aging",
-                    $"Current: {FormatCurrency(aging0)}",
-                    $"30 days: {FormatCurrency(aging30)}",
-                    $"60 days: {FormatCurrency(aging60)}",
-                    $"90+ days: {FormatCurrency(aging90Plus)}",
-                    string.Empty
-                ]
-            });
-
-            var label = member.IsDeleted ? $"{member.Name} (Archived)" : member.Name;
+            // Aging is not repeated here — it's already shown per-bucket on the collapsed
+            // member summary row (SummaryRow below).
+            var label = member.IsDeleted ? $"{member.SortableFullName} (Archived)" : member.SortableFullName;
             var summaryRow = new ReportRow
             {
                 Cells =
@@ -139,7 +151,6 @@ public class MemberAccountSummaryReportProvider : IReportProvider
                 new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
                 new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
-                new ReportColumn { Header = "Aging", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "Balance", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
             ],
             SummaryColumns =
