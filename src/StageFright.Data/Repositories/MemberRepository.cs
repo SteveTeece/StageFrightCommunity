@@ -19,9 +19,9 @@ public class MemberRepository : SoftDeletableBaseRepository<Member>, IMemberRepo
     public async Task<IReadOnlyList<Member>> GetActiveAsOfAsync(DateTime date, CancellationToken ct = default)
     {
         return await _db.Members
-            .Where(m => m.Status == MemberStatus.Active
-                && m.ActivateDate <= date
-                && (m.InactivateDate == null || m.InactivateDate > date))
+            .Where(m =>
+                (m.Status == MemberStatus.Active && m.ActivateDate <= date)
+                || (m.Status == MemberStatus.Inactive && m.ActivateDate <= date && m.InactivateDate > date))
             .ToListAsync(ct);
     }
 }
