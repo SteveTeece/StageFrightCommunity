@@ -11,7 +11,7 @@ namespace StageFright.UI.Tests.Pages.Members;
 /// <summary>
 /// bUnit tests for MemberList — the show-inactive switch and its effect on the grid.
 /// </summary>
-public class MemberListTests : BunitContext
+public class MemberListTests : RadzenGridTestContext
 {
     private readonly IMemberService _memberService = Substitute.For<IMemberService>();
 

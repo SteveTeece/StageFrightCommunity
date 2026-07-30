@@ -12,7 +12,7 @@ namespace StageFright.UI.Tests.Pages.Events;
 /// <summary>
 /// bUnit tests for ParticipationGrid — member rendering, no-fee columns, save behavior, locked state.
 /// </summary>
-public class ParticipationGridTests : BunitContext
+public class ParticipationGridTests : RadzenGridTestContext
 {
     private readonly IEventService _eventService = Substitute.For<IEventService>();
     private readonly IMemberService _memberService = Substitute.For<IMemberService>();

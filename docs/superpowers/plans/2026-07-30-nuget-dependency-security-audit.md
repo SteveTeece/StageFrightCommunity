@@ -100,14 +100,19 @@ the full run was the known pre-existing bUnit GUID-substring flake, confirmed by
 - [x] `NSubstitute` 5.3.0 → 6.0.0 across all 5 test projects — check changelog for mocking-API
       breaking changes first. No breaking-API usage found in this repo; build + full test suite
       (1352 tests) green. Committed 2026-07-30 (4f4abfc).
-- [ ] `Radzen.Blazor` 10.4.9 → 11.1.9 in `StageFright.UI` — **attempted and reverted.** Compiles
-      clean, but `RadzenDataGrid` now issues a new JS interop call (`Radzen.createDataGrid`) from
-      `OnAfterRenderAsync` that bUnit's `BunitJSInterop` doesn't mock, failing 99 of 409
-      `StageFright.UI.Tests` (every test that renders a grid). 14 production components use
-      `RadzenDataGrid` per CLAUDE.md's data-grid standard, so fixing this properly means adding JS
-      interop setups across every affected bUnit test file — a broad test-infrastructure change,
-      not a version bump. Left at `10.4.9`; needs its own dedicated pass (bUnit JSInterop mock
-      updates) before this can move, plus the manual browser smoke-test called for below.
+- [x] `Radzen.Blazor` 10.4.9 → 11.1.9 in `StageFright.UI` — resolved via GitHub issue #264. Added a
+      shared `RadzenGridTestContext` bUnit base class (`tests/StageFright.UI.Tests/RadzenGridTestContext.cs`)
+      that mocks the new `Radzen.createDataGrid` JS interop call via `JSInterop.SetupModule(...)`
+      in `Loose` mode (bUnit requires `SetupModule`, not a plain `Setup<IJSObjectReference>`, for
+      calls returning `IJSObjectReference`); the 11 affected test classes now inherit it instead of
+      `BunitContext` directly. Full build + all 1352 tests green. The manual smoke-test surfaced a
+      second, real production bug: the real WebView2 runtime threw `'Radzen' was undefined` on any
+      page with a grid, because `Radzen.Blazor.js` was never referenced in
+      `src/StageFright.App/wwwroot/index.html` (unneeded until 11.x's `RadzenDataGrid` started
+      calling into it) — added the `<script src="_content/Radzen.Blazor/Radzen.Blazor.js">` tag
+      per Radzen's own quick-start docs. Verified via a live CDP-driven run: Members grid renders
+      rows, and a real dispatched mouse click on a column header correctly triggers a sort
+      (`aria-sort` flips to `ascending`).
 - [x] `Microsoft.Maui.Controls` / `Microsoft.AspNetCore.Components.WebView.Maui` 10.0.71 → 10.0.90
       in `StageFright.App` — the biggest compatibility risk in the audit, since it also moves
       `Microsoft.WindowsAppSDK.*` from the `1.8.x` to `2.x.x` major line; may require a matching
