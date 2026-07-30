@@ -31,6 +31,10 @@ description: "Task list template for feature implementation"
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
+> **Superseded**: T003's `AnnualFeePaid` field described below was replaced by T027
+> (adds `Attended`/`RehearsalFeePaid`) per the Phase 7 correction. Kept as a historical record of
+> what was originally built; see Phase 7 for the current shape.
+
 **Purpose**: Establish the shared DTO/contract shapes every user story phase builds on (per data-model.md). No behavior yet — just the types.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
@@ -45,6 +49,11 @@ description: "Task list template for feature implementation"
 ---
 
 ## Phase 3: User Story 1 - Print a roll instead of maintaining a separate paper list (Priority: P1) 🎯 MVP
+
+> **Partially superseded**: The member-fetch mechanism described below
+> (`IMemberService.GetByStatusAsync(MemberStatus.Active)`) was replaced by
+> `IMemberRepository.GetActiveAsOfAsync(rehearsal.Date)` in T030 (point-in-time membership, per
+> the Phase 7 correction). The button/handler/DI wiring (T012-T014) remain accurate.
 
 **Goal**: A "Print Roll" action on each scheduled rehearsal generates a print-ready PDF listing every currently-active member, sorted by surname then first name, each with blank "Attended" and "Rehearsal Fee Paid" checkboxes; an empty active-member list shows an inline message instead of a blank PDF.
 
@@ -71,6 +80,11 @@ description: "Task list template for feature implementation"
 
 ## Phase 4: User Story 2 - See current-year annual fee status at a glance (Priority: P2)
 
+> **Fully superseded**: The entire "Annual Fee Paid" feature described in this phase was removed
+> per the Phase 7 correction (spec.md's "Correction — 2026-07-28" clarification session) — it did
+> not match the actual requirement. Kept as a historical record only; see Phase 7 (T027-T038) for
+> what actually shipped (real "Present"/"Rehearsal Fee Paid" checkboxes instead).
+
 **Goal**: Each row's "Annual Fee Paid" checkbox is checked only when the member's current-calendar-year Annual fee has no outstanding GL balance.
 
 **Independent Test**: Generate the roll for a mix of members — fully-paid current-year annual fee, unpaid/partial, and no annual fee recorded yet for the current year — and confirm the "Annual Fee Paid" checkbox is checked only for the fully-paid member.
@@ -92,6 +106,11 @@ description: "Task list template for feature implementation"
 
 ## Phase 5: User Story 3 - Compact, print-friendly layout (Priority: P3)
 
+> **Partially superseded**: T021 originally described three checkbox columns (Attended,
+> Rehearsal Fee Paid, Annual Fee Paid); Phase 7's removal of `AnnualFeePaid` (T031) left two
+> ("Present", "Pd"). The two-column page layout, `RowsPerColumn` chunking, and capitalized-surname
+> mechanics described below are otherwise still accurate.
+
 **Goal**: The roll is laid out in a two-column, print-optimized format: minimal-width checkbox columns, wrapping column headings, surnames in capitals, and same-page overflow into a second column (then additional pages) for larger rosters.
 
 **Independent Test**: Generate a roll with enough active members to overflow a single column and confirm the list continues into a second column on the same page, checkbox columns are visibly narrower than the name column, column headings wrap rather than widen/truncate, and every surname is displayed in capital letters.
@@ -110,6 +129,11 @@ description: "Task list template for feature implementation"
 ---
 
 ## Phase 6: Polish & Cross-Cutting Concerns
+
+> **Partially superseded**: T023's reference to an "annual-fee-paid accuracy" quickstart.md
+> scenario and T025's SC-checklist reference reflect the pre-Phase-7 spec/quickstart; both
+> documents were rewritten in T026/T044. T024 (build/test verification) remains accurate as a
+> general practice and was re-run in T035/T045.
 
 **Purpose**: Final whole-solution verification once all three stories are in place.
 

@@ -8,12 +8,13 @@
 
 ## Summary
 
-**Correction — 2026-07-28**: this Summary and the Constraints/Scale sections below describe the
-original (superseded) "Annual Fee Paid" implementation. The corrected behavior — point-in-time
-active membership, real "Present"/fee-paid checkboxes, a fee-amount column heading, and the
-`AnnualFeePaid` removal — is documented in spec.md's "Correction" clarification session,
-research.md Decisions 5 and 8-10, and data-model.md; this plan's Constitution Check gates below
-remain valid unchanged (no new module, no schema change, same layering).
+**Note**: This Summary and the Technical Context/Constraints/Scale sections below already
+describe the corrected behavior — point-in-time active membership, real "Present"/fee-paid
+checkboxes, and the static "Pd" fee-column heading — following the "Correction — 2026-07-28"
+clarification session in spec.md. The full history of what changed and why (including the
+now-removed `AnnualFeePaid` field) is recorded in research.md Decisions 5 and 8-10 and
+data-model.md; this plan's Constitution Check gates below remain valid unchanged (no new module,
+no schema change, same layering).
 
 Add a "Print Roll" action to each scheduled rehearsal (surfaced from `RehearsalList.razor`'s
 Actions column) that generates a printable PDF attendance roll: every member active as of the
