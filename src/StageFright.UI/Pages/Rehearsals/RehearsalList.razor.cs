@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Modules.Rehearsals;
@@ -13,6 +14,7 @@ public partial class RehearsalList
     [Inject] private IAttendanceRollPdfRenderer AttendanceRollPdfRenderer { get; set; } = null!;
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private ILogger<RehearsalList> Logger { get; set; } = null!;
 
     private bool _loading = true;
     private List<Rehearsal> _rehearsals = new();
@@ -89,8 +91,9 @@ public partial class RehearsalList
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(tempPath) { UseShellExecute = true });
 #pragma warning restore CA1416
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Logger.LogError(ex, "Failed to print attendance roll for rehearsal {RehearsalId}", rehearsalId);
             _rollMessage = "Unable to print roll. Please try again.";
         }
     }
