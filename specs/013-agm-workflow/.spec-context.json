@@ -193,6 +193,11 @@
       "decision": "Model a special election as a service operation (close outgoing CommitteePositionRecord, open incoming one) rather than a new stored entity",
       "why": "Spec Key Entities lists exactly 5 entities with no Special Election entity, and everything FR-026/027/028 need is expressible as start/end dates on CommitteePositionRecord rows",
       "rejected": "A dedicated SpecialElection entity tracking outgoing/incoming member and replacement date as its own row"
+    },
+    {
+      "decision": "Drop Annual General Meeting from EventTypeService default seed list (fresh installs never get the row) and rewrite DebugDataSeeder.SeedAgmAsync/SeedCommitteeAsync against the new AgmService/office-holder-type model rather than preserving them",
+      "why": "User confirmed the seeded EventType row and dev/test fixture data are not real customer history - FR-003s preserve-existing-events requirement only matters for a genuine upgrading production install",
+      "rejected": "Migrating/preserving the current seed datas old Event+EventType-shaped AGM records"
     }
   ],
   "step_summaries": {

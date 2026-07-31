@@ -38,11 +38,15 @@ Each entry: **Decision** (what we chose) / **Rationale** (why) / **Alternatives 
 
 ---
 
-## D4 — FR-003 (stop offering "Annual General Meeting" as a generic event type) is a query filter, not a schema change
+## D4 — FR-003 (stop offering "Annual General Meeting" as a generic event type): drop it from the default seed, filter it defensively for upgrades, rewrite the dev seeder outright
 
-**Decision**: `EventType` is a DB-seeded table row (`EventTypeService.GetDefaultEventTypeNames()` includes `"Annual General Meeting"` as a seeded, `IsSystemDefault` row), not an enum. Implement FR-003 by filtering that name out of whatever list populates the "create event" type dropdown (a new `GetSelectableForNewEventsAsync()`-style method or an inline filter at the call site), while leaving the `EventType` row itself and every historical `Event.EventTypeId` FK untouched.
+**Decision**: `EventType` is a DB-seeded table row (`EventTypeService.GetDefaultEventTypeNames()` includes `"Annual General Meeting"` as a seeded, `IsSystemDefault` row), not an enum. Two parts:
+1. Remove `"Annual General Meeting"` from `GetDefaultEventTypeNames()`'s hardcoded array — a brand-new install never gets this `EventType` row at all, since AGMs are their own dedicated record type from day one.
+2. For an existing install upgrading into this feature (where the row, and possibly historical `Event` rows referencing it, already exist), FR-003's "preserving any existing events historically tagged with that type" is satisfied by leaving that row and its FK'd `Event` rows completely untouched — the "create new generic event" dropdown filters it out by name (`GetSelectableForNewEventsAsync()`), which is a no-op for fresh installs (nothing to filter) and a real filter for upgrading installs (row still exists, just hidden from new-event creation).
 
-**Rationale**: No entity/migration change is needed — existing events keep their type reference exactly as before, satisfying "preserving any existing events historically tagged with that type" for free.
+**Repo-local seed/test data is explicitly out of scope for "preservation"**: this repo's own `TestData/stagefright.db` and `src/StageFright.App/Seeding/DebugDataSeeder.cs` are dev/test fixtures, not real customer history — confirmed by the user, who noted the seeded EventType row "can be ignored" and seed data "can be removed and regenerated to comply with the new spec." Concretely, `DebugDataSeeder.SeedAgmAsync` (currently: `_eventService.ScheduleAsync` with the AGM `EventType` + `RecordParticipationAsync`) and `SeedCommitteeAsync` (currently: `CommitteeService.AddOrUpdateAsync(memberId, year, position)` per member/year) are rewritten outright to seed through the new `IAgmService.RecordAsync` and the new office-holder-type/committee-term model. No migration or backward-compat path is needed for the seeder itself — it's simply regenerated to match the new spec, same as any other test fixture.
+
+**Rationale**: No entity/migration change is needed for real historical data; existing (real) events keep their type reference exactly as before. The seed data, in contrast, is disposable fixture data local to this repo and should be rewritten fresh rather than laboriously preserved or migrated.
 
 ---
 
