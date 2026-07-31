@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "agm workflow",
   "branch": "013-agm-workflow",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implementing",
   "history": [
     {
       "step": "specify",
@@ -60,6 +60,21 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-07-31T11:33:04.633Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-31T11:40:34.732Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:43:43.413Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
@@ -367,6 +382,13 @@
     },
     "tasks": {
       "summary": "71 tasks across Setup, Foundational (34 tasks: schema rename+4 new entities, services, backup, old-reset deletion), and 5 user-story phases (US1 MVP record/save/view, US2 office-holder config, US3 AGM-month term boundaries, US4 special elections, US5 past-AGM review), plus Polish."
+    }
+  },
+  "currentTask": "T001",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Confirmed dotnet restore/build/test all green before touching CommitteeMembership (496+130+140+409+177=1352 tests passed, 0 failed)"
     }
   }
 }

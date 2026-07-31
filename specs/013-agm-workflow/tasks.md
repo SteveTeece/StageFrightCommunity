@@ -26,7 +26,7 @@ One structural note: `AgmService` implements all five `IAgmService` methods in a
 
 **Purpose**: Establish a known-green baseline before touching a shared entity (`CommitteeMembership`) and shared services (`EventTypeService`, `CommitteeService`, `Settings`).
 
-- [ ] **T001** Run `dotnet restore`, `dotnet build`, and `dotnet test` (all five projects) from the repo root and confirm everything is currently green, so any later failure is attributable to this feature
+- [x] **T001** Run `dotnet restore`, `dotnet build`, and `dotnet test` (all five projects) from the repo root and confirm everything is currently green, so any later failure is attributable to this feature
 
 ---
 
