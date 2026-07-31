@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "agm workflow",
   "branch": "013-agm-workflow",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -46,99 +46,259 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-07-31T10:57:13.137Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-31T11:14:18.101Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-31T11:33:04.633Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
   "coverage": {
     "FR-001": {
-      "title": "Dedicated Record AGM entry point on the Events menu, separate from generic create-event flow"
+      "title": "The system MUST provide a dedicated Record AGM entry point from the Events menu, separate from the existing generic create event flow.",
+      "tasks": [
+        "T048"
+      ]
     },
     "FR-002": {
-      "title": "AGM recorded as its own record type, not an entry in the general Events list"
+      "title": "An Annual General Meeting MUST be recorded as its own record type with its own date, not as an entry in the general Events list.",
+      "tasks": [
+        "T002",
+        "T044"
+      ]
     },
     "FR-003": {
-      "title": "Annual General Meeting removed as a selectable type for new generic events; historical events preserved"
+      "title": "The system MUST no longer offer Annual General Meeting as a selectable type when creating a new generic event, while preserving existing events historically tagged with that type.",
+      "tasks": [
+        "T029",
+        "T030"
+      ]
     },
     "FR-004": {
-      "title": "AGM screen lists active members for attendance, with per-member and select-all marking"
+      "title": "The AGM screen MUST list active members for attendance marking, with individual and select/deselect-all marking.",
+      "tasks": [
+        "T045",
+        "T046"
+      ]
     },
     "FR-005": {
-      "title": "AGM attendance grid has no page-number controls; grid scrolls independently of the page"
+      "title": "The member attendance list MUST NOT use page-number controls; the member grid MUST scroll independently while the rest of the page stays fixed.",
+      "tasks": [
+        "T045"
+      ]
     },
     "FR-006": {
-      "title": "AGM screen assigns President/Secretary/Treasurer per year, vacant if unassigned"
+      "title": "The AGM screen MUST let the coordinator assign one member each to President, Secretary, and Treasurer, leaving a position vacant if unassigned.",
+      "tasks": [
+        "T044",
+        "T046"
+      ]
     },
     "FR-007": {
-      "title": "AGM screen assigns members to additional office-holder positions or as general committee members"
+      "title": "The AGM screen MUST let the coordinator assign members to additional office-holder positions and record a member as a general committee member.",
+      "tasks": [
+        "T022",
+        "T044",
+        "T046"
+      ]
     },
     "FR-008": {
-      "title": "A member cannot be assigned to more than one position or seat within the same AGM"
+      "title": "The system MUST prevent a single member from being assigned to more than one office-holder position or general-committee slot within the same AGM.",
+      "tasks": [
+        "T041",
+        "T044",
+        "T046"
+      ]
     },
     "FR-009": {
-      "title": "Saving an AGM persists meeting, attendance, and committee positions atomically"
+      "title": "Saving an AGM MUST persist the meeting, attendance, and committee position results together as one atomic operation.",
+      "tasks": [
+        "T041",
+        "T044"
+      ]
     },
     "FR-010": {
-      "title": "Saving AGM election results supersedes existing committee position records for that year"
+      "title": "Saving an AGM's election results MUST supersede any prior AGM's election results for the term without altering or deleting the prior AGM's own stored records.",
+      "tasks": [
+        "T023",
+        "T041",
+        "T044"
+      ]
     },
     "FR-011": {
-      "title": "Saved AGM attendance and election results are read-only; corrections via a superseding AGM"
+      "title": "Once an AGM has been saved, its attendance and election results MUST be displayed read-only with no edit path.",
+      "tasks": [
+        "T043",
+        "T047"
+      ]
     },
     "FR-012": {
-      "title": "Coordinator can add, rename, reorder, and archive custom office-holder position titles"
+      "title": "The system MUST let the coordinator define additional office-holder position titles, including add/rename/reorder/archive.",
+      "tasks": [
+        "T022",
+        "T049",
+        "T051"
+      ]
     },
     "FR-013": {
-      "title": "Built-in President/Secretary/Treasurer positions cannot be renamed, reordered, or archived"
+      "title": "The built-in President, Secretary, and Treasurer positions MUST NOT be renamed, reordered, or archived.",
+      "tasks": [
+        "T022",
+        "T049"
+      ]
     },
     "FR-016": {
-      "title": "Coordinator can open a past AGM to view attendance and elected positions read-only"
+      "title": "The system MUST let the coordinator open a past AGM to view its attendance and elected positions read-only.",
+      "tasks": [
+        "T047",
+        "T067"
+      ]
     },
     "FR-017": {
-      "title": "A past AGM record can be archived (soft-deleted) rather than permanently removed"
+      "title": "The system MUST allow a past AGM record to be archived rather than permanently removed.",
+      "tasks": [
+        "T044",
+        "T065",
+        "T067"
+      ]
     },
     "FR-018": {
-      "title": "Annual committee-reset reminder banner updated to trigger off the new AGM record, not a generic event"
+      "title": "The existing annual committee-reset reminder banner and manual reset action MUST be removed.",
+      "tasks": [
+        "T025",
+        "T026",
+        "T027",
+        "T028",
+        "T069"
+      ]
     },
     "FR-019": {
-      "title": "Automated tests cover every reachable code path introduced by this feature"
+      "title": "The system MUST include automated tests covering every reachable code path introduced by this feature.",
+      "tasks": [
+        "T036",
+        "T037",
+        "T038",
+        "T039",
+        "T040",
+        "T041",
+        "T042",
+        "T043",
+        "T049",
+        "T050",
+        "T055",
+        "T056",
+        "T059",
+        "T060",
+        "T061",
+        "T064",
+        "T065",
+        "T068"
+      ]
     },
     "FR-014": {
-      "title": "Coordinator sets a target general-committee-seat count; AGM screen shows seats filled vs target"
+      "title": "The system MUST let the coordinator set a target general-committee seat count, snapshotted onto the AGM record at save time.",
+      "tasks": [
+        "T002",
+        "T044",
+        "T051"
+      ]
     },
     "FR-015": {
-      "title": "Browsable list of past AGMs, most-recent-first, showing date and attendance count"
+      "title": "The system MUST provide a browsable list of past AGMs, most-recent-first, showing date and attendance count.",
+      "tasks": [
+        "T064",
+        "T066"
+      ]
     },
     "FR-020": {
-      "title": "Setup wizard includes a step for committee office-holder titles and general committee seat count"
+      "title": "The setup wizard MUST include a step for configuring committee office-holder titles and the seat count target.",
+      "tasks": [
+        "T053",
+        "T054"
+      ]
     },
     "FR-021": {
-      "title": "Committee configuration during setup is optional; can be completed later from Settings"
+      "title": "Completing committee configuration during setup MUST be optional, with identical behaviour if configured later from Settings.",
+      "tasks": [
+        "T053",
+        "T054"
+      ]
     },
     "FR-022": {
-      "title": "Setup wizard lets coordinator select the calendar month the AGM is normally held"
+      "title": "The setup wizard MUST let the coordinator select the calendar month the AGM is normally held.",
+      "tasks": [
+        "T057"
+      ]
     },
     "FR-023": {
-      "title": "Committee term runs from the AGM date to the next AGM date, not a fixed calendar year"
+      "title": "A committee term MUST run from the AGM that elected it to the date of the next recorded AGM, not a fixed calendar year.",
+      "tasks": [
+        "T005",
+        "T044"
+      ]
     },
     "FR-024": {
-      "title": "Committee term labeled with the calendar year containing the majority of its days"
+      "title": "A committee term MUST be labeled with the calendar year containing the majority of the days within that term.",
+      "tasks": [
+        "T005",
+        "T044",
+        "T055"
+      ]
     },
     "FR-025": {
-      "title": "Saving a new AGM supersedes committee position records for the term it starts, not a calendar year"
+      "title": "Saving a new AGM's election results MUST supersede existing committee position records for the term it starts, not a fixed calendar year.",
+      "tasks": [
+        "T023",
+        "T044"
+      ]
     },
     "FR-026": {
-      "title": "Coordinator can record a special/interim election to replace a departing committee member or office holder"
+      "title": "The system MUST let the coordinator record a special/interim election to replace a departing committee member or office holder.",
+      "tasks": [
+        "T044",
+        "T062"
+      ]
     },
     "FR-027": {
-      "title": "Special election closes departing holder's record with an end date and creates a new record for the incoming member"
+      "title": "Recording a special election MUST close the departing holder's record with an end date and create a new record for the incoming member.",
+      "tasks": [
+        "T044",
+        "T059"
+      ]
     },
     "FR-028": {
-      "title": "More than one committee position record can exist for the same position within the same term"
+      "title": "The system MUST allow more than one committee position record to exist for the same position within the same committee term.",
+      "tasks": [
+        "T006",
+        "T013",
+        "T044"
+      ]
     },
     "FR-029": {
-      "title": "Multiple holders in one term's position are shown/printed with each holder's service start/end dates"
+      "title": "When a position has more than one holder in a term, the system MUST display each holder's name with service start/end dates.",
+      "tasks": [
+        "T058",
+        "T060",
+        "T063"
+      ]
     },
     "FR-030": {
-      "title": "AGM month setting is the single source of truth for both the reset reminder and committee term boundaries"
+      "title": "The AGM month setting MUST be the single source of truth for both the reset timing and the new committee term boundaries.",
+      "tasks": [
+        "T007",
+        "T026",
+        "T057"
+      ]
     }
   },
   "size": "oversized",
@@ -204,6 +364,9 @@
     "plan": {
       "summary": "Full plan produced: research.md (12 decisions), data-model.md (4 new + 1 extended entity, 2 removed services), contracts/agm-workflow-contract.md (routes, menu, service signatures), plan.md (Summary/Structure/Constitution Check, all PASS)",
       "key_finding": "Saving a new AGM auto-closes the previously-open CommitteeTerm and opens a new one - this single mechanism is what makes the old manual reset banner obsolete, resolves the same-term-rerun edge case with no bespoke supersede logic, and is why FR-018s removal and FR-030s AGM-month reuse are safe independent changes"
+    },
+    "tasks": {
+      "summary": "71 tasks across Setup, Foundational (34 tasks: schema rename+4 new entities, services, backup, old-reset deletion), and 5 user-story phases (US1 MVP record/save/view, US2 office-holder config, US3 AGM-month term boundaries, US4 special elections, US5 past-AGM review), plus Polish."
     }
   }
 }
