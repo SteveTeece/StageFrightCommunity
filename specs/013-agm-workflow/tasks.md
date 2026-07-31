@@ -55,7 +55,7 @@ One structural note: `AgmService` implements all five `IAgmService` methods in a
 
 **Wave 2 — independent (different files), depends on Wave 1:**
 
-- [ ] **T009** [P] New `src/StageFright.Data/Configurations/AnnualGeneralMeetingConfiguration.cs` (`IEntityTypeConfiguration<AnnualGeneralMeeting>`; `HasQueryFilter` on `!IsDeleted`)
+- [x] **T009** [P] New `src/StageFright.Data/Configurations/AnnualGeneralMeetingConfiguration.cs` (`IEntityTypeConfiguration<AnnualGeneralMeeting>`; `HasQueryFilter` on `!IsDeleted`)
 - [ ] **T010** [P] New `src/StageFright.Data/Configurations/AgmAttendanceRecordConfiguration.cs` (unique index `(AnnualGeneralMeetingId, MemberId)`)
 - [ ] **T011** [P] New `src/StageFright.Data/Configurations/CommitteeOfficeHolderTypeConfiguration.cs` (unique index `(Name) WHERE IsDeleted = 0`, case-insensitive collation)
 - [ ] **T012** [P] New `src/StageFright.Data/Configurations/CommitteeTermConfiguration.cs` (no query filter — no soft-delete fields)
