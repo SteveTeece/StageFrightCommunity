@@ -1,0 +1,104 @@
+{
+  "workflow": "speckit",
+  "specName": "agm workflow",
+  "branch": "013-agm-workflow",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-31T05:09:28.282Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-31T05:22:43.039Z"
+    }
+  ],
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "Dedicated Record AGM entry point on the Events menu, separate from generic create-event flow"
+    },
+    "FR-002": {
+      "title": "AGM recorded as its own record type, not an entry in the general Events list"
+    },
+    "FR-003": {
+      "title": "Annual General Meeting removed as a selectable type for new generic events; historical events preserved"
+    },
+    "FR-004": {
+      "title": "AGM screen lists active members for attendance, with per-member and select-all marking"
+    },
+    "FR-005": {
+      "title": "AGM attendance grid has no page-number controls; grid scrolls independently of the page"
+    },
+    "FR-006": {
+      "title": "AGM screen assigns President/Secretary/Treasurer per year, vacant if unassigned"
+    },
+    "FR-007": {
+      "title": "AGM screen assigns members to additional office-holder positions or as general committee members"
+    },
+    "FR-008": {
+      "title": "A member cannot be assigned to more than one position or seat within the same AGM"
+    },
+    "FR-009": {
+      "title": "Saving an AGM persists meeting, attendance, and committee positions atomically"
+    },
+    "FR-010": {
+      "title": "Saving AGM election results supersedes existing committee position records for that year"
+    },
+    "FR-011": {
+      "title": "Saved AGM attendance and election results are read-only; corrections via a superseding AGM"
+    },
+    "FR-012": {
+      "title": "Coordinator can add, rename, reorder, and archive custom office-holder position titles"
+    },
+    "FR-013": {
+      "title": "Built-in President/Secretary/Treasurer positions cannot be renamed, reordered, or archived"
+    },
+    "FR-016": {
+      "title": "Coordinator can open a past AGM to view attendance and elected positions read-only"
+    },
+    "FR-017": {
+      "title": "A past AGM record can be archived (soft-deleted) rather than permanently removed"
+    },
+    "FR-018": {
+      "title": "Annual committee-reset reminder banner updated to trigger off the new AGM record, not a generic event"
+    },
+    "FR-019": {
+      "title": "Automated tests cover every reachable code path introduced by this feature"
+    },
+    "FR-014": {
+      "title": "Coordinator sets a target general-committee-seat count; AGM screen shows seats filled vs target"
+    },
+    "FR-015": {
+      "title": "Browsable list of past AGMs, most-recent-first, showing date and attendance count"
+    }
+  },
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 42,
+    "projectedTasks": 55,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "context": [
+    "area: src/StageFright.Core/Modules/Members/CommitteeService.cs, CommitteeAnnualResetService.cs (existing committee position + AGM-reset banner logic)",
+    "area: src/StageFright.Core/Entities/Event.cs, EventType.cs (AGM currently recorded as an Event with a system-default EventType)",
+    "area: src/StageFright.UI/Pages/Rehearsals/AttendanceGrid.razor, StageFright.UI/Pages/Events/ParticipationGrid.razor (existing attendance/participation grid patterns to follow, except for the no-paging requirement)",
+    "area: src/StageFright.Reports/Providers/CommitteeReportProvider.cs (existing President/Secretary/Treasurer + General Committee Members reporting convention reused by this feature)",
+    "constraint: soft-delete everywhere except Fee/Payment/Transaction (CLAUDE.md) — AGM and its attendance/office-holder records are non-financial and must be archivable, not hard-deletable",
+    "constraint: CommitteeMembership is unique per (MemberId, Year) — carried forward as the one-position-per-member-per-year rule (FR-008)"
+  ],
+  "intent": "Let a coordinator record an AGM's attendance and committee elections (office holders + general committee members) in one workflow, as its own record type separate from generic Events.",
+  "expectations": [
+    "No new AGM outcome types beyond attendance, office-holder elections, and general-committee elections in this release",
+    "No hard cap enforced on the general-committee seat count target — it is guidance only",
+    "No in-place editing of a saved AGM's attendance/election data — corrections are a new superseding AGM"
+  ]
+}
