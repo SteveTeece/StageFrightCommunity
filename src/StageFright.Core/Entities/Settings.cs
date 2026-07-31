@@ -35,8 +35,17 @@ public class Settings
     /// <summary>Month (1–12) when membership renewals are due. Required.</summary>
     public int MembershipRenewalMonth { get; set; }
 
-    /// <summary>Month (1–12) when committee positions are reviewed. Default: 1 (January).</summary>
+    /// <summary>
+    /// Month (1–12) the AGM is normally held. Single source of truth for both committee
+    /// term boundaries and (formerly) the reset reminder timing. Default: 1 (January).
+    /// </summary>
     public int CommitteeRenewalMonth { get; set; } = 1;
+
+    /// <summary>
+    /// Coordinator-configured target number of general committee member seats (FR-014).
+    /// Null when unset. Snapshotted onto each AnnualGeneralMeeting at save time.
+    /// </summary>
+    public int? GeneralCommitteeSeatCountTarget { get; set; }
 
     /// <summary>
     /// First month (1–12) of the financial year used by reports and FY presets.

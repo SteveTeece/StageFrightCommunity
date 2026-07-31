@@ -75,6 +75,62 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-07-31T11:43:43.413Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:57:39.378Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:57:39.545Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:57:39.712Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:57:39.879Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:57:40.038Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:57:40.208Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:57:40.380Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
@@ -384,11 +440,60 @@
       "summary": "71 tasks across Setup, Foundational (34 tasks: schema rename+4 new entities, services, backup, old-reset deletion), and 5 user-story phases (US1 MVP record/save/view, US2 office-holder config, US3 AGM-month term boundaries, US4 special elections, US5 past-AGM review), plus Polish."
     }
   },
-  "currentTask": "T001",
+  "currentTask": "T008",
   "task_summaries": {
     "T001": {
       "status": "DONE",
       "did": "Confirmed dotnet restore/build/test all green before touching CommitteeMembership (496+130+140+409+177=1352 tests passed, 0 failed)"
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "New AnnualGeneralMeeting entity (Date, Notes, seat-count-target snapshot, soft-delete/audit, attendance nav)",
+      "files": [
+        "src/StageFright.Core/Entities/AnnualGeneralMeeting.cs"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "New AgmAttendanceRecord entity, immutable per-member attendance row",
+      "files": [
+        "src/StageFright.Core/Entities/AgmAttendanceRecord.cs"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "New CommitteeOfficeHolderType entity (Name, DisplayOrder, IsBuiltIn)",
+      "files": [
+        "src/StageFright.Core/Entities/CommitteeOfficeHolderType.cs"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "New CommitteeTerm entity (StartedByAgmId, StartDate, EndDate, LabelYear)",
+      "files": [
+        "src/StageFright.Core/Entities/CommitteeTerm.cs"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Renamed CommitteeMembership -> CommitteePositionRecord; Year/Position now legacy-nullable; added CommitteeTermId/OfficeHolderTypeId/StartDate/EndDate",
+      "files": [
+        "src/StageFright.Core/Entities/CommitteePositionRecord.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Settings gains GeneralCommitteeSeatCountTarget, drops LastCommitteeResetYear, relabels CommitteeRenewalMonth as AGM month",
+      "files": [
+        "src/StageFright.Core/Entities/Settings.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Member.CommitteeMemberships nav property renamed to CommitteePositionRecords",
+      "files": [
+        "src/StageFright.Core/Entities/Member.cs"
+      ]
     }
   }
 }
