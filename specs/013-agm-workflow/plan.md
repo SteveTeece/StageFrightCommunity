@@ -62,7 +62,7 @@ src/StageFright.Core/
 │   │   └── CommitteeAnnualResetService.cs        # DELETED
 │   └── Events/
 │       ├── EventsMenuItemProvider.cs    # extended (SubItems)
-│       └── EventTypeService.cs          # extended (GetSelectableForNewEventsAsync)
+│       └── EventTypeService.cs          # extended (drop "Annual General Meeting" from default seed; add GetSelectableForNewEventsAsync)
 └── Contracts/
     ├── IAgmService.cs                   # new
     ├── ICommitteeOfficeHolderTypeService.cs      # new
@@ -99,6 +99,9 @@ src/StageFright.UI/Pages/
 
 src/StageFright.Reports/Providers/
 └── CommitteeReportProvider.cs           # reworked in place (term-keyed grouping, multi-holder date display)
+
+src/StageFright.App/Seeding/
+└── DebugDataSeeder.cs                   # rewritten (SeedAgmAsync/SeedCommitteeAsync regenerated against the new model — dev/test fixture, not preserved history; research D4)
 
 tests/StageFright.Core.Tests/Modules/
 ├── Agm/AgmServiceTests.cs                                # new
