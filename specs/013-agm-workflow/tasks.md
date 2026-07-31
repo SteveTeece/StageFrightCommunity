@@ -40,16 +40,16 @@ One structural note: `AgmService` implements all five `IAgmService` methods in a
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T002** [P] New entity `Guid Id, DateTime Date, string? Notes, int? GeneralCommitteeSeatCountTarget` + soft-delete/audit fields on `src/StageFright.Core/Entities/AnnualGeneralMeeting.cs`
-- [ ] **T003** [P] New entity `Guid Id, Guid AnnualGeneralMeetingId, Guid MemberId, bool Attended` + soft-delete/audit fields (never independently set — immutable once saved, same convention as `AttendanceRecord`) on `src/StageFright.Core/Entities/AgmAttendanceRecord.cs`
-- [ ] **T004** [P] New entity `Guid Id, string Name (max 100), int DisplayOrder, bool IsBuiltIn` + soft-delete/audit fields on `src/StageFright.Core/Entities/CommitteeOfficeHolderType.cs`
-- [ ] **T005** [P] New entity `Guid Id, Guid StartedByAgmId, DateTime StartDate, DateTime? EndDate, int LabelYear` + audit fields only (no soft-delete — archived only as a side effect of its starting AGM) on `src/StageFright.Core/Entities/CommitteeTerm.cs`
-- [ ] **T006** [P] Rename `src/StageFright.Core/Entities/CommitteeMembership.cs` → `src/StageFright.Core/Entities/CommitteePositionRecord.cs`: rename the class; make `Year` (`int` → `int?`) and `Position` (`string` → `string?`) legacy-only (populated on pre-feature rows, always null on rows this feature creates); add `Guid? CommitteeTermId`, `Guid? OfficeHolderTypeId`, `DateTime? StartDate`, `DateTime? EndDate`
-- [ ] **T007** [P] `src/StageFright.Core/Entities/Settings.cs`: add `public int? GeneralCommitteeSeatCountTarget { get; set; }`; remove `LastCommitteeResetYear` (only consumer, `CheckAgmBannerAsync`, is being deleted in T024); update `CommitteeRenewalMonth`'s doc comment to describe it as "the month the AGM is normally held" (repurposed in place, FR-022/FR-030 — no new field)
+- [x] **T002** [P] New entity `Guid Id, DateTime Date, string? Notes, int? GeneralCommitteeSeatCountTarget` + soft-delete/audit fields on `src/StageFright.Core/Entities/AnnualGeneralMeeting.cs`
+- [x] **T003** [P] New entity `Guid Id, Guid AnnualGeneralMeetingId, Guid MemberId, bool Attended` + soft-delete/audit fields (never independently set — immutable once saved, same convention as `AttendanceRecord`) on `src/StageFright.Core/Entities/AgmAttendanceRecord.cs`
+- [x] **T004** [P] New entity `Guid Id, string Name (max 100), int DisplayOrder, bool IsBuiltIn` + soft-delete/audit fields on `src/StageFright.Core/Entities/CommitteeOfficeHolderType.cs`
+- [x] **T005** [P] New entity `Guid Id, Guid StartedByAgmId, DateTime StartDate, DateTime? EndDate, int LabelYear` + audit fields only (no soft-delete — archived only as a side effect of its starting AGM) on `src/StageFright.Core/Entities/CommitteeTerm.cs`
+- [x] **T006** [P] Rename `src/StageFright.Core/Entities/CommitteeMembership.cs` → `src/StageFright.Core/Entities/CommitteePositionRecord.cs`: rename the class; make `Year` (`int` → `int?`) and `Position` (`string` → `string?`) legacy-only (populated on pre-feature rows, always null on rows this feature creates); add `Guid? CommitteeTermId`, `Guid? OfficeHolderTypeId`, `DateTime? StartDate`, `DateTime? EndDate`
+- [x] **T007** [P] `src/StageFright.Core/Entities/Settings.cs`: add `public int? GeneralCommitteeSeatCountTarget { get; set; }`; remove `LastCommitteeResetYear` (only consumer, `CheckAgmBannerAsync`, is being deleted in T024); update `CommitteeRenewalMonth`'s doc comment to describe it as "the month the AGM is normally held" (repurposed in place, FR-022/FR-030 — no new field)
 
 **⟶ Wait for Wave 1 to finish, then:**
 
-- [ ] **T008** [US-shared] `src/StageFright.Core/Entities/Member.cs`: rename navigation property `ICollection<CommitteeMembership> CommitteeMemberships` → `ICollection<CommitteePositionRecord> CommitteePositionRecords`
+- [x] **T008** [US-shared] `src/StageFright.Core/Entities/Member.cs`: rename navigation property `ICollection<CommitteeMembership> CommitteeMemberships` → `ICollection<CommitteePositionRecord> CommitteePositionRecords`
 
 ### EF configurations
 
