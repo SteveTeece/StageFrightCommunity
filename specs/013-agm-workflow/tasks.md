@@ -56,7 +56,7 @@ One structural note: `AgmService` implements all five `IAgmService` methods in a
 **Wave 2 — independent (different files), depends on Wave 1:**
 
 - [x] **T009** [P] New `src/StageFright.Data/Configurations/AnnualGeneralMeetingConfiguration.cs` (`IEntityTypeConfiguration<AnnualGeneralMeeting>`; `HasQueryFilter` on `!IsDeleted`)
-- [ ] **T010** [P] New `src/StageFright.Data/Configurations/AgmAttendanceRecordConfiguration.cs` (unique index `(AnnualGeneralMeetingId, MemberId)`)
+- [x] **T010** [P] New `src/StageFright.Data/Configurations/AgmAttendanceRecordConfiguration.cs` (unique index `(AnnualGeneralMeetingId, MemberId)`)
 - [ ] **T011** [P] New `src/StageFright.Data/Configurations/CommitteeOfficeHolderTypeConfiguration.cs` (unique index `(Name) WHERE IsDeleted = 0`, case-insensitive collation)
 - [ ] **T012** [P] New `src/StageFright.Data/Configurations/CommitteeTermConfiguration.cs` (no query filter — no soft-delete fields)
 - [ ] **T013** [P] Rename `src/StageFright.Data/Configurations/CommitteeMembershipConfiguration.cs` → `CommitteePositionRecordConfiguration.cs`: drop the old `HasIndex(c => new { c.MemberId, c.Year }).IsUnique().HasFilter("[IsDeleted] = 0")`; add `unique index (CommitteeTermId, OfficeHolderTypeId) WHERE EndDate IS NULL AND OfficeHolderTypeId IS NOT NULL AND IsDeleted = 0` and `unique index (CommitteeTermId, MemberId) WHERE EndDate IS NULL AND IsDeleted = 0`; make `Year`/`Position` property mappings optional

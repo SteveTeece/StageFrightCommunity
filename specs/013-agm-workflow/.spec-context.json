@@ -139,6 +139,14 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-07-31T12:03:28.833Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T12:07:21.465Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
@@ -448,7 +456,7 @@
       "summary": "71 tasks across Setup, Foundational (34 tasks: schema rename+4 new entities, services, backup, old-reset deletion), and 5 user-story phases (US1 MVP record/save/view, US2 office-holder config, US3 AGM-month term boundaries, US4 special elections, US5 past-AGM review), plus Polish."
     }
   },
-  "currentTask": "T009",
+  "currentTask": "T010",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -508,6 +516,13 @@
       "did": "New AnnualGeneralMeetingConfiguration (HasQueryFilter on !IsDeleted, HasMany AttendanceRecords)",
       "files": [
         "src/StageFright.Data/Configurations/AnnualGeneralMeetingConfiguration.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "New AgmAttendanceRecordConfiguration (unique index on AnnualGeneralMeetingId+MemberId, Member FK)",
+      "files": [
+        "src/StageFright.Data/Configurations/AgmAttendanceRecordConfiguration.cs"
       ]
     }
   }
