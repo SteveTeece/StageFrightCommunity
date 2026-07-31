@@ -78,6 +78,39 @@
     },
     "FR-015": {
       "title": "Browsable list of past AGMs, most-recent-first, showing date and attendance count"
+    },
+    "FR-020": {
+      "title": "Setup wizard includes a step for committee office-holder titles and general committee seat count"
+    },
+    "FR-021": {
+      "title": "Committee configuration during setup is optional; can be completed later from Settings"
+    },
+    "FR-022": {
+      "title": "Setup wizard lets coordinator select the calendar month the AGM is normally held"
+    },
+    "FR-023": {
+      "title": "Committee term runs from the AGM date to the next AGM date, not a fixed calendar year"
+    },
+    "FR-024": {
+      "title": "Committee term labeled with the calendar year containing the majority of its days"
+    },
+    "FR-025": {
+      "title": "Saving a new AGM supersedes committee position records for the term it starts, not a calendar year"
+    },
+    "FR-026": {
+      "title": "Coordinator can record a special/interim election to replace a departing committee member or office holder"
+    },
+    "FR-027": {
+      "title": "Special election closes departing holder's record with an end date and creates a new record for the incoming member"
+    },
+    "FR-028": {
+      "title": "More than one committee position record can exist for the same position within the same term"
+    },
+    "FR-029": {
+      "title": "Multiple holders in one term's position are shown/printed with each holder's service start/end dates"
+    },
+    "FR-030": {
+      "title": "AGM month setting is the single source of truth for both the reset reminder and committee term boundaries"
     }
   },
   "size": "oversized",
@@ -93,12 +126,17 @@
     "area: src/StageFright.UI/Pages/Rehearsals/AttendanceGrid.razor, StageFright.UI/Pages/Events/ParticipationGrid.razor (existing attendance/participation grid patterns to follow, except for the no-paging requirement)",
     "area: src/StageFright.Reports/Providers/CommitteeReportProvider.cs (existing President/Secretary/Treasurer + General Committee Members reporting convention reused by this feature)",
     "constraint: soft-delete everywhere except Fee/Payment/Transaction (CLAUDE.md) — AGM and its attendance/office-holder records are non-financial and must be archivable, not hard-deletable",
-    "constraint: CommitteeMembership is unique per (MemberId, Year) — carried forward as the one-position-per-member-per-year rule (FR-008)"
+    "constraint: CommitteeMembership is unique per (MemberId, Year) — carried forward as the one-position-per-member-per-year rule (FR-008)",
+    "issue: #290 add committee settings and definitions to Startup wizard",
+    "issue: #292 separate committee service years from calendar years",
+    "area: src/StageFright.Core/Entities/CommitteeMembership.cs (Year int field — now must become a committee-term concept, not a bare calendar year)",
+    "area: src/StageFright.Core/Entities/Settings.cs (CommitteeRenewalMonth, LastCommitteeResetYear — existing fields the new AGM-month setting must unify with, not duplicate)"
   ],
   "intent": "Let a coordinator record an AGM's attendance and committee elections (office holders + general committee members) in one workflow, as its own record type separate from generic Events.",
   "expectations": [
     "No new AGM outcome types beyond attendance, office-holder elections, and general-committee elections in this release",
     "No hard cap enforced on the general-committee seat count target — it is guidance only",
-    "No in-place editing of a saved AGM's attendance/election data — corrections are a new superseding AGM"
+    "No in-place editing of a saved AGM's attendance/election data — corrections are a new superseding AGM",
+    "No retroactive re-dating of committee position records created before AGM-to-AGM term tracking existed"
   ]
 }
