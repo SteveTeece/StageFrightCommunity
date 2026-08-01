@@ -15,7 +15,11 @@ public class StageFrightDbContext : DbContext
     public StageFrightDbContext(DbContextOptions<StageFrightDbContext> options) : base(options) { }
 
     public DbSet<Member> Members => Set<Member>();
-    public DbSet<CommitteeMembership> CommitteeMemberships => Set<CommitteeMembership>();
+    public DbSet<CommitteePositionRecord> CommitteePositionRecords => Set<CommitteePositionRecord>();
+    public DbSet<AnnualGeneralMeeting> AnnualGeneralMeetings => Set<AnnualGeneralMeeting>();
+    public DbSet<AgmAttendanceRecord> AgmAttendanceRecords => Set<AgmAttendanceRecord>();
+    public DbSet<CommitteeOfficeHolderType> CommitteeOfficeHolderTypes => Set<CommitteeOfficeHolderType>();
+    public DbSet<CommitteeTerm> CommitteeTerms => Set<CommitteeTerm>();
     public DbSet<Rehearsal> Rehearsals => Set<Rehearsal>();
     public DbSet<AttendanceRecord> AttendanceRecords => Set<AttendanceRecord>();
     public DbSet<Event> Events => Set<Event>();
@@ -36,7 +40,11 @@ public class StageFrightDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfiguration(new MemberConfiguration());
-        modelBuilder.ApplyConfiguration(new CommitteeMembershipConfiguration());
+        modelBuilder.ApplyConfiguration(new CommitteePositionRecordConfiguration());
+        modelBuilder.ApplyConfiguration(new AnnualGeneralMeetingConfiguration());
+        modelBuilder.ApplyConfiguration(new AgmAttendanceRecordConfiguration());
+        modelBuilder.ApplyConfiguration(new CommitteeOfficeHolderTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new CommitteeTermConfiguration());
         modelBuilder.ApplyConfiguration(new RehearsalConfiguration());
         modelBuilder.ApplyConfiguration(new AttendanceRecordConfiguration());
         modelBuilder.ApplyConfiguration(new EventConfiguration());

@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Modules.Agm;
 using StageFright.Core.Modules.Events;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Members;
@@ -38,7 +39,8 @@ public class DebugDataSeeder : IDebugDataSeeder
     private readonly IAttendanceService _attendanceService;
     private readonly IEventTypeService _eventTypeService;
     private readonly IEventService _eventService;
-    private readonly ICommitteeService _committeeService;
+    private readonly ICommitteeOfficeHolderTypeService _officeHolderTypeService;
+    private readonly IAgmService _agmService;
     private readonly IPaymentService _paymentService;
     private readonly IFeeRepository _feeRepository;
     private readonly IGLRepository _glRepository;
@@ -58,7 +60,8 @@ public class DebugDataSeeder : IDebugDataSeeder
         IAttendanceService attendanceService,
         IEventTypeService eventTypeService,
         IEventService eventService,
-        ICommitteeService committeeService,
+        ICommitteeOfficeHolderTypeService officeHolderTypeService,
+        IAgmService agmService,
         IPaymentService paymentService,
         IFeeRepository feeRepository,
         IGLRepository glRepository,
@@ -77,7 +80,8 @@ public class DebugDataSeeder : IDebugDataSeeder
         _attendanceService = attendanceService;
         _eventTypeService = eventTypeService;
         _eventService = eventService;
-        _committeeService = committeeService;
+        _officeHolderTypeService = officeHolderTypeService;
+        _agmService = agmService;
         _paymentService = paymentService;
         _feeRepository = feeRepository;
         _glRepository = glRepository;
@@ -127,13 +131,14 @@ public class DebugDataSeeder : IDebugDataSeeder
         var eventTypes = await _eventTypeService.GetAllAsync(ct);
         var eisteddfodType = eventTypes.First(et => et.Name == "Eisteddfod");
         var performanceType = eventTypes.First(et => et.Name == "Performance");
-        var agmType = eventTypes.First(et => et.Name == "Annual General Meeting");
+
+        var officeHolderTypes = await _officeHolderTypeService.GetActiveAsync(ct);
+        var presidentType = officeHolderTypes.First(t => t.Name == "President");
+        var secretaryType = officeHolderTypes.First(t => t.Name == "Secretary");
+        var treasurerType = officeHolderTypes.First(t => t.Name == "Treasurer");
 
         var settings = await _settingsService.GetAsync(ct)
             ?? throw new InvalidOperationException("Settings must be initialised before seeding debug data.");
-
-        progress?.Report("Assigning committee positions…");
-        await SeedCommitteeAsync(activeMembers, ct);
 
         var random = new Random(20250101); // fixed seed — deterministic across runs
         var attendanceProfile = BuildAttendanceProfile(activeMembers, random);
@@ -161,7 +166,7 @@ public class DebugDataSeeder : IDebugDataSeeder
             await SeedRaffleAsync(year, raffleIncomeAccount, ct);
 
             progress?.Report($"Seeding {year} AGM…");
-            await SeedAgmAsync(year, activeMembers, agmType, ct);
+            await SeedAgmAsync(year, activeMembers, presidentType.Id, secretaryType.Id, treasurerType.Id, ct);
 
             progress?.Report($"Seeding {year} operating expenses…");
             await SeedOperatingExpensesAsync(
@@ -279,30 +284,6 @@ public class DebugDataSeeder : IDebugDataSeeder
             await _memberService.ArchiveAsync(member.Id, ct);
 
         return (active, inactive, archived);
-    }
-
-    // -------------------------------------------------------------------------
-    // Committee
-    // -------------------------------------------------------------------------
-
-    /// <summary>
-    /// The committee term runs 1 year from the last Monday in October; the same nine
-    /// members hold the same positions across both the 2025 and 2026 calendar years.
-    /// </summary>
-    private async Task SeedCommitteeAsync(IReadOnlyList<Member> activeMembers, CancellationToken ct)
-    {
-        string[] positions =
-        [
-            "President", "Secretary", "Treasurer", "Welfare Officer",
-            "Committee Member", "Committee Member", "Committee Member", "Committee Member", "Committee Member"
-        ];
-
-        for (var i = 0; i < positions.Length; i++)
-        {
-            var member = activeMembers[i];
-            await _committeeService.AddOrUpdateAsync(member.Id, 2025, positions[i], ct);
-            await _committeeService.AddOrUpdateAsync(member.Id, 2026, positions[i], ct);
-        }
     }
 
     // -------------------------------------------------------------------------
@@ -750,21 +731,41 @@ public class DebugDataSeeder : IDebugDataSeeder
     // Annual General Meeting
     // -------------------------------------------------------------------------
 
-    private async Task SeedAgmAsync(int year, IReadOnlyList<Member> activeMembers, EventType agmType, CancellationToken ct)
+    /// <summary>
+    /// Records the AGM through IAgmService: full attendance, President/Secretary/Treasurer
+    /// (the three built-in office-holder titles), and 6 general committee members. The AGM
+    /// closes whatever committee term was previously open and starts a new one — the 2026
+    /// AGM falls after SeedCurrentDate so it is skipped entirely (hasn't happened yet from
+    /// the seed data's point of view), leaving the term elected at the 2025 AGM open.
+    /// </summary>
+    private async Task SeedAgmAsync(
+        int year,
+        IReadOnlyList<Member> activeMembers,
+        Guid presidentTypeId,
+        Guid secretaryTypeId,
+        Guid treasurerTypeId,
+        CancellationToken ct)
     {
         var agmDate = GetAgmDate(year);
-        var evt = await _eventService.ScheduleAsync(new ScheduleEventRequest
-        {
-            Date = agmDate,
-            EventTypeId = agmType.Id,
-            Notes = $"{year} Annual General Meeting — new committee term commences"
-        }, ct);
+        if (agmDate > SeedCurrentDate)
+            return;
 
-        if (agmDate <= SeedCurrentDate)
+        var memberIds = activeMembers.Select(m => m.Id).ToList();
+        var officeHolderAssignments = new Dictionary<Guid, Guid>
         {
-            var items = activeMembers.Select(m => new ParticipationBatchItem { MemberId = m.Id, Participated = true }).ToList();
-            await _eventService.RecordParticipationAsync(evt.Id, items, ct);
-        }
+            [presidentTypeId] = activeMembers[0].Id,
+            [secretaryTypeId] = activeMembers[1].Id,
+            [treasurerTypeId] = activeMembers[2].Id
+        };
+        var generalCommitteeMemberIds = activeMembers.Skip(3).Take(6).Select(m => m.Id).ToList();
+
+        await _agmService.RecordAsync(new RecordAgmRequest(
+            Date: agmDate,
+            Notes: $"{year} Annual General Meeting — new committee term commences",
+            AttendedMemberIds: memberIds,
+            AllActiveMemberIds: memberIds,
+            OfficeHolderAssignments: officeHolderAssignments,
+            GeneralCommitteeMemberIds: generalCommitteeMemberIds), ct);
     }
 
     // -------------------------------------------------------------------------

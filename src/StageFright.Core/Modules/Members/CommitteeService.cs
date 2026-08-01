@@ -5,35 +5,38 @@ using StageFright.Core.Enums;
 namespace StageFright.Core.Modules.Members;
 
 /// <summary>
-/// Manages committee membership records: add/update positions and annual reset.
+/// Manages committee position records: legacy year/position add-update and term-scoped queries.
 /// </summary>
 public class CommitteeService : ICommitteeService
 {
-    private readonly ICommitteeMembershipRepository _repo;
+    private readonly ICommitteePositionRecordRepository _repo;
+    private readonly ICommitteeTermRepository _termRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
 
     public CommitteeService(
-        ICommitteeMembershipRepository repo,
+        ICommitteePositionRecordRepository repo,
+        ICommitteeTermRepository termRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork)
     {
         _repo = repo;
+        _termRepo = termRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<CommitteeMembership> AddOrUpdateAsync(
+    public async Task<CommitteePositionRecord> AddOrUpdateAsync(
         Guid memberId, int year, string position, CancellationToken ct = default)
     {
         var existing = await FindExistingAsync(memberId, year, ct);
 
-        CommitteeMembership result = null!;
+        CommitteePositionRecord result = null!;
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
             if (existing is null)
             {
-                var record = new CommitteeMembership
+                var record = new CommitteePositionRecord
                 {
                     Id = Guid.NewGuid(),
                     MemberId = memberId,
@@ -43,14 +46,14 @@ public class CommitteeService : ICommitteeService
                     UpdatedAt = DateTime.UtcNow
                 };
                 result = await _repo.AddAsync(record, innerCt);
-                await _audit.LogAsync("CommitteeMembership", result.Id, AuditAction.Create, ct: innerCt);
+                await _audit.LogAsync(nameof(CommitteePositionRecord), result.Id, AuditAction.Create, ct: innerCt);
             }
             else
             {
                 existing.Position = position.Trim();
                 existing.UpdatedAt = DateTime.UtcNow;
                 await _repo.UpdateAsync(existing, innerCt);
-                await _audit.LogAsync("CommitteeMembership", existing.Id, AuditAction.Update, ct: innerCt);
+                await _audit.LogAsync(nameof(CommitteePositionRecord), existing.Id, AuditAction.Update, ct: innerCt);
                 result = existing;
             }
         }, ct);
@@ -58,20 +61,24 @@ public class CommitteeService : ICommitteeService
         return result;
     }
 
-    public Task<IReadOnlyList<CommitteeMembership>> GetHistoryAsync(Guid memberId, CancellationToken ct = default) =>
+    public Task<IReadOnlyList<CommitteePositionRecord>> GetHistoryAsync(Guid memberId, CancellationToken ct = default) =>
         _repo.GetByMemberAsync(memberId, ct);
 
-    public async Task SoftDeleteCurrentYearAsync(int year, CancellationToken ct = default)
+    public async Task<IReadOnlyList<CommitteePositionRecord>> GetCurrentAsync(CancellationToken ct = default)
     {
-        await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
-        {
-            await _repo.SoftDeleteCurrentYearAsync(year, "system", innerCt);
-            await _audit.LogAsync("CommitteeMembership", Guid.Empty, AuditAction.CommitteeReset,
-                newValue: year.ToString(), ct: innerCt);
-        }, ct);
+        var openTerm = await _termRepo.GetOpenAsync(ct);
+        return openTerm is null
+            ? Array.Empty<CommitteePositionRecord>()
+            : await _repo.GetByTermAsync(openTerm.Id, ct);
     }
 
-    private async Task<CommitteeMembership?> FindExistingAsync(Guid memberId, int year, CancellationToken ct)
+    public Task<IReadOnlyList<CommitteePositionRecord>> GetByTermAsync(Guid committeeTermId, CancellationToken ct = default) =>
+        _repo.GetByTermAsync(committeeTermId, ct);
+
+    public Task<IReadOnlyList<CommitteePositionRecord>> GetByAgmAsync(Guid annualGeneralMeetingId, CancellationToken ct = default) =>
+        _repo.GetByAgmAsync(annualGeneralMeetingId, ct);
+
+    private async Task<CommitteePositionRecord?> FindExistingAsync(Guid memberId, int year, CancellationToken ct)
     {
         var all = await _repo.GetByMemberAsync(memberId, ct);
         return all.FirstOrDefault(r => r.Year == year);

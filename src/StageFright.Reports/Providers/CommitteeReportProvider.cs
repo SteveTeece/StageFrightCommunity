@@ -15,10 +15,10 @@ namespace StageFright.Reports.Providers;
 /// </summary>
 public class CommitteeReportProvider : IReportProvider
 {
-    private readonly ICommitteeMembershipRepository _committeeMemberships;
+    private readonly ICommitteePositionRecordRepository _committeeMemberships;
     private readonly IMemberRepository _members;
 
-    public CommitteeReportProvider(ICommitteeMembershipRepository committeeMemberships, IMemberRepository members)
+    public CommitteeReportProvider(ICommitteePositionRecordRepository committeeMemberships, IMemberRepository members)
     {
         _committeeMemberships = committeeMemberships;
         _members = members;
@@ -55,17 +55,19 @@ public class CommitteeReportProvider : IReportProvider
 
         var memberMap = filteredMembers.ToDictionary(m => m.Id);
 
-        // Flatten every filtered member's committee memberships into (Member, CommitteeMembership) pairs
-        var records = new List<(Core.Entities.Member Member, Core.Entities.CommitteeMembership Membership)>();
+        // Flatten every filtered member's committee memberships into (Member, CommitteePositionRecord) pairs
+        var records = new List<(Core.Entities.Member Member, Core.Entities.CommitteePositionRecord Membership)>();
         foreach (var member in memberMap.Values.OrderBy(m => m.LastName).ThenBy(m => m.FirstName))
         {
             var memberships = await _committeeMemberships.GetByMemberAsync(member.Id, ct);
             records.AddRange(memberships.Select(membership => (member, membership)));
         }
 
-        // One ReportSection per year with at least one matching record, most-recent-year-first (FR-001/FR-009)
+        // One ReportSection per year with at least one matching record, most-recent-year-first (FR-001/FR-009).
+        // Only legacy-shaped rows (Year populated) group here; CommitteeTerm-based rows are re-keyed in US3 (T058).
         var sections = records
-            .GroupBy(r => r.Membership.Year)
+            .Where(r => r.Membership.Year.HasValue)
+            .GroupBy(r => r.Membership.Year!.Value)
             .OrderByDescending(g => g.Key)
             .Select(yearGroup =>
             {
@@ -117,14 +119,14 @@ public class CommitteeReportProvider : IReportProvider
     /// </summary>
     private static List<ReportRow> BuildPositionLines(
         int year,
-        List<(Core.Entities.Member Member, Core.Entities.CommitteeMembership Membership)> yearRecords)
+        List<(Core.Entities.Member Member, Core.Entities.CommitteePositionRecord Membership)> yearRecords)
     {
         var positionGroups = new Dictionary<string, (string DisplayLabel, List<string> MemberNames)>();
         var generalMembers = new List<string>();
 
         foreach (var (member, membership) in yearRecords)
         {
-            var trimmed = membership.Position.Trim();
+            var trimmed = (membership.Position ?? string.Empty).Trim();
             if (trimmed.Length == 0)
             {
                 generalMembers.Add(member.SortableFullName);

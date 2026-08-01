@@ -147,9 +147,81 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-07-31T12:07:21.465Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T00:09:26.663Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T00:09:27.008Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T00:09:27.290Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T00:09:27.583Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T00:14:28.628Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:15:51.042Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:23:33.617Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:23:34.417Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T070",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:42:14.267Z"
     }
   ],
-  "last_action": "living specs evaluated — skipped (not configured)",
+  "last_action": "Phase 2 Foundational complete (all of T002-T035 done); T016 migration generated and verified; T024/T044 (IAgmService + AgmService.cs) and T027-followup (DI registration) pulled forward from US1 to support T070; T070 DebugDataSeeder rewritten and its core logic (AgmService) smoke-verified. Production build green across all 5 src projects. Remaining known test-project breakage (Core.Tests, Reports.Tests, UI.Tests, Integration.Tests) is pre-existing rename fallout explicitly deferred to Phase 3 US1 test tasks T036-T043, plus MemberServiceTests.cs/V2/V3/V11 Integration tests which were not explicitly assigned a task in tasks.md (same class of gap as the T071 MemberForm discovery from a prior session) - flag to user before Phase 3 test-writing begins. Not yet started: T045-T048 (US1 UI: AgmAttendanceGrid/RecordAgm/AgmDetail/menu), all of Phases 4-8.",
   "coverage": {
     "FR-001": {
       "title": "The system MUST provide a dedicated Record AGM entry point from the Events menu, separate from the existing generic create event flow.",
@@ -456,7 +528,7 @@
       "summary": "71 tasks across Setup, Foundational (34 tasks: schema rename+4 new entities, services, backup, old-reset deletion), and 5 user-story phases (US1 MVP record/save/view, US2 office-holder config, US3 AGM-month term boundaries, US4 special elections, US5 past-AGM review), plus Polish."
     }
   },
-  "currentTask": "T010",
+  "currentTask": "T070",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -524,6 +596,91 @@
       "files": [
         "src/StageFright.Data/Configurations/AgmAttendanceRecordConfiguration.cs"
       ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Added CommitteeOfficeHolderTypeConfiguration (unique NOCASE index on Name, soft-delete filter)",
+      "files": [
+        "src/StageFright.Data/Configurations/CommitteeOfficeHolderTypeConfiguration.cs"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Added CommitteeTermConfiguration (no soft-delete filter, FK to starting AGM)",
+      "files": [
+        "src/StageFright.Data/Configurations/CommitteeTermConfiguration.cs"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Renamed CommitteeMembershipConfiguration to CommitteePositionRecordConfiguration with new filtered unique indexes replacing (MemberId,Year)",
+      "files": [
+        "src/StageFright.Data/Configurations/CommitteePositionRecordConfiguration.cs",
+        "src/StageFright.Data/Configurations/CommitteeMembershipConfiguration.cs(deleted)"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Updated MemberConfiguration to use renamed CommitteePositionRecords navigation",
+      "files": [
+        "src/StageFright.Data/Configurations/MemberConfiguration.cs"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Renamed CommitteeMemberships DbSet to CommitteePositionRecords; added DbSets for AnnualGeneralMeeting, AgmAttendanceRecord, CommitteeOfficeHolderType, CommitteeTerm; registered all 4 new EF configurations",
+      "files": [
+        "src/StageFright.Data/StageFrightDbContext.cs"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Generated AddAgmWorkflow migration (hand-corrected EF's auto-generated drop+recreate into a real RenameTable+AlterColumn for CommitteeMemberships->CommitteePositionRecords, and DropColumn+AddColumn instead of a semantic-mismatch RenameColumn for Settings.LastCommitteeResetYear->GeneralCommitteeSeatCountTarget); hand-added InsertData for 3 built-in CommitteeOfficeHolderType rows; verified by applying to a scratch SQLite db from empty through the full migration chain",
+      "files": [
+        "src/StageFright.Data/Migrations/20260801030745_AddAgmWorkflow.cs",
+        "src/StageFright.Data/Migrations/20260801030745_AddAgmWorkflow.Designer.cs",
+        "src/StageFright.Data/Migrations/StageFrightDbContextModelSnapshot.cs"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "IAgmService interface + RecordAgmRequest/RecordSpecialElectionRequest DTOs per contract",
+      "files": [
+        "src/StageFright.Core/Contracts/IAgmService.cs",
+        "src/StageFright.Core/Modules/Agm/RecordAgmRequest.cs",
+        "src/StageFright.Core/Modules/Agm/RecordSpecialElectionRequest.cs"
+      ]
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "AgmService.cs implementing all 5 IAgmService methods (RecordAsync with FR-008 pre-tx validation + term-close/open + LabelYear majority-of-days rule; GetByIdAsync; GetPastAsync; ArchiveAsync cascading to attendance records; RecordSpecialElectionAsync). Pulled forward from US1 to unblock T070 seeder rewrite per user request.",
+      "files": [
+        "src/StageFright.Core/Modules/Agm/AgmService.cs"
+      ]
+    },
+    "T070": {
+      "status": "DONE",
+      "did": "Rewrote SeedAgmAsync/SeedCommitteeAsync in DebugDataSeeder.cs against IAgmService.RecordAsync and the office-holder-type model: removed the standalone legacy SeedCommitteeAsync (year/position AddOrUpdateAsync), folded committee assignment into the per-year AGM call (President/Secretary/Treasurer via built-in office-holder-type lookup + 6 general committee members); dropped the now-nonexistent 'Annual General Meeting' EventType lookup; 2026 AGM (after SeedCurrentDate) is skipped entirely rather than seeding a phantom future AGM, leaving the term from the 2025 AGM open through the seed window.",
+      "files": [
+        "src/StageFright.App/Seeding/DebugDataSeeder.cs"
+      ]
     }
-  }
+  },
+  "concerns": [
+    {
+      "note": "Mid-Phase-2 Foundational rename in progress. Reordered execution: doing T016 (EF migration) LAST in Phase 2 (after T017-T035) instead of tasks.md literal position (between T015 and Wave 3 repositories), because dotnet ef migrations add requires a full green build of StageFright.Data+App, and the literal doc order leaves ICommitteeMembershipRepository.cs/ICommitteeService.cs/BackupService.cs referencing the already-renamed CommitteeMembership entity unfixed at that point. Also deferring the IAgmService/AgmService DI line from T27s literal scope until AgmService.cs concrete class exists (T044, US1) - registering an interface with no implementation would break the build. Everything else in T027 (repo registrations, ICommitteeOfficeHolderTypeService, CommitteePositionRecordRepository rename, removing ICommitteeAnnualResetService registration) still belongs in T027 now.",
+      "step": "implement"
+    }
+  ],
+  "verified": [
+    {
+      "what": "Full production build (Core/Data/Reports/UI/App) green; EF migration AddAgmWorkflow verified against a real SQLite DB applied from empty; Data.Tests 140/140 pass; throwaway smoke test (deleted after) verified AgmService.RecordAsync/RecordSpecialElectionAsync/ArchiveAsync end-to-end including FR-008 rejection",
+      "command": "dotnet build StageFrightCommunity.slnx; dotnet test tests/StageFright.Data.Tests/",
+      "result": "production code green; remaining failures are only in *.Tests projects referencing the pre-existing deleted CommitteeMembership type, expected per tasks.md and deferred to US1 test tasks (T036-T043) plus a few undocumented gaps found (MemberServiceTests.cs, V2/V3/V11/V5 Integration.Tests)",
+      "warnings": [
+        "EF CLI (dotnet-ef 10.0.2 vs runtime 10.0.10) tooling version mismatch warning - informational only",
+        "PRAGMA foreign_keys=0 outside-transaction warning on AlterColumn/RenameTable migrations - pre-existing pattern also seen on AddJournalEntries and SplitMemberNameIntoFirstLastName migrations"
+      ]
+    }
+  ]
 }
