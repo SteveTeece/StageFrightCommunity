@@ -32,4 +32,12 @@ internal sealed class SetupFormModel
     public GstCode? AnnualFeeGstCode { get; set; }
 
     public GstCode? AttendanceFeeGstCode { get; set; }
+
+    [Range(1, 12, ErrorMessage = "AGM month must be between 1 and 12.")]
+    public int CommitteeRenewalMonth { get; set; } = 1;
+
+    /// <summary>Optional, comma-separated custom office-holder titles entered during setup.</summary>
+    public string? CommitteeOfficeHolderTitlesText { get; set; }
+
+    public int? GeneralCommitteeSeatCountTarget { get; set; }
 }

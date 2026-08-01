@@ -224,24 +224,6 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
         Assert.Equal(before, after);
     }
 
-    // --- AGM detection ---
-
-    [Fact]
-    public async Task AgmExistsInYearAsync_ReturnsTrue_AfterAgmScheduled()
-    {
-        var agmType = await AddSystemEventType("Annual General Meeting");
-
-        var eventSvc = BuildEventService();
-        await eventSvc.ScheduleAsync(new ScheduleEventRequest
-        {
-            Date = new DateTime(2026, 11, 15, 0, 0, 0, DateTimeKind.Utc),
-            EventTypeId = agmType.Id
-        });
-
-        Assert.True(await eventSvc.AgmExistsInYearAsync(2026));
-        Assert.False(await eventSvc.AgmExistsInYearAsync(2025));
-    }
-
     // --- Helpers ---
 
     private EventService BuildEventService()

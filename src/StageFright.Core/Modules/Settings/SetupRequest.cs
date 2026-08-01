@@ -12,4 +12,7 @@ public record SetupRequest(
     bool IsGstRegistered,
     GstCode? AnnualFeeGstCode,
     GstCode? AttendanceFeeGstCode,
-    Theme Theme);
+    Theme Theme,
+    int CommitteeRenewalMonth = 1,
+    IReadOnlyList<string>? CommitteeOfficeHolderTitles = null,
+    int? GeneralCommitteeSeatCountTarget = null);

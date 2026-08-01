@@ -20,13 +20,13 @@ namespace StageFright.Reports.Tests;
 /// </summary>
 public class CommitteeReportProviderTests
 {
-    private readonly ICommitteeMembershipRepository _committeeMemberships = Substitute.For<ICommitteeMembershipRepository>();
+    private readonly ICommitteePositionRecordRepository _committeePositionRecords = Substitute.For<ICommitteePositionRecordRepository>();
     private readonly IMemberRepository _members = Substitute.For<IMemberRepository>();
     private readonly CommitteeReportProvider _sut;
 
     public CommitteeReportProviderTests()
     {
-        _sut = new CommitteeReportProvider(_committeeMemberships, _members);
+        _sut = new CommitteeReportProvider(_committeePositionRecords, _members);
     }
 
     // --- User Story 1: Year-grouped committee overview ---
@@ -106,6 +106,134 @@ public class CommitteeReportProviderTests
         var result = await _sut.GenerateAsync(DefaultFilters());
 
         Assert.Empty(result.Sections);
+    }
+
+    // --- US3: AGM-month term boundaries (spec 013) ---
+
+    [Fact]
+    public async Task Should_GroupByCommitteeTermLabelYear_When_RecordBelongsToATerm()
+    {
+        var alice = MakeMember("Alice");
+        SetupMembers(alice);
+        var term = MakeTerm(labelYear: 2027);
+        SetupCommittee(alice.Id, MakeTermPositionRecord(alice.Id, term, officeHolderType: null));
+
+        var result = await _sut.GenerateAsync(DefaultFilters());
+
+        var section = Assert.Single(result.Sections);
+        Assert.Equal("2027", section.SummaryRow!.Cells[0]);
+    }
+
+    [Fact]
+    public async Task Should_GroupLegacyAndTermRecords_ByTheirOwnResolvedYear_When_BothExist()
+    {
+        var alice = MakeMember("Alice");
+        var bob = MakeMember("Bob");
+        SetupMembers(alice, bob);
+        var term = MakeTerm(labelYear: 2027);
+        SetupCommittee(alice.Id, MakeTermPositionRecord(alice.Id, term, officeHolderType: null));
+        SetupCommittee(bob.Id, MakeCommittee(bob.Id, 2024, "Treasurer"));
+
+        var result = await _sut.GenerateAsync(DefaultFilters());
+
+        Assert.Equal(2, result.Sections.Count);
+        Assert.Equal("2027", result.Sections[0].SummaryRow!.Cells[0]);
+        Assert.Equal("2024", result.Sections[1].SummaryRow!.Cells[0]);
+    }
+
+    [Fact]
+    public async Task Should_ResolveOfficeHolderTypeName_AsPositionLabel_When_RecordBelongsToATerm()
+    {
+        var alice = MakeMember("Alice");
+        SetupMembers(alice);
+        var term = MakeTerm(labelYear: 2027);
+        var officeHolderType = new CommitteeOfficeHolderType
+        {
+            Id = Guid.NewGuid(), Name = "President", DisplayOrder = 0, IsBuiltIn = true,
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        SetupCommittee(alice.Id, MakeTermPositionRecord(alice.Id, term, officeHolderType));
+
+        var result = await _sut.GenerateAsync(DefaultFilters());
+
+        var section = Assert.Single(result.Sections);
+        Assert.Contains(section.Rows, r => r.Cells[1] == "President" && r.Cells[2] == "Alice");
+    }
+
+    [Fact]
+    public async Task Should_GroupTermRecordWithNoOfficeHolderType_AsGeneralCommitteeMember_When_RecordBelongsToATerm()
+    {
+        var alice = MakeMember("Alice");
+        SetupMembers(alice);
+        var term = MakeTerm(labelYear: 2027);
+        SetupCommittee(alice.Id, MakeTermPositionRecord(alice.Id, term, officeHolderType: null));
+
+        var result = await _sut.GenerateAsync(DefaultFilters());
+
+        var section = Assert.Single(result.Sections);
+        var lastRow = section.Rows[^1];
+        Assert.Equal("General Committee Members", lastRow.Cells[1]);
+        Assert.Equal("Alice", lastRow.Cells[2]);
+    }
+
+    // --- User Story 4: Special elections — multi-holder dated display (FR-029) ---
+
+    [Fact]
+    public async Task Should_RenderNameOnly_NoDates_When_PositionHasSingleHolder()
+    {
+        var alice = MakeMember("Alice");
+        SetupMembers(alice);
+        var term = MakeTerm(labelYear: 2026);
+        var president = new CommitteeOfficeHolderType
+        {
+            Id = Guid.NewGuid(), Name = "President", DisplayOrder = 0, IsBuiltIn = true,
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        SetupCommittee(alice.Id, MakeTermPositionRecord(alice.Id, term, president));
+
+        var result = await _sut.GenerateAsync(DefaultFilters());
+
+        var section = Assert.Single(result.Sections);
+        var presidentRow = section.Rows.Single(r => r.Cells[1] == "President");
+        Assert.Equal("Alice", presidentRow.Cells[2]);
+        Assert.DoesNotContain("(", presidentRow.Cells[2]);
+    }
+
+    [Fact]
+    public async Task Should_RenderDatedHolderList_OrderedByStartDate_When_SpecialElectionReplacedAHolder()
+    {
+        var alice = MakeMember("Alice");
+        var bob = MakeMember("Bob");
+        SetupMembers(alice, bob);
+        var term = MakeTerm(labelYear: 2026);
+        var president = new CommitteeOfficeHolderType
+        {
+            Id = Guid.NewGuid(), Name = "President", DisplayOrder = 0, IsBuiltIn = true,
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        var outgoing = MakeTermPositionRecord(alice.Id, term, president);
+        outgoing.StartDate = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc);
+        outgoing.EndDate = new DateTime(2026, 6, 15, 0, 0, 0, DateTimeKind.Utc);
+        var incoming = MakeTermPositionRecord(bob.Id, term, president);
+        incoming.StartDate = new DateTime(2026, 6, 15, 0, 0, 0, DateTimeKind.Utc);
+        incoming.EndDate = null;
+
+        _committeePositionRecords.GetByMemberAsync(alice.Id, Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<CommitteePositionRecord>>([outgoing]));
+        _committeePositionRecords.GetByMemberAsync(bob.Id, Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<CommitteePositionRecord>>([incoming]));
+
+        var result = await _sut.GenerateAsync(DefaultFilters());
+
+        var section = Assert.Single(result.Sections);
+        var presidentRow = section.Rows.Single(r => r.Cells[1] == "President");
+        var cell = presidentRow.Cells[2];
+
+        // Alice (outgoing, dated) must appear before Bob (incoming, "present") — ordered by StartDate.
+        Assert.True(cell.IndexOf("Alice", StringComparison.Ordinal) < cell.IndexOf("Bob", StringComparison.Ordinal));
+        Assert.Contains("2026", cell);
+        Assert.Contains("–present)", cell);
+        Assert.DoesNotContain("Alice, Bob", cell);
     }
 
     // --- User Story 2: Role breakdown within each year ---
@@ -299,24 +427,51 @@ public class CommitteeReportProviderTests
 
         foreach (var member in members)
         {
-            _committeeMemberships.GetByMemberAsync(member.Id, Arg.Any<CancellationToken>())
-                .Returns(Task.FromResult<IReadOnlyList<CommitteeMembership>>([]));
+            _committeePositionRecords.GetByMemberAsync(member.Id, Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult<IReadOnlyList<CommitteePositionRecord>>([]));
         }
     }
 
-    private void SetupCommittee(Guid memberId, params CommitteeMembership[] memberships)
+    private void SetupCommittee(Guid memberId, params CommitteePositionRecord[] memberships)
     {
-        _committeeMemberships.GetByMemberAsync(memberId, Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<CommitteeMembership>>(memberships.ToList()));
+        _committeePositionRecords.GetByMemberAsync(memberId, Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<CommitteePositionRecord>>(memberships.ToList()));
     }
 
-    private static CommitteeMembership MakeCommittee(Guid memberId, int year, string position)
+    private static CommitteePositionRecord MakeCommittee(Guid memberId, int year, string position)
         => new()
         {
             Id = Guid.NewGuid(),
             MemberId = memberId,
             Year = year,
             Position = position,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+    private static CommitteeTerm MakeTerm(int labelYear)
+        => new()
+        {
+            Id = Guid.NewGuid(),
+            StartedByAgmId = Guid.NewGuid(),
+            StartDate = DateTime.UtcNow,
+            EndDate = null,
+            LabelYear = labelYear,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+    private static CommitteePositionRecord MakeTermPositionRecord(Guid memberId, CommitteeTerm term, CommitteeOfficeHolderType? officeHolderType)
+        => new()
+        {
+            Id = Guid.NewGuid(),
+            MemberId = memberId,
+            CommitteeTermId = term.Id,
+            CommitteeTerm = term,
+            OfficeHolderTypeId = officeHolderType?.Id,
+            OfficeHolderType = officeHolderType,
+            StartDate = term.StartDate,
+            EndDate = null,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

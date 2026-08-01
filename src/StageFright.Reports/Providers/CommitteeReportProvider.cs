@@ -15,12 +15,12 @@ namespace StageFright.Reports.Providers;
 /// </summary>
 public class CommitteeReportProvider : IReportProvider
 {
-    private readonly ICommitteePositionRecordRepository _committeeMemberships;
+    private readonly ICommitteePositionRecordRepository _committeePositionRecords;
     private readonly IMemberRepository _members;
 
-    public CommitteeReportProvider(ICommitteePositionRecordRepository committeeMemberships, IMemberRepository members)
+    public CommitteeReportProvider(ICommitteePositionRecordRepository committeePositionRecords, IMemberRepository members)
     {
-        _committeeMemberships = committeeMemberships;
+        _committeePositionRecords = committeePositionRecords;
         _members = members;
     }
 
@@ -55,29 +55,33 @@ public class CommitteeReportProvider : IReportProvider
 
         var memberMap = filteredMembers.ToDictionary(m => m.Id);
 
-        // Flatten every filtered member's committee memberships into (Member, CommitteePositionRecord) pairs
-        var records = new List<(Core.Entities.Member Member, Core.Entities.CommitteePositionRecord Membership)>();
+        // Flatten every filtered member's committee position records into (Member, CommitteePositionRecord) pairs
+        var records = new List<(Core.Entities.Member Member, Core.Entities.CommitteePositionRecord PositionRecord)>();
         foreach (var member in memberMap.Values.OrderBy(m => m.LastName).ThenBy(m => m.FirstName))
         {
-            var memberships = await _committeeMemberships.GetByMemberAsync(member.Id, ct);
-            records.AddRange(memberships.Select(membership => (member, membership)));
+            var positionRecords = await _committeePositionRecords.GetByMemberAsync(member.Id, ct);
+            records.AddRange(positionRecords.Select(positionRecord => (member, positionRecord)));
         }
 
-        // One ReportSection per year with at least one matching record, most-recent-year-first (FR-001/FR-009).
-        // Only legacy-shaped rows (Year populated) group here; CommitteeTerm-based rows are re-keyed in US3 (T058).
+        // One ReportSection per resolved label year, most-recent-first (FR-001/FR-009): rows tied
+        // to a CommitteeTerm resolve to that term's LabelYear; legacy pre-feature rows (no
+        // CommitteeTermId) still group by their own Year, unchanged.
         var sections = records
-            .Where(r => r.Membership.Year.HasValue)
-            .GroupBy(r => r.Membership.Year!.Value)
+            .GroupBy(r => r.PositionRecord.CommitteeTermId is not null
+                ? r.PositionRecord.CommitteeTerm!.LabelYear
+                : r.PositionRecord.Year)
+            .Where(g => g.Key.HasValue)
             .OrderByDescending(g => g.Key)
             .Select(yearGroup =>
             {
+                var year = yearGroup.Key!.Value;
                 var yearRecords = yearGroup.ToList();
 
                 return new ReportSection
                 {
-                    Heading = yearGroup.Key.ToString(),
-                    Rows = BuildPositionLines(yearGroup.Key, yearRecords),
-                    SummaryRow = new ReportRow { Cells = [yearGroup.Key.ToString(), yearRecords.Count.ToString()] }
+                    Heading = year.ToString(),
+                    Rows = BuildPositionLines(year, yearRecords),
+                    SummaryRow = new ReportRow { Cells = [year.ToString(), yearRecords.Count.ToString()] }
                 };
             })
             .ToList();
@@ -119,14 +123,16 @@ public class CommitteeReportProvider : IReportProvider
     /// </summary>
     private static List<ReportRow> BuildPositionLines(
         int year,
-        List<(Core.Entities.Member Member, Core.Entities.CommitteePositionRecord Membership)> yearRecords)
+        List<(Core.Entities.Member Member, Core.Entities.CommitteePositionRecord PositionRecord)> yearRecords)
     {
-        var positionGroups = new Dictionary<string, (string DisplayLabel, List<string> MemberNames)>();
+        var positionGroups = new Dictionary<string, (string DisplayLabel, List<(Core.Entities.Member Member, Core.Entities.CommitteePositionRecord PositionRecord)> Holders)>();
         var generalMembers = new List<string>();
 
-        foreach (var (member, membership) in yearRecords)
+        foreach (var (member, positionRecord) in yearRecords)
         {
-            var trimmed = (membership.Position ?? string.Empty).Trim();
+            // New-model rows carry the label on OfficeHolderType (null = general committee);
+            // legacy rows carry it on the free-text Position field.
+            var trimmed = (positionRecord.OfficeHolderType?.Name ?? positionRecord.Position ?? string.Empty).Trim();
             if (trimmed.Length == 0)
             {
                 generalMembers.Add(member.SortableFullName);
@@ -140,7 +146,7 @@ public class CommitteeReportProvider : IReportProvider
                 group = (displayLabel, []);
                 positionGroups[key] = group;
             }
-            group.MemberNames.Add(member.SortableFullName);
+            group.Holders.Add((member, positionRecord));
         }
 
         var rows = new List<ReportRow>();
@@ -149,7 +155,7 @@ public class CommitteeReportProvider : IReportProvider
         {
             var label = NamedRoleLabels[roleKey];
             var memberText = positionGroups.TryGetValue(roleKey, out var group)
-                ? JoinAlphabetically(group.MemberNames)
+                ? FormatHolders(group.Holders)
                 : "Vacant";
             rows.Add(new ReportRow { Cells = [year.ToString(), label, memberText] });
         }
@@ -160,7 +166,7 @@ public class CommitteeReportProvider : IReportProvider
 
         foreach (var (_, group) in otherPositionLines)
         {
-            rows.Add(new ReportRow { Cells = [year.ToString(), group.DisplayLabel, JoinAlphabetically(group.MemberNames)] });
+            rows.Add(new ReportRow { Cells = [year.ToString(), group.DisplayLabel, FormatHolders(group.Holders)] });
         }
 
         if (generalMembers.Count > 0)
@@ -169,6 +175,32 @@ public class CommitteeReportProvider : IReportProvider
         }
 
         return rows;
+    }
+
+    /// <summary>
+    /// FR-029: a single holder (legacy or term-based) renders as name only. Multiple holders for
+    /// the same term-tracked slot (a special election occurred) render as "Name (Start–End or
+    /// 'present')" per holder, ordered by StartDate. Multiple legacy holders (no StartDate to
+    /// order by) keep the pre-existing plain alphabetical comma-join.
+    /// </summary>
+    private static string FormatHolders(List<(Core.Entities.Member Member, Core.Entities.CommitteePositionRecord PositionRecord)> holders)
+    {
+        if (holders.Count == 1)
+            return holders[0].Member.SortableFullName;
+
+        if (holders.All(h => h.PositionRecord.StartDate.HasValue))
+        {
+            return string.Join(", ", holders
+                .OrderBy(h => h.PositionRecord.StartDate)
+                .Select(h =>
+                {
+                    var start = h.PositionRecord.StartDate!.Value.ToString("d MMM yyyy");
+                    var end = h.PositionRecord.EndDate.HasValue ? h.PositionRecord.EndDate.Value.ToString("d MMM yyyy") : "present";
+                    return $"{h.Member.SortableFullName} ({start}–{end})";
+                }));
+        }
+
+        return JoinAlphabetically(holders.Select(h => h.Member.SortableFullName));
     }
 
     private static string JoinAlphabetically(IEnumerable<string> names) =>

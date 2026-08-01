@@ -163,7 +163,9 @@ public sealed class V10_ThemeTests : IAsyncLifetime
         var eventTypeRepo = new EventTypeRepository(_db);
         var auditRepo = new AuditTrailRepository(_db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        return new SetupService(settingsRepo, accountRepo, eventTypeRepo, auditService);
+        var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(_db);
+        var officeHolderTypeService = new StageFright.Core.Modules.Members.CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
+        return new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
     }
 
     private static (int R, int G, int B) HslToRgb(double h, double s, double l)

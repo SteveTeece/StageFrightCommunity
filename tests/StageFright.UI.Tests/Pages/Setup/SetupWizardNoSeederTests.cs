@@ -33,7 +33,8 @@ public class SetupWizardNoSeederTests : BunitContext
         cut.Find("#abn").Change(ValidAbn);
         cut.Find("#btn-next").Click(); // -> step 2
         cut.Find("#btn-next").Click(); // -> step 3
-        cut.Find("#btn-next").Click(); // -> step 4 (Review & Finish)
+        cut.Find("#btn-next").Click(); // -> step 4 (committee config)
+        cut.Find("#btn-next").Click(); // -> step 5 (Review & Finish)
     }
 
     [Fact]
@@ -42,7 +43,7 @@ public class SetupWizardNoSeederTests : BunitContext
         var cut = Render<SetupWizard>();
         AdvanceToReview(cut);
 
-        Assert.Contains("Step 4 of 4", cut.Markup);
+        Assert.Contains("Step 5 of 5", cut.Markup);
         Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#seedData"));
     }
 

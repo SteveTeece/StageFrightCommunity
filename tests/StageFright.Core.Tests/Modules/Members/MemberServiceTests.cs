@@ -15,7 +15,7 @@ namespace StageFright.Core.Tests.Modules.Members;
 public class MemberServiceTests : TestBase
 {
     private readonly IMemberRepository _memberRepo = Substitute.For<IMemberRepository>();
-    private readonly ICommitteeMembershipRepository _committeeRepo = Substitute.For<ICommitteeMembershipRepository>();
+    private readonly ICommitteePositionRecordRepository _committeeRepo = Substitute.For<ICommitteePositionRecordRepository>();
     private readonly ISettingsRepository _settingsRepo = Substitute.For<ISettingsRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
@@ -201,7 +201,7 @@ public class MemberServiceTests : TestBase
     }
 
     [Fact]
-    public async Task InactivateAsync_DoesNot_CascadeToCommitteeMemberships()
+    public async Task InactivateAsync_DoesNot_CascadeToCommitteePositionRecords()
     {
         var member = ActiveMember();
         _memberRepo.GetByIdAsync(member.Id, Arg.Any<CancellationToken>()).Returns(member);
@@ -209,11 +209,9 @@ public class MemberServiceTests : TestBase
 
         await svc.InactivateAsync(member.Id, Ct);
 
-        // CommitteeMembership records must NOT be touched on inactivation
+        // CommitteePositionRecord records must NOT be touched on inactivation
         await _committeeRepo.DidNotReceive().ArchiveAsync(
             Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        await _committeeRepo.DidNotReceive().SoftDeleteCurrentYearAsync(
-            Arg.Any<int>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -278,14 +276,14 @@ public class MemberServiceTests : TestBase
         _memberRepo.GetByIdAsync(member.Id, Arg.Any<CancellationToken>()).Returns(member);
 
         var currentYear = DateTime.UtcNow.Year;
-        var committeeRecord = new CommitteeMembership
+        var committeeRecord = new CommitteePositionRecord
         {
             Id = Guid.NewGuid(), MemberId = member.Id,
             Year = currentYear, Position = "President",
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         };
         _committeeRepo.GetByMemberAsync(member.Id, Arg.Any<CancellationToken>())
-            .Returns(new List<CommitteeMembership> { committeeRecord });
+            .Returns(new List<CommitteePositionRecord> { committeeRecord });
 
         var svc = CreateService();
 
@@ -303,14 +301,14 @@ public class MemberServiceTests : TestBase
 
         // Historical record from last year
         var lastYear = DateTime.UtcNow.Year - 1;
-        var historicalRecord = new CommitteeMembership
+        var historicalRecord = new CommitteePositionRecord
         {
             Id = Guid.NewGuid(), MemberId = member.Id,
             Year = lastYear, Position = "Treasurer",
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         };
         _committeeRepo.GetByMemberAsync(member.Id, Arg.Any<CancellationToken>())
-            .Returns(new List<CommitteeMembership> { historicalRecord });
+            .Returns(new List<CommitteePositionRecord> { historicalRecord });
 
         var svc = CreateService();
 
@@ -327,7 +325,7 @@ public class MemberServiceTests : TestBase
         var member = ActiveMember();
         _memberRepo.GetByIdAsync(member.Id, Arg.Any<CancellationToken>()).Returns(member);
         _committeeRepo.GetByMemberAsync(member.Id, Arg.Any<CancellationToken>())
-            .Returns(new List<CommitteeMembership>());
+            .Returns(new List<CommitteePositionRecord>());
         var svc = CreateService();
 
         await svc.ArchiveAsync(member.Id, Ct);

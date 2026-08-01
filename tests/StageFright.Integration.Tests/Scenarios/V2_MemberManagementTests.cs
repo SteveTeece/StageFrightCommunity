@@ -351,7 +351,7 @@ public sealed class V2_MemberManagementTests : IAsyncLifetime
         await memberSvc.ArchiveAsync(member.Id);
 
         // After archive, the current-year committee record should be soft-deleted
-        var committeeRepo = new CommitteeMembershipRepository(_db);
+        var committeeRepo = new CommitteePositionRecordRepository(_db);
         var active = await committeeRepo.GetByMemberAsync(member.Id);
         Assert.Empty(active); // soft-deleted records filtered out
 
@@ -364,7 +364,7 @@ public sealed class V2_MemberManagementTests : IAsyncLifetime
     private MemberService BuildMemberService()
     {
         var memberRepo = new MemberRepository(_db);
-        var committeeRepo = new CommitteeMembershipRepository(_db);
+        var committeeRepo = new CommitteePositionRecordRepository(_db);
         var settingsRepo = new SettingsRepository(_db);
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(
@@ -393,12 +393,13 @@ public sealed class V2_MemberManagementTests : IAsyncLifetime
 
     private CommitteeService BuildCommitteeService()
     {
-        var committeeRepo = new CommitteeMembershipRepository(_db);
+        var committeeRepo = new CommitteePositionRecordRepository(_db);
+        var termRepo = new CommitteeTermRepository(_db);
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(
             auditRepo, NullLogger<AuditTrailService>.Instance);
         var unitOfWork = new UnitOfWork(_db);
 
-        return new CommitteeService(committeeRepo, auditSvc, unitOfWork);
+        return new CommitteeService(committeeRepo, termRepo, auditSvc, unitOfWork);
     }
 }

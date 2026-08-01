@@ -9,7 +9,7 @@ using StageFright.UI.Pages.Setup;
 namespace StageFright.UI.Tests.Pages.Setup;
 
 /// <summary>
-/// bUnit component tests for the 4-step SetupWizard: step navigation/validation gating,
+/// bUnit component tests for the 5-step SetupWizard: step navigation/validation gating,
 /// GST dropdown visibility, Finish composing the full SetupRequest, and the sample-data
 /// seeding overlay appearing only once seeding actually starts.
 /// </summary>
@@ -45,6 +45,11 @@ public class SetupWizardTests : BunitContext
         cut.Find("#btn-next").Click();
     }
 
+    private static void AdvanceFromStep4(IRenderedComponent<SetupWizard> cut)
+    {
+        cut.Find("#btn-next").Click();
+    }
+
     [Fact]
     public void Step1_RendersOrganisationAndAbnFields()
     {
@@ -52,7 +57,7 @@ public class SetupWizardTests : BunitContext
 
         cut.Find("#orgName");
         cut.Find("#abn");
-        Assert.Contains("Step 1 of 4", cut.Markup);
+        Assert.Contains("Step 1 of 5", cut.Markup);
     }
 
     [Fact]
@@ -63,7 +68,7 @@ public class SetupWizardTests : BunitContext
         cut.Find("#abn").Change(ValidAbn);
         cut.Find("#btn-next").Click();
 
-        Assert.Contains("Step 1 of 4", cut.Markup);
+        Assert.Contains("Step 1 of 5", cut.Markup);
         Assert.Contains("required", cut.Markup, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -75,7 +80,7 @@ public class SetupWizardTests : BunitContext
         cut.Find("#orgName").Change("My Choir");
         cut.Find("#btn-next").Click();
 
-        Assert.Contains("Step 1 of 4", cut.Markup);
+        Assert.Contains("Step 1 of 5", cut.Markup);
     }
 
 #if !DEBUG
@@ -88,7 +93,7 @@ public class SetupWizardTests : BunitContext
         cut.Find("#abn").Change("12345");
         cut.Find("#btn-next").Click();
 
-        Assert.Contains("Step 1 of 4", cut.Markup);
+        Assert.Contains("Step 1 of 5", cut.Markup);
     }
 #else
     [Fact]
@@ -102,7 +107,7 @@ public class SetupWizardTests : BunitContext
         cut.Find("#abn").Change("12345");
         cut.Find("#btn-next").Click();
 
-        Assert.Contains("Step 2 of 4", cut.Markup);
+        Assert.Contains("Step 2 of 5", cut.Markup);
     }
 #endif
 
@@ -112,16 +117,22 @@ public class SetupWizardTests : BunitContext
         var cut = Render<SetupWizard>();
 
         AdvanceFromStep1(cut);
-        Assert.Contains("Step 2 of 4", cut.Markup);
+        Assert.Contains("Step 2 of 5", cut.Markup);
         cut.Find("#annualFee");
         cut.Find("#renewalMonth");
 
         AdvanceFromStep2(cut);
-        Assert.Contains("Step 3 of 4", cut.Markup);
+        Assert.Contains("Step 3 of 5", cut.Markup);
         cut.Find("#gstRegistered");
 
         AdvanceFromStep3(cut);
-        Assert.Contains("Step 4 of 4", cut.Markup);
+        Assert.Contains("Step 4 of 5", cut.Markup);
+        cut.Find("#agmMonth");
+        cut.Find("#officeHolderTitles");
+        cut.Find("#seatCountTarget");
+
+        AdvanceFromStep4(cut);
+        Assert.Contains("Step 5 of 5", cut.Markup);
         cut.Find("#seedData");
         cut.Find("#btn-finish");
     }
@@ -134,7 +145,7 @@ public class SetupWizardTests : BunitContext
         AdvanceFromStep1(cut, orgName: "Retained Org");
         cut.Find("#btn-back").Click();
 
-        Assert.Contains("Step 1 of 4", cut.Markup);
+        Assert.Contains("Step 1 of 5", cut.Markup);
         Assert.Equal("Retained Org", cut.Find("#orgName").GetAttribute("value"));
     }
 
@@ -166,6 +177,7 @@ public class SetupWizardTests : BunitContext
         cut.Find("#annualFeeGstCode").Change("Gst");
         cut.Find("#attendanceFeeGstCode").Change("GstFree");
         AdvanceFromStep3(cut);
+        AdvanceFromStep4(cut);
 
         await cut.Find("form").SubmitAsync();
 
@@ -187,6 +199,7 @@ public class SetupWizardTests : BunitContext
         AdvanceFromStep2(cut);
         // GST left off (default) on step 3.
         AdvanceFromStep3(cut);
+        AdvanceFromStep4(cut);
 
         await cut.Find("form").SubmitAsync();
 
@@ -206,6 +219,7 @@ public class SetupWizardTests : BunitContext
         AdvanceFromStep1(cut);
         AdvanceFromStep2(cut);
         AdvanceFromStep3(cut);
+        AdvanceFromStep4(cut);
 
         await cut.Find("form").SubmitAsync();
 
@@ -220,6 +234,7 @@ public class SetupWizardTests : BunitContext
         AdvanceFromStep1(cut);
         AdvanceFromStep2(cut);
         AdvanceFromStep3(cut);
+        AdvanceFromStep4(cut);
 
         await cut.Find("form").SubmitAsync();
 
@@ -234,6 +249,7 @@ public class SetupWizardTests : BunitContext
         AdvanceFromStep1(cut);
         AdvanceFromStep2(cut);
         AdvanceFromStep3(cut);
+        AdvanceFromStep4(cut);
 
         await cut.Find("form").SubmitAsync();
 
@@ -252,6 +268,7 @@ public class SetupWizardTests : BunitContext
         AdvanceFromStep1(cut);
         AdvanceFromStep2(cut);
         AdvanceFromStep3(cut);
+        AdvanceFromStep4(cut);
         cut.Find("#seedData").Change(true);
 
         Assert.DoesNotContain("setup-seeding-overlay", cut.Markup);

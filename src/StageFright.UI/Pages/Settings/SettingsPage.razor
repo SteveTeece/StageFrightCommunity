@@ -58,6 +58,19 @@
                 </div>
             </Content>
         </Tab>
+        <Tab Title="Committee" OnClick="OnCommitteeClicked">
+            <Content>
+                <div class="pt-3">
+                    @if (CommitteeShown)
+                    {
+                        <ErrorBoundary>
+                            <ChildContent><CommitteeSettingsTab /></ChildContent>
+                            <ErrorContent><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                        </ErrorBoundary>
+                    }
+                </div>
+            </Content>
+        </Tab>
         @foreach (var tab in PluginTabs)
         {
             var key = tab.TabKey;

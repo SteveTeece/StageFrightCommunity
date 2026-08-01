@@ -17,6 +17,7 @@ public class SetupServiceTests : TestBase
     private readonly ISettingsRepository _settingsRepo = Substitute.For<ISettingsRepository>();
     private readonly IAccountRepository _accountRepo = Substitute.For<IAccountRepository>();
     private readonly IEventTypeRepository _eventTypeRepo = Substitute.For<IEventTypeRepository>();
+    private readonly ICommitteeOfficeHolderTypeService _officeHolderTypeService = Substitute.For<ICommitteeOfficeHolderTypeService>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
 
     public SetupServiceTests()
@@ -25,7 +26,7 @@ public class SetupServiceTests : TestBase
             .Returns(ci => ci.ArgAt<StageFright.Core.Entities.EventType>(0));
     }
 
-    private SetupService CreateService() => new(_settingsRepo, _accountRepo, _eventTypeRepo, _audit);
+    private SetupService CreateService() => new(_settingsRepo, _accountRepo, _eventTypeRepo, _officeHolderTypeService, _audit);
 
     // --- IsSetupCompleteAsync ---
 

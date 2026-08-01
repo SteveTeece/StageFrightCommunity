@@ -24,7 +24,7 @@ public class EventFormTests : BunitContext
         Services.AddSingleton(_eventTypeService);
         Services.AddSingleton(Substitute.For<Microsoft.AspNetCore.Components.NavigationManager>());
 
-        _eventTypeService.GetAllAsync(Arg.Any<CancellationToken>())
+        _eventTypeService.GetSelectableForNewEventsAsync(Arg.Any<CancellationToken>())
             .Returns(new List<EventType>
             {
                 new() { Id = PerformanceId, Name = "Performance", IsSystemDefault = true,
