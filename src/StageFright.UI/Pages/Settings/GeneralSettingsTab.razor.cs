@@ -58,6 +58,7 @@ public partial class GeneralSettingsTab : ComponentBase
                 _settings.IsGstRegistered = current.IsGstRegistered;
                 _settings.AnnualFeeGstCode = current.AnnualFeeGstCode;
                 _settings.AttendanceFeeGstCode = current.AttendanceFeeGstCode;
+                _settings.GeneralCommitteeSeatCountTarget = current.GeneralCommitteeSeatCountTarget;
             }
 
             await SettingsService.SaveAsync(_settings);

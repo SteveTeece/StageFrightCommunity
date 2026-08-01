@@ -11,6 +11,7 @@ public class AgmRepository : SoftDeletableBaseRepository<AnnualGeneralMeeting>, 
     public async Task<IReadOnlyList<AnnualGeneralMeeting>> GetPastOrderedAsync(CancellationToken ct = default)
     {
         return await _db.AnnualGeneralMeetings
+            .Include(a => a.AttendanceRecords)
             .OrderByDescending(a => a.Date)
             .ToListAsync(ct);
     }

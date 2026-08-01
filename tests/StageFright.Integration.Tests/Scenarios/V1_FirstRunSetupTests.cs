@@ -112,7 +112,9 @@ public sealed class V1_FirstRunSetupTests : IAsyncLifetime
         var auditRepo = new AuditTrailRepository(_db);
         var auditService = new Core.Modules.AuditTrail.AuditTrailService(
             auditRepo, NullLogger<Core.Modules.AuditTrail.AuditTrailService>.Instance);
-        return new SetupService(settingsRepo, accountRepo, eventTypeRepo, auditService);
+        var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(_db);
+        var officeHolderTypeService = new Core.Modules.Members.CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
+        return new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
     }
 
     private static SetupRequest ValidRequest() =>

@@ -1,0 +1,63 @@
+@page "/events/agm/special-election/new"
+
+<PageTitle>Record Special Election — StageFright Community</PageTitle>
+
+<div class="page-header mb-2">
+    <h1 class="h3">Record Special Election</h1>
+</div>
+
+@if (_loading)
+{
+    <p role="status" aria-live="polite">Loading…</p>
+}
+else if (_currentPositions.Count == 0)
+{
+    <div class="alert alert-warning py-1 mb-2 small">No current committee positions found. Record an AGM first.</div>
+    <a href="/events/agm" class="btn btn-outline-secondary btn-sm">Back to Past AGMs</a>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+    }
+
+    <div class="mb-3">
+        <label for="outgoingPosition" class="form-label">Position Being Replaced</label>
+        <select id="outgoingPosition" class="form-select form-select-sm"
+                value="@(_selectedOutgoingId?.ToString() ?? "")"
+                @onchange="e => OnOutgoingChanged(e.Value?.ToString())">
+            <option value="">Select a position</option>
+            @foreach (var record in _currentPositions)
+            {
+                <option value="@record.Id">@DescribePosition(record)</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="incomingMember" class="form-label">Incoming Member</label>
+        <select id="incomingMember" class="form-select form-select-sm"
+                value="@(_selectedIncomingMemberId?.ToString() ?? "")"
+                @onchange="e => OnIncomingChanged(e.Value?.ToString())">
+            <option value="">Select a member</option>
+            @foreach (var member in _activeMembers)
+            {
+                <option value="@member.Id">@member.SortableFullName</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="replacementDate" class="form-label">Replacement Date</label>
+        <input type="date" id="replacementDate" class="form-control form-control-sm"
+               @bind="_replacementDate" @bind:format="yyyy-MM-dd" />
+    </div>
+
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary btn-sm" @onclick="SaveAsync" disabled="@_saving">
+            @(_saving ? "Saving…" : "Save Special Election")
+        </button>
+        <a href="/events/agm" class="btn btn-outline-secondary btn-sm">Cancel</a>
+    </div>
+}

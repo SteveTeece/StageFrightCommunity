@@ -1,6 +1,7 @@
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Modules.AuditTrail;
+using StageFright.Core.Modules.Members;
 using StageFright.Core.Modules.Settings;
 using StageFright.Data.Repositories;
 using StageFright.Data.Tests.Infrastructure;
@@ -26,7 +27,9 @@ public class SetupServiceIntegrationTests : IDisposable
         var eventTypeRepo = new EventTypeRepository(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, auditService);
+        var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
+        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
 
         var request = new SetupRequest("My Choir", "51824753556", 80m, 6m, 3, false, null, null, Theme.Dark);
         await svc.InitializeAsync(request);
@@ -48,7 +51,9 @@ public class SetupServiceIntegrationTests : IDisposable
         var eventTypeRepo = new EventTypeRepository(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, auditService);
+        var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
+        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
 
         await svc.InitializeAsync(new SetupRequest("Org", "51824753556", 50m, 5m, 1, false, null, null, Theme.Dark));
 
@@ -67,7 +72,9 @@ public class SetupServiceIntegrationTests : IDisposable
         var eventTypeRepo = new EventTypeRepository(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, auditService);
+        var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
+        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
 
         await svc.InitializeAsync(new SetupRequest("Org", "51824753556", 50m, 5m, 1, false, null, null, Theme.Dark));
 
@@ -84,7 +91,9 @@ public class SetupServiceIntegrationTests : IDisposable
         var eventTypeRepo = new EventTypeRepository(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, auditService);
+        var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
+        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
 
         Assert.False(await svc.IsSetupCompleteAsync());
     }

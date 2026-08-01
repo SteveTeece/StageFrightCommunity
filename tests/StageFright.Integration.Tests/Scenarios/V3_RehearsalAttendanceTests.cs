@@ -409,7 +409,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
     private MemberService BuildMemberService()
     {
         var memberRepo = new MemberRepository(_db);
-        var committeeRepo = new CommitteeMembershipRepository(_db);
+        var committeeRepo = new CommitteePositionRecordRepository(_db);
         var settingsRepo = new SettingsRepository(_db);
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
