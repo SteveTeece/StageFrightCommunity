@@ -87,12 +87,6 @@ public class Settings
     /// </summary>
     public bool ShowParticipationGraphs { get; set; } = true;
 
-    /// <summary>
-    /// The calendar year for which the annual committee reset was last performed.
-    /// Null until the first reset. Used to drive the AGM reminder banner (FR-031).
-    /// </summary>
-    public int? LastCommitteeResetYear { get; set; }
-
     /// <summary>Semver schema version recorded by migrations and backup manifests (NFR-002).</summary>
     public string SchemaVersion { get; set; } = "1.1.0";
 

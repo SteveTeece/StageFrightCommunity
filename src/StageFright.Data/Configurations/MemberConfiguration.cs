@@ -19,7 +19,7 @@ public class MemberConfiguration : IEntityTypeConfiguration<Member>
 
         builder.HasQueryFilter(m => !m.IsDeleted);
 
-        builder.HasMany(m => m.CommitteeMemberships)
+        builder.HasMany(m => m.CommitteePositionRecords)
             .WithOne(c => c.Member)
             .HasForeignKey(c => c.MemberId)
             .OnDelete(DeleteBehavior.Restrict);

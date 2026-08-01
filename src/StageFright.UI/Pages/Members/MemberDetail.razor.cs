@@ -18,7 +18,7 @@ public partial class MemberDetail : ComponentBase
 
     private readonly AgeCalculationService _ageCalc = new();
     private Member? _member;
-    private List<CommitteeMembership> _committeeHistory = new();
+    private List<CommitteePositionRecord> _committeeHistory = new();
     private List<FeeHistoryItem> _feeHistory = new();
     private int? _age;
     private bool _loading = true;
@@ -77,6 +77,23 @@ public partial class MemberDetail : ComponentBase
             _feeHistory = new();
         }
     }
+
+    private static int GetEffectiveYear(CommitteePositionRecord record) =>
+        record.CommitteeTermId is not null ? record.CommitteeTerm!.LabelYear : record.Year ?? 0;
+
+    private static string GetEffectiveLabel(CommitteePositionRecord record)
+    {
+        if (record.OfficeHolderTypeId is not null)
+            return record.OfficeHolderType!.Name;
+
+        var position = record.Position;
+        return !string.IsNullOrWhiteSpace(position) ? position : "General Committee Member";
+    }
+
+    private bool IsCurrent(CommitteePositionRecord record) =>
+        record.CommitteeTermId is not null
+            ? record.CommitteeTerm!.EndDate is null
+            : record.Year == _currentYear;
 
     private void Edit() => Nav.NavigateTo($"/members/edit/{Id}");
 

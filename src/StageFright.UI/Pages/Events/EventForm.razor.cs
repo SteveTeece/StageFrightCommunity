@@ -23,7 +23,7 @@ public partial class EventForm
     {
         try
         {
-            var types = await EventTypeService.GetAllAsync();
+            var types = await EventTypeService.GetSelectableForNewEventsAsync();
             _eventTypes = types.OrderBy(t => t.Name).ToList();
         }
         catch (Exception ex)
