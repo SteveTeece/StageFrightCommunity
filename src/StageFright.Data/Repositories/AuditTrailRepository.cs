@@ -37,12 +37,19 @@ public class AuditTrailRepository : IAuditTrailRepository
 
     public async Task<int> PurgeOlderThanAsync(DateTime cutoff, CancellationToken ct = default)
     {
-        var old = await _db.AuditTrailEntries
-            .Where(a => a.Timestamp < cutoff)
-            .ToListAsync(ct);
+        try
+        {
+            var old = await _db.AuditTrailEntries
+                .Where(a => a.Timestamp < cutoff)
+                .ToListAsync(ct);
 
-        _db.AuditTrailEntries.RemoveRange(old);
-        await _db.SaveChangesAsync(ct);
-        return old.Count;
+            _db.AuditTrailEntries.RemoveRange(old);
+            await _db.SaveChangesAsync(ct);
+            return old.Count;
+        }
+        catch (Exception ex) when (ex is not DataAccessException)
+        {
+            throw new DataAccessException(ex.Message, nameof(AuditTrailEntry), nameof(PurgeOlderThanAsync), null, ex);
+        }
     }
 }
