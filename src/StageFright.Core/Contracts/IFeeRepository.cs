@@ -28,4 +28,7 @@ public interface IFeeRepository
 
     /// <summary>Returns true if an attendance fee already exists for the member at the given rehearsal (idempotency check).</summary>
     Task<bool> AttendanceFeeExistsAsync(Guid memberId, Guid rehearsalId, CancellationToken ct = default);
+
+    /// <summary>Returns all fee records (any FeeType) tied to the given rehearsal.</summary>
+    Task<IReadOnlyList<Fee>> GetByRehearsalAsync(Guid rehearsalId, CancellationToken ct = default);
 }

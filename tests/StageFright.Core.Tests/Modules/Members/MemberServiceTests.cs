@@ -45,6 +45,10 @@ public class MemberServiceTests : TestBase
 
         _memberRepo.AddAsync(Arg.Any<Member>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.ArgAt<Member>(0));
+
+        // Default: no archived committee records exist unless a test overrides it.
+        _committeeRepo.GetArchivedAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<CommitteePositionRecord>());
     }
 
     private MemberService CreateService() =>
@@ -333,6 +337,77 @@ public class MemberServiceTests : TestBase
         await _audit.Received(1).LogAsync(
             "Member", member.Id, AuditAction.Delete,
             Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    // --- RestoreAsync ---
+
+    [Fact]
+    public async Task RestoreAsync_RestoresMember()
+    {
+        var memberId = Guid.NewGuid();
+        var svc = CreateService();
+
+        await svc.RestoreAsync(memberId, Ct);
+
+        await _memberRepo.Received(1).RestoreAsync(memberId, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RestoreAsync_WritesAuditEntry()
+    {
+        var memberId = Guid.NewGuid();
+        var svc = CreateService();
+
+        await svc.RestoreAsync(memberId, Ct);
+
+        await _audit.Received(1).LogAsync(
+            "Member", memberId, AuditAction.Restore,
+            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RestoreAsync_RestoresCascadedCommitteeRecord()
+    {
+        // Regression for #279: ArchiveAsync cascades soft-delete to the member's committee
+        // position record, but RestoreAsync silently left it archived forever. RestoreAsync
+        // must reverse the cascade, not just clear the member's own IsDeleted flag.
+        var memberId = Guid.NewGuid();
+        var archivedRecord = new CommitteePositionRecord
+        {
+            Id = Guid.NewGuid(), MemberId = memberId,
+            Year = DateTime.UtcNow.Year, Position = "President",
+            IsDeleted = true, DeletedAt = DateTime.UtcNow, DeletedBy = "system",
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        _committeeRepo.GetArchivedAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<CommitteePositionRecord> { archivedRecord });
+
+        var svc = CreateService();
+
+        await svc.RestoreAsync(memberId, Ct);
+
+        await _committeeRepo.Received(1).RestoreAsync(archivedRecord.Id, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RestoreAsync_DoesNotRestore_OtherMembersArchivedCommitteeRecords()
+    {
+        var memberId = Guid.NewGuid();
+        var otherMembersRecord = new CommitteePositionRecord
+        {
+            Id = Guid.NewGuid(), MemberId = Guid.NewGuid(),
+            Year = DateTime.UtcNow.Year, Position = "Treasurer",
+            IsDeleted = true, DeletedAt = DateTime.UtcNow, DeletedBy = "system",
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        _committeeRepo.GetArchivedAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<CommitteePositionRecord> { otherMembersRecord });
+
+        var svc = CreateService();
+
+        await svc.RestoreAsync(memberId, Ct);
+
+        await _committeeRepo.DidNotReceive().RestoreAsync(otherMembersRecord.Id, Arg.Any<CancellationToken>());
     }
 
     // --- GetByStatusAsync ---

@@ -83,13 +83,13 @@ public class IncomeStatementReportProvider : IReportProvider
             ?
             [
                 new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Current Period", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
-                new ReportColumn { Header = "Prior Period", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
+                new ReportColumn { Header = "Current Period", Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = "Prior Period", Alignment = ReportColumnAlignment.Right }
             ]
             :
             [
                 new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
+                new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right }
             ];
 
         ReportRow TotalRow(string label, decimal amount, decimal priorAmount) => new()

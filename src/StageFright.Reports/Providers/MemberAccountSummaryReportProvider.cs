@@ -149,9 +149,9 @@ public class MemberAccountSummaryReportProvider : IReportProvider
             [
                 new ReportColumn { Header = "Date / Item", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
-                new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
-                new ReportColumn { Header = "Balance", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
+                new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = "Balance", Alignment = ReportColumnAlignment.Right }
             ],
             SummaryColumns =
             [
@@ -160,7 +160,7 @@ public class MemberAccountSummaryReportProvider : IReportProvider
                 new ReportColumn { Header = "30 Days", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "60 Days", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "90+ Days", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Balance", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
+                new ReportColumn { Header = "Balance", Alignment = ReportColumnAlignment.Right }
             ],
             Sections = sections
         };

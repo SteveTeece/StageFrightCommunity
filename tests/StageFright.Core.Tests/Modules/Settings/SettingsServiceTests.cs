@@ -1,6 +1,7 @@
 using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.Settings;
 using StageFright.Core.Tests.Fixtures;
@@ -38,6 +39,45 @@ public class SettingsServiceTests : TestBase
         await svc.SaveAsync(settings, Ct); // must not throw
 
         await _settingsRepo.Received(1).SaveAsync(settings, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SaveAsync_ClearsGstCodes_WhenIsGstRegisteredFalse()
+    {
+        // Regression for #282: un-registering GST post-setup must clear stale GST codes,
+        // matching Settings.IsGstRegistered's own doc comment ("GST codes stay null").
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var settings = ValidSettings(null);
+        settings.IsGstRegistered = false;
+        settings.AnnualFeeGstCode = GstCode.Gst;
+        settings.AttendanceFeeGstCode = GstCode.Gst;
+
+        await svc.SaveAsync(settings, Ct);
+
+        Assert.Null(settings.AnnualFeeGstCode);
+        Assert.Null(settings.AttendanceFeeGstCode);
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s.AnnualFeeGstCode == null && s.AttendanceFeeGstCode == null),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SaveAsync_PreservesGstCodes_WhenIsGstRegisteredTrue()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var settings = ValidSettings(null);
+        settings.IsGstRegistered = true;
+        settings.AnnualFeeGstCode = GstCode.Gst;
+        settings.AttendanceFeeGstCode = GstCode.GstFree;
+
+        await svc.SaveAsync(settings, Ct);
+
+        Assert.Equal(GstCode.Gst, settings.AnnualFeeGstCode);
+        Assert.Equal(GstCode.GstFree, settings.AttendanceFeeGstCode);
     }
 
 #if !DEBUG

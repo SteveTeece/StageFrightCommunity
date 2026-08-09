@@ -51,8 +51,15 @@ public class GLRepository : IGLRepository
                 "GL set imbalanced (Σdebits ≠ Σcredits); operation cancelled.",
                 nameof(Transaction), nameof(AddBalancedSetAsync));
 
-        await _db.Transactions.AddRangeAsync(lines, ct);
-        await _db.SaveChangesAsync(ct);
+        try
+        {
+            await _db.Transactions.AddRangeAsync(lines, ct);
+            await _db.SaveChangesAsync(ct);
+        }
+        catch (Exception ex) when (ex is not DataAccessException)
+        {
+            throw new DataAccessException(ex.Message, nameof(Transaction), nameof(AddBalancedSetAsync), null, ex);
+        }
     }
 
     public async Task<decimal> GetMemberBalanceAsync(Guid memberId, CancellationToken ct = default)

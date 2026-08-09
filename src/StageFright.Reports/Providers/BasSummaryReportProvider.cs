@@ -59,7 +59,7 @@ public class BasSummaryReportProvider : IReportProvider
                 [
                     new ReportColumn { Header = "Label", Alignment = ReportColumnAlignment.Left },
                     new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
-                    new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
+                    new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right }
                 ],
                 Sections = []
             };
@@ -121,7 +121,7 @@ public class BasSummaryReportProvider : IReportProvider
             [
                 new ReportColumn { Header = "Label", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
+                new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right }
             ],
             Sections = [new ReportSection { Heading = "BAS Labels", Rows = rows }],
             GrandTotal = new ReportRow

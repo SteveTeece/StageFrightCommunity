@@ -31,6 +31,14 @@ public class CsvReportExporter : ICsvReportExporter
         // Write data rows from all sections
         foreach (var section in report.Sections)
         {
+            if (!string.IsNullOrEmpty(section.Heading))
+            {
+                csv.WriteField(section.Heading);
+                for (var i = 1; i < report.Columns.Count; i++)
+                    csv.WriteField(string.Empty);
+                csv.NextRecord();
+            }
+
             foreach (var row in section.Rows)
             {
                 for (var i = 0; i < report.Columns.Count; i++)

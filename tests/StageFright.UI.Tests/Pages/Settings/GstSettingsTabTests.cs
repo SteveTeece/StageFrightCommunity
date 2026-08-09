@@ -42,8 +42,8 @@ public class GstSettingsTabTests : BunitContext
 
         var cut = Render<GstSettingsTab>();
 
-        var checkbox = cut.Find("#gstRegistered");
-        Assert.Null(checkbox.GetAttribute("checked"));
+        var toggle = cut.Find("#gstRegistered");
+        Assert.Equal("false", toggle.GetAttribute("aria-checked"));
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class GstSettingsTabTests : BunitContext
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings());
 
         var cut = Render<GstSettingsTab>();
-        cut.Find("#gstRegistered").Change(true);
+        cut.Find("#gstRegistered").Click();
 
         var confirm = cut.Find("#gst-toggle-confirm");
         Assert.Contains("future income and expense postings will split out GST", confirm.TextContent);
@@ -65,7 +65,7 @@ public class GstSettingsTabTests : BunitContext
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings(gstRegistered: true));
 
         var cut = Render<GstSettingsTab>();
-        cut.Find("#gstRegistered").Change(false);
+        cut.Find("#gstRegistered").Click();
 
         var confirm = cut.Find("#gst-toggle-confirm");
         Assert.Contains("GST fields will be hidden", confirm.TextContent);
@@ -77,7 +77,7 @@ public class GstSettingsTabTests : BunitContext
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings());
 
         var cut = Render<GstSettingsTab>();
-        cut.Find("#gstRegistered").Change(true);
+        cut.Find("#gstRegistered").Click();
         cut.Find("#gst-toggle-confirm-btn").Click();
 
         Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#gst-toggle-confirm"));
@@ -91,12 +91,12 @@ public class GstSettingsTabTests : BunitContext
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings());
 
         var cut = Render<GstSettingsTab>();
-        cut.Find("#gstRegistered").Change(true);
+        cut.Find("#gstRegistered").Click();
         cut.Find("#gst-toggle-confirm .btn-outline-secondary").Click();
 
         Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#gst-toggle-confirm"));
         Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#annualFeeGstCode"));
-        Assert.Null(cut.Find("#gstRegistered").GetAttribute("checked"));
+        Assert.Equal("false", cut.Find("#gstRegistered").GetAttribute("aria-checked"));
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class GstSettingsTabTests : BunitContext
         _settingsService.SaveAsync(Arg.Any<AppSettings>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
 
         var cut = Render<GstSettingsTab>();
-        cut.Find("#gstRegistered").Change(true);
+        cut.Find("#gstRegistered").Click();
         cut.Find("#gst-toggle-confirm-btn").Click();
         cut.Find("#annualFeeGstCode").Change("Gst");
 
@@ -141,7 +141,7 @@ public class GstSettingsTabTests : BunitContext
         _settingsService.SaveAsync(Arg.Any<AppSettings>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
 
         var cut = Render<GstSettingsTab>();
-        cut.Find("#gstRegistered").Change(true);
+        cut.Find("#gstRegistered").Click();
         cut.Find("#gst-toggle-confirm-btn").Click();
 
         await cut.Find("form").SubmitAsync();

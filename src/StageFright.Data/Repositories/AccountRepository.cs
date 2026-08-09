@@ -55,16 +55,23 @@ public class AccountRepository : SoftDeletableBaseRepository<Account>, IAccountR
 
     public async Task ReorderAsync(IReadOnlyList<(Guid Id, int SortOrder)> order, CancellationToken ct = default)
     {
-        foreach (var (id, sortOrder) in order)
+        try
         {
-            var account = await _db.Accounts.FindAsync(new object[] { id }, ct);
-            if (account is not null)
+            foreach (var (id, sortOrder) in order)
             {
-                account.SortOrder = sortOrder;
-                account.UpdatedAt = DateTime.UtcNow;
+                var account = await _db.Accounts.FindAsync(new object[] { id }, ct);
+                if (account is not null)
+                {
+                    account.SortOrder = sortOrder;
+                    account.UpdatedAt = DateTime.UtcNow;
+                }
             }
+            await _db.SaveChangesAsync(ct);
         }
-        await _db.SaveChangesAsync(ct);
+        catch (Exception ex) when (ex is not DataAccessException)
+        {
+            throw new DataAccessException(ex.Message, nameof(Account), nameof(ReorderAsync), null, ex);
+        }
     }
 
     public override async Task ArchiveAsync(Guid id, string deletedBy, CancellationToken ct = default)

@@ -96,6 +96,21 @@ public sealed class BalancedSetIntegrationTests : IAsyncLifetime
     // --- AddBalancedSetAsync: rejection + rollback ---
 
     [Fact]
+    public async Task Should_ThrowDataAccessException_When_SaveChangesFailsPastValidation_Integration()
+    {
+        // Regression for #285: a balanced set (passes GLBalanceException validation) whose
+        // SaveChangesAsync fails for a real DB reason (here: duplicate primary key) must
+        // surface as DataAccessException, not a raw DbUpdateException, across the DAL boundary.
+        var duplicateId = Guid.NewGuid();
+        var debit = MakeLine(ExpenseAccountId, "6000", debit: 25m);
+        var credit = MakeLine(SystemAccounts.CashId, "1100", credit: 25m);
+        debit.Id = duplicateId;
+        credit.Id = duplicateId;
+
+        await Assert.ThrowsAsync<DataAccessException>(() => _sut.AddBalancedSetAsync(new[] { debit, credit }));
+    }
+
+    [Fact]
     public async Task Should_ThrowAndInsertNothing_When_SetIsImbalanced_Integration()
     {
         var lines = new[]

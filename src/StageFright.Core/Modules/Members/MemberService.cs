@@ -9,6 +9,8 @@ namespace StageFright.Core.Modules.Members;
 /// <summary>
 /// Handles member lifecycle: creation, status transitions (Active ↔ Inactive), and archival.
 /// ArchiveAsync cascades soft-delete to the current-year CommitteePositionRecord only.
+/// RestoreAsync reverses that cascade by restoring the member's own archived committee
+/// position record(s), so a restored member doesn't silently lose them.
 /// </summary>
 public class MemberService : IMemberService
 {
@@ -161,9 +163,18 @@ public class MemberService : IMemberService
 
     public async Task RestoreAsync(Guid id, CancellationToken ct = default)
     {
+        var archivedCommitteeRecords = await _committeeRepo.GetArchivedAsync(ct);
+        var committeeRecordsToRestore = archivedCommitteeRecords.Where(r => r.MemberId == id).ToList();
+
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
             await _memberRepo.RestoreAsync(id, innerCt);
+
+            // Reverse the cascade ArchiveAsync performed: restore this member's own
+            // committee position record(s) that were archived alongside them.
+            foreach (var record in committeeRecordsToRestore)
+                await _committeeRepo.RestoreAsync(record.Id, innerCt);
+
             await _audit.LogAsync("Member", id, AuditAction.Restore, ct: innerCt);
         }, ct);
     }

@@ -25,6 +25,16 @@ public class SettingsService : ISettingsService
 
     public async Task SaveAsync(global::StageFright.Core.Entities.Settings settings, CancellationToken ct = default)
     {
+        // Enforce Settings.IsGstRegistered's documented invariant here — the single choke
+        // point every save path (General tab, GST tab, etc.) goes through — so un-registering
+        // GST post-setup can't leave stale GST codes persisted (matches SetupService.InitializeAsync's
+        // setup-time behavior).
+        if (!settings.IsGstRegistered)
+        {
+            settings.AnnualFeeGstCode = null;
+            settings.AttendanceFeeGstCode = null;
+        }
+
 #if !DEBUG
         // ABN checksum validation is skipped in Debug builds — see SetupFormModel.Abn.
         if (!string.IsNullOrEmpty(settings.Abn) && !AbnValidator.IsValid(settings.Abn))
