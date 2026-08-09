@@ -78,7 +78,7 @@ public class SettingsCrossTabSaveTests : BunitContext
 
         // GST/BAS tab loads independently, toggles registration on, confirms, and saves.
         var gstCut = Render<GstSettingsTab>();
-        gstCut.Find("#gstRegistered").Change(true);
+        gstCut.Find("#gstRegistered").Click();
         gstCut.Find("#gst-toggle-confirm-btn").Click();
         await gstCut.Find("form").SubmitAsync();
 
@@ -98,7 +98,7 @@ public class SettingsCrossTabSaveTests : BunitContext
 
         // GST/BAS tab loads its own (soon-to-be-stale) copy and stages an unsaved toggle.
         var gstCut = Render<GstSettingsTab>();
-        gstCut.Find("#gstRegistered").Change(true);
+        gstCut.Find("#gstRegistered").Click();
         gstCut.Find("#gst-toggle-confirm-btn").Click();
 
         // General tab loads independently, changes the ABN, and saves.
