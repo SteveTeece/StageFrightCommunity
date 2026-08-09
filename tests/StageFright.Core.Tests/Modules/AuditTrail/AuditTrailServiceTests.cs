@@ -39,6 +39,19 @@ public class AuditTrailServiceTests : TestBase
     }
 
     [Fact]
+    public async Task LogAsync_DoesNotCallRepository_WhenSuppressed()
+    {
+        var svc = CreateService();
+
+        using (AuditTrailSuppressionScope.Begin())
+        {
+            await svc.LogAsync("Member", Guid.NewGuid(), AuditAction.Create, ct: Ct);
+        }
+
+        await _repository.DidNotReceive().AddAsync(Arg.Any<AuditTrailEntry>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task PurgeOlderThanAsync_DelegatesToRepository_WithGivenCutoff()
     {
         var svc = CreateService();
