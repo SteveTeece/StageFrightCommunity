@@ -76,10 +76,10 @@ public class BankReconciliationReportProvider : IReportProvider
             GeneratedAt = DateTime.UtcNow,
             Columns =
             [
-                new ReportColumn { Header = "Date", Alignment = ReportColumnAlignment.Left, Format = ReportColumnFormat.Date },
+                new ReportColumn { Header = "Date", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Deposit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
-                new ReportColumn { Header = "Payment", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
+                new ReportColumn { Header = "Deposit", Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = "Payment", Alignment = ReportColumnAlignment.Right }
             ],
             Sections = sections
         };

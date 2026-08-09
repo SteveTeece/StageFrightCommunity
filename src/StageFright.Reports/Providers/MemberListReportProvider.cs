@@ -84,7 +84,7 @@ public class MemberListReportProvider : IReportProvider
                 new ReportColumn { Header = "Address", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "Phone", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "Email", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Join Date", Alignment = ReportColumnAlignment.Left, Format = ReportColumnFormat.Date },
+                new ReportColumn { Header = "Join Date", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "Age", Alignment = ReportColumnAlignment.Right },
                 new ReportColumn { Header = "Status", Alignment = ReportColumnAlignment.Left }
             ],
