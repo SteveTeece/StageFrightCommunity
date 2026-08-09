@@ -2,7 +2,10 @@ using StageFright.Core.Entities;
 
 namespace StageFright.Core.Contracts;
 
-/// <summary>Repository contract for Event entities.</summary>
+/// <summary>
+/// Repository contract for Event entities. GetAllAsync (inherited from IRepository)
+/// returns all non-deleted events ordered by date descending.
+/// </summary>
 public interface IEventRepository : ISoftDeletableRepository<Event>
 {
     /// <summary>Returns the most recent non-deleted event whose date is before asOf (UTC), or null.</summary>
