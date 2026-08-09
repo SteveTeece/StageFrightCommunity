@@ -120,10 +120,9 @@ else
                 </div>
             </div>
             <div class="col-md-6">
-                <label class="form-label">Dashboard</label>
-                <div class="form-check">
-                    <InputCheckbox id="showParticipationGraphs" class="form-check-input"
-                                   @bind-Value="s.ShowParticipationGraphs" />
+                <label for="showParticipationGraphs" class="form-label">Dashboard</label>
+                <div class="d-flex align-items-center gap-2">
+                    <RadzenSwitch Name="showParticipationGraphs" @bind-Value="s.ShowParticipationGraphs" />
                     <label class="form-check-label small" for="showParticipationGraphs">
                         Show year-to-date participation graphs on Rehearsals and Events tiles
                     </label>
