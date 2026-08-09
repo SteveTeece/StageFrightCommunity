@@ -69,7 +69,7 @@ public class BalanceSheetReportProvider : IReportProvider
             Columns =
             [
                 new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
+                new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right }
             ],
             Sections =
             [

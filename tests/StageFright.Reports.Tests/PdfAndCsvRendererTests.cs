@@ -165,8 +165,8 @@ public class PdfAndCsvRendererTests
             GeneratedAt = DateTime.UtcNow,
             Columns = new[]
             {
-                new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left, Format = ReportColumnFormat.Text },
-                new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
+                new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right }
             },
             Sections = new[]
             {

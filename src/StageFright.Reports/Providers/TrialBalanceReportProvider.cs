@@ -94,8 +94,8 @@ public class TrialBalanceReportProvider : IReportProvider
             Columns =
             [
                 new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
-                new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
+                new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right }
             ],
             Sections =
             [
