@@ -85,12 +85,35 @@ public static class MauiProgram
                 sp.GetServices<IDataAccessProvider>(),
                 sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<PluginMigrationRunner>>()));
 
+        // Plugin discovery must register into the IServiceCollection before the container
+        // is built — the built ServiceProvider does not implement IServiceCollection, so
+        // registrations attempted afterward are never resolvable (issue #273).
+        DiscoverAndRegisterPlugins(builder.Services, pluginsPath);
+
         // Run startup sequence after the app is built
         var app = builder.Build();
 
-        RunStartupSequence(app.Services, dbPath, pluginsPath, connectionString, diagnosticService);
+        RunStartupSequence(app.Services, dbPath, connectionString, diagnosticService);
 
         return app;
+    }
+
+    private static void DiscoverAndRegisterPlugins(IServiceCollection services, string pluginsPath)
+    {
+        // Auto-create Plugins directory (FR-021)
+        try
+        {
+            Directory.CreateDirectory(pluginsPath);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Log.Error(ex, "Failed to create Plugins directory at {Path}; plugin discovery skipped", pluginsPath);
+            return;
+        }
+
+        using var loggerFactory = LoggerFactory.Create(b => b.AddSerilog());
+        var logger = loggerFactory.CreateLogger("PluginLoader");
+        PluginLoader.DiscoverAndRegister(services, pluginsPath, logger);
     }
 
     private static string FindRepoRoot(string startDir)
@@ -241,23 +264,8 @@ public static class MauiProgram
         services.AddSingleton<IMenuItemProvider, SettingsMenuItemProvider>();
     }
 
-    private static void RunStartupSequence(IServiceProvider services, string dbPath, string pluginsPath, string connectionString, StartupDiagnosticService diagnosticService)
+    private static void RunStartupSequence(IServiceProvider services, string dbPath, string connectionString, StartupDiagnosticService diagnosticService)
     {
-        // Auto-create Plugins directory (FR-021)
-        try
-        {
-            Directory.CreateDirectory(pluginsPath);
-        }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        {
-            Log.Error(ex, "Failed to create Plugins directory at {Path}; plugin discovery skipped", pluginsPath);
-        }
-
-        // Discover and register plugins
-        using var loggerFactory = LoggerFactory.Create(b => b.AddSerilog());
-        var logger = loggerFactory.CreateLogger("PluginLoader");
-        PluginLoader.DiscoverAndRegister(services as IServiceCollection ?? new ServiceCollection(), pluginsPath, logger);
-
         // Run core EF Core migration + startup tasks
         using var scope = services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<StageFrightDbContext>();

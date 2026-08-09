@@ -25,11 +25,11 @@ else
 
         <div class="mb-2">
             <label class="form-label">GST / BAS</label>
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="gstRegistered"
-                       checked="@s.IsGstRegistered"
-                       disabled="@(_pendingGstToggle is not null)"
-                       @onchange="HandleGstToggleRequested" />
+            <div class="d-flex align-items-center gap-2">
+                <RadzenSwitch Name="gstRegistered"
+                              Value="@s.IsGstRegistered"
+                              Disabled="@(_pendingGstToggle is not null)"
+                              Change="@((bool v) => HandleGstToggleRequested(v))" />
                 <label class="form-check-label small" for="gstRegistered">
                     Organisation is registered for GST
                 </label>

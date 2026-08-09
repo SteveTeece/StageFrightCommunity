@@ -19,4 +19,11 @@ public interface IAttendanceService
 
     /// <summary>Returns saved attendance records for a rehearsal with Member navigation loaded, ordered by member name.</summary>
     Task<IReadOnlyList<AttendanceRecord>> GetByRehearsalAsync(Guid rehearsalId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns each member's attendance-fee paid status (Fee.PaidAtCreation) for the given
+    /// rehearsal, keyed by MemberId. Members with no attendance fee (e.g. did not attend, or
+    /// inactive at recording time) are omitted.
+    /// </summary>
+    Task<IReadOnlyDictionary<Guid, bool>> GetPaidStatusByRehearsalAsync(Guid rehearsalId, CancellationToken ct = default);
 }

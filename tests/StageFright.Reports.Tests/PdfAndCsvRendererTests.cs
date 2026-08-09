@@ -130,6 +130,31 @@ public class PdfAndCsvRendererTests
         Assert.Contains("Charlie", csv);
     }
 
+    [Fact]
+    public void CsvExporter_Export_WritesSectionHeading()
+    {
+        // Regression for #286: section headings (e.g. "Income"/"Expenses" on Trial Balance/
+        // Balance Sheet/Income Statement) must survive CSV export, not just PDF/on-screen.
+        var report = MakeSimpleReport(); // section has Heading = "Income"
+
+        var csv = _csvExporter.Export(report);
+        var lines = csv.Split('\n').Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
+
+        Assert.Contains(lines, l => l.TrimStart().StartsWith("Income"));
+    }
+
+    [Fact]
+    public void CsvExporter_Export_OmitsHeadingRow_WhenSectionHasNoHeading()
+    {
+        var report = MakeReportWithValue("Some Row");
+
+        var csv = _csvExporter.Export(report);
+        var lines = csv.Split('\n').Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
+
+        // Header row + one data row only — no extra heading row inserted.
+        Assert.Equal(2, lines.Length);
+    }
+
     // --- Helpers ---
 
     private static ReportData MakeSimpleReport()
@@ -140,8 +165,8 @@ public class PdfAndCsvRendererTests
             GeneratedAt = DateTime.UtcNow,
             Columns = new[]
             {
-                new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left, Format = ReportColumnFormat.Text },
-                new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
+                new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right }
             },
             Sections = new[]
             {
