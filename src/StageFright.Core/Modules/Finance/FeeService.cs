@@ -8,7 +8,7 @@ namespace StageFright.Core.Modules.Finance;
 /// <summary>
 /// Application service for annual membership fee batch operations.
 /// Eligibility: Active members with no existing Annual fee for the current calendar year (paid or unpaid).
-/// GL pair on creation: Debit MemberReceivable (0101) / Credit first available Income account.
+/// GL pair on creation: Debit MemberReceivable (1200) / Credit first available Income account.
 /// </summary>
 public class FeeService : IFeeService
 {

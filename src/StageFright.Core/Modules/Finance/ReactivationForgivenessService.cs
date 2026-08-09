@@ -6,7 +6,7 @@ namespace StageFright.Core.Modules.Finance;
 
 /// <summary>
 /// Applies GL write-off entries for reactivating members with prior fee balances.
-/// Write-off pair per fee: Debit BadDebtExpense (9900) / Credit MemberReceivable (0101).
+/// Write-off pair per fee: Debit BadDebtExpense (6999) / Credit MemberReceivable (1200).
 /// Fee records are never modified (immutable per Constitution §3.4).
 /// </summary>
 public class ReactivationForgivenessService : IReactivationForgivenessService

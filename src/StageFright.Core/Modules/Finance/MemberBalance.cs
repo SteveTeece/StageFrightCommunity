@@ -13,7 +13,7 @@ public class MemberBalance
     /// <summary>Member display name.</summary>
     public string Name { get; set; } = string.Empty;
 
-    /// <summary>Outstanding balance from GL: Σdebits(0101) − Σcredits(0101).</summary>
+    /// <summary>Outstanding balance from GL: Σdebits(1200) − Σcredits(1200).</summary>
     public decimal Balance { get; set; }
 
     /// <summary>Outstanding (unpaid) fee records for the member, FIFO ordered (for expanded breakdown view).</summary>

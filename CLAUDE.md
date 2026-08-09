@@ -82,7 +82,7 @@ Blazor Router owns **all** navigation. Every screen has a `@page` directive. `Na
 
 Application logic lives in `StageFright.Core/Modules/<ModuleName>/`. Each module slice contains its services, request/response models, and menu/tile providers. Repositories are *not* module-owned; they live centrally in `StageFright.Data/Repositories/` (this is a spec-mandated deviation from pure vertical-slice, required by FR-042).
 
-Current modules: `AuditTrail`, `Dashboard`, `Events`, `Finance`, `Members`, `Rehearsals`, `Settings`.
+Current modules: `Agm`, `AuditTrail`, `Dashboard`, `Events`, `Finance`, `Members`, `Rehearsals`, `Settings`.
 
 ### Extension points (plugin contracts)
 
@@ -102,7 +102,7 @@ Every fee or payment write wraps fee creation + paired GL debit/credit + balance
 
 ### Reports pipeline
 
-`IReportProvider` → `ReportData` (rows/columns/sections/subtotals) → `ReportViewer.razor` (modal "Generating…", synchronous) → `PdfReportRenderer` (QuestPDF) or `CsvReportExporter` (CsvHelper). Cancel appears after 5 s. All six MVP reports (`IncomeStatement`, `TrialBalance`, `AccountRegister`, `MemberAccountSummary`, `MemberList`, `Committee`) follow this single pipeline.
+`IReportProvider` → `ReportData` (rows/columns/sections/subtotals) → `ReportViewer.razor` (modal "Generating…", synchronous) → `PdfReportRenderer` (QuestPDF) or `CsvReportExporter` (CsvHelper). Cancel appears after 5 s. All ten reports (`IncomeStatement`, `TrialBalance`, `AccountRegister`, `MemberAccountSummary`, `MemberList`, `Committee`, `BalanceSheet`, `BankReconciliation`, `BasSummary`, `GeneralLedger`) follow this single pipeline.
 
 ### Data grid standards
 
@@ -110,9 +110,9 @@ All tabular data uses `RadzenDataGrid<TItem>`, never plain `<table>` markup or a
 
 ### Data model highlights
 
-- **13 entities** in `StageFright.Core/Entities/`: `Member`, `CommitteeMembership`, `Rehearsal`, `AttendanceRecord`, `Event`, `EventType`, `ParticipationRecord`, `Fee`, `Payment`, `Transaction`, `Category`, `Settings`, `AuditTrailEntry`.
+- **20 entities** in `StageFright.Core/Entities/`: `Member`, `CommitteeTerm`, `CommitteePositionRecord`, `CommitteeOfficeHolderType`, `AnnualGeneralMeeting`, `AgmAttendanceRecord`, `Rehearsal`, `AttendanceRecord`, `Event`, `EventType`, `ParticipationRecord`, `Account`, `Fee`, `Payment`, `Transaction`, `JournalEntry`, `BankReconciliation`, `ReconciliationLine`, `Settings`, `AuditTrailEntry`. `Category` was fully replaced by `Account` (see the `ConvertCategoriesToAccounts` migration).
 - All PKs are `Guid`. All entities carry `CreatedAt`; most carry `UpdatedAt`.
-- **Soft-delete** (`IsDeleted`, `DeletedAt`, `DeletedBy`) is present on every entity *except* `Fee`, `Payment`, `Transaction` (financial exemption).
+- **Soft-delete** (`IsDeleted`, `DeletedAt`, `DeletedBy`) is present on every entity *except* `Fee`, `Payment`, `Transaction` (financial exemption — see "Finance / GL integrity" above), `JournalEntry` (immutable GL header, same exemption), `AuditTrailEntry` (governed by retention purge instead), `ReconciliationLine`, and `CommitteeTerm` — see each entity's doc-comment for its specific rationale.
 - `AttendanceRecord` carries soft-delete fields but they are never set by any MVP workflow — records are permanently immutable once saved.
 
 ---
