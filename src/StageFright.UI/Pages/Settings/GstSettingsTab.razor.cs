@@ -34,11 +34,10 @@ public partial class GstSettingsTab : ComponentBase
         }
     }
 
-    private void HandleGstToggleRequested(ChangeEventArgs e)
+    private void HandleGstToggleRequested(bool requested)
     {
         if (_settings is null) return;
 
-        var requested = (bool)(e.Value ?? false);
         _pendingGstToggle = requested == _settings.IsGstRegistered ? null : requested;
     }
 
