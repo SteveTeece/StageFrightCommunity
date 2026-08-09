@@ -87,29 +87,6 @@ else
                 }
             </div>
 
-            <div class="col-12">
-                <div class="form-check form-check-sm">
-                    <input class="form-check-input" type="checkbox" id="isCommittee"
-                           checked="@_isCommitteeMember"
-                           @onchange="OnCommitteeCheckChanged" />
-                    <label class="form-check-label" for="isCommittee">Committee Member</label>
-                </div>
-            </div>
-
-            @if (_isCommitteeMember)
-            {
-                <div class="col-md-6">
-                    <label class="form-label" for="position">Position <span aria-hidden="true">*</span></label>
-                    <InputText id="position"
-                               class="@(_errors.ContainsKey("Position") ? "form-control form-control-sm is-invalid" : "form-control form-control-sm")"
-                               @bind-Value="_form.CommitteePosition" />
-                    @if (_errors.TryGetValue("Position", out var posErr))
-                    {
-                        <div class="invalid-feedback">@posErr</div>
-                    }
-                </div>
-            }
-
         </div>
 
         @if (!string.IsNullOrEmpty(_globalError))

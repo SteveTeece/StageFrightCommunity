@@ -35,7 +35,7 @@ public partial class SetupWizard : ComponentBase
 
     private void HandleNext()
     {
-        if (_editContext.Validate() && _currentStep < 4)
+        if (_editContext.Validate() && _currentStep < 5)
             _currentStep++;
     }
 
@@ -67,6 +67,10 @@ public partial class SetupWizard : ComponentBase
 
         try
         {
+            var officeHolderTitles = (_model.CommitteeOfficeHolderTitlesText ?? string.Empty)
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ToList();
+
             var request = new SetupRequest(
                 OrganizationName: _model.OrganizationName!,
                 Abn: _model.Abn!,
@@ -76,7 +80,10 @@ public partial class SetupWizard : ComponentBase
                 IsGstRegistered: _model.IsGstRegistered,
                 AnnualFeeGstCode: _model.AnnualFeeGstCode,
                 AttendanceFeeGstCode: _model.AttendanceFeeGstCode,
-                Theme: ThemeProvider?.CurrentTheme ?? Theme.Dark);
+                Theme: ThemeProvider?.CurrentTheme ?? Theme.Dark,
+                CommitteeRenewalMonth: _model.CommitteeRenewalMonth,
+                CommitteeOfficeHolderTitles: officeHolderTitles,
+                GeneralCommitteeSeatCountTarget: _model.GeneralCommitteeSeatCountTarget);
 
             await SetupService.InitializeAsync(request);
 

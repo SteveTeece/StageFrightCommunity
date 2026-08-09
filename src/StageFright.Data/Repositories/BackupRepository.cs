@@ -28,7 +28,11 @@ public class BackupRepository : IBackupRepository
             return new BackupSnapshot
             {
                 Members = await _db.Members.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
-                CommitteeMemberships = await _db.CommitteeMemberships.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
+                CommitteePositionRecords = await _db.CommitteePositionRecords.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
+                AnnualGeneralMeetings = await _db.AnnualGeneralMeetings.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
+                AgmAttendanceRecords = await _db.AgmAttendanceRecords.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
+                CommitteeOfficeHolderTypes = await _db.CommitteeOfficeHolderTypes.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
+                CommitteeTerms = await _db.CommitteeTerms.AsNoTracking().ToListAsync(ct),
                 Rehearsals = await _db.Rehearsals.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
                 AttendanceRecords = await _db.AttendanceRecords.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
                 Events = await _db.Events.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
@@ -57,7 +61,11 @@ public class BackupRepository : IBackupRepository
             _db.ChangeTracker.Clear();
 
             await UpsertCollectionAsync(snapshot.Members, _db.Members, m => m.Id, ct);
-            await UpsertCollectionAsync(snapshot.CommitteeMemberships, _db.CommitteeMemberships, c => c.Id, ct);
+            await UpsertCollectionAsync(snapshot.AnnualGeneralMeetings, _db.AnnualGeneralMeetings, a => a.Id, ct);
+            await UpsertCollectionAsync(snapshot.CommitteeOfficeHolderTypes, _db.CommitteeOfficeHolderTypes, t => t.Id, ct);
+            await UpsertCollectionAsync(snapshot.CommitteeTerms, _db.CommitteeTerms, t => t.Id, ct);
+            await UpsertCollectionAsync(snapshot.CommitteePositionRecords, _db.CommitteePositionRecords, c => c.Id, ct);
+            await UpsertCollectionAsync(snapshot.AgmAttendanceRecords, _db.AgmAttendanceRecords, a => a.Id, ct);
             await UpsertCollectionAsync(snapshot.Rehearsals, _db.Rehearsals, r => r.Id, ct);
             await UpsertCollectionAsync(snapshot.AttendanceRecords, _db.AttendanceRecords, a => a.Id, ct);
             await UpsertCollectionAsync(snapshot.EventTypes, _db.EventTypes, et => et.Id, ct);

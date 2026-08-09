@@ -233,30 +233,6 @@ public class EventServiceTests : TestBase
         await _eventRepo.Received(1).UpdateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>());
     }
 
-    // --- AgmExistsInYearAsync ---
-
-    [Fact]
-    public async Task AgmExistsInYearAsync_DelegatesToRepository()
-    {
-        _eventRepo.AgmExistsInYearAsync(2026, Arg.Any<CancellationToken>()).Returns(true);
-
-        var svc = CreateService();
-        var result = await svc.AgmExistsInYearAsync(2026, Ct);
-
-        Assert.True(result);
-    }
-
-    [Fact]
-    public async Task AgmExistsInYearAsync_ReturnsFalse_WhenNotFound()
-    {
-        _eventRepo.AgmExistsInYearAsync(2025, Arg.Any<CancellationToken>()).Returns(false);
-
-        var svc = CreateService();
-        var result = await svc.AgmExistsInYearAsync(2025, Ct);
-
-        Assert.False(result);
-    }
-
     // --- GetMostRecentPastAsync ---
 
     [Fact]

@@ -1,0 +1,39 @@
+@page "/events/agm"
+
+<PageTitle>Past AGMs — StageFright Community</PageTitle>
+
+<div class="page-header mb-2">
+    <h1 class="h3">Past AGMs</h1>
+</div>
+
+@if (_loading)
+{
+    <p role="status" aria-live="polite">Loading…</p>
+}
+else if (_agms.Count == 0)
+{
+    <div class="alert alert-info py-1 mb-2 small">No AGMs have been recorded yet.</div>
+    <a href="/events/agm/new" class="btn btn-primary btn-sm">Record AGM</a>
+}
+else
+{
+    <RadzenDataGrid Data="@_agms" TItem="AnnualGeneralMeeting"
+                    AllowSorting="true" AllowPaging="true" PageSize="15"
+                    class="rz-shadow-0">
+        <Columns>
+            <RadzenDataGridColumn TItem="AnnualGeneralMeeting" Property="Date" Title="Date" Width="200px">
+                <Template Context="agm">
+                    <a href="#" @onclick:preventDefault @onclick="() => OpenDetail(agm)"
+                       class="text-decoration-none fw-semibold">
+                        @agm.Date.ToString("d MMMM yyyy")
+                    </a>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="AnnualGeneralMeeting" Title="Attendance" Width="140px" Sortable="false">
+                <Template Context="agm">
+                    @AttendedCount(agm) of @agm.AttendanceRecords.Count
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+}

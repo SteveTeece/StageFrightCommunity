@@ -18,7 +18,13 @@ public class EventsMenuItemProvider : IMenuItemProvider
             Title = "Events",
             Route = "/events",
             ShortLabel = "EVNT",
-            DisplayOrder = 0
+            DisplayOrder = 0,
+            SubItems =
+            [
+                new MenuItem { Title = "All Events", Route = "/events", DisplayOrder = 0 },
+                new MenuItem { Title = "Record AGM", Route = "/events/agm/new", DisplayOrder = 1 },
+                new MenuItem { Title = "Past AGMs", Route = "/events/agm", DisplayOrder = 2 }
+            ]
         }
     ];
 }

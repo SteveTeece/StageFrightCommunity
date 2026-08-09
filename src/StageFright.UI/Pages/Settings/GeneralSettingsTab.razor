@@ -2,16 +2,6 @@
 @using StageFright.Core.Enums
 @using AppSettings = StageFright.Core.Entities.Settings
 
-@if (!string.IsNullOrEmpty(_agmBanner))
-{
-    <div class="alert alert-info py-1 mb-2 small" role="alert" id="agm-banner">
-        @_agmBanner
-        <button class="btn btn-sm btn-outline-primary ms-2" type="button" @onclick="HandleResetCommitteeAsync">
-            Reset now
-        </button>
-    </div>
-}
-
 @if (!string.IsNullOrEmpty(_errorMessage))
 {
     <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
@@ -82,7 +72,7 @@ else
                 <ValidationMessage For="() => s.MembershipRenewalMonth" />
             </div>
             <div class="col-md-4">
-                <label for="committeeRenewalMonth" class="form-label">Committee Renewal Month</label>
+                <label for="committeeRenewalMonth" class="form-label">AGM Month</label>
                 <InputSelect id="committeeRenewalMonth" class="form-select form-select-sm" @bind-Value="s.CommitteeRenewalMonth">
                     @for (var m = 1; m <= 12; m++)
                     {
@@ -145,14 +135,6 @@ else
             <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
                 @(_saving ? "Saving…" : "Save Settings")
             </button>
-            @if (_committeeResetService is not null)
-            {
-                <button type="button" class="btn btn-outline-warning btn-sm" id="reset-committee-btn"
-                        @onclick="HandleResetCommitteeAsync"
-                        disabled="@_resetting">
-                    @(_resetting ? "Resetting…" : "Reset Committee for New Year")
-                </button>
-            }
         </div>
     </EditForm>
 }

@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Modules.Agm;
 using StageFright.Core.Modules.Events;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Members;
@@ -14,23 +15,25 @@ namespace StageFright.App.Seeding;
 /// after the first-run wizard completes: 51 members (43 active/3 inactive/5 archived), a
 /// petty-cash + single bank-account chart of accounts, 40 Monday-night rehearsals per year
 /// during NSW school terms with probabilistic attendance, annual subscription fees, a July
-/// Eisteddfod, a September Maclean/Yamba concert weekend, an annual raffle, committee
-/// membership, an AGM, and a spread of dated operating expenses (insurance, musical
-/// director, hall hire, costumes, licensing, printing, bank fees). Financial activity is
-/// generated as if "today" were 1 July 2026 — nothing dated after that is posted, so
-/// rehearsals/events in the second half of 2026 are scheduled but not yet paid/settled.
-/// Only runs when the user opts in via the setup wizard checkbox.
+/// Eisteddfod, a September Maclean/Yamba concert weekend, an annual raffle, an AGM each year
+/// with realistic (not full-house) attendance plus a mid-term committee resignation and
+/// special election, and a spread of dated operating expenses (insurance, musical director,
+/// hall hire, costumes, licensing, printing, bank fees). Financial activity is generated as
+/// if "today" were 27 October 2026 (the day after the 2026 AGM) — nothing dated after that
+/// is posted, so the tail end of Term 4 2026 rehearsals are scheduled but not yet
+/// paid/settled. Only runs when the user opts in via the setup wizard checkbox.
 /// </summary>
 public class DebugDataSeeder : IDebugDataSeeder
 {
     private const decimal PettyCashFloat = 50m;
 
     /// <summary>
-    /// Seed data is generated as if "today" were 1 July 2026. Financial transactions
-    /// (fees, payments, income, expenses) dated after this are not posted — they
-    /// represent activity that has not happened yet from the seed data's point of view.
+    /// Seed data is generated as if "today" were 27 October 2026 — the day after the 2026
+    /// AGM, so both years' AGMs are recorded. Financial transactions (fees, payments,
+    /// income, expenses) dated after this are not posted — they represent activity that
+    /// has not happened yet from the seed data's point of view.
     /// </summary>
-    private static readonly DateTime SeedCurrentDate = Utc(2026, 7, 1);
+    private static readonly DateTime SeedCurrentDate = Utc(2026, 10, 27);
 
     private readonly IMemberService _memberService;
     private readonly IMemberRepository _memberRepository;
@@ -38,6 +41,8 @@ public class DebugDataSeeder : IDebugDataSeeder
     private readonly IAttendanceService _attendanceService;
     private readonly IEventTypeService _eventTypeService;
     private readonly IEventService _eventService;
+    private readonly ICommitteeOfficeHolderTypeService _officeHolderTypeService;
+    private readonly IAgmService _agmService;
     private readonly ICommitteeService _committeeService;
     private readonly IPaymentService _paymentService;
     private readonly IFeeRepository _feeRepository;
@@ -58,6 +63,8 @@ public class DebugDataSeeder : IDebugDataSeeder
         IAttendanceService attendanceService,
         IEventTypeService eventTypeService,
         IEventService eventService,
+        ICommitteeOfficeHolderTypeService officeHolderTypeService,
+        IAgmService agmService,
         ICommitteeService committeeService,
         IPaymentService paymentService,
         IFeeRepository feeRepository,
@@ -77,6 +84,8 @@ public class DebugDataSeeder : IDebugDataSeeder
         _attendanceService = attendanceService;
         _eventTypeService = eventTypeService;
         _eventService = eventService;
+        _officeHolderTypeService = officeHolderTypeService;
+        _agmService = agmService;
         _committeeService = committeeService;
         _paymentService = paymentService;
         _feeRepository = feeRepository;
@@ -127,13 +136,14 @@ public class DebugDataSeeder : IDebugDataSeeder
         var eventTypes = await _eventTypeService.GetAllAsync(ct);
         var eisteddfodType = eventTypes.First(et => et.Name == "Eisteddfod");
         var performanceType = eventTypes.First(et => et.Name == "Performance");
-        var agmType = eventTypes.First(et => et.Name == "Annual General Meeting");
+
+        var officeHolderTypes = await _officeHolderTypeService.GetActiveAsync(ct);
+        var presidentType = officeHolderTypes.First(t => t.Name == "President");
+        var secretaryType = officeHolderTypes.First(t => t.Name == "Secretary");
+        var treasurerType = officeHolderTypes.First(t => t.Name == "Treasurer");
 
         var settings = await _settingsService.GetAsync(ct)
             ?? throw new InvalidOperationException("Settings must be initialised before seeding debug data.");
-
-        progress?.Report("Assigning committee positions…");
-        await SeedCommitteeAsync(activeMembers, ct);
 
         var random = new Random(20250101); // fixed seed — deterministic across runs
         var attendanceProfile = BuildAttendanceProfile(activeMembers, random);
@@ -161,7 +171,13 @@ public class DebugDataSeeder : IDebugDataSeeder
             await SeedRaffleAsync(year, raffleIncomeAccount, ct);
 
             progress?.Report($"Seeding {year} AGM…");
-            await SeedAgmAsync(year, activeMembers, agmType, ct);
+            var agm = await SeedAgmAsync(year, activeMembers, presidentType.Id, secretaryType.Id, treasurerType.Id, random, ct);
+
+            if (year == 2025 && agm is not null)
+            {
+                progress?.Report("Seeding mid-term committee resignation…");
+                await SeedSpecialElectionAsync(agm.Id, activeMembers, ct);
+            }
 
             progress?.Report($"Seeding {year} operating expenses…");
             await SeedOperatingExpensesAsync(
@@ -279,30 +295,6 @@ public class DebugDataSeeder : IDebugDataSeeder
             await _memberService.ArchiveAsync(member.Id, ct);
 
         return (active, inactive, archived);
-    }
-
-    // -------------------------------------------------------------------------
-    // Committee
-    // -------------------------------------------------------------------------
-
-    /// <summary>
-    /// The committee term runs 1 year from the last Monday in October; the same nine
-    /// members hold the same positions across both the 2025 and 2026 calendar years.
-    /// </summary>
-    private async Task SeedCommitteeAsync(IReadOnlyList<Member> activeMembers, CancellationToken ct)
-    {
-        string[] positions =
-        [
-            "President", "Secretary", "Treasurer", "Welfare Officer",
-            "Committee Member", "Committee Member", "Committee Member", "Committee Member", "Committee Member"
-        ];
-
-        for (var i = 0; i < positions.Length; i++)
-        {
-            var member = activeMembers[i];
-            await _committeeService.AddOrUpdateAsync(member.Id, 2025, positions[i], ct);
-            await _committeeService.AddOrUpdateAsync(member.Id, 2026, positions[i], ct);
-        }
     }
 
     // -------------------------------------------------------------------------
@@ -750,21 +742,75 @@ public class DebugDataSeeder : IDebugDataSeeder
     // Annual General Meeting
     // -------------------------------------------------------------------------
 
-    private async Task SeedAgmAsync(int year, IReadOnlyList<Member> activeMembers, EventType agmType, CancellationToken ct)
+    /// <summary>
+    /// Records the AGM through IAgmService: President/Secretary/Treasurer (the three
+    /// built-in office-holder titles) and 6 general committee members, all re-elected
+    /// unopposed each year. Attendance is a realistic 70–85% turnout rather than a
+    /// full house — the elected/nominated members always attend their own election, but
+    /// the rest of the membership turns up at the same rate a small club AGM typically
+    /// draws. The AGM closes whatever committee term was previously open and starts a
+    /// new one. Returns null (and seeds nothing) when the AGM date falls after
+    /// SeedCurrentDate — i.e. it hasn't happened yet from the seed data's point of view.
+    /// </summary>
+    private async Task<AnnualGeneralMeeting?> SeedAgmAsync(
+        int year,
+        IReadOnlyList<Member> activeMembers,
+        Guid presidentTypeId,
+        Guid secretaryTypeId,
+        Guid treasurerTypeId,
+        Random random,
+        CancellationToken ct)
     {
         var agmDate = GetAgmDate(year);
-        var evt = await _eventService.ScheduleAsync(new ScheduleEventRequest
-        {
-            Date = agmDate,
-            EventTypeId = agmType.Id,
-            Notes = $"{year} Annual General Meeting — new committee term commences"
-        }, ct);
+        if (agmDate > SeedCurrentDate)
+            return null;
 
-        if (agmDate <= SeedCurrentDate)
+        var memberIds = activeMembers.Select(m => m.Id).ToList();
+        var officeHolderAssignments = new Dictionary<Guid, Guid>
         {
-            var items = activeMembers.Select(m => new ParticipationBatchItem { MemberId = m.Id, Participated = true }).ToList();
-            await _eventService.RecordParticipationAsync(evt.Id, items, ct);
-        }
+            [presidentTypeId] = activeMembers[0].Id,
+            [secretaryTypeId] = activeMembers[1].Id,
+            [treasurerTypeId] = activeMembers[2].Id
+        };
+        var generalCommitteeMemberIds = activeMembers.Skip(3).Take(6).Select(m => m.Id).ToList();
+
+        var assignedMemberIds = new HashSet<Guid>(officeHolderAssignments.Values);
+        assignedMemberIds.UnionWith(generalCommitteeMemberIds);
+
+        var attendanceRate = 0.70 + random.NextDouble() * 0.15; // 70–85% turnout, varies by year
+        var attendedMemberIds = memberIds
+            .Where(id => assignedMemberIds.Contains(id) || random.NextDouble() < attendanceRate)
+            .ToList();
+
+        return await _agmService.RecordAsync(new RecordAgmRequest(
+            Date: agmDate,
+            Notes: $"{year} Annual General Meeting — new committee term commences",
+            AttendedMemberIds: attendedMemberIds,
+            AllActiveMemberIds: memberIds,
+            OfficeHolderAssignments: officeHolderAssignments,
+            GeneralCommitteeMemberIds: generalCommitteeMemberIds), ct);
+    }
+
+    /// <summary>
+    /// Mid-term regression fixture: one general committee member elected at the 2025 AGM
+    /// resigns partway through the term and is replaced by special election ahead of the
+    /// 2026 AGM. A single unbroken committee term never exercises AgmDetail's dated,
+    /// multi-holder rendering for a position (FR-029) — this gives it a seeded example.
+    /// </summary>
+    private async Task SeedSpecialElectionAsync(Guid agmId, IReadOnlyList<Member> activeMembers, CancellationToken ct)
+    {
+        var replacementDate = Utc(2026, 3, 16);
+        if (replacementDate > SeedCurrentDate)
+            return;
+
+        var positions = await _committeeService.GetByAgmAsync(agmId, ct);
+        var outgoing = positions.First(p => p.OfficeHolderTypeId is null);
+        var incoming = activeMembers[9]; // not otherwise assigned an officeholder or committee role
+
+        await _agmService.RecordSpecialElectionAsync(new RecordSpecialElectionRequest(
+            OutgoingPositionRecordId: outgoing.Id,
+            IncomingMemberId: incoming.Id,
+            ReplacementDate: replacementDate), ct);
     }
 
     // -------------------------------------------------------------------------

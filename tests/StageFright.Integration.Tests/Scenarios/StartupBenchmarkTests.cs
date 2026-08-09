@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using StageFright.Core.Modules.AuditTrail;
+using StageFright.Core.Modules.Members;
 using StageFright.Core.Modules.Settings;
 using StageFright.Data;
 using StageFright.Data.Repositories;
@@ -53,7 +54,9 @@ public sealed class StartupBenchmarkTests : IAsyncLifetime
         var eventTypeRepo = new EventTypeRepository(ctx);
         var auditRepo = new AuditTrailRepository(ctx);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        return new SetupService(settingsRepo, accountRepo, eventTypeRepo, auditSvc);
+        var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(ctx);
+        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditSvc);
+        return new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditSvc);
     }
 
     /// <summary>

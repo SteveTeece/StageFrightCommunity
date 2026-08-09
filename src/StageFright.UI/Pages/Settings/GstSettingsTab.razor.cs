@@ -81,7 +81,7 @@ public partial class GstSettingsTab : ComponentBase
                 _settings.MinimumMemberAge = current.MinimumMemberAge;
                 _settings.Theme = current.Theme;
                 _settings.ShowParticipationGraphs = current.ShowParticipationGraphs;
-                _settings.LastCommitteeResetYear = current.LastCommitteeResetYear;
+                _settings.GeneralCommitteeSeatCountTarget = current.GeneralCommitteeSeatCountTarget;
             }
 
             await SettingsService.SaveAsync(_settings);

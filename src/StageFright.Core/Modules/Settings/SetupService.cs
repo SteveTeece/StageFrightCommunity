@@ -17,17 +17,20 @@ public class SetupService : ISetupService
     private readonly ISettingsRepository _settingsRepo;
     private readonly IAccountRepository _accountRepo;
     private readonly IEventTypeRepository _eventTypeRepo;
+    private readonly ICommitteeOfficeHolderTypeService _officeHolderTypeService;
     private readonly IAuditTrailService _audit;
 
     public SetupService(
         ISettingsRepository settingsRepo,
         IAccountRepository accountRepo,
         IEventTypeRepository eventTypeRepo,
+        ICommitteeOfficeHolderTypeService officeHolderTypeService,
         IAuditTrailService audit)
     {
         _settingsRepo = settingsRepo;
         _accountRepo = accountRepo;
         _eventTypeRepo = eventTypeRepo;
+        _officeHolderTypeService = officeHolderTypeService;
         _audit = audit;
     }
 
@@ -61,7 +64,8 @@ public class SetupService : ISetupService
             IsGstRegistered = request.IsGstRegistered,
             AnnualFeeGstCode = annualFeeGstCode,
             AttendanceFeeGstCode = attendanceFeeGstCode,
-            CommitteeRenewalMonth = 1,
+            CommitteeRenewalMonth = request.CommitteeRenewalMonth,
+            GeneralCommitteeSeatCountTarget = request.GeneralCommitteeSeatCountTarget,
             MaxAgeRangeYears = 150,
             MinimumMemberAge = 0,
             Theme = request.Theme,
@@ -73,6 +77,14 @@ public class SetupService : ISetupService
         await _settingsRepo.SaveAsync(settings, ct);
 
         await SeedDefaultEventTypesAsync(ct);
+
+        // Committee configuration is optional at every default (FR-021) — coordinators who
+        // skip this step get no custom titles, identical to configuring none from Settings.
+        if (request.CommitteeOfficeHolderTitles is { Count: > 0 })
+        {
+            foreach (var title in request.CommitteeOfficeHolderTitles)
+                await _officeHolderTypeService.AddAsync(title, ct);
+        }
 
         await _audit.LogAsync(
             entityType: "Settings",

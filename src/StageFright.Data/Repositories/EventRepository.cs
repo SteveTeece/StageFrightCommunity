@@ -44,15 +44,6 @@ public class EventRepository : SoftDeletableBaseRepository<Event>, IEventReposit
             .FirstOrDefaultAsync(ct);
     }
 
-    public async Task<bool> AgmExistsInYearAsync(int year, CancellationToken ct = default)
-    {
-        return await _db.Events
-            .Include(e => e.EventType)
-            .Where(e => e.Date.Year == year
-                && e.EventType.Name == "Annual General Meeting")
-            .AnyAsync(ct);
-    }
-
     public async Task<Event?> GetByIdWithDetailsAsync(Guid id, CancellationToken ct = default)
     {
         return await _db.Events

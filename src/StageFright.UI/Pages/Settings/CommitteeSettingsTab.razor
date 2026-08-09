@@ -1,0 +1,107 @@
+@using StageFright.Core.Entities
+
+<div class="committee-settings-tab">
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+    }
+
+    @if (!string.IsNullOrEmpty(_successMessage))
+    {
+        <div class="alert alert-success py-1 mb-2 small" role="status">@_successMessage</div>
+    }
+
+    @if (_loading)
+    {
+        <p role="status" aria-live="polite">Loading committee settings…</p>
+    }
+    else
+    {
+        <!-- General committee seat-count target -->
+        <div class="card mb-2">
+            <div class="card-body py-2">
+                <h6 class="card-title mb-2">General Committee Seat Count Target</h6>
+                <div class="row g-2 align-items-end">
+                    <div class="col-auto">
+                        <label for="seatCountTarget" class="form-label small mb-0">Target seats</label>
+                        <input type="number" id="seatCountTarget" class="form-control form-control-sm" min="0"
+                               value="@_seatCountTarget"
+                               @onchange="e => _seatCountTarget = string.IsNullOrEmpty(e.Value?.ToString()) ? (int?)null : int.Parse(e.Value.ToString()!)" />
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-primary btn-sm" @onclick="HandleSaveSeatCountAsync" disabled="@_savingSeatCount">
+                            @(_savingSeatCount ? "Saving…" : "Save")
+                        </button>
+                    </div>
+                </div>
+                <p class="small text-muted mt-1 mb-0">Guidance only — no hard cap is enforced when recording an AGM.</p>
+            </div>
+        </div>
+
+        <!-- Add Office-Holder Title Form -->
+        <div class="card mb-2">
+            <div class="card-body py-2">
+                <h6 class="card-title mb-2">Add Office-Holder Title</h6>
+                <EditForm Model="_newModel" OnValidSubmit="HandleCreateAsync">
+                    <div class="row g-2 align-items-start">
+                        <div class="col">
+                            <InputText id="oht-name" class="form-control form-control-sm"
+                                       @bind-Value="_newModel.Name"
+                                       placeholder="Office-holder title name"
+                                       aria-label="Office-holder title name" />
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary btn-sm" disabled="@_creating">
+                                @(_creating ? "Creating…" : "Add Title")
+                            </button>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+
+        <!-- Active Office-Holder Titles -->
+        <section aria-labelledby="active-oht-heading" class="mb-2">
+            <h6 id="active-oht-heading" class="mb-1">Office-Holder Titles</h6>
+            @if (!_activeTypes.Any())
+            {
+                <p class="text-muted small mb-0">No office-holder titles defined yet.</p>
+            }
+            else
+            {
+                <RadzenDataGrid Data="@_activeTypes" TItem="CommitteeOfficeHolderType"
+                                AllowSorting="true" AllowPaging="true" PageSize="10"
+                                class="rz-shadow-0">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="CommitteeOfficeHolderType" Property="Name" Title="Name" Width="300px">
+                            <Template Context="t">
+                                @t.Name
+                                @if (t.IsBuiltIn)
+                                {
+                                    <span class="badge bg-secondary ms-1" title="Built-in">Built-in</span>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="CommitteeOfficeHolderType" Title="Actions" Width="140px" Sortable="false">
+                            <Template Context="t">
+                                @if (!t.IsBuiltIn)
+                                {
+                                    <button class="btn btn-outline-danger btn-sm"
+                                            @onclick="() => ArchiveAsync(t.Id)"
+                                            aria-label="Archive @t.Name">
+                                        Archive
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Read-only</span>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            }
+        </section>
+    }
+</div>

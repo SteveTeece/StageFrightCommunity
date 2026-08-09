@@ -12,6 +12,9 @@ public interface IEventTypeService
     /// <summary>Returns all active (non-archived) event types.</summary>
     Task<IReadOnlyList<EventType>> GetAllAsync(CancellationToken ct = default);
 
+    /// <summary>Returns all active event types selectable when scheduling a new generic event, excluding "Annual General Meeting" (FR-003).</summary>
+    Task<IReadOnlyList<EventType>> GetSelectableForNewEventsAsync(CancellationToken ct = default);
+
     /// <summary>Returns all archived event types.</summary>
     Task<IReadOnlyList<EventType>> GetArchivedAsync(CancellationToken ct = default);
 
