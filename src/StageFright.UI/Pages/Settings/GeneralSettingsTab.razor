@@ -97,6 +97,21 @@ else
         </div>
 
         <div class="row g-2 mb-2">
+            <div class="col-md-4">
+                <label for="auditRetentionYears" class="form-label">Audit Trail Retention (years)</label>
+                <InputSelect id="auditRetentionYears" class="form-select form-select-sm" @bind-Value="s.AuditRetentionYears">
+                    @for (var y = 1; y <= 7; y++)
+                    {
+                        var years = y;
+                        <option value="@years">@years year@(years == 1 ? "" : "s")</option>
+                    }
+                </InputSelect>
+                <div class="form-text small">How long audit trail history is kept before the startup purge removes it.</div>
+                <ValidationMessage For="() => s.AuditRetentionYears" />
+            </div>
+        </div>
+
+        <div class="row g-2 mb-2">
             <div class="col-md-6">
                 <label for="maxAge" class="form-label">Maximum Member Age (years)</label>
                 <InputNumber id="maxAge" class="form-control form-control-sm" @bind-Value="s.MaxAgeRangeYears" />

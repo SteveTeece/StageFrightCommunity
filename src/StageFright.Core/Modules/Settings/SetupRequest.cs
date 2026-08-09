@@ -15,4 +15,5 @@ public record SetupRequest(
     Theme Theme,
     int CommitteeRenewalMonth = 1,
     IReadOnlyList<string>? CommitteeOfficeHolderTitles = null,
-    int? GeneralCommitteeSeatCountTarget = null);
+    int? GeneralCommitteeSeatCountTarget = null,
+    int AuditRetentionYears = 1);

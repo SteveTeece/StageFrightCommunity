@@ -83,7 +83,8 @@ public partial class SetupWizard : ComponentBase
                 Theme: ThemeProvider?.CurrentTheme ?? Theme.Dark,
                 CommitteeRenewalMonth: _model.CommitteeRenewalMonth,
                 CommitteeOfficeHolderTitles: officeHolderTitles,
-                GeneralCommitteeSeatCountTarget: _model.GeneralCommitteeSeatCountTarget);
+                GeneralCommitteeSeatCountTarget: _model.GeneralCommitteeSeatCountTarget,
+                AuditRetentionYears: _model.AuditRetentionYears);
 
             await SetupService.InitializeAsync(request);
 

@@ -421,7 +421,7 @@ public class BackupService : IBackupService
         CommitteeRenewalMonth = s.CommitteeRenewalMonth,
         MaxAgeRangeYears = s.MaxAgeRangeYears, MinimumMemberAge = s.MinimumMemberAge,
         Theme = s.Theme, GeneralCommitteeSeatCountTarget = s.GeneralCommitteeSeatCountTarget,
-        SchemaVersion = s.SchemaVersion,
+        SchemaVersion = s.SchemaVersion, AuditRetentionYears = s.AuditRetentionYears,
         IsDeleted = s.IsDeleted, DeletedAt = s.DeletedAt, DeletedBy = s.DeletedBy,
         CreatedAt = s.CreatedAt, UpdatedAt = s.UpdatedAt
     };
@@ -565,7 +565,7 @@ public class BackupService : IBackupService
         CommitteeRenewalMonth = d.CommitteeRenewalMonth,
         MaxAgeRangeYears = d.MaxAgeRangeYears, MinimumMemberAge = d.MinimumMemberAge,
         Theme = d.Theme, GeneralCommitteeSeatCountTarget = d.GeneralCommitteeSeatCountTarget,
-        SchemaVersion = d.SchemaVersion,
+        SchemaVersion = d.SchemaVersion, AuditRetentionYears = d.AuditRetentionYears,
         IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy,
         CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
     };

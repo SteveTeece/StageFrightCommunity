@@ -78,6 +78,19 @@
                 </InputSelect>
                 <ValidationMessage For="() => _model.MembershipRenewalMonth" class="text-danger small" />
             </div>
+
+            <div class="mb-3">
+                <label for="auditRetentionYears" class="form-label">Audit Trail Retention (years)</label>
+                <InputSelect id="auditRetentionYears" class="form-select form-select-sm" @bind-Value="_model.AuditRetentionYears">
+                    @for (var y = 1; y <= 7; y++)
+                    {
+                        var years = y;
+                        <option value="@years">@years year@(years == 1 ? "" : "s")</option>
+                    }
+                </InputSelect>
+                <div class="form-text small">How long audit trail history is kept before the startup purge removes it. Default 1 year.</div>
+                <ValidationMessage For="() => _model.AuditRetentionYears" class="text-danger small" />
+            </div>
         }
         else if (_currentStep == 3)
         {
@@ -160,6 +173,7 @@
                         <dt class="col-5">Attendance Fee GST Treatment</dt><dd class="col-7">@(_model.AttendanceFeeGstCode?.ToString() ?? "GST-free (default)")</dd>
                     }
                     <dt class="col-5">AGM Month</dt><dd class="col-7">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(_model.CommitteeRenewalMonth)</dd>
+                    <dt class="col-5">Audit Trail Retention</dt><dd class="col-7">@_model.AuditRetentionYears year@(_model.AuditRetentionYears == 1 ? "" : "s")</dd>
                     <dt class="col-5">Additional Office-Holder Titles</dt><dd class="col-7">@(string.IsNullOrWhiteSpace(_model.CommitteeOfficeHolderTitlesText) ? "None" : _model.CommitteeOfficeHolderTitlesText)</dd>
                     <dt class="col-5">Seat Count Target</dt><dd class="col-7">@(_model.GeneralCommitteeSeatCountTarget?.ToString() ?? "Not set")</dd>
                 </dl>

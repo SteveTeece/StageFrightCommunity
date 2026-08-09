@@ -136,4 +136,44 @@ public class GeneralSettingsTabTests : BunitContext
                 s.AttendanceFeeGstCode == GstCode.GstFree),
             Arg.Any<CancellationToken>());
     }
+
+    [Fact]
+    public void AuditRetentionDropdown_RendersSevenOptions()
+    {
+        _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings());
+
+        var cut = Render<GeneralSettingsTab>();
+
+        var select = cut.Find("#auditRetentionYears");
+        Assert.Equal(7, select.Children.Length);
+    }
+
+    [Fact]
+    public async Task Save_PersistsSelectedAuditRetentionYears()
+    {
+        _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings());
+        _settingsService.SaveAsync(Arg.Any<AppSettings>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+
+        var cut = Render<GeneralSettingsTab>();
+        cut.Find("#auditRetentionYears").Change("7");
+        await cut.Find("form").SubmitAsync();
+
+        await _settingsService.Received(1).SaveAsync(
+            Arg.Is<AppSettings>(s => s.AuditRetentionYears == 7),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Save_ShowsError_WhenAuditRetentionValidationFails()
+    {
+        _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings());
+        _settingsService.SaveAsync(Arg.Any<AppSettings>(), Arg.Any<CancellationToken>())
+            .Returns<Task>(_ => throw new StageFright.Core.Exceptions.ValidationException(
+                "Audit retention period must be between 1 and 7 years.", "Settings", "SaveAsync"));
+
+        var cut = Render<GeneralSettingsTab>();
+        await cut.Find("form").SubmitAsync();
+
+        Assert.Contains("Audit retention period must be between 1 and 7 years.", cut.Markup);
+    }
 }
