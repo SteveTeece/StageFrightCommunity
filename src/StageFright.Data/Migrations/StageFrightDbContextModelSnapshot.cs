@@ -15,7 +15,7 @@ namespace StageFright.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
 
             modelBuilder.Entity("StageFright.Core.Entities.Account", b =>
                 {
@@ -162,6 +162,78 @@ namespace StageFright.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("StageFright.Core.Entities.AgmAttendanceRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("AnnualGeneralMeetingId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Attended")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("MemberId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("AnnualGeneralMeetingId", "MemberId")
+                        .IsUnique();
+
+                    b.ToTable("AgmAttendanceRecords");
+                });
+
+            modelBuilder.Entity("StageFright.Core.Entities.AnnualGeneralMeeting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("GeneralCommitteeSeatCountTarget")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AnnualGeneralMeetings");
+                });
+
             modelBuilder.Entity("StageFright.Core.Entities.AttendanceRecord", b =>
                 {
                     b.Property<Guid>("Id")
@@ -286,7 +358,7 @@ namespace StageFright.Data.Migrations
                     b.ToTable("BankReconciliations", (string)null);
                 });
 
-            modelBuilder.Entity("StageFright.Core.Entities.CommitteeMembership", b =>
+            modelBuilder.Entity("StageFright.Core.Entities.CommitteeOfficeHolderType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -301,30 +373,122 @@ namespace StageFright.Data.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsBuiltIn")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("CommitteeOfficeHolderTypes");
+                });
+
+            modelBuilder.Entity("StageFright.Core.Entities.CommitteePositionRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CommitteeTermId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<Guid>("MemberId")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("OfficeHolderTypeId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Position")
-                        .IsRequired()
                         .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Year")
+                    b.Property<int?>("Year")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MemberId", "Year")
-                        .IsUnique()
-                        .HasFilter("[IsDeleted] = 0");
+                    b.HasIndex("MemberId");
 
-                    b.ToTable("CommitteeMemberships");
+                    b.HasIndex("OfficeHolderTypeId");
+
+                    b.HasIndex("CommitteeTermId", "MemberId")
+                        .IsUnique()
+                        .HasFilter("[EndDate] IS NULL AND [IsDeleted] = 0");
+
+                    b.HasIndex("CommitteeTermId", "OfficeHolderTypeId")
+                        .IsUnique()
+                        .HasFilter("[EndDate] IS NULL AND [OfficeHolderTypeId] IS NOT NULL AND [IsDeleted] = 0");
+
+                    b.ToTable("CommitteePositionRecords");
+                });
+
+            modelBuilder.Entity("StageFright.Core.Entities.CommitteeTerm", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("LabelYear")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("StartedByAgmId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StartedByAgmId");
+
+                    b.ToTable("CommitteeTerms");
                 });
 
             modelBuilder.Entity("StageFright.Core.Entities.Event", b =>
@@ -716,6 +880,9 @@ namespace StageFright.Data.Migrations
                     b.Property<int>("FinancialYearStartMonth")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("GeneralCommitteeSeatCountTarget")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
@@ -723,9 +890,6 @@ namespace StageFright.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(false);
-
-                    b.Property<int?>("LastCommitteeResetYear")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("MaxAgeRangeYears")
                         .HasColumnType("INTEGER");
@@ -819,6 +983,25 @@ namespace StageFright.Data.Migrations
                     b.ToTable("Transactions");
                 });
 
+            modelBuilder.Entity("StageFright.Core.Entities.AgmAttendanceRecord", b =>
+                {
+                    b.HasOne("StageFright.Core.Entities.AnnualGeneralMeeting", "AnnualGeneralMeeting")
+                        .WithMany("AttendanceRecords")
+                        .HasForeignKey("AnnualGeneralMeetingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StageFright.Core.Entities.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AnnualGeneralMeeting");
+
+                    b.Navigation("Member");
+                });
+
             modelBuilder.Entity("StageFright.Core.Entities.AttendanceRecord", b =>
                 {
                     b.HasOne("StageFright.Core.Entities.Member", "Member")
@@ -849,15 +1032,40 @@ namespace StageFright.Data.Migrations
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("StageFright.Core.Entities.CommitteeMembership", b =>
+            modelBuilder.Entity("StageFright.Core.Entities.CommitteePositionRecord", b =>
                 {
+                    b.HasOne("StageFright.Core.Entities.CommitteeTerm", "CommitteeTerm")
+                        .WithMany("PositionRecords")
+                        .HasForeignKey("CommitteeTermId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("StageFright.Core.Entities.Member", "Member")
-                        .WithMany("CommitteeMemberships")
+                        .WithMany("CommitteePositionRecords")
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("StageFright.Core.Entities.CommitteeOfficeHolderType", "OfficeHolderType")
+                        .WithMany("PositionRecords")
+                        .HasForeignKey("OfficeHolderTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CommitteeTerm");
+
                     b.Navigation("Member");
+
+                    b.Navigation("OfficeHolderType");
+                });
+
+            modelBuilder.Entity("StageFright.Core.Entities.CommitteeTerm", b =>
+                {
+                    b.HasOne("StageFright.Core.Entities.AnnualGeneralMeeting", "StartedByAgm")
+                        .WithMany()
+                        .HasForeignKey("StartedByAgmId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("StartedByAgm");
                 });
 
             modelBuilder.Entity("StageFright.Core.Entities.Event", b =>
@@ -982,9 +1190,24 @@ namespace StageFright.Data.Migrations
                     b.Navigation("Transactions");
                 });
 
+            modelBuilder.Entity("StageFright.Core.Entities.AnnualGeneralMeeting", b =>
+                {
+                    b.Navigation("AttendanceRecords");
+                });
+
             modelBuilder.Entity("StageFright.Core.Entities.BankReconciliation", b =>
                 {
                     b.Navigation("Lines");
+                });
+
+            modelBuilder.Entity("StageFright.Core.Entities.CommitteeOfficeHolderType", b =>
+                {
+                    b.Navigation("PositionRecords");
+                });
+
+            modelBuilder.Entity("StageFright.Core.Entities.CommitteeTerm", b =>
+                {
+                    b.Navigation("PositionRecords");
                 });
 
             modelBuilder.Entity("StageFright.Core.Entities.Event", b =>
@@ -1004,7 +1227,7 @@ namespace StageFright.Data.Migrations
 
             modelBuilder.Entity("StageFright.Core.Entities.Member", b =>
                 {
-                    b.Navigation("CommitteeMemberships");
+                    b.Navigation("CommitteePositionRecords");
                 });
 
             modelBuilder.Entity("StageFright.Core.Entities.Rehearsal", b =>

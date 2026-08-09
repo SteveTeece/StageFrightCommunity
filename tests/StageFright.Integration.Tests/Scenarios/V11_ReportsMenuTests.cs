@@ -199,13 +199,13 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
         var activeMember = MakeMember("Active Member", MemberStatus.Active, isDeleted: false);
         var archivedMember = MakeMember("Archived Member", MemberStatus.Inactive, isDeleted: true);
         _db.Members.AddRange(activeMember, archivedMember);
-        _db.CommitteeMemberships.AddRange(
-            new CommitteeMembership { Id = Guid.NewGuid(), MemberId = activeMember.Id, Year = 2026, Position = "Chair", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new CommitteeMembership { Id = Guid.NewGuid(), MemberId = archivedMember.Id, Year = 2025, Position = "Treasurer", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow });
+        _db.CommitteePositionRecords.AddRange(
+            new CommitteePositionRecord { Id = Guid.NewGuid(), MemberId = activeMember.Id, Year = 2026, Position = "Chair", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new CommitteePositionRecord { Id = Guid.NewGuid(), MemberId = archivedMember.Id, Year = 2025, Position = "Treasurer", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow });
         await _db.SaveChangesAsync();
 
         var provider = new CommitteeReportProvider(
-            new CommitteeMembershipRepository(_db),
+            new CommitteePositionRecordRepository(_db),
             new MemberRepository(_db));
 
         var filters = new ReportFilterValues();
@@ -226,7 +226,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
         var catRepo = new AccountRepository(_db);
         var memberRepo = new MemberRepository(_db);
         var feeRepo = new FeeRepository(_db);
-        var committeeRepo = new CommitteeMembershipRepository(_db);
+        var committeeRepo = new CommitteePositionRecordRepository(_db);
 
         return new ReportProviderRegistry(
             new IReportProvider[]

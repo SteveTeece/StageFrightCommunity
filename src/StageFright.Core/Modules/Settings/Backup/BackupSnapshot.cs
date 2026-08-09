@@ -10,7 +10,11 @@ namespace StageFright.Core.Modules.Settings.Backup;
 public sealed class BackupSnapshot
 {
     public IReadOnlyList<Member> Members { get; init; } = Array.Empty<Member>();
-    public IReadOnlyList<CommitteeMembership> CommitteeMemberships { get; init; } = Array.Empty<CommitteeMembership>();
+    public IReadOnlyList<CommitteePositionRecord> CommitteePositionRecords { get; init; } = Array.Empty<CommitteePositionRecord>();
+    public IReadOnlyList<AnnualGeneralMeeting> AnnualGeneralMeetings { get; init; } = Array.Empty<AnnualGeneralMeeting>();
+    public IReadOnlyList<AgmAttendanceRecord> AgmAttendanceRecords { get; init; } = Array.Empty<AgmAttendanceRecord>();
+    public IReadOnlyList<CommitteeOfficeHolderType> CommitteeOfficeHolderTypes { get; init; } = Array.Empty<CommitteeOfficeHolderType>();
+    public IReadOnlyList<CommitteeTerm> CommitteeTerms { get; init; } = Array.Empty<CommitteeTerm>();
     public IReadOnlyList<Rehearsal> Rehearsals { get; init; } = Array.Empty<Rehearsal>();
     public IReadOnlyList<AttendanceRecord> AttendanceRecords { get; init; } = Array.Empty<AttendanceRecord>();
     public IReadOnlyList<Event> Events { get; init; } = Array.Empty<Event>();

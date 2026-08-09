@@ -24,12 +24,6 @@ public interface IEventRepository : ISoftDeletableRepository<Event>
     Task<Event?> GetNextUpcomingAsync(DateTime asOf, CancellationToken ct = default);
 
     /// <summary>
-    /// Returns true if any non-deleted AGM event (EventType.Name = "Annual General Meeting") exists
-    /// with a date in the given calendar year.
-    /// </summary>
-    Task<bool> AgmExistsInYearAsync(int year, CancellationToken ct = default);
-
-    /// <summary>
     /// Returns an event with its EventType and ParticipationRecords (including Member) loaded, or null if not found.
     /// </summary>
     Task<Event?> GetByIdWithDetailsAsync(Guid id, CancellationToken ct = default);

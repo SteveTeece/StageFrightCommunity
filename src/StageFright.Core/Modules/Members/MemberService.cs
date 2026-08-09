@@ -8,12 +8,12 @@ namespace StageFright.Core.Modules.Members;
 
 /// <summary>
 /// Handles member lifecycle: creation, status transitions (Active ↔ Inactive), and archival.
-/// ArchiveAsync cascades soft-delete to the current-year CommitteeMembership only.
+/// ArchiveAsync cascades soft-delete to the current-year CommitteePositionRecord only.
 /// </summary>
 public class MemberService : IMemberService
 {
     private readonly IMemberRepository _memberRepo;
-    private readonly ICommitteeMembershipRepository _committeeRepo;
+    private readonly ICommitteePositionRecordRepository _committeeRepo;
     private readonly MemberValidationService _validation;
     private readonly ISettingsRepository _settingsRepo;
     private readonly IAuditTrailService _audit;
@@ -21,7 +21,7 @@ public class MemberService : IMemberService
 
     public MemberService(
         IMemberRepository memberRepo,
-        ICommitteeMembershipRepository committeeRepo,
+        ICommitteePositionRecordRepository committeeRepo,
         MemberValidationService validation,
         ISettingsRepository settingsRepo,
         IAuditTrailService audit,

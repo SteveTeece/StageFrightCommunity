@@ -24,6 +24,12 @@ public class EventTypeService : IEventTypeService
     public Task<IReadOnlyList<EventType>> GetAllAsync(CancellationToken ct = default) =>
         _repo.GetAllAsync(ct);
 
+    public async Task<IReadOnlyList<EventType>> GetSelectableForNewEventsAsync(CancellationToken ct = default)
+    {
+        var all = await _repo.GetAllAsync(ct);
+        return all.Where(et => !string.Equals(et.Name, "Annual General Meeting", StringComparison.OrdinalIgnoreCase)).ToList();
+    }
+
     public Task<IReadOnlyList<EventType>> GetArchivedAsync(CancellationToken ct = default) =>
         _repo.GetArchivedAsync(ct);
 
@@ -83,7 +89,6 @@ public class EventTypeService : IEventTypeService
         "Performance",
         "Eisteddfod",
         "Fund raiser",
-        "Promotional",
-        "Annual General Meeting"
+        "Promotional"
     ];
 }

@@ -80,6 +80,6 @@ public class Member
 
     // --- Navigation ---
 
-    /// <summary>Committee positions held by this member across all years.</summary>
-    public ICollection<CommitteeMembership> CommitteeMemberships { get; set; } = new List<CommitteeMembership>();
+    /// <summary>Committee positions held by this member across all terms (and legacy years).</summary>
+    public ICollection<CommitteePositionRecord> CommitteePositionRecords { get; set; } = new List<CommitteePositionRecord>();
 }

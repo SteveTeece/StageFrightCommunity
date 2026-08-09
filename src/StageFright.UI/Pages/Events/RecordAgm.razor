@@ -1,0 +1,82 @@
+@page "/events/agm/new"
+
+<PageTitle>Record AGM — StageFright Community</PageTitle>
+
+<div class="page-header mb-2">
+    <h1 class="h3">Record AGM</h1>
+</div>
+
+@if (_loading)
+{
+    <p role="status" aria-live="polite">Loading…</p>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+    }
+
+    <div class="row g-2 mb-2">
+        <div class="col-md-4">
+            <label for="agmDate" class="form-label">Meeting Date</label>
+            <input type="date" id="agmDate" class="form-control form-control-sm"
+                   @bind="_date" @bind:format="yyyy-MM-dd" />
+        </div>
+        <div class="col-md-8">
+            <label for="agmNotes" class="form-label">Notes</label>
+            <input type="text" id="agmNotes" class="form-control form-control-sm" @bind="_notes" />
+        </div>
+    </div>
+
+    <h2 class="h6 mb-1">Attendance</h2>
+    <div style="display:flex; flex-direction:column; height:360px;">
+        <AgmAttendanceGrid @ref="_attendanceGrid" Members="@_activeMembers" />
+    </div>
+
+    <h2 class="h6 mb-1 mt-3">Committee Elections</h2>
+    <div class="row g-2 mb-2">
+        @foreach (var type in _officeHolderTypes)
+        {
+            <div class="col-md-4">
+                <label for="office-@type.Id" class="form-label">@type.Name</label>
+                <select id="office-@type.Id" class="form-select form-select-sm"
+                        value="@(_officeHolderAssignments[type.Id]?.ToString() ?? "")"
+                        @onchange="e => OnOfficeHolderChanged(type.Id, e.Value?.ToString())">
+                    <option value="">Vacant</option>
+                    @foreach (var member in _activeMembers)
+                    {
+                        <option value="@member.Id">@member.SortableFullName</option>
+                    }
+                </select>
+            </div>
+        }
+    </div>
+
+    <h2 class="h6 mb-1">General Committee Members</h2>
+    <p class="small text-muted">
+        Selected: @_generalCommitteeMemberIds.Count
+        @if (_seatCountTarget.HasValue)
+        {
+            <span> of @_seatCountTarget target seats</span>
+        }
+    </p>
+    <div class="mb-2" style="max-height:200px; overflow-y:auto;">
+        @foreach (var member in _activeMembers)
+        {
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="general-@member.Id"
+                       checked="@_generalCommitteeMemberIds.Contains(member.Id)"
+                       @onchange="e => ToggleGeneralCommittee(member.Id, (bool)(e.Value ?? false))" />
+                <label class="form-check-label" for="general-@member.Id">@member.SortableFullName</label>
+            </div>
+        }
+    </div>
+
+    <div class="d-flex gap-2 mt-2">
+        <button class="btn btn-primary btn-sm" @onclick="SaveAsync" disabled="@_saving">
+            @(_saving ? "Saving…" : "Save AGM")
+        </button>
+        <a href="/events" class="btn btn-outline-secondary btn-sm">Cancel</a>
+    </div>
+}

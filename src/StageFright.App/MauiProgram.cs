@@ -8,6 +8,7 @@ using Serilog;
 using Serilog.Events;
 using StageFright.App.Seeding;
 using StageFright.Core.Contracts;
+using StageFright.Core.Modules.Agm;
 using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Dashboard;
 using StageFright.Core.Modules.Finance;
@@ -131,7 +132,11 @@ public static class MauiProgram
     private static void RegisterRepositories(IServiceCollection services)
     {
         services.AddScoped<IMemberRepository, MemberRepository>();
-        services.AddScoped<ICommitteeMembershipRepository, CommitteeMembershipRepository>();
+        services.AddScoped<ICommitteePositionRecordRepository, CommitteePositionRecordRepository>();
+        services.AddScoped<IAgmRepository, AgmRepository>();
+        services.AddScoped<IAgmAttendanceRepository, AgmAttendanceRepository>();
+        services.AddScoped<ICommitteeOfficeHolderTypeRepository, CommitteeOfficeHolderTypeRepository>();
+        services.AddScoped<ICommitteeTermRepository, CommitteeTermRepository>();
         services.AddScoped<IRehearsalRepository, RehearsalRepository>();
         services.AddScoped<IAttendanceRepository, AttendanceRepository>();
         services.AddScoped<IEventRepository, EventRepository>();
@@ -163,7 +168,8 @@ public static class MauiProgram
         services.AddScoped<MemberValidationService>();
         services.AddScoped<IMemberService, MemberService>();
         services.AddScoped<ICommitteeService, CommitteeService>();
-        services.AddScoped<ICommitteeAnnualResetService, CommitteeAnnualResetService>();
+        services.AddScoped<ICommitteeOfficeHolderTypeService, CommitteeOfficeHolderTypeService>();
+        services.AddScoped<IAgmService, AgmService>();
 
         // Rehearsals module (Phase 5)
         services.AddScoped<IRehearsalService, RehearsalService>();

@@ -46,7 +46,7 @@ public class SettingsCrossTabSaveTests : BunitContext
             MinimumMemberAge = s.MinimumMemberAge,
             Theme = s.Theme,
             ShowParticipationGraphs = s.ShowParticipationGraphs,
-            LastCommitteeResetYear = s.LastCommitteeResetYear,
+            GeneralCommitteeSeatCountTarget = s.GeneralCommitteeSeatCountTarget,
             SchemaVersion = s.SchemaVersion,
             CreatedAt = s.CreatedAt,
             UpdatedAt = s.UpdatedAt

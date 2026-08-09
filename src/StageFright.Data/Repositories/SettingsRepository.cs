@@ -43,7 +43,7 @@ public class SettingsRepository : ISettingsRepository
                 existing.IsGstRegistered = settings.IsGstRegistered;
                 existing.AnnualFeeGstCode = settings.AnnualFeeGstCode;
                 existing.AttendanceFeeGstCode = settings.AttendanceFeeGstCode;
-                existing.LastCommitteeResetYear = settings.LastCommitteeResetYear;
+                existing.GeneralCommitteeSeatCountTarget = settings.GeneralCommitteeSeatCountTarget;
                 existing.SchemaVersion = settings.SchemaVersion;
                 existing.UpdatedAt = DateTime.UtcNow;
             }

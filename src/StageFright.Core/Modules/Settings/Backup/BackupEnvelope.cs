@@ -32,8 +32,13 @@ public class BackupEnvelope
     [ProtoMember(15)] public List<TransactionBackupDto>? Transactions { get; set; }
     [ProtoMember(16)] public List<AccountBackupDto>? Accounts { get; set; }
     [ProtoMember(17)] public SettingsBackupDto? Settings { get; set; }
-    [ProtoMember(18)] public List<CommitteeMembershipBackupDto>? CommitteeMemberships { get; set; }
+    [ProtoMember(18)] public List<CommitteePositionRecordBackupDto>? CommitteePositionRecords { get; set; }
     [ProtoMember(19)] public List<AuditTrailBackupDto>? AuditTrailEntries { get; set; }
+
+    [ProtoMember(20)] public List<AnnualGeneralMeetingBackupDto>? AnnualGeneralMeetings { get; set; }
+    [ProtoMember(21)] public List<AgmAttendanceRecordBackupDto>? AgmAttendanceRecords { get; set; }
+    [ProtoMember(22)] public List<CommitteeOfficeHolderTypeBackupDto>? CommitteeOfficeHolderTypes { get; set; }
+    [ProtoMember(23)] public List<CommitteeTermBackupDto>? CommitteeTerms { get; set; }
 
     /// <summary>Per-entity record counts for validation and display. Keys match collection property names.</summary>
     [ProtoMember(30)] public Dictionary<string, int> EntityCounts { get; set; } = new();
