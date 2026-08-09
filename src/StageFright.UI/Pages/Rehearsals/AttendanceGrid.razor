@@ -49,7 +49,8 @@ else if (_alreadyRecorded)
                 <RadzenDataGridColumn TItem="AttendanceRecord" Title="Paid" Width="90px" Sortable="false">
                     <Template Context="record">
                         <div class="text-center">
-                            <input type="checkbox" class="form-check-input" checked="@record.Attended" disabled
+                            <input type="checkbox" class="form-check-input"
+                                   checked="@(_paidByMemberId.TryGetValue(record.MemberId, out var paid) && paid)" disabled
                                    aria-label="@record.Member.SortableFullName paid" />
                         </div>
                     </Template>

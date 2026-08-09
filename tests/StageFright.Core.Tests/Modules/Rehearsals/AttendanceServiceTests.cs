@@ -380,6 +380,58 @@ public class AttendanceServiceTests : TestBase
             RehearsalId, Arg.Any<DateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
+    // --- GetPaidStatusByRehearsalAsync ---
+
+    [Fact]
+    public async Task GetPaidStatusByRehearsalAsync_ReturnsTruePerMember_WhenFeePaidAtCreation()
+    {
+        var paidFee = new Fee
+        {
+            Id = Guid.NewGuid(), MemberId = ActiveMemberId, FeeType = FeeType.Attendance,
+            Amount = 10m, FeeDate = DateTime.UtcNow, DueDate = DateTime.UtcNow,
+            PaidAtCreation = true, RehearsalId = RehearsalId, CreatedAt = DateTime.UtcNow
+        };
+        _feeRepo.GetByRehearsalAsync(RehearsalId, Arg.Any<CancellationToken>())
+            .Returns(new List<Fee> { paidFee });
+        var svc = CreateService();
+
+        var result = await svc.GetPaidStatusByRehearsalAsync(RehearsalId, Ct);
+
+        Assert.True(result[ActiveMemberId]);
+    }
+
+    [Fact]
+    public async Task GetPaidStatusByRehearsalAsync_ReturnsFalsePerMember_WhenFeeMarkedUnpaidAtCreation()
+    {
+        // Regression for #281: the read-only attendance grid must reflect the true paid
+        // status, not always show "Paid" like it did when it mirrored the Attended flag.
+        var unpaidFee = new Fee
+        {
+            Id = Guid.NewGuid(), MemberId = ActiveMemberId, FeeType = FeeType.Attendance,
+            Amount = 10m, FeeDate = DateTime.UtcNow, DueDate = DateTime.UtcNow,
+            PaidAtCreation = false, RehearsalId = RehearsalId, CreatedAt = DateTime.UtcNow
+        };
+        _feeRepo.GetByRehearsalAsync(RehearsalId, Arg.Any<CancellationToken>())
+            .Returns(new List<Fee> { unpaidFee });
+        var svc = CreateService();
+
+        var result = await svc.GetPaidStatusByRehearsalAsync(RehearsalId, Ct);
+
+        Assert.False(result[ActiveMemberId]);
+    }
+
+    [Fact]
+    public async Task GetPaidStatusByRehearsalAsync_OmitsMembersWithNoAttendanceFee()
+    {
+        _feeRepo.GetByRehearsalAsync(RehearsalId, Arg.Any<CancellationToken>())
+            .Returns(new List<Fee>());
+        var svc = CreateService();
+
+        var result = await svc.GetPaidStatusByRehearsalAsync(RehearsalId, Ct);
+
+        Assert.False(result.ContainsKey(InactiveMemberId));
+    }
+
     // --- Helpers ---
 
     private static Member ActiveMember(Guid id) => new()
