@@ -3,6 +3,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Modules.Agm;
+using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Events;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Members;
@@ -21,7 +22,9 @@ namespace StageFright.App.Seeding;
 /// hall hire, costumes, licensing, printing, bank fees). Financial activity is generated as
 /// if "today" were 27 October 2026 (the day after the 2026 AGM) — nothing dated after that
 /// is posted, so the tail end of Term 4 2026 rehearsals are scheduled but not yet
-/// paid/settled. Only runs when the user opts in via the setup wizard checkbox.
+/// paid/settled. Only runs when the user opts in via the setup wizard checkbox. The whole run
+/// is wrapped in an AuditTrailSuppressionScope — seeded records are a synthetic starting
+/// fixture, not real user actions, so they produce no audit trail entries (issue #296).
 /// </summary>
 public class DebugDataSeeder : IDebugDataSeeder
 {
@@ -108,6 +111,11 @@ public class DebugDataSeeder : IDebugDataSeeder
             _logger.LogInformation("Debug seed data already present ({Count} members); skipping.", existing.Count);
             return;
         }
+
+        // Seeded records are a synthetic starting fixture, not something a real user did —
+        // suppress audit trail writes for the whole run (issue #296). The `using` guarantees
+        // suppression lifts even if a step below throws partway through.
+        using var _ = AuditTrailSuppressionScope.Begin();
 
         _logger.LogInformation("Seeding debug data...");
 

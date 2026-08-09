@@ -1,0 +1,242 @@
+{
+  "workflow": "speckit",
+  "specName": "disable seeder audit log",
+  "branch": "015-disable-seeder-audit-log",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-09T10:28:55.644Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-09T10:41:02.318Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-09T10:41:32.231Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-09T10:41:32.515Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-09T10:41:59.720Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-09T10:42:00.003Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-09T10:44:25.367Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T10:45:46.646Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T10:50:49.857Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T10:50:53.953Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T10:52:49.910Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T10:54:47.412Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T10:56:21.591Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-09T10:56:21.911Z"
+    }
+  ],
+  "livingSpecs": {
+    "loaded": [
+      "audit-trail",
+      "app-host"
+    ],
+    "synced": [
+      "audit-trail",
+      "app-host"
+    ]
+  },
+  "coverage": {
+    "FR-001": {
+      "title": "No audit trail entry for any record the debug seeder creates/updates while running",
+      "tests": [
+        "AuditTrailServiceTests.cs::LogAsync_DoesNotCallRepository_WhenSuppressed"
+      ]
+    },
+    "FR-002": {
+      "title": "Normal user-facing workflows continue to create audit trail entries unchanged",
+      "tests": [
+        "AuditTrailServiceTests.cs::LogAsync_PersistsEntry_WithExpectedFields"
+      ]
+    },
+    "FR-003": {
+      "title": "Audit logging auto-resumes after the seeder finishes, success or error",
+      "tests": [
+        "AuditTrailSuppressionScopeTests.cs::Dispose_RestoresIsSuppressedFalse",
+        "AuditTrailSuppressionScopeTests.cs::Dispose_RestoresIsSuppressedFalse_WhenExceptionThrownInsideScope"
+      ]
+    },
+    "FR-004": {
+      "title": "Skipping audit writes does not change the seeded data itself"
+    },
+    "FR-005": {
+      "title": "Seeder remains gated behind its existing opt-in checkbox",
+      "tests": [
+        "manual review — SetupWizard.razor.cs and MauiProgram.cs seeder registration/gating untouched"
+      ]
+    }
+  },
+  "size": "simple",
+  "classification": {
+    "projectedFiles": 5,
+    "projectedTasks": 6,
+    "scopeSignal": "none",
+    "verdict": "simple"
+  },
+  "context": [
+    "living spec: audit-trail — one AuditTrailEntry per state-changing action, transactionally coupled to the write it documents",
+    "living spec: app-host — sample-data seeding is debug-only, opt-in, non-blocking, safe against existing data",
+    "area: src/StageFright.Core/Modules/AuditTrail (AuditTrailService.LogAsync is the single choke point ~20 services call through)",
+    "area: src/StageFright.App/Seeding/DebugDataSeeder.cs (SeedAsync, 2-year sample data generator)",
+    "constraint: normal (non-seeding) audit logging behavior and its transactional coupling must be unchanged"
+  ],
+  "intent": "Stop the debug sample-data seeder from writing audit trail entries, so first-run seeding is fast and the audit trail isn't cluttered with synthetic history",
+  "expectations": [
+    "No new user-facing setting or UI control — behavior change only",
+    "No change to what data is seeded, only whether audit entries accompany it",
+    "No change to normal (non-seeding) audit logging behavior or its transactional coupling to the write it documents"
+  ],
+  "approach": "Add an AsyncLocal-backed AuditTrailSuppressionScope; AuditTrailService.LogAsync no-ops while it is active; DebugDataSeeder.SeedAsync wraps its body in that scope.",
+  "currentTask": "T006",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Added AsyncLocal-backed AuditTrailSuppressionScope ambient scope (Begin/IsSuppressed)",
+      "files": [
+        "src/StageFright.Core/Modules/AuditTrail/AuditTrailSuppressionScope.cs"
+      ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "AuditTrailService.LogAsync no-ops when AuditTrailSuppressionScope.IsSuppressed is true",
+      "files": [
+        "src/StageFright.Core/Modules/AuditTrail/AuditTrailService.cs"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "DebugDataSeeder.SeedAsync wraps its body in AuditTrailSuppressionScope.Begin() via using",
+      "files": [
+        "src/StageFright.App/Seeding/DebugDataSeeder.cs"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Added AuditTrailSuppressionScope unit tests: default false, begin/dispose, exception-safety via using, flows across await",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/AuditTrail/AuditTrailSuppressionScopeTests.cs"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Added LogAsync_DoesNotCallRepository_WhenSuppressed; existing LogAsync_PersistsEntry_WithExpectedFields already covers the not-suppressed case",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/AuditTrail/AuditTrailServiceTests.cs"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "dotnet build: 0 errors; dotnet test: all 1479 tests pass across all 5 projects (6 new suppression tests)"
+    }
+  },
+  "verified": [
+    {
+      "what": "full build + test suite after all tasks",
+      "command": "dotnet build && dotnet test",
+      "result": "0 build errors; 1479/1479 tests pass (6 new), no regressions",
+      "warnings": []
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "AsyncLocal-backed ambient AuditTrailSuppressionScope, checked once inside AuditTrailService.LogAsync",
+      "why": "LogAsync is the single existing choke point ~20 services already call through, so suppression needed zero changes to those callers or the IAuditTrailService interface",
+      "rejected": "Threading a suppress-audit bool parameter through IAuditTrailService.LogAsync and every one of its ~20 call sites"
+    },
+    {
+      "decision": "Suppression scope begins/ends inside DebugDataSeeder.SeedAsync itself via using, not at its caller in SetupWizard.razor.cs",
+      "why": "keeps the seeder self-contained and guarantees the using/finally safety net applies regardless of how or where SeedAsync is invoked",
+      "rejected": "Wrapping the call site in SetupWizard.razor.cs instead"
+    }
+  ],
+  "concerns": [
+    {
+      "note": "SC-001s zero-writes outcome is verified at the unit level (LogAsync no-ops when suppressed) and by design (SeedAsync wraps its whole body), but a full end-to-end 2-year seed run against a real MAUI app + DB inspection was not performed as part of this implementation, so no wall-clock before/after timing was captured",
+      "step": "implement"
+    }
+  ]
+}
