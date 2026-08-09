@@ -98,5 +98,47 @@ public class SetupServiceIntegrationTests : IDisposable
         Assert.False(await svc.IsSetupCompleteAsync());
     }
 
+    [Fact]
+    public async Task InitializeAsync_PersistsDefaultAuditRetentionYears()
+    {
+        using var db = _factory.CreateContext();
+        var settingsRepo = new SettingsRepository(db);
+        var accountRepo = new AccountRepository(db);
+        var eventTypeRepo = new EventTypeRepository(db);
+        var auditRepo = new AuditTrailRepository(db);
+        var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
+        var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
+        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
+
+        await svc.InitializeAsync(new SetupRequest("Org", "51824753556", 50m, 5m, 1, false, null, null, Theme.Dark));
+
+        var settings = await settingsRepo.GetAsync();
+        Assert.Equal(1, settings!.AuditRetentionYears);
+    }
+
+    [Fact]
+    public async Task InitializeAsync_PersistsCustomAuditRetentionYears()
+    {
+        using var db = _factory.CreateContext();
+        var settingsRepo = new SettingsRepository(db);
+        var accountRepo = new AccountRepository(db);
+        var eventTypeRepo = new EventTypeRepository(db);
+        var auditRepo = new AuditTrailRepository(db);
+        var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
+        var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
+        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
+
+        var request = new SetupRequest("Org", "51824753556", 50m, 5m, 1, false, null, null, Theme.Dark)
+        {
+            AuditRetentionYears = 7
+        };
+        await svc.InitializeAsync(request);
+
+        var settings = await settingsRepo.GetAsync();
+        Assert.Equal(7, settings!.AuditRetentionYears);
+    }
+
     public void Dispose() => _factory.Dispose();
 }

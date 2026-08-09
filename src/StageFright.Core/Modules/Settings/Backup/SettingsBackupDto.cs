@@ -23,4 +23,5 @@ public class SettingsBackupDto
     [ProtoMember(15)] public DateTime CreatedAt { get; set; }
     [ProtoMember(16)] public DateTime UpdatedAt { get; set; }
     [ProtoMember(17)] public int? GeneralCommitteeSeatCountTarget { get; set; }
+    [ProtoMember(18)] public int AuditRetentionYears { get; set; } = 1;
 }

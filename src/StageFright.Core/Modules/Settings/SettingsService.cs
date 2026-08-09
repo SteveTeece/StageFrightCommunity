@@ -50,6 +50,9 @@ public class SettingsService : ISettingsService
         if (settings.MinimumMemberAge > settings.MaxAgeRangeYears)
             throw new ValidationException("Minimum member age cannot exceed the maximum age range.", "Settings", nameof(SaveAsync));
 
+        if (settings.AuditRetentionYears < 1 || settings.AuditRetentionYears > 7)
+            throw new ValidationException("Audit retention period must be between 1 and 7 years.", "Settings", nameof(SaveAsync));
+
         var existing = await _repository.GetAsync(ct);
 
         string? oldValue = existing is null
