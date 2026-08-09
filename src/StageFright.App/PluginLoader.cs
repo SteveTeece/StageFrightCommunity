@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StageFright.Core.Exceptions;
 using StageFright.Plugins.Contracts;
+using StageFright.Reports.Registry;
 
 namespace StageFright.App;
 
@@ -36,6 +37,7 @@ public static class PluginLoader
                 RegisterProviderTypes<ISettingsTabProvider>(services, providerTypes, logger);
                 RegisterProviderTypes<IMenuItemProvider>(services, providerTypes, logger);
                 RegisterProviderTypes<IDataAccessProvider>(services, providerTypes, logger);
+                RegisterProviderTypes<IReportProvider>(services, providerTypes, logger);
 
                 logger.LogInformation("Plugin loaded: {Assembly}", assembly.FullName);
             }
