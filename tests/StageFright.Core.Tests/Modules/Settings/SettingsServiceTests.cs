@@ -186,4 +186,34 @@ public class SettingsServiceTests : TestBase
         await svc.SaveAsync(settings, Ct); // must not throw
         await _settingsRepo.Received(1).SaveAsync(settings, Arg.Any<CancellationToken>());
     }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(8)]
+    public async Task SaveAsync_Throws_WhenAuditRetentionYearsOutOfRange(int years)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var settings = ValidSettings(null);
+        settings.AuditRetentionYears = years;
+
+        await Assert.ThrowsAsync<ValidationException>(() => svc.SaveAsync(settings, Ct));
+        await _settingsRepo.DidNotReceive().SaveAsync(Arg.Any<Settings>(), Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(7)]
+    public async Task SaveAsync_Saves_WhenAuditRetentionYearsAtBoundary(int years)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var settings = ValidSettings(null);
+        settings.AuditRetentionYears = years;
+
+        await svc.SaveAsync(settings, Ct); // must not throw
+        await _settingsRepo.Received(1).SaveAsync(settings, Arg.Any<CancellationToken>());
+    }
 }

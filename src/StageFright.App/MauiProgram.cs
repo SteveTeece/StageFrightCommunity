@@ -294,12 +294,19 @@ public static class MauiProgram
         var migrationRunner = scope.ServiceProvider.GetRequiredService<PluginMigrationRunner>();
         migrationRunner.RunAsync().GetAwaiter().GetResult();
 
-        // Audit trail startup purge (FR-022): failure is tolerated, startup continues
+        // Audit trail startup purge (FR-022): failure is tolerated, startup continues.
+        // Resolved via the registered interface — resolving the concrete AuditTrailService
+        // type here previously returned null (it was never registered by concrete type),
+        // silently skipping the purge while still logging a false "complete" message.
         try
         {
-            var auditService = scope.ServiceProvider.GetService<AuditTrailService>();
-            auditService?.PurgeOlderThanAsync(DateTime.UtcNow.AddMonths(-12)).GetAwaiter().GetResult();
-            Log.Information("Audit trail startup purge complete");
+            var auditService = scope.ServiceProvider.GetRequiredService<IAuditTrailService>();
+            var settingsService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
+            var settings = settingsService.GetAsync().GetAwaiter().GetResult();
+            var retentionYears = settings?.AuditRetentionYears ?? 1;
+
+            auditService.PurgeOlderThanAsync(DateTime.UtcNow.AddYears(-retentionYears)).GetAwaiter().GetResult();
+            Log.Information("Audit trail startup purge complete (retention: {RetentionYears} year(s))", retentionYears);
         }
         catch (Exception ex)
         {

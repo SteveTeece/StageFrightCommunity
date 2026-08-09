@@ -90,6 +90,12 @@ public class Settings
     /// <summary>Semver schema version recorded by migrations and backup manifests (NFR-002).</summary>
     public string SchemaVersion { get; set; } = "1.1.0";
 
+    /// <summary>
+    /// Number of years audit trail entries are retained before the startup purge hard-deletes
+    /// them. Range: 1–7. Default: 1 year.
+    /// </summary>
+    public int AuditRetentionYears { get; set; } = 1;
+
     // --- Soft-delete fields (never set; singleton row) ---
 
     /// <summary>Reserved; always false for the Settings singleton.</summary>

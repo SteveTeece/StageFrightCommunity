@@ -1,0 +1,563 @@
+{
+  "workflow": "speckit",
+  "specName": "audit trail retention",
+  "branch": "014-audit-trail-retention",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-09T07:57:37.044Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-09T08:05:47.756Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-09T08:07:40.241Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-09T08:14:37.616Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-09T08:18:24.016Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-09T08:19:33.161Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T08:21:39.589Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T08:21:39.953Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T08:27:18.037Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T08:27:18.355Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T08:27:18.636Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T08:27:18.894Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T08:27:24.075Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T08:27:24.386Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T08:27:24.688Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T08:34:19.577Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T08:34:19.874Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T08:34:20.156Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T08:34:20.428Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T08:35:22.451Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T08:39:57.890Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T09:04:32.955Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T09:04:33.362Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T09:04:33.757Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T09:04:34.107Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T09:04:34.463Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T09:04:39.290Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T09:04:39.713Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T09:04:40.098Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T09:04:40.472Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-09T09:07:43.667Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-09T09:07:44.813Z"
+    }
+  ],
+  "coverage": {
+    "FR-001": {
+      "title": "Resolve audit purge via registered service abstraction, not an unregistered concrete type",
+      "tests": [
+        "StartupSequenceTests.cs::AuditPurge_ResolvesViaDiContainer_ThroughInterfaceOnly"
+      ]
+    },
+    "FR-002": {
+      "title": "Startup purge actually executes on every normal startup",
+      "tests": [
+        "StartupSequenceTests.cs::AuditPurge_ResolvesViaDiContainer_ThroughInterfaceOnly"
+      ]
+    },
+    "FR-003": {
+      "title": "Log purge success only when it actually executed",
+      "tests": [
+        "StartupSequenceTests.cs::AuditPurge_ResolvesViaDiContainer_ThroughInterfaceOnly"
+      ]
+    },
+    "FR-009": {
+      "title": "Settings screen lets coordinator view/change retention period post-setup",
+      "tests": [
+        "GeneralSettingsTabTests.cs::AuditRetentionDropdown_RendersSevenOptions",
+        "Save_PersistsSelectedAuditRetentionYears",
+        "Save_ShowsError_WhenAuditRetentionValidationFails"
+      ]
+    },
+    "FR-010": {
+      "title": "Purge falls back to 1-year default when no retention period is configured",
+      "tests": [
+        "AddAuditRetentionYearsToSettingsMigrationTests.cs::ExistingSettingsRow_BackfillsAuditRetentionYearsToOne_AfterMigration"
+      ]
+    },
+    "FR-011": {
+      "title": "Retention period change takes effect on next startup purge automatically",
+      "tests": [
+        "SetupServiceIntegrationTests.cs::InitializeAsync_PersistsCustomAuditRetentionYears"
+      ]
+    },
+    "FR-005": {
+      "title": "Purge failure is logged and does not block startup",
+      "tests": [
+        "AuditTrailServiceTests.cs::PurgeOlderThanAsync_DoesNotThrow_WhenRepositoryFails"
+      ]
+    },
+    "FR-006": {
+      "title": "Store coordinator-configurable audit retention period, default 1 year",
+      "tests": [
+        "SetupServiceTests.cs::InitializeAsync_PersistsDefaultAuditRetentionYears_WhenNotSpecified"
+      ]
+    },
+    "FR-004": {
+      "title": "Purge removes entries older than cutoff, preserves entries within retention",
+      "tests": [
+        "StartupSequenceTests.cs::AuditPurge_HonoursConfiguredRetentionPeriod",
+        "AuditTrailServiceTests.cs::PurgeOlderThanAsync_DelegatesToRepository_WithGivenCutoff"
+      ]
+    },
+    "FR-007": {
+      "title": "Retention period restricted to 1-7 years inclusive; out-of-range save rejected",
+      "tests": [
+        "SettingsServiceTests.cs::SaveAsync_Throws_WhenAuditRetentionYearsOutOfRange",
+        "SetupServiceTests.cs::InitializeAsync_Throws_WhenAuditRetentionYearsOutOfRange"
+      ]
+    },
+    "FR-008": {
+      "title": "Setup wizard lets coordinator choose retention period (1-7 years, default 1)",
+      "tests": [
+        "SetupWizardTests.cs::Step2_RendersAuditRetentionDropdown_WithSevenOptions",
+        "Finish_ComposesRequest_WithDefaultAuditRetentionYears_WhenUnchanged",
+        "Finish_ComposesRequest_WithSelectedAuditRetentionYears"
+      ]
+    }
+  },
+  "context": [
+    "area: src/StageFright.App/MauiProgram.cs (startup sequence, audit purge call)",
+    "area: src/StageFright.Core/Modules/AuditTrail (IAuditTrailService, AuditTrailService)",
+    "area: src/StageFright.Core/Modules/Settings (Settings entity, SettingsService, SetupService, SetupRequest)",
+    "constraint: one class per file, .razor.cs code-behind mandatory, RadzenSwitch/InputSelect UI conventions"
+  ],
+  "intent": "Make the audit trail startup purge actually run (fixing a DI resolution bug) and let coordinators configure its retention period (1-7 years, default 1) via setup and Settings.",
+  "expectations": [
+    "No change to the purge's hard-delete mechanics (AuditTrailRepository.PurgeOlderThanAsync) beyond how its cutoff is computed",
+    "No retroactive backfill of a retention value onto pre-existing Settings rows beyond a code-level default"
+  ],
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 18,
+    "projectedTasks": 22,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "approach": "Resolve IAuditTrailService (not the unregistered concrete class) via GetRequiredService in MauiProgram; add PurgeOlderThanAsync to that interface; add Settings.AuditRetentionYears (1-7, default 1) via EF migration, validated in SettingsService/SetupService, surfaced in the setup wizard and Settings General tab, and mirrored into the backup DTO.",
+  "step_summaries": {
+    "plan": {
+      "summary": "Fixed purge DI resolution; added Settings.AuditRetentionYears (1-7, default 1) via migration, validated at setup + Settings, surfaced in wizard + General tab, mirrored to backup DTO.",
+      "key_finding": "IAuditTrailService lacked PurgeOlderThanAsync entirely -- adding it is required before the DI fix is even possible."
+    },
+    "implement": {
+      "summary": "Fixed audit purge DI resolution bug (#275) and added configurable 1-7 year audit retention (#291), wired end-to-end with tests and an EF migration."
+    }
+  },
+  "currentTask": "T025",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Added PurgeOlderThanAsync to IAuditTrailService",
+      "files": [
+        "src/StageFright.Core/Contracts/IAuditTrailService.cs"
+      ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Added AuditRetentionYears (default 1) to Settings entity",
+      "files": [
+        "src/StageFright.Core/Entities/Settings.cs"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "EF default value 1 for AuditRetentionYears",
+      "files": [
+        "src/StageFright.Data/Configurations/SettingsConfiguration.cs"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Validate AuditRetentionYears 1-7 in SettingsService.SaveAsync",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/SettingsService.cs"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Added AuditRetentionYears to SetupRequest",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/SetupRequest.cs"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Fixed MauiProgram DI resolution (IAuditTrailService via GetRequiredService) + retention-driven cutoff, success-only log",
+      "files": [
+        "src/StageFright.App/MauiProgram.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Added AuditRetentionYears (Range 1-7) to SetupFormModel",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupFormModel.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Added AuditRetentionYears (ProtoMember 18) to SettingsBackupDto",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/Backup/SettingsBackupDto.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Updated AuditTrailService doc comment (caller-supplied cutoff)",
+      "files": [
+        "src/StageFright.Core/Modules/AuditTrail/AuditTrailService.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Validate + assign AuditRetentionYears in SetupService",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/SetupService.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Updated BackupService mappers for AuditRetentionYears",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/BackupService.cs"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Added retention dropdown to SetupWizard Step 2 + Review",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Added retention dropdown to GeneralSettingsTab",
+      "files": [
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Wired AuditRetentionYears from wizard model into SetupRequest",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Generated EF Core migration AddAuditRetentionYearsToSettings (column + default 1)",
+      "files": [
+        "src/StageFright.Data/Migrations/20260809083931_AddAuditRetentionYearsToSettings.cs"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "New AuditTrailServiceTests (LogAsync + PurgeOlderThanAsync)",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/AuditTrail/AuditTrailServiceTests.cs"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "SettingsServiceTests AuditRetentionYears validation",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/SettingsServiceTests.cs"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "SetupServiceTests AuditRetentionYears validation",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "SetupServiceIntegrationTests default+custom retention persistence",
+      "files": [
+        "tests/StageFright.Data.Tests/Settings/SetupServiceIntegrationTests.cs"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "New migration test: column exists, backfills to default 1",
+      "files": [
+        "tests/StageFright.Data.Tests/Migrations/AddAuditRetentionYearsToSettingsMigrationTests.cs"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "SetupWizardTests retention dropdown coverage",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "GeneralSettingsTabTests retention dropdown coverage",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Settings/GeneralSettingsTabTests.cs"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "StartupSequenceTests: DI-resolution regression + retention-driven cutoff",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/StartupSequenceTests.cs"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "BackupServiceTests AuditRetentionYears round-trip",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "dotnet build (0 errors) + dotnet test (1473 passed, 0 failed) across all 5 test projects"
+    }
+  },
+  "verified": [
+    {
+      "what": "full build",
+      "command": "dotnet build StageFrightCommunity.slnx",
+      "result": "0 errors, 90 pre-existing warnings (unrelated xUnit1051 analyzer suggestions)",
+      "warnings": []
+    },
+    {
+      "what": "full test suite",
+      "command": "dotnet test StageFrightCommunity.slnx",
+      "result": "1473 passed, 0 failed across Core/Reports/Data/Integration/UI test projects",
+      "warnings": []
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "Generated the EF migration using StageFrightDbContextFactory (--startup-project src/StageFright.Data/) instead of the App project",
+      "why": "dotnet-ef could not resolve the MAUI App project multi-targeting (net10.0-windows...) as startup project in this environment; the existing IDesignTimeDbContextFactory on the Data project sidesteps that entirely",
+      "rejected": "forcing --framework net10.0-windows10.0.19041.0 on the App project (still failed: Data project only targets net10.0)"
+    }
+  ],
+  "concerns": [
+    {
+      "note": "dotnet ef migrations add with --startup-project src/StageFright.App/ fails in this environment (multi-targeting/ResolvePackageAssets error) even after a successful plain build; using --startup-project src/StageFright.Data/ (its IDesignTimeDbContextFactory) works instead.",
+      "step": "implement"
+    }
+  ],
+  "last_action": "All 25 tasks done -- 1473/1473 tests pass, build clean"
+}

@@ -41,7 +41,8 @@ public class AuditTrailService : IAuditTrailService
     }
 
     /// <summary>
-    /// Hard-deletes audit trail entries older than 12 months. Called at startup.
+    /// Hard-deletes audit trail entries older than the given cutoff. Called at startup with a
+    /// cutoff derived from the configured retention period (Settings.AuditRetentionYears).
     /// Failure is caught, logged, and startup continues.
     /// </summary>
     public async Task PurgeOlderThanAsync(DateTime cutoff, CancellationToken ct = default)

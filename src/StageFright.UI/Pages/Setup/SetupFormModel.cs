@@ -40,4 +40,7 @@ internal sealed class SetupFormModel
     public string? CommitteeOfficeHolderTitlesText { get; set; }
 
     public int? GeneralCommitteeSeatCountTarget { get; set; }
+
+    [Range(1, 7, ErrorMessage = "Audit retention period must be between 1 and 7 years.")]
+    public int AuditRetentionYears { get; set; } = 1;
 }
