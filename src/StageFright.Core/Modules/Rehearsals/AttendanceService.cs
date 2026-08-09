@@ -60,6 +60,14 @@ public class AttendanceService : IAttendanceService
         return await _attendanceRepo.GetByRehearsalAsync(rehearsalId, ct);
     }
 
+    public async Task<IReadOnlyDictionary<Guid, bool>> GetPaidStatusByRehearsalAsync(Guid rehearsalId, CancellationToken ct = default)
+    {
+        var fees = await _feeRepo.GetByRehearsalAsync(rehearsalId, ct);
+        return fees
+            .Where(f => f.FeeType == FeeType.Attendance)
+            .ToDictionary(f => f.MemberId, f => f.PaidAtCreation);
+    }
+
     public async Task RecordBatchAsync(Guid rehearsalId, IReadOnlyList<AttendanceBatchItem> items, CancellationToken ct = default)
     {
         var rehearsal = await _rehearsalRepo.GetByIdAsync(rehearsalId, ct)

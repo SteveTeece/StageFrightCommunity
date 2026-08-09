@@ -26,6 +26,7 @@ public partial class AttendanceGrid
     private List<Member> _members = new();
     private List<AttendanceRow> _rows = new();
     private List<AttendanceRecord> _recordedAttendance = new();
+    private IReadOnlyDictionary<Guid, bool> _paidByMemberId = new Dictionary<Guid, bool>();
     private decimal _attendanceFee;
 
     protected override async Task OnInitializedAsync()
@@ -45,6 +46,7 @@ public partial class AttendanceGrid
             {
                 _alreadyRecorded = true;
                 _recordedAttendance = (await AttendanceService.GetByRehearsalAsync(RehearsalId)).ToList();
+                _paidByMemberId = await AttendanceService.GetPaidStatusByRehearsalAsync(RehearsalId);
                 return;
             }
 

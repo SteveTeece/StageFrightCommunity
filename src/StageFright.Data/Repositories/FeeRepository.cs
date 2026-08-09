@@ -67,4 +67,11 @@ public class FeeRepository : IFeeRepository
         return await _db.Fees
             .AnyAsync(f => f.MemberId == memberId && f.RehearsalId == rehearsalId, ct);
     }
+
+    public async Task<IReadOnlyList<Fee>> GetByRehearsalAsync(Guid rehearsalId, CancellationToken ct = default)
+    {
+        return await _db.Fees
+            .Where(f => f.RehearsalId == rehearsalId)
+            .ToListAsync(ct);
+    }
 }
