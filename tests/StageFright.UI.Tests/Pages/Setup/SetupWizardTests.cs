@@ -192,6 +192,49 @@ public class SetupWizardTests : BunitContext
     }
 
     [Fact]
+    public void Step2_RendersAuditRetentionDropdown_WithSevenOptions()
+    {
+        var cut = Render<SetupWizard>();
+        AdvanceFromStep1(cut);
+
+        var select = cut.Find("#auditRetentionYears");
+        Assert.Equal(7, select.Children.Length);
+    }
+
+    [Fact]
+    public async Task Finish_ComposesRequest_WithDefaultAuditRetentionYears_WhenUnchanged()
+    {
+        var cut = Render<SetupWizard>();
+        AdvanceFromStep1(cut);
+        AdvanceFromStep2(cut);
+        AdvanceFromStep3(cut);
+        AdvanceFromStep4(cut);
+
+        await cut.Find("form").SubmitAsync();
+
+        await _setupService.Received(1).InitializeAsync(
+            Arg.Is<SetupRequest>(r => r.AuditRetentionYears == 1),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Finish_ComposesRequest_WithSelectedAuditRetentionYears()
+    {
+        var cut = Render<SetupWizard>();
+        AdvanceFromStep1(cut);
+        cut.Find("#auditRetentionYears").Change("5");
+        AdvanceFromStep2(cut);
+        AdvanceFromStep3(cut);
+        AdvanceFromStep4(cut);
+
+        await cut.Find("form").SubmitAsync();
+
+        await _setupService.Received(1).InitializeAsync(
+            Arg.Is<SetupRequest>(r => r.AuditRetentionYears == 5),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task Finish_ForcesGstCodesNull_WhenNotRegistered()
     {
         var cut = Render<SetupWizard>();

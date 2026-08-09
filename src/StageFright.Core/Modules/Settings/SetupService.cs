@@ -66,6 +66,7 @@ public class SetupService : ISetupService
             AttendanceFeeGstCode = attendanceFeeGstCode,
             CommitteeRenewalMonth = request.CommitteeRenewalMonth,
             GeneralCommitteeSeatCountTarget = request.GeneralCommitteeSeatCountTarget,
+            AuditRetentionYears = request.AuditRetentionYears,
             MaxAgeRangeYears = 150,
             MinimumMemberAge = 0,
             Theme = request.Theme,
@@ -133,5 +134,8 @@ public class SetupService : ISetupService
 
         if (request.MembershipRenewalMonth < 1 || request.MembershipRenewalMonth > 12)
             throw new ValidationException("MembershipRenewalMonth must be between 1 and 12.", "Settings", nameof(InitializeAsync));
+
+        if (request.AuditRetentionYears < 1 || request.AuditRetentionYears > 7)
+            throw new ValidationException("Audit retention period must be between 1 and 7 years.", "Settings", nameof(InitializeAsync));
     }
 }

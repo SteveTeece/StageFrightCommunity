@@ -233,6 +233,51 @@ public class SetupServiceTests : TestBase
             Arg.Any<CancellationToken>());
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(8)]
+    public async Task InitializeAsync_Throws_WhenAuditRetentionYearsOutOfRange(int years)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var request = ValidRequest() with { AuditRetentionYears = years };
+        await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
+    }
+
+    [Fact]
+    public async Task InitializeAsync_PersistsDefaultAuditRetentionYears_WhenNotSpecified()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        await svc.InitializeAsync(ValidRequest(), Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s.AuditRetentionYears == 1),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(7)]
+    public async Task InitializeAsync_PersistsRequestedAuditRetentionYears(int years)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        var request = ValidRequest() with { AuditRetentionYears = years };
+        await svc.InitializeAsync(request, Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s.AuditRetentionYears == years),
+            Arg.Any<CancellationToken>());
+    }
+
     private static SetupRequest ValidRequest() => new(
         OrganizationName: "Test Org",
         Abn: "51824753556",

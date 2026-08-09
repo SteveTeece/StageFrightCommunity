@@ -507,6 +507,49 @@ public class BackupServiceTests : TestBase
     }
 
     [Fact]
+    public async Task ImportAsync_RoundTripsAuditRetentionYears()
+    {
+        var settings = new Settings
+        {
+            Id = Guid.NewGuid(), OrganizationName = "Test Org", AnnualFee = 75m, AttendanceFee = 5m,
+            MembershipRenewalMonth = 1, AuditRetentionYears = 5,
+            SchemaVersion = "1.1.0", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        var snapshot = new BackupSnapshot
+        {
+            Members = [], CommitteePositionRecords = [], AnnualGeneralMeetings = [],
+            AgmAttendanceRecords = [], CommitteeOfficeHolderTypes = [], CommitteeTerms = [],
+            Rehearsals = [], AttendanceRecords = [], Events = [], EventTypes = [],
+            ParticipationRecords = [], Fees = [], Payments = [], Transactions = [], Accounts = [],
+            Settings = settings, AuditTrailEntries = []
+        };
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
+        _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0])(Ct));
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_settings_import_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+
+            BackupSnapshot? upserted = null;
+            _backupRepo.UpsertSnapshotAsync(Arg.Do<BackupSnapshot>(s => upserted = s), Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask);
+
+            await svc.ImportAsync(path, Ct);
+
+            Assert.Equal(5, upserted!.Settings!.AuditRetentionYears);
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+                File.Delete(f);
+        }
+    }
+
+    [Fact]
     public async Task ImportAsync_ThrowsImportException_WhenAnnualGeneralMeetingsMissing()
     {
         var snapshot = BuildMinimalSnapshot();
