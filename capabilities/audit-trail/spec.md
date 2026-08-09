@@ -60,3 +60,12 @@ A failure while purging expired audit entries SHALL be caught and logged as a st
 ## Uncovered
 
 _None — every file in the area was read._
+
+### Audit writes can be suppressed for the duration of a bulk, non-user-driven operation
+
+An ambient `AuditTrailSuppressionScope` SHALL let a caller mark a block of work as exempt from audit logging; while a scope is active, `AuditTrailService.LogAsync` SHALL return without writing to the audit trail repository, and normal logging SHALL resume the instant the scope is disposed — including when an exception unwinds through it. This lets a bulk, non-user-driven operation such as the debug data seeder generate synthetic sample data without producing a real audit trail entry for each record.
+
+#### Scenario: a caller suppresses audit logging around bulk sample-data generation
+- **WHEN** a caller wraps a block of work in `AuditTrailSuppressionScope.Begin()`
+- **THEN** every `LogAsync` call made during that block, however many services it flows through, writes no audit trail entry
+- **AND** logging resumes normally for the rest of the application session the instant the scope is disposed, even if the wrapped work threw an exception
