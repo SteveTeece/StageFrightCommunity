@@ -14,6 +14,7 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
     private readonly IFeeRepository _feeRepo;
     private readonly IGLRepository _glRepo;
     private readonly IMemberRepository _memberRepo;
+    private readonly ISettingsRepository _settingsRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -21,12 +22,14 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
         IFeeRepository feeRepo,
         IGLRepository glRepo,
         IMemberRepository memberRepo,
+        ISettingsRepository settingsRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork)
     {
         _feeRepo = feeRepo;
         _glRepo = glRepo;
         _memberRepo = memberRepo;
+        _settingsRepo = settingsRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
     }
@@ -61,6 +64,7 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
         var feeMap = fees.ToDictionary(f => f.Id);
         var member = await _memberRepo.GetByIdAsync(memberId, ct);
         var memberName = member?.FullName ?? "Unknown Member";
+        var settings = await _settingsRepo.GetAsync(ct);
 
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
@@ -72,10 +76,12 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
                     continue;
 
                 // Write-off: Debit BadDebtExpense / Credit MemberReceivable gross.
-                // Taxable fees (Fee.GstCode = Gst) also debit GST Collected — a bad-debt
-                // decreasing adjustment reversing the GST accrued with the fee.
-                var (badDebtAmount, gstAdjustment) = fee.GstCode == GstCode.Gst
-                    ? GstCalculator.SplitInclusive(fee.Amount)
+                // Taxable fees (Fee.TaxCode = Taxable) also debit Tax Collected — a bad-debt
+                // decreasing adjustment reversing the tax accrued with the fee, at the
+                // organisation's current tax rate (single current rate, no rate history — see
+                // spec 016 Assumptions).
+                var (badDebtAmount, taxAdjustment) = fee.TaxCode == TaxCode.Taxable
+                    ? TaxCalculator.SplitInclusive(fee.Amount, settings?.TaxRate ?? 0m)
                     : (fee.Amount, 0m);
 
                 var lines = new List<Transaction>
@@ -90,7 +96,7 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
                         GLAccount = SystemAccounts.BadDebtNumber,
                         MemberId = memberId,
                         FeeId = feeId,
-                        GstCode = fee.GstCode,
+                        TaxCode = fee.TaxCode,
                         Description = $"Reactivation forgiveness write-off for {memberName}",
                         CreatedAt = now
                     },
@@ -104,26 +110,26 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
                         GLAccount = SystemAccounts.MemberReceivableNumber,
                         MemberId = memberId,
                         FeeId = feeId,
-                        GstCode = fee.GstCode,
+                        TaxCode = fee.TaxCode,
                         Description = $"Reactivation forgiveness — receivable cleared for {memberName}",
                         CreatedAt = now
                     }
                 };
 
-                if (gstAdjustment != 0m)
+                if (taxAdjustment != 0m)
                 {
                     lines.Add(new Transaction
                     {
                         Id = Guid.NewGuid(),
                         Date = now,
-                        AccountId = SystemAccounts.GstCollectedId,
-                        DebitAmount = gstAdjustment,
+                        AccountId = SystemAccounts.TaxCollectedId,
+                        DebitAmount = taxAdjustment,
                         CreditAmount = 0m,
-                        GLAccount = SystemAccounts.GstCollectedNumber,
+                        GLAccount = SystemAccounts.TaxCollectedNumber,
                         MemberId = memberId,
                         FeeId = feeId,
-                        GstCode = fee.GstCode,
-                        Description = $"GST decreasing adjustment — forgiveness for {memberName}",
+                        TaxCode = fee.TaxCode,
+                        Description = $"Tax decreasing adjustment — forgiveness for {memberName}",
                         CreatedAt = now
                     });
                 }

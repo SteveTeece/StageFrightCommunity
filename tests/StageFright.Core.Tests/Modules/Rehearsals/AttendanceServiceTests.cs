@@ -85,7 +85,7 @@ public class AttendanceServiceTests : TestBase
             .Returns(ci => ci.ArgAt<Payment>(0));
     }
 
-    private void SetSettings(bool isGstRegistered, GstCode? attendanceFeeGstCode, decimal attendanceFee) =>
+    private void SetSettings(bool isTaxApplicable, TaxCode? attendanceFeeTaxCode, decimal attendanceFee) =>
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>())
             .Returns(new Settings
             {
@@ -93,7 +93,7 @@ public class AttendanceServiceTests : TestBase
                 AnnualFee = 50m, AttendanceFee = attendanceFee,
                 MembershipRenewalMonth = 1, MaxAgeRangeYears = 150,
                 MinimumMemberAge = 0, SchemaVersion = "1.1.0",
-                IsGstRegistered = isGstRegistered, AttendanceFeeGstCode = attendanceFeeGstCode,
+                IsTaxApplicable = isTaxApplicable, TaxRate = isTaxApplicable ? 10m : null, AttendanceFeeTaxCode = attendanceFeeTaxCode,
                 CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
             });
 
@@ -196,26 +196,26 @@ public class AttendanceServiceTests : TestBase
     // --- GST ---
 
     [Fact]
-    public async Task RecordBatch_NotRegistered_StampsNullGstCode_OnFeeAndAccrualLines_EvenWhenGstCodeConfigured()
+    public async Task RecordBatch_NotRegistered_StampsNullTaxCode_OnFeeAndAccrualLines_EvenWhenTaxCodeConfigured()
     {
         // Toggle-off byte-identical regression: unregistered orgs must always get the
-        // pre-GST 2-line accrual with GstCode == null, regardless of AttendanceFeeGstCode.
-        SetSettings(isGstRegistered: false, attendanceFeeGstCode: GstCode.Gst, attendanceFee: 11m);
+        // pre-GST 2-line accrual with TaxCode == null, regardless of AttendanceFeeTaxCode.
+        SetSettings(isTaxApplicable: false, attendanceFeeTaxCode: TaxCode.Taxable, attendanceFee: 11m);
         var svc = CreateService();
         var items = new[] { new AttendanceBatchItem { MemberId = ActiveMemberId, Attended = true, MarkAsUnpaid = true } };
 
         await svc.RecordBatchAsync(RehearsalId, items, Ct);
 
-        await _feeRepo.Received(1).AddAsync(Arg.Is<Fee>(f => f.GstCode == null), Arg.Any<CancellationToken>());
+        await _feeRepo.Received(1).AddAsync(Arg.Is<Fee>(f => f.TaxCode == null), Arg.Any<CancellationToken>());
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.Count == 2 && lines.All(t => t.GstCode == null)),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.Count == 2 && lines.All(t => t.TaxCode == null)),
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task RecordBatch_RegisteredAndTaxable_Posts3LineAccrual_SplitsGstToClearing()
+    public async Task RecordBatch_RegisteredAndTaxable_Posts3LineAccrual_SplitsTaxToClearing()
     {
-        SetSettings(isGstRegistered: true, attendanceFeeGstCode: GstCode.Gst, attendanceFee: 11m);
+        SetSettings(isTaxApplicable: true, attendanceFeeTaxCode: TaxCode.Taxable, attendanceFee: 11m);
         var svc = CreateService();
         var items = new[] { new AttendanceBatchItem { MemberId = ActiveMemberId, Attended = true, MarkAsUnpaid = true } };
 
@@ -226,17 +226,17 @@ public class AttendanceServiceTests : TestBase
                 lines.Count == 3
                 && lines.Any(t => t.DebitAmount == 11m && t.AccountId == MemberReceivableAccountId)
                 && lines.Any(t => t.CreditAmount == 10m && t.AccountId == IncomeAccountId)
-                && lines.Any(t => t.CreditAmount == 1m && t.AccountId == SystemAccounts.GstCollectedId)
-                && lines.All(t => t.GstCode == GstCode.Gst)),
+                && lines.Any(t => t.CreditAmount == 1m && t.AccountId == SystemAccounts.TaxCollectedId)
+                && lines.All(t => t.TaxCode == TaxCode.Taxable)),
             Arg.Any<CancellationToken>());
     }
 
     [Theory]
-    [InlineData(GstCode.GstFree)]
-    [InlineData(GstCode.InputTaxed)]
-    public async Task RecordBatch_RegisteredButNotTaxable_Posts2LineAccrual_NoGstSplit(GstCode code)
+    [InlineData(TaxCode.TaxExempt)]
+    [InlineData(TaxCode.Excluded)]
+    public async Task RecordBatch_RegisteredButNotTaxable_Posts2LineAccrual_NoTaxSplit(TaxCode code)
     {
-        SetSettings(isGstRegistered: true, attendanceFeeGstCode: code, attendanceFee: 10m);
+        SetSettings(isTaxApplicable: true, attendanceFeeTaxCode: code, attendanceFee: 10m);
         var svc = CreateService();
         var items = new[] { new AttendanceBatchItem { MemberId = ActiveMemberId, Attended = true, MarkAsUnpaid = true } };
 
@@ -244,21 +244,21 @@ public class AttendanceServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2 && lines.All(t => t.GstCode == code)),
+                lines.Count == 2 && lines.All(t => t.TaxCode == code)),
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task RecordBatch_RegisteredWithNoFeeGstCodeSet_DefaultsToGstFree()
+    public async Task RecordBatch_RegisteredWithNoFeeTaxCodeSet_DefaultsToTaxFree()
     {
-        SetSettings(isGstRegistered: true, attendanceFeeGstCode: null, attendanceFee: 10m);
+        SetSettings(isTaxApplicable: true, attendanceFeeTaxCode: null, attendanceFee: 10m);
         var svc = CreateService();
         var items = new[] { new AttendanceBatchItem { MemberId = ActiveMemberId, Attended = true, MarkAsUnpaid = true } };
 
         await svc.RecordBatchAsync(RehearsalId, items, Ct);
 
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.GstCode == GstCode.GstFree)),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.TaxCode == TaxCode.TaxExempt)),
             Arg.Any<CancellationToken>());
     }
 

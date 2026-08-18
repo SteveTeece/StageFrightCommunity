@@ -31,7 +31,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
 
-        var request = new SetupRequest("My Choir", "51824753556", 80m, 6m, 3, false, null, null, Theme.Dark);
+        var request = new SetupRequest("My Choir", 80m, 6m, 3, false, null, null, null, Theme.Dark);
         await svc.InitializeAsync(request);
 
         var settings = await settingsRepo.GetAsync();
@@ -55,7 +55,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
 
-        await svc.InitializeAsync(new SetupRequest("Org", "51824753556", 50m, 5m, 1, false, null, null, Theme.Dark));
+        await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark));
 
         var all = await accountRepo.GetAllAsync();
         Assert.Contains(all, c => c.AccountNumber == "1100" && c.Name == "Cash on Hand" && c.IsSystem);
@@ -76,7 +76,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
 
-        await svc.InitializeAsync(new SetupRequest("Org", "51824753556", 50m, 5m, 1, false, null, null, Theme.Dark));
+        await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark));
 
         var feeCount = await db.Fees.CountAsync();
         Assert.Equal(0, feeCount);
@@ -111,7 +111,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
 
-        await svc.InitializeAsync(new SetupRequest("Org", "51824753556", 50m, 5m, 1, false, null, null, Theme.Dark));
+        await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark));
 
         var settings = await settingsRepo.GetAsync();
         Assert.Equal(1, settings!.AuditRetentionYears);
@@ -130,7 +130,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
 
-        var request = new SetupRequest("Org", "51824753556", 50m, 5m, 1, false, null, null, Theme.Dark)
+        var request = new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark)
         {
             AuditRetentionYears = 7
         };

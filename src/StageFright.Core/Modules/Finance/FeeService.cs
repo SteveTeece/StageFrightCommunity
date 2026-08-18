@@ -74,12 +74,12 @@ public class FeeService : IFeeService
         var dueDate = new DateTime(currentYear, 12, 31, 0, 0, 0, DateTimeKind.Utc);
         int count = 0;
 
-        // Per-fee-type GST treatment, stamped on the Fee at accrual (drives forgiveness/BAS).
-        var gstCode = settings.IsGstRegistered
-            ? settings.AnnualFeeGstCode ?? GstCode.GstFree
-            : (GstCode?)null;
-        var (incomeAmount, gstAmount) = gstCode == GstCode.Gst
-            ? GstCalculator.SplitInclusive(settings.AnnualFee)
+        // Per-fee-type tax treatment, stamped on the Fee at accrual (drives forgiveness/tax reporting).
+        var taxCode = settings.IsTaxApplicable
+            ? settings.AnnualFeeTaxCode ?? TaxCode.TaxExempt
+            : (TaxCode?)null;
+        var (incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
+            ? TaxCalculator.SplitInclusive(settings.AnnualFee, settings.TaxRate ?? 0m)
             : (settings.AnnualFee, 0m);
 
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
@@ -97,13 +97,13 @@ public class FeeService : IFeeService
                     FeeDate = feeDate,
                     DueDate = dueDate,
                     PaidAtCreation = false,
-                    GstCode = gstCode,
+                    TaxCode = taxCode,
                     CreatedAt = now
                 };
                 var savedFee = await _feeRepo.AddAsync(fee, innerCt);
 
                 // GL accrual: Debit MemberReceivable gross / Credit Income net
-                // (+ Credit GST Collected when the fee is taxable while registered).
+                // (+ Credit Tax Collected when the fee is taxable while tax applies).
                 var lines = new List<Transaction>
                 {
                     new()
@@ -116,7 +116,7 @@ public class FeeService : IFeeService
                         GLAccount = SystemAccounts.MemberReceivableNumber,
                         MemberId = memberId,
                         FeeId = savedFee.Id,
-                        GstCode = gstCode,
+                        TaxCode = taxCode,
                         Description = $"Annual membership fee {currentYear}",
                         CreatedAt = now
                     },
@@ -130,26 +130,26 @@ public class FeeService : IFeeService
                         GLAccount = incomeAccount.AccountNumber,
                         MemberId = null,
                         FeeId = savedFee.Id,
-                        GstCode = gstCode,
+                        TaxCode = taxCode,
                         Description = $"Annual membership fee income {currentYear}",
                         CreatedAt = now
                     }
                 };
 
-                if (gstAmount != 0m)
+                if (taxAmount != 0m)
                 {
                     lines.Add(new Transaction
                     {
                         Id = Guid.NewGuid(),
                         Date = feeDate,
-                        AccountId = SystemAccounts.GstCollectedId,
+                        AccountId = SystemAccounts.TaxCollectedId,
                         DebitAmount = 0m,
-                        CreditAmount = gstAmount,
-                        GLAccount = SystemAccounts.GstCollectedNumber,
+                        CreditAmount = taxAmount,
+                        GLAccount = SystemAccounts.TaxCollectedNumber,
                         MemberId = null,
                         FeeId = savedFee.Id,
-                        GstCode = gstCode,
-                        Description = $"GST collected — annual membership fee {currentYear}",
+                        TaxCode = taxCode,
+                        Description = $"Tax collected — annual membership fee {currentYear}",
                         CreatedAt = now
                     });
                 }

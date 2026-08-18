@@ -14,10 +14,11 @@ public class SettingsConfiguration : IEntityTypeConfiguration<Settings>
         builder.Property(s => s.AnnualFee).HasPrecision(18, 2).IsRequired();
         builder.Property(s => s.AttendanceFee).HasPrecision(18, 2).IsRequired();
         builder.Property(s => s.Theme).HasConversion<string>();
-        builder.Property(s => s.IsGstRegistered).HasDefaultValue(false);
+        builder.Property(s => s.IsTaxApplicable).HasDefaultValue(false);
+        builder.Property(s => s.TaxRate).HasPrecision(5, 2);
         builder.Property(s => s.AuditRetentionYears).HasDefaultValue(1);
-        builder.Property(s => s.AnnualFeeGstCode).HasConversion<string>();
-        builder.Property(s => s.AttendanceFeeGstCode).HasConversion<string>();
+        builder.Property(s => s.AnnualFeeTaxCode).HasConversion<string>();
+        builder.Property(s => s.AttendanceFeeTaxCode).HasConversion<string>();
         builder.Property(s => s.SchemaVersion).IsRequired();
         builder.Property(s => s.CreatedAt).IsRequired();
         builder.Property(s => s.UpdatedAt).IsRequired();
