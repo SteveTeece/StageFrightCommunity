@@ -29,15 +29,6 @@ else
                 <InputText id="orgName" class="form-control form-control-sm" @bind-Value="s.OrganizationName" />
                 <ValidationMessage For="() => s.OrganizationName" />
             </div>
-            <div class="col-md-6">
-                <label for="abn" class="form-label">ABN</label>
-                <AbnInput id="abn" class="form-control form-control-sm" @bind-Value="s.Abn" />
-                <ValidationMessage For="() => s.Abn" />
-                @if (string.IsNullOrEmpty(s.Abn))
-                {
-                    <div class="form-text small">ABN not on file.</div>
-                }
-            </div>
         </div>
 
         <div class="row g-2 mb-2">

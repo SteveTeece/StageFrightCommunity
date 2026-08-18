@@ -9,9 +9,9 @@ using AppSettings = StageFright.Core.Entities.Settings;
 namespace StageFright.UI.Tests.Pages.Settings;
 
 /// <summary>
-/// bUnit tests for GeneralSettingsTab after the GST/BAS split (FR-117): GST controls are
-/// gone, the ABN field (with a non-blocking "not on file" notice) replaces them, and
-/// HandleSaveAsync merges GST-owned fields from a fresh fetch before saving (FR-119).
+/// bUnit tests for GeneralSettingsTab after the ABN/GST removal (spec 016): the ABN field
+/// and GST controls are both gone, and HandleSaveAsync merges tax-owned fields from a
+/// fresh fetch before saving (FR-008/cross-tab save safety).
 /// </summary>
 public class GeneralSettingsTabTests : BunitContext
 {
@@ -22,11 +22,10 @@ public class GeneralSettingsTabTests : BunitContext
         Services.AddSingleton(_settingsService);
     }
 
-    private static AppSettings MakeSettings(string? abn = "51824753556") => new()
+    private static AppSettings MakeSettings() => new()
     {
         Id = Guid.NewGuid(),
         OrganizationName = "Test Org",
-        Abn = abn,
         AnnualFee = 75m,
         AttendanceFee = 5m,
         MembershipRenewalMonth = 1,
@@ -61,50 +60,32 @@ public class GeneralSettingsTabTests : BunitContext
     }
 
     [Fact]
-    public void GstControls_AreAbsent()
+    public void TaxControls_AreAbsent()
     {
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings());
 
         var cut = Render<GeneralSettingsTab>();
 
-        Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#gstRegistered"));
+        Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#taxApplicable"));
         Assert.DoesNotContain("GST / BAS", cut.Markup);
+        Assert.DoesNotContain("Sales Tax", cut.Markup);
     }
 
     [Fact]
-    public void AbnField_IsPresent()
+    public void AbnField_IsAbsent()
     {
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings());
 
         var cut = Render<GeneralSettingsTab>();
 
-        cut.Find("#abn");
+        Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#abn"));
+        Assert.DoesNotContain("ABN", cut.Markup);
     }
 
     [Fact]
-    public void AbnNotOnFileNotice_Shows_WhenAbnEmpty()
-    {
-        _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings(abn: null));
-
-        var cut = Render<GeneralSettingsTab>();
-
-        Assert.Contains("ABN not on file", cut.Markup);
-    }
-
-    [Fact]
-    public void AbnNotOnFileNotice_Hidden_WhenAbnPresent()
+    public async Task Save_Succeeds()
     {
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings());
-
-        var cut = Render<GeneralSettingsTab>();
-
-        Assert.DoesNotContain("ABN not on file", cut.Markup);
-    }
-
-    [Fact]
-    public async Task Save_Succeeds_WithEmptyAbn()
-    {
-        _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings(abn: null));
         _settingsService.SaveAsync(Arg.Any<AppSettings>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
 
         var cut = Render<GeneralSettingsTab>();
@@ -115,13 +96,14 @@ public class GeneralSettingsTabTests : BunitContext
     }
 
     [Fact]
-    public async Task HandleSaveAsync_MergesGstFields_FromFreshFetch()
+    public async Task HandleSaveAsync_MergesTaxFields_FromFreshFetch()
     {
         var loaded = MakeSettings();
         var freshFromDb = MakeSettings();
-        freshFromDb.IsGstRegistered = true;
-        freshFromDb.AnnualFeeGstCode = GstCode.Gst;
-        freshFromDb.AttendanceFeeGstCode = GstCode.GstFree;
+        freshFromDb.IsTaxApplicable = true;
+        freshFromDb.TaxRate = 10m;
+        freshFromDb.AnnualFeeTaxCode = TaxCode.Taxable;
+        freshFromDb.AttendanceFeeTaxCode = TaxCode.TaxExempt;
 
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(loaded, freshFromDb);
         _settingsService.SaveAsync(Arg.Any<AppSettings>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
@@ -131,9 +113,9 @@ public class GeneralSettingsTabTests : BunitContext
 
         await _settingsService.Received(1).SaveAsync(
             Arg.Is<AppSettings>(s =>
-                s.IsGstRegistered &&
-                s.AnnualFeeGstCode == GstCode.Gst &&
-                s.AttendanceFeeGstCode == GstCode.GstFree),
+                s.IsTaxApplicable &&
+                s.AnnualFeeTaxCode == TaxCode.Taxable &&
+                s.AttendanceFeeTaxCode == TaxCode.TaxExempt),
             Arg.Any<CancellationToken>());
     }
 

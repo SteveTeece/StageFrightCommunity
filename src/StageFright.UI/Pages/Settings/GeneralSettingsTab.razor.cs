@@ -50,14 +50,15 @@ public partial class GeneralSettingsTab : ComponentBase
 
         try
         {
-            // Merge in the fields owned by the GST/BAS tab, so a stale in-memory copy
-            // here never clobbers a concurrent GST-registration save made there.
+            // Merge in the fields owned by the Sales Tax tab, so a stale in-memory copy
+            // here never clobbers a concurrent tax-applicability save made there.
             var current = await SettingsService.GetAsync();
             if (current is not null)
             {
-                _settings.IsGstRegistered = current.IsGstRegistered;
-                _settings.AnnualFeeGstCode = current.AnnualFeeGstCode;
-                _settings.AttendanceFeeGstCode = current.AttendanceFeeGstCode;
+                _settings.IsTaxApplicable = current.IsTaxApplicable;
+                _settings.TaxRate = current.TaxRate;
+                _settings.AnnualFeeTaxCode = current.AnnualFeeTaxCode;
+                _settings.AttendanceFeeTaxCode = current.AttendanceFeeTaxCode;
                 _settings.GeneralCommitteeSeatCountTarget = current.GeneralCommitteeSeatCountTarget;
             }
 
