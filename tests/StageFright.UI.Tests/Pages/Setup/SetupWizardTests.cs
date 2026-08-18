@@ -10,13 +10,11 @@ namespace StageFright.UI.Tests.Pages.Setup;
 
 /// <summary>
 /// bUnit component tests for the 5-step SetupWizard: step navigation/validation gating,
-/// GST dropdown visibility, Finish composing the full SetupRequest, and the sample-data
-/// seeding overlay appearing only once seeding actually starts.
+/// Sales Tax dropdown visibility, Finish composing the full SetupRequest, and the
+/// sample-data seeding overlay appearing only once seeding actually starts.
 /// </summary>
 public class SetupWizardTests : BunitContext
 {
-    private const string ValidAbn = "51824753556";
-
     private readonly ISetupService _setupService = Substitute.For<ISetupService>();
     private readonly IDebugDataSeeder _debugSeeder = Substitute.For<IDebugDataSeeder>();
 
@@ -28,10 +26,9 @@ public class SetupWizardTests : BunitContext
             .Returns(Task.CompletedTask);
     }
 
-    private static void AdvanceFromStep1(IRenderedComponent<SetupWizard> cut, string orgName = "My Choir", string abn = ValidAbn)
+    private static void AdvanceFromStep1(IRenderedComponent<SetupWizard> cut, string orgName = "My Choir")
     {
         cut.Find("#orgName").Change(orgName);
-        cut.Find("#abn").Change(abn);
         cut.Find("#btn-next").Click();
     }
 
@@ -51,12 +48,12 @@ public class SetupWizardTests : BunitContext
     }
 
     [Fact]
-    public void Step1_RendersOrganisationAndAbnFields()
+    public void Step1_RendersOrganisationField_WithNoAbnField()
     {
         var cut = Render<SetupWizard>();
 
         cut.Find("#orgName");
-        cut.Find("#abn");
+        Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#abn"));
         Assert.Contains("Step 1 of 5", cut.Markup);
     }
 
@@ -65,51 +62,11 @@ public class SetupWizardTests : BunitContext
     {
         var cut = Render<SetupWizard>();
 
-        cut.Find("#abn").Change(ValidAbn);
         cut.Find("#btn-next").Click();
 
         Assert.Contains("Step 1 of 5", cut.Markup);
         Assert.Contains("required", cut.Markup, StringComparison.OrdinalIgnoreCase);
     }
-
-    [Fact]
-    public void Next_Blocked_WhenAbnEmpty()
-    {
-        var cut = Render<SetupWizard>();
-
-        cut.Find("#orgName").Change("My Choir");
-        cut.Find("#btn-next").Click();
-
-        Assert.Contains("Step 1 of 5", cut.Markup);
-    }
-
-#if !DEBUG
-    [Fact]
-    public void Next_Blocked_WhenAbnInvalid()
-    {
-        var cut = Render<SetupWizard>();
-
-        cut.Find("#orgName").Change("My Choir");
-        cut.Find("#abn").Change("12345");
-        cut.Find("#btn-next").Click();
-
-        Assert.Contains("Step 1 of 5", cut.Markup);
-    }
-#else
-    [Fact]
-    public void Next_AllowsMalformedAbn_InDebugBuild()
-    {
-        // ABN checksum validation is disabled in Debug builds (see SetupFormModel.Abn) so
-        // developers can click through setup without a real, checksum-valid ABN.
-        var cut = Render<SetupWizard>();
-
-        cut.Find("#orgName").Change("My Choir");
-        cut.Find("#abn").Change("12345");
-        cut.Find("#btn-next").Click();
-
-        Assert.Contains("Step 2 of 5", cut.Markup);
-    }
-#endif
 
     [Fact]
     public void Next_AdvancesThroughAllSteps_ToReview()
@@ -123,7 +80,7 @@ public class SetupWizardTests : BunitContext
 
         AdvanceFromStep2(cut);
         Assert.Contains("Step 3 of 5", cut.Markup);
-        cut.Find("#gstRegistered");
+        cut.Find("#taxApplicable");
 
         AdvanceFromStep3(cut);
         Assert.Contains("Step 4 of 5", cut.Markup);
@@ -150,32 +107,61 @@ public class SetupWizardTests : BunitContext
     }
 
     [Fact]
-    public void GstDropdowns_AppearOnlyWhenToggledOn()
+    public void TaxDropdowns_AppearOnlyWhenToggledOn()
     {
         var cut = Render<SetupWizard>();
         AdvanceFromStep1(cut);
         AdvanceFromStep2(cut);
 
-        Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#annualFeeGstCode"));
+        Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#annualFeeTaxCode"));
 
-        cut.Find("#gstRegistered").Change(true);
-        cut.Find("#annualFeeGstCode");
-        cut.Find("#attendanceFeeGstCode");
+        cut.Find("#taxApplicable").Change(true);
+        cut.Find("#taxRate");
+        cut.Find("#annualFeeTaxCode");
+        cut.Find("#attendanceFeeTaxCode");
 
-        cut.Find("#gstRegistered").Change(false);
-        Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#annualFeeGstCode"));
+        cut.Find("#taxApplicable").Change(false);
+        Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#annualFeeTaxCode"));
     }
 
     [Fact]
-    public async Task Finish_ComposesFullSetupRequest_WhenGstRegistered()
+    public void Next_Blocked_WhenTaxApplicable_AndRateBlank()
     {
         var cut = Render<SetupWizard>();
-        AdvanceFromStep1(cut, orgName: "GST Org");
+        AdvanceFromStep1(cut);
         AdvanceFromStep2(cut);
 
-        cut.Find("#gstRegistered").Change(true);
-        cut.Find("#annualFeeGstCode").Change("Gst");
-        cut.Find("#attendanceFeeGstCode").Change("GstFree");
+        cut.Find("#taxApplicable").Change(true);
+        cut.Find("#btn-next").Click();
+
+        Assert.Contains("Step 3 of 5", cut.Markup);
+    }
+
+    [Fact]
+    public void Next_Blocked_WhenTaxApplicable_AndRateNotPositive()
+    {
+        var cut = Render<SetupWizard>();
+        AdvanceFromStep1(cut);
+        AdvanceFromStep2(cut);
+
+        cut.Find("#taxApplicable").Change(true);
+        cut.Find("#taxRate").Change("0");
+        cut.Find("#btn-next").Click();
+
+        Assert.Contains("Step 3 of 5", cut.Markup);
+    }
+
+    [Fact]
+    public async Task Finish_ComposesFullSetupRequest_WhenTaxApplicable()
+    {
+        var cut = Render<SetupWizard>();
+        AdvanceFromStep1(cut, orgName: "Tax Org");
+        AdvanceFromStep2(cut);
+
+        cut.Find("#taxApplicable").Change(true);
+        cut.Find("#taxRate").Change("15");
+        cut.Find("#annualFeeTaxCode").Change("Taxable");
+        cut.Find("#attendanceFeeTaxCode").Change("TaxExempt");
         AdvanceFromStep3(cut);
         AdvanceFromStep4(cut);
 
@@ -183,11 +169,11 @@ public class SetupWizardTests : BunitContext
 
         await _setupService.Received(1).InitializeAsync(
             Arg.Is<SetupRequest>(r =>
-                r.OrganizationName == "GST Org" &&
-                r.Abn == ValidAbn &&
-                r.IsGstRegistered &&
-                r.AnnualFeeGstCode == Core.Enums.GstCode.Gst &&
-                r.AttendanceFeeGstCode == Core.Enums.GstCode.GstFree),
+                r.OrganizationName == "Tax Org" &&
+                r.IsTaxApplicable &&
+                r.TaxRate == 15m &&
+                r.AnnualFeeTaxCode == Core.Enums.TaxCode.Taxable &&
+                r.AttendanceFeeTaxCode == Core.Enums.TaxCode.TaxExempt),
             Arg.Any<CancellationToken>());
     }
 
@@ -235,19 +221,19 @@ public class SetupWizardTests : BunitContext
     }
 
     [Fact]
-    public async Task Finish_ForcesGstCodesNull_WhenNotRegistered()
+    public async Task Finish_ForcesTaxFieldsNull_WhenNotApplicable()
     {
         var cut = Render<SetupWizard>();
         AdvanceFromStep1(cut);
         AdvanceFromStep2(cut);
-        // GST left off (default) on step 3.
+        // Tax left off (default) on step 3.
         AdvanceFromStep3(cut);
         AdvanceFromStep4(cut);
 
         await cut.Find("form").SubmitAsync();
 
         await _setupService.Received(1).InitializeAsync(
-            Arg.Is<SetupRequest>(r => !r.IsGstRegistered && r.AnnualFeeGstCode == null && r.AttendanceFeeGstCode == null),
+            Arg.Is<SetupRequest>(r => !r.IsTaxApplicable && r.TaxRate == null && r.AnnualFeeTaxCode == null && r.AttendanceFeeTaxCode == null),
             Arg.Any<CancellationToken>());
     }
 

@@ -11,7 +11,7 @@ using AppSettings = StageFright.Core.Entities.Settings;
 namespace StageFright.UI.Tests.Pages.Settings;
 
 /// <summary>
-/// Tests for SettingsPage after inserting the "GST / BAS" tab (FR-118): tab order in the
+/// Tests for SettingsPage after inserting the "Sales Tax" tab (FR-118): tab order in the
 /// rendered markup, and the DefaultTabIndex/lazy-render-flag switch logic driven by the
 /// `?tab=` query key. The switch logic is verified by invoking OnInitialized directly via
 /// reflection, since [SupplyParameterFromQuery] binding requires the full Router pipeline
@@ -30,7 +30,6 @@ public class SettingsPageTests : BunitContext
             {
                 Id = Guid.NewGuid(),
                 OrganizationName = "Test Org",
-                Abn = "51824753556",
                 AnnualFee = 75m,
                 AttendanceFee = 5m,
                 MembershipRenewalMonth = 1
@@ -38,25 +37,25 @@ public class SettingsPageTests : BunitContext
     }
 
     [Fact]
-    public void GstBasTab_RendersImmediatelyAfterGeneral()
+    public void SalesTaxTab_RendersImmediatelyAfterGeneral()
     {
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.initialize", _ => true);
 
         var cut = Render<SettingsPage>();
 
         var generalIndex = cut.Markup.IndexOf("General", StringComparison.Ordinal);
-        var gstIndex = cut.Markup.IndexOf("GST / BAS", StringComparison.Ordinal);
+        var taxIndex = cut.Markup.IndexOf("Sales Tax", StringComparison.Ordinal);
         var eventTypesIndex = cut.Markup.IndexOf("Event Types", StringComparison.Ordinal);
 
         Assert.True(generalIndex >= 0);
-        Assert.True(gstIndex > generalIndex);
-        Assert.True(eventTypesIndex > gstIndex);
+        Assert.True(taxIndex > generalIndex);
+        Assert.True(eventTypesIndex > taxIndex);
     }
 
     [Theory]
     [InlineData(null, 0)]
     [InlineData("general", 0)]
-    [InlineData("gst", 1)]
+    [InlineData("tax", 1)]
     [InlineData("event-types", 2)]
     [InlineData("backup", 3)]
     public void OnInitialized_SetsDefaultTabIndex_FromTabQuery(string? tabQuery, int expectedIndex)
@@ -75,19 +74,19 @@ public class SettingsPageTests : BunitContext
         InvokeOnInitialized(page);
 
         Assert.True(GetInternalField(page, "GeneralShown"));
-        Assert.False(GetInternalField(page, "GstShown"));
+        Assert.False(GetInternalField(page, "TaxShown"));
         Assert.False(GetInternalField(page, "EventTypesShown"));
         Assert.False(GetInternalField(page, "BackupShown"));
     }
 
     [Fact]
-    public void OnInitialized_ShowsOnlyGstTab_WhenTabQueryIsGst()
+    public void OnInitialized_ShowsOnlyTaxTab_WhenTabQueryIsTax()
     {
-        var page = CreateUninitializedPage("gst");
+        var page = CreateUninitializedPage("tax");
         InvokeOnInitialized(page);
 
         Assert.False(GetInternalField(page, "GeneralShown"));
-        Assert.True(GetInternalField(page, "GstShown"));
+        Assert.True(GetInternalField(page, "TaxShown"));
         Assert.False(GetInternalField(page, "EventTypesShown"));
         Assert.False(GetInternalField(page, "BackupShown"));
     }
@@ -99,7 +98,7 @@ public class SettingsPageTests : BunitContext
         InvokeOnInitialized(page);
 
         Assert.False(GetInternalField(page, "GeneralShown"));
-        Assert.False(GetInternalField(page, "GstShown"));
+        Assert.False(GetInternalField(page, "TaxShown"));
         Assert.True(GetInternalField(page, "EventTypesShown"));
         Assert.False(GetInternalField(page, "BackupShown"));
     }
@@ -111,7 +110,7 @@ public class SettingsPageTests : BunitContext
         InvokeOnInitialized(page);
 
         Assert.False(GetInternalField(page, "GeneralShown"));
-        Assert.False(GetInternalField(page, "GstShown"));
+        Assert.False(GetInternalField(page, "TaxShown"));
         Assert.False(GetInternalField(page, "EventTypesShown"));
         Assert.True(GetInternalField(page, "BackupShown"));
     }

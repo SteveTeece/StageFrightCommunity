@@ -19,13 +19,13 @@
                 </div>
             </Content>
         </Tab>
-        <Tab Title="GST / BAS" OnClick="OnGstClicked">
+        <Tab Title="Sales Tax" OnClick="OnTaxClicked">
             <Content>
                 <div class="pt-3">
-                    @if (GstShown)
+                    @if (TaxShown)
                     {
                         <ErrorBoundary>
-                            <ChildContent><GstSettingsTab /></ChildContent>
+                            <ChildContent><TaxSettingsTab /></ChildContent>
                             <ErrorContent><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
                         </ErrorBoundary>
                     }
