@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Generic International Sales Tax (Replacing ABN & GST)",
   "branch": "016-generic-sales-tax",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implemented",
   "history": [
     {
       "step": "specify",
@@ -25,6 +25,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-08-18T05:13:26.372Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-18T05:51:45.577Z"
     }
   ]
 }
