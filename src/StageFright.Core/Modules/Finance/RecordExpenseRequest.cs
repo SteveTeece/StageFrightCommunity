@@ -8,11 +8,11 @@ namespace StageFright.Core.Modules.Finance;
 public class RecordExpenseRequest
 {
     /// <summary>
-    /// GST treatment of this payment. Only honoured while the organisation is GST
-    /// registered; defaults to GST-free when registered and null when not.
-    /// The amount is always GST-inclusive.
+    /// Tax treatment of this payment. Only honoured while tax applies to the organisation;
+    /// defaults to tax-exempt when applicable and null when not.
+    /// The amount is always tax-inclusive.
     /// </summary>
-    public GstCode? GstCode { get; set; }
+    public TaxCode? TaxCode { get; set; }
 
     /// <summary>UTC date the payment was made. Required.</summary>
     public DateTime Date { get; set; }

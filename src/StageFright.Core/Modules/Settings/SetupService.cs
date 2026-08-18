@@ -48,22 +48,24 @@ public class SetupService : ISetupService
 
         Validate(request);
 
-        // GST codes only ever apply while registered — force them null otherwise, regardless
-        // of what the wizard happened to have selected before the user toggled registration off.
-        var annualFeeGstCode = request.IsGstRegistered ? request.AnnualFeeGstCode : null;
-        var attendanceFeeGstCode = request.IsGstRegistered ? request.AttendanceFeeGstCode : null;
+        // Tax codes and rate only ever apply while tax is applicable — force them null
+        // otherwise, regardless of what the wizard happened to have selected before the
+        // user toggled tax applicability off.
+        var taxRate = request.IsTaxApplicable ? request.TaxRate : null;
+        var annualFeeTaxCode = request.IsTaxApplicable ? request.AnnualFeeTaxCode : null;
+        var attendanceFeeTaxCode = request.IsTaxApplicable ? request.AttendanceFeeTaxCode : null;
 
         var settings = new SettingsEntity
         {
             Id = Guid.NewGuid(),
             OrganizationName = request.OrganizationName.Trim(),
-            Abn = request.Abn.Trim(),
             AnnualFee = request.AnnualFee,
             AttendanceFee = request.AttendanceFee,
             MembershipRenewalMonth = request.MembershipRenewalMonth,
-            IsGstRegistered = request.IsGstRegistered,
-            AnnualFeeGstCode = annualFeeGstCode,
-            AttendanceFeeGstCode = attendanceFeeGstCode,
+            IsTaxApplicable = request.IsTaxApplicable,
+            TaxRate = taxRate,
+            AnnualFeeTaxCode = annualFeeTaxCode,
+            AttendanceFeeTaxCode = attendanceFeeTaxCode,
             CommitteeRenewalMonth = request.CommitteeRenewalMonth,
             GeneralCommitteeSeatCountTarget = request.GeneralCommitteeSeatCountTarget,
             AuditRetentionYears = request.AuditRetentionYears,
@@ -117,14 +119,8 @@ public class SetupService : ISetupService
         if (string.IsNullOrWhiteSpace(request.OrganizationName))
             throw new ValidationException("OrganizationName is required.", "Settings", nameof(InitializeAsync));
 
-        if (string.IsNullOrWhiteSpace(request.Abn))
-            throw new ValidationException("A valid ABN is required.", "Settings", nameof(InitializeAsync));
-
-#if !DEBUG
-        // ABN checksum validation is skipped in Debug builds — see SetupFormModel.Abn.
-        if (!AbnValidator.IsValid(request.Abn.Trim()))
-            throw new ValidationException("A valid ABN is required.", "Settings", nameof(InitializeAsync));
-#endif
+        if (request.IsTaxApplicable && request.TaxRate is not (> 0))
+            throw new ValidationException("A tax rate greater than zero is required when sales tax applies.", "Settings", nameof(InitializeAsync));
 
         if (request.AnnualFee < 0)
             throw new ValidationException("AnnualFee must be zero or greater.", "Settings", nameof(InitializeAsync));
