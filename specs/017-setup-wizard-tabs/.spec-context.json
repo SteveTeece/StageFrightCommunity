@@ -1,0 +1,105 @@
+{
+  "workflow": "speckit",
+  "specName": "setup wizard tabs",
+  "branch": "017-setup-wizard-tabs",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-20T14:05:17.021Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-20T14:12:06.012Z"
+    }
+  ],
+  "livingSpecs": {
+    "loaded": [
+      "settings",
+      "app-host"
+    ]
+  },
+  "coverage": {
+    "FR-001": {
+      "title": "Single tabbed screen replaces the numbered step sequence"
+    },
+    "FR-002": {
+      "title": "Each tab groups logically related settings; no 1-2-setting tabs"
+    },
+    "FR-003": {
+      "title": "Tabs are navigable both by direct click and by Next"
+    },
+    "FR-004": {
+      "title": "Next does not advance past an invalid tab"
+    },
+    "FR-005": {
+      "title": "Last tab is a read-only review of every entered value"
+    },
+    "FR-006": {
+      "title": "Review tab shows added roles and accounts as list boxes"
+    },
+    "FR-007": {
+      "title": "Finish validates all tabs' required fields before completing"
+    },
+    "FR-008": {
+      "title": "Committee roles added one at a time via a + control"
+    },
+    "FR-009": {
+      "title": "Added roles listed and removable before finishing"
+    },
+    "FR-010": {
+      "title": "Blank or duplicate role titles are rejected"
+    },
+    "FR-011": {
+      "title": "New Chart of Accounts tab reuses the existing add-account control"
+    },
+    "FR-012": {
+      "title": "Accounts added on that tab are created immediately, listed right away"
+    },
+    "FR-013": {
+      "title": "Duplicate account names are rejected the same as the standalone page"
+    },
+    "FR-014": {
+      "title": "Adding an account is optional, never blocks finishing setup"
+    },
+    "FR-015": {
+      "title": "Theme is a dropdown selector, applies immediately"
+    },
+    "FR-016": {
+      "title": "Every other yes/no setting is a checkbox, not a toggle switch"
+    },
+    "FR-017": {
+      "title": "Regrouping into tabs preserves every field, rule, and default"
+    },
+    "FR-018": {
+      "title": "Sample-data checkbox still debug-build-only regardless of tab"
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 12,
+    "projectedTasks": 22,
+    "scopeSignal": "larger",
+    "verdict": "normal"
+  },
+  "context": [
+    "living spec: settings",
+    "living spec: app-host",
+    "area: src/StageFright.UI/Pages/Setup/SetupWizard.razor(.cs), SetupFormModel.cs",
+    "constraint: reuse the Tabs/Tab BlazorBootstrap component already used by FinancePage.razor",
+    "constraint: RadzenDataGrid for tabular data per CLAUDE.md data-grid standards",
+    "constraint: no @code blocks — every .razor pairs with a .razor.cs"
+  ],
+  "intent": "Replace the setup wizard's linear five-step flow with a single tabbed screen, logically regrouped, that also lets coordinators add committee roles and Chart of Accounts entries inline and review everything before finishing.",
+  "expectations": [
+    "Settings page's own General tab (post-setup theme toggle) is unchanged — only the /setup wizard is in scope",
+    "No change to what data first-run setup captures, validates, or defaults — only how it's grouped/entered"
+  ]
+}
