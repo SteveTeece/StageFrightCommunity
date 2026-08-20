@@ -23,7 +23,8 @@
   "livingSpecs": {
     "loaded": [
       "settings",
-      "app-host"
+      "app-host",
+      "finance"
     ]
   },
   "coverage": {
@@ -46,10 +47,10 @@
       "title": "Review tab shows queued roles and accounts as bordered list boxes"
     },
     "FR-007": {
-      "title": "Bordered-list convention for every list box, app-wide (new)"
+      "title": "Bordered-list convention for every list box, app-wide"
     },
     "FR-008": {
-      "title": "Finish validates all tabs' required fields, creates queued items together"
+      "title": "Finish validates all tabs, creates queued roles/accounts/balances together"
     },
     "FR-009": {
       "title": "Committee roles added one at a time via a + control"
@@ -76,16 +77,34 @@
       "title": "Add-account experience is shared: immediate-create on the standalone page, deferred on the wizard tab"
     },
     "FR-017": {
-      "title": "Theme is a dropdown selector, applies immediately"
+      "title": "New Opening Balances tab covers every eligible existing + queued account, same exclusions as standalone page"
     },
     "FR-018": {
-      "title": "Every other yes/no setting is a checkbox, not a toggle switch"
+      "title": "Opening balance entries deferred; posted together at Finish via the standalone page's posting behavior"
     },
     "FR-019": {
-      "title": "Regrouping into tabs preserves every field, rule, and default"
+      "title": "Opening-balance experience is shared: immediate-post on the standalone page, deferred on the wizard tab"
     },
     "FR-020": {
-      "title": "Sample-data checkbox still debug-build-only regardless of tab"
+      "title": "Opening Balances tab stays in sync with Chart of Accounts tab additions/removals"
+    },
+    "FR-022": {
+      "title": "Theme is a dropdown selector, applies immediately"
+    },
+    "FR-023": {
+      "title": "Every other yes/no setting is a checkbox, not a toggle switch"
+    },
+    "FR-024": {
+      "title": "Regrouping into tabs preserves every field, rule, and default"
+    },
+    "FR-026": {
+      "title": "Debug seeder must include opening balances for the accounts it seeds"
+    },
+    "FR-021": {
+      "title": "Finish blocked unless opening balances posted or sample data selected"
+    },
+    "FR-025": {
+      "title": "Sample-data checkbox is debug-build-only and lives specifically on the review tab"
     }
   },
   "size": "normal",
@@ -101,9 +120,12 @@
     "area: src/StageFright.UI/Pages/Setup/SetupWizard.razor(.cs), SetupFormModel.cs",
     "constraint: reuse the Tabs/Tab BlazorBootstrap component already used by FinancePage.razor",
     "constraint: RadzenDataGrid for tabular data per CLAUDE.md data-grid standards",
-    "constraint: no @code blocks — every .razor pairs with a .razor.cs"
+    "constraint: no @code blocks — every .razor pairs with a .razor.cs",
+    "living spec: finance",
+    "area: src/StageFright.UI/Pages/Finance/OpeningBalancesWizard.razor(.cs), ChartOfAccountsPage.razor(.cs), OpeningBalanceService.cs, AccountService.cs",
+    "constraint: Fee/Payment/Transaction/JournalEntry are immutable and financially exempt from soft-delete; opening balances post as one ACID GL transaction with a balancing Opening Balance Equity plug"
   ],
-  "intent": "Replace the setup wizard's linear five-step flow with a single tabbed screen, logically regrouped, that also lets coordinators add committee roles and Chart of Accounts entries inline and review everything before finishing.",
+  "intent": "Replace the setup wizard's linear five-step flow with a single tabbed screen, logically regrouped, that also lets coordinators queue committee roles, Chart of Accounts entries, and opening balances (all bordered list boxes, an app-wide convention) and review everything before finishing — opening balances are mandatory unless sample data is loaded instead.",
   "expectations": [
     "Settings page's own General tab (post-setup theme toggle) is unchanged — only the /setup wizard is in scope",
     "No change to what data first-run setup captures, validates, or defaults — only how it's grouped/entered"
