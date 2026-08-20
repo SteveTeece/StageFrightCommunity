@@ -40,9 +40,10 @@ public class SettingsRepository : ISettingsRepository
                 existing.Theme = settings.Theme;
                 existing.ShowParticipationGraphs = settings.ShowParticipationGraphs;
                 existing.FinancialYearStartMonth = settings.FinancialYearStartMonth;
-                existing.IsGstRegistered = settings.IsGstRegistered;
-                existing.AnnualFeeGstCode = settings.AnnualFeeGstCode;
-                existing.AttendanceFeeGstCode = settings.AttendanceFeeGstCode;
+                existing.IsTaxApplicable = settings.IsTaxApplicable;
+                existing.TaxRate = settings.TaxRate;
+                existing.AnnualFeeTaxCode = settings.AnnualFeeTaxCode;
+                existing.AttendanceFeeTaxCode = settings.AttendanceFeeTaxCode;
                 existing.GeneralCommitteeSeatCountTarget = settings.GeneralCommitteeSeatCountTarget;
                 existing.SchemaVersion = settings.SchemaVersion;
                 existing.UpdatedAt = DateTime.UtcNow;

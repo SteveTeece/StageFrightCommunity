@@ -109,7 +109,7 @@ public class StageFrightDbContext : DbContext
             new Account
             {
                 Id = new Guid("00000000-0000-0000-0000-000000000004"),
-                Name = "GST Collected",
+                Name = "Tax Collected",
                 Type = AccountType.Liability,
                 AccountNumber = "2310",
                 SortOrder = 10,
@@ -121,7 +121,7 @@ public class StageFrightDbContext : DbContext
             new Account
             {
                 Id = new Guid("00000000-0000-0000-0000-000000000005"),
-                Name = "GST Paid",
+                Name = "Tax Paid",
                 Type = AccountType.Liability,
                 AccountNumber = "2320",
                 SortOrder = 11,

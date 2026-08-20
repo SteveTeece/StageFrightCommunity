@@ -6,52 +6,52 @@ using AppSettings = StageFright.Core.Entities.Settings;
 
 namespace StageFright.UI.Pages.Settings;
 
-public partial class GstSettingsTab : ComponentBase
+public partial class TaxSettingsTab : ComponentBase
 {
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
-    [Inject] private ILogger<GstSettingsTab> Logger { get; set; } = null!;
+    [Inject] private ILogger<TaxSettingsTab> Logger { get; set; } = null!;
 
     private AppSettings? _settings;
 
     private bool _saving;
     private string? _errorMessage;
     private string? _successMessage;
-    private bool? _pendingGstToggle;
+    private bool? _pendingTaxToggle;
 
     protected override async Task OnInitializedAsync()
     {
-        Logger.LogInformation("GstSettingsTab.OnInitializedAsync start");
+        Logger.LogInformation("TaxSettingsTab.OnInitializedAsync start");
 
         try
         {
             _settings = await SettingsService.GetAsync();
-            Logger.LogInformation("GstSettingsTab: settings loaded. HasSettings={HasSettings}", _settings is not null);
+            Logger.LogInformation("TaxSettingsTab: settings loaded. HasSettings={HasSettings}", _settings is not null);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "GstSettingsTab: SettingsService.GetAsync failed");
+            Logger.LogError(ex, "TaxSettingsTab: SettingsService.GetAsync failed");
             _errorMessage = $"Failed to load settings: {ex.Message}";
         }
     }
 
-    private void HandleGstToggleRequested(bool requested)
+    private void HandleTaxToggleRequested(bool requested)
     {
         if (_settings is null) return;
 
-        _pendingGstToggle = requested == _settings.IsGstRegistered ? null : requested;
+        _pendingTaxToggle = requested == _settings.IsTaxApplicable ? null : requested;
     }
 
-    private void ConfirmGstToggle()
+    private void ConfirmTaxToggle()
     {
-        if (_settings is null || _pendingGstToggle is null) return;
+        if (_settings is null || _pendingTaxToggle is null) return;
 
-        _settings.IsGstRegistered = _pendingGstToggle.Value;
-        _pendingGstToggle = null;
+        _settings.IsTaxApplicable = _pendingTaxToggle.Value;
+        _pendingTaxToggle = null;
     }
 
-    private void CancelGstToggle()
+    private void CancelTaxToggle()
     {
-        _pendingGstToggle = null;
+        _pendingTaxToggle = null;
     }
 
     private async Task HandleSaveAsync()
@@ -70,7 +70,6 @@ public partial class GstSettingsTab : ComponentBase
             if (current is not null)
             {
                 _settings.OrganizationName = current.OrganizationName;
-                _settings.Abn = current.Abn;
                 _settings.AnnualFee = current.AnnualFee;
                 _settings.AttendanceFee = current.AttendanceFee;
                 _settings.MembershipRenewalMonth = current.MembershipRenewalMonth;

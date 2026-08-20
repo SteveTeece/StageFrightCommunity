@@ -25,21 +25,20 @@ public class SettingsService : ISettingsService
 
     public async Task SaveAsync(global::StageFright.Core.Entities.Settings settings, CancellationToken ct = default)
     {
-        // Enforce Settings.IsGstRegistered's documented invariant here — the single choke
-        // point every save path (General tab, GST tab, etc.) goes through — so un-registering
-        // GST post-setup can't leave stale GST codes persisted (matches SetupService.InitializeAsync's
-        // setup-time behavior).
-        if (!settings.IsGstRegistered)
+        // Enforce Settings.IsTaxApplicable's documented invariant here — the single choke
+        // point every save path (General tab, Sales Tax tab, etc.) goes through — so turning
+        // tax off post-setup can't leave a stale rate/tax codes persisted (matches
+        // SetupService.InitializeAsync's setup-time behavior).
+        if (!settings.IsTaxApplicable)
         {
-            settings.AnnualFeeGstCode = null;
-            settings.AttendanceFeeGstCode = null;
+            settings.TaxRate = null;
+            settings.AnnualFeeTaxCode = null;
+            settings.AttendanceFeeTaxCode = null;
         }
-
-#if !DEBUG
-        // ABN checksum validation is skipped in Debug builds — see SetupFormModel.Abn.
-        if (!string.IsNullOrEmpty(settings.Abn) && !AbnValidator.IsValid(settings.Abn))
-            throw new ValidationException("The ABN is not valid.", "Settings", nameof(SaveAsync));
-#endif
+        else if (settings.TaxRate is not (> 0))
+        {
+            throw new ValidationException("A tax rate greater than zero is required when sales tax applies.", "Settings", nameof(SaveAsync));
+        }
 
         if (settings.MinimumMemberAge < 0)
             throw new ValidationException("Minimum member age cannot be negative.", "Settings", nameof(SaveAsync));

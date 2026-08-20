@@ -41,7 +41,7 @@ public class RecordIncomeTests : BunitContext
                 AnnualFee = 50m, AttendanceFee = 10m,
                 MembershipRenewalMonth = 1, MaxAgeRangeYears = 150,
                 MinimumMemberAge = 0, SchemaVersion = "1.1.0",
-                IsGstRegistered = false,
+                IsTaxApplicable = false,
                 CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
             });
 

@@ -56,10 +56,10 @@ public class Transaction
     public Guid? JournalEntryId { get; set; }
 
     /// <summary>
-    /// GST treatment stamped at posting time. Null on rows posted while unregistered
-    /// and on all historical rows — never updated after posting.
+    /// Tax treatment stamped at posting time. Null on rows posted while tax didn't
+    /// apply and on all historical rows — never updated after posting.
     /// </summary>
-    public GstCode? GstCode { get; set; }
+    public TaxCode? TaxCode { get; set; }
 
     /// <summary>
     /// Optional description. Reversing entries MUST state what was reversed and why

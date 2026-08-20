@@ -7,27 +7,26 @@ using StageFright.Reports.Registry;
 namespace StageFright.Reports.Providers;
 
 /// <summary>
-/// Generates the BAS (Business Activity Statement) Summary report on an accruals
-/// basis: G1 total sales, G3 GST-free sales, G11 non-capital purchases, 1A GST on
-/// sales, 1B GST on purchases, label 9 net amount payable/refundable. Self-explains
-/// when the organisation is not GST registered. Default range: current BAS quarter
-/// (aligned to Settings.FinancialYearStartMonth).
+/// Generates the Tax Summary report on an accruals basis: total taxable sales, total
+/// tax-exempt sales, tax collected on sales, tax paid on purchases, and the net amount
+/// payable/refundable. Self-explains when sales tax doesn't apply to the organisation.
+/// Default range: current tax quarter (aligned to Settings.FinancialYearStartMonth).
 /// </summary>
-public class BasSummaryReportProvider : IReportProvider
+public class TaxSummaryReportProvider : IReportProvider
 {
     private readonly IGLRepository _gl;
     private readonly IAccountRepository _accounts;
     private readonly ISettingsRepository _settings;
 
-    public BasSummaryReportProvider(IGLRepository gl, IAccountRepository accounts, ISettingsRepository settings)
+    public TaxSummaryReportProvider(IGLRepository gl, IAccountRepository accounts, ISettingsRepository settings)
     {
         _gl = gl;
         _accounts = accounts;
         _settings = settings;
     }
 
-    public string ReportId => "bas-summary";
-    public string ReportName => "BAS Summary";
+    public string ReportId => "tax-summary";
+    public string ReportName => "Tax Summary";
     public string ModuleName => "Finance";
     public int DisplayOrder => 60;
 
@@ -48,16 +47,15 @@ public class BasSummaryReportProvider : IReportProvider
     {
         var settings = await _settings.GetAsync(ct);
 
-        if (settings?.IsGstRegistered != true)
+        if (settings?.IsTaxApplicable != true)
         {
             return new ReportData
             {
-                Title = "BAS Summary",
-                SubTitle = "The organisation is not registered for GST. Enable GST registration in Settings to generate a BAS.",
+                Title = "Tax Summary",
+                SubTitle = "Sales tax does not apply to this organisation. Enable sales tax in Settings to generate a Tax Summary.",
                 GeneratedAt = DateTime.UtcNow,
                 Columns =
                 [
-                    new ReportColumn { Header = "Label", Alignment = ReportColumnAlignment.Left },
                     new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
                     new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right }
                 ],
@@ -81,52 +79,45 @@ public class BasSummaryReportProvider : IReportProvider
         var lines = await _gl.GetByDateRangeAsync(from, to, ct);
         var movements = await _gl.GetAccountMovementsAsync(from, to, ct);
 
-        var codedIncomeNet = lines
-            .Where(t => t.GstCode is GstCode.Gst or GstCode.GstFree or GstCode.InputTaxed)
+        var totalTaxableSales = lines
+            .Where(t => t.TaxCode is TaxCode.Taxable or TaxCode.TaxExempt)
             .Where(t => accountTypes.GetValueOrDefault(t.AccountId) == AccountType.Income)
             .Sum(t => t.CreditAmount - t.DebitAmount);
-        var codedExpenseNet = lines
-            .Where(t => t.GstCode is GstCode.Gst or GstCode.GstFree or GstCode.InputTaxed)
-            .Where(t => accountTypes.GetValueOrDefault(t.AccountId) == AccountType.Expense)
-            .Sum(t => t.DebitAmount - t.CreditAmount);
-        var g3 = lines
-            .Where(t => t.GstCode == GstCode.GstFree)
+        var totalTaxExemptSales = lines
+            .Where(t => t.TaxCode == TaxCode.TaxExempt)
             .Where(t => accountTypes.GetValueOrDefault(t.AccountId) == AccountType.Income)
             .Sum(t => t.CreditAmount - t.DebitAmount);
 
-        var (gstCollectedDebits, gstCollectedCredits) = movements.GetValueOrDefault(SystemAccounts.GstCollectedId);
-        var (gstPaidDebits, gstPaidCredits) = movements.GetValueOrDefault(SystemAccounts.GstPaidId);
+        var (taxCollectedDebits, taxCollectedCredits) = movements.GetValueOrDefault(SystemAccounts.TaxCollectedId);
+        var (taxPaidDebits, taxPaidCredits) = movements.GetValueOrDefault(SystemAccounts.TaxPaidId);
 
-        var gstOnSales = gstCollectedCredits - gstCollectedDebits;   // 1A: net CR movement of GST Collected (2310)
-        var gstOnPurchases = gstPaidDebits - gstPaidCredits;         // 1B: net DR movement of GST Paid (2320)
-        var g1 = codedIncomeNet + gstOnSales;
-        var g11 = codedExpenseNet + gstPaidDebits;
-        var net = gstOnSales - gstOnPurchases;                      // Label 9
+        var taxOnSales = taxCollectedCredits - taxCollectedDebits;   // net CR movement of Tax Collected (2310)
+        var taxOnPurchases = taxPaidDebits - taxPaidCredits;         // net DR movement of Tax Paid (2320)
+        var totalSales = totalTaxableSales + taxOnSales;
+        var net = taxOnSales - taxOnPurchases;
 
         var rows = new List<ReportRow>
         {
-            LabelRow("G1", "Total sales (including GST)", g1),
-            LabelRow("G3", "GST-free sales", g3),
-            LabelRow("G11", "Non-capital purchases (including GST)", g11),
-            LabelRow("1A", "GST on sales", gstOnSales),
-            LabelRow("1B", "GST on purchases", gstOnPurchases)
+            DescriptionRow("Total taxable sales", totalSales),
+            DescriptionRow("Total tax-exempt sales", totalTaxExemptSales),
+            DescriptionRow("Tax collected on sales", taxOnSales),
+            DescriptionRow("Tax paid on purchases", taxOnPurchases)
         };
 
         return new ReportData
         {
-            Title = "BAS Summary",
+            Title = "Tax Summary",
             SubTitle = $"Accruals basis — {from:d MMMM yyyy} – {to:d MMMM yyyy}",
             GeneratedAt = DateTime.UtcNow,
             Columns =
             [
-                new ReportColumn { Header = "Label", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right }
             ],
-            Sections = [new ReportSection { Heading = "BAS Labels", Rows = rows }],
+            Sections = [new ReportSection { Heading = "Tax Summary", Rows = rows }],
             GrandTotal = new ReportRow
             {
-                Cells = ["9", $"Net GST {(net >= 0 ? "payable" : "refundable")}", Math.Abs(net).ToString("F2")],
+                Cells = [$"Net tax {(net >= 0 ? "payable" : "refundable")}", Math.Abs(net).ToString("F2")],
                 IsEmphasized = true
             }
         };
@@ -142,8 +133,8 @@ public class BasSummaryReportProvider : IReportProvider
         return (qFrom, new DateTime(qTo.Year, qTo.Month, qTo.Day, 23, 59, 59, DateTimeKind.Utc));
     }
 
-    private static ReportRow LabelRow(string label, string description, decimal amount) => new()
+    private static ReportRow DescriptionRow(string description, decimal amount) => new()
     {
-        Cells = [label, description, amount.ToString("F2")]
+        Cells = [description, amount.ToString("F2")]
     };
 }

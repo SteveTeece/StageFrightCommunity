@@ -53,7 +53,7 @@ public sealed class V1_FirstRunSetupTests : IAsyncLifetime
     public async Task AfterSetup_SettingsPersisted_WithCorrectValues()
     {
         var svc = BuildSetupService();
-        var request = new SetupRequest("Springfield Choir", "51824753556", 75m, 5m, 9, false, null, null, Core.Enums.Theme.Dark);
+        var request = new SetupRequest("Springfield Choir", 75m, 5m, 9, false, null, null, null, Core.Enums.Theme.Dark);
         await svc.InitializeAsync(request);
 
         var settings = await new SettingsRepository(_db).GetAsync();
@@ -118,5 +118,5 @@ public sealed class V1_FirstRunSetupTests : IAsyncLifetime
     }
 
     private static SetupRequest ValidRequest() =>
-        new("Test Organisation", "51824753556", 60m, 4m, 1, false, null, null, Core.Enums.Theme.Dark);
+        new("Test Organisation", 60m, 4m, 1, false, null, null, null, Core.Enums.Theme.Dark);
 }

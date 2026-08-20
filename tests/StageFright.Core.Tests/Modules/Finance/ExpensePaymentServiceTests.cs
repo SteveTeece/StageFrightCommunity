@@ -173,31 +173,31 @@ public class ExpensePaymentServiceTests : TestBase
     // --- GST ---
 
     [Fact]
-    public async Task Should_PostTwoLinesWithNullGstCode_When_NotRegistered_EvenWhenGstCodeRequested()
+    public async Task Should_PostTwoLinesWithNullTaxCode_When_NotRegistered_EvenWhenTaxCodeRequested()
     {
         // Toggle-off byte-identical regression.
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         var request = MakeRequest(110m);
-        request.GstCode = GstCode.Gst;
+        request.TaxCode = TaxCode.Taxable;
 
         await _sut.RecordExpenseAsync(request, Ct);
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
                 lines.Count == 2
-                && lines.All(t => t.GstCode == null)
+                && lines.All(t => t.TaxCode == null)
                 && lines.Any(t => t.DebitAmount == 110m)
                 && lines.Any(t => t.CreditAmount == 110m)),
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Should_PostThreeLinesSplittingGstToClearing_When_RegisteredAndTaxable()
+    public async Task Should_PostThreeLinesSplittingTaxToClearing_When_RegisteredAndTaxable()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>())
-            .Returns(MakeSettings(isGstRegistered: true));
+            .Returns(MakeSettings(isTaxApplicable: true));
         var request = MakeRequest(110m);
-        request.GstCode = GstCode.Gst;
+        request.TaxCode = TaxCode.Taxable;
 
         await _sut.RecordExpenseAsync(request, Ct);
 
@@ -205,21 +205,21 @@ public class ExpensePaymentServiceTests : TestBase
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
                 lines.Count == 3
                 && lines.Any(t => t.DebitAmount == 100m && t.AccountId == ExpenseAccountId)
-                && lines.Any(t => t.DebitAmount == 10m && t.AccountId == SystemAccounts.GstPaidId)
+                && lines.Any(t => t.DebitAmount == 10m && t.AccountId == SystemAccounts.TaxPaidId)
                 && lines.Any(t => t.CreditAmount == 110m && t.AccountId == BankAccountId)
-                && lines.All(t => t.GstCode == GstCode.Gst)),
+                && lines.All(t => t.TaxCode == TaxCode.Taxable)),
             Arg.Any<CancellationToken>());
     }
 
     [Theory]
-    [InlineData(GstCode.GstFree)]
-    [InlineData(GstCode.InputTaxed)]
-    public async Task Should_PostTwoLines_When_RegisteredButNotTaxable(GstCode code)
+    [InlineData(TaxCode.TaxExempt)]
+    [InlineData(TaxCode.Excluded)]
+    public async Task Should_PostTwoLines_When_RegisteredButNotTaxable(TaxCode code)
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>())
-            .Returns(MakeSettings(isGstRegistered: true));
+            .Returns(MakeSettings(isTaxApplicable: true));
         var request = MakeRequest(110m);
-        request.GstCode = code;
+        request.TaxCode = code;
 
         await _sut.RecordExpenseAsync(request, Ct);
 
@@ -228,22 +228,22 @@ public class ExpensePaymentServiceTests : TestBase
                 lines.Count == 2
                 && lines.Any(t => t.DebitAmount == 110m)
                 && lines.Any(t => t.CreditAmount == 110m)
-                && lines.All(t => t.GstCode == code)),
+                && lines.All(t => t.TaxCode == code)),
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Should_DefaultToGstFree_When_RegisteredAndNoGstCodeProvided()
+    public async Task Should_DefaultToTaxFree_When_RegisteredAndNoTaxCodeProvided()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>())
-            .Returns(MakeSettings(isGstRegistered: true));
-        var request = MakeRequest(110m); // GstCode left null
+            .Returns(MakeSettings(isTaxApplicable: true));
+        var request = MakeRequest(110m); // TaxCode left null
 
         await _sut.RecordExpenseAsync(request, Ct);
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2 && lines.All(t => t.GstCode == GstCode.GstFree)),
+                lines.Count == 2 && lines.All(t => t.TaxCode == TaxCode.TaxExempt)),
             Arg.Any<CancellationToken>());
     }
 
@@ -288,13 +288,13 @@ public class ExpensePaymentServiceTests : TestBase
         CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
 
-    private static Settings MakeSettings(bool isGstRegistered) => new()
+    private static Settings MakeSettings(bool isTaxApplicable) => new()
     {
         Id = Guid.NewGuid(), OrganizationName = "Test Choir",
         AnnualFee = 50m, AttendanceFee = 10m,
         MembershipRenewalMonth = 1, MaxAgeRangeYears = 150,
         MinimumMemberAge = 0, SchemaVersion = "1.1.0",
-        IsGstRegistered = isGstRegistered,
+        IsTaxApplicable = isTaxApplicable, TaxRate = isTaxApplicable ? 10m : null,
         CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
 }

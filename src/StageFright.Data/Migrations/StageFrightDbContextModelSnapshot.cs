@@ -116,7 +116,7 @@ namespace StageFright.Data.Migrations
                             IsBankAccount = false,
                             IsDeleted = false,
                             IsSystem = true,
-                            Name = "GST Collected",
+                            Name = "Tax Collected",
                             SortOrder = 10,
                             Type = "Liability",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -129,7 +129,7 @@ namespace StageFright.Data.Migrations
                             IsBankAccount = false,
                             IsDeleted = false,
                             IsSystem = true,
-                            Name = "GST Paid",
+                            Name = "Tax Paid",
                             SortOrder = 11,
                             Type = "Liability",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -592,9 +592,6 @@ namespace StageFright.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("GstCode")
-                        .HasColumnType("TEXT");
-
                     b.Property<Guid>("MemberId")
                         .HasColumnType("TEXT");
 
@@ -602,6 +599,9 @@ namespace StageFright.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<Guid?>("RehearsalId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TaxCode")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -848,21 +848,18 @@ namespace StageFright.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Abn")
-                        .HasColumnType("TEXT");
-
                     b.Property<decimal>("AnnualFee")
                         .HasPrecision(18, 2)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("AnnualFeeGstCode")
+                    b.Property<string>("AnnualFeeTaxCode")
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("AttendanceFee")
                         .HasPrecision(18, 2)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("AttendanceFeeGstCode")
+                    b.Property<string>("AttendanceFeeTaxCode")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("AuditRetentionYears")
@@ -891,7 +888,7 @@ namespace StageFright.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsGstRegistered")
+                    b.Property<bool>("IsTaxApplicable")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(false);
@@ -915,6 +912,10 @@ namespace StageFright.Data.Migrations
 
                     b.Property<bool>("ShowParticipationGraphs")
                         .HasColumnType("INTEGER");
+
+                    b.Property<decimal?>("TaxRate")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Theme")
                         .IsRequired()
@@ -961,9 +962,6 @@ namespace StageFright.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("GstCode")
-                        .HasColumnType("TEXT");
-
                     b.Property<Guid?>("JournalEntryId")
                         .HasColumnType("TEXT");
 
@@ -971,6 +969,9 @@ namespace StageFright.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<Guid?>("PaymentId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TaxCode")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

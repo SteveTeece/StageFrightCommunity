@@ -16,8 +16,6 @@ namespace StageFright.UI.Tests.Pages.Setup;
 /// </summary>
 public class SetupWizardNoSeederTests : BunitContext
 {
-    private const string ValidAbn = "51824753556";
-
     private readonly ISetupService _setupService = Substitute.For<ISetupService>();
 
     public SetupWizardNoSeederTests()
@@ -30,7 +28,6 @@ public class SetupWizardNoSeederTests : BunitContext
     private static void AdvanceToReview(IRenderedComponent<SetupWizard> cut)
     {
         cut.Find("#orgName").Change("My Choir");
-        cut.Find("#abn").Change(ValidAbn);
         cut.Find("#btn-next").Click(); // -> step 2
         cut.Find("#btn-next").Click(); // -> step 3
         cut.Find("#btn-next").Click(); // -> step 4 (committee config)

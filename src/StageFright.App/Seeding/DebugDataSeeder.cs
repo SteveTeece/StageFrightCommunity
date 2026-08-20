@@ -500,9 +500,9 @@ public class DebugDataSeeder : IDebugDataSeeder
         Settings settings,
         CancellationToken ct)
     {
-        var gstCode = settings.IsGstRegistered ? (settings.AnnualFeeGstCode ?? GstCode.GstFree) : (GstCode?)null;
-        var (incomeAmount, gstAmount) = gstCode == GstCode.Gst
-            ? GstCalculator.SplitInclusive(settings.AnnualFee)
+        var taxCode = settings.IsTaxApplicable ? (settings.AnnualFeeTaxCode ?? TaxCode.TaxExempt) : (TaxCode?)null;
+        var (incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
+            ? TaxCalculator.SplitInclusive(settings.AnnualFee, settings.TaxRate ?? 0m)
             : (settings.AnnualFee, 0m);
 
         Fee savedFee = null!;
@@ -518,7 +518,7 @@ public class DebugDataSeeder : IDebugDataSeeder
                 FeeDate = feeDate,
                 DueDate = dueDate,
                 PaidAtCreation = false,
-                GstCode = gstCode,
+                TaxCode = taxCode,
                 CreatedAt = now
             };
             savedFee = await _feeRepository.AddAsync(fee, innerCt);
@@ -530,7 +530,7 @@ public class DebugDataSeeder : IDebugDataSeeder
                     Id = Guid.NewGuid(), Date = feeDate,
                     AccountId = SystemAccounts.MemberReceivableId, GLAccount = SystemAccounts.MemberReceivableNumber,
                     DebitAmount = settings.AnnualFee, CreditAmount = 0m,
-                    MemberId = memberId, FeeId = savedFee.Id, GstCode = gstCode,
+                    MemberId = memberId, FeeId = savedFee.Id, TaxCode = taxCode,
                     Description = $"Annual membership fee {year}", CreatedAt = now
                 },
                 new()
@@ -538,20 +538,20 @@ public class DebugDataSeeder : IDebugDataSeeder
                     Id = Guid.NewGuid(), Date = feeDate,
                     AccountId = incomeAccount.Id, GLAccount = incomeAccount.AccountNumber,
                     DebitAmount = 0m, CreditAmount = incomeAmount,
-                    FeeId = savedFee.Id, GstCode = gstCode,
+                    FeeId = savedFee.Id, TaxCode = taxCode,
                     Description = $"Annual membership fee income {year}", CreatedAt = now
                 }
             };
 
-            if (gstAmount != 0m)
+            if (taxAmount != 0m)
             {
                 lines.Add(new Transaction
                 {
                     Id = Guid.NewGuid(), Date = feeDate,
-                    AccountId = SystemAccounts.GstCollectedId, GLAccount = SystemAccounts.GstCollectedNumber,
-                    DebitAmount = 0m, CreditAmount = gstAmount,
-                    FeeId = savedFee.Id, GstCode = gstCode,
-                    Description = $"GST collected — annual membership fee {year}", CreatedAt = now
+                    AccountId = SystemAccounts.TaxCollectedId, GLAccount = SystemAccounts.TaxCollectedNumber,
+                    DebitAmount = 0m, CreditAmount = taxAmount,
+                    FeeId = savedFee.Id, TaxCode = taxCode,
+                    Description = $"Tax collected — annual membership fee {year}", CreatedAt = now
                 });
             }
 

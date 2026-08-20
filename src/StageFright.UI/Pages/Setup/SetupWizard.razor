@@ -34,16 +34,10 @@
 
         @if (_currentStep == 1)
         {
-            <div class="mb-2">
+            <div class="mb-3">
                 <label for="orgName" class="form-label">Organisation Name <span aria-hidden="true" class="text-danger">*</span></label>
                 <InputText id="orgName" class="form-control form-control-sm" @bind-Value="_model.OrganizationName" placeholder="e.g. Springfield Choral Society" />
                 <ValidationMessage For="() => _model.OrganizationName" class="text-danger small" />
-            </div>
-
-            <div class="mb-3">
-                <label for="abn" class="form-label">ABN <span aria-hidden="true" class="text-danger">*</span></label>
-                <AbnInput id="abn" class="form-control form-control-sm" @bind-Value="_model.Abn" placeholder="XX XXX XXX XXX" />
-                <ValidationMessage For="() => _model.Abn" class="text-danger small" />
             </div>
         }
         else if (_currentStep == 2)
@@ -96,29 +90,34 @@
         {
             <div class="mb-3">
                 <div class="form-check">
-                    <InputCheckbox id="gstRegistered" class="form-check-input" @bind-Value="_model.IsGstRegistered" @bind-Value:after="HandleGstToggleChanged" />
-                    <label class="form-check-label small" for="gstRegistered">Organisation is registered for GST</label>
+                    <InputCheckbox id="taxApplicable" class="form-check-input" @bind-Value="_model.IsTaxApplicable" @bind-Value:after="HandleTaxToggleChanged" />
+                    <label class="form-check-label small" for="taxApplicable">Sales tax applies to this organisation</label>
                 </div>
 
-                @if (_model.IsGstRegistered)
+                @if (_model.IsTaxApplicable)
                 {
                     <div class="row g-2 mt-1">
                         <div class="col-md-6">
-                            <label for="annualFeeGstCode" class="form-label">Annual Fee GST Treatment</label>
-                            <InputSelect id="annualFeeGstCode" class="form-select form-select-sm" @bind-Value="_model.AnnualFeeGstCode">
-                                <option value="">GST-free (default)</option>
-                                <option value="@GstCode.Gst">Taxable (GST)</option>
-                                <option value="@GstCode.GstFree">GST-free</option>
-                                <option value="@GstCode.InputTaxed">Input-taxed</option>
+                            <label for="taxRate" class="form-label">Tax Rate (%) <span aria-hidden="true" class="text-danger">*</span></label>
+                            <InputNumber id="taxRate" class="form-control form-control-sm" @bind-Value="_model.TaxRate" @bind-Value:format="N2" />
+                            <ValidationMessage For="() => _model.TaxRate" class="text-danger small" />
+                        </div>
+                    </div>
+                    <div class="row g-2 mt-1">
+                        <div class="col-md-6">
+                            <label for="annualFeeTaxCode" class="form-label">Annual Fee Tax Treatment</label>
+                            <InputSelect id="annualFeeTaxCode" class="form-select form-select-sm" @bind-Value="_model.AnnualFeeTaxCode">
+                                <option value="">Tax-exempt (default)</option>
+                                <option value="@TaxCode.Taxable">Taxable</option>
+                                <option value="@TaxCode.TaxExempt">Tax-exempt</option>
                             </InputSelect>
                         </div>
                         <div class="col-md-6">
-                            <label for="attendanceFeeGstCode" class="form-label">Attendance Fee GST Treatment</label>
-                            <InputSelect id="attendanceFeeGstCode" class="form-select form-select-sm" @bind-Value="_model.AttendanceFeeGstCode">
-                                <option value="">GST-free (default)</option>
-                                <option value="@GstCode.Gst">Taxable (GST)</option>
-                                <option value="@GstCode.GstFree">GST-free</option>
-                                <option value="@GstCode.InputTaxed">Input-taxed</option>
+                            <label for="attendanceFeeTaxCode" class="form-label">Attendance Fee Tax Treatment</label>
+                            <InputSelect id="attendanceFeeTaxCode" class="form-select form-select-sm" @bind-Value="_model.AttendanceFeeTaxCode">
+                                <option value="">Tax-exempt (default)</option>
+                                <option value="@TaxCode.Taxable">Taxable</option>
+                                <option value="@TaxCode.TaxExempt">Tax-exempt</option>
                             </InputSelect>
                         </div>
                     </div>
@@ -162,15 +161,15 @@
                 <h2 class="h6">Review</h2>
                 <dl class="row small mb-2">
                     <dt class="col-5">Organisation Name</dt><dd class="col-7">@_model.OrganizationName</dd>
-                    <dt class="col-5">ABN</dt><dd class="col-7">@_model.Abn</dd>
                     <dt class="col-5">Annual Fee</dt><dd class="col-7">@_model.AnnualFee.ToString("C")</dd>
                     <dt class="col-5">Attendance Fee</dt><dd class="col-7">@_model.AttendanceFee.ToString("C")</dd>
                     <dt class="col-5">Membership Renewal Month</dt><dd class="col-7">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(_model.MembershipRenewalMonth)</dd>
-                    <dt class="col-5">GST Registered</dt><dd class="col-7">@(_model.IsGstRegistered ? "Yes" : "No")</dd>
-                    @if (_model.IsGstRegistered)
+                    <dt class="col-5">Sales Tax Applies</dt><dd class="col-7">@(_model.IsTaxApplicable ? "Yes" : "No")</dd>
+                    @if (_model.IsTaxApplicable)
                     {
-                        <dt class="col-5">Annual Fee GST Treatment</dt><dd class="col-7">@(_model.AnnualFeeGstCode?.ToString() ?? "GST-free (default)")</dd>
-                        <dt class="col-5">Attendance Fee GST Treatment</dt><dd class="col-7">@(_model.AttendanceFeeGstCode?.ToString() ?? "GST-free (default)")</dd>
+                        <dt class="col-5">Tax Rate</dt><dd class="col-7">@(_model.TaxRate?.ToString("N2") ?? "")%</dd>
+                        <dt class="col-5">Annual Fee Tax Treatment</dt><dd class="col-7">@(_model.AnnualFeeTaxCode?.ToString() ?? "Tax-exempt (default)")</dd>
+                        <dt class="col-5">Attendance Fee Tax Treatment</dt><dd class="col-7">@(_model.AttendanceFeeTaxCode?.ToString() ?? "Tax-exempt (default)")</dd>
                     }
                     <dt class="col-5">AGM Month</dt><dd class="col-7">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(_model.CommitteeRenewalMonth)</dd>
                     <dt class="col-5">Audit Trail Retention</dt><dd class="col-7">@_model.AuditRetentionYears year@(_model.AuditRetentionYears == 1 ? "" : "s")</dd>
