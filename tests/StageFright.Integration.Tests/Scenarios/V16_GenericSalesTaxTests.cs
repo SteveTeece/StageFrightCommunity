@@ -11,13 +11,14 @@ using StageFright.Reports.Providers;
 namespace StageFright.Integration.Tests.Scenarios;
 
 /// <summary>
-/// Acceptance tests for V15: GST-registered income and expense postings, and the
-/// BAS Summary report computed from them. Verifies the 3-line taxable posting splits
-/// GST to the 2310/2320 clearing accounts, the ledger stays balanced, and BAS labels
-/// 1A/1B/G1/G11 match a $110-in/$110-out fixture (1A = 1B = $10).
+/// Acceptance tests for V16: generic sales-tax-applicable income and expense postings, and
+/// the Tax Summary report computed from them. Verifies the 3-line taxable posting splits
+/// tax to the 2310/2320 clearing accounts, the ledger stays balanced, and the tax-collected/
+/// tax-paid/total-taxable-sales rows match a $110-in/$110-out fixture at a 10% rate (tax
+/// collected on sales = tax paid on purchases = $10).
 /// Uses a real SQLite in-memory database with full EF migrations.
 /// </summary>
-public sealed class V15_GstBasTests : IAsyncLifetime
+public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
 {
     private StageFrightDbContext _db = null!;
 
@@ -60,34 +61,34 @@ public sealed class V15_GstBasTests : IAsyncLifetime
         await _db.DisposeAsync();
     }
 
-    // --- GST-registered income posting ---
+    // --- Tax-applicable income posting ---
 
     [Fact]
-    public async Task RecordIncome_RegisteredAndTaxable_Posts3Lines_SplitsGstToClearingAccount()
+    public async Task RecordIncome_ApplicableAndTaxable_Posts3Lines_SplitsTaxToClearingAccount()
     {
-        await SeedSettingsAsync(isGstRegistered: true);
+        await SeedSettingsAsync(isTaxApplicable: true);
         var svc = BuildIncomeService();
 
         await svc.RecordIncomeAsync(new RecordIncomeRequest
         {
-            Date = Today, Amount = 110m, AccountId = IncomeAccountId, GstCode = GstCode.Gst
+            Date = Today, Amount = 110m, AccountId = IncomeAccountId, TaxCode = TaxCode.Taxable
         });
 
         var lines = await _db.Transactions.ToListAsync();
         Assert.Equal(3, lines.Count);
         Assert.Equal(lines.Sum(t => t.DebitAmount), lines.Sum(t => t.CreditAmount));
 
-        var gstLine = Assert.Single(lines, t => t.AccountId == SystemAccounts.GstCollectedId);
-        Assert.Equal(10m, gstLine.CreditAmount);
-        Assert.All(lines, t => Assert.Equal(GstCode.Gst, t.GstCode));
+        var taxLine = Assert.Single(lines, t => t.AccountId == SystemAccounts.TaxCollectedId);
+        Assert.Equal(10m, taxLine.CreditAmount);
+        Assert.All(lines, t => Assert.Equal(TaxCode.Taxable, t.TaxCode));
     }
 
-    // --- GST-registered expense posting ---
+    // --- Tax-applicable expense posting ---
 
     [Fact]
-    public async Task RecordExpense_RegisteredAndTaxable_Posts3Lines_SplitsGstToClearingAccount()
+    public async Task RecordExpense_ApplicableAndTaxable_Posts3Lines_SplitsTaxToClearingAccount()
     {
-        await SeedSettingsAsync(isGstRegistered: true);
+        await SeedSettingsAsync(isTaxApplicable: true);
         var svc = BuildExpenseService();
 
         await svc.RecordExpenseAsync(new RecordExpenseRequest
@@ -95,56 +96,56 @@ public sealed class V15_GstBasTests : IAsyncLifetime
             Date = Today, Amount = 110m,
             BankAccountId = SystemAccounts.CashId,
             ExpenseAccountId = ExpenseAccountId,
-            GstCode = GstCode.Gst
+            TaxCode = TaxCode.Taxable
         });
 
         var lines = await _db.Transactions.ToListAsync();
         Assert.Equal(3, lines.Count);
         Assert.Equal(lines.Sum(t => t.DebitAmount), lines.Sum(t => t.CreditAmount));
 
-        var gstLine = Assert.Single(lines, t => t.AccountId == SystemAccounts.GstPaidId);
-        Assert.Equal(10m, gstLine.DebitAmount);
-        Assert.All(lines, t => Assert.Equal(GstCode.Gst, t.GstCode));
+        var taxLine = Assert.Single(lines, t => t.AccountId == SystemAccounts.TaxPaidId);
+        Assert.Equal(10m, taxLine.DebitAmount);
+        Assert.All(lines, t => Assert.Equal(TaxCode.Taxable, t.TaxCode));
     }
 
     // --- Toggle-off byte-identical regression ---
 
     [Fact]
-    public async Task RecordIncome_NotRegistered_Posts2Lines_WithNullGstCode_EvenWhenGstCodeRequested()
+    public async Task RecordIncome_NotApplicable_Posts2Lines_WithNullTaxCode_EvenWhenTaxCodeRequested()
     {
-        await SeedSettingsAsync(isGstRegistered: false);
+        await SeedSettingsAsync(isTaxApplicable: false);
         var svc = BuildIncomeService();
 
         await svc.RecordIncomeAsync(new RecordIncomeRequest
         {
-            Date = Today, Amount = 110m, AccountId = IncomeAccountId, GstCode = GstCode.Gst
+            Date = Today, Amount = 110m, AccountId = IncomeAccountId, TaxCode = TaxCode.Taxable
         });
 
         var lines = await _db.Transactions.ToListAsync();
         Assert.Equal(2, lines.Count);
-        Assert.All(lines, t => Assert.Null(t.GstCode));
+        Assert.All(lines, t => Assert.Null(t.TaxCode));
     }
 
-    // --- BAS Summary report ---
+    // --- Tax Summary report ---
 
     [Fact]
-    public async Task BasSummary_MatchingIncomeAndExpense_1AEquals1BEqualsTen()
+    public async Task TaxSummary_MatchingIncomeAndExpense_TaxCollectedEqualsTaxPaidEqualsTen()
     {
-        await SeedSettingsAsync(isGstRegistered: true);
+        await SeedSettingsAsync(isTaxApplicable: true);
 
         await BuildIncomeService().RecordIncomeAsync(new RecordIncomeRequest
         {
-            Date = Today, Amount = 110m, AccountId = IncomeAccountId, GstCode = GstCode.Gst
+            Date = Today, Amount = 110m, AccountId = IncomeAccountId, TaxCode = TaxCode.Taxable
         });
         await BuildExpenseService().RecordExpenseAsync(new RecordExpenseRequest
         {
             Date = Today, Amount = 110m,
             BankAccountId = SystemAccounts.CashId,
             ExpenseAccountId = ExpenseAccountId,
-            GstCode = GstCode.Gst
+            TaxCode = TaxCode.Taxable
         });
 
-        var provider = new BasSummaryReportProvider(new GLRepository(_db), new AccountRepository(_db), new SettingsRepository(_db));
+        var provider = new TaxSummaryReportProvider(new GLRepository(_db), new AccountRepository(_db), new SettingsRepository(_db));
         var filters = new StageFright.Reports.Models.ReportFilterValues();
         filters.Set("dateFrom", $"{Today.AddDays(-1):yyyy-MM-dd}");
         filters.Set("dateTo", $"{Today.AddDays(1):yyyy-MM-dd}");
@@ -152,23 +153,22 @@ public sealed class V15_GstBasTests : IAsyncLifetime
         var result = await provider.GenerateAsync(filters);
 
         var rows = result.Sections.Single().Rows;
-        Assert.Equal("10.00", rows.Single(r => r.Cells[0] == "1A").Cells[2]);
-        Assert.Equal("10.00", rows.Single(r => r.Cells[0] == "1B").Cells[2]);
-        Assert.Equal("110.00", rows.Single(r => r.Cells[0] == "G1").Cells[2]);
-        Assert.Equal("110.00", rows.Single(r => r.Cells[0] == "G11").Cells[2]);
-        Assert.Equal("0.00", result.GrandTotal!.Cells[2]);
+        Assert.Equal("10.00", rows.Single(r => r.Cells[0] == "Tax collected on sales").Cells[1]);
+        Assert.Equal("10.00", rows.Single(r => r.Cells[0] == "Tax paid on purchases").Cells[1]);
+        Assert.Equal("110.00", rows.Single(r => r.Cells[0] == "Total taxable sales").Cells[1]);
+        Assert.Equal("0.00", result.GrandTotal!.Cells[1]);
     }
 
     [Fact]
-    public async Task BasSummary_NotRegistered_SelfExplains()
+    public async Task TaxSummary_NotApplicable_SelfExplains()
     {
-        await SeedSettingsAsync(isGstRegistered: false);
+        await SeedSettingsAsync(isTaxApplicable: false);
 
-        var provider = new BasSummaryReportProvider(new GLRepository(_db), new AccountRepository(_db), new SettingsRepository(_db));
+        var provider = new TaxSummaryReportProvider(new GLRepository(_db), new AccountRepository(_db), new SettingsRepository(_db));
         var result = await provider.GenerateAsync(new StageFright.Reports.Models.ReportFilterValues());
 
         Assert.Empty(result.Sections);
-        Assert.Contains("not registered for GST", result.SubTitle);
+        Assert.Contains("does not apply", result.SubTitle);
     }
 
     // --- Helpers ---
@@ -187,7 +187,7 @@ public sealed class V15_GstBasTests : IAsyncLifetime
         return new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
     }
 
-    private async Task SeedSettingsAsync(bool isGstRegistered)
+    private async Task SeedSettingsAsync(bool isTaxApplicable)
     {
         _db.Settings.Add(new Settings
         {
@@ -195,7 +195,8 @@ public sealed class V15_GstBasTests : IAsyncLifetime
             AnnualFee = 50m, AttendanceFee = 10m,
             MembershipRenewalMonth = 1, MaxAgeRangeYears = 150,
             MinimumMemberAge = 0, SchemaVersion = "1.1.0",
-            FinancialYearStartMonth = 7, IsGstRegistered = isGstRegistered,
+            FinancialYearStartMonth = 7, IsTaxApplicable = isTaxApplicable,
+            TaxRate = isTaxApplicable ? 10m : null,
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         });
         await _db.SaveChangesAsync();

@@ -45,12 +45,13 @@ public partial class SetupWizard : ComponentBase
             _currentStep--;
     }
 
-    private void HandleGstToggleChanged()
+    private void HandleTaxToggleChanged()
     {
-        if (!_model.IsGstRegistered)
+        if (!_model.IsTaxApplicable)
         {
-            _model.AnnualFeeGstCode = null;
-            _model.AttendanceFeeGstCode = null;
+            _model.TaxRate = null;
+            _model.AnnualFeeTaxCode = null;
+            _model.AttendanceFeeTaxCode = null;
         }
     }
 
@@ -73,13 +74,13 @@ public partial class SetupWizard : ComponentBase
 
             var request = new SetupRequest(
                 OrganizationName: _model.OrganizationName!,
-                Abn: _model.Abn!,
                 AnnualFee: _model.AnnualFee,
                 AttendanceFee: _model.AttendanceFee,
                 MembershipRenewalMonth: _model.MembershipRenewalMonth,
-                IsGstRegistered: _model.IsGstRegistered,
-                AnnualFeeGstCode: _model.AnnualFeeGstCode,
-                AttendanceFeeGstCode: _model.AttendanceFeeGstCode,
+                IsTaxApplicable: _model.IsTaxApplicable,
+                TaxRate: _model.TaxRate,
+                AnnualFeeTaxCode: _model.AnnualFeeTaxCode,
+                AttendanceFeeTaxCode: _model.AttendanceFeeTaxCode,
                 Theme: ThemeProvider?.CurrentTheme ?? Theme.Dark,
                 CommitteeRenewalMonth: _model.CommitteeRenewalMonth,
                 CommitteeOfficeHolderTitles: officeHolderTitles,

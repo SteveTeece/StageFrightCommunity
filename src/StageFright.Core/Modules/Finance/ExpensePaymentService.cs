@@ -71,8 +71,8 @@ public class ExpensePaymentService : IExpensePaymentService
                 "System accounts cannot be used for manual expense payments.", nameof(Account), nameof(RecordExpenseAsync));
 
         var settings = await _settingsRepo.GetAsync(ct);
-        var isRegistered = settings?.IsGstRegistered ?? false;
-        var gstCode = isRegistered ? (request.GstCode ?? GstCode.GstFree) : (GstCode?)null;
+        var isTaxApplicable = settings?.IsTaxApplicable ?? false;
+        var taxCode = isTaxApplicable ? (request.TaxCode ?? TaxCode.TaxExempt) : (TaxCode?)null;
 
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
@@ -92,10 +92,10 @@ public class ExpensePaymentService : IExpensePaymentService
                 CreatedAt = now
             }, innerCt);
 
-            // Taxable while registered: DR Expense net / DR GST Paid / CR Bank gross.
-            // Otherwise a 2-line pair; unregistered postings carry no GST code at all.
-            var (expenseAmount, gstAmount) = gstCode == GstCode.Gst
-                ? GstCalculator.SplitInclusive(request.Amount)
+            // Taxable while tax applies: DR Expense net / DR Tax Paid / CR Bank gross.
+            // Otherwise a 2-line pair; postings while tax doesn't apply carry no tax code at all.
+            var (expenseAmount, taxAmount) = taxCode == TaxCode.Taxable
+                ? TaxCalculator.SplitInclusive(request.Amount, settings?.TaxRate ?? 0m)
                 : (request.Amount, 0m);
 
             var lines = new List<Transaction>
@@ -109,7 +109,7 @@ public class ExpensePaymentService : IExpensePaymentService
                     CreditAmount = 0m,
                     GLAccount = expenseAccount.AccountNumber,
                     JournalEntryId = entry.Id,
-                    GstCode = gstCode,
+                    TaxCode = taxCode,
                     Description = description,
                     CreatedAt = now
                 },
@@ -122,25 +122,25 @@ public class ExpensePaymentService : IExpensePaymentService
                     CreditAmount = request.Amount,
                     GLAccount = bankAccount.AccountNumber,
                     JournalEntryId = entry.Id,
-                    GstCode = gstCode,
+                    TaxCode = taxCode,
                     Description = description,
                     CreatedAt = now
                 }
             };
 
-            if (gstAmount != 0m)
+            if (taxAmount != 0m)
             {
                 lines.Add(new Transaction
                 {
                     Id = Guid.NewGuid(),
                     Date = request.Date,
-                    AccountId = SystemAccounts.GstPaidId,
-                    DebitAmount = gstAmount,
+                    AccountId = SystemAccounts.TaxPaidId,
+                    DebitAmount = taxAmount,
                     CreditAmount = 0m,
-                    GLAccount = SystemAccounts.GstPaidNumber,
+                    GLAccount = SystemAccounts.TaxPaidNumber,
                     JournalEntryId = entry.Id,
-                    GstCode = gstCode,
-                    Description = $"GST paid — {description}",
+                    TaxCode = taxCode,
+                    Description = $"Tax paid — {description}",
                     CreatedAt = now
                 });
             }

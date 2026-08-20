@@ -61,41 +61,27 @@ public class SetupServiceTests : TestBase
     }
 
     [Fact]
-    public async Task InitializeAsync_Throws_WhenAbnMissing()
+    public async Task InitializeAsync_Throws_WhenTaxApplicableWithoutRate()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         var svc = CreateService();
 
-        var request = ValidRequest() with { Abn = "" };
+        var request = ValidRequest() with { IsTaxApplicable = true, TaxRate = null };
         await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
     }
 
-#if !DEBUG
     [Fact]
-    public async Task InitializeAsync_Throws_WhenAbnChecksumInvalid()
+    public async Task InitializeAsync_Throws_WhenTaxApplicableWithNonPositiveRate()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         var svc = CreateService();
 
-        var request = ValidRequest() with { Abn = "12345678901" };
+        var request = ValidRequest() with { IsTaxApplicable = true, TaxRate = 0m };
         await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
     }
-#else
-    [Fact]
-    public async Task InitializeAsync_AllowsAbnChecksumInvalid_InDebugBuild()
-    {
-        // ABN checksum validation is disabled in Debug builds (see SetupService.Validate)
-        // so developers can complete setup without a real, checksum-valid ABN.
-        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
-        var svc = CreateService();
-
-        var request = ValidRequest() with { Abn = "12345678901" };
-        await svc.InitializeAsync(request, Ct);
-    }
-#endif
 
     [Fact]
-    public async Task InitializeAsync_ForcesGstCodesNull_WhenNotRegistered()
+    public async Task InitializeAsync_ForcesTaxFieldsNull_WhenNotApplicable()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
@@ -104,19 +90,21 @@ public class SetupServiceTests : TestBase
 
         var request = ValidRequest() with
         {
-            IsGstRegistered = false,
-            AnnualFeeGstCode = GstCode.Gst,
-            AttendanceFeeGstCode = GstCode.Gst
+            IsTaxApplicable = false,
+            TaxRate = 10m,
+            AnnualFeeTaxCode = TaxCode.Taxable,
+            AttendanceFeeTaxCode = TaxCode.Taxable
         };
         await svc.InitializeAsync(request, Ct);
 
         await _settingsRepo.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s.IsGstRegistered == false && s.AnnualFeeGstCode == null && s.AttendanceFeeGstCode == null),
+            Arg.Is<Settings>(s => s.IsTaxApplicable == false && s.TaxRate == null
+                && s.AnnualFeeTaxCode == null && s.AttendanceFeeTaxCode == null),
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task InitializeAsync_PersistsGstCodes_WhenRegistered()
+    public async Task InitializeAsync_PersistsTaxFields_WhenApplicable()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
@@ -125,14 +113,16 @@ public class SetupServiceTests : TestBase
 
         var request = ValidRequest() with
         {
-            IsGstRegistered = true,
-            AnnualFeeGstCode = GstCode.Gst,
-            AttendanceFeeGstCode = GstCode.GstFree
+            IsTaxApplicable = true,
+            TaxRate = 15m,
+            AnnualFeeTaxCode = TaxCode.Taxable,
+            AttendanceFeeTaxCode = TaxCode.TaxExempt
         };
         await svc.InitializeAsync(request, Ct);
 
         await _settingsRepo.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s.IsGstRegistered && s.AnnualFeeGstCode == GstCode.Gst && s.AttendanceFeeGstCode == GstCode.GstFree),
+            Arg.Is<Settings>(s => s.IsTaxApplicable && s.TaxRate == 15m
+                && s.AnnualFeeTaxCode == TaxCode.Taxable && s.AttendanceFeeTaxCode == TaxCode.TaxExempt),
             Arg.Any<CancellationToken>());
     }
 
@@ -280,12 +270,12 @@ public class SetupServiceTests : TestBase
 
     private static SetupRequest ValidRequest() => new(
         OrganizationName: "Test Org",
-        Abn: "51824753556",
         AnnualFee: 75m,
         AttendanceFee: 5m,
         MembershipRenewalMonth: 1,
-        IsGstRegistered: false,
-        AnnualFeeGstCode: null,
-        AttendanceFeeGstCode: null,
+        IsTaxApplicable: false,
+        TaxRate: null,
+        AnnualFeeTaxCode: null,
+        AttendanceFeeTaxCode: null,
         Theme: Theme.Dark);
 }

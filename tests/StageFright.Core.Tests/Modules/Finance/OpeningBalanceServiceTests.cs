@@ -41,8 +41,8 @@ public class OpeningBalanceServiceTests : TestBase
             {
                 MakeAccount(CashAccountId, "Cash on Hand", AccountType.Asset, "1100", isSystem: true, isBank: true),
                 MakeAccount(SystemAccounts.MemberReceivableId, "Member Receivable", AccountType.Asset, "1200", isSystem: true),
-                MakeAccount(SystemAccounts.GstCollectedId, "GST Collected", AccountType.Liability, "2310", isSystem: true),
-                MakeAccount(SystemAccounts.GstPaidId, "GST Paid", AccountType.Liability, "2320", isSystem: true),
+                MakeAccount(SystemAccounts.TaxCollectedId, "GST Collected", AccountType.Liability, "2310", isSystem: true),
+                MakeAccount(SystemAccounts.TaxPaidId, "GST Paid", AccountType.Liability, "2320", isSystem: true),
                 MakeAccount(SystemAccounts.OpeningBalanceEquityId, "Opening Balance Equity", AccountType.Equity, "3100", isSystem: true),
                 MakeAccount(LoanAccountId, "Committee Loan", AccountType.Liability, "2000"),
                 MakeAccount(IncomeAccountId, "Raffle Income", AccountType.Income, "4000")
@@ -54,14 +54,14 @@ public class OpeningBalanceServiceTests : TestBase
     // --- GetOpeningBalanceAccountsAsync ---
 
     [Fact]
-    public async Task Should_ExcludeReceivableGstAndPlugAccounts_When_GettingEligibleAccounts()
+    public async Task Should_ExcludeReceivableTaxAndPlugAccounts_When_GettingEligibleAccounts()
     {
         var result = await _sut.GetOpeningBalanceAccountsAsync(Ct);
 
         Assert.Equal(3, result.Count);
         Assert.DoesNotContain(result, a => a.Id == SystemAccounts.MemberReceivableId);
-        Assert.DoesNotContain(result, a => a.Id == SystemAccounts.GstCollectedId);
-        Assert.DoesNotContain(result, a => a.Id == SystemAccounts.GstPaidId);
+        Assert.DoesNotContain(result, a => a.Id == SystemAccounts.TaxCollectedId);
+        Assert.DoesNotContain(result, a => a.Id == SystemAccounts.TaxPaidId);
         Assert.DoesNotContain(result, a => a.Id == SystemAccounts.OpeningBalanceEquityId);
     }
 

@@ -41,7 +41,7 @@ public sealed class V10_ThemeTests : IAsyncLifetime
     public async Task DefaultTheme_MatchesRequestedTheme_AfterFirstRunSetup(Theme requestedTheme)
     {
         var svc = BuildSetupService();
-        var request = new SetupRequest("Test Choir", "51824753556", 60m, 5m, 1, false, null, null, requestedTheme);
+        var request = new SetupRequest("Test Choir", 60m, 5m, 1, false, null, null, null, requestedTheme);
 
         await svc.InitializeAsync(request);
 

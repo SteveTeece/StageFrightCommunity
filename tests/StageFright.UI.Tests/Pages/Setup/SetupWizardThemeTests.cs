@@ -17,8 +17,6 @@ namespace StageFright.UI.Tests.Pages.Setup;
 /// </summary>
 public class SetupWizardThemeTests : BunitContext
 {
-    private const string ValidAbn = "51824753556";
-
     private readonly ISetupService _setupService = Substitute.For<ISetupService>();
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
     private readonly IDeviceThemePreferenceProvider _deviceThemeProvider = Substitute.For<IDeviceThemePreferenceProvider>();
@@ -40,7 +38,6 @@ public class SetupWizardThemeTests : BunitContext
     private static void AdvanceToReview(IRenderedComponent<ThemeProvider> cut)
     {
         cut.Find("#orgName").Change("My Choir");
-        cut.Find("#abn").Change(ValidAbn);
         cut.Find("#btn-next").Click(); // -> step 2
         cut.Find("#btn-next").Click(); // -> step 3
         cut.Find("#btn-next").Click(); // -> step 4 (Review & Finish)

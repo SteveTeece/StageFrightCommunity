@@ -96,19 +96,18 @@
                                     }
                                 </div>
 
-                                @if (_isGstRegistered)
+                                @if (_isTaxApplicable)
                                 {
                                     <div class="col-md-4">
-                                        <label class="form-label" for="expenseGstCode">GST Treatment</label>
-                                        <InputSelect id="expenseGstCode" class="form-select form-select-sm" @bind-Value="_form.GstCode">
-                                            <option value="">GST-free (default)</option>
-                                            <option value="@StageFright.Core.Enums.GstCode.Gst">Taxable (GST)</option>
-                                            <option value="@StageFright.Core.Enums.GstCode.GstFree">GST-free</option>
-                                            <option value="@StageFright.Core.Enums.GstCode.InputTaxed">Input-taxed</option>
+                                        <label class="form-label" for="expenseTaxCode">Tax Treatment</label>
+                                        <InputSelect id="expenseTaxCode" class="form-select form-select-sm" @bind-Value="_form.TaxCode">
+                                            <option value="">Tax-exempt (default)</option>
+                                            <option value="@StageFright.Core.Enums.TaxCode.Taxable">Taxable</option>
+                                            <option value="@StageFright.Core.Enums.TaxCode.TaxExempt">Tax-exempt</option>
                                         </InputSelect>
-                                        @if (GstInclusiveHint is not null)
+                                        @if (TaxInclusiveHint is not null)
                                         {
-                                            <div class="form-text small">@GstInclusiveHint</div>
+                                            <div class="form-text small">@TaxInclusiveHint</div>
                                         }
                                     </div>
                                 }

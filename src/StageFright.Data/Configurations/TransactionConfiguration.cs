@@ -14,7 +14,7 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
         builder.Property(t => t.DebitAmount).HasPrecision(18, 2).IsRequired();
         builder.Property(t => t.CreditAmount).HasPrecision(18, 2).IsRequired();
         builder.Property(t => t.GLAccount).IsRequired();
-        builder.Property(t => t.GstCode).HasConversion<string>();
+        builder.Property(t => t.TaxCode).HasConversion<string>();
         builder.Property(t => t.CreatedAt).IsRequired();
 
         // No soft-delete fields; no global query filter on Transaction (Constitution §3.4)
