@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "setup wizard tabs",
   "branch": "017-setup-wizard-tabs",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,34 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-20T14:12:06.012Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-20T14:57:00.942Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-20T15:05:20.066Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-20T15:05:26.180Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-20T15:06:37.437Z"
     }
   ],
   "livingSpecs": {
@@ -129,5 +157,33 @@
   "expectations": [
     "Settings page's own General tab (post-setup theme toggle) is unchanged — only the /setup wizard is in scope",
     "No change to what data first-run setup captures, validates, or defaults — only how it's grouped/entered"
+  ],
+  "approach": "Extract the standalone Chart of Accounts add-account form and the standalone Opening Balances entry table into shared, callback-driven components; the setup wizard rebuilds on the Finance-screen Tabs/Tab component, feeding those shared components a queuing callback instead of the standalone pages' immediate-persist callback, and SetupService composes IAccountService/IOpeningBalanceService at Finish so everything is created together.",
+  "decisions": [
+    {
+      "decision": "Reuse the Tabs/Tab BlazorBootstrap component from FinancePage.razor",
+      "why": "issue explicitly references the Finance screen tabs; already proven in this codebase",
+      "rejected": "RadzenTabs or hand-rolled nav-tabs markup"
+    },
+    {
+      "decision": "Shared AddAccountForm/OpeningBalanceEntryForm take an OnSubmit callback, no internal mode flag",
+      "why": "keeps persistence knowledge out of the shared component (Dependency Inversion); standalone pages keep immediate-create/post unchanged, wizard queues instead",
+      "rejected": "an internal Immediate/Deferred enum branching inside the shared component"
+    },
+    {
+      "decision": "SetupRequest/SetupService.InitializeAsync compose IAccountService and IOpeningBalanceService directly",
+      "why": "neither service depends on a Settings record existing, so Finish stays one service call, matching how CommitteeOfficeHolderTitles already works",
+      "rejected": "UI layer calling AccountService/OpeningBalanceService itself after SetupService.InitializeAsync returns"
+    },
+    {
+      "decision": "BorderedListBox is one generic shared component, not a CSS class applied four times",
+      "why": "FR-007 requires one true application-wide convention; a shared component guarantees it in code including overflow/scroll handling",
+      "rejected": "a shared .bordered-list-box CSS class applied independently in each of the four places"
+    },
+    {
+      "decision": "Debug seeder posts an explicit OpeningBalance entry for its seeded accounts, before its historical-transaction simulation",
+      "why": "FR-026 requires seeded accounts to have opening balances specifically; todays seeder only reaches balances via simulated years of transactions with no OpeningBalance journal entry",
+      "rejected": "leaving the seeder unchanged and relying on simulated history alone"
+    }
   ]
 }
