@@ -36,8 +36,8 @@ Before finishing setup, the coordinator can open a final review tab that lists e
 **Acceptance Scenarios**:
 
 1. **Given** values have been entered on every other tab, **When** the user opens the review tab, **Then** every setting's current value is displayed read-only, grouped in a way that's easy to scan.
-2. **Given** one or more committee roles have been added, **When** the review tab is shown, **Then** the added roles are displayed in a list box, not as a comma-separated string.
-3. **Given** one or more accounts have been added on the chart-of-accounts tab, **When** the review tab is shown, **Then** the added accounts are displayed in a list box.
+2. **Given** one or more committee roles have been added, **When** the review tab is shown, **Then** the added roles are displayed as a bordered list box, not as a comma-separated string.
+3. **Given** one or more accounts have been added on the chart-of-accounts tab, **When** the review tab is shown, **Then** the added accounts are displayed as a bordered list box.
 4. **Given** the review tab is the last tab, **When** the user clicks "Finish", **Then** setup is submitted using the values currently shown on the review tab.
 
 ---
@@ -52,7 +52,7 @@ Instead of typing a comma-separated list of extra committee role titles into a s
 
 **Acceptance Scenarios**:
 
-1. **Given** the committee tab is open, **When** the user types a role title and clicks "+", **Then** the title appears in a list below the entry field and the entry field clears for the next title.
+1. **Given** the committee tab is open, **When** the user types a role title and clicks "+", **Then** the title appears in a bordered list box below the entry field and the entry field clears for the next title.
 2. **Given** the entry field is empty or only whitespace, **When** the user clicks "+", **Then** no entry is added.
 3. **Given** a role title already appears in the list (case-insensitive match), **When** the user tries to add it again, **Then** the duplicate is rejected and the existing entry is not duplicated.
 4. **Given** one or more roles have been added, **When** the user removes one from the list, **Then** it no longer appears in the list and is not included when setup is submitted.
@@ -70,7 +70,7 @@ The coordinator can add general ledger accounts to the Chart of Accounts from a 
 
 **Acceptance Scenarios**:
 
-1. **Given** the chart-of-accounts tab is open, **When** the user enters a valid account name and type and submits, **Then** the account is added to the tab's queued list (not yet created in the database) and the entry form clears for the next account.
+1. **Given** the chart-of-accounts tab is open, **When** the user enters a valid account name and type and submits, **Then** the account is added to the tab's bordered queued-list box (not yet created in the database) and the entry form clears for the next account.
 2. **Given** an account name that matches one already queued in this session, or one that already exists in the Chart of Accounts, **When** the user tries to add it, **Then** the same validation error shown on the standalone Chart of Accounts page for a duplicate name is shown here, and no duplicate is queued.
 3. **Given** the account type selected is Asset, **When** the add-account form is shown, **Then** the bank/cash account checkbox is available, matching the standalone page's behavior.
 4. **Given** no accounts are queued on this tab, **When** setup is completed, **Then** setup still completes normally with only the system default accounts present.
@@ -101,6 +101,7 @@ The theme is chosen from a dropdown selector instead of a toggle switch, and eve
 - The user clicks directly on a tab far ahead of the one they're currently completing (skipping tabs via the tab strip rather than Next): this is allowed for navigation, but does not bypass the same overall validation performed at Finish.
 - The user switches tabs rapidly: because the wizard doesn't persist anything to the database until Finish is clicked — including the queued committee roles and the queued Chart of Accounts entries — tab switching itself must not trigger any concurrent database access.
 - Finish is submitted but a required field on another tab is invalid: the queued committee roles and queued Chart of Accounts entries MUST remain queued and visible, not discarded, so the coordinator can fix the invalid field and retry Finish without re-entering them.
+- A list box (committee roles or queued accounts) grows long enough to overflow its allotted space: the bordered list MUST stay contained (e.g. scrolling within its own border) rather than pushing the rest of the tab out of view — this applies to any bordered list box anywhere in the app, not just these two.
 - Sales tax is toggled off after a tax rate and fee tax treatments were entered: the same clearing behavior that exists today (tax fields reset) must still apply regardless of which tab layout is in effect.
 - The debug-only "load sample data" checkbox: continues to appear only when a debug seeder is available, unaffected by which tab it now lives on.
 
@@ -113,20 +114,21 @@ The theme is chosen from a dropdown selector instead of a toggle switch, and eve
 - **FR-003**: The wizard MUST allow moving between tabs both by clicking a tab's header directly and by clicking a "Next" control that advances to the next tab in the defined order.
 - **FR-004**: "Next" MUST NOT advance past a tab whose own required fields fail validation.
 - **FR-005**: The last tab MUST be a review tab that displays every value entered across all other tabs in read-only form before the user finishes setup.
-- **FR-006**: The review tab MUST display queued committee office-holder titles and queued chart-of-accounts entries as list boxes rather than as comma-separated or plain text.
-- **FR-007**: Finishing setup from the review tab MUST validate all required fields across every tab and MUST refuse to complete setup while any are invalid, consistent with today's all-fields-required-before-finish behavior; on a successful Finish, every queued committee office-holder title and every queued Chart of Accounts entry MUST be created together with the rest of setup, in one submission.
-- **FR-008**: The wizard MUST let the user add an additional committee office-holder title by typing its name into an entry field and clicking an "add" ("+") control, rather than by editing a single comma-separated text field.
-- **FR-009**: Each added committee office-holder title MUST appear in a list displayed beneath the entry field, and the user MUST be able to remove a previously added title from that list before finishing setup.
-- **FR-010**: Adding a committee office-holder title that is blank/whitespace-only, or that duplicates (case-insensitively) a title already added in the same setup session, MUST be rejected without adding a duplicate or empty entry.
-- **FR-011**: The wizard MUST include a tab for queuing entries to add to the Chart of Accounts during setup, offering the same fields (name, account type, and — for Asset accounts — the bank/cash flag) as the existing standalone Chart of Accounts page's add-account control.
-- **FR-012**: An account added on the Chart of Accounts tab MUST be held in the wizard's own in-progress state and MUST NOT be created in the database until the user finishes setup, at which point it MUST be created using the same account-creation behavior the standalone Chart of Accounts page uses. Until then, it MUST appear in that tab's list of queued accounts.
-- **FR-013**: Adding an account whose name matches one already queued in the current setup session (case-insensitive), or one that already exists in the Chart of Accounts, MUST be rejected with the same validation behavior as the standalone Chart of Accounts page, and MUST NOT queue a duplicate.
-- **FR-014**: The wizard MUST NOT require any account to be queued on the Chart of Accounts tab in order to finish setup.
-- **FR-015**: The add-account fields and validation MUST be a single shared experience used by both the standalone Chart of Accounts page and the setup wizard's tab, rather than two separately built forms; the standalone page's existing behavior of creating an account immediately on submit MUST remain unchanged, while the setup wizard's use of that same experience MUST defer creation until Finish, as described in FR-012.
-- **FR-016**: The theme (appearance) setting in the wizard MUST be presented as a dropdown selector rather than a toggle switch, and selecting a value MUST update the wizard's own appearance immediately.
-- **FR-017**: Every yes/no (boolean) setting elsewhere in the wizard, other than the theme selector, MUST be presented as a checkbox rather than a toggle switch.
-- **FR-018**: Regrouping settings into tabs MUST NOT change what data first-run setup captures or how it's validated — every field, validation rule, and default value that exists in the current wizard MUST still exist and behave the same way in the tabbed wizard.
-- **FR-019**: The debug-only "load sample data" option MUST continue to appear only when a debug data seeder is available (never in a release build), regardless of which tab hosts it.
+- **FR-006**: The review tab MUST display queued committee office-holder titles and queued chart-of-accounts entries as bordered list boxes (see FR-007) rather than as comma-separated or plain text.
+- **FR-007**: Every list box anywhere in the application — whether it lets the user select an entry (interactive) or is purely a read-only display of entries — MUST be rendered as a bordered list. This is an application-wide visual convention, not a setup-wizard-only detail: the committee-role list and the queued-accounts list (both while being built and when summarized on the review tab) are this feature's instances of it, and it is the standard any list box added elsewhere in the app afterward MUST also follow.
+- **FR-008**: Finishing setup from the review tab MUST validate all required fields across every tab and MUST refuse to complete setup while any are invalid, consistent with today's all-fields-required-before-finish behavior; on a successful Finish, every queued committee office-holder title and every queued Chart of Accounts entry MUST be created together with the rest of setup, in one submission.
+- **FR-009**: The wizard MUST let the user add an additional committee office-holder title by typing its name into an entry field and clicking an "add" ("+") control, rather than by editing a single comma-separated text field.
+- **FR-010**: Each added committee office-holder title MUST appear in a bordered list box displayed beneath the entry field, and the user MUST be able to remove a previously added title from that list before finishing setup.
+- **FR-011**: Adding a committee office-holder title that is blank/whitespace-only, or that duplicates (case-insensitively) a title already added in the same setup session, MUST be rejected without adding a duplicate or empty entry.
+- **FR-012**: The wizard MUST include a tab for queuing entries to add to the Chart of Accounts during setup, offering the same fields (name, account type, and — for Asset accounts — the bank/cash flag) as the existing standalone Chart of Accounts page's add-account control.
+- **FR-013**: An account added on the Chart of Accounts tab MUST be held in the wizard's own in-progress state and MUST NOT be created in the database until the user finishes setup, at which point it MUST be created using the same account-creation behavior the standalone Chart of Accounts page uses. Until then, it MUST appear in that tab's bordered list box of queued accounts.
+- **FR-014**: Adding an account whose name matches one already queued in the current setup session (case-insensitive), or one that already exists in the Chart of Accounts, MUST be rejected with the same validation behavior as the standalone Chart of Accounts page, and MUST NOT queue a duplicate.
+- **FR-015**: The wizard MUST NOT require any account to be queued on the Chart of Accounts tab in order to finish setup.
+- **FR-016**: The add-account fields and validation MUST be a single shared experience used by both the standalone Chart of Accounts page and the setup wizard's tab, rather than two separately built forms; the standalone page's existing behavior of creating an account immediately on submit MUST remain unchanged, while the setup wizard's use of that same experience MUST defer creation until Finish, as described in FR-013.
+- **FR-017**: The theme (appearance) setting in the wizard MUST be presented as a dropdown selector rather than a toggle switch, and selecting a value MUST update the wizard's own appearance immediately.
+- **FR-018**: Every yes/no (boolean) setting elsewhere in the wizard, other than the theme selector, MUST be presented as a checkbox rather than a toggle switch.
+- **FR-019**: Regrouping settings into tabs MUST NOT change what data first-run setup captures or how it's validated — every field, validation rule, and default value that exists in the current wizard MUST still exist and behave the same way in the tabbed wizard.
+- **FR-020**: The debug-only "load sample data" option MUST continue to appear only when a debug data seeder is available (never in a release build), regardless of which tab hosts it.
 
 ## Key Entities
 
@@ -148,6 +150,7 @@ The theme is chosen from a dropdown selector instead of a toggle switch, and eve
 - "Tabs should look like the ones in the Finance screen" refers to the `Tabs`/`Tab` Blazor component already used by `FinancePage.razor`; the setup wizard's tabs are built with that same component for visual and behavioral consistency.
 - The exact tab names and final grouping (e.g. "General", "Membership & Fees", "Sales Tax", "Committee", "Chart of Accounts", "Review") are left to the planning step to finalize, as long as no tab holds only one or two settings and the grouping is logical — the issue asks for a grouping strategy, not exact tab names.
 - The theme dropdown offers the two themes the application currently supports (Light and Dark); if more themes are added later, the dropdown grows to match without further spec changes.
-- "List boxes" for the review tab's committee-role and account summaries means a simple read-only list display (e.g. a bulleted or bordered list), not an interactive multi-select control — the user isn't selecting from these lists, only reviewing what they already entered.
-- The existing add-account control is modified (not merely reused as-is) so it can operate in two modes: creating immediately, as it does today on the standalone Chart of Accounts page, and queuing locally without persisting, as required by the setup wizard. Changing that shared control is explicitly in scope for this feature (see FR-019).
-- This feature only changes the `/setup` first-run wizard. The Settings page's own General tab (which also currently uses a theme toggle switch) is out of scope — the issue's wording specifically calls out "the setup wizard."
+- A "bordered list box" means a list of entries rendered inside a visible border/box (as opposed to a bare bulleted list, plain text, or borderless rows) — this is the one visual shape "list box" refers to everywhere in this spec, whether the list is purely read-only (the review tab's summaries) or lets the user act on an entry (e.g. remove it, as on the committee tab).
+- The bordered-list requirement (FR-007) is deliberately written as an application-wide convention rather than a wizard-only style choice, per explicit direction that this change is in scope project-wide. No other list box exists in the app today — the committee-role list and the queued-accounts list introduced by this feature are its first instances — so no other screen needs retrofitting right now, but the convention itself is recorded here so any list box built afterward, anywhere in the app, follows it too.
+- The existing add-account control is modified (not merely reused as-is) so it can operate in two modes: creating immediately, as it does today on the standalone Chart of Accounts page, and queuing locally without persisting, as required by the setup wizard. Changing that shared control is explicitly in scope for this feature (see FR-016).
+- This feature's tab restructuring, control-style changes (FR-001 through FR-006, FR-008 through FR-020), and the setup-specific list boxes are limited to the `/setup` first-run wizard. The Settings page's own General tab (which also currently uses a theme toggle switch) is out of scope for those — the issue's wording specifically calls out "the setup wizard." The bordered-list convention itself (FR-007) is the one exception: it is application-wide by design, as described above.

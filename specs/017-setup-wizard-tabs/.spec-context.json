@@ -43,45 +43,48 @@
       "title": "Last tab is a read-only review of every entered value"
     },
     "FR-006": {
-      "title": "Review tab shows added roles and accounts as list boxes"
+      "title": "Review tab shows queued roles and accounts as bordered list boxes"
     },
     "FR-007": {
-      "title": "Finish validates all tabs' required fields before completing"
+      "title": "Bordered-list convention for every list box, app-wide (new)"
     },
     "FR-008": {
-      "title": "Committee roles added one at a time via a + control"
+      "title": "Finish validates all tabs' required fields, creates queued items together"
     },
     "FR-009": {
-      "title": "Added roles listed and removable before finishing"
+      "title": "Committee roles added one at a time via a + control"
     },
     "FR-010": {
-      "title": "Blank or duplicate role titles are rejected"
+      "title": "Added roles shown in a bordered list box, removable before finishing"
     },
     "FR-011": {
-      "title": "New Chart of Accounts tab lets the user queue entries via the shared add-account fields"
+      "title": "Blank or duplicate role titles are rejected"
     },
     "FR-012": {
-      "title": "Queued accounts are not created until Finish; shown in the tab's queued list meanwhile"
+      "title": "New Chart of Accounts tab lets the user queue entries via the shared add-account fields"
     },
     "FR-013": {
-      "title": "Duplicate account names (queued or persisted) are rejected the same as the standalone page"
+      "title": "Queued accounts are not created until Finish; shown in a bordered list box meanwhile"
     },
     "FR-014": {
-      "title": "Adding an account is optional, never blocks finishing setup"
+      "title": "Duplicate account names (queued or persisted) are rejected the same as the standalone page"
     },
     "FR-015": {
-      "title": "Add-account experience is shared: immediate-create on the standalone page, deferred on the wizard tab"
+      "title": "Adding an account is optional, never blocks finishing setup"
     },
     "FR-016": {
-      "title": "Theme is a dropdown selector, applies immediately"
+      "title": "Add-account experience is shared: immediate-create on the standalone page, deferred on the wizard tab"
     },
     "FR-017": {
-      "title": "Every other yes/no setting is a checkbox, not a toggle switch"
+      "title": "Theme is a dropdown selector, applies immediately"
     },
     "FR-018": {
-      "title": "Regrouping into tabs preserves every field, rule, and default"
+      "title": "Every other yes/no setting is a checkbox, not a toggle switch"
     },
     "FR-019": {
+      "title": "Regrouping into tabs preserves every field, rule, and default"
+    },
+    "FR-020": {
       "title": "Sample-data checkbox still debug-build-only regardless of tab"
     }
   },
