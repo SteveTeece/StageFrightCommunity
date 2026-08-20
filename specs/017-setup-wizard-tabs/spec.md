@@ -60,21 +60,21 @@ Instead of typing a comma-separated list of extra committee role titles into a s
 
 ---
 
-### User Story 4 - Add Chart of Accounts entries during setup (Priority: P2)
+### User Story 4 - Queue Chart of Accounts entries during setup (Priority: P2)
 
-The coordinator can add general ledger accounts to the Chart of Accounts from a dedicated tab during first-run setup, using the same add-account control (name, type, and bank/cash flag) that's used everywhere else in the app, instead of having to finish setup first and find the Chart of Accounts page separately.
+The coordinator can add general ledger accounts to the Chart of Accounts from a dedicated tab during first-run setup, using the same add-account experience (name, type, and bank/cash flag) that's used on the standalone Chart of Accounts page — but, unlike that standalone page, an account added here is only queued for creation: it isn't written to the database until the coordinator finishes setup, exactly like the committee roles added on the committee tab.
 
 **Why this priority**: A genuinely new capability (setup previously offered no way to add accounts), valuable but not blocking — the app already seeds default system accounts, so a coordinator can still finish setup and add accounts afterward from Finance ▸ Chart of Accounts if they skip this tab.
 
-**Independent Test**: On the chart-of-accounts tab, add a new account with a name, type, and (for an Asset account) the bank/cash flag, confirm it appears in the tab's account list immediately, and confirm it's visible later in Finance ▸ Chart of Accounts after setup completes.
+**Independent Test**: On the chart-of-accounts tab, add a new account with a name, type, and (for an Asset account) the bank/cash flag; confirm it appears in the tab's queued-accounts list but does not yet exist in Finance ▸ Chart of Accounts; then finish setup and confirm it now exists there.
 
 **Acceptance Scenarios**:
 
-1. **Given** the chart-of-accounts tab is open, **When** the user enters a valid account name and type and submits, **Then** the account is created immediately (the same way the standalone Chart of Accounts page creates one) and appears in the tab's list of accounts added so far.
-2. **Given** an account name that already exists, **When** the user tries to add it, **Then** the same validation error shown on the standalone Chart of Accounts page is shown here, and no duplicate is created.
+1. **Given** the chart-of-accounts tab is open, **When** the user enters a valid account name and type and submits, **Then** the account is added to the tab's queued list (not yet created in the database) and the entry form clears for the next account.
+2. **Given** an account name that matches one already queued in this session, or one that already exists in the Chart of Accounts, **When** the user tries to add it, **Then** the same validation error shown on the standalone Chart of Accounts page for a duplicate name is shown here, and no duplicate is queued.
 3. **Given** the account type selected is Asset, **When** the add-account form is shown, **Then** the bank/cash account checkbox is available, matching the standalone page's behavior.
-4. **Given** no accounts are added on this tab, **When** setup is completed, **Then** setup still completes normally with only the system default accounts present.
-5. **Given** accounts were added on this tab but the coordinator closes the app before finishing setup, **When** the app is relaunched, **Then** it returns to the setup wizard (setup is still incomplete) and the previously added accounts still exist and are not recreated.
+4. **Given** no accounts are queued on this tab, **When** setup is completed, **Then** setup still completes normally with only the system default accounts present.
+5. **Given** accounts were queued on this tab but the coordinator closes the app before finishing setup, **When** the app is relaunched, **Then** it returns to the setup wizard (setup is still incomplete) and the previously queued accounts are gone — nothing was persisted — so the coordinator must re-add them, the same as they would need to re-enter a committee role or any other unsaved field.
 
 ---
 
@@ -99,7 +99,8 @@ The theme is chosen from a dropdown selector instead of a toggle switch, and eve
 - A required field on a tab other than the one currently open is left invalid: attempting to finish from the review tab MUST be rejected the same way an invalid submission is rejected today, and the user MUST be able to tell which tab needs attention.
 - The user clicks "Next" on a tab whose own required fields aren't valid yet: the wizard does not advance past that tab.
 - The user clicks directly on a tab far ahead of the one they're currently completing (skipping tabs via the tab strip rather than Next): this is allowed for navigation, but does not bypass the same overall validation performed at Finish.
-- The user switches tabs rapidly: because the wizard doesn't persist anything to the database until Finish is clicked (with the sole exception of accounts added on the Chart of Accounts tab, which persist immediately like they do everywhere else in the app), tab switching itself must not trigger any concurrent database access.
+- The user switches tabs rapidly: because the wizard doesn't persist anything to the database until Finish is clicked — including the queued committee roles and the queued Chart of Accounts entries — tab switching itself must not trigger any concurrent database access.
+- Finish is submitted but a required field on another tab is invalid: the queued committee roles and queued Chart of Accounts entries MUST remain queued and visible, not discarded, so the coordinator can fix the invalid field and retry Finish without re-entering them.
 - Sales tax is toggled off after a tax rate and fee tax treatments were entered: the same clearing behavior that exists today (tax fields reset) must still apply regardless of which tab layout is in effect.
 - The debug-only "load sample data" checkbox: continues to appear only when a debug seeder is available, unaffected by which tab it now lives on.
 
@@ -112,24 +113,25 @@ The theme is chosen from a dropdown selector instead of a toggle switch, and eve
 - **FR-003**: The wizard MUST allow moving between tabs both by clicking a tab's header directly and by clicking a "Next" control that advances to the next tab in the defined order.
 - **FR-004**: "Next" MUST NOT advance past a tab whose own required fields fail validation.
 - **FR-005**: The last tab MUST be a review tab that displays every value entered across all other tabs in read-only form before the user finishes setup.
-- **FR-006**: The review tab MUST display added committee office-holder titles and added chart-of-accounts entries as list boxes rather than as comma-separated or plain text.
-- **FR-007**: Finishing setup from the review tab MUST validate all required fields across every tab and MUST refuse to complete setup while any are invalid, consistent with today's all-fields-required-before-finish behavior.
+- **FR-006**: The review tab MUST display queued committee office-holder titles and queued chart-of-accounts entries as list boxes rather than as comma-separated or plain text.
+- **FR-007**: Finishing setup from the review tab MUST validate all required fields across every tab and MUST refuse to complete setup while any are invalid, consistent with today's all-fields-required-before-finish behavior; on a successful Finish, every queued committee office-holder title and every queued Chart of Accounts entry MUST be created together with the rest of setup, in one submission.
 - **FR-008**: The wizard MUST let the user add an additional committee office-holder title by typing its name into an entry field and clicking an "add" ("+") control, rather than by editing a single comma-separated text field.
 - **FR-009**: Each added committee office-holder title MUST appear in a list displayed beneath the entry field, and the user MUST be able to remove a previously added title from that list before finishing setup.
 - **FR-010**: Adding a committee office-holder title that is blank/whitespace-only, or that duplicates (case-insensitively) a title already added in the same setup session, MUST be rejected without adding a duplicate or empty entry.
-- **FR-011**: The wizard MUST include a tab for adding entries to the Chart of Accounts during setup, offering the same fields and immediate-create behavior (name, account type, and — for Asset accounts — the bank/cash flag) as the existing standalone Chart of Accounts page.
-- **FR-012**: An account added on the Chart of Accounts tab MUST be created immediately, the same way accounts are created from the standalone Chart of Accounts page, and MUST appear in that tab's list of accounts without requiring setup to be finished first.
-- **FR-013**: Adding an account with a name that already exists MUST be rejected with the same validation behavior as the standalone Chart of Accounts page.
-- **FR-014**: The wizard MUST NOT require any account to be added on the Chart of Accounts tab in order to finish setup.
-- **FR-015**: The theme (appearance) setting in the wizard MUST be presented as a dropdown selector rather than a toggle switch, and selecting a value MUST update the wizard's own appearance immediately.
-- **FR-016**: Every yes/no (boolean) setting elsewhere in the wizard, other than the theme selector, MUST be presented as a checkbox rather than a toggle switch.
-- **FR-017**: Regrouping settings into tabs MUST NOT change what data first-run setup captures or how it's validated — every field, validation rule, and default value that exists in the current wizard MUST still exist and behave the same way in the tabbed wizard.
-- **FR-018**: The debug-only "load sample data" option MUST continue to appear only when a debug data seeder is available (never in a release build), regardless of which tab hosts it.
+- **FR-011**: The wizard MUST include a tab for queuing entries to add to the Chart of Accounts during setup, offering the same fields (name, account type, and — for Asset accounts — the bank/cash flag) as the existing standalone Chart of Accounts page's add-account control.
+- **FR-012**: An account added on the Chart of Accounts tab MUST be held in the wizard's own in-progress state and MUST NOT be created in the database until the user finishes setup, at which point it MUST be created using the same account-creation behavior the standalone Chart of Accounts page uses. Until then, it MUST appear in that tab's list of queued accounts.
+- **FR-013**: Adding an account whose name matches one already queued in the current setup session (case-insensitive), or one that already exists in the Chart of Accounts, MUST be rejected with the same validation behavior as the standalone Chart of Accounts page, and MUST NOT queue a duplicate.
+- **FR-014**: The wizard MUST NOT require any account to be queued on the Chart of Accounts tab in order to finish setup.
+- **FR-015**: The add-account fields and validation MUST be a single shared experience used by both the standalone Chart of Accounts page and the setup wizard's tab, rather than two separately built forms; the standalone page's existing behavior of creating an account immediately on submit MUST remain unchanged, while the setup wizard's use of that same experience MUST defer creation until Finish, as described in FR-012.
+- **FR-016**: The theme (appearance) setting in the wizard MUST be presented as a dropdown selector rather than a toggle switch, and selecting a value MUST update the wizard's own appearance immediately.
+- **FR-017**: Every yes/no (boolean) setting elsewhere in the wizard, other than the theme selector, MUST be presented as a checkbox rather than a toggle switch.
+- **FR-018**: Regrouping settings into tabs MUST NOT change what data first-run setup captures or how it's validated — every field, validation rule, and default value that exists in the current wizard MUST still exist and behave the same way in the tabbed wizard.
+- **FR-019**: The debug-only "load sample data" option MUST continue to appear only when a debug data seeder is available (never in a release build), regardless of which tab hosts it.
 
 ## Key Entities
 
 - **Committee office-holder title (in-session list)**: A role name the coordinator adds during setup, held only in the wizard's own in-progress state until Finish, at which point the full set is submitted together — same underlying data as today's comma-separated field, only the entry/display mechanism changes.
-- **Chart of Accounts entry**: A general ledger account (name, account type, and — for Asset accounts — whether it's a bank/cash account) created immediately when added on the new tab, using the same account-creation behavior as the standalone Chart of Accounts page.
+- **Chart of Accounts entry (in-session queue)**: A general ledger account (name, account type, and — for Asset accounts — whether it's a bank/cash account) the coordinator queues during setup, held only in the wizard's own in-progress state until Finish, at which point it's created using the same account-creation behavior as the standalone Chart of Accounts page.
 
 ## Success Criteria
 
@@ -139,7 +141,7 @@ The theme is chosen from a dropdown selector instead of a toggle switch, and eve
 - **SC-002**: No tab in the redesigned wizard contains fewer than three related settings, except the review tab and the Chart of Accounts tab (which are exempt because their content is inherently a summary/list rather than a fixed set of settings).
 - **SC-003**: 100% of the fields, validations, and default values present in the current five-step wizard are still present and enforced after the redesign (no silent loss of setup capability).
 - **SC-004**: A coordinator can add at least five committee office-holder titles and remove any of them before finishing setup, with no duplicate or blank entries ever appearing in the list.
-- **SC-005**: A coordinator can add at least one Chart of Accounts entry during setup and see it appear in the standalone Chart of Accounts page (Finance ▸ Chart of Accounts) after setup completes, with no duplication.
+- **SC-005**: A coordinator can queue at least one Chart of Accounts entry during setup, confirm it does not yet exist anywhere in the app before Finish is clicked, then see it appear in the standalone Chart of Accounts page (Finance ▸ Chart of Accounts) once setup completes, with no duplication.
 
 ## Assumptions
 
@@ -147,5 +149,5 @@ The theme is chosen from a dropdown selector instead of a toggle switch, and eve
 - The exact tab names and final grouping (e.g. "General", "Membership & Fees", "Sales Tax", "Committee", "Chart of Accounts", "Review") are left to the planning step to finalize, as long as no tab holds only one or two settings and the grouping is logical — the issue asks for a grouping strategy, not exact tab names.
 - The theme dropdown offers the two themes the application currently supports (Light and Dark); if more themes are added later, the dropdown grows to match without further spec changes.
 - "List boxes" for the review tab's committee-role and account summaries means a simple read-only list display (e.g. a bulleted or bordered list), not an interactive multi-select control — the user isn't selecting from these lists, only reviewing what they already entered.
-- Accounts added on the Chart of Accounts tab persist immediately (matching the existing standalone page's behavior) rather than being deferred until Finish like the rest of setup's fields — the issue asks to reuse the existing add-account control as-is, and that control already creates accounts immediately.
+- The existing add-account control is modified (not merely reused as-is) so it can operate in two modes: creating immediately, as it does today on the standalone Chart of Accounts page, and queuing locally without persisting, as required by the setup wizard. Changing that shared control is explicitly in scope for this feature (see FR-019).
 - This feature only changes the `/setup` first-run wizard. The Settings page's own General tab (which also currently uses a theme toggle switch) is out of scope — the issue's wording specifically calls out "the setup wizard."

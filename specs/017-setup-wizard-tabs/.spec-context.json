@@ -58,27 +58,30 @@
       "title": "Blank or duplicate role titles are rejected"
     },
     "FR-011": {
-      "title": "New Chart of Accounts tab reuses the existing add-account control"
+      "title": "New Chart of Accounts tab lets the user queue entries via the shared add-account fields"
     },
     "FR-012": {
-      "title": "Accounts added on that tab are created immediately, listed right away"
+      "title": "Queued accounts are not created until Finish; shown in the tab's queued list meanwhile"
     },
     "FR-013": {
-      "title": "Duplicate account names are rejected the same as the standalone page"
+      "title": "Duplicate account names (queued or persisted) are rejected the same as the standalone page"
     },
     "FR-014": {
       "title": "Adding an account is optional, never blocks finishing setup"
     },
     "FR-015": {
-      "title": "Theme is a dropdown selector, applies immediately"
+      "title": "Add-account experience is shared: immediate-create on the standalone page, deferred on the wizard tab"
     },
     "FR-016": {
-      "title": "Every other yes/no setting is a checkbox, not a toggle switch"
+      "title": "Theme is a dropdown selector, applies immediately"
     },
     "FR-017": {
-      "title": "Regrouping into tabs preserves every field, rule, and default"
+      "title": "Every other yes/no setting is a checkbox, not a toggle switch"
     },
     "FR-018": {
+      "title": "Regrouping into tabs preserves every field, rule, and default"
+    },
+    "FR-019": {
       "title": "Sample-data checkbox still debug-build-only regardless of tab"
     }
   },
