@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using StageFright.Core.Modules.AuditTrail;
+using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Members;
 using StageFright.Core.Modules.Settings;
 using StageFright.Data;
@@ -56,7 +57,14 @@ public sealed class StartupBenchmarkTests : IAsyncLifetime
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(ctx);
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditSvc);
-        return new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditSvc);
+        var glAssignment = new AccountNumberAssignmentService(accountRepo);
+        var reconciliationRepo = new BankReconciliationRepository(ctx);
+        var accountService = new AccountService(accountRepo, glAssignment, auditSvc, reconciliationRepo);
+        var glRepo = new GLRepository(ctx);
+        var journalRepo = new JournalEntryRepository(ctx);
+        var unitOfWork = new UnitOfWork(ctx);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditSvc, unitOfWork);
+        return new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditSvc);
     }
 
     /// <summary>

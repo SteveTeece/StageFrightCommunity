@@ -1,8 +1,8 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
 using StageFright.Core.Modules.Finance;
+using StageFright.UI.Shared;
 using CoreValidationException = StageFright.Core.Exceptions.ValidationException;
 
 namespace StageFright.UI.Pages.Finance;
@@ -24,7 +24,8 @@ public partial class ChartOfAccountsPage : ComponentBase
     private Guid? _editingId;
     private string _editName = string.Empty;
 
-    private NewAccountModel _newAccountModel = new();
+    private IReadOnlyList<string> ExistingAccountNames =>
+        _accounts.Select(a => a.Name).Concat(_archivedAccounts.Select(a => a.Name)).ToList();
 
     private IEnumerable<AccountBalance> FilteredAccounts =>
         _typeFilter is null ? _accounts : _accounts.Where(a => a.Type == _typeFilter);
@@ -59,7 +60,7 @@ public partial class ChartOfAccountsPage : ComponentBase
         _typeFilter = Enum.TryParse<AccountType>(value, out var parsed) ? parsed : null;
     }
 
-    private async Task HandleCreateAsync()
+    private async Task HandleCreateAsync(NewAccountModel newAccountModel)
     {
         _creating = true;
         _errorMessage = null;
@@ -68,11 +69,10 @@ public partial class ChartOfAccountsPage : ComponentBase
         try
         {
             var created = await AccountService.CreateAsync(
-                _newAccountModel.Name!,
-                _newAccountModel.Type,
-                _newAccountModel.Type == AccountType.Asset && _newAccountModel.IsBankAccount);
+                newAccountModel.Name!,
+                newAccountModel.Type,
+                newAccountModel.Type == AccountType.Asset && newAccountModel.IsBankAccount);
             _successMessage = $"Account '{created.Name}' created with number {created.AccountNumber}.";
-            _newAccountModel = new NewAccountModel();
             await LoadAccountsAsync();
         }
         catch (CoreValidationException ex)
@@ -162,15 +162,4 @@ public partial class ChartOfAccountsPage : ComponentBase
         }
     }
 
-    private sealed class NewAccountModel
-    {
-        [Required(ErrorMessage = "Account name is required.")]
-        [MaxLength(100, ErrorMessage = "Account name must be 100 characters or fewer.")]
-        public string? Name { get; set; }
-
-        [Required]
-        public AccountType Type { get; set; } = AccountType.Income;
-
-        public bool IsBankAccount { get; set; }
-    }
 }

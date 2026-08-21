@@ -3,6 +3,7 @@ using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.Events;
+using StageFright.Core.Modules.Finance;
 using SettingsEntity = StageFright.Core.Entities.Settings;
 
 namespace StageFright.Core.Modules.Settings;
@@ -18,6 +19,8 @@ public class SetupService : ISetupService
     private readonly IAccountRepository _accountRepo;
     private readonly IEventTypeRepository _eventTypeRepo;
     private readonly ICommitteeOfficeHolderTypeService _officeHolderTypeService;
+    private readonly IAccountService _accountService;
+    private readonly IOpeningBalanceService _openingBalanceService;
     private readonly IAuditTrailService _audit;
 
     public SetupService(
@@ -25,12 +28,16 @@ public class SetupService : ISetupService
         IAccountRepository accountRepo,
         IEventTypeRepository eventTypeRepo,
         ICommitteeOfficeHolderTypeService officeHolderTypeService,
+        IAccountService accountService,
+        IOpeningBalanceService openingBalanceService,
         IAuditTrailService audit)
     {
         _settingsRepo = settingsRepo;
         _accountRepo = accountRepo;
         _eventTypeRepo = eventTypeRepo;
         _officeHolderTypeService = officeHolderTypeService;
+        _accountService = accountService;
+        _openingBalanceService = openingBalanceService;
         _audit = audit;
     }
 
@@ -80,6 +87,42 @@ public class SetupService : ISetupService
         await _settingsRepo.SaveAsync(settings, ct);
 
         await SeedDefaultEventTypesAsync(ct);
+
+        // Chart of Accounts entries queued during setup (FR-013) are created here, together
+        // with the rest of setup, so Finish stays one submission (FR-008). ClientId->real
+        // Account.Id is tracked so a queued account's opening balance (below) can be
+        // resolved to a real AccountId even though it didn't exist when it was queued.
+        var clientIdToAccountId = new Dictionary<Guid, Guid>();
+        if (request.QueuedAccounts is { Count: > 0 })
+        {
+            foreach (var queuedAccount in request.QueuedAccounts)
+            {
+                var created = await _accountService.CreateAsync(
+                    queuedAccount.Name, queuedAccount.Type, queuedAccount.IsBankAccount, ct);
+                clientIdToAccountId[queuedAccount.ClientId] = created.Id;
+            }
+        }
+
+        // Opening balances queued during setup (FR-018) post together as one journal entry,
+        // after any queued accounts above so a queued account's ClientId can already resolve.
+        if (request.QueuedOpeningBalances is { Count: > 0 })
+        {
+            var resolvedEntries = request.QueuedOpeningBalances
+                .Select(entry => new OpeningBalanceEntry
+                {
+                    AccountId = clientIdToAccountId.TryGetValue(entry.AccountId, out var realId)
+                        ? realId
+                        : entry.AccountId,
+                    Amount = entry.Amount
+                })
+                .ToList();
+
+            await _openingBalanceService.RecordOpeningBalancesAsync(new RecordOpeningBalancesRequest
+            {
+                AsAtDate = request.OpeningBalanceAsAtDate,
+                Entries = resolvedEntries
+            }, ct);
+        }
 
         // Committee configuration is optional at every default (FR-021) — coordinators who
         // skip this step get no custom titles, identical to configuring none from Settings.

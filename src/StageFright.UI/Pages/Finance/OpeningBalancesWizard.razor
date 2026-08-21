@@ -1,4 +1,5 @@
 @page "/finance/opening-balances"
+@using StageFright.UI.Shared
 
 <PageTitle>Opening Balances</PageTitle>
 
@@ -22,17 +23,9 @@
         }
         else
         {
-            @if (_hasExistingOpeningBalances)
-            {
-                <div class="alert alert-warning py-1 mb-2 small opening-balances-warning" role="alert">
-                    Opening balances have already been posted. Posting again will add to the
-                    existing balances rather than replace them.
-                </div>
-            }
-
             <div class="card mb-2">
                 <div class="card-body py-2">
-                    <p class="small text-muted mb-2">Step @_step of 3</p>
+                    <p class="small text-muted mb-2">Step @_step of 2</p>
 
                     @if (_step == 1)
                     {
@@ -53,92 +46,16 @@
                             <button type="button" class="btn btn-primary btn-sm wizard-next" @onclick="() => GoToStep(2)">Next</button>
                         </div>
                     }
-                    else if (_step == 2)
-                    {
-                        <h6 class="card-title mb-2">Step 2 — Enter balances</h6>
-                        <p class="small">
-                            Enter each account's balance as at @_asAtDate.ToString("d MMMM yyyy").
-                            Leave accounts you don't need at zero. Any difference is posted to
-                            Opening Balance Equity automatically.
-                        </p>
-                        <div class="table-responsive">
-                            <table class="table table-sm align-middle opening-balances-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 6rem;">Number</th>
-                                        <th>Account</th>
-                                        <th style="width: 8rem;">Type</th>
-                                        <th class="text-end" style="width: 10rem;">Balance</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var row in _rows)
-                                    {
-                                        <tr>
-                                            <td>@row.Account.AccountNumber</td>
-                                            <td>@row.Account.Name</td>
-                                            <td>@row.Account.Type</td>
-                                            <td>
-                                                <input type="number" step="0.01"
-                                                       class="form-control form-control-sm text-end opening-balance-amount"
-                                                       value="@(row.Amount == 0m ? null : row.Amount)"
-                                                       @onchange="e => SetAmount(row, e)"
-                                                       aria-label="Balance for @row.Account.Name" />
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                                <tfoot>
-                                    <tr class="fw-semibold">
-                                        <td colspan="3">Opening Balance Equity plug</td>
-                                        <td class="text-end opening-balances-plug">@Plug.ToString("N2")</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                        <div class="d-flex gap-2 mt-2">
-                            <button type="button" class="btn btn-outline-secondary btn-sm wizard-back" @onclick="() => GoToStep(1)">Back</button>
-                            <button type="button" class="btn btn-primary btn-sm wizard-next" @onclick="() => GoToStep(3)"
-                                    disabled="@(NonZeroRows.Count == 0)">Next</button>
-                        </div>
-                    }
                     else
                     {
-                        <h6 class="card-title mb-2">Step 3 — Confirm</h6>
-                        <p class="small">
-                            The following opening balances will be posted as at @_asAtDate.ToString("d MMMM yyyy"):
-                        </p>
-                        <div class="table-responsive">
-                            <table class="table table-sm align-middle opening-balances-confirm">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 6rem;">Number</th>
-                                        <th>Account</th>
-                                        <th class="text-end" style="width: 10rem;">Balance</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var row in NonZeroRows)
-                                    {
-                                        <tr>
-                                            <td>@row.Account.AccountNumber</td>
-                                            <td>@row.Account.Name</td>
-                                            <td class="text-end">@row.Amount.ToString("N2")</td>
-                                        </tr>
-                                    }
-                                    <tr class="fw-semibold">
-                                        <td>3100</td>
-                                        <td>Opening Balance Equity (plug)</td>
-                                        <td class="text-end opening-balances-plug">@Plug.ToString("N2")</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <h6 class="card-title mb-2">Step 2 — Enter balances</h6>
+                        <OpeningBalanceEntryForm Accounts="_accounts"
+                                                  AsAtDate="_asAtDate"
+                                                  OnSubmit="PostAsync"
+                                                  ShowAlreadyPostedWarning="true"
+                                                  HasExistingOpeningBalances="_hasExistingOpeningBalances" />
                         <div class="d-flex gap-2 mt-2">
-                            <button type="button" class="btn btn-outline-secondary btn-sm wizard-back" @onclick="() => GoToStep(2)">Back</button>
-                            <button type="button" class="btn btn-primary btn-sm wizard-post" @onclick="PostAsync" disabled="@_saving">
-                                @(_saving ? "Posting…" : "Post Opening Balances")
-                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm wizard-back" @onclick="() => GoToStep(1)">Back</button>
                         </div>
                     }
                 </div>

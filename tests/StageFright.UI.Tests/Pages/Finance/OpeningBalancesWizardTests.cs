@@ -12,8 +12,9 @@ using AppSettings = StageFright.Core.Entities.Settings;
 namespace StageFright.UI.Tests.Pages.Finance;
 
 /// <summary>
-/// bUnit tests for OpeningBalancesWizard — 3-step flow (as-at date → balances grid
-/// with live plug preview → confirm), rerun warning, posting, and error handling.
+/// bUnit tests for OpeningBalancesWizard — 2-step flow (as-at date → the shared
+/// OpeningBalanceEntryForm, which folds entry, live plug preview, and posting into one
+/// step per spec 017's extraction), rerun warning, posting, and error handling.
 /// </summary>
 public class OpeningBalancesWizardTests : BunitContext
 {
@@ -87,6 +88,7 @@ public class OpeningBalancesWizardTests : BunitContext
             .Returns(true);
 
         var cut = Render<OpeningBalancesWizard>();
+        cut.Find(".wizard-next").Click();
 
         Assert.NotNull(cut.Find(".opening-balances-warning"));
     }
@@ -95,11 +97,12 @@ public class OpeningBalancesWizardTests : BunitContext
     public void Should_NotShowRerunWarning_When_NoOpeningBalancesExist()
     {
         var cut = Render<OpeningBalancesWizard>();
+        cut.Find(".wizard-next").Click();
 
         Assert.Empty(cut.FindAll(".opening-balances-warning"));
     }
 
-    // --- Step 2 ---
+    // --- Step 2 (entry + live plug + post, folded from the old Step 2/3) ---
 
     [Fact]
     public void Should_ShowAccountGrid_When_AdvancedToStepTwo()
@@ -126,12 +129,12 @@ public class OpeningBalancesWizardTests : BunitContext
     }
 
     [Fact]
-    public void Should_DisableNext_When_NoBalancesEntered()
+    public void Should_DisablePost_When_NoBalancesEntered()
     {
         var cut = Render<OpeningBalancesWizard>();
         cut.Find(".wizard-next").Click();
 
-        Assert.True(cut.Find(".wizard-next").HasAttribute("disabled"));
+        Assert.True(cut.Find(".wizard-post").HasAttribute("disabled"));
     }
 
     [Fact]
@@ -145,29 +148,12 @@ public class OpeningBalancesWizardTests : BunitContext
         Assert.Contains("Step 1", cut.Markup);
     }
 
-    // --- Step 3 ---
-
-    [Fact]
-    public void Should_ShowConfirmationWithNonZeroRowsAndPlug_When_AdvancedToStepThree()
-    {
-        var cut = Render<OpeningBalancesWizard>();
-        cut.Find(".wizard-next").Click();
-        cut.FindAll(".opening-balance-amount")[0].Change("5000");
-        cut.Find(".wizard-next").Click();
-
-        Assert.Contains("Step 3", cut.Markup);
-        Assert.Contains("Cash on Hand", cut.Markup);
-        Assert.DoesNotContain("Committee Loan", cut.Markup);
-        Assert.Contains("Opening Balance Equity", cut.Markup);
-    }
-
     [Fact]
     public void Should_PostOpeningBalances_When_PostClicked()
     {
         var cut = Render<OpeningBalancesWizard>();
         cut.Find(".wizard-next").Click();
         cut.FindAll(".opening-balance-amount")[0].Change("5000");
-        cut.Find(".wizard-next").Click();
 
         cut.Find(".wizard-post").Click();
 
@@ -190,7 +176,6 @@ public class OpeningBalancesWizardTests : BunitContext
         var cut = Render<OpeningBalancesWizard>();
         cut.Find(".wizard-next").Click();
         cut.FindAll(".opening-balance-amount")[0].Change("5000");
-        cut.Find(".wizard-next").Click();
 
         cut.Find(".wizard-post").Click();
 

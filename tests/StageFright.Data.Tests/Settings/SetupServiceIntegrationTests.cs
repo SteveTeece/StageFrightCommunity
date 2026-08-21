@@ -1,8 +1,10 @@
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Modules.AuditTrail;
+using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Members;
 using StageFright.Core.Modules.Settings;
+using StageFright.Data;
 using StageFright.Data.Repositories;
 using StageFright.Data.Tests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +31,14 @@ public class SetupServiceIntegrationTests : IDisposable
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
+        var glAssignment = new AccountNumberAssignmentService(accountRepo);
+        var reconciliationRepo = new BankReconciliationRepository(db);
+        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
+        var glRepo = new GLRepository(db);
+        var journalRepo = new JournalEntryRepository(db);
+        var unitOfWork = new UnitOfWork(db);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
 
         var request = new SetupRequest("My Choir", 80m, 6m, 3, false, null, null, null, Theme.Dark);
         await svc.InitializeAsync(request);
@@ -53,7 +62,14 @@ public class SetupServiceIntegrationTests : IDisposable
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
+        var glAssignment = new AccountNumberAssignmentService(accountRepo);
+        var reconciliationRepo = new BankReconciliationRepository(db);
+        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
+        var glRepo = new GLRepository(db);
+        var journalRepo = new JournalEntryRepository(db);
+        var unitOfWork = new UnitOfWork(db);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark));
 
@@ -74,7 +90,14 @@ public class SetupServiceIntegrationTests : IDisposable
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
+        var glAssignment = new AccountNumberAssignmentService(accountRepo);
+        var reconciliationRepo = new BankReconciliationRepository(db);
+        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
+        var glRepo = new GLRepository(db);
+        var journalRepo = new JournalEntryRepository(db);
+        var unitOfWork = new UnitOfWork(db);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark));
 
@@ -93,7 +116,14 @@ public class SetupServiceIntegrationTests : IDisposable
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
+        var glAssignment = new AccountNumberAssignmentService(accountRepo);
+        var reconciliationRepo = new BankReconciliationRepository(db);
+        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
+        var glRepo = new GLRepository(db);
+        var journalRepo = new JournalEntryRepository(db);
+        var unitOfWork = new UnitOfWork(db);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
 
         Assert.False(await svc.IsSetupCompleteAsync());
     }
@@ -109,7 +139,14 @@ public class SetupServiceIntegrationTests : IDisposable
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
+        var glAssignment = new AccountNumberAssignmentService(accountRepo);
+        var reconciliationRepo = new BankReconciliationRepository(db);
+        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
+        var glRepo = new GLRepository(db);
+        var journalRepo = new JournalEntryRepository(db);
+        var unitOfWork = new UnitOfWork(db);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark));
 
@@ -128,7 +165,14 @@ public class SetupServiceIntegrationTests : IDisposable
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
+        var glAssignment = new AccountNumberAssignmentService(accountRepo);
+        var reconciliationRepo = new BankReconciliationRepository(db);
+        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
+        var glRepo = new GLRepository(db);
+        var journalRepo = new JournalEntryRepository(db);
+        var unitOfWork = new UnitOfWork(db);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
 
         var request = new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark)
         {
