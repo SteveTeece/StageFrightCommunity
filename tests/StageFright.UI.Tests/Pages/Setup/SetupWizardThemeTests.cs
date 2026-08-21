@@ -49,7 +49,6 @@ public class SetupWizardThemeTests : BunitContext
     private static void AdvanceToReview(IRenderedComponent<ThemeProvider> cut)
     {
         cut.Find("#orgName").Change("My Choir");
-        cut.Find("#btn-next").Click(); // -> Membership & Fees
         cut.Find("#btn-next").Click(); // -> Sales Tax
         cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
