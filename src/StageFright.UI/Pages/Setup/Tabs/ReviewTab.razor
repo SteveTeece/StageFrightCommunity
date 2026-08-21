@@ -1,3 +1,6 @@
+@using StageFright.Core.Modules.Settings
+@using StageFright.UI.Shared
+
 <div class="mb-3">
     <h2 class="h6">Review</h2>
     <dl class="row small mb-2">
@@ -15,9 +18,27 @@
         }
         <dt class="col-5">AGM Month</dt><dd class="col-7">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Model.CommitteeRenewalMonth)</dd>
         <dt class="col-5">Audit Trail Retention</dt><dd class="col-7">@Model.AuditRetentionYears year@(Model.AuditRetentionYears == 1 ? "" : "s")</dd>
-        <dt class="col-5">Additional Office-Holder Titles</dt><dd class="col-7">@(string.IsNullOrWhiteSpace(Model.CommitteeOfficeHolderTitlesText) ? "None" : Model.CommitteeOfficeHolderTitlesText)</dd>
         <dt class="col-5">Seat Count Target</dt><dd class="col-7">@(Model.GeneralCommitteeSeatCountTarget?.ToString() ?? "Not set")</dd>
     </dl>
+
+    <div class="mb-2">
+        <h3 class="h6 small fw-semibold mb-1">Additional Office-Holder Titles</h3>
+        <BorderedListBox TItem="string" Items="QueuedCommitteeTitles" EmptyText="None.">
+            <RowTemplate Context="title"><span>@title</span></RowTemplate>
+        </BorderedListBox>
+    </div>
+
+    <div class="mb-2">
+        <h3 class="h6 small fw-semibold mb-1">Queued Chart of Accounts Entries</h3>
+        <BorderedListBox TItem="QueuedAccountRequest" Items="QueuedAccounts" EmptyText="None queued.">
+            <RowTemplate Context="account">
+                <span>@account.Name</span>
+                <span class="text-muted small ms-2">
+                    @account.Type@(account.IsBankAccount ? " · Bank/Cash" : string.Empty)
+                </span>
+            </RowTemplate>
+        </BorderedListBox>
+    </div>
 </div>
 
 @if (DebugSeederAvailable)

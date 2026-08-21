@@ -263,6 +263,29 @@ public class SetupWizardTests : BunitContext
     }
 
     [Fact]
+    public async Task ReviewTab_ShowsEveryTabsEnteredValue_WithoutNavigatingBack()
+    {
+        var cut = Render<SetupWizard>();
+        AdvanceFromGeneral(cut, "My Choir");
+        cut.Find("#btn-next").Click(); // -> Sales Tax
+        cut.Find("#btn-next").Click(); // -> Committee
+        cut.Find("#committee-role-input").Input("Publicity Officer");
+        cut.Find("#committee-role-add-btn").Click();
+        cut.Find("#btn-next").Click(); // -> Chart of Accounts
+
+        var coaTab = cut.FindComponent<ChartOfAccountsTab>();
+        await cut.InvokeAsync(() => coaTab.Instance.OnAdd.InvokeAsync(
+            new QueuedAccountRequest(Guid.NewGuid(), "Petty Cash", Core.Enums.AccountType.Asset, false)));
+
+        cut.Find("#btn-next").Click(); // -> Opening Balances
+        cut.Find("#btn-next").Click(); // -> Review
+
+        Assert.Contains("My Choir", cut.Markup);
+        Assert.Contains("Publicity Officer", cut.Markup);
+        Assert.Contains("Petty Cash", cut.Markup);
+    }
+
+    [Fact]
     public void SeedDataCheckbox_RendersOnReviewTab_WhenSeederAvailable()
     {
         var cut = Render<SetupWizard>();

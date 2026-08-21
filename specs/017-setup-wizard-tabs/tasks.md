@@ -184,20 +184,20 @@
 
 **Wave 1:**
 
-- [ ] **T045** [US3] Update `ReviewTab.razor(.cs)` — replace the plain-text committee-titles line and (once T031/T041 exist) queued-accounts line with two read-only `BorderedListBox` (T002) summaries; the rest of the `dl` settings summary from US1 is unchanged (FR-006).
+- [x] **T045** [US3] Update `ReviewTab.razor(.cs)` — replace the plain-text committee-titles line and (once T031/T041 exist) queued-accounts line with two read-only `BorderedListBox` (T002) summaries; the rest of the `dl` settings summary from US1 is unchanged (FR-006).
 
 **⟶ Wait for Wave 1 to finish, then:**
 
 **Wave 2:**
 
-- [ ] **T046** [US3] Update `SetupWizard.razor(.cs)` — pass the queued-roles list (US5) and queued-accounts list (US4) into `ReviewTab` as parameters.
+- [x] **T046** [US3] Update `SetupWizard.razor(.cs)` — pass the queued-roles list (US5) and queued-accounts list (US4) into `ReviewTab` as parameters.
 
 **⟶ Wait for Wave 2 to finish, then:**
 
 **Wave 3 — independent (different files):**
 
-- [ ] **T047** [P] [US3] Update `ReviewTabTests.cs` (T029) — roles and accounts render as bordered lists, not comma-separated/plain text.
-- [ ] **T048** [P] [US3] Update `SetupWizardTests.cs` — every tab's entered value (including both lists) visible on Review without navigating back (US3 Acceptance Scenario 1).
+- [x] **T047** [P] [US3] Update `ReviewTabTests.cs` (T029) — roles and accounts render as bordered lists, not comma-separated/plain text.
+- [x] **T048** [P] [US3] Update `SetupWizardTests.cs` — every tab's entered value (including both lists) visible on Review without navigating back (US3 Acceptance Scenario 1).
 
 **Checkpoint**: The Review tab fully reflects the tabbed/queued redesign — FR-006/FR-007 satisfied end-to-end.
 
