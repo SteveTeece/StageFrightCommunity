@@ -65,7 +65,12 @@
                         @if (_tabShown[3])
                         {
                             <ErrorBoundary>
-                                <ChildContent><CommitteeTab Model="_model" /></ChildContent>
+                                <ChildContent>
+                                    <CommitteeTab Model="_model"
+                                                  QueuedTitles="_queuedCommitteeTitles"
+                                                  OnAdd="HandleQueueCommitteeTitle"
+                                                  OnRemove="HandleRemoveQueuedCommitteeTitle" />
+                                </ChildContent>
                                 <ErrorContent Context="tabError"><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
                             </ErrorBoundary>
                         }

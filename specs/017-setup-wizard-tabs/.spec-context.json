@@ -387,6 +387,38 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-21T08:25:00.815Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:55:01.781Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:55:02.095Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:55:02.355Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:55:02.584Z"
     }
   ],
   "livingSpecs": {
@@ -619,7 +651,7 @@
       "summary": "53 tasks across 9 phases (Setup, Foundational, US1, US4, US2, US5, US3, US6, Polish); phase order follows the real dependency chain (US4 pulled ahead of US2 since the P1 opening-balances story needs the P2 accounts tab first) rather than raw spec priority"
     }
   },
-  "currentTask": "T040",
+  "currentTask": "T044",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -925,15 +957,49 @@
       "files": [
         "tests/StageFright.Integration.Tests/Scenarios/V1_FirstRunSetupTests.cs"
       ]
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "CommitteeTab: replaced comma-separated textbox with type-and-+-to-add widget + BorderedListBox<string>; rejects blank/case-insensitive duplicates",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/CommitteeTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/CommitteeTab.razor.cs"
+      ]
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "Wired CommitteeTab's queue into SetupWizard; Finish composes CommitteeOfficeHolderTitles directly from the List<string> queue instead of comma-splitting",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs"
+      ]
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "CommitteeTabTests.cs rewritten for +/- widget: blank/duplicate rejected, remove works, 5-titles addable/removable with no dupes/blanks (SC-004)",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/CommitteeTabTests.cs"
+      ]
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "SetupWizardTests.cs: Finish composes queued title list from the +/- widget; empty queue still finishes with no titles",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs"
+      ]
     }
   },
   "concerns": [
     {
       "note": "T008s SetupService constructor change had 3 call sites tasks.md did not anticipate (SetupServiceIntegrationTests.cs, StartupBenchmarkTests.cs, V10_ThemeTests.cs) beyond the 2 planned (T014, T015) - fixed inline as Wave-2 reconciliation per the implement skills seam-drift step",
       "step": "implement"
+    },
+    {
+      "note": "SetupFormModel.CommitteeOfficeHolderTitlesText is now write-only dead weight (nothing binds to it since CommitteeTab moved to the +/- widget) until Phase 7/T045 updates ReviewTab off it; Review currently always shows the titles line as \"None\" regardless of what is queued, an intentional interim gap per tasks.md phase ordering, fixed next phase.",
+      "step": "implement"
     }
   ],
-  "last_action": "Phase 5 (US2) complete: T035-T040 done, dotnet build/test green solution-wide (1520 tests); both P1/MVP stories (US1+US2) done; next up: Phase 6 (US5) Committee +/- widget, T041",
+  "last_action": "Phase 6 (US5) complete: T041-T044 done, dotnet build/test green solution-wide (1529 tests); next up: Phase 7 (US3) ReviewTab BorderedListBox summaries, T045",
   "telemetryInstanceId": "d07d346e-b06e-47b7-b101-c89451a62504",
   "verified": [
     {
@@ -946,6 +1012,12 @@
       "what": "Phase 5 (US2) checkpoint: full solution build + full test suite",
       "command": "dotnet build && dotnet test",
       "result": "0 build errors; 1520 tests passed across all 5 projects (Core 562, UI 497, Data 148, Integration 175, Reports 138)",
+      "warnings": []
+    },
+    {
+      "what": "Phase 6 (US5) checkpoint: full solution build + full test suite",
+      "command": "dotnet build && dotnet test",
+      "result": "0 build errors; 1529 tests passed across all 5 projects (Core 562, UI 506, Data 148, Integration 175, Reports 138)",
       "warnings": []
     }
   ]

@@ -157,20 +157,20 @@
 
 **Wave 1:**
 
-- [ ] **T041** [US5] Update `CommitteeTab.razor(.cs)` — replace the `CommitteeOfficeHolderTitlesText` textbox with an entry field + "+" button + `BorderedListBox<string>` (T002) with per-row remove; reject blank/whitespace and case-insensitive duplicates without adding (FR-009, FR-010, FR-011).
+- [x] **T041** [US5] Update `CommitteeTab.razor(.cs)` — replace the `CommitteeOfficeHolderTitlesText` textbox with an entry field + "+" button + `BorderedListBox<string>` (T002) with per-row remove; reject blank/whitespace and case-insensitive duplicates without adding (FR-009, FR-010, FR-011).
 
 **⟶ Wait for Wave 1 to finish, then:**
 
 **Wave 2:**
 
-- [ ] **T042** [US5] Update `SetupWizard.razor(.cs)` — Finish composes `SetupRequest.CommitteeOfficeHolderTitles` directly from the new `List<string>` queue instead of comma-splitting `_model.CommitteeOfficeHolderTitlesText` (the request's shape is unchanged — data-model.md confirms only the entry mechanism changes, no `SetupRequest`/`SetupService` edit needed here).
+- [x] **T042** [US5] Update `SetupWizard.razor(.cs)` — Finish composes `SetupRequest.CommitteeOfficeHolderTitles` directly from the new `List<string>` queue instead of comma-splitting `_model.CommitteeOfficeHolderTitlesText` (the request's shape is unchanged — data-model.md confirms only the entry mechanism changes, no `SetupRequest`/`SetupService` edit needed here).
 
 **⟶ Wait for Wave 2 to finish, then:**
 
 **Wave 3 — independent (different files):**
 
-- [ ] **T043** [P] [US5] Update `CommitteeTabTests.cs` (T028) — +/− widget behavior: blank rejected, case-insensitive duplicate rejected, remove works, ≥5 titles addable/removable with no dupes/blanks ever appearing (SC-004).
-- [ ] **T044** [P] [US5] Update `SetupWizardTests.cs` — Finish composes the queued title list; empty queue still finishes with no titles, as today (US5 Acceptance Scenario 5).
+- [x] **T043** [P] [US5] Update `CommitteeTabTests.cs` (T028) — +/− widget behavior: blank rejected, case-insensitive duplicate rejected, remove works, ≥5 titles addable/removable with no dupes/blanks ever appearing (SC-004).
+- [x] **T044** [P] [US5] Update `SetupWizardTests.cs` — Finish composes the queued title list; empty queue still finishes with no titles, as today (US5 Acceptance Scenario 5).
 
 **Checkpoint**: Committee roles are added/removed one at a time; the underlying `SetupRequest` contract is untouched.
 

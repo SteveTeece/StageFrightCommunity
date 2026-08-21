@@ -157,7 +157,8 @@ public class SetupWizardTests : BunitContext
         cut.Find("#annualFee").Change("80");
         cut.Find("#btn-next").Click();
         cut.Find("#btn-next").Click();
-        cut.Find("#officeHolderTitles").Change("Publicity Officer");
+        cut.Find("#committee-role-input").Input("Publicity Officer");
+        cut.Find("#committee-role-add-btn").Click();
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
         cut.Find("#btn-next").Click(); // -> Opening Balances
         cut.Find("#btn-next").Click(); // -> Review
@@ -282,6 +283,46 @@ public class SetupWizardTests : BunitContext
         await cut.Find("form").SubmitAsync();
 
         await _debugSeeder.Received(1).SeedAsync(Arg.Any<IProgress<string>>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ValidSubmit_ComposesQueuedCommitteeTitles_When_TitlesAdded()
+    {
+        var cut = Render<SetupWizard>();
+        AdvanceFromGeneral(cut, "My Choir");
+        cut.Find("#btn-next").Click(); // -> Sales Tax
+        cut.Find("#btn-next").Click(); // -> Committee
+        cut.Find("#committee-role-input").Input("Publicity Officer");
+        cut.Find("#committee-role-add-btn").Click();
+        cut.Find("#committee-role-input").Input("Webmaster");
+        cut.Find("#committee-role-add-btn").Click();
+        cut.Find("#btn-next").Click(); // -> Chart of Accounts
+        cut.Find("#btn-next").Click(); // -> Opening Balances
+        cut.Find("#btn-next").Click(); // -> Review
+        await cut.Find("#seedData").ChangeAsync(true);
+
+        await cut.Find("form").SubmitAsync();
+
+        await _setupService.Received(1).InitializeAsync(
+            Arg.Is<SetupRequest>(r =>
+                r.CommitteeOfficeHolderTitles!.Count == 2
+                && r.CommitteeOfficeHolderTitles.Contains("Publicity Officer")
+                && r.CommitteeOfficeHolderTitles.Contains("Webmaster")),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ValidSubmit_FinishesWithNoTitles_When_QueueLeftEmpty()
+    {
+        var cut = Render<SetupWizard>();
+        AdvanceToReview(cut);
+        await cut.Find("#seedData").ChangeAsync(true);
+
+        await cut.Find("form").SubmitAsync();
+
+        await _setupService.Received(1).InitializeAsync(
+            Arg.Is<SetupRequest>(r => r.CommitteeOfficeHolderTitles!.Count == 0),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]

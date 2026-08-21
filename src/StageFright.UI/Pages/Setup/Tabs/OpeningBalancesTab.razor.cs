@@ -3,6 +3,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Settings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Setup.Tabs;
 
