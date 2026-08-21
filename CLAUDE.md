@@ -108,6 +108,10 @@ Every fee or payment write wraps fee creation + paired GL debit/credit + balance
 
 All tabular data uses `RadzenDataGrid<TItem>`, never plain `<table>` markup or a `table-responsive` wrapper div. Every grid instance follows the Members grid (`src/StageFright.UI/Pages/Members/MemberList.razor`) as the reference: `AllowSorting="true" AllowPaging="true" PageSize="15" class="rz-shadow-0"`. Grids needing a "select all" checkbox in a column header use a `HeaderTemplate` rather than a separate control outside the grid. `ReportViewer.razor` is the one exception — its dynamic columns, section headers, and subtotal/grand-total rows don't fit RadzenDataGrid's typed-column model, so it keeps hand-rolled paging (also fixed at a page size of 15) instead.
 
+### List box standards
+
+All bordered list boxes (queued items, role lists, read-only summaries) use `BorderedListBox<TItem>` (`src/StageFright.UI/Shared/BorderedListBox.razor`), never a hand-rolled bordered `<div>`. It takes `Items`, a `RowTemplate`, an optional `OnRemove` (unset renders read-only; set adds a per-row remove button), and `EmptyText`. See the Setup Wizard's Chart of Accounts, Committee, and Review tabs for the reference usage.
+
 ### Data model highlights
 
 - **20 entities** in `StageFright.Core/Entities/`: `Member`, `CommitteeTerm`, `CommitteePositionRecord`, `CommitteeOfficeHolderType`, `AnnualGeneralMeeting`, `AgmAttendanceRecord`, `Rehearsal`, `AttendanceRecord`, `Event`, `EventType`, `ParticipationRecord`, `Account`, `Fee`, `Payment`, `Transaction`, `JournalEntry`, `BankReconciliation`, `ReconciliationLine`, `Settings`, `AuditTrailEntry`. `Category` was fully replaced by `Account` (see the `ConvertCategoriesToAccounts` migration).
