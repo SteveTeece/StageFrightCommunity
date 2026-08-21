@@ -31,9 +31,6 @@ public sealed class SetupFormModel : IValidatableObject
     [Range(1, 12, ErrorMessage = "AGM month must be between 1 and 12.")]
     public int CommitteeRenewalMonth { get; set; } = 1;
 
-    /// <summary>Optional, comma-separated custom office-holder titles entered during setup.</summary>
-    public string? CommitteeOfficeHolderTitlesText { get; set; }
-
     public int? GeneralCommitteeSeatCountTarget { get; set; }
 
     [Range(1, 7, ErrorMessage = "Audit retention period must be between 1 and 7 years.")]
