@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Settings;
 using StageFright.UI.Pages.Setup;
 using StageFright.UI.Pages.Setup.Tabs;
@@ -20,16 +21,19 @@ public class SetupWizardTests : BunitContext
     private readonly ISetupService _setupService = Substitute.For<ISetupService>();
     private readonly IDebugDataSeeder _debugSeeder = Substitute.For<IDebugDataSeeder>();
     private readonly IAccountService _accountService = Substitute.For<IAccountService>();
+    private readonly IOpeningBalanceService _openingBalanceService = Substitute.For<IOpeningBalanceService>();
 
     public SetupWizardTests()
     {
         Services.AddSingleton(_setupService);
         Services.AddSingleton(_debugSeeder);
         Services.AddSingleton(_accountService);
+        Services.AddSingleton(_openingBalanceService);
         _setupService.InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
         _accountService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>());
         _accountService.GetArchivedAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>());
+        _openingBalanceService.GetOpeningBalanceAccountsAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>());
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.initialize", _ => true);
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.show", _ => true);
     }
@@ -46,6 +50,7 @@ public class SetupWizardTests : BunitContext
         cut.Find("#btn-next").Click(); // -> Sales Tax
         cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
+        cut.Find("#btn-next").Click(); // -> Opening Balances
         cut.Find("#btn-next").Click(); // -> Review
     }
 
@@ -59,6 +64,7 @@ public class SetupWizardTests : BunitContext
         var salesTax = cut.Markup.IndexOf("Sales Tax", StringComparison.Ordinal);
         var committee = cut.Markup.IndexOf("Committee", StringComparison.Ordinal);
         var chartOfAccounts = cut.Markup.IndexOf("Chart of Accounts", StringComparison.Ordinal);
+        var openingBalances = cut.Markup.IndexOf("Opening Balances", StringComparison.Ordinal);
         var review = cut.Markup.IndexOf("Review", StringComparison.Ordinal);
 
         Assert.True(general >= 0);
@@ -66,7 +72,8 @@ public class SetupWizardTests : BunitContext
         Assert.True(salesTax > membership);
         Assert.True(committee > salesTax);
         Assert.True(chartOfAccounts > committee);
-        Assert.True(review > chartOfAccounts);
+        Assert.True(openingBalances > chartOfAccounts);
+        Assert.True(review > openingBalances);
     }
 
     [Fact]
@@ -107,6 +114,9 @@ public class SetupWizardTests : BunitContext
 
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
         cut.Find("#account-name");
+
+        cut.Find("#btn-next").Click(); // -> Opening Balances
+        cut.Find("#ob-tab-as-at-date");
 
         cut.Find("#btn-next").Click(); // -> Review
         Assert.Contains("Review", cut.Markup);
@@ -149,7 +159,12 @@ public class SetupWizardTests : BunitContext
         cut.Find("#btn-next").Click();
         cut.Find("#officeHolderTitles").Change("Publicity Officer");
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
+        cut.Find("#btn-next").Click(); // -> Opening Balances
         cut.Find("#btn-next").Click(); // -> Review
+        // No opening balance entered — check the sample-data checkbox to satisfy the
+        // Finish gate (FR-021); this test cares about SetupRequest composition, not the
+        // opening-balance gate itself (covered separately in the US2 test suite).
+        await cut.Find("#seedData").ChangeAsync(true);
 
         await cut.Find("form").SubmitAsync();
 
@@ -184,7 +199,11 @@ public class SetupWizardTests : BunitContext
         var newAccount = new QueuedAccountRequest(Guid.NewGuid(), "Petty Cash", Core.Enums.AccountType.Asset, false);
         await cut.InvokeAsync(() => tab.Instance.OnAdd.InvokeAsync(newAccount));
 
+        cut.Find("#btn-next").Click(); // -> Opening Balances
         cut.Find("#btn-next").Click(); // -> Review
+        // No opening balance entered — satisfy the Finish gate (FR-021) via sample data;
+        // this test is only about QueuedAccounts composition.
+        await cut.Find("#seedData").ChangeAsync(true);
         await cut.Find("form").SubmitAsync();
 
         await _setupService.Received(1).InitializeAsync(
@@ -200,6 +219,8 @@ public class SetupWizardTests : BunitContext
     {
         var cut = Render<SetupWizard>();
         AdvanceToReview(cut);
+        // No opening balance entered — satisfy the Finish gate (FR-021) via sample data.
+        await cut.Find("#seedData").ChangeAsync(true);
 
         await cut.Find("form").SubmitAsync();
 
@@ -229,7 +250,10 @@ public class SetupWizardTests : BunitContext
         tab = cut.FindComponent<ChartOfAccountsTab>();
         await cut.InvokeAsync(() => tab.Instance.OnRemove.InvokeAsync(queued));
 
+        cut.Find("#btn-next").Click(); // -> Opening Balances
         cut.Find("#btn-next").Click(); // -> Review
+        // No opening balance entered — satisfy the Finish gate (FR-021) via sample data.
+        await cut.Find("#seedData").ChangeAsync(true);
         await cut.Find("form").SubmitAsync();
 
         await _setupService.Received(1).InitializeAsync(
@@ -258,6 +282,65 @@ public class SetupWizardTests : BunitContext
         await cut.Find("form").SubmitAsync();
 
         await _debugSeeder.Received(1).SeedAsync(Arg.Any<IProgress<string>>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Finish_Blocked_When_NoBalanceEntered_AndSampleDataUnselected()
+    {
+        var cut = Render<SetupWizard>();
+        AdvanceToReview(cut);
+
+        await cut.Find("form").SubmitAsync();
+
+        Assert.Contains("opening balance", cut.Markup, StringComparison.OrdinalIgnoreCase);
+        await _setupService.DidNotReceive().InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Finish_Succeeds_When_BalanceEntered()
+    {
+        var cut = Render<SetupWizard>();
+        AdvanceToReview(cut);
+
+        var tab = cut.FindComponent<OpeningBalancesTab>();
+        var asAtDate = new DateTime(2025, 7, 1);
+        var accountId = Guid.NewGuid();
+        await cut.InvokeAsync(() => tab.Instance.OnSubmit.InvokeAsync(new RecordOpeningBalancesRequest
+        {
+            AsAtDate = asAtDate,
+            Entries = new List<OpeningBalanceEntry> { new() { AccountId = accountId, Amount = 500m } }
+        }));
+
+        await cut.Find("form").SubmitAsync();
+
+        await _setupService.Received(1).InitializeAsync(
+            Arg.Is<SetupRequest>(r =>
+                r.QueuedOpeningBalances != null
+                && r.QueuedOpeningBalances.Count == 1
+                && r.QueuedOpeningBalances[0].AccountId == accountId
+                && r.QueuedOpeningBalances[0].Amount == 500m
+                && r.OpeningBalanceAsAtDate == asAtDate),
+            Arg.Any<CancellationToken>());
+
+        var nav = Services.GetRequiredService<NavigationManager>();
+        Assert.EndsWith("/dashboard", nav.Uri);
+    }
+
+    [Fact]
+    public async Task Finish_Succeeds_When_SampleDataSelected_AndNoBalanceEntered()
+    {
+        var cut = Render<SetupWizard>();
+        AdvanceToReview(cut);
+        await cut.Find("#seedData").ChangeAsync(true);
+
+        await cut.Find("form").SubmitAsync();
+
+        await _setupService.Received(1).InitializeAsync(
+            Arg.Is<SetupRequest>(r => r.QueuedOpeningBalances == null),
+            Arg.Any<CancellationToken>());
+
+        var nav = Services.GetRequiredService<NavigationManager>();
+        Assert.EndsWith("/dashboard", nav.Uri);
     }
 
     [Fact]

@@ -4,9 +4,11 @@ using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Settings;
 using StageFright.UI.Layout;
 using StageFright.UI.Pages.Setup;
+using StageFright.UI.Pages.Setup.Tabs;
 
 namespace StageFright.UI.Tests.Pages.Setup;
 
@@ -21,6 +23,7 @@ public class SetupWizardThemeTests : BunitContext
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
     private readonly IDeviceThemePreferenceProvider _deviceThemeProvider = Substitute.For<IDeviceThemePreferenceProvider>();
     private readonly IAccountService _accountService = Substitute.For<IAccountService>();
+    private readonly IOpeningBalanceService _openingBalanceService = Substitute.For<IOpeningBalanceService>();
 
     public SetupWizardThemeTests()
     {
@@ -28,12 +31,14 @@ public class SetupWizardThemeTests : BunitContext
         Services.AddSingleton(_settingsService);
         Services.AddSingleton(_deviceThemeProvider);
         Services.AddSingleton(_accountService);
+        Services.AddSingleton(_openingBalanceService);
         _setupService.InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns((Core.Entities.Settings?)null);
         _deviceThemeProvider.GetPreference().Returns(PlatformThemePreference.Dark);
         _accountService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>());
         _accountService.GetArchivedAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>());
+        _openingBalanceService.GetOpeningBalanceAccountsAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>());
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.initialize", _ => true);
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.show", _ => true);
     }
@@ -48,7 +53,22 @@ public class SetupWizardThemeTests : BunitContext
         cut.Find("#btn-next").Click(); // -> Sales Tax
         cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
+        cut.Find("#btn-next").Click(); // -> Opening Balances
         cut.Find("#btn-next").Click(); // -> Review
+    }
+
+    // No seeder is registered in this test class, so the Finish gate (FR-021) can only be
+    // satisfied by a real queued balance — invoking OpeningBalancesTab's OnSubmit parameter
+    // directly, same as SetupWizardNoSeederTests, since bUnit can't simulate a submit
+    // through its nested <EditForm>.
+    private static async Task QueueOpeningBalanceAsync(IRenderedComponent<ThemeProvider> cut)
+    {
+        var tab = cut.FindComponent<OpeningBalancesTab>();
+        await cut.InvokeAsync(() => tab.Instance.OnSubmit.InvokeAsync(new RecordOpeningBalancesRequest
+        {
+            AsAtDate = DateTime.Today,
+            Entries = new List<OpeningBalanceEntry> { new() { AccountId = Guid.NewGuid(), Amount = 100m } }
+        }));
     }
 
     [Fact]
@@ -82,6 +102,7 @@ public class SetupWizardThemeTests : BunitContext
     {
         var cut = RenderWizard();
         AdvanceToReview(cut);
+        await QueueOpeningBalanceAsync(cut);
 
         await cut.Find("form").SubmitAsync();
 
@@ -96,6 +117,7 @@ public class SetupWizardThemeTests : BunitContext
         var cut = RenderWizard();
         cut.Find(".setup-theme-toggle [role=switch]").Click(); // Dark -> Light
         AdvanceToReview(cut);
+        await QueueOpeningBalanceAsync(cut);
 
         await cut.Find("form").SubmitAsync();
 

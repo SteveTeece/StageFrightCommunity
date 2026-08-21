@@ -339,6 +339,54 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-21T07:41:37.787Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T07:51:53.291Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T07:51:53.567Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:10:01.042Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:20:58.447Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:20:58.668Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:25:00.815Z"
     }
   ],
   "livingSpecs": {
@@ -500,7 +548,12 @@
       ]
     },
     "FR-021": {
-      "title": "Finish blocked unless opening balances posted or sample data selected"
+      "title": "Finish blocked unless opening balances posted or sample data selected",
+      "tests": [
+        "SetupWizardTests.cs::Finish_Blocked_When_NoBalanceEntered_AndSampleDataUnselected",
+        "SetupWizardTests.cs::Finish_Succeeds_When_BalanceEntered",
+        "SetupWizardTests.cs::Finish_Succeeds_When_SampleDataSelected_AndNoBalanceEntered"
+      ]
     },
     "FR-025": {
       "title": "Sample-data checkbox is debug-build-only and lives on the review tab",
@@ -566,7 +619,7 @@
       "summary": "53 tasks across 9 phases (Setup, Foundational, US1, US4, US2, US5, US3, US6, Polish); phase order follows the real dependency chain (US4 pulled ahead of US2 since the P1 opening-balances story needs the P2 accounts tab first) rather than raw spec priority"
     }
   },
-  "currentTask": "T034",
+  "currentTask": "T040",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -825,6 +878,53 @@
       "files": [
         "tests/StageFright.Integration.Tests/Scenarios/V1_FirstRunSetupTests.cs"
       ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "New OpeningBalancesTab.razor(.cs): hosts OpeningBalanceEntryForm with existing+queued accounts (queued shown via placeholder Account keyed by ClientId), own as-at-date input defaulting to today, ShowAlreadyPostedWarning=false",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/OpeningBalancesTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/OpeningBalancesTab.razor.cs"
+      ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "DebugDataSeeder now injects IOpeningBalanceService and posts an explicit OpeningBalance journal entry (000 to Community Bank Account, as at 2025-01-01) before SeedHistoricalTransfersAsync runs",
+      "files": [
+        "src/StageFright.App/Seeding/DebugDataSeeder.cs"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "Wired OpeningBalancesTab into SetupWizard at position 6 (after Chart of Accounts, before Review); queued-balance state + FR-020 removal cleanup; Finish composes QueuedOpeningBalances+AsAtDate and is blocked unless a balance is queued or sample data is selected (FR-021); fixed collateral SetupWizardTests/NoSeeder/Theme test files",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardNoSeederTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardThemeTests.cs"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "New OpeningBalancesTabTests.cs: rows for existing+queued accounts, negative amount, plug recalculation, row sync on QueuedAccounts add/remove, OnSubmit request composition, as-at-date default",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/OpeningBalancesTabTests.cs"
+      ]
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "SetupWizardTests.cs: added Finish-blocked-no-balance-no-sampledata, Finish-succeeds-with-balance, Finish-succeeds-with-sampledata-no-balance tests (FR-021)",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs"
+      ]
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "Extended V1_FirstRunSetupTests.cs: InitializeAsync with QueuedOpeningBalances posts one balanced OpeningBalance JournalEntry; queued-account ClientId reference resolves to its real just-created AccountId",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V1_FirstRunSetupTests.cs"
+      ]
     }
   },
   "concerns": [
@@ -833,13 +933,19 @@
       "step": "implement"
     }
   ],
-  "last_action": "Phase 4 (US4) complete: T030-T034 done, dotnet build/test green solution-wide (1506 tests); next up: Phase 5 (US2) Wave 1 (T035 OpeningBalancesTab, T036 DebugDataSeeder)",
+  "last_action": "Phase 5 (US2) complete: T035-T040 done, dotnet build/test green solution-wide (1520 tests); both P1/MVP stories (US1+US2) done; next up: Phase 6 (US5) Committee +/- widget, T041",
   "telemetryInstanceId": "d07d346e-b06e-47b7-b101-c89451a62504",
   "verified": [
     {
       "what": "Phase 4 (US4) checkpoint: full solution build + full test suite",
       "command": "dotnet build && dotnet test",
       "result": "0 build errors; 1506 tests passed across all 5 projects (Core 562, UI 485, Data 148, Integration 173, Reports 138)",
+      "warnings": []
+    },
+    {
+      "what": "Phase 5 (US2) checkpoint: full solution build + full test suite",
+      "command": "dotnet build && dotnet test",
+      "result": "0 build errors; 1520 tests passed across all 5 projects (Core 562, UI 497, Data 148, Integration 175, Reports 138)",
       "warnings": []
     }
   ]
