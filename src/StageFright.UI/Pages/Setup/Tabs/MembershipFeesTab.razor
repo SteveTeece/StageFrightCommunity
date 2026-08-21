@@ -17,27 +17,28 @@
     </div>
 </div>
 
-<div class="mb-3">
-    <label for="renewalMonth" class="form-label">Membership Renewal Month <span aria-hidden="true" class="text-danger">*</span></label>
-    <InputSelect id="renewalMonth" class="form-select form-select-sm" @bind-Value="Model.MembershipRenewalMonth">
-        @for (var m = 1; m <= 12; m++)
-        {
-            var month = m;
-            <option value="@month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
-        }
-    </InputSelect>
-    <ValidationMessage For="() => Model.MembershipRenewalMonth" class="text-danger small" />
-</div>
-
-<div class="mb-3">
-    <label for="auditRetentionYears" class="form-label">Audit Trail Retention (years)</label>
-    <InputSelect id="auditRetentionYears" class="form-select form-select-sm" @bind-Value="Model.AuditRetentionYears">
-        @for (var y = 1; y <= 7; y++)
-        {
-            var years = y;
-            <option value="@years">@years year@(years == 1 ? "" : "s")</option>
-        }
-    </InputSelect>
-    <div class="form-text small">How long audit trail history is kept before the startup purge removes it. Default 1 year.</div>
-    <ValidationMessage For="() => Model.AuditRetentionYears" class="text-danger small" />
+<div class="row g-2 mb-3">
+    <div class="col">
+        <label for="renewalMonth" class="form-label">Membership Renewal Month <span aria-hidden="true" class="text-danger">*</span></label>
+        <InputSelect id="renewalMonth" class="form-select form-select-sm" @bind-Value="Model.MembershipRenewalMonth">
+            @for (var m = 1; m <= 12; m++)
+            {
+                var month = m;
+                <option value="@month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="() => Model.MembershipRenewalMonth" class="text-danger small" />
+    </div>
+    <div class="col">
+        <label for="auditRetentionYears" class="form-label">Audit Trail Retention (years)</label>
+        <InputSelect id="auditRetentionYears" class="form-select form-select-sm" @bind-Value="Model.AuditRetentionYears">
+            @for (var y = 1; y <= 7; y++)
+            {
+                var years = y;
+                <option value="@years">@years year@(years == 1 ? "" : "s")</option>
+            }
+        </InputSelect>
+        <div class="form-text small">How long audit trail history is kept before the startup purge removes it. Default 1 year.</div>
+        <ValidationMessage For="() => Model.AuditRetentionYears" class="text-danger small" />
+    </div>
 </div>
