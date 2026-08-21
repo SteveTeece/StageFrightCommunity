@@ -100,21 +100,21 @@
 
 **Wave 1:**
 
-- [ ] **T030** [US4] Create `ChartOfAccountsTab.razor(.cs)` · `src/StageFright.UI/Pages/Setup/Tabs/` — hosts `AddAccountForm` (T003) with a queuing `OnSubmit` (appends to an in-memory list instead of calling `AccountService`) + `BorderedListBox` of queued accounts with remove; duplicate-name check passes `ExistingNames` = real accounts ∪ already-queued names (FR-012, FR-013, FR-014, FR-015).
+- [x] **T030** [US4] Create `ChartOfAccountsTab.razor(.cs)` · `src/StageFright.UI/Pages/Setup/Tabs/` — hosts `AddAccountForm` (T003) with a queuing `OnSubmit` (appends to an in-memory list instead of calling `AccountService`) + `BorderedListBox` of queued accounts with remove; duplicate-name check passes `ExistingNames` = real accounts ∪ already-queued names (FR-012, FR-013, FR-014, FR-015).
 
 **⟶ Wait for Wave 1 to finish, then:**
 
 **Wave 2:**
 
-- [ ] **T031** [US4] Update `SetupWizard.razor(.cs)` — insert the Chart of Accounts tab at position 5 (per contract, must precede Opening Balances); add `List<QueuedAccountRequest>` queue state + add/remove handlers; Finish populates `SetupRequest.QueuedAccounts`; a failed Finish leaves the queue untouched (Edge Cases).
+- [x] **T031** [US4] Update `SetupWizard.razor(.cs)` — insert the Chart of Accounts tab at position 5 (per contract, must precede Opening Balances); add `List<QueuedAccountRequest>` queue state + add/remove handlers; Finish populates `SetupRequest.QueuedAccounts`; a failed Finish leaves the queue untouched (Edge Cases).
 
 **⟶ Wait for Wave 2 to finish, then:**
 
 **Wave 3 — independent (different files):**
 
-- [ ] **T032** [P] [US4] New `tests/StageFright.UI.Tests/Pages/Setup/Tabs/ChartOfAccountsTabTests.cs` — add/duplicate/blank/remove, Asset-only bank flag.
-- [ ] **T033** [P] [US4] Update `SetupWizardTests.cs` — Finish composes `QueuedAccounts` from the tab's queue; empty queue still finishes normally (FR-015).
-- [ ] **T034** [P] [US4] Extend `V1_FirstRunSetupTests.cs` — new scenario: `InitializeAsync` with a non-empty `QueuedAccounts` request creates the account (real DB, `AccountRepository`), no duplicate created when re-run guard applies.
+- [x] **T032** [P] [US4] New `tests/StageFright.UI.Tests/Pages/Setup/Tabs/ChartOfAccountsTabTests.cs` — add/duplicate/blank/remove, Asset-only bank flag.
+- [x] **T033** [P] [US4] Update `SetupWizardTests.cs` — Finish composes `QueuedAccounts` from the tab's queue; empty queue still finishes normally (FR-015).
+- [x] **T034** [P] [US4] Extend `V1_FirstRunSetupTests.cs` — new scenario: `InitializeAsync` with a non-empty `QueuedAccounts` request creates the account (real DB, `AccountRepository`), no duplicate created when re-run guard applies.
 
 **Checkpoint**: Coordinators can queue accounts during setup; skipping this tab still completes setup with only system defaults.
 

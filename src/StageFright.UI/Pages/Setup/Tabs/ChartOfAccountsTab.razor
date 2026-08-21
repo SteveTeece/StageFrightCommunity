@@ -1,0 +1,25 @@
+@using StageFright.Core.Modules.Settings
+@using StageFright.UI.Shared
+
+<p class="text-muted small">
+    Queue any new accounts to add to your Chart of Accounts. This is optional — you can
+    always add accounts later from Finance ▸ Chart of Accounts.
+</p>
+
+<div class="mb-3">
+    <AddAccountForm OnSubmit="HandleAddAsync" ExistingNames="ExistingNames" SubmitButtonText="Queue Account" />
+</div>
+
+<div class="mb-3">
+    <h6 class="mb-1">Queued Accounts</h6>
+    <BorderedListBox TItem="QueuedAccountRequest" Items="QueuedAccounts"
+                      OnRemove="@(EventCallback.Factory.Create<QueuedAccountRequest>(this, HandleRemoveAsync))"
+                      EmptyText="No accounts queued yet.">
+        <RowTemplate Context="account">
+            <span>@account.Name</span>
+            <span class="text-muted small ms-2">
+                @account.Type@(account.IsBankAccount ? " · Bank/Cash" : string.Empty)
+            </span>
+        </RowTemplate>
+    </BorderedListBox>
+</div>

@@ -299,6 +299,46 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-21T04:18:11.614Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T04:53:20.202Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T07:13:03.684Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T07:38:17.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T07:38:17.720Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T07:41:37.787Z"
     }
   ],
   "livingSpecs": {
@@ -526,7 +566,7 @@
       "summary": "53 tasks across 9 phases (Setup, Foundational, US1, US4, US2, US5, US3, US6, Polish); phase order follows the real dependency chain (US4 pulled ahead of US2 since the P1 opening-balances story needs the P2 accounts tab first) rather than raw spec priority"
     }
   },
-  "currentTask": "T029",
+  "currentTask": "T034",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -746,12 +786,61 @@
       "files": [
         "tests/StageFright.UI.Tests/Pages/Setup/Tabs/ReviewTabTests.cs"
       ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Created ChartOfAccountsTab hosting AddAccountForm in queuing mode + BorderedListBox of queued accounts",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/ChartOfAccountsTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/ChartOfAccountsTab.razor.cs"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "Wired ChartOfAccountsTab into SetupWizard at position 5 (before Review); added queue state + add/remove handlers; Finish composes SetupRequest.QueuedAccounts",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "New ChartOfAccountsTabTests.cs: add/duplicate(real+queued)/blank/remove, Asset-only bank flag, empty-queue text",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/ChartOfAccountsTabTests.cs"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "SetupWizardTests.cs updated for 6-tab flow; added Finish-composes-QueuedAccounts, empty-queue-finishes-normally, and remove-excludes-from-finish tests; fixed collateral SetupWizardNoSeederTests/SetupWizardThemeTests for the inserted tab",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardNoSeederTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardThemeTests.cs"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "Extended V1_FirstRunSetupTests.cs: InitializeAsync with QueuedAccounts creates each real Account; re-init guard prevents duplicate creation on a second call",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V1_FirstRunSetupTests.cs"
+      ]
     }
   },
   "concerns": [
     {
       "note": "T008s SetupService constructor change had 3 call sites tasks.md did not anticipate (SetupServiceIntegrationTests.cs, StartupBenchmarkTests.cs, V10_ThemeTests.cs) beyond the 2 planned (T014, T015) - fixed inline as Wave-2 reconciliation per the implement skills seam-drift step",
       "step": "implement"
+    }
+  ],
+  "last_action": "Phase 4 (US4) complete: T030-T034 done, dotnet build/test green solution-wide (1506 tests); next up: Phase 5 (US2) Wave 1 (T035 OpeningBalancesTab, T036 DebugDataSeeder)",
+  "telemetryInstanceId": "d07d346e-b06e-47b7-b101-c89451a62504",
+  "verified": [
+    {
+      "what": "Phase 4 (US4) checkpoint: full solution build + full test suite",
+      "command": "dotnet build && dotnet test",
+      "result": "0 build errors; 1506 tests passed across all 5 projects (Core 562, UI 485, Data 148, Integration 173, Reports 138)",
+      "warnings": []
     }
   ]
 }

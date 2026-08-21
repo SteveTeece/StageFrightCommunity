@@ -25,8 +25,13 @@ public partial class SetupWizard : ComponentBase
     // Lazy-render flags: a tab's content is only instantiated once it has been shown, so
     // multiple tabs never touch the shared DbContext concurrently (see SettingsPage's own
     // precedent for this exact MAUI WebView gotcha). Grows as later stories add tabs.
-    private readonly List<bool> _tabShown = new() { true, false, false, false, false };
+    private readonly List<bool> _tabShown = new() { true, false, false, false, false, false };
     private int _currentTabIndex;
+
+    // Chart of Accounts queue (US4): accounts added here are never persisted until Finish
+    // (FR-013) — held in memory only, so a failed Finish leaves the queue untouched
+    // (Edge Cases) simply by never being cleared outside a successful submit.
+    private readonly List<QueuedAccountRequest> _queuedAccounts = new();
 
     private bool _submitting;
     private bool _seedingInProgress;
@@ -70,6 +75,18 @@ public partial class SetupWizard : ComponentBase
             await _tabsRef.ShowTabByIndexAsync(nextIndex);
     }
 
+    // Chart of Accounts tab (US4) queue handlers — the tab itself owns duplicate/blank
+    // validation via AddAccountForm; this just holds what's been queued so far.
+    private void HandleQueueAccount(QueuedAccountRequest account)
+    {
+        _queuedAccounts.Add(account);
+    }
+
+    private void HandleRemoveQueuedAccount(QueuedAccountRequest account)
+    {
+        _queuedAccounts.Remove(account);
+    }
+
     // EditForm only calls OnValidSubmit once the whole model is valid; if Finish is clicked
     // while an earlier tab still has an invalid field, this fires instead (Edge Cases: the
     // coordinator must be able to tell something needs attention, even from the Review tab).
@@ -102,7 +119,8 @@ public partial class SetupWizard : ComponentBase
                 CommitteeRenewalMonth: _model.CommitteeRenewalMonth,
                 CommitteeOfficeHolderTitles: officeHolderTitles,
                 GeneralCommitteeSeatCountTarget: _model.GeneralCommitteeSeatCountTarget,
-                AuditRetentionYears: _model.AuditRetentionYears);
+                AuditRetentionYears: _model.AuditRetentionYears,
+                QueuedAccounts: _queuedAccounts.Count > 0 ? _queuedAccounts : null);
 
             await SetupService.InitializeAsync(request);
 

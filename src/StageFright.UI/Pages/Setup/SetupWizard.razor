@@ -72,10 +72,27 @@
                     </div>
                 </Content>
             </Tab>
-            <Tab Title="Review" OnClick="@(() => SetActiveTab(4))">
+            <Tab Title="Chart of Accounts" OnClick="@(() => SetActiveTab(4))">
                 <Content>
                     <div class="pt-3">
                         @if (_tabShown[4])
+                        {
+                            <ErrorBoundary>
+                                <ChildContent>
+                                    <ChartOfAccountsTab QueuedAccounts="_queuedAccounts"
+                                                         OnAdd="HandleQueueAccount"
+                                                         OnRemove="HandleRemoveQueuedAccount" />
+                                </ChildContent>
+                                <ErrorContent Context="tabError"><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                            </ErrorBoundary>
+                        }
+                    </div>
+                </Content>
+            </Tab>
+            <Tab Title="Review" OnClick="@(() => SetActiveTab(5))">
+                <Content>
+                    <div class="pt-3">
+                        @if (_tabShown[5])
                         {
                             <ErrorBoundary>
                                 <ChildContent>
