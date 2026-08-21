@@ -105,6 +105,39 @@ public sealed class V1_FirstRunSetupTests : IAsyncLifetime
             () => svc.InitializeAsync(ValidRequest() with { OrganizationName = "" }));
     }
 
+    [Fact]
+    public async Task InitializeAsync_WithQueuedAccounts_CreatesEachAccount()
+    {
+        var svc = BuildSetupService();
+        var queued = new[]
+        {
+            new QueuedAccountRequest(Guid.NewGuid(), "Petty Cash", Core.Enums.AccountType.Asset, true),
+            new QueuedAccountRequest(Guid.NewGuid(), "Grant Income", Core.Enums.AccountType.Income, false)
+        };
+        await svc.InitializeAsync(ValidRequest() with { QueuedAccounts = queued });
+
+        var accounts = await new AccountRepository(_db).GetAllAsync();
+        Assert.Contains(accounts, a => a.Name == "Petty Cash" && a.Type == Core.Enums.AccountType.Asset && a.IsBankAccount && !a.IsSystem);
+        Assert.Contains(accounts, a => a.Name == "Grant Income" && a.Type == Core.Enums.AccountType.Income && !a.IsBankAccount && !a.IsSystem);
+    }
+
+    [Fact]
+    public async Task InitializingTwice_WithQueuedAccounts_DoesNotCreateDuplicateAccount()
+    {
+        // The second call fails at the "already completed" guard before it ever reaches
+        // queued-account creation, so the account is created exactly once (data-model.md's
+        // account transition — nothing here re-runs on a rejected re-initialization).
+        var svc = BuildSetupService();
+        var queued = new[] { new QueuedAccountRequest(Guid.NewGuid(), "Petty Cash", Core.Enums.AccountType.Asset, true) };
+        await svc.InitializeAsync(ValidRequest() with { QueuedAccounts = queued });
+
+        await Assert.ThrowsAsync<ValidationException>(
+            () => svc.InitializeAsync(ValidRequest() with { QueuedAccounts = queued }));
+
+        var accounts = await new AccountRepository(_db).GetAllAsync();
+        Assert.Single(accounts, a => a.Name == "Petty Cash");
+    }
+
     private SetupService BuildSetupService()
     {
         var settingsRepo = new SettingsRepository(_db);

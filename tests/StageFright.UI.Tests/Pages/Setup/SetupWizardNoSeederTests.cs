@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using StageFright.Core.Contracts;
+using StageFright.Core.Entities;
 using StageFright.Core.Modules.Settings;
 using StageFright.UI.Pages.Setup;
 
@@ -17,12 +18,16 @@ namespace StageFright.UI.Tests.Pages.Setup;
 public class SetupWizardNoSeederTests : BunitContext
 {
     private readonly ISetupService _setupService = Substitute.For<ISetupService>();
+    private readonly IAccountService _accountService = Substitute.For<IAccountService>();
 
     public SetupWizardNoSeederTests()
     {
         Services.AddSingleton(_setupService);
+        Services.AddSingleton(_accountService);
         _setupService.InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
+        _accountService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>());
+        _accountService.GetArchivedAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>());
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.initialize", _ => true);
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.show", _ => true);
     }
@@ -33,6 +38,7 @@ public class SetupWizardNoSeederTests : BunitContext
         cut.Find("#btn-next").Click(); // -> Membership & Fees
         cut.Find("#btn-next").Click(); // -> Sales Tax
         cut.Find("#btn-next").Click(); // -> Committee
+        cut.Find("#btn-next").Click(); // -> Chart of Accounts
         cut.Find("#btn-next").Click(); // -> Review
     }
 

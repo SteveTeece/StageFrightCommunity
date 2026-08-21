@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using StageFright.Core.Contracts;
+using StageFright.Core.Entities;
 using StageFright.Core.Modules.Settings;
 using StageFright.UI.Pages.Setup;
+using StageFright.UI.Pages.Setup.Tabs;
 
 namespace StageFright.UI.Tests.Pages.Setup;
 
@@ -17,13 +19,17 @@ public class SetupWizardTests : BunitContext
 {
     private readonly ISetupService _setupService = Substitute.For<ISetupService>();
     private readonly IDebugDataSeeder _debugSeeder = Substitute.For<IDebugDataSeeder>();
+    private readonly IAccountService _accountService = Substitute.For<IAccountService>();
 
     public SetupWizardTests()
     {
         Services.AddSingleton(_setupService);
         Services.AddSingleton(_debugSeeder);
+        Services.AddSingleton(_accountService);
         _setupService.InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
+        _accountService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>());
+        _accountService.GetArchivedAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>());
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.initialize", _ => true);
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.show", _ => true);
     }
@@ -39,6 +45,7 @@ public class SetupWizardTests : BunitContext
         AdvanceFromGeneral(cut);
         cut.Find("#btn-next").Click(); // -> Sales Tax
         cut.Find("#btn-next").Click(); // -> Committee
+        cut.Find("#btn-next").Click(); // -> Chart of Accounts
         cut.Find("#btn-next").Click(); // -> Review
     }
 
@@ -51,13 +58,15 @@ public class SetupWizardTests : BunitContext
         var membership = cut.Markup.IndexOf("Membership", StringComparison.Ordinal);
         var salesTax = cut.Markup.IndexOf("Sales Tax", StringComparison.Ordinal);
         var committee = cut.Markup.IndexOf("Committee", StringComparison.Ordinal);
+        var chartOfAccounts = cut.Markup.IndexOf("Chart of Accounts", StringComparison.Ordinal);
         var review = cut.Markup.IndexOf("Review", StringComparison.Ordinal);
 
         Assert.True(general >= 0);
         Assert.True(membership > general);
         Assert.True(salesTax > membership);
         Assert.True(committee > salesTax);
-        Assert.True(review > committee);
+        Assert.True(chartOfAccounts > committee);
+        Assert.True(review > chartOfAccounts);
     }
 
     [Fact]
@@ -95,6 +104,9 @@ public class SetupWizardTests : BunitContext
 
         cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#agmMonth");
+
+        cut.Find("#btn-next").Click(); // -> Chart of Accounts
+        cut.Find("#account-name");
 
         cut.Find("#btn-next").Click(); // -> Review
         Assert.Contains("Review", cut.Markup);
@@ -136,7 +148,8 @@ public class SetupWizardTests : BunitContext
         cut.Find("#btn-next").Click();
         cut.Find("#btn-next").Click();
         cut.Find("#officeHolderTitles").Change("Publicity Officer");
-        cut.Find("#btn-next").Click();
+        cut.Find("#btn-next").Click(); // -> Chart of Accounts
+        cut.Find("#btn-next").Click(); // -> Review
 
         await cut.Find("form").SubmitAsync();
 
@@ -149,6 +162,79 @@ public class SetupWizardTests : BunitContext
 
         var nav = Services.GetRequiredService<NavigationManager>();
         Assert.EndsWith("/dashboard", nav.Uri);
+    }
+
+    [Fact]
+    public async Task ValidSubmit_ComposesQueuedAccounts_When_AccountQueuedOnChartOfAccountsTab()
+    {
+        var cut = Render<SetupWizard>();
+        AdvanceFromGeneral(cut, "My Choir");
+        cut.Find("#btn-next").Click(); // -> Sales Tax
+        cut.Find("#btn-next").Click(); // -> Committee
+        cut.Find("#btn-next").Click(); // -> Chart of Accounts
+
+        // ChartOfAccountsTab hosts AddAccountForm's own <EditForm>, nested inside the
+        // wizard's outer one — real nested <form> elements resolve fine in a live browser
+        // (submit-button targets its nearest form ancestor), but bUnit's AngleSharp-parsed
+        // DOM collapses a nested <form> start tag, so its OnAdd callback can't be reached
+        // by simulating a DOM form submit here. Invoking the child's own OnAdd parameter
+        // directly exercises exactly what this test cares about — SetupWizard's wiring
+        // between the tab's queue and Finish — without depending on that DOM quirk.
+        var tab = cut.FindComponent<ChartOfAccountsTab>();
+        var newAccount = new QueuedAccountRequest(Guid.NewGuid(), "Petty Cash", Core.Enums.AccountType.Asset, false);
+        await cut.InvokeAsync(() => tab.Instance.OnAdd.InvokeAsync(newAccount));
+
+        cut.Find("#btn-next").Click(); // -> Review
+        await cut.Find("form").SubmitAsync();
+
+        await _setupService.Received(1).InitializeAsync(
+            Arg.Is<SetupRequest>(r =>
+                r.QueuedAccounts != null
+                && r.QueuedAccounts.Count == 1
+                && r.QueuedAccounts[0].Name == "Petty Cash"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ValidSubmit_FinishesNormally_When_NoAccountsQueued()
+    {
+        var cut = Render<SetupWizard>();
+        AdvanceToReview(cut);
+
+        await cut.Find("form").SubmitAsync();
+
+        await _setupService.Received(1).InitializeAsync(
+            Arg.Is<SetupRequest>(r => r.QueuedAccounts == null),
+            Arg.Any<CancellationToken>());
+
+        var nav = Services.GetRequiredService<NavigationManager>();
+        Assert.EndsWith("/dashboard", nav.Uri);
+    }
+
+    [Fact]
+    public async Task RemovingQueuedAccount_OnChartOfAccountsTab_ExcludesItFromFinish()
+    {
+        var cut = Render<SetupWizard>();
+        AdvanceFromGeneral(cut, "My Choir");
+        cut.Find("#btn-next").Click(); // -> Sales Tax
+        cut.Find("#btn-next").Click(); // -> Committee
+        cut.Find("#btn-next").Click(); // -> Chart of Accounts
+
+        // See ValidSubmit_ComposesQueuedAccounts_When_AccountQueuedOnChartOfAccountsTab for
+        // why this invokes the child's OnAdd/OnRemove parameters directly rather than
+        // simulating a nested-form DOM submit.
+        var tab = cut.FindComponent<ChartOfAccountsTab>();
+        var queued = new QueuedAccountRequest(Guid.NewGuid(), "Petty Cash", Core.Enums.AccountType.Asset, false);
+        await cut.InvokeAsync(() => tab.Instance.OnAdd.InvokeAsync(queued));
+        tab = cut.FindComponent<ChartOfAccountsTab>();
+        await cut.InvokeAsync(() => tab.Instance.OnRemove.InvokeAsync(queued));
+
+        cut.Find("#btn-next").Click(); // -> Review
+        await cut.Find("form").SubmitAsync();
+
+        await _setupService.Received(1).InitializeAsync(
+            Arg.Is<SetupRequest>(r => r.QueuedAccounts == null),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]

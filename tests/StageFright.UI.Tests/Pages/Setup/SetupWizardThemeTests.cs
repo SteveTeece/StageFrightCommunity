@@ -20,16 +20,20 @@ public class SetupWizardThemeTests : BunitContext
     private readonly ISetupService _setupService = Substitute.For<ISetupService>();
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
     private readonly IDeviceThemePreferenceProvider _deviceThemeProvider = Substitute.For<IDeviceThemePreferenceProvider>();
+    private readonly IAccountService _accountService = Substitute.For<IAccountService>();
 
     public SetupWizardThemeTests()
     {
         Services.AddSingleton(_setupService);
         Services.AddSingleton(_settingsService);
         Services.AddSingleton(_deviceThemeProvider);
+        Services.AddSingleton(_accountService);
         _setupService.InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns((Core.Entities.Settings?)null);
         _deviceThemeProvider.GetPreference().Returns(PlatformThemePreference.Dark);
+        _accountService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>());
+        _accountService.GetArchivedAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>());
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.initialize", _ => true);
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.show", _ => true);
     }
@@ -43,6 +47,7 @@ public class SetupWizardThemeTests : BunitContext
         cut.Find("#btn-next").Click(); // -> Membership & Fees
         cut.Find("#btn-next").Click(); // -> Sales Tax
         cut.Find("#btn-next").Click(); // -> Committee
+        cut.Find("#btn-next").Click(); // -> Chart of Accounts
         cut.Find("#btn-next").Click(); // -> Review
     }
 
