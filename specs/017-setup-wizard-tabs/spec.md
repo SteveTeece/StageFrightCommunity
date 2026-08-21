@@ -191,7 +191,7 @@ The theme is chosen from a dropdown selector instead of a toggle switch, and eve
 <!-- capability: settings -->
 
 ### First-run setup is one tabbed screen, not a linear multi-step flow
-The setup wizard MUST present every setting on one screen with a persistent tab strip (General, Membership & Fees, Sales Tax, Committee, Chart of Accounts, Opening Balances, Review), navigable by clicking any tab header or by Next; Next MUST validate only the current tab's own fields before advancing, while Finish validates every field across every tab.
+The setup wizard MUST present every setting on one screen with a persistent tab strip (Organisation Settings, Chart of Accounts, Opening Balances, Committee, Review), navigable by clicking any tab header or by Next; Next MUST validate only the current tab's own fields before advancing, while Finish validates every field across every tab.
 
 #### Scenario: coordinator jumps directly to a later tab
 - **WHEN** the coordinator clicks a tab header ahead of the current tab
