@@ -1,3 +1,5 @@
+@using StageFright.UI.Shared
+
 <div class="mb-3">
     <label for="agmMonth" class="form-label">AGM Month</label>
     <InputSelect id="agmMonth" class="form-select form-select-sm" @bind-Value="Model.CommitteeRenewalMonth">
@@ -11,14 +13,28 @@
 </div>
 
 <div class="mb-3">
-    <label for="officeHolderTitles" class="form-label">Additional Office-Holder Titles</label>
-    <InputText id="officeHolderTitles" class="form-control form-control-sm"
-               @bind-Value="Model.CommitteeOfficeHolderTitlesText"
-               placeholder="e.g. Publicity Officer, Webmaster" />
+    <label for="committee-role-input" class="form-label">Additional Office-Holder Titles</label>
+    <div class="input-group input-group-sm" style="max-width: 24rem;">
+        <input id="committee-role-input" type="text" class="form-control"
+               @bind="_titleInput" @bind:event="oninput"
+               placeholder="e.g. Publicity Officer" />
+        <button id="committee-role-add-btn" type="button" class="btn btn-outline-primary" @onclick="HandleAddAsync">+</button>
+    </div>
+    @if (_error is not null)
+    {
+        <div class="text-danger small">@_error</div>
+    }
     <div class="form-text small">
-        Optional, comma-separated. President/Secretary/Treasurer are always included.
+        Optional, one at a time. President/Secretary/Treasurer are always included.
         Can also be configured later from Settings.
     </div>
+    <BorderedListBox TItem="string" Items="QueuedTitles"
+                      OnRemove="@(EventCallback.Factory.Create<string>(this, HandleRemoveAsync))"
+                      EmptyText="No additional titles added yet.">
+        <RowTemplate Context="title">
+            <span>@title</span>
+        </RowTemplate>
+    </BorderedListBox>
 </div>
 
 <div class="mb-3">

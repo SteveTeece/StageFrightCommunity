@@ -44,6 +44,10 @@ public partial class SetupWizard : ComponentBase
     private readonly List<OpeningBalanceEntry> _queuedOpeningBalances = new();
     private DateTime _openingBalanceAsAtDate = DateTime.Today;
 
+    // Committee office-holder role queue (US5): added/removed one at a time via the
+    // Committee tab's +/− widget. Held in memory only, same as the other two queues.
+    private readonly List<string> _queuedCommitteeTitles = new();
+
     private bool _submitting;
     private bool _seedingInProgress;
     private bool _seedWithTestData;
@@ -112,6 +116,17 @@ public partial class SetupWizard : ComponentBase
         _openingBalanceAsAtDate = request.AsAtDate;
     }
 
+    // Committee tab (US5) queue handlers — the tab itself owns blank/duplicate validation.
+    private void HandleQueueCommitteeTitle(string title)
+    {
+        _queuedCommitteeTitles.Add(title);
+    }
+
+    private void HandleRemoveQueuedCommitteeTitle(string title)
+    {
+        _queuedCommitteeTitles.Remove(title);
+    }
+
     // EditForm only calls OnValidSubmit once the whole model is valid; if Finish is clicked
     // while an earlier tab still has an invalid field, this fires instead (Edge Cases: the
     // coordinator must be able to tell something needs attention, even from the Review tab).
@@ -137,10 +152,6 @@ public partial class SetupWizard : ComponentBase
 
         try
         {
-            var officeHolderTitles = (_model.CommitteeOfficeHolderTitlesText ?? string.Empty)
-                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .ToList();
-
             var request = new SetupRequest(
                 OrganizationName: _model.OrganizationName!,
                 AnnualFee: _model.AnnualFee,
@@ -152,7 +163,7 @@ public partial class SetupWizard : ComponentBase
                 AttendanceFeeTaxCode: _model.AttendanceFeeTaxCode,
                 Theme: ThemeProvider?.CurrentTheme ?? Theme.Dark,
                 CommitteeRenewalMonth: _model.CommitteeRenewalMonth,
-                CommitteeOfficeHolderTitles: officeHolderTitles,
+                CommitteeOfficeHolderTitles: _queuedCommitteeTitles,
                 GeneralCommitteeSeatCountTarget: _model.GeneralCommitteeSeatCountTarget,
                 AuditRetentionYears: _model.AuditRetentionYears,
                 QueuedAccounts: _queuedAccounts.Count > 0 ? _queuedAccounts : null,
