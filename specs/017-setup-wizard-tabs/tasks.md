@@ -225,9 +225,9 @@
 
 ## Phase 9: Polish & Cross-Cutting Concerns
 
-- [ ] **T051** Reconcile `contracts/setup-wizard-ui-contract.md` with whatever parameter names implementation actually settled on (the contract's own preamble invites this) — in particular `AddAccountForm`'s duplicate-check parameter from T003.
-- [ ] **T052** [P] Add a short "List box standards" note to CLAUDE.md's Tech Stack & Conventions section, mirroring the existing "Data grid standards" entry — `BorderedListBox` is now the one convention every list box in the app follows (FR-007).
-- [ ] **T053** Full verification: `dotnet build` and `dotnet test` (no `--no-build`) across all five test projects; report pass/fail counts per CLAUDE.md's Build & Test Verification rule. Includes the manual Debug-build "Load sample data" walkthrough noted in T036.
+- [x] **T051** Reconcile `contracts/setup-wizard-ui-contract.md` with whatever parameter names implementation actually settled on (the contract's own preamble invites this) — in particular `AddAccountForm`'s duplicate-check parameter from T003.
+- [x] **T052** [P] Add a short "List box standards" note to CLAUDE.md's Tech Stack & Conventions section, mirroring the existing "Data grid standards" entry — `BorderedListBox` is now the one convention every list box in the app follows (FR-007).
+- [x] **T053** Full verification: `dotnet build` and `dotnet test` (no `--no-build`) across all five test projects; report pass/fail counts per CLAUDE.md's Build & Test Verification rule. Includes the manual Debug-build "Load sample data" walkthrough noted in T036.
 
 ---
 

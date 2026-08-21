@@ -186,3 +186,50 @@ The theme is chosen from a dropdown selector instead of a toggle switch, and eve
 - Because this is always a first-run flow (no Settings record exists yet), the wizard's Opening Balances tab never needs the standalone page's "opening balances have already been posted" warning — that scenario cannot occur during setup.
 - The as-at date the Opening Balances tab defaults to is left to the planning step to decide, since the standalone page's own default (derived from the organisation's financial-year-start setting) isn't available yet during first-run setup — no Settings record exists until Finish.
 - This feature's tab restructuring, control-style changes (FR-001 through FR-006, FR-008 through FR-026 except FR-007), and the setup-specific list boxes are limited to the `/setup` first-run wizard. The Settings page's own General tab (which also currently uses a theme toggle switch) is out of scope for those — the issue's wording specifically calls out "the setup wizard." The bordered-list convention itself (FR-007) is the one exception: it is application-wide by design, as described above.
+
+## ADDED Requirements
+<!-- capability: settings -->
+
+### First-run setup is one tabbed screen, not a linear multi-step flow
+The setup wizard MUST present every setting on one screen with a persistent tab strip (General, Membership & Fees, Sales Tax, Committee, Chart of Accounts, Opening Balances, Review), navigable by clicking any tab header or by Next; Next MUST validate only the current tab's own fields before advancing, while Finish validates every field across every tab.
+
+#### Scenario: coordinator jumps directly to a later tab
+- **WHEN** the coordinator clicks a tab header ahead of the current tab
+- **THEN** the wizard navigates there immediately without validating the skipped tabs
+- **AND** any values already entered on earlier tabs remain intact
+
+#### Scenario: Finish is attempted with an earlier tab still invalid
+- **WHEN** the coordinator clicks Finish while a required field on a tab other than the current one is invalid
+- **THEN** setup is rejected
+- **AND** the coordinator is told to check every tab, not just the one currently shown
+
+### Setup can queue new Chart of Accounts entries, created together with the rest of setup
+The setup wizard MUST let the coordinator queue zero or more new accounts (name, type, and — for Asset accounts only — a bank/cash flag) during setup; queued accounts are created via the same account-creation rules as the standalone Chart of Accounts page, all together at Finish, and are never required to complete setup.
+
+#### Scenario: coordinator queues an account and finishes setup
+- **WHEN** the coordinator queues an account during setup and then finishes
+- **THEN** that account exists in the Chart of Accounts once setup completes
+- **AND** it did not exist anywhere in the app before Finish was clicked
+
+#### Scenario: coordinator queues a duplicate account name
+- **WHEN** the coordinator tries to queue a name matching (case-insensitively) an existing account or one already queued this session
+- **THEN** the queue rejects it and nothing is added
+
+### Finishing setup requires a posted opening balance or an explicit sample-data opt-in
+Setup MUST refuse to finish unless at least one non-zero opening balance has been queued, or the coordinator has explicitly chosen to load sample data instead; a release build with no sample-data option available always requires a queued opening balance.
+
+#### Scenario: Finish attempted with nothing queued and no sample data
+- **WHEN** the coordinator clicks Finish with no opening balance queued and "load sample data" unselected
+- **THEN** setup is rejected and no Settings, account, or ledger records are created
+
+#### Scenario: Finish succeeds via sample data instead of a manual balance
+- **WHEN** the coordinator selects "load sample data" without queuing any opening balance
+- **THEN** setup completes normally
+
+### Committee office-holder titles are added one at a time, not typed as a delimited list
+Setup MUST let the coordinator add optional committee office-holder titles one at a time (reject blank/whitespace and case-insensitive duplicates without adding) and remove any previously added title, composing the final list from whatever remains queued at Finish.
+
+#### Scenario: coordinator adds and removes titles before finishing
+- **WHEN** the coordinator adds several titles and removes one of them before Finish
+- **THEN** the removed title is absent from the finished Settings' office-holder titles
+- **AND** every title still queued is present
