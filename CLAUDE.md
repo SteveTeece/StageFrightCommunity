@@ -17,6 +17,9 @@ Always run `dotnet build` and the full test suite (without --no-build) after mak
 
 Always commit all changed and new files at the end of a task — this overrides the default behavior of only committing when explicitly asked. Stage everything (`git add -A`) and commit with a message describing the change, following the existing commit style (see `git log`), unless the user explicitly says not to commit or asks for only specific files to be committed. Still show the user what changed; committing automatically doesn't replace surfacing a summary of the work.
 
+## Editing Workflow
+
+This environment's GateGuard hook blocks the first `Write` of a new file and the first `Edit` of a given file with a `[Fact-Forcing Gate]` unless the immediately-preceding turn text states: (1) callers/importers of the file, (2) confirmation no duplicate already exists, (3) data-schema details if applicable, (4) the user's verbatim current instruction. State those four facts as plain text right before *every* Write/Edit call, not just the first per file — repeat edits to an already-touched file get gated too. A denied batch of several files usually succeeds when retried one file at a time with the same facts.
 
 ## Commands
 
@@ -102,7 +105,7 @@ Every fee or payment write wraps fee creation + paired GL debit/credit + balance
 
 ### Reports pipeline
 
-`IReportProvider` → `ReportData` (rows/columns/sections/subtotals) → `ReportViewer.razor` (modal "Generating…", synchronous) → `PdfReportRenderer` (QuestPDF) or `CsvReportExporter` (CsvHelper). Cancel appears after 5 s. All ten reports (`IncomeStatement`, `TrialBalance`, `AccountRegister`, `MemberAccountSummary`, `MemberList`, `Committee`, `BalanceSheet`, `BankReconciliation`, `TaxSummary`, `GeneralLedger`) follow this single pipeline.
+`IReportProvider` → `ReportData` (rows/columns/sections/subtotals) → `ReportViewer.razor` (modal "Generating…", synchronous) → `PdfReportRenderer` (QuestPDF) or `CsvReportExporter` (CsvHelper). Cancel appears after 5 s. All ten reports (`IncomeStatement`, `TrialBalance`, `AccountRegister`, `MemberAccountSummary`, `MemberList`, `Committee`, `BalanceSheet`, `BankReconciliation`, `TaxSummary`, `GeneralLedger`) follow this single pipeline. In QuestPDF-rendered checkbox-style cells (e.g. `AttendanceRollPdfRenderer`), a checked box is a bordered `Container` with a centered "✓" glyph, never a solid filled box.
 
 ### Data grid standards
 
@@ -111,6 +114,14 @@ All tabular data uses `RadzenDataGrid<TItem>`, never plain `<table>` markup or a
 ### List box standards
 
 All bordered list boxes (queued items, role lists, read-only summaries) use `BorderedListBox<TItem>` (`src/StageFright.UI/Shared/BorderedListBox.razor`), never a hand-rolled bordered `<div>`. It takes `Items`, a `RowTemplate`, an optional `OnRemove` (unset renders read-only; set adds a per-row remove button), and `EmptyText`. See the Setup Wizard's Chart of Accounts, Committee, and Review tabs for the reference usage.
+
+### Toggle control standards
+
+Every on/off toggle uses `<RadzenSwitch>` (`@bind-Value` + a `Change` callback, not `@bind:after`), never a hand-rolled Bootstrap `form-check form-switch` checkbox — see the Members List "show inactive" switch or the Settings page's theme toggle. `RadzenSwitch` renders no native `onchange`-wired `<input>`; drive it in bUnit via `cut.Find("[role=switch]").Click()` and assert state via `GetAttribute("aria-checked")`, not `.Change(bool)`/`HasAttribute("checked")`. The Setup Wizard's own theme control is a deliberate, spec-mandated exception (FR-022 of spec 017) — a Light/Dark `<select>` dropdown, not a switch — because the wizard's screen-shell had no cascaded state to toggle live the way Settings does; don't take it as a new default over `RadzenSwitch`.
+
+### Dashboard tile sizing
+
+Dashboard tiles opt into one of four sizes via `DashboardTileSize` (`StageFright.Plugins.Contracts`) — `OneByOne` (default), `OneByTwo`, `TwoByOne`, `TwoByTwo`, named RowsByColumns — by overriding `IDashboardTileProvider.TileSize`. `Dashboard.razor.cs` maps the enum to a `tile-size-*` CSS class already defined in `app.css`'s CSS-Grid layout; resizing a tile only needs the provider's `TileSize` override plus its own inner chart/layout sizing — no `Dashboard.razor` or grid CSS changes.
 
 ### Data model highlights
 
@@ -137,12 +148,18 @@ All bordered list boxes (queued items, role lists, read-only summaries) use `Bor
 
 **Soft-delete everywhere (except finance).** Never hard-delete application data. Financial records (`Fee`, `Payment`, `Transaction`) are explicitly exempt — they carry no soft-delete fields and must never be deleted at all.
 
-## Tech Stack & Conventions section.
+## Tech Stack & Conventions
 
 This is a MAUI Blazor project using BlazorBootstrap and Radzen for charts/UI controls and double-entry accounting for finances; prefer existing patterns (e.g. month-name dropdowns, BlazorBootstrap charts) over custom SVG.
 
 When summing financial amounts, only sum payment-related credit entries, not all GL credit entries, to avoid double-counting in double-entry accounting.
 
-## Known Gotchas section.
+## Known Gotchas
 
 Watch for MAUI WebView quirks: Settings tabs require the Bootstrap JS bundle and may need lazy rendering / StateHasChanged handling to avoid concurrent DbContext access and OnShown callback failures.
+
+bUnit cannot simulate a form submit through a nested `<EditForm>`/`<form>` (e.g. a shared component like `AddAccountForm`/`OpeningBalanceEntryForm` used inside the Setup Wizard's own outer `EditForm`) — its inner `<form>` collapses when bUnit builds its AngleSharp DOM. This is a bUnit limitation, not a production bug (real Blazor rendering resolves nested forms via native nearest-ancestor targeting); in tests, invoke the child component's own `EventCallback` parameters directly (`cut.FindComponent<ChildTab>().Instance.OnSubmit.InvokeAsync(...)`) instead of simulating the nested submit.
+
+`StageFright.UI.Tests` has at least two known-flaky tests asserting rendered markup does *not* contain "fee"/"Fee" (`ParticipationGridTests.DoesNotRender_FeeColumns`, `EventFormTests.DoesNotRender_FeeOrPaidFields`) — bUnit-rendered markup embeds random lowercase-hex GUIDs, and "fee" is a valid 3-hex-digit run, so these intermittently false-positive on an unrelated GUID. Treat a failure here as this known flake (re-run in isolation) rather than a regression, unless the diff actually touches Events/ParticipationGrid/EventForm.
+
+Verifying a UI change in the real MAUI app requires launching with `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9222` and driving the DOM over CDP; plain synthetic `element.click()` works for `@onclick` but does not reliably trigger Radzen's own interactive handlers (grid sort, expand/collapse) — those need a real dispatched mouse event (`Input.dispatchMouseEvent` at the element's `getBoundingClientRect()`). Screenshots must call `SetProcessDPIAware()` first or a scaled display silently crops the capture.
