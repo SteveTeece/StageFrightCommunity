@@ -1,0 +1,13 @@
+<div class="mb-3">
+    <label for="orgName" class="form-label">Organisation Name <span aria-hidden="true" class="text-danger">*</span></label>
+    <InputText id="orgName" class="form-control form-control-sm" @bind-Value="Model.OrganizationName" placeholder="e.g. Springfield Choral Society" />
+    <ValidationMessage For="() => Model.OrganizationName" class="text-danger small" />
+</div>
+
+<div class="setup-theme-toggle d-flex align-items-center gap-2 mb-3">
+    <span class="small text-muted">Theme:</span>
+    <RadzenSwitch Name="setupThemeToggleSwitch"
+                  Value="@(ThemeProvider?.CurrentTheme == Core.Enums.Theme.Dark)"
+                  Change="@(async (bool _) => await HandleThemeToggleAsync())" />
+    <span class="small">@(ThemeProvider?.CurrentTheme == Core.Enums.Theme.Dark ? "Dark" : "Light")</span>
+</div>

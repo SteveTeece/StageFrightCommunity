@@ -23,15 +23,17 @@ public class SetupWizardNoSeederTests : BunitContext
         Services.AddSingleton(_setupService);
         _setupService.InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
+        JSInterop.SetupVoid("window.blazorBootstrap.tabs.initialize", _ => true);
+        JSInterop.SetupVoid("window.blazorBootstrap.tabs.show", _ => true);
     }
 
     private static void AdvanceToReview(IRenderedComponent<SetupWizard> cut)
     {
         cut.Find("#orgName").Change("My Choir");
-        cut.Find("#btn-next").Click(); // -> step 2
-        cut.Find("#btn-next").Click(); // -> step 3
-        cut.Find("#btn-next").Click(); // -> step 4 (committee config)
-        cut.Find("#btn-next").Click(); // -> step 5 (Review & Finish)
+        cut.Find("#btn-next").Click(); // -> Membership & Fees
+        cut.Find("#btn-next").Click(); // -> Sales Tax
+        cut.Find("#btn-next").Click(); // -> Committee
+        cut.Find("#btn-next").Click(); // -> Review
     }
 
     [Fact]
@@ -40,7 +42,7 @@ public class SetupWizardNoSeederTests : BunitContext
         var cut = Render<SetupWizard>();
         AdvanceToReview(cut);
 
-        Assert.Contains("Step 5 of 5", cut.Markup);
+        Assert.Contains("Review", cut.Markup);
         Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#seedData"));
     }
 

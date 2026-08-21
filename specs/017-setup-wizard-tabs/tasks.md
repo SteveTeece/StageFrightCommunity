@@ -63,30 +63,30 @@
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T016** [P] [US1] Create `GeneralAppearanceTab.razor(.cs)` · `src/StageFright.UI/Pages/Setup/Tabs/` — organisation name + the theme control, carried over as-is (still `RadzenSwitch` — US6/T049 swaps it to a dropdown later, keeping this story a pure regrouping).
-- [ ] **T017** [P] [US1] Create `MembershipFeesTab.razor(.cs)` · `src/StageFright.UI/Pages/Setup/Tabs/` — annual fee, attendance fee, membership renewal month, audit retention years, relocated unchanged.
-- [ ] **T018** [P] [US1] Create `SalesTaxTab.razor(.cs)` · `src/StageFright.UI/Pages/Setup/Tabs/` — tax-applicable checkbox, tax rate, fee tax-treatment dropdowns, relocated unchanged including the existing `HandleTaxToggleChanged` clear-on-toggle-off behavior (Edge Cases).
-- [ ] **T019** [P] [US1] Create `CommitteeTab.razor(.cs)` · `src/StageFright.UI/Pages/Setup/Tabs/` — AGM month, general committee seat count target, and the **existing** comma-separated `CommitteeOfficeHolderTitlesText` field carried over unchanged (US5/T041 replaces it with the +/− widget later).
-- [ ] **T020** [P] [US1] Create `ReviewTab.razor(.cs)` · `src/StageFright.UI/Pages/Setup/Tabs/` — the existing `dl`-based read-only summary of every setting, plus the existing debug-only "Load sample data" checkbox relocated here (it already lives on today's last step, so FR-025 is satisfied by this move alone) (FR-005, FR-025).
+- [x] **T016** [P] [US1] Create `GeneralAppearanceTab.razor(.cs)` · `src/StageFright.UI/Pages/Setup/Tabs/` — organisation name + the theme control, carried over as-is (still `RadzenSwitch` — US6/T049 swaps it to a dropdown later, keeping this story a pure regrouping).
+- [x] **T017** [P] [US1] Create `MembershipFeesTab.razor(.cs)` · `src/StageFright.UI/Pages/Setup/Tabs/` — annual fee, attendance fee, membership renewal month, audit retention years, relocated unchanged.
+- [x] **T018** [P] [US1] Create `SalesTaxTab.razor(.cs)` · `src/StageFright.UI/Pages/Setup/Tabs/` — tax-applicable checkbox, tax rate, fee tax-treatment dropdowns, relocated unchanged including the existing `HandleTaxToggleChanged` clear-on-toggle-off behavior (Edge Cases).
+- [x] **T019** [P] [US1] Create `CommitteeTab.razor(.cs)` · `src/StageFright.UI/Pages/Setup/Tabs/` — AGM month, general committee seat count target, and the **existing** comma-separated `CommitteeOfficeHolderTitlesText` field carried over unchanged (US5/T041 replaces it with the +/− widget later).
+- [x] **T020** [P] [US1] Create `ReviewTab.razor(.cs)` · `src/StageFright.UI/Pages/Setup/Tabs/` — the existing `dl`-based read-only summary of every setting, plus the existing debug-only "Load sample data" checkbox relocated here (it already lives on today's last step, so FR-025 is satisfied by this move alone) (FR-005, FR-025).
 
 **⟶ Wait for Wave 1 to finish, then:**
 
 **Wave 2:**
 
-- [ ] **T021** [US1] Rewrite `SetupWizard.razor(.cs)` · `src/StageFright.UI/Pages/Setup/` — host `<Tabs><Tab Title="…" OnShown="…">` for the 5 tabs above (T016–T020), matching `FinancePage.razor`'s pattern; tab-click AND Next both navigate (FR-003); Next validates only the current tab's own fields and refuses to advance on failure (FR-004); Finish keeps validating the **whole** `_editContext` (already does today) and, on failure, indicates which tab needs attention rather than a bare error (Edge Cases); Finish orchestration (`SetupService.InitializeAsync` + optional debug seeding + navigate to `/dashboard`) is otherwise unchanged from today. **Known gotcha** (CLAUDE.md): watch for concurrent-DbContext issues from `Tabs`/`Tab`'s `OnShown` firing during rapid tab switching — no tab does DB work on `OnShown` yet at this point in the build, so confirm none is introduced.
+- [x] **T021** [US1] Rewrite `SetupWizard.razor(.cs)` · `src/StageFright.UI/Pages/Setup/` — host `<Tabs><Tab Title="…" OnShown="…">` for the 5 tabs above (T016–T020), matching `FinancePage.razor`'s pattern; tab-click AND Next both navigate (FR-003); Next validates only the current tab's own fields and refuses to advance on failure (FR-004); Finish keeps validating the **whole** `_editContext` (already does today) and, on failure, indicates which tab needs attention rather than a bare error (Edge Cases); Finish orchestration (`SetupService.InitializeAsync` + optional debug seeding + navigate to `/dashboard`) is otherwise unchanged from today. **Known gotcha** (CLAUDE.md): watch for concurrent-DbContext issues from `Tabs`/`Tab`'s `OnShown` firing during rapid tab switching — no tab does DB work on `OnShown` yet at this point in the build, so confirm none is introduced.
 
 **⟶ Wait for Wave 2 to finish, then:**
 
 **Wave 3 — independent (different files):**
 
-- [ ] **T022** [P] [US1] Rewrite `tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs` for the tabbed flow — tab-click navigation, Next gating per tab, Finish composes the same `SetupRequest` fields as today, FR-024 no-capability-loss coverage.
-- [ ] **T023** [P] [US1] Rewrite `tests/StageFright.UI.Tests/Pages/Setup/SetupWizardNoSeederTests.cs` — same seeder-absent assertions, tabbed navigation instead of `#btn-next` step-counting.
-- [ ] **T024** [P] [US1] Rewrite `tests/StageFright.UI.Tests/Pages/Setup/SetupWizardThemeTests.cs` — same theme-toggle/Finish-composition assertions, tabbed navigation to the Review tab.
-- [ ] **T025** [P] [US1] New `tests/StageFright.UI.Tests/Pages/Setup/Tabs/GeneralAppearanceTabTests.cs`.
-- [ ] **T026** [P] [US1] New `tests/StageFright.UI.Tests/Pages/Setup/Tabs/MembershipFeesTabTests.cs`.
-- [ ] **T027** [P] [US1] New `tests/StageFright.UI.Tests/Pages/Setup/Tabs/SalesTaxTabTests.cs` — include the tax-toggle-off field-clearing case.
-- [ ] **T028** [P] [US1] New `tests/StageFright.UI.Tests/Pages/Setup/Tabs/CommitteeTabTests.cs` — legacy comma-separated field, pre-upgrade.
-- [ ] **T029** [P] [US1] New `tests/StageFright.UI.Tests/Pages/Setup/Tabs/ReviewTabTests.cs` — basic `dl` summary + relocated seed-data checkbox, pre-upgrade.
+- [x] **T022** [P] [US1] Rewrite `tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs` for the tabbed flow — tab-click navigation, Next gating per tab, Finish composes the same `SetupRequest` fields as today, FR-024 no-capability-loss coverage.
+- [x] **T023** [P] [US1] Rewrite `tests/StageFright.UI.Tests/Pages/Setup/SetupWizardNoSeederTests.cs` — same seeder-absent assertions, tabbed navigation instead of `#btn-next` step-counting.
+- [x] **T024** [P] [US1] Rewrite `tests/StageFright.UI.Tests/Pages/Setup/SetupWizardThemeTests.cs` — same theme-toggle/Finish-composition assertions, tabbed navigation to the Review tab.
+- [x] **T025** [P] [US1] New `tests/StageFright.UI.Tests/Pages/Setup/Tabs/GeneralAppearanceTabTests.cs`.
+- [x] **T026** [P] [US1] New `tests/StageFright.UI.Tests/Pages/Setup/Tabs/MembershipFeesTabTests.cs`.
+- [x] **T027** [P] [US1] New `tests/StageFright.UI.Tests/Pages/Setup/Tabs/SalesTaxTabTests.cs` — include the tax-toggle-off field-clearing case.
+- [x] **T028** [P] [US1] New `tests/StageFright.UI.Tests/Pages/Setup/Tabs/CommitteeTabTests.cs` — legacy comma-separated field, pre-upgrade.
+- [x] **T029** [P] [US1] New `tests/StageFright.UI.Tests/Pages/Setup/Tabs/ReviewTabTests.cs` — basic `dl` summary + relocated seed-data checkbox, pre-upgrade.
 
 **Checkpoint**: The tabbed wizard is fully functional and independently testable — every field/rule/default from the old 5-step flow still works, just regrouped.
 

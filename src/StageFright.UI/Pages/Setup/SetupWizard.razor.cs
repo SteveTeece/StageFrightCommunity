@@ -16,7 +16,18 @@ public partial class SetupWizard : ComponentBase
     private readonly SetupFormModel _model = new();
     private EditContext _editContext = null!;
     private IDebugDataSeeder? _debugSeeder;
-    private int _currentStep = 1;
+
+    // Fully qualified — a bare "Tabs" is ambiguous with our own sibling
+    // StageFright.UI.Pages.Setup.Tabs namespace (nested namespaces are reachable by
+    // simple name from their enclosing namespace, no `using` required).
+    private BlazorBootstrap.Tabs? _tabsRef;
+
+    // Lazy-render flags: a tab's content is only instantiated once it has been shown, so
+    // multiple tabs never touch the shared DbContext concurrently (see SettingsPage's own
+    // precedent for this exact MAUI WebView gotcha). Grows as later stories add tabs.
+    private readonly List<bool> _tabShown = new() { true, false, false, false, false };
+    private int _currentTabIndex;
+
     private bool _submitting;
     private bool _seedingInProgress;
     private bool _seedWithTestData;
@@ -33,32 +44,38 @@ public partial class SetupWizard : ComponentBase
         _debugSeeder = ServiceProvider.GetService(typeof(IDebugDataSeeder)) as IDebugDataSeeder;
     }
 
-    private void HandleNext()
+    // Called both by a direct tab-header click and by Next (which already knows the target
+    // index) — a single place that keeps _currentTabIndex and the lazy-render flag in sync
+    // regardless of which triggered the move (FR-003).
+    private void SetActiveTab(int index)
     {
-        if (_editContext.Validate() && _currentStep < 5)
-            _currentStep++;
+        _tabShown[index] = true;
+        _currentTabIndex = index;
     }
 
-    private void HandleBack()
+    private async Task HandleNextAsync()
     {
-        if (_currentStep > 1)
-            _currentStep--;
+        // Matches today's actual Next behavior (validates the whole model, not just the
+        // current tab) — every other field already has a valid default, so in practice
+        // only the current tab's own required fields can ever fail this (FR-004).
+        if (!_editContext.Validate())
+            return;
+
+        var nextIndex = _currentTabIndex + 1;
+        if (nextIndex >= _tabShown.Count)
+            return;
+
+        SetActiveTab(nextIndex);
+        if (_tabsRef is not null)
+            await _tabsRef.ShowTabByIndexAsync(nextIndex);
     }
 
-    private void HandleTaxToggleChanged()
+    // EditForm only calls OnValidSubmit once the whole model is valid; if Finish is clicked
+    // while an earlier tab still has an invalid field, this fires instead (Edge Cases: the
+    // coordinator must be able to tell something needs attention, even from the Review tab).
+    private void HandleInvalidSubmit()
     {
-        if (!_model.IsTaxApplicable)
-        {
-            _model.TaxRate = null;
-            _model.AnnualFeeTaxCode = null;
-            _model.AttendanceFeeTaxCode = null;
-        }
-    }
-
-    private async Task HandleThemeToggleAsync()
-    {
-        if (ThemeProvider is not null)
-            await ThemeProvider.ToggleAsync();
+        _errorMessage = "Some required fields are incomplete — check every tab before finishing.";
     }
 
     private async Task HandleValidSubmitAsync()

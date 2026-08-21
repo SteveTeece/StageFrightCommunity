@@ -1,0 +1,28 @@
+<div class="mb-3">
+    <label for="agmMonth" class="form-label">AGM Month</label>
+    <InputSelect id="agmMonth" class="form-select form-select-sm" @bind-Value="Model.CommitteeRenewalMonth">
+        @for (var m = 1; m <= 12; m++)
+        {
+            var month = m;
+            <option value="@month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
+        }
+    </InputSelect>
+    <div class="form-text small">The month your AGM is normally held. Drives committee term boundaries.</div>
+</div>
+
+<div class="mb-3">
+    <label for="officeHolderTitles" class="form-label">Additional Office-Holder Titles</label>
+    <InputText id="officeHolderTitles" class="form-control form-control-sm"
+               @bind-Value="Model.CommitteeOfficeHolderTitlesText"
+               placeholder="e.g. Publicity Officer, Webmaster" />
+    <div class="form-text small">
+        Optional, comma-separated. President/Secretary/Treasurer are always included.
+        Can also be configured later from Settings.
+    </div>
+</div>
+
+<div class="mb-3">
+    <label for="seatCountTarget" class="form-label">General Committee Seat Count Target</label>
+    <InputNumber id="seatCountTarget" class="form-control form-control-sm" @bind-Value="Model.GeneralCommitteeSeatCountTarget" />
+    <div class="form-text small">Optional — guidance only, no hard cap is enforced when recording an AGM.</div>
+</div>
