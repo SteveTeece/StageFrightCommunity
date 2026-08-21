@@ -38,7 +38,7 @@ public class SetupWizardTests : BunitContext
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.show", _ => true);
     }
 
-    private static void AdvanceFromGeneral(IRenderedComponent<SetupWizard> cut, string orgName = "My Choir")
+    private static void AdvanceFromOrganisationSettings(IRenderedComponent<SetupWizard> cut, string orgName = "My Choir")
     {
         cut.Find("#orgName").Change(orgName);
         cut.Find("#btn-next").Click();
@@ -46,10 +46,9 @@ public class SetupWizardTests : BunitContext
 
     private static void AdvanceToReview(IRenderedComponent<SetupWizard> cut)
     {
-        AdvanceFromGeneral(cut); // -> Sales Tax
-        cut.Find("#btn-next").Click(); // -> Committee
-        cut.Find("#btn-next").Click(); // -> Chart of Accounts
+        AdvanceFromOrganisationSettings(cut); // -> Chart of Accounts
         cut.Find("#btn-next").Click(); // -> Opening Balances
+        cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#btn-next").Click(); // -> Review
     }
 
@@ -58,25 +57,21 @@ public class SetupWizardTests : BunitContext
     {
         var cut = Render<SetupWizard>();
 
-        var general = cut.Markup.IndexOf("General", StringComparison.Ordinal);
-        var membership = cut.Markup.IndexOf("Membership", StringComparison.Ordinal);
-        var salesTax = cut.Markup.IndexOf("Sales Tax", StringComparison.Ordinal);
-        var committee = cut.Markup.IndexOf("Committee", StringComparison.Ordinal);
+        var organisationSettings = cut.Markup.IndexOf("Organisation Settings", StringComparison.Ordinal);
         var chartOfAccounts = cut.Markup.IndexOf("Chart of Accounts", StringComparison.Ordinal);
         var openingBalances = cut.Markup.IndexOf("Opening Balances", StringComparison.Ordinal);
+        var committee = cut.Markup.IndexOf("Committee", StringComparison.Ordinal);
         var review = cut.Markup.IndexOf("Review", StringComparison.Ordinal);
 
-        Assert.True(general >= 0);
-        Assert.True(membership > general);
-        Assert.True(salesTax > membership);
-        Assert.True(committee > salesTax);
-        Assert.True(chartOfAccounts > committee);
+        Assert.True(organisationSettings >= 0);
+        Assert.True(chartOfAccounts > organisationSettings);
         Assert.True(openingBalances > chartOfAccounts);
-        Assert.True(review > openingBalances);
+        Assert.True(committee > openingBalances);
+        Assert.True(review > committee);
     }
 
     [Fact]
-    public void GeneralTab_RendersOrganisationField_WithNoAbnField()
+    public void OrganisationSettingsTab_RendersOrganisationField_WithNoAbnField()
     {
         var cut = Render<SetupWizard>();
 
@@ -91,7 +86,8 @@ public class SetupWizardTests : BunitContext
 
         cut.Find("#btn-next").Click();
 
-        // Still on the General tab — the field and its validation message remain visible.
+        // Still on the Organisation Settings tab — the field and its validation message
+        // remain visible.
         cut.Find("#orgName");
         Assert.Contains("required", cut.Markup, StringComparison.OrdinalIgnoreCase);
     }
@@ -104,18 +100,16 @@ public class SetupWizardTests : BunitContext
         cut.Find("#orgName").Change("My Choir");
         cut.Find("#annualFee");
         cut.Find("#renewalMonth");
-
-        cut.Find("#btn-next").Click(); // -> Sales Tax
         cut.Find("#taxApplicable");
-
-        cut.Find("#btn-next").Click(); // -> Committee
-        cut.Find("#agmMonth");
 
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
         cut.Find("#account-name");
 
         cut.Find("#btn-next").Click(); // -> Opening Balances
         cut.Find("#ob-tab-as-at-date");
+
+        cut.Find("#btn-next").Click(); // -> Committee
+        cut.Find("#agmMonth");
 
         cut.Find("#btn-next").Click(); // -> Review
         Assert.Contains("Review", cut.Markup);
@@ -126,9 +120,9 @@ public class SetupWizardTests : BunitContext
     public void DirectTabClick_NavigatesWithoutLosingEnteredValues()
     {
         var cut = Render<SetupWizard>();
-        AdvanceFromGeneral(cut, "My Choir");
+        AdvanceFromOrganisationSettings(cut, "My Choir");
 
-        // Jump directly to Review by clicking its header, skipping Sales Tax/Committee.
+        // Jump directly to Review by clicking its header, skipping Opening Balances/Committee.
         cut.FindAll(".nav-link").First(a => a.TextContent.Contains("Review")).Click();
 
         Assert.Contains("My Choir", cut.Markup);
@@ -138,8 +132,9 @@ public class SetupWizardTests : BunitContext
     public async Task TaxRateField_OnlyShown_WhenTaxApplicableChecked()
     {
         var cut = Render<SetupWizard>();
-        AdvanceFromGeneral(cut); // -> Sales Tax
 
+        // Sales Tax fields now live on the same Organisation Settings tab as orgName —
+        // no Next click needed to reach #taxApplicable.
         Assert.Empty(cut.FindAll("#taxRate"));
 
         await cut.Find("#taxApplicable").ChangeAsync(true);
@@ -153,12 +148,11 @@ public class SetupWizardTests : BunitContext
         var cut = Render<SetupWizard>();
         cut.Find("#orgName").Change("My Choir");
         cut.Find("#annualFee").Change("80");
-        cut.Find("#btn-next").Click(); // -> Sales Tax
+        cut.Find("#btn-next").Click(); // -> Chart of Accounts
+        cut.Find("#btn-next").Click(); // -> Opening Balances
         cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#committee-role-input").Input("Publicity Officer");
         cut.Find("#committee-role-add-btn").Click();
-        cut.Find("#btn-next").Click(); // -> Chart of Accounts
-        cut.Find("#btn-next").Click(); // -> Opening Balances
         cut.Find("#btn-next").Click(); // -> Review
         // No opening balance entered — check the sample-data checkbox to satisfy the
         // Finish gate (FR-021); this test cares about SetupRequest composition, not the
@@ -182,9 +176,7 @@ public class SetupWizardTests : BunitContext
     public async Task ValidSubmit_ComposesQueuedAccounts_When_AccountQueuedOnChartOfAccountsTab()
     {
         var cut = Render<SetupWizard>();
-        AdvanceFromGeneral(cut, "My Choir"); // -> Sales Tax
-        cut.Find("#btn-next").Click(); // -> Committee
-        cut.Find("#btn-next").Click(); // -> Chart of Accounts
+        AdvanceFromOrganisationSettings(cut, "My Choir"); // -> Chart of Accounts
 
         // ChartOfAccountsTab hosts AddAccountForm's own <EditForm>, nested inside the
         // wizard's outer one — real nested <form> elements resolve fine in a live browser
@@ -198,6 +190,7 @@ public class SetupWizardTests : BunitContext
         await cut.InvokeAsync(() => tab.Instance.OnAdd.InvokeAsync(newAccount));
 
         cut.Find("#btn-next").Click(); // -> Opening Balances
+        cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#btn-next").Click(); // -> Review
         // No opening balance entered — satisfy the Finish gate (FR-021) via sample data;
         // this test is only about QueuedAccounts composition.
@@ -234,9 +227,7 @@ public class SetupWizardTests : BunitContext
     public async Task RemovingQueuedAccount_OnChartOfAccountsTab_ExcludesItFromFinish()
     {
         var cut = Render<SetupWizard>();
-        AdvanceFromGeneral(cut, "My Choir"); // -> Sales Tax
-        cut.Find("#btn-next").Click(); // -> Committee
-        cut.Find("#btn-next").Click(); // -> Chart of Accounts
+        AdvanceFromOrganisationSettings(cut, "My Choir"); // -> Chart of Accounts
 
         // See ValidSubmit_ComposesQueuedAccounts_When_AccountQueuedOnChartOfAccountsTab for
         // why this invokes the child's OnAdd/OnRemove parameters directly rather than
@@ -248,6 +239,7 @@ public class SetupWizardTests : BunitContext
         await cut.InvokeAsync(() => tab.Instance.OnRemove.InvokeAsync(queued));
 
         cut.Find("#btn-next").Click(); // -> Opening Balances
+        cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#btn-next").Click(); // -> Review
         // No opening balance entered — satisfy the Finish gate (FR-021) via sample data.
         await cut.Find("#seedData").ChangeAsync(true);
@@ -262,17 +254,16 @@ public class SetupWizardTests : BunitContext
     public async Task ReviewTab_ShowsEveryTabsEnteredValue_WithoutNavigatingBack()
     {
         var cut = Render<SetupWizard>();
-        AdvanceFromGeneral(cut, "My Choir"); // -> Sales Tax
-        cut.Find("#btn-next").Click(); // -> Committee
-        cut.Find("#committee-role-input").Input("Publicity Officer");
-        cut.Find("#committee-role-add-btn").Click();
-        cut.Find("#btn-next").Click(); // -> Chart of Accounts
+        AdvanceFromOrganisationSettings(cut, "My Choir"); // -> Chart of Accounts
 
         var coaTab = cut.FindComponent<ChartOfAccountsTab>();
         await cut.InvokeAsync(() => coaTab.Instance.OnAdd.InvokeAsync(
             new QueuedAccountRequest(Guid.NewGuid(), "Petty Cash", Core.Enums.AccountType.Asset, false)));
 
         cut.Find("#btn-next").Click(); // -> Opening Balances
+        cut.Find("#btn-next").Click(); // -> Committee
+        cut.Find("#committee-role-input").Input("Publicity Officer");
+        cut.Find("#committee-role-add-btn").Click();
         cut.Find("#btn-next").Click(); // -> Review
 
         Assert.Contains("My Choir", cut.Markup);
@@ -307,14 +298,13 @@ public class SetupWizardTests : BunitContext
     public async Task ValidSubmit_ComposesQueuedCommitteeTitles_When_TitlesAdded()
     {
         var cut = Render<SetupWizard>();
-        AdvanceFromGeneral(cut, "My Choir"); // -> Sales Tax
+        AdvanceFromOrganisationSettings(cut, "My Choir"); // -> Chart of Accounts
+        cut.Find("#btn-next").Click(); // -> Opening Balances
         cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#committee-role-input").Input("Publicity Officer");
         cut.Find("#committee-role-add-btn").Click();
         cut.Find("#committee-role-input").Input("Webmaster");
         cut.Find("#committee-role-add-btn").Click();
-        cut.Find("#btn-next").Click(); // -> Chart of Accounts
-        cut.Find("#btn-next").Click(); // -> Opening Balances
         cut.Find("#btn-next").Click(); // -> Review
         await cut.Find("#seedData").ChangeAsync(true);
 

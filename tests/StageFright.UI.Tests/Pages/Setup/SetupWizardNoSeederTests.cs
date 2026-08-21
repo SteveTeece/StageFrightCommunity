@@ -40,10 +40,9 @@ public class SetupWizardNoSeederTests : BunitContext
     private static void AdvanceToReview(IRenderedComponent<SetupWizard> cut)
     {
         cut.Find("#orgName").Change("My Choir");
-        cut.Find("#btn-next").Click(); // -> Sales Tax
-        cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
         cut.Find("#btn-next").Click(); // -> Opening Balances
+        cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#btn-next").Click(); // -> Review
     }
 
