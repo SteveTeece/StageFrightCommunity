@@ -8,15 +8,14 @@ Unchanged: `@page "/setup"`, still resolved by `Blazor Router` per the app-host 
 
 ## Tab order
 
-1. **General** — organisation name, theme dropdown (FR-022).
-2. **Membership & Fees** — annual fee, attendance fee, membership renewal month, audit retention years.
-3. **Sales Tax** — tax-applicable checkbox, tax rate, annual/attendance fee tax treatment.
-4. **Committee** — AGM month, seat count target, office-holder role queue (+ / bordered list).
-5. **Chart of Accounts** — queued-account form (shared `AddAccountForm`) + bordered list of queued accounts.
-6. **Opening Balances** — queued balance entries (shared `OpeningBalanceEntryForm`), covering existing + queued accounts; must come after Chart of Accounts per spec Assumptions.
-7. **Review** — read-only summary of every tab, two bordered-list summaries (roles, accounts), "load sample data" checkbox (FR-025), Finish button.
+1. **General & Membership** — organisation name, theme dropdown (FR-022), annual fee, attendance fee, membership renewal month, audit retention years. Originally two separate tabs ("General" and "Membership & Fees"); merged into one so the wizard reads as fewer, denser steps — the two source components (`GeneralAppearanceTab`, `MembershipFeesTab`) are unchanged and simply render one after the other inside this tab's content.
+2. **Sales Tax** — tax-applicable checkbox, tax rate, annual/attendance fee tax treatment.
+3. **Committee** — AGM month, seat count target, office-holder role queue (+ / bordered list).
+4. **Chart of Accounts** — queued-account form (shared `AddAccountForm`) + bordered list of queued accounts.
+5. **Opening Balances** — queued balance entries (shared `OpeningBalanceEntryForm`), covering existing + queued accounts; must come after Chart of Accounts per spec Assumptions.
+6. **Review** — read-only summary of every tab, two bordered-list summaries (roles, accounts), "load sample data" checkbox (FR-025), Finish button.
 
-Tab 5 before tab 6 is a hard ordering requirement (data dependency, not just presentation — see data-model.md's account-reference resolution). Tabs 1–4 and 7 are logically fixed by their content but have no cross-tab data dependency on order.
+Tab 4 before tab 5 is a hard ordering requirement (data dependency, not just presentation — see data-model.md's account-reference resolution). Tabs 1–3 and 6 are logically fixed by their content but have no cross-tab data dependency on order.
 
 ## Shared component parameters
 
@@ -57,4 +56,4 @@ Following the existing wizard's convention of explicit `id`s on primary actions 
 - `AddAccountForm` renders `id="account-name"`, `id="account-type"`, `id="account-is-bank"` — the *same* ids `ChartOfAccountsPage` already used before extraction, reused as-is by every caller including the wizard's `ChartOfAccountsTab` (no `coa-tab-` prefix was needed in practice — the two callers are never both on screen at once, so the shared ids never collide).
 - `id="ob-tab-as-at-date"` — the wizard's Opening Balances tab as-at-date input (the standalone page's own Step 1 keeps its separate `id="asAtDate"`). The balance-entry table's per-row inputs mirror `OpeningBalancesWizard`'s existing `aria-label="Balance for @row.Account.Name"` pattern (no shared `id` possible across dynamic rows; tests select by `aria-label`).
 - `id="seedData"` — moved from wherever it renders today to the Review tab specifically (FR-025); not `seed-data-checkbox` as first drafted here.
-- `id="themeSelect"` — the General tab's Light/Dark theme dropdown (US6/FR-022), replacing the old `[role=switch]` toggle.
+- `id="themeSelect"` — the General & Membership tab's Light/Dark theme dropdown (US6/FR-022), replacing the old `[role=switch]` toggle.

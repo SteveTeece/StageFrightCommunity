@@ -46,8 +46,7 @@ public class SetupWizardTests : BunitContext
 
     private static void AdvanceToReview(IRenderedComponent<SetupWizard> cut)
     {
-        AdvanceFromGeneral(cut);
-        cut.Find("#btn-next").Click(); // -> Sales Tax
+        AdvanceFromGeneral(cut); // -> Sales Tax
         cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
         cut.Find("#btn-next").Click(); // -> Opening Balances
@@ -102,7 +101,7 @@ public class SetupWizardTests : BunitContext
     {
         var cut = Render<SetupWizard>();
 
-        AdvanceFromGeneral(cut);
+        cut.Find("#orgName").Change("My Choir");
         cut.Find("#annualFee");
         cut.Find("#renewalMonth");
 
@@ -139,8 +138,7 @@ public class SetupWizardTests : BunitContext
     public async Task TaxRateField_OnlyShown_WhenTaxApplicableChecked()
     {
         var cut = Render<SetupWizard>();
-        AdvanceFromGeneral(cut);
-        cut.Find("#btn-next").Click(); // Membership & Fees -> Sales Tax
+        AdvanceFromGeneral(cut); // -> Sales Tax
 
         Assert.Empty(cut.FindAll("#taxRate"));
 
@@ -153,10 +151,10 @@ public class SetupWizardTests : BunitContext
     public async Task ValidSubmit_ComposesFullSetupRequest()
     {
         var cut = Render<SetupWizard>();
-        AdvanceFromGeneral(cut, "My Choir");
+        cut.Find("#orgName").Change("My Choir");
         cut.Find("#annualFee").Change("80");
-        cut.Find("#btn-next").Click();
-        cut.Find("#btn-next").Click();
+        cut.Find("#btn-next").Click(); // -> Sales Tax
+        cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#committee-role-input").Input("Publicity Officer");
         cut.Find("#committee-role-add-btn").Click();
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
@@ -184,8 +182,7 @@ public class SetupWizardTests : BunitContext
     public async Task ValidSubmit_ComposesQueuedAccounts_When_AccountQueuedOnChartOfAccountsTab()
     {
         var cut = Render<SetupWizard>();
-        AdvanceFromGeneral(cut, "My Choir");
-        cut.Find("#btn-next").Click(); // -> Sales Tax
+        AdvanceFromGeneral(cut, "My Choir"); // -> Sales Tax
         cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
 
@@ -237,8 +234,7 @@ public class SetupWizardTests : BunitContext
     public async Task RemovingQueuedAccount_OnChartOfAccountsTab_ExcludesItFromFinish()
     {
         var cut = Render<SetupWizard>();
-        AdvanceFromGeneral(cut, "My Choir");
-        cut.Find("#btn-next").Click(); // -> Sales Tax
+        AdvanceFromGeneral(cut, "My Choir"); // -> Sales Tax
         cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
 
@@ -266,8 +262,7 @@ public class SetupWizardTests : BunitContext
     public async Task ReviewTab_ShowsEveryTabsEnteredValue_WithoutNavigatingBack()
     {
         var cut = Render<SetupWizard>();
-        AdvanceFromGeneral(cut, "My Choir");
-        cut.Find("#btn-next").Click(); // -> Sales Tax
+        AdvanceFromGeneral(cut, "My Choir"); // -> Sales Tax
         cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#committee-role-input").Input("Publicity Officer");
         cut.Find("#committee-role-add-btn").Click();
@@ -312,8 +307,7 @@ public class SetupWizardTests : BunitContext
     public async Task ValidSubmit_ComposesQueuedCommitteeTitles_When_TitlesAdded()
     {
         var cut = Render<SetupWizard>();
-        AdvanceFromGeneral(cut, "My Choir");
-        cut.Find("#btn-next").Click(); // -> Sales Tax
+        AdvanceFromGeneral(cut, "My Choir"); // -> Sales Tax
         cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#committee-role-input").Input("Publicity Officer");
         cut.Find("#committee-role-add-btn").Click();
