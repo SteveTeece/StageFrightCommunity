@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using StageFright.Core.Enums;
 using StageFright.Core.Modules.AuditTrail;
+using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Settings;
 using StageFright.Data;
 using StageFright.Data.Repositories;
@@ -165,7 +166,14 @@ public sealed class V10_ThemeTests : IAsyncLifetime
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(_db);
         var officeHolderTypeService = new StageFright.Core.Modules.Members.CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
-        return new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, auditService);
+        var glAssignment = new AccountNumberAssignmentService(accountRepo);
+        var reconciliationRepo = new BankReconciliationRepository(_db);
+        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
+        var glRepo = new GLRepository(_db);
+        var journalRepo = new JournalEntryRepository(_db);
+        var unitOfWork = new UnitOfWork(_db);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
+        return new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
     }
 
     private static (int R, int G, int B) HslToRgb(double h, double s, double l)
