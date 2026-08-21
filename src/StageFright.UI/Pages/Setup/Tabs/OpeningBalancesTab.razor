@@ -1,0 +1,22 @@
+@using StageFright.Core.Modules.Finance
+@using StageFright.Core.Modules.Settings
+@using StageFright.UI.Shared
+
+<p class="text-muted small">
+    Enter opening balances for any accounts you'd like to start with a balance —
+    including accounts you just queued on the Chart of Accounts tab. This is optional;
+    you can also load sample data from the Review tab instead.
+</p>
+
+<div class="mb-2">
+    <label class="form-label" for="ob-tab-as-at-date">As at <span aria-hidden="true">*</span></label>
+    <input id="ob-tab-as-at-date" type="date" class="form-control form-control-sm" style="max-width: 12rem;"
+           value="@_asAtDate.ToString("yyyy-MM-dd")"
+           @onchange="HandleAsAtDateChanged" />
+</div>
+
+<OpeningBalanceEntryForm Accounts="AllAccounts"
+                          AsAtDate="_asAtDate"
+                          OnSubmit="OnSubmit"
+                          ShowAlreadyPostedWarning="false"
+                          SubmitButtonText="Queue Balances" />

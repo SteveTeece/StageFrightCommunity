@@ -55,6 +55,7 @@ public class DebugDataSeeder : IDebugDataSeeder
     private readonly IIncomeEntryService _incomeEntryService;
     private readonly IExpensePaymentService _expensePaymentService;
     private readonly IBankDepositService _bankDepositService;
+    private readonly IOpeningBalanceService _openingBalanceService;
     private readonly ISettingsService _settingsService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<DebugDataSeeder> _logger;
@@ -77,6 +78,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         IIncomeEntryService incomeEntryService,
         IExpensePaymentService expensePaymentService,
         IBankDepositService bankDepositService,
+        IOpeningBalanceService openingBalanceService,
         ISettingsService settingsService,
         IUnitOfWork unitOfWork,
         ILogger<DebugDataSeeder> logger)
@@ -98,6 +100,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         _incomeEntryService = incomeEntryService;
         _expensePaymentService = expensePaymentService;
         _bankDepositService = bankDepositService;
+        _openingBalanceService = openingBalanceService;
         _settingsService = settingsService;
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -155,6 +158,16 @@ public class DebugDataSeeder : IDebugDataSeeder
 
         var random = new Random(20250101); // fixed seed — deterministic across runs
         var attendanceProfile = BuildAttendanceProfile(activeMembers, random);
+
+        progress?.Report("Posting opening balance…");
+        await _openingBalanceService.RecordOpeningBalancesAsync(new RecordOpeningBalancesRequest
+        {
+            AsAtDate = Utc(2025, 1, 1),
+            Entries = new List<OpeningBalanceEntry>
+            {
+                new() { AccountId = bankAccount.Id, Amount = 2000m }
+            }
+        }, ct);
 
         progress?.Report("Seeding historical transfers (pre-spec 009)…");
         await SeedHistoricalTransfersAsync(bankAccount, ct);

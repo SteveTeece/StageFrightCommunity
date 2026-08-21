@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
+using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Settings;
 using StageFright.UI.Layout;
 
@@ -25,13 +26,23 @@ public partial class SetupWizard : ComponentBase
     // Lazy-render flags: a tab's content is only instantiated once it has been shown, so
     // multiple tabs never touch the shared DbContext concurrently (see SettingsPage's own
     // precedent for this exact MAUI WebView gotcha). Grows as later stories add tabs.
-    private readonly List<bool> _tabShown = new() { true, false, false, false, false, false };
+    private readonly List<bool> _tabShown = new() { true, false, false, false, false, false, false };
     private int _currentTabIndex;
 
     // Chart of Accounts queue (US4): accounts added here are never persisted until Finish
     // (FR-013) — held in memory only, so a failed Finish leaves the queue untouched
-    // (Edge Cases) simply by never being cleared outside a successful submit.
+    // (Edge Cases) simply by never being cleared outside a successful submit. The same
+    // list is passed to the Opening Balances tab so its rows stay in sync (FR-020) —
+    // OpeningBalanceEntryForm already reconciles its own rows against whatever Accounts
+    // it's given, so adding/removing here is all that's needed for that sync.
     private readonly List<QueuedAccountRequest> _queuedAccounts = new();
+
+    // Opening Balances queue (US2): replaced wholesale each time the tab's "Queue
+    // Balances" action fires (it always reports the full current non-zero row set, not
+    // one entry at a time) — held in memory only, same untouched-on-failed-Finish
+    // guarantee as the account queue above.
+    private readonly List<OpeningBalanceEntry> _queuedOpeningBalances = new();
+    private DateTime _openingBalanceAsAtDate = DateTime.Today;
 
     private bool _submitting;
     private bool _seedingInProgress;
@@ -85,6 +96,20 @@ public partial class SetupWizard : ComponentBase
     private void HandleRemoveQueuedAccount(QueuedAccountRequest account)
     {
         _queuedAccounts.Remove(account);
+        // FR-020: removing a queued account also drops any balance already entered for it —
+        // OpeningBalanceEntryForm's own row reconciliation drops the row visually once
+        // QueuedAccounts no longer includes it, but a balance already queued via a prior
+        // "Queue Balances" click lives here and needs its own cleanup.
+        _queuedOpeningBalances.RemoveAll(e => e.AccountId == account.ClientId);
+    }
+
+    // Opening Balances tab (US2) queue handler — the tab's "Queue Balances" action always
+    // reports its full current non-zero row set, so this replaces rather than appends.
+    private void HandleQueueOpeningBalances(RecordOpeningBalancesRequest request)
+    {
+        _queuedOpeningBalances.Clear();
+        _queuedOpeningBalances.AddRange(request.Entries);
+        _openingBalanceAsAtDate = request.AsAtDate;
     }
 
     // EditForm only calls OnValidSubmit once the whole model is valid; if Finish is clicked
@@ -99,6 +124,16 @@ public partial class SetupWizard : ComponentBase
     {
         _submitting = true;
         _errorMessage = null;
+
+        // FR-021: Finish requires either a real opening balance or an explicit opt-in to
+        // sample data instead — checked before any orchestration starts so a rejected
+        // Finish leaves every queue untouched (Edge Cases), same as an EditContext failure.
+        if (_queuedOpeningBalances.Count == 0 && !_seedWithTestData)
+        {
+            _errorMessage = "Enter at least one opening balance, or select \"Load sample data\" on the Review tab, before finishing.";
+            _submitting = false;
+            return;
+        }
 
         try
         {
@@ -120,7 +155,9 @@ public partial class SetupWizard : ComponentBase
                 CommitteeOfficeHolderTitles: officeHolderTitles,
                 GeneralCommitteeSeatCountTarget: _model.GeneralCommitteeSeatCountTarget,
                 AuditRetentionYears: _model.AuditRetentionYears,
-                QueuedAccounts: _queuedAccounts.Count > 0 ? _queuedAccounts : null);
+                QueuedAccounts: _queuedAccounts.Count > 0 ? _queuedAccounts : null,
+                QueuedOpeningBalances: _queuedOpeningBalances.Count > 0 ? _queuedOpeningBalances : null,
+                OpeningBalanceAsAtDate: _openingBalanceAsAtDate);
 
             await SetupService.InitializeAsync(request);
 

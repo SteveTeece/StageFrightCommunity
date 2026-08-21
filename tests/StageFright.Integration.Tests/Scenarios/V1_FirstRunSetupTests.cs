@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Settings;
@@ -136,6 +137,52 @@ public sealed class V1_FirstRunSetupTests : IAsyncLifetime
 
         var accounts = await new AccountRepository(_db).GetAllAsync();
         Assert.Single(accounts, a => a.Name == "Petty Cash");
+    }
+
+    [Fact]
+    public async Task InitializeAsync_WithQueuedOpeningBalances_PostsOneBalancedOpeningBalanceEntry()
+    {
+        var svc = BuildSetupService();
+        var cashAccount = (await new AccountRepository(_db).GetAllAsync())
+            .Single(a => a.AccountNumber == "1100");
+        var asAtDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        await svc.InitializeAsync(ValidRequest() with
+        {
+            QueuedOpeningBalances = new[] { new OpeningBalanceEntry { AccountId = cashAccount.Id, Amount = 500m } },
+            OpeningBalanceAsAtDate = asAtDate
+        });
+
+        var journalEntry = Assert.Single(_db.JournalEntries, j => j.Type == JournalEntryType.OpeningBalance);
+        Assert.Equal(asAtDate, journalEntry.Date);
+
+        var lines = await _db.Transactions.Where(t => t.JournalEntryId == journalEntry.Id).ToListAsync();
+        Assert.Contains(lines, l => l.AccountId == cashAccount.Id && l.DebitAmount == 500m);
+        Assert.Equal(lines.Sum(l => l.DebitAmount), lines.Sum(l => l.CreditAmount));
+    }
+
+    [Fact]
+    public async Task InitializeAsync_WithQueuedAccountAndOpeningBalance_ResolvesClientIdToRealAccountId()
+    {
+        var svc = BuildSetupService();
+        var clientId = Guid.NewGuid();
+        var asAtDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        await svc.InitializeAsync(ValidRequest() with
+        {
+            QueuedAccounts = new[] { new QueuedAccountRequest(clientId, "Petty Cash", Core.Enums.AccountType.Asset, true) },
+            QueuedOpeningBalances = new[] { new OpeningBalanceEntry { AccountId = clientId, Amount = 200m } },
+            OpeningBalanceAsAtDate = asAtDate
+        });
+
+        var pettyCash = (await new AccountRepository(_db).GetAllAsync()).Single(a => a.Name == "Petty Cash");
+        Assert.NotEqual(clientId, pettyCash.Id); // resolved to a real, freshly assigned Account.Id
+
+        var journalEntry = Assert.Single(_db.JournalEntries, j => j.Type == JournalEntryType.OpeningBalance);
+        var lines = await _db.Transactions.Where(t => t.JournalEntryId == journalEntry.Id).ToListAsync();
+        Assert.Contains(lines, l => l.AccountId == pettyCash.Id && l.DebitAmount == 200m);
+        Assert.DoesNotContain(lines, l => l.AccountId == clientId);
+        Assert.Equal(lines.Sum(l => l.DebitAmount), lines.Sum(l => l.CreditAmount));
     }
 
     private SetupService BuildSetupService()
