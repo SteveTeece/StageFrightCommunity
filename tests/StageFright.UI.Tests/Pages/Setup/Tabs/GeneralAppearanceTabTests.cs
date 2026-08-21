@@ -10,10 +10,9 @@ using StageFright.UI.Pages.Setup.Tabs;
 
 namespace StageFright.UI.Tests.Pages.Setup.Tabs;
 
-/// <summary>bUnit tests for GeneralAppearanceTab (US1) — organisation name field and the
-/// theme toggle, relocated unchanged from the old wizard's Step 1. Rendered inside an
-/// EditForm since its InputText/ValidationMessage need a cascaded EditContext (built
-/// manually — EditForm.ChildContent is generic).</summary>
+/// <summary>bUnit tests for GeneralAppearanceTab (US1/US6) — organisation name field and
+/// the theme dropdown. Rendered inside an EditForm since its InputText/ValidationMessage
+/// need a cascaded EditContext (built manually — EditForm.ChildContent is generic).</summary>
 public class GeneralAppearanceTabTests : BunitContext
 {
     public GeneralAppearanceTabTests()
@@ -43,13 +42,13 @@ public class GeneralAppearanceTabTests : BunitContext
     }
 
     [Fact]
-    public void RendersThemeToggle()
+    public void RendersThemeDropdown()
     {
         var model = new SetupFormModel();
         var cut = Render<ThemeProvider>(p => p.AddChildContent<EditForm>(f => f
             .Add(x => x.Model, model)
             .Add(x => x.ChildContent, GeneralTab(model))));
 
-        cut.Find(".setup-theme-toggle [role=switch]");
+        cut.Find("#themeSelect");
     }
 }

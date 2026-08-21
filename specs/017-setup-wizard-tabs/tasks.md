@@ -211,13 +211,13 @@
 
 **Wave 1:**
 
-- [ ] **T049** [US6] Update `GeneralAppearanceTab.razor(.cs)` — replace the `RadzenSwitch` theme toggle with a dropdown (`InputSelect`/`<select>`) listing Light/Dark, applying via `ThemeProvider` immediately on change (FR-022). Verify (no code change expected) that every other boolean field across `SalesTaxTab`/`ReviewTab` already renders as `InputCheckbox` — they do since before this feature (FR-023).
+- [x] **T049** [US6] Update `GeneralAppearanceTab.razor(.cs)` — replace the `RadzenSwitch` theme toggle with a dropdown (`InputSelect`/`<select>`) listing Light/Dark, applying via `ThemeProvider` immediately on change (FR-022). Verify (no code change expected) that every other boolean field across `SalesTaxTab`/`ReviewTab` already renders as `InputCheckbox` — they do since before this feature (FR-023).
 
 **⟶ Wait for Wave 1 to finish, then:**
 
 **Wave 2:**
 
-- [ ] **T050** [US6] Update `SetupWizardThemeTests.cs` (T024) — replace `[role=switch]` selectors/interactions with the dropdown's selection pattern; same Finish-composition assertions.
+- [x] **T050** [US6] Update `SetupWizardThemeTests.cs` (T024) — replace `[role=switch]` selectors/interactions with the dropdown's selection pattern; same Finish-composition assertions.
 
 **Checkpoint**: All six user stories are independently functional. The tabbed, queued, bordered-list wizard matches the full spec.
 

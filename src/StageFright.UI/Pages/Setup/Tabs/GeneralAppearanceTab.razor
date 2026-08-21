@@ -5,9 +5,11 @@
 </div>
 
 <div class="setup-theme-toggle d-flex align-items-center gap-2 mb-3">
-    <span class="small text-muted">Theme:</span>
-    <RadzenSwitch Name="setupThemeToggleSwitch"
-                  Value="@(ThemeProvider?.CurrentTheme == Core.Enums.Theme.Dark)"
-                  Change="@(async (bool _) => await HandleThemeToggleAsync())" />
-    <span class="small">@(ThemeProvider?.CurrentTheme == Core.Enums.Theme.Dark ? "Dark" : "Light")</span>
+    <label for="themeSelect" class="small text-muted mb-0">Theme:</label>
+    <select id="themeSelect" class="form-select form-select-sm" style="width: auto;"
+            value="@(ThemeProvider?.CurrentTheme == Core.Enums.Theme.Dark ? "Dark" : "Light")"
+            @onchange="HandleThemeChangedAsync">
+        <option value="Light">Light</option>
+        <option value="Dark">Dark</option>
+    </select>
 </div>

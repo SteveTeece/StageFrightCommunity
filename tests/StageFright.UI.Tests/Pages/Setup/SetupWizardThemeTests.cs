@@ -13,7 +13,7 @@ using StageFright.UI.Pages.Setup.Tabs;
 namespace StageFright.UI.Tests.Pages.Setup;
 
 /// <summary>
-/// bUnit tests for the theme toggle switch on the Setup Wizard (issue #248): the switch
+/// bUnit tests for the theme dropdown on the Setup Wizard (issue #248, US6): the dropdown
 /// reflects and controls the cascaded ThemeProvider's current theme, and whatever theme
 /// is selected when the wizard is submitted flows into the SetupRequest.
 /// </summary>
@@ -72,33 +72,33 @@ public class SetupWizardThemeTests : BunitContext
     }
 
     [Fact]
-    public void ThemeToggle_Renders_OnSetupWizard()
+    public void ThemeDropdown_Renders_OnSetupWizard()
     {
         var cut = RenderWizard();
 
-        cut.Find(".setup-theme-toggle [role=switch]");
+        cut.Find("#themeSelect");
     }
 
     [Fact]
-    public void ThemeToggle_DefaultsToDevicePreference()
+    public void ThemeDropdown_DefaultsToDevicePreference()
     {
         var cut = RenderWizard();
 
-        Assert.Contains("Dark", cut.Find(".setup-theme-toggle").TextContent);
+        Assert.Equal(nameof(Theme.Dark), cut.Find("#themeSelect").GetAttribute("value"));
     }
 
     [Fact]
-    public void ThemeToggle_TogglingSwitch_ChangesDisplayedTheme()
+    public void ThemeDropdown_SelectingLight_ChangesDisplayedTheme()
     {
         var cut = RenderWizard();
 
-        cut.Find(".setup-theme-toggle [role=switch]").Click();
+        cut.Find("#themeSelect").Change(nameof(Theme.Light));
 
-        Assert.Contains("Light", cut.Find(".setup-theme-toggle").TextContent);
+        Assert.Equal(nameof(Theme.Light), cut.Find("#themeSelect").GetAttribute("value"));
     }
 
     [Fact]
-    public async Task Finish_IncludesDefaultTheme_InSetupRequest_WhenToggleUntouched()
+    public async Task Finish_IncludesDefaultTheme_InSetupRequest_WhenDropdownUntouched()
     {
         var cut = RenderWizard();
         AdvanceToReview(cut);
@@ -112,10 +112,10 @@ public class SetupWizardThemeTests : BunitContext
     }
 
     [Fact]
-    public async Task Finish_IncludesToggledTheme_InSetupRequest_WhenUserSwitchesToLight()
+    public async Task Finish_IncludesSelectedTheme_InSetupRequest_WhenUserSwitchesToLight()
     {
         var cut = RenderWizard();
-        cut.Find(".setup-theme-toggle [role=switch]").Click(); // Dark -> Light
+        cut.Find("#themeSelect").Change(nameof(Theme.Light));
         AdvanceToReview(cut);
         await QueueOpeningBalanceAsync(cut);
 
