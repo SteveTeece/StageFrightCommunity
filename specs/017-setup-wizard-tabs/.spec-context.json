@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "setup wizard tabs",
   "branch": "017-setup-wizard-tabs",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -46,6 +46,20 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-20T15:06:37.437Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-21T01:43:56.714Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-21T02:03:46.820Z"
     }
   ],
   "livingSpecs": {
@@ -57,28 +71,68 @@
   },
   "coverage": {
     "FR-001": {
-      "title": "Single tabbed screen replaces the numbered step sequence"
+      "title": "Setup wizard MUST present its settings as a single screen with a tab strip",
+      "tasks": [
+        "T016",
+        "T017",
+        "T018",
+        "T019",
+        "T020",
+        "T021"
+      ]
     },
     "FR-002": {
-      "title": "Each tab groups logically related settings; no 1-2-setting tabs"
+      "title": "Each tab groups logically related settings; no 1-2-setting tabs",
+      "tasks": [
+        "T016",
+        "T017",
+        "T018",
+        "T019",
+        "T020",
+        "T021"
+      ]
     },
     "FR-003": {
-      "title": "Tabs are navigable both by direct click and by Next"
+      "title": "Tabs navigable both by direct click and by Next",
+      "tasks": [
+        "T021"
+      ]
     },
     "FR-004": {
-      "title": "Next does not advance past an invalid tab"
+      "title": "Next MUST NOT advance past a tab whose own required fields fail validation",
+      "tasks": [
+        "T021"
+      ]
     },
     "FR-005": {
-      "title": "Last tab is a read-only review of every entered value"
+      "title": "Last tab MUST be a review tab displaying every value read-only",
+      "tasks": [
+        "T020",
+        "T021"
+      ]
     },
     "FR-006": {
-      "title": "Review tab shows queued roles and accounts as bordered list boxes"
+      "title": "Review tab MUST display queued roles/accounts as bordered list boxes",
+      "tasks": [
+        "T045",
+        "T046"
+      ]
     },
     "FR-007": {
-      "title": "Bordered-list convention for every list box, app-wide"
+      "title": "Every list box anywhere in the app MUST be a bordered list (app-wide convention)",
+      "tasks": [
+        "T002",
+        "T052"
+      ]
     },
     "FR-008": {
-      "title": "Finish validates all tabs, creates queued roles/accounts/balances together"
+      "title": "Finish MUST validate all tabs and create queued items together in one submission",
+      "tasks": [
+        "T008",
+        "T021",
+        "T031",
+        "T037"
+      ]
     },
     "FR-009": {
       "title": "Committee roles added one at a time via a + control"
@@ -87,28 +141,57 @@
       "title": "Added roles shown in a bordered list box, removable before finishing"
     },
     "FR-011": {
-      "title": "Blank or duplicate role titles are rejected"
+      "title": "Blank or duplicate (case-insensitive) title rejected",
+      "tasks": [
+        "T041"
+      ]
     },
     "FR-012": {
-      "title": "New Chart of Accounts tab lets the user queue entries via the shared add-account fields"
+      "title": "Chart of Accounts tab offers the same fields as the standalone add-account control",
+      "tasks": [
+        "T003",
+        "T030"
+      ]
     },
     "FR-013": {
-      "title": "Queued accounts are not created until Finish; shown in a bordered list box meanwhile"
+      "title": "Queued account held in wizard state, not created until Finish",
+      "tasks": [
+        "T008",
+        "T030",
+        "T031"
+      ]
     },
     "FR-014": {
-      "title": "Duplicate account names (queued or persisted) are rejected the same as the standalone page"
+      "title": "Duplicate account name (queued or persisted) rejected same as standalone page",
+      "tasks": [
+        "T003",
+        "T030"
+      ]
     },
     "FR-015": {
       "title": "Adding an account is optional, never blocks finishing setup"
     },
     "FR-016": {
-      "title": "Add-account experience is shared: immediate-create on the standalone page, deferred on the wizard tab"
+      "title": "Add-account fields/validation are a single shared experience (immediate vs deferred)",
+      "tasks": [
+        "T003",
+        "T006",
+        "T030"
+      ]
     },
     "FR-017": {
-      "title": "New Opening Balances tab covers every eligible existing + queued account, same exclusions as standalone page"
+      "title": "Opening Balances tab covers every eligible existing + queued account",
+      "tasks": [
+        "T035"
+      ]
     },
     "FR-018": {
-      "title": "Opening balance entries deferred; posted together at Finish via the standalone page's posting behavior"
+      "title": "Opening balance entries deferred, posted together at Finish",
+      "tasks": [
+        "T008",
+        "T035",
+        "T037"
+      ]
     },
     "FR-019": {
       "title": "Opening-balance experience is shared: immediate-post on the standalone page, deferred on the wizard tab"
@@ -117,22 +200,35 @@
       "title": "Opening Balances tab stays in sync with Chart of Accounts tab additions/removals"
     },
     "FR-022": {
-      "title": "Theme is a dropdown selector, applies immediately"
+      "title": "Theme is a dropdown selector, applies immediately",
+      "tasks": [
+        "T049"
+      ]
     },
     "FR-023": {
-      "title": "Every other yes/no setting is a checkbox, not a toggle switch"
+      "title": "Every other yes/no setting is a checkbox, not a toggle switch",
+      "tasks": [
+        "T049"
+      ]
     },
     "FR-024": {
       "title": "Regrouping into tabs preserves every field, rule, and default"
     },
     "FR-026": {
-      "title": "Debug seeder must include opening balances for the accounts it seeds"
+      "title": "Debug seeder must include opening balances for the accounts it seeds",
+      "tasks": [
+        "T036"
+      ]
     },
     "FR-021": {
       "title": "Finish blocked unless opening balances posted or sample data selected"
     },
     "FR-025": {
-      "title": "Sample-data checkbox is debug-build-only and lives specifically on the review tab"
+      "title": "Sample-data checkbox is debug-build-only and lives on the review tab",
+      "tasks": [
+        "T020",
+        "T021"
+      ]
     }
   },
   "size": "normal",
@@ -185,5 +281,10 @@
       "why": "FR-026 requires seeded accounts to have opening balances specifically; todays seeder only reaches balances via simulated years of transactions with no OpeningBalance journal entry",
       "rejected": "leaving the seeder unchanged and relying on simulated history alone"
     }
-  ]
+  ],
+  "step_summaries": {
+    "tasks": {
+      "summary": "53 tasks across 9 phases (Setup, Foundational, US1, US4, US2, US5, US3, US6, Polish); phase order follows the real dependency chain (US4 pulled ahead of US2 since the P1 opening-balances story needs the P2 accounts tab first) rather than raw spec priority"
+    }
+  }
 }
