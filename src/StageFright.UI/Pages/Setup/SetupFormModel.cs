@@ -3,7 +3,9 @@ using StageFright.Core.Enums;
 
 namespace StageFright.UI.Pages.Setup;
 
-internal sealed class SetupFormModel : IValidatableObject
+// Public (not internal) because it's now a [Parameter] on the Tabs/* components
+// (StageFright.UI.Pages.Setup.Tabs), and Blazor component parameters must be public.
+public sealed class SetupFormModel : IValidatableObject
 {
     [Required(ErrorMessage = "Organisation name is required.")]
     [StringLength(255, ErrorMessage = "Organisation name must not exceed 255 characters.")]

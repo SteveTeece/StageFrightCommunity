@@ -30,6 +30,8 @@ public class SetupWizardThemeTests : BunitContext
             .Returns(Task.CompletedTask);
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns((Core.Entities.Settings?)null);
         _deviceThemeProvider.GetPreference().Returns(PlatformThemePreference.Dark);
+        JSInterop.SetupVoid("window.blazorBootstrap.tabs.initialize", _ => true);
+        JSInterop.SetupVoid("window.blazorBootstrap.tabs.show", _ => true);
     }
 
     private IRenderedComponent<ThemeProvider> RenderWizard() =>
@@ -38,9 +40,10 @@ public class SetupWizardThemeTests : BunitContext
     private static void AdvanceToReview(IRenderedComponent<ThemeProvider> cut)
     {
         cut.Find("#orgName").Change("My Choir");
-        cut.Find("#btn-next").Click(); // -> step 2
-        cut.Find("#btn-next").Click(); // -> step 3
-        cut.Find("#btn-next").Click(); // -> step 4 (Review & Finish)
+        cut.Find("#btn-next").Click(); // -> Membership & Fees
+        cut.Find("#btn-next").Click(); // -> Sales Tax
+        cut.Find("#btn-next").Click(); // -> Committee
+        cut.Find("#btn-next").Click(); // -> Review
     }
 
     [Fact]
