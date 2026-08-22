@@ -1,20 +1,48 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version Change: 2.5.0 → 2.5.1
+Version Change: 2.5.1 → 2.6.0
 
 Modified Principles:
-- §4.5 Code Organization and File Structure: Blazor Components bullet updated — .razor.css
-  is now conditional (only when component-specific styles are needed), not mandatory on every
-  component. The mandatory pairing is .razor + .razor.cs only.
-- §4.7.2 CSS Isolation Pattern: Rule rewritten to reflect that the global stylesheet is the
-  primary home for CSS; .razor.css files are created only for genuinely component-scoped
-  styles that are not appropriate for the global stylesheet.
-- §7.2 Architecture Requirements: CSS isolation line updated to reflect the conditional
-  (not universal) requirement.
+- §4.1 Vertical Slice Module Architecture → renamed "Layered Architecture with Module
+  Slices". Corrected to match the real, implemented structure: one project per
+  architectural layer (StageFright.App / Core / Data / UI / Reports /
+  Plugins.Contracts) rather than a per-module Domain/Application/Infrastructure/UI
+  folder tree. Repositories are explicitly centralized in StageFright.Data (one per
+  entity), not module-owned — documented as a deliberate, spec-mandated deviation
+  (FR-042) rather than left implicit. Dashboard-tile providers documented as living in
+  StageFright.UI (need a Blazor component Type reference), not StageFright.Core.
+  Current module list added: Agm, AuditTrail, Dashboard, Events, Finance, Members,
+  Rehearsals, Settings.
+- §4.2 Dashboard Tile System: added the real DashboardTileSize four-size system
+  (OneByOne/OneByTwo/TwoByOne/TwoByTwo → tile-size-1x1/1x2/2x1/2x2 CSS grid classes)
+  which previously went undocumented at the constitution level.
+- §4.3 Settings System: corrected — built-in tabs (General, Tax, Committee, Event
+  Types, Backup & Restore) are hardcoded in SettingsPage.razor, not contributed by
+  each module via ISettingsTabProvider. That interface exists solely for
+  plugin-contributed tabs and its real members are TabTitle/TabIcon/TabKey/
+  DisplayOrder/SettingsComponentType — not the fictional
+  GetSettingsAsync/ValidateAsync/SaveAsync method trio the previous text specified.
+- §4.6 Navigation Menu System: corrected — the real shell is a fixed vertical sidebar
+  (not a top nav bar). MenuItem's real properties are Title/Route/Icon/ShortLabel/
+  DisplayOrder/SubItems/BadgeText (no IsActive field — active-state is computed by the
+  shell at render time, not stored on the model). Removed the `builder.Services.Scan()`
+  (Scrutor-style) auto-discovery code sample — the real app has no assembly-scanning
+  DI anywhere; every provider is registered explicitly by name in MauiProgram.cs.
+- §5.2 Custom Exceptions: corrected the exception type list to match
+  StageFright.Core/Exceptions/ exactly (DataAccessException replaces the fictional
+  PersistenceException; PluginLoadException replaces the fictional PluginException;
+  ConnectionException removed — folded into DataAccessException; added
+  ConcurrencyException, DataIntegrityException, GLBalanceException, ImportException,
+  ReconciliationException, which previously went unlisted). Documented the one shared
+  constructor shape every custom exception actually uses.
+- §7.1 Technology Stack: named the real test frameworks (xUnit v3, bUnit, NSubstitute —
+  explicitly not Moq, which is not a dependency anywhere in the solution), the real EF
+  Core provider (SQLite via Microsoft.EntityFrameworkCore.Sqlite), and cross-referenced
+  the OpenTelemetry requirement already present in §6.
 
 Added Sections:
-- None
+- None (all changes are corrections/expansions within existing numbered sections)
 
 Removed Sections:
 - None
@@ -25,21 +53,37 @@ Templates Requiring Updates:
 - ✅ .specify/templates/tasks-template.md — no update needed.
 
 Runtime Guidance Docs:
-- ⚠ pending: CLAUDE.md — does not currently call out code-behind as mandatory. Consider
-  adding a brief note flagging .razor.cs as required and .razor.css as conditional.
+- ✅ CLAUDE.md — already independently documents the real module/layer structure,
+  the real Settings/menu/dashboard-tile contracts, and the real exception list; no
+  further action needed there as a result of this amendment.
+- ✅ docs/ARCHITECTURE.md, docs/SETUP.md, docs/UI_COMPONENT_STYLE_GUIDE.md,
+  docs/XML-DOCUMENTATION-STANDARDS.md — already rewritten to match the real
+  implementation in a prior pass; this amendment brings the constitution into
+  alignment with those docs rather than the other way around.
+- ⚠ pending: CONTRIBUTING.md — describes the same superseded vertical-slice/
+  per-module folder model this amendment corrects; being updated in the same work
+  session as this amendment.
 
 Follow-up TODOs:
-- Update CLAUDE.md Architecture section to note mandatory code-behind (.razor.cs) and
-  conditional CSS isolation (.razor.css only when component-specific styles are needed).
+- None outstanding.
 
-Version Bump Rationale: PATCH
-- Clarifies §4.7.2: the .razor.css-per-component rule from v2.5.0 is refined to reflect
-  that most CSS belongs in the global stylesheet and CSS isolation files are conditional.
-  Code-behind (.razor.cs) remains unconditionally mandatory. No structural additions or
-  removals — this is a scoping correction to the previous amendment.
+Version Bump Rationale: MINOR
+- Substantively corrects and expands the architectural description in §4.1–§4.6,
+  §5.2, and §7.1 to match the actually-implemented system (module structure,
+  Settings/menu contract shapes, exception taxonomy, tech stack specifics). No
+  governing principle (SOLID, soft-delete, financial immutability, one-class-per-file,
+  testing coverage, exception-boundary translation) was removed, weakened, or
+  redefined — these sections describe *how* the architecture is realized, and that
+  description was inaccurate; fixing it is additive clarification at the scale of a
+  MINOR bump, not a PATCH-level wording fix (the vertical-slice folder model was
+  materially wrong, not just imprecisely worded) and not a MAJOR breaking change to
+  a principle itself.
 -->
 
 <!-- Previous Sync Impact Reports:
+2.5.0 → 2.5.1: Clarifies §4.7.2: the .razor.css-per-component rule from v2.5.0 is refined to
+  reflect that most CSS belongs in the global stylesheet and CSS isolation files are
+  conditional. Code-behind (.razor.cs) remains unconditionally mandatory.
 2.4.0 → 2.5.0: Added §4.7 (Blazor Component Patterns — code-behind + CSS isolation mandatory)
 2.3.0 → 2.4.0: §7.1 §7.2 — BlazorBootstrap added as permitted library
 -->
@@ -47,9 +91,9 @@ Version Bump Rationale: PATCH
 # Spec Kit Constitution  
 *A guiding document for clean, modular, extensible software development*
 
-**Version**: 2.5.1
+**Version**: 2.6.0
 **Ratification Date**: 2025-01-01
-**Last Amended**: 2026-06-24
+**Last Amended**: 2026-08-22
 
 ---
 
@@ -212,10 +256,10 @@ All specifications and implementations must follow these architectural principle
 - Clean, intention‑revealing code  
 - SOLID design  
 - Strict separation of concerns  
-- Vertical Slice module architecture (see §4.1)  
+- Layered architecture with module slices inside the Core layer (see §4.1)  
 - Dashboard tile system for feature exposure (see §4.2)  
-- Settings system with module-specific tabs (see §4.3)  
-- Navigation menu system with module-defined items (see §4.5)  
+- Settings system with a hardcoded core tab set plus plugin-contributed tabs (see §4.3)  
+- Navigation menu system with module-defined items rendered in a fixed sidebar (see §4.6)  
 - Plug‑in architecture with extension points (see §8)  
 - Composition over inheritance  
 - Testability of all core logic  
@@ -228,40 +272,31 @@ All specifications and implementations must follow these architectural principle
 - Members and financial data are NEVER HARD deleted  
 - Clean, simple, modern UI design with minimal whitespace (see §4.4)  
 
-### 4.1 Vertical Slice Module Architecture
+### 4.1 Layered Architecture with Module Slices
 
-Each feature or functional domain must be organized as a self-contained vertical slice with its own dedicated folder. This pattern promotes modularity, independent development, and clear separation of concerns.
+The system is a **layered solution**: one project per architectural layer, with each business capability ("module") organized as a folder *within* the Core layer rather than as its own top-level Domain/Application/Infrastructure/UI tree. This is a deliberate refinement of pure vertical-slice architecture, made for a desktop MAUI Blazor Hybrid application with a shared SQLite database.
 
-**Module Structure Requirements:**
+**Layer/Project Requirements:**
 
-- **One Module Per Folder**: Each feature or functional domain gets its own folder at the appropriate level in the project hierarchy.  
-- **No MediaTr or CQRS**: Vertical slices must NOT use MediaTr for command/query dispatch or implement CQRS patterns. Instead, use:  
+- **One Project Per Layer**: `StageFright.App` (MAUI Blazor Hybrid host — composition root only, zero application logic), `StageFright.Core` (domain entities, enums, custom exceptions, service/repository contracts, module services), `StageFright.Data` (centralized DAL: `DbContext`, migrations, one repository per entity, unit of work), `StageFright.Plugins.Contracts` (extension-point interfaces, no project dependencies), `StageFright.Reports` (report pipeline), `StageFright.UI` (all Blazor UI as a Razor class library).
+- **Module Folders Inside Core**: Each business capability gets a folder at `StageFright.Core/Modules/<ModuleName>/` containing that module's services and request/response DTOs. Current modules: `Agm`, `AuditTrail`, `Dashboard`, `Events`, `Finance`, `Members`, `Rehearsals`, `Settings`.
+- **No MediaTr or CQRS**: Modules must NOT use MediaTr for command/query dispatch or implement CQRS patterns. Instead, use:  
   - Direct service injection and method calls  
-  - Dependency-injected handlers for business logic  
+  - Dependency-injected services for business logic  
   - Clear, explicit request/response models  
   - Standard repository and service patterns  
-- **Ownership**: Each module owns its own:  
-  - Domain entities and value objects  
-  - Application services and handlers  
-  - Infrastructure adapters (repositories, external service clients)  
-  - UI components (pages, forms, shared controls scoped to this module)  
-  - Unit and integration tests  
-  - Dashboard tile definitions (§4.2)  
-- **Folder Naming**: Module folders should use domain language (e.g., `Members`, `FinancialAuditing`, `EventScheduling`) and follow naming conventions consistent with project structure.  
-- **Internal Structure**: Within each module folder:  
-  ```
-  ModuleName/
-  ├── Domain/              # Entities, value objects, contracts
-  ├── Application/         # Services, handlers, orchestration
-  ├── Infrastructure/      # Repositories, external integrations
-  ├── UI/                  # Blazor components, pages (if applicable)
-  ├── Tests/               # Unit and integration tests scoped to this module
-  └── DashboardTile.cs     # Tile provider implementation (see §4.2)
-  ```
-- **No Cross-Module Dependencies**: Modules must NOT import from sibling modules' private implementation details. Modules communicate through:  
-  - Dependency injection of published interfaces  
-  - Event-driven patterns for decoupled pub/sub  
-  - Shared contracts defined at the application or domain level  
+- **Repositories Are Centralized, Not Module-Owned**: Unlike pure vertical-slice architecture, repositories do NOT live inside each module's folder. All repositories live in `StageFright.Data/Repositories/` — one repository class per entity, implementing an interface declared in `StageFright.Core/Contracts/`. This centralization is intentional: it keeps EF Core configuration, migrations, and the `DbContext` in one place for a single shared SQLite database, and is a documented, permanent deviation from the strict per-module ownership described in earlier drafts of this constitution — not a violation to be refactored away.
+- **Menu-Item Providers Live With Their Module**: Each module that contributes navigation defines its `IMenuItemProvider` implementation inside its own `StageFright.Core/Modules/<ModuleName>/` folder.
+- **Dashboard-Tile Providers Live in the UI Layer**: `IDashboardTileProvider` implementations live in `StageFright.UI/Modules/<ModuleName>/`, not in `StageFright.Core` — a tile provider must reference a Blazor component `Type` for its tile content (`TileComponentType`), and `StageFright.Core` intentionally has no reference to `StageFright.UI`.
+- **Contracts Are Centralized in Core**: Service and repository interfaces (`I<Service>`, `I<Entity>Repository`) live in `StageFright.Core/Contracts/`, grouped together rather than colocated with each implementation — this keeps the "one type per file" rule intact while giving developers one place to scan every published contract.
+- **Module Ownership**: Each module owns its own:  
+  - Application services, request/response DTOs, and menu-item provider (in `StageFright.Core/Modules/<ModuleName>/`)  
+  - Its repository/repositories (in `StageFright.Data/Repositories/`, implementing that module's `StageFright.Core/Contracts/` interfaces)  
+  - Its UI pages/components and dashboard-tile provider (in `StageFright.UI/Pages/<ModuleName>/` and `StageFright.UI/Modules/<ModuleName>/`)  
+  - Its unit and integration tests, in the matching `tests/StageFright.*.Tests/` project  
+- **No Cross-Module Dependencies**: Modules must NOT import from a sibling module's concrete service class or reach into `StageFright.Data` repositories directly from `StageFright.UI`. Modules communicate through:  
+  - Dependency injection of published interfaces from `StageFright.Core/Contracts/`  
+  - Shared contracts defined at the Core layer  
 - **Testing Isolation**: Each module's tests must be independently executable and isolated from other modules.  
 
 ### 4.2 Dashboard Tile System
@@ -270,7 +305,7 @@ The dashboard is the primary user-facing interface for feature discovery and int
 
 **Tile Requirements:**
 
-- **Tile Definition**: Each module MUST define one or more dashboard tiles through an implementation of a well-defined tile provider contract.  
+- **Tile Definition**: Each module MUST define one or more dashboard tiles through an implementation of `IDashboardTileProvider` (`StageFright.Plugins.Contracts`), located in `StageFright.UI/Modules/<ModuleName>/` (see §4.1).  
 - **Tile Content**: Tiles MAY contain:  
   - Summary information or metrics (e.g., count of active members, outstanding fees)  
   - Charts and graphs (e.g., revenue trends, attendance distribution)  
@@ -280,42 +315,39 @@ The dashboard is the primary user-facing interface for feature discovery and int
 - **Tile Characteristics**:  
   - Self-contained rendering (tile handles its own data loading and rendering)  
   - No inter-tile dependencies  
-  - Consistent sizing and layout within dashboard grid  
+  - Consistent sizing and layout within the dashboard grid (see Tile Sizing below)  
   - Responsive to user interactions without leaving the dashboard  
+- **Tile Sizing**: Each provider opts into one of four grid footprints via `DashboardTileSize` (`OneByOne` default = 1×1, `OneByTwo` = 2 cols × 1 row, `TwoByOne` = 1 col × 2 rows, `TwoByTwo` = 2×2), overriding `IDashboardTileProvider.TileSize`. The dashboard's CSS grid maps each value to a `tile-size-1x1`/`1x2`/`2x1`/`2x2` class; resizing a tile requires only the provider's `TileSize` override plus its own inner layout, never a change to the shared grid CSS.  
 - **Multiple Tiles per Module**: A module MAY define multiple tiles to represent different aspects (e.g., "Members Overview" and "Member Onboarding Quick Action").  
-- **Tile Registration**: Tiles are registered with the dashboard system via DI or a tile discovery mechanism; no hardcoding of tile instances.  
+- **Tile Registration**: Tiles are registered with DI (explicitly, by name — see §4.6's registration note); no hardcoding of tile instances outside the DI registration itself.  
 - **Failure Isolation**: If a tile fails to load or render, it must gracefully degrade without breaking the entire dashboard.  
 
 ### 4.3 Settings System
 
-The Settings page is a core application feature where configuration and preferences are managed. The settings architecture uses a **tabbed interface** where each module provides its own settings tab, and the core application provides an "Application Settings" tab.
+The Settings page is a core application feature where configuration and preferences are managed. The settings architecture uses a **tabbed interface**: the core application ships a fixed, hardcoded set of built-in tabs, and external plugins MAY append additional tabs through a published contract.
 
 **Settings Architecture:**
 
-- **Settings Page**: A base application page with tabbed interface at `/settings`
-- **Module Settings Tabs**: Each module MAY define a settings tab through an `ISettingsTabProvider` contract
-- **Tab Registry**: Settings tabs are discovered and registered at application startup via DI
-- **Application Settings Tab**: Core application settings (built-in, not from a module)
+- **Settings Page**: A base application page with tabbed interface at `/settings`, supporting deep-linking to a specific tab via a tab key in the query string.
+- **Built-in Tabs Are Hardcoded, Not Module-Contributed**: The core application's own tabs (organization/application settings, tax configuration, committee configuration, event types, backup & restore) are implemented directly as components hosted by the Settings page — they are NOT registered through the plugin tab contract described below. This is a deliberate simplification: these tabs are permanent, ship with every install, and gain nothing from an indirection layer only external plugins need.
+- **`ISettingsTabProvider` Is For Plugin-Contributed Tabs Only**: The Settings page separately discovers all registered `ISettingsTabProvider` implementations via DI and renders their tabs after the built-in ones. A provider whose tab key collides with an existing one MUST be skipped with a logged warning, not allowed to silently overwrite or crash the page.
+- **Tab Isolation**: Each tab manages its own UI, validation, and persistence internally within its own Blazor component — the provider contract does not itself carry `GetSettingsAsync`/`ValidateAsync`/`SaveAsync` methods; it only identifies and locates the tab.
 
-**Module Settings Tab Requirements:**
+**`ISettingsTabProvider` Contract** (the real, minimal shape — persistence and validation are the tab component's own responsibility, not the provider's):
 
-- **Tab Definition**: Modules that have configurable settings MUST implement `ISettingsTabProvider` to define their settings tab
-- **Tab Interface**: Each provider specifies:
-  - Tab title and icon
-  - Display order (tabs ordered by priority)
-  - Blazor component for settings content
-  - Validation and persistence logic
-- **Tab Content**: Modules own the layout and content of their settings tab:
-  - Form fields, controls, and validation
-  - Save/cancel buttons
-  - Error handling and user feedback
-- **Isolation**: Each module's settings are independent; changes to one tab don't affect others
-- **Persistence**: Module settings are persisted through the module's infrastructure layer
-- **Validation**: Settings validation happens at module level; custom exceptions used for validation errors
+```csharp
+public interface ISettingsTabProvider
+{
+    string TabTitle { get; }              // Display title shown in the tab strip
+    string TabIcon { get; }               // Icon name/CSS class for the tab
+    string TabKey { get; }                // Unique key for deep-linking: /settings?tab={TabKey}
+    int DisplayOrder { get; }             // Core tabs: 0–99. Plugin tabs: 100+.
+    Type SettingsComponentType { get; }   // Blazor component that owns the tab's content,
+                                           // validation, and save/cancel behavior
+}
+```
 
-**Application Settings Tab** (Core Application):
-
-The base application provides a built-in "Application Settings" tab containing:
+**Application Settings** (Core, part of the built-in General tab, not a module contribution):
 
 - **Organization Information**:
   - Organization/Group Name
@@ -331,52 +363,16 @@ The base application provides a built-in "Application Settings" tab containing:
   - Fee renewal frequency (annual, per-season, etc.)
   - Auto-renewal configuration
 
-**Settings Tab Structure**:
-
-```csharp
-public interface ISettingsTabProvider
-{
-    string TabTitle { get; }
-    string TabIcon { get; }
-    int DisplayOrder { get; }
-    
-    Type SettingsComponentType { get; } // Blazor component
-    
-    Task<ISettingsTab> GetSettingsAsync();
-    Task<ValidationResult> ValidateAsync(ISettingsTab settings);
-    Task SaveAsync(ISettingsTab settings);
-}
-
-// Example: Members module settings
-public class MembersSettingsTabProvider : ISettingsTabProvider
-{
-    public string TabTitle => "Members";
-    public string TabIcon => "users";
-    public int DisplayOrder => 2;
-    
-    public Type SettingsComponentType => typeof(MembersSettingsTab);
-    
-    public async Task<ISettingsTab> GetSettingsAsync()
-    {
-        return new MembersSettings
-        {
-            DefaultMemberStatus = "Active",
-            AutoArchiveInactiveDays = 365
-        };
-    }
-}
-```
-
 **Settings Page Layout**:
 
 ```
 ┌─────────────────────────────────────────────────┐
 │  Settings                                       │
 ├─────────────────────────────────────────────────┤
-│ [Application] [Members] [Events] [Finances] ... │
+│ [General] [Tax] [Committee] [Event Types] [...] │
 ├─────────────────────────────────────────────────┤
 │                                                 │
-│  Application Settings Content                  │
+│  Active Tab Content                            │
 │  - Organization Name                           │
 │  - Annual Fee                                  │
 │  - Rehearsal Fee                               │
@@ -406,17 +402,18 @@ The user interface must embody simplicity, clarity, and modern design principles
 
 ### 4.6 Navigation Menu System
 
-The application provides a hierarchical navigation menu where each module defines its own menu items and sub-items. The menu system is modular, extensible, and always displays Settings as the final menu item.
+The application provides a hierarchical navigation menu where each module defines its own menu items and sub-items. The menu is rendered as a **fixed vertical sidebar**, is modular and extensible, and always displays Settings as the final item.
 
 **Menu Architecture**:
 
+- **Rendering Surface**: The menu renders as a fixed-position vertical sidebar (not a top nav bar), occupying a constant width down the left edge of the application shell.
 - **Menu Items**: Each module can define primary menu items and optional sub-items
 - **Optional Icons**: Menu items may include icons to visually represent functionality
 - **Module Order**: Modules contribute menu items in a customizable order
 - **Settings Always Last**: The Settings menu item is reserved for the core application and appears last
-- **Sub-menus**: Each menu item may have child items for feature grouping
+- **Sub-menus**: Each menu item may have child items, rendered as an expandable/collapsible group that auto-expands while a descendant route is active
 
-**Menu Item Structure**:
+**Menu Item Structure** (the real contract — note there is no `IsActive` field; which item is "active" is computed by the rendering shell from the current route at render time, not stored on the model):
 
 ```csharp
 public interface IMenuItemProvider
@@ -429,12 +426,12 @@ public interface IMenuItemProvider
 public class MenuItem
 {
     public string Title { get; set; }              // Display title
-    public string Route { get; set; }             // Navigation route (e.g., "/members/list")
-    public string Icon { get; set; }              // Optional icon (e.g., "users", "calendar")
-    public int DisplayOrder { get; set; }         // Order within module
-    public List<MenuItem> SubItems { get; set; }  // Optional sub-menu items
-    public string BadgeText { get; set; }         // Optional badge (e.g., count)
-    public bool IsActive { get; set; }            // Current page indicator
+    public string Route { get; set; }               // Navigation route (e.g., "/members/list")
+    public string? Icon { get; set; }                // Optional icon name/CSS class
+    public string? ShortLabel { get; set; }          // Optional short label for compact surfaces
+    public int DisplayOrder { get; set; }            // Order within module
+    public List<MenuItem> SubItems { get; set; } = new();  // Optional sub-menu items
+    public string? BadgeText { get; set; }           // Optional badge (e.g., count)
 }
 
 // Example: Members module menu
@@ -442,7 +439,7 @@ public class MembersMenuItemProvider : IMenuItemProvider
 {
     public string ModuleName => "Members";
     public int DisplayOrder => 1;
-    
+
     public IReadOnlyList<MenuItem> GetMenuItems()
     {
         return new List<MenuItem>
@@ -452,40 +449,7 @@ public class MembersMenuItemProvider : IMenuItemProvider
                 Title = "Members",
                 Route = "/members",
                 Icon = "users",
-                DisplayOrder = 1,
-                SubItems = new List<MenuItem>
-                {
-                    new() { Title = "Active Members", Route = "/members/list", DisplayOrder = 1 },
-                    new() { Title = "Pending Approval", Route = "/members/pending", DisplayOrder = 2 },
-                    new() { Title = "Add Member", Route = "/members/new", DisplayOrder = 3 }
-                }
-            }
-        };
-    }
-}
-
-// Example: Finances module menu
-public class FinancesMenuItemProvider : IMenuItemProvider
-{
-    public string ModuleName => "Finances";
-    public int DisplayOrder => 3;
-    
-    public IReadOnlyList<MenuItem> GetMenuItems()
-    {
-        return new List<MenuItem>
-        {
-            new()
-            {
-                Title = "Finances",
-                Route = "/finances",
-                Icon = "dollar-sign",
-                DisplayOrder = 1,
-                SubItems = new List<MenuItem>
-                {
-                    new() { Title = "Transactions", Route = "/finances/transactions", DisplayOrder = 1 },
-                    new() { Title = "Reports", Route = "/finances/reports", DisplayOrder = 2 },
-                    new() { Title = "Invoices", Route = "/finances/invoices", DisplayOrder = 3 }
-                }
+                DisplayOrder = 1
             }
         };
     }
@@ -498,8 +462,9 @@ public class FinancesMenuItemProvider : IMenuItemProvider
 ├── Dashboard (Core)                        // Always first
 ├── [Module 1 items by DisplayOrder]        // e.g., Members (order 1)
 ├── [Module 2 items by DisplayOrder]        // e.g., Events (order 2)
-├── [Module 3 items by DisplayOrder]        // e.g., Finances (order 3)
+├── [Module 3 items by DisplayOrder]        // e.g., Finance (order 3)
 ├── ... [other modules] ...
+├── [Plugin-contributed items]              // Discovered at runtime
 └── Settings (Core)                         // Always last
 ```
 
@@ -508,97 +473,62 @@ public class FinancesMenuItemProvider : IMenuItemProvider
 - **Title**: User-facing text displayed in the menu
 - **Route**: Target URL when menu item is clicked
 - **Icon**: Optional icon name for visual identification (from icon set)
+- **ShortLabel**: Optional short label for compact navigation surfaces
 - **DisplayOrder**: Order within the module (lower numbers first)
 - **SubItems**: Optional child menu items for grouping related features
 - **BadgeText**: Optional notification badge (e.g., "5" for pending items)
-- **IsActive**: Computed property indicating current page
 
 **Menu Registration**:
 
-Modules register menu items through dependency injection:
+`IMenuItemProvider` implementations are registered **explicitly by name** in the application's DI composition root, one `services.AddSingleton<IMenuItemProvider, XProvider>()` call per provider — there is no assembly-scanning/auto-discovery mechanism (no Scrutor `.Scan()`, no reflection-based registration) for core, in-solution providers. Explicit registration is a deliberate choice: it keeps every registered provider visible at a single call site and avoids surprising behavior from reflection picking up an unintended type. Only plugin assemblies discovered at runtime from the `Plugins/` directory are registered reflectively (see §8), and that reflection is scoped to the five plugin-contract interfaces only.
 
 ```csharp
-// Features/Members/DependencyInjection.cs
-public static IServiceCollection AddMembersModule(this IServiceCollection services)
-{
-    services.AddScoped<IMemberService, MemberService>();
-    services.AddScoped<IMenuItemProvider, MembersMenuItemProvider>();
-    
-    return services;
-}
-
-// Program.cs - Auto-discover all IMenuItemProvider implementations
-builder.Services.Scan(scan => scan
-    .FromAssemblies(typeof(Program).Assembly)
-    .AddClasses(classes => classes.AssignableTo(typeof(IMenuItemProvider)))
-    .AsImplementedInterfaces()
-    .WithScopedLifetime());
+// StageFright.Core/Modules/Members/DependencyInjection or MauiProgram.cs equivalent —
+// explicit, one line per provider; NOT an assembly scan.
+services.AddSingleton<IMenuItemProvider, MembersMenuItemProvider>();
+services.AddSingleton<IMenuItemProvider, EventsMenuItemProvider>();
+services.AddSingleton<IMenuItemProvider, FinanceMenuItemProvider>();
 ```
 
 **Menu Component Usage**:
 
-The application's main layout component discovers and renders all menu items:
+The application's shell layout component discovers and renders all menu items as a fixed sidebar:
 
 ```razor
-@* App/Layout/MainLayout.razor *@
-@using StageFright.Application.Navigation
+@* Layout/ShellLayout.razor *@
+@inject IEnumerable<IMenuItemProvider> MenuProviders
 
-<nav class="main-navigation">
-    <div class="nav-brand">
-        <img src="logo.svg" alt="StageFright" />
-        <span>StageFright</span>
-    </div>
-    
-    <ul class="nav-menu">
+<nav class="shell-sidebar" role="navigation" aria-label="Main navigation">
+    <ul class="sidebar-list">
         @* Dashboard always first *@
-        <li class="nav-item">
-            <a href="/dashboard" class="nav-link">
-                <i class="icon icon-home"></i>
-                <span>Dashboard</span>
+        <li class="sidebar-item">
+            <a href="/dashboard" class="sidebar-link">
+                <span class="nav-icon" aria-hidden="true"></span>
+                <span class="sidebar-label">Dashboard</span>
             </a>
         </li>
-        
+
         @* Module menu items sorted by DisplayOrder *@
         @foreach (var provider in MenuProviders.OrderBy(p => p.DisplayOrder))
         {
             @foreach (var item in provider.GetMenuItems().OrderBy(m => m.DisplayOrder))
             {
-                <li class="nav-item">
-                    <a href="@item.Route" class="nav-link @(item.IsActive ? "active" : "")">
-                        @if (!string.IsNullOrEmpty(item.Icon))
-                        {
-                            <i class="icon icon-@item.Icon"></i>
-                        }
-                        <span>@item.Title</span>
+                <li class="sidebar-item">
+                    <a href="@item.Route" class="sidebar-link @(IsActive(item.Route) ? "active" : "")">
+                        <span class="sidebar-label">@item.Title</span>
                         @if (!string.IsNullOrEmpty(item.BadgeText))
                         {
-                            <span class="badge">@item.BadgeText</span>
+                            <span class="sidebar-badge">@item.BadgeText</span>
                         }
                     </a>
-                    
-                    @* Render sub-items if present *@
-                    @if (item.SubItems?.Count > 0)
-                    {
-                        <ul class="nav-submenu">
-                            @foreach (var subItem in item.SubItems.OrderBy(s => s.DisplayOrder))
-                            {
-                                <li class="nav-subitem">
-                                    <a href="@subItem.Route" class="nav-sublink @(subItem.IsActive ? "active" : "")">
-                                        @subItem.Title
-                                    </a>
-                                </li>
-                            }
-                        </ul>
-                    }
                 </li>
             }
         }
-        
+
         @* Settings always last *@
-        <li class="nav-item nav-settings">
-            <a href="/settings" class="nav-link">
-                <i class="icon icon-cog"></i>
-                <span>Settings</span>
+        <li class="sidebar-item">
+            <a href="/settings" class="sidebar-link">
+                <span class="sidebar-label">Settings</span>
             </a>
         </li>
     </ul>
@@ -610,7 +540,7 @@ The application's main layout component discovers and renders all menu items:
 - Modules MUST NOT depend on menu items from other modules
 - Menu items MUST be independent and self-contained
 - Route conflicts MUST be avoided (each module owns its route prefix)
-- Menu item state (active, badge count) MUST be computed dynamically
+- Menu item active-state MUST be computed dynamically from the current route at render time, not stored on the `MenuItem` model
 
 ### 4.5 Code Organization and File Structure
 
@@ -626,47 +556,42 @@ The physical organization of source files directly reflects the Single Responsib
   - `public record MemberDto` → file `MemberDto.cs`
   - `public enum MemberStatus` → file `MemberStatus.cs`
   
-- **Folder Structure by Responsibility**: Within each module, organize files by responsibility layer:
+- **Folder Structure by Responsibility**: Files are organized by architectural layer/responsibility, per §4.1 — not by a per-module Domain/Application/Infrastructure/UI tree:
   ```
-  ModuleName/
-  ├── Domain/                    # Domain entities, value objects, enums
-  │   ├── Member.cs
-  │   ├── MemberStatus.cs
-  │   ├── MemberEmail.cs
-  │   └── IMemberRepository.cs   # Domain contracts
-  │
-  ├── Application/               # Application services, handlers, DTOs
+  StageFright.Core/
+  ├── Entities/                    # Domain entities
+  │   └── Member.cs
+  ├── Enums/                       # Shared enums
+  │   └── MemberStatus.cs
+  ├── Exceptions/                  # Custom exception hierarchy (see §5.2)
+  │   └── ValidationException.cs
+  ├── Contracts/                   # Service/repository interfaces, all modules
   │   ├── IMemberService.cs
-  │   ├── MemberService.cs
-  │   ├── CreateMemberHandler.cs
-  │   ├── MemberDto.cs
-  │   └── CreateMemberRequest.cs
-  │
-  ├── Infrastructure/            # Repositories, external integrations
-  │   ├── MemberRepository.cs
-  │   ├── MemberRepositoryExtensions.cs
-  │   └── ExternalMemberService.cs
-  │
-  ├── UI/                        # Blazor components, pages
-  │   ├── Pages/
-  │   │   ├── MemberList.razor
-  │   │   ├── MemberList.razor.cs
-  │   │   ├── MemberDetail.razor
-  │   │   └── MemberDetail.razor.cs
-  │   └── Shared/
-  │       ├── MemberForm.razor
-  │       └── MemberForm.razor.cs
-  │
-  ├── Tests/                     # Unit and integration tests
-  │   ├── MemberServiceTests.cs
-  │   ├── MemberRepositoryTests.cs
-  │   └── MemberIntegrationTests.cs
-  │
-  └── DashboardTile.cs           # Tile provider
+  │   └── IMemberRepository.cs
+  └── Modules/
+      └── Members/                 # This module's services + DTOs + menu provider
+          ├── MemberService.cs
+          ├── CreateMemberRequest.cs
+          └── MemberMenuItemProvider.cs
+
+  StageFright.Data/Repositories/
+  └── MemberRepository.cs          # Centralized — implements IMemberRepository
+
+  StageFright.UI/
+  ├── Pages/Members/
+  │   ├── MemberList.razor
+  │   ├── MemberList.razor.cs
+  │   ├── MemberDetail.razor
+  │   └── MemberDetail.razor.cs
+  └── Modules/Members/
+      └── MembersDashboardTileProvider.cs
+
+  tests/StageFright.Core.Tests/Modules/Members/
+  └── MemberServiceTests.cs
   ```
 
 - **File Responsibility**: Each file must contain only the types and logic necessary to fulfill one specific responsibility:
-  - A service class and its interface should be in separate files
+  - A service class and its interface should be in separate files (interface in `Contracts/`, implementation in `Modules/<Name>/`)
   - DTOs should be in separate files from domain entities
   - Request/response objects should be in separate files
   - Enums and value objects each get their own file
@@ -725,7 +650,7 @@ and are not appropriate for global or shared stylesheets.
 
 **Mandatory Rules**:
 
-- The global stylesheet (`wwwroot/css/app.css` and related files) MUST be the default
+- The global stylesheet (`StageFright.App/wwwroot/app.css`) MUST be the default
   location for all CSS — layout, typography, utility classes, theme variables, Bootstrap
   overrides, and styles shared across two or more components.
 - A `.razor.css` file MUST be created alongside a component only when that component
@@ -789,29 +714,29 @@ ComponentName.razor.css    ← Genuinely component-scoped styles only (CONDITION
 
 ### 5.2 Custom Exceptions
 Custom exceptions are mandatory for domain and application behavior.
-Define domain-specific custom exceptions that inherit from appropriate base types:
+The project-defined custom exception types (`StageFright.Core/Exceptions/`) are:
 
-- `PersistenceException`  
+- `DataAccessException` — unexpected database/persistence errors raised at the DAL boundary
 - `EntityNotFoundException`  
-- `DuplicateEntityException`  
-- `ConcurrencyException`  
+- `DuplicateEntityException` — e.g. a `UNIQUE` constraint violation
+- `ConcurrencyException` — e.g. `DbUpdateConcurrencyException`
 - `DataIntegrityException`  
-- `ConnectionException`  
-- `ValidationException`  
-- `PluginException`  
+- `ValidationException` — domain validation rule violations
+- `GLBalanceException` — a GL transaction pair fails to balance (Σdebits ≠ Σcredits); MUST
+  trigger an immediate rollback of the enclosing unit-of-work transaction
+- `ReconciliationException`  
+- `ImportException`  
+- `PluginLoadException` — a plugin assembly fails to load or register
 
-Custom exceptions must include:
+Every custom exception type MUST share one consistent constructor shape:
+`(string message, string entityType, string operationContext, Guid? entityId = null, Exception? innerException = null)`,
+with `Guid? EntityId`, `DateTime Timestamp` (UTC, set at construction), and `Guid CorrelationId`
+(for cross-layer tracing) as built-in properties — individual exception types MUST NOT invent
+their own, inconsistent constructor signature or omit these properties.
 
-- Detailed error message  
-- Entity type and ID (when applicable)  
-- Operation context  
-- Original exception as inner exception  
-- Timestamp  
-- Correlation ID  
-
-Raw framework exceptions (for example `SqlException`, `IOException`,
+Raw framework exceptions (for example `DbException`, `DbUpdateException`, `IOException`,
 `InvalidOperationException`) MUST NOT leak across architectural boundaries.
-They must be translated to approved custom exceptions with preserved inner
+They must be translated to one of the approved custom exceptions above with preserved inner
 exception context.
 
 All caught exceptions must be logged using Serilog.
@@ -856,14 +781,22 @@ All caught exceptions must be logged using Serilog.
 - **Language:** C# 14  
 - **Platforms:** Windows desktop and macOS desktop  
 - **Hosting Model:** Blazor Hybrid  
+- **Data Access:** Entity Framework Core against SQLite (`Microsoft.EntityFrameworkCore.Sqlite`) —
+  a single shared database file, with plugin-owned schemas merged in via `IDataAccessProvider`
+  (see §8)  
+- **Observability:** Serilog (structured logging) + OpenTelemetry (tracing and runtime metrics) —
+  see §6  
+- **Testing:** xUnit v3 for unit/integration tests, bUnit for Blazor component tests, and
+  NSubstitute for mocking. Moq MUST NOT be introduced as a dependency — NSubstitute is the
+  established, exclusive mocking library for this project  
 
 ### 7.2 Architecture Requirements
 - UI components in a separate class library  
 - Use MAUI DI container  
 - Platform-specific code via abstractions or conditional compilation  
 - CSS isolation (`.razor.css`) MUST be used for genuinely component-scoped styles; most CSS
-  belongs in the global stylesheet (`wwwroot/css/`) — inline `<style>` tags are prohibited
-  (see §4.7.2)
+  belongs in the global stylesheet (`StageFright.App/wwwroot/app.css`) — inline `<style>` tags
+  are prohibited (see §4.7.2)
 - Reusable, testable UI components  
 - Free Radzen components (`Radzen.Blazor`) are permitted for UI composition when implemented
   in Blazor components and backed by C# handlers/services  
@@ -881,10 +814,16 @@ All caught exceptions must be logged using Serilog.
 ## 8. Plug‑In Architecture
 
 ### 8.1 Architecture Model
-- Core system defines contracts and extension points  
-- Plug‑ins implement contracts and are discovered at runtime  
+- Core system defines contracts and extension points (`StageFright.Plugins.Contracts`):
+  `IDashboardTileProvider`, `ISettingsTabProvider`, `IMenuItemProvider`, `IReportProvider`,
+  `IDataAccessProvider`  
+- Plug‑ins implement contracts and are discovered at runtime from a `Plugins/` directory,
+  each loaded into its own `AssemblyLoadContext` and reflectively registered against the
+  five contract interfaces above  
 - Plug‑ins must be isolated and independently testable  
 - No plug‑in may depend on another unless explicitly defined  
+- A plugin that fails to load, or a provider that throws/duplicates an identifier, MUST be
+  caught, logged, and skipped — it must never block application startup or other providers  
 
 ### 8.2 MVP Modules vs. Extensible Plugins
 
@@ -892,24 +831,35 @@ The application distinguishes between MVP (Minimum Viable Product) modules and f
 
 **MVP Modules**:
 - Core features included directly in the main application (not in a separate plugins folder)  
-- MVP modules are built as vertical slices (§4.1) with defined dashboard tiles (§4.2)  
-- MVP modules are organized at the application root or within a feature-organized modules folder  
-- Examples: Members, Financial Tracking, Event Scheduling, Attendance  
-- MVP modules do NOT require external loading or registration mechanisms  
-- MVP modules are part of the shipped application and follow the standard vertical slice pattern  
+- MVP modules follow the layered architecture with module slices described in §4.1, with
+  defined dashboard tiles (§4.2)  
+- MVP modules live inside `StageFright.Core/Modules/<ModuleName>/` (services/DTOs/menu
+  provider), `StageFright.Data/Repositories/` (their repositories), and
+  `StageFright.UI/Pages/<ModuleName>/` + `StageFright.UI/Modules/<ModuleName>/` (their UI and
+  dashboard tiles) — see §4.1 and §4.5  
+- Examples: Members, Finance, Events, Rehearsals, Agm, AuditTrail, Dashboard, Settings  
+- MVP modules do NOT require external loading or registration mechanisms — they are
+  registered explicitly, by name, in the application's DI composition root  
+- MVP modules are part of the shipped application and follow the standard layered/module-slice pattern  
 
-**Extensible Plugins** (Future Pattern):
+**Extensible Plugins**:
 - Third-party or optional community-specific extensions developed outside the core  
-- Plugins follow the vertical slice pattern (§4.1) and define dashboard tiles (§4.2)  
-- Plugins are physically located in a dedicated `Plugins/` folder or loaded from external assemblies  
-- Plugins are discovered and registered at runtime  
+- Plugins implement one or more of the five `StageFright.Plugins.Contracts` interfaces (§8.1)  
+- Plugins are physically located in a dedicated `Plugins/` folder and loaded from external
+  assemblies at runtime  
+- Plugins are discovered and registered reflectively at runtime (unlike core modules, which
+  are registered explicitly — see §4.6)  
 - Plugins implement well-defined contracts and extension points  
 - Plugins maintain backward compatibility with core contracts  
 - Plugins are independently distributable and versioned  
+- A plugin MAY supply its own `DbContext` (via `IDataAccessProvider`) merged into the shared
+  SQLite database, with its own `__EFMigrationsHistory_{PluginName}` table and
+  `{PluginName}_`-prefixed tables to avoid collisions with core tables  
 
 **Transition Strategy**:
 - MVP modules may be refactored into discoverable plugins after initial release if needed  
-- Plugin infrastructure should be designed with future extensibility in mind, even if initial plugins are bundled  
+- Plugin infrastructure is designed with future extensibility in mind, even though every
+  current module ships bundled with the core application  
 
 ---
 
@@ -972,7 +922,9 @@ Testing is a FIRST-CLASS citizen in the project. All code must be testable and t
 ### 11.1 Unit Testing
 - **Coverage**: All reachable branches in public functions and critical business
   logic MUST have unit tests or justified integration/acceptance coverage  
-- **Isolation**: Mock abstractions, not concrete implementations  
+- **Isolation**: Mock abstractions, not concrete implementations. Use **NSubstitute**
+  (`Substitute.For<T>()`) — this is the project's exclusive mocking library; Moq MUST NOT
+  be introduced  
 - **Dependencies**: No live database or external dependencies allowed in unit tests
 - **Blazor Components**: Use bUnit for isolated component testing  
 - **Test Organization**: Unit tests live in `tests/[Project].Tests/` folders  
@@ -984,7 +936,9 @@ Testing is a FIRST-CLASS citizen in the project. All code must be testable and t
 Integration tests validate that multiple components work together correctly with realistic (non-mocked) dependencies while remaining isolated from external services.
 
 - **Scope**: Integration tests must verify all service-to-service interactions, repository operations, multi-layer workflows, and *all user-facing UI functions end-to-end*  
-- **Database**: Use in-memory databases (e.g., Entity Framework Core In-Memory Provider) or test doubles for data persistence  
+- **Database**: Use a real SQLite connection (file-backed or in-memory SQLite, not EF Core's
+  `UseInMemoryDatabase` provider) so SQLite-specific behavior (transactions, unique
+  constraints) is exercised for real  
 - **Real Dependencies**: Application services, repositories, and business logic operate with real code paths  
 - **Isolation from External Services**: Mock or stub external APIs, file systems, messaging systems, and cloud services  
 - **Fixtures and Setup**: Use fixture factories to create consistent test data; leverage database seeding or migrations  
@@ -1011,7 +965,7 @@ UI testing validates that Blazor components render correctly, respond to user in
 - **Full UI Function Integration**: *All user-facing UI functions must be exercised by integration tests that simulate real user journeys through the UI, including navigation, form input, validation, and error handling.*
 - **User Interactions**: Test user gestures and input handling (click, input, navigation)  
 - **Render Validation**: Assert on rendered HTML output and DOM state  
-- **Service Integration**: Mock application services (IServiceProvider, custom services) to test components with realistic (mocked) data flows  
+- **Service Integration**: Mock application services with NSubstitute to test components with realistic (mocked) data flows  
 - **Test Organization**:  
   - Component unit tests: `tests/StageFright.UI.Tests/Pages/` and `tests/StageFright.UI.Tests/Shared/`  
   - UI integration tests: `tests/StageFright.UI.Tests/Integration/` and `tests/StageFright.Integration.Tests/UI/`  
