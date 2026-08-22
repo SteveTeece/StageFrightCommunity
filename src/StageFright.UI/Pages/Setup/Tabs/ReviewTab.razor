@@ -21,23 +21,25 @@
         <dt class="col-5">Seat Count Target</dt><dd class="col-7">@(Model.GeneralCommitteeSeatCountTarget?.ToString() ?? "Not set")</dd>
     </dl>
 
-    <div class="mb-2">
-        <h3 class="h6 small fw-semibold mb-1">Additional Office-Holder Titles</h3>
-        <BorderedListBox TItem="string" Items="QueuedCommitteeTitles" EmptyText="None.">
-            <RowTemplate Context="title"><span>@title</span></RowTemplate>
-        </BorderedListBox>
-    </div>
+    <div class="row g-3 mb-2">
+        <div class="col-md-6">
+            <h3 class="h6 small fw-semibold mb-1">Additional Office-Holder Titles</h3>
+            <BorderedListBox TItem="string" Items="QueuedCommitteeTitles" EmptyText="None.">
+                <RowTemplate Context="title"><span>@title</span></RowTemplate>
+            </BorderedListBox>
+        </div>
 
-    <div class="mb-2">
-        <h3 class="h6 small fw-semibold mb-1">Queued Chart of Accounts Entries</h3>
-        <BorderedListBox TItem="QueuedAccountRequest" Items="QueuedAccounts" EmptyText="None queued.">
-            <RowTemplate Context="account">
-                <span>@account.Name</span>
-                <span class="text-muted small ms-2">
-                    @account.Type@(account.IsBankAccount ? " · Bank/Cash" : string.Empty)
-                </span>
-            </RowTemplate>
-        </BorderedListBox>
+        <div class="col-md-6">
+            <h3 class="h6 small fw-semibold mb-1">Queued Chart of Accounts Entries</h3>
+            <BorderedListBox TItem="QueuedAccountRequest" Items="QueuedAccounts" EmptyText="None queued.">
+                <RowTemplate Context="account">
+                    <span>@account.Name</span>
+                    <span class="text-muted small ms-2">
+                        @account.Type@(account.IsBankAccount ? " · Bank/Cash" : string.Empty)
+                    </span>
+                </RowTemplate>
+            </BorderedListBox>
+        </div>
     </div>
 </div>
 
