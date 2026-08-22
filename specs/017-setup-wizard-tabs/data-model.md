@@ -53,5 +53,5 @@ Sequence after the existing Settings/event-type creation, before the existing co
 
 These are not new rules — restated here only to confirm nothing about them changes in the tabbed/queued redesign:
 - Account name uniqueness (case-insensitive), 100-char max, bank flag restricted to `Asset` — `AccountService.CreateAsync`.
-- Opening balance posting requires ≥1 non-zero entry; each account may appear once; only eligible (non-excluded) accounts accepted — `OpeningBalanceService.RecordOpeningBalancesAsync`.
+- Opening balance posting requires ≥1 non-zero entry; each account may appear once; only eligible (non-excluded) accounts accepted — every account except Opening Balance Equity itself, the plug target — `OpeningBalanceService.RecordOpeningBalancesAsync`.
 - `SetupService.Validate` — organisation name required, tax rate > 0 when tax applicable, non-negative fees, renewal month 1–12, audit retention 1–7 years. Unchanged; still runs before any creation.

@@ -25,7 +25,7 @@ public class ChartOfAccountsTabTests : BunitContext
         Services.AddSingleton(_accountService);
         _accountService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>
         {
-            new() { Id = Guid.NewGuid(), Name = "Cash on Hand", Type = AccountType.Asset, AccountNumber = "1100", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+            new() { Id = Guid.NewGuid(), Name = "Cash on Hand", Type = AccountType.Asset, AccountNumber = "1100", IsSystem = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
         });
         _accountService.GetArchivedAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>());
     }
@@ -141,5 +141,17 @@ public class ChartOfAccountsTabTests : BunitContext
         cut.Find(".bordered-list-box-remove").Click();
 
         Assert.Equal(toRemove, removed);
+    }
+
+    [Fact]
+    public void ExistingAccounts_RenderInReadOnlyBorderedListBox_WithSystemBadge_EvenWhenNothingQueued()
+    {
+        var cut = RenderTab();
+
+        Assert.Contains("Existing Accounts", cut.Markup);
+        Assert.Contains("Cash on Hand", cut.Markup);
+        Assert.Contains("System", cut.Markup);
+        // Read-only: no remove button for the existing-accounts list itself.
+        Assert.Empty(cut.FindAll(".bordered-list-box-remove"));
     }
 }
