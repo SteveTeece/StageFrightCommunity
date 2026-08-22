@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Components;
 
 namespace StageFright.UI.Pages.Setup.Tabs;
 
-/// <summary>Committee tab (US1/US5) — AGM month, seat count target, and a type-and-"+"-
-/// to-add office-holder titles widget (a BorderedListBox with per-row remove), replacing
-/// the old single-page wizard's comma-separated textbox (FR-009/FR-010/FR-011). The
-/// queue itself lives in SetupWizard.razor.cs, same as the Chart of Accounts tab's queue,
-/// since the Review tab also needs it.</summary>
+/// <summary>Committee tab (US1/US5) — AGM month, seat count target, and a type-and-arrow-
+/// button-to-add office-holder titles widget (a BorderedListBox with per-row remove),
+/// replacing the old single-page wizard's comma-separated textbox (FR-009/FR-010/FR-011).
+/// The queue itself lives in SetupWizard.razor.cs, same as the Chart of Accounts tab's
+/// queue, since the Review tab also needs it.</summary>
 public partial class CommitteeTab : ComponentBase
 {
     [Parameter, EditorRequired] public SetupFormModel Model { get; set; } = null!;

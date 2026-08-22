@@ -7,8 +7,8 @@ using StageFright.UI.Pages.Setup.Tabs;
 namespace StageFright.UI.Tests.Pages.Setup.Tabs;
 
 /// <summary>bUnit tests for CommitteeTab (US1/US5) — AGM month, seat count target, and
-/// the type-and-"+"-to-add office-holder titles widget (BorderedListBox with per-row
-/// remove) that replaced the old comma-separated textbox (FR-009/FR-010/FR-011).
+/// the type-and-arrow-button-to-add office-holder titles widget (BorderedListBox with
+/// per-row remove) that replaced the old comma-separated textbox (FR-009/FR-010/FR-011).
 /// Rendered inside an EditForm since AGM month/seat count still use Input* components
 /// needing a cascaded EditContext (built manually — EditForm.ChildContent is generic).</summary>
 public class CommitteeTabTests : BunitContext
