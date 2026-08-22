@@ -2,1625 +2,368 @@
 
 ## Overview
 
-StageFright Community uses a **Vertical Slice Module Architecture** where each feature is self-contained, independently testable, and capable of being developed and deployed in isolation. This guide explains the architectural patterns, principles, and how to implement new features following this model.
+StageFright Community is a .NET MAUI Blazor Hybrid desktop application. It is **not** a vertical-slice-per-layer system (each module does not get its own `Domain/Application/Infrastructure/UI` folder tree). Instead it uses a **layered solution with module slices inside the Core layer**:
+
+- One project per architectural layer (`StageFright.App`, `StageFright.Core`, `StageFright.Data`, `StageFright.UI`, `StageFright.Reports`, `StageFright.Plugins.Contracts`).
+- Inside `StageFright.Core`, each business capability ("module") gets its own folder under `Modules/` containing its services, request/response models, and menu-item provider.
+- Repositories are **not** module-owned. They live centrally in `StageFright.Data/Repositories/` — one repository per entity — which is a deliberate, spec-mandated deviation from pure vertical-slice architecture (see FR-042 in `specs/001-initial-mvp/`).
+- Dashboard-tile providers live in `StageFright.UI/Modules/<ModuleName>/` (not Core), because a tile provider must reference a Blazor component `Type` for its tile content, and `StageFright.Core` has no reference to `StageFright.UI`.
+
+This guide documents the real, current shape of the solution. For the historical/original decision record, see `specs/001-initial-mvp/` and the constitution at `.specify/memory/constitution.md`.
 
 ---
 
-## Vertical Slice Architecture
+## Solution Layout
 
-### What is a Vertical Slice?
+| Project | Role |
+|---------|------|
+| `StageFright.App` | MAUI Blazor Hybrid host — composition root only. Hosts a single `BlazorWebView`; zero application logic. |
+| `StageFright.Core` | Domain entities, enums, custom exceptions, repository/service contracts (`Contracts/`), and application services organized into module slices (`Modules/`). |
+| `StageFright.Data` | Centralized DAL — `StageFrightDbContext`, EF Core migrations, one repository per entity, `UnitOfWork`. |
+| `StageFright.Plugins.Contracts` | Extension-point interfaces consumed by both core and external plugins. Leaf assembly with no project dependencies. |
+| `StageFright.Reports` | Report infrastructure — `ReportProviderRegistry`, `IReportProvider` implementations, `PdfReportRenderer` (QuestPDF), `CsvReportExporter` (CsvHelper), shared `ReportData` model. |
+| `StageFright.UI` | Razor class library — **all** Blazor UI. `App.razor` owns the router; `Layout/ShellLayout.razor` owns the sidebar navigation. Dashboard-tile providers also live here (see above). |
+| `tests/StageFright.Core.Tests` | xUnit unit tests for services and domain logic. |
+| `tests/StageFright.Data.Tests` | Integration tests hitting SQLite connections. |
+| `tests/StageFright.UI.Tests` | bUnit component tests. |
+| `tests/StageFright.Integration.Tests` | Cross-layer user-journey tests. |
+| `tests/StageFright.Reports.Tests` | Report-provider and PDF/CSV renderer tests. |
+| `tests/StageFright.TestPlugin` | Sample plugin fixture (tile + report + entity), used to exercise the plugin-discovery pipeline. |
 
-A vertical slice is a complete, thin slice of functionality from top to bottom: Domain → Application → Infrastructure → UI. Each module (slice) is independent and handles a complete user-facing feature or business capability.
+Project references flow one way: `StageFright.App` → `{Core, Data, UI, Plugins.Contracts, Reports}`; `StageFright.UI` → `{Core, Plugins.Contracts, Reports}`; `StageFright.Data` → `{Core}`; `StageFright.Reports` → `{Core, Plugins.Contracts}`. Nothing depends on `StageFright.App`, keeping it a pure composition root.
 
-```
-Domain Layer:        Member entity, business rules
-                     ↓
-Application Layer:   MemberService, request/response models
-                     ↓
-Infrastructure Layer: MemberRepository, database access
-                     ↓
-UI Layer:            MembersPage, components
-                     ↓
-Dashboard:           MembersDashboardTile
-```
-
-### Why Vertical Slices?
-
-✅ **Independence** — Each slice can be developed, tested, and deployed independently  
-✅ **Clarity** — Clear ownership: each module owns its full business capability  
-✅ **Testability** — Isolated testing without cross-module complexity  
-✅ **Scalability** — New features added as new slices; no core bloat  
-✅ **Maintainability** — Changes localized to one slice; low risk of side effects  
-
-### Module Structure
-
-Every module lives in its own folder and contains all required layers:
-
-```
-src/Features/[ModuleName]/
-├── Domain/
-│   ├── Entities/
-│   │   └── [Entity].cs
-│   ├── ValueObjects/
-│   ├── Events/
-│   └── [Contracts].cs          # Published interfaces
-│
-├── Application/
-│   ├── Services/
-│   │   └── [Service].cs        # Business logic orchestrators
-│   ├── Handlers/
-│   │   └── [Handler].cs        # Command/event handlers
-│   ├── DTOs/
-│   │   └── [Request|Response].cs
-│   └── Interfaces/
-│       └── I[Service].cs       # Contracts published to other modules
-│
-├── Infrastructure/
-│   ├── Repositories/
-│   │   └── [Entity]Repository.cs  # Data access
-│   ├── DataAccess/
-│   │   └── [Entity]DbConfiguration.cs  # EF Core config
-│   └── ExternalServices/       # Third-party integrations
-│       └── [Service]Client.cs
-│
-├── UI/
-│   ├── Pages/
-│   │   └── [Feature]Page.razor
-│   ├── Components/
-│   │   └── [Component].razor   # Reusable UI components
-│   └── Models/
-│       └── [ViewModel].cs      # UI-specific models
-│
-├── Tests/
-│   ├── Unit/
-│   │   ├── Services/
-│   │   └── [ServiceName]Tests.cs
-│   ├── Integration/
-│   │   ├── Repositories/
-│   │   └── [RepositoryName]IntegrationTests.cs
-│   └── UI/
-│       └── [PageName]UITests.cs
-│
-├── DashboardTile.cs            # Dashboard tile provider
-└── README.md                   # Module documentation
-```
+Target framework: `net10.0-windows10.0.19041.0` (Windows) / `net10.0-maccatalyst` (Mac Catalyst), set in `StageFright.App.csproj`. There is no `appsettings.json` — the SQLite path and log path are computed in code at startup (see below), not configuration-driven.
 
 ---
 
-## Layer Responsibilities
+## Composition Root: `StageFright.App`
 
-### Domain Layer (`Domain/`)
+`MauiProgram.CreateMauiApp()` does all wiring, in this order:
 
-**Purpose**: Encapsulates business logic and rules, independent of any framework or technology.
-
-**Responsibilities**:
-- Entities with business behavior
-- Value objects (immutable data)
-- Business rules and constraints
-- Domain events
-- Published contracts (interfaces)
-
-**Rules**:
-- ✅ Domain classes should be "fat models" with behavior
-- ✅ Use value objects for complex data
-- ✅ Raise domain events for important facts
-- ✅ Can reference other Domain layers (published contracts only)
-- ❌ No framework dependencies (EF Core, Serilog, etc.)
-- ❌ No Application or Infrastructure imports
-- ❌ No data access logic
-
-**Example**:
-
-```csharp
-// ✅ GOOD: Rich domain model
-public class Member
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public Email Email { get; set; }           // Value object
-    public MemberStatus Status { get; set; }   // Enum
-    public decimal OutstandingFees { get; private set; }
-    
-    public void RecordFeePayment(decimal amount)
-    {
-        if (amount <= 0) throw new ArgumentException("Amount must be positive");
-        if (OutstandingFees < amount) throw new InvalidOperationException("Overpayment");
-        
-        OutstandingFees -= amount;
-        DomainEvents.Add(new FeePaymentRecordedEvent(this.Id, amount));
-    }
-}
-
-// ✅ GOOD: Value object
-public record Email
-{
-    public string Value { get; }
-    
-    public Email(string value)
-    {
-        if (!IsValidEmail(value)) throw new ArgumentException("Invalid email");
-        Value = value;
-    }
-}
-```
-
-### Application Layer (`Application/`)
-
-**Purpose**: Orchestrates business logic, coordinates between Domain and Infrastructure layers.
-
-**Responsibilities**:
-- Service classes that use repositories and Domain logic
-- DTOs (Data Transfer Objects) for inbound/outbound data
-- Request/response models
-- Business orchestration
-- Published service interfaces
-
-**Rules**:
-- ✅ Services are thin orchestrators
-- ✅ Use dependency injection for repositories and external services
-- ✅ Translate exceptions at boundaries
-- ✅ Create DTOs to decouple from Domain entities
-- ✅ Can reference Domain and Infrastructure layers
-- ❌ No direct UI logic
-- ❌ No entity framework queries (use repositories)
-- ❌ No hardcoded business rules (use Domain entities)
-
-**Example**:
-
-```csharp
-// ✅ GOOD: Service orchestrates Domain + Infrastructure
-public interface IMemberService
-{
-    Task<MemberDto> CreateMemberAsync(CreateMemberRequest request);
-    Task<List<MemberDto>> GetActiveMembersAsync();
-}
-
-public class MemberService : IMemberService
-{
-    private readonly IMemberRepository _repository;
-    private readonly ILogger<MemberService> _logger;
-    
-    public MemberService(IMemberRepository repository, ILogger<MemberService> logger)
-    {
-        _repository = repository;
-        _logger = logger;
-    }
-    
-    public async Task<MemberDto> CreateMemberAsync(CreateMemberRequest request)
-    {
-        try
-        {
-            var email = new Email(request.Email);
-            var member = new Member { Name = request.Name, Email = email };
-            
-            var created = await _repository.AddAsync(member);
-            _logger.LogInformation("Member created: {MemberId}", created.Id);
-            
-            return new MemberDto 
-            { 
-                Id = created.Id, 
-                Name = created.Name, 
-                Email = created.Email.Value 
-            };
-        }
-        catch (DbUpdateException ex)
-        {
-            _logger.LogError(ex, "Failed to create member");
-            throw new PersistenceException("Failed to create member", innerException: ex);
-        }
-    }
-}
-
-// ✅ GOOD: DTO decouples from Domain
-public class MemberDto
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Email { get; set; }
-    public string Status { get; set; }
-}
-```
-
-### Infrastructure Layer (`Infrastructure/`)
-
-**Purpose**: Implements data access and external service integration.
-
-**Responsibilities**:
-- Repository implementations for data access
-- Entity Framework configuration
-- External API clients
-- File system access
-- Exception translation at boundaries
-
-**Rules**:
-- ✅ Repositories implement interfaces defined in Application
-- ✅ Translate raw exceptions to custom exceptions
-- ✅ Use Entity Framework Core for queries
-- ✅ Can reference Application and Domain
-- ❌ No business logic (that's in Domain/Application)
-- ❌ No UI logic
-- ❌ No service orchestration
-
-**Example**:
-
-```csharp
-// ✅ GOOD: Repository with exception translation
-public class MemberRepository : IMemberRepository
-{
-    private readonly ApplicationDbContext _context;
-    private readonly ILogger<MemberRepository> _logger;
-    
-    public MemberRepository(ApplicationDbContext context, ILogger<MemberRepository> logger)
-    {
-        _context = context;
-        _logger = logger;
-    }
-    
-    public async Task<Member> AddAsync(Member member)
-    {
-        try
-        {
-            _context.Members.Add(member);
-            await _context.SaveChangesAsync();
-            _logger.LogInformation("Member added: {MemberId}", member.Id);
-            return member;
-        }
-        catch (DbUpdateException ex)
-        {
-            _logger.LogError(ex, "Database error adding member");
-            throw new PersistenceException("Failed to add member", innerException: ex);
-        }
-    }
-    
-    public async Task<Member> GetByIdAsync(int id)
-    {
-        try
-        {
-            var member = await _context.Members.FirstOrDefaultAsync(m => m.Id == id);
-            return member ?? throw new EntityNotFoundException("Member", id);
-        }
-        catch (DbException ex)
-        {
-            throw new PersistenceException("Failed to query members", innerException: ex);
-        }
-    }
-}
-```
-
-### UI Layer (`UI/`)
-
-**Purpose**: Presents information and handles user interaction.
-
-**Responsibilities**:
-- Blazor pages and components
-- User interaction handling
-- Validation for UI input
-- Navigation
-- Component presentation logic
-
-**Rules**:
-- ✅ Inject services from Application layer
-- ✅ Use components for reusability
-- ✅ Handle errors gracefully for users
-- ✅ CSS isolation for styling
-- ✅ Can reference Application layer only
-- ❌ No business logic (use services)
-- ❌ No direct database access
-- ❌ No hardcoded data
-
-**Example**:
-
-```razor
-@* Pages/MembersPage.razor *@
-@page "/members"
-@inject IMemberService MemberService
-@inject ILogger<MembersPage> Logger
-
-<PageHeader Title="Members" />
-
-<div class="members-container">
-    @if (members == null)
-    {
-        <LoadingSpinner />
-    }
-    else if (members.Count == 0)
-    {
-        <EmptyState Message="No members found" />
-    }
-    else
-    {
-        <MembersTable Members="members" OnDelete="HandleDelete" />
-    }
-</div>
-
-@code {
-    private List<MemberDto> members;
-    private string errorMessage;
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            members = await MemberService.GetActiveMembersAsync();
-        }
-        catch (EntityNotFoundException)
-        {
-            members = new();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to load members");
-            errorMessage = "Failed to load members. Please try again.";
-        }
-    }
-
-    private async Task HandleDelete(int memberId)
-    {
-        try
-        {
-            await MemberService.DeleteMemberAsync(memberId);
-            members = await MemberService.GetActiveMembersAsync();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to delete member");
-            errorMessage = "Failed to delete member";
-        }
-    }
-}
-
-<style scoped>
-.members-container {
-    padding: 16px;
-}
-</style>
-```
+1. Compute `TestData/stagefright.db` (walking up from the executable directory to find the repo root by locating `*.slnx` or `.git`) and the log path under `FileSystem.AppDataDirectory/logs/`.
+2. Configure Serilog (console + rolling daily file, 7-day retention) and OpenTelemetry (tracing + runtime metrics, console exporter).
+3. Register `StageFrightDbContext` against SQLite, `IStartupDiagnosticService` (singleton, must exist before the startup sequence runs), then all repositories and core services via explicit `services.AddScoped<TInterface, TImpl>()` calls — **there is no assembly-scanning/auto-registration** (no Scrutor `.Scan()`, no MediatR). Every service is registered by hand in `RegisterRepositories`/`RegisterCoreServices`.
+4. Discover and register plugin providers (`DiscoverAndRegisterPlugins` → `PluginLoader.DiscoverAndRegister`) — this must happen **before** `builder.Build()`, because the built `ServiceProvider` doesn't implement `IServiceCollection` and late registrations would never resolve (see the comment in `MauiProgram.cs`, issue #273).
+5. Build the app, then run the startup sequence: apply EF Core migrations (falling back to the `StartupError` page on `DbException`/`DbUpdateException` instead of crashing), run plugin migrations via `PluginMigrationRunner`, and purge audit-trail entries older than the configured retention (best-effort — a failure here does not block startup).
 
 ---
 
-## Communication Between Modules
+## Module Structure inside `StageFright.Core`
 
-### Intra-Module Communication
-
-Within a module, all layers communicate directly:
+Each module lives in `StageFright.Core/Modules/<ModuleName>/` and contains its services, request/response DTOs, and menu-item provider (repositories and UI live elsewhere — see above). Current modules: **Agm, AuditTrail, Dashboard, Events, Finance, Members, Rehearsals, Settings**.
 
 ```
-MembersPage (UI)
-    ↓ (injects)
-MemberService (Application)
-    ↓ (uses)
-MemberRepository (Infrastructure)
-    ↓ (queries)
-Member (Domain)
+StageFright.Core/Modules/Finance/
+├── FeeService.cs                       # IFeeService implementation
+├── PaymentService.cs                   # IPaymentService implementation
+├── ExpensePaymentService.cs
+├── BankDepositService.cs
+├── BankReconciliationService.cs
+├── GeneralJournalService.cs
+├── OpeningBalanceService.cs
+├── AccountService.cs / AccountBalanceService.cs
+├── FinanceSummaryService.cs / FinanceSummary.cs
+├── RecordPaymentRequest.cs, RecordIncomeRequest.cs, ...   # request DTOs
+├── OutstandingFee.cs, MemberBalance.cs, ...                # response/view DTOs
+└── FinanceMenuItemProvider.cs          # IMenuItemProvider implementation
 ```
 
-### Inter-Module Communication
+Interfaces for these services live in `StageFright.Core/Contracts/` (e.g. `IFeeService.cs`, `IPaymentRepository.cs`), not alongside the implementation — this keeps the "one type per file" rule intact while grouping contracts in one place developers can scan.
 
-Between modules, use published Application interfaces **only**:
+### Communication between modules
 
-```
-EventScheduling Module → Events Module
-    ↓
-Injects IEventService (Application layer)
-    ↓
-Does NOT import
-  - Event Infrastructure
-  - Event UI Components
-  - Event private services
-```
-
-**Example: EventScheduling scheduling an event**
-
-```csharp
-// ✅ GOOD: EventScheduling injects published interface
-public class EventSchedulingService
-{
-    private readonly IEventService _eventService;
-    
-    public EventSchedulingService(IEventService eventService)
-    {
-        _eventService = eventService; // Published interface
-    }
-    
-    public async Task ScheduleRehearsalAsync(RehearsalRequest request)
-    {
-        var eventDto = await _eventService.CreateEventAsync(
-            new CreateEventRequest { /* ... */ }
-        );
-    }
-}
-
-// ❌ BAD: Direct Infrastructure import
-public class EventSchedulingService
-{
-    private readonly EventRepository _repository; // Private!
-    // This breaks the module boundary
-}
-```
-
-### Cross-Module Data Flow
-
-```
-Input: EventSchedulingService needs to create an event
-
-1. EventScheduling calls IEventService.CreateEventAsync(createRequest)
-   (Published Application interface)
-
-2. EventService orchestrates:
-   - Validates input
-   - Creates Event entity (Domain)
-   - Saves via EventRepository (Infrastructure)
-
-3. Returns EventDto (DTO for external consumption)
-
-4. EventScheduling receives EventDto and proceeds
-
-Result: Clean boundary, no implementation leakage
-```
+Modules communicate only through interfaces from `StageFright.Core/Contracts/`, injected via DI — never by importing another module's concrete service class or reaching into `StageFright.Data` repositories directly from UI code.
 
 ---
 
-## Dependency Injection Setup
+## Data Access Layer (`StageFright.Data`)
 
-### Module Registration
-
-Each module registers its services in a setup extension:
+- `StageFrightDbContext` — the single EF Core context for core entities. `StageFrightDbContextFactory` supports `dotnet ef` design-time tooling.
+- One repository class per entity in `Repositories/`, all implementing an interface from `StageFright.Core/Contracts/` (e.g. `MemberRepository : IMemberRepository`). Most derive from `BaseRepository<TEntity>` (generic CRUD) or `SoftDeletableBaseRepository<TEntity>` (adds soft-delete filtering); a few (`GLRepository`, `BackupRepository`, `AuditTrailRepository`) implement their interface directly for entity-specific query shapes.
+- `UnitOfWork` (`IUnitOfWork.ExecuteInTransactionAsync`) wraps a delegate in an EF Core database transaction, rolling back on any exception and translating unexpected ones to `DataAccessException`. This is what Finance services use to keep fee/payment/GL writes atomic (see [Finance / GL integrity](#finance--gl-integrity) below).
+- **Exception translation is mandatory at this boundary.** `BaseRepository<TEntity>` catches raw EF Core/ADO exceptions and re-throws project-defined exceptions (`DataAccessException`, `DuplicateEntityException` on a `UNIQUE` constraint violation, `ConcurrencyException` on `DbUpdateConcurrencyException`):
 
 ```csharp
-// Features/Members/DependencyInjection.cs
-namespace StageFright.Features.Members;
-
-public static class DependencyInjection
+public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken ct = default)
 {
-    public static IServiceCollection AddMembersModule(
-        this IServiceCollection services)
+    try
     {
-        // Domain services (if any)
-        
-        // Application services
-        services.AddScoped<IMemberService, MemberService>();
-        
-        // Infrastructure
-        services.AddScoped<IMemberRepository, MemberRepository>();
-        
-        return services;
+        var entry = await _db.Set<TEntity>().AddAsync(entity, ct);
+        await _db.SaveChangesAsync(ct);
+        return entry.Entity;
     }
-}
-
-// Program.cs
-builder.Services
-    .AddMembersModule()
-    .AddEventSchedulingModule()
-    .AddFinancialTrackingModule();
-```
-
-### Cross-Module Dependencies
-
-Inject published interfaces from other modules:
-
-```csharp
-// EventScheduling/Application/Services/EventSchedulingService.cs
-public class EventSchedulingService
-{
-    public EventSchedulingService(
-        IEventService eventService,      // From Events module
-        IMemberRepository memberRepository) // From Members module
+    catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("UNIQUE", StringComparison.OrdinalIgnoreCase) == true)
     {
-        _eventService = eventService;
-        _memberRepository = memberRepository;
+        throw new DuplicateEntityException($"A {typeof(TEntity).Name} with these values already exists.",
+            typeof(TEntity).Name, nameof(AddAsync), null, ex);
+    }
+    catch (Exception ex) when (ex is not DuplicateEntityException and not DataAccessException)
+    {
+        throw new DataAccessException(ex.Message, typeof(TEntity).Name, nameof(AddAsync), null, ex);
     }
 }
 ```
+
+- Plugin-owned schemas (`IDataAccessProvider`) are merged into the same SQLite file by `PluginMigrationRunner`, each with its own `__EFMigrationsHistory_{PluginName}` table and `{PluginName}_`-prefixed tables (`StageFright.Data/PluginData/`).
 
 ---
 
-## Error Handling & Exception Translation
+## Extension Points (Plugin Contracts)
 
-### Exception Translation at Boundaries
+All extension points are interfaces in `StageFright.Plugins.Contracts` (a leaf assembly with no project references, so plugins can reference it without dragging in the whole solution):
 
-Translate raw exceptions to custom exceptions at architectural boundaries:
+| Interface | Purpose | Key members |
+|---|---|---|
+| `IDashboardTileProvider` | Contributes a dashboard tile. Core tiles use `DisplayOrder` 0–99, plugin tiles 100+. | `TileId`, `Title`, `ModuleName`, `TileComponentType`, `TileSize` (defaults to `OneByOne`), `NavigateRoute?`, `ActionText?`, `GetTileDataAsync(ct)` |
+| `ISettingsTabProvider` | Contributes a tab to the Settings page. **No core module implements this** — the built-in tabs (General, Tax, Committee, Event Types, Backup & Restore) are hardcoded directly in `SettingsPage.razor`; this contract exists solely for plugin-added tabs, rendered after the hardcoded ones. | `TabTitle`, `TabKey` (deep-link `/settings?tab={TabKey}`), `DisplayOrder`, `SettingsComponentType` |
+| `IMenuItemProvider` | Contributes items to the shell sidebar. Rendering order: Dashboard → module items by `DisplayOrder` → plugin items → Settings (always last). | `ModuleName`, `DisplayOrder`, `GetMenuItems()` → `IReadOnlyList<MenuItem>` |
+| `IReportProvider` *(defined in `StageFright.Reports.Registry`, not `Plugins.Contracts`, to avoid a circular project reference — Reports already references Plugins.Contracts)* | Delivers a named report as `ReportData`. | `ReportId`, `ReportName`, `ModuleName`, `Filters`, `GenerateAsync(filters, ct)` |
+| `IDataAccessProvider` | Supplies a plugin `DbContext` merged into the shared SQLite database. | `PluginName`, `DbContextType`, `RegisterServices(services)` |
 
-```
-Infrastructure Layer (catches raw exceptions)
-    ↓ (translates)
-    ↓
-Application Layer (sees only custom exceptions)
-    ↓
-UI Layer (handles custom exceptions)
-```
+Each interface's failure mode is documented on the interface itself and is uniform: a throwing/duplicate provider is caught, logged, and skipped — it never blocks startup or the other providers (tiles load in parallel; a failing one renders "Unable to load").
 
-**Example: Repository translates database exception**
-
-```csharp
-// Infrastructure/Repositories/MemberRepository.cs
-public class MemberRepository : IMemberRepository
-{
-    public async Task<Member> GetByIdAsync(int id)
-    {
-        try
-        {
-            return await _context.Members.FindAsync(id)
-                ?? throw new EntityNotFoundException("Member", id);
-        }
-        catch (EntityNotFoundException)
-        {
-            throw; // Custom exception, let it through
-        }
-        catch (DbException ex)
-        {
-            // Raw database exception → custom exception
-            throw new PersistenceException("Failed to query member", innerException: ex);
-        }
-    }
-}
-
-// Application/Services/MemberService.cs
-public class MemberService : IMemberService
-{
-    public async Task<MemberDto> GetMemberAsync(int id)
-    {
-        try
-        {
-            var member = await _memberRepository.GetByIdAsync(id);
-            return new MemberDto { /* ... */ };
-        }
-        catch (EntityNotFoundException ex)
-        {
-            // Custom exception from repository
-            _logger.LogWarning(ex, "Member not found: {MemberId}", id);
-            throw; // Propagate to UI
-        }
-    }
-}
-
-// UI/Pages/MemberPage.razor
-@code {
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            member = await MemberService.GetMemberAsync(id);
-        }
-        catch (EntityNotFoundException)
-        {
-            errorMessage = "Member not found";
-        }
-        catch (PersistenceException)
-        {
-            errorMessage = "Failed to load member. Please try again.";
-        }
-    }
-}
-```
+Core providers register explicitly in `MauiProgram.RegisterCoreServices`. External plugins are discovered at runtime from the `Plugins/` directory (under `FileSystem.AppDataDirectory`) — see below.
 
 ---
 
-## Data Models
+## Plugin Discovery & Loading
 
-### Domain Entities
+`PluginLoader.DiscoverAndRegister` (in `StageFright.App`) scans every `*.dll` in the `Plugins/` directory:
 
-Entities represent core business concepts with business behavior:
+1. Loads each assembly into its own (non-collectible) `AssemblyLoadContext`, isolating plugin dependency versions from the host.
+2. Reflects over the assembly's concrete types and registers any type implementing `IDashboardTileProvider`, `ISettingsTabProvider`, `IMenuItemProvider`, `IDataAccessProvider`, or `IReportProvider` as a DI **singleton** against that interface.
+3. Wraps the whole per-assembly attempt in a `try/catch`: a load failure is wrapped in a `PluginLoadException`, logged, and that assembly is skipped — it never blocks startup or the other plugins.
 
-```csharp
-public class Member
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public Email Email { get; set; }
-    public MemberStatus Status { get; set; }
-    
-    // Soft delete fields
-    public bool IsDeleted { get; set; }
-    public DateTime? DeletedAt { get; set; }
-    public string DeletedBy { get; set; }
-    
-    // Navigation properties
-    public ICollection<EventAttendance> Attendances { get; set; }
-    public ICollection<FeePayment> Payments { get; set; }
-    
-    // Business methods
-    public void RecordAttendance(Event @event)
-    {
-        if (IsDeleted) throw new InvalidOperationException("Cannot record for deleted member");
-        Attendances.Add(new EventAttendance { Member = this, Event = @event });
-    }
-}
-```
-
-### DTOs (Data Transfer Objects)
-
-DTOs decouple Domain entities from external consumers:
-
-```csharp
-// Request (inbound)
-public class CreateMemberRequest
-{
-    public string Name { get; set; }
-    public string Email { get; set; }
-}
-
-// Response (outbound)
-public class MemberDto
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Email { get; set; }
-    public string Status { get; set; }
-    public decimal OutstandingFees { get; set; }
-}
-```
+`tests/StageFright.TestPlugin` is the reference fixture exercising this pipeline end-to-end (a tile provider + a report provider + a plugin entity).
 
 ---
 
-## Core Project Structure
+## Navigation
 
-### StageFright.Core Organization
+Blazor Router owns **all** navigation — `App.razor`'s `<Router AppAssembly>` wraps every route in an `ErrorBoundary`, defaults to `Layout.ShellLayout`, and shows a `NotFound` page linking back to `/dashboard`. Every screen has a `@page` directive; `NavigationManager.NavigateTo` is the only way to transition between pages. MAUI Shell routing is disabled — MAUI is a platform-only container (a single `BlazorWebView` in `MainPage.xaml`). First-run detection redirects to `/setup` before the dashboard loads.
 
-The **Core project** (`StageFright.Core`) contains foundational, cross-cutting types that are shared across all features and modules:
-
-```
-StageFright.Core/
-├── Entities/          # Core domain entities (Member, Event, Payment, etc.)
-│   └── [Entity].cs
-├── Enums/             # Common enumeration types
-│   ├── MemberStatus.cs        # Active/Inactive
-│   ├── CategoryType.cs        # Income/Expense
-│   ├── FeeType.cs             # Annual/Attendance/Other
-│   ├── PaymentMethod.cs       # Cash/Check/Card/ElectronicTransfer/Other
-│   ├── PaymentType.cs         # Annual/Attendance/Other
-│   ├── Theme.cs               # Dark/Light
-│   └── AuditAction.cs         # Create/Update/Delete
-├── Exceptions/        # Custom exception hierarchy
-│   ├── EntityNotFoundException.cs
-│   ├── PersistenceException.cs
-│   └── [CustomException].cs
-└── Services/          # Core business services
-    └── [Service].cs
-```
-
-### Enum Placement Rules
-
-**All common enums belong in `StageFright.Core.Enums`**. An enum is "common" if it:
-- Is used by multiple entities (e.g., `MemberStatus` used by `Member`)
-- Is referenced across features (e.g., `PaymentMethod` used by Financial Tracking and Reports)
-- Represents a foundational domain concept (e.g., `AuditAction` for audit trails)
-
-**When to create a new enum in Core**:
-1. ✅ Enum values are stable and unlikely to change per-feature
-2. ✅ Enum is part of the core business model
-3. ✅ Multiple modules need to reference the same enum values
-4. ✅ Enum appears in entity definitions
-
-**When NOT to use Core enums**:
-1. ❌ Feature-specific enums that only one module uses
-2. ❌ Temporary or UI-only enums (use strings or class constants)
-3. ❌ Volatile enums that vary by feature or configuration
-
----
-
-## Code Organization and File Structure
-
-**Every class, interface, record, struct, or enum MUST be defined in its own dedicated file.** This is a non-negotiable architectural rule enforced by code review and CI/CD pipeline checks.
-
-### Single Responsibility File Organization Rules
-
-**Mandatory Requirements** (from Constitution §3.2.1 and §4.5):
-
-1. **One Type Per File**: Each file contains at most one public class/interface/record/struct/enum.
-   - **Exception**: Private nested types that serve a single, tightly-scoped purpose within their parent class may be defined inline.
-   - **Exception**: Compiler-generated types (e.g., auto-property backing fields).
-
-2. **File Naming**: File name MUST exactly match the type it contains.
-   ```
-   class MemberService              → MemberService.cs
-   interface IMemberRepository      → IMemberRepository.cs
-   record MemberDto                 → MemberDto.cs
-   enum MemberStatus                → MemberStatus.cs
-   struct MemberEmail               → MemberEmail.cs
-   ```
-
-3. **Responsibility-Based Organization**: Within each layer/responsibility, separate files by their distinct purpose:
-   - `IMemberService.cs` — Service interface (contract)
-   - `MemberService.cs` — Service implementation
-   - `MemberDto.cs` — Data transfer object
-   - `CreateMemberRequest.cs` — Request model
-   - `MemberDto.cs` — Response model
-
-4. **Folder Structure by Responsibility**:
-   ```
-   Features/Members/
-   ├── Domain/
-   │   ├── Member.cs               # only Member entity
-   │   ├── MemberStatus.cs         # only MemberStatus enum
-   │   ├── MemberEmail.cs          # only MemberEmail value object
-   │   └── IMemberRepository.cs    # only IMemberRepository interface
-   │
-   ├── Application/
-   │   ├── IMemberService.cs       # only IMemberService interface
-   │   ├── MemberService.cs        # only MemberService class
-   │   ├── CreateMemberRequest.cs  # only CreateMemberRequest DTO
-   │   └── MemberDto.cs            # only MemberDto
-   │
-   ├── Infrastructure/
-   │   ├── MemberRepository.cs     # only MemberRepository class
-   │   └── MemberRepositoryExtensions.cs  # only extension methods
-   ```
-
-5. **Blazor Components**: Each component consists of two files:
-   - `.razor` — Component markup and directives
-   - `.razor.cs` — Code-behind with logic, event handlers, parameters
-
-### Enforcement and Consequences
-
-- ✅ **Code Review**: PRs with multiple types per file are automatically rejected.
-- ✅ **CI/CD Checks**: Linter/analyzer rules detect multi-type files before merge approval.
-- ✅ **Automated Refactoring**: Consider using Roslyn analyzers or similar tooling to enforce compliance.
-- ❌ **No Exceptions**: This rule is non-negotiable and applies to all new code. Existing violations in the codebase should be refactored as separate technical debt stories.
-
-### Benefits
-
-- 🎯 **Clarity**: File name = type name = clear intent
-- 📍 **Discoverability**: IDE Go-to-Definition navigates intuitively
-- 🔧 **Refactoring**: Extract or rename operations work reliably
-- 📝 **Version Control**: Fewer merge conflicts on multi-type files
-- ✅ **SOLID Compliance**: Enforces Single Responsibility Principle at file level
-- 🧪 **Testing**: Each unit is easily isolated and tested independently
-
----
-
-## Testing Strategy
-
-### Unit Tests (Single Layer)
-
-Test a single service/repository in isolation with mocked dependencies:
-
-```csharp
-[Fact]
-public async Task Should_ReturnActiveMembersOnly_When_GetActiveMembersAsync_Called()
-{
-    // Arrange
-    var mockRepository = new Mock<IMemberRepository>();
-    mockRepository
-        .Setup(r => r.GetActiveMembersAsync())
-        .ReturnsAsync(new List<Member>
-        {
-            new() { Id = 1, Name = "John", Status = MemberStatus.Active }
-        });
-    
-    var service = new MemberService(mockRepository.Object, new Mock<ILogger<MemberService>>().Object);
-    
-    // Act
-    var result = await service.GetActiveMembersAsync();
-    
-    // Assert
-    Assert.Single(result);
-    Assert.Equal("John", result[0].Name);
-}
-```
-
-### Integration Tests (Multiple Layers)
-
-Test with real repositories and in-memory database:
-
-```csharp
-[Fact]
-public async Task Should_CreateAndRetrieveMember_When_UsingSameTransaction()
-{
-    // Arrange
-    var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-        .UseInMemoryDatabase("test-db")
-        .Options;
-    
-    using var context = new ApplicationDbContext(options);
-    var repository = new MemberRepository(context, new Mock<ILogger<MemberRepository>>().Object);
-    
-    // Act
-    var member = new Member { Name = "John", Email = new Email("john@example.com") };
-    await repository.AddAsync(member);
-    
-    var retrieved = await repository.GetByIdAsync(member.Id);
-    
-    // Assert
-    Assert.NotNull(retrieved);
-    Assert.Equal("John", retrieved.Name);
-}
-```
-
-### UI Tests (Component)
-
-Test Blazor components with bUnit:
-
-```csharp
-[Fact]
-public void Should_DisplayMembersList_When_MembersProvided()
-{
-    // Arrange
-    var members = new List<MemberDto>
-    {
-        new() { Id = 1, Name = "John", Email = "john@example.com" }
-    };
-    
-    // Act
-    var cut = RenderComponent<MembersTable>(
-        ComponentParameter.CreateParameter("Members", members)
-    );
-    
-    // Assert
-    cut.Find("table tbody tr").TextContent.Should().Contain("John");
-}
-```
+The shell itself (`Layout/ShellLayout.razor`) is a **fixed vertical sidebar**, not a top nav bar: it injects `IEnumerable<IMenuItemProvider>`, orders providers by `DisplayOrder`, and renders each provider's `MenuItem`s (with expandable sub-item groups that auto-expand while a child route is active, and badge counts). A `RadzenSwitch` in the top bar toggles light/dark theme app-wide (hidden on `/setup`, which has its own theme control per FR-022 of spec 017).
 
 ---
 
 ## Dashboard Tiles
 
-Each module defines how it appears on the dashboard:
+Tiles opt into one of four sizes via the `DashboardTileSize` enum (`StageFright.Plugins.Contracts`), by overriding `IDashboardTileProvider.TileSize`:
 
-```csharp
-// Features/Members/DashboardTile.cs
-public class MembersDashboardTile : IDashboardTile
-{
-    private readonly IMemberService _memberService;
-    
-    public string Title => "Members";
-    public int Order => 1;
-    public string Icon => "users";
-    
-    public MembersDashboardTile(IMemberService memberService)
-    {
-        _memberService = memberService;
-    }
-    
-    public async Task<IDashboardTileContent> GetContentAsync()
-    {
-        var activeCount = await _memberService.GetActiveMemberCountAsync();
-        var pendingFees = await _memberService.GetPendingFeeCountAsync();
-        var recent = await _memberService.GetRecentMembersAsync(5);
-        
-        return new MembersTileContent
-        {
-            ActiveMembers = activeCount,
-            PendingFees = pendingFees,
-            RecentMembers = recent
-        };
-    }
-}
-```
+| Enum value | Grid footprint | CSS class (`app.css`) |
+|---|---|---|
+| `OneByOne` (default) | 1 column × 1 row | `.tile-size-1x1` |
+| `OneByTwo` | 2 columns × 1 row (double width) | `.tile-size-1x2` |
+| `TwoByOne` | 1 column × 2 rows (double height) | `.tile-size-2x1` |
+| `TwoByTwo` | 2 columns × 2 rows | `.tile-size-2x2` |
+
+`Dashboard.razor.cs` maps the enum to the CSS class; the grid itself (`.sf-dash-grid` in `StageFright.App/wwwroot/app.css`) is `display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); grid-auto-flow: dense;` and collapses every tile to a single column below 576px. Resizing a tile only needs the provider's `TileSize` override plus its own inner chart/layout sizing — no `Dashboard.razor` or grid CSS changes are needed.
+
+Tile providers live in `StageFright.UI/Modules/<ModuleName>/` (e.g. `MembersDashboardTileProvider.cs`), not in `StageFright.Core`, because `TileComponentType` must reference a Blazor component `Type` and Core has no UI reference.
 
 ---
 
 ## Settings System
 
-The Settings page (`/settings`) is a core application feature where configuration and module preferences are managed through a tabbed interface.
+The Settings page (`/settings`) is a tabbed core feature. Unlike the plugin-oriented tab contract might suggest, the **built-in tabs are not routed through `ISettingsTabProvider`** — `SettingsPage.razor` hosts them directly (General, Tax, Committee, Event Types, Backup & Restore), and separately resolves `IEnumerable<ISettingsTabProvider>` to append any plugin-contributed tabs after them, skipping duplicate `TabKey`s with a warning log. Deep-linking uses `/settings?tab={TabKey}`.
 
-### Settings Architecture
-
-- **Core Application Settings Tab**: Built-in tab with organization, fee, and membership configuration
-- **Module Settings Tabs**: Each module MAY provide a settings tab for module-specific configuration
-- **Tab Registry**: Settings tabs discovered and registered at startup via DI
-- **Tab Isolation**: Each tab manages its own UI, validation, and persistence
-
-### Application Settings Tab
-
-The core application provides built-in settings:
-
-```csharp
-public class ApplicationSettings
-{
-    public string OrganizationName { get; set; }
-    public decimal AnnualMembershipFee { get; set; }
-    public decimal RehearsalFee { get; set; }
-    public DateTime MembershipRenewalDueDate { get; set; } // e.g., September 1
-    public int MembershipRenewalGracePeriodDays { get; set; }
-}
-```
-
-### Module Settings Tab Implementation
-
-Modules that need configuration provide a settings tab:
-
-```csharp
-// Module publishes ISettingsTabProvider interface
-public interface ISettingsTabProvider
-{
-    string TabTitle { get; }      // Display title (e.g., "Members")
-    string TabIcon { get; }       // Icon name
-    int DisplayOrder { get; }     // Tab order in settings page
-    
-    Type SettingsComponentType { get; }  // Blazor component for settings UI
-    
-    Task<ISettingsTab> GetSettingsAsync();
-    Task<ValidationResult> ValidateAsync(ISettingsTab settings);
-    Task SaveAsync(ISettingsTab settings);
-}
-
-// Module implements provider
-public class MembersSettingsTabProvider : ISettingsTabProvider
-{
-    private readonly IMembersSettingsService _settingsService;
-    
-    public string TabTitle => "Members";
-    public string TabIcon => "users";
-    public int DisplayOrder => 2;
-    
-    public Type SettingsComponentType => typeof(MembersSettingsTab);
-    
-    public async Task<ISettingsTab> GetSettingsAsync()
-    {
-        return await _settingsService.GetSettingsAsync();
-    }
-    
-    public async Task<ValidationResult> ValidateAsync(ISettingsTab settings)
-    {
-        if (settings is not MembersSettings ms)
-            return ValidationResult.Invalid("Invalid settings type");
-        
-        if (ms.AutoArchiveInactiveDays < 1)
-            return ValidationResult.Invalid("Days must be at least 1");
-        
-        return ValidationResult.Valid();
-    }
-    
-    public async Task SaveAsync(ISettingsTab settings)
-    {
-        await _settingsService.SaveAsync((MembersSettings)settings);
-    }
-}
-
-// Module provides Blazor component for tab content
-// Features/Members/UI/Components/MembersSettingsTab.razor
-@implements IAsyncDisposable
-@inject IMembersSettingsTabProvider SettingsProvider
-@inject ILogger<MembersSettingsTab> Logger
-
-<EditForm Model="@settings" OnValidSubmit="@HandleSave">
-    <DataAnnotationsValidator />
-    
-    <div class="form-group">
-        <label>Default Member Status</label>
-        <InputSelect @bind-Value="settings.DefaultMemberStatus" class="form-control">
-            <option>Active</option>
-            <option>Inactive</option>
-        </InputSelect>
-        <ValidationMessage For="@(() => settings.DefaultMemberStatus)" />
-    </div>
-    
-    <div class="form-group">
-        <label>Auto-Archive Inactive After (days)</label>
-        <InputNumber @bind-Value="settings.AutoArchiveInactiveDays" class="form-control" />
-        <ValidationMessage For="@(() => settings.AutoArchiveInactiveDays)" />
-    </div>
-    
-    @if (errorMessage != null)
-    {
-        <div class="alert alert-danger">@errorMessage</div>
-    }
-    
-    <div class="button-group">
-        <button type="button" class="btn btn-secondary" @onclick="OnCancel">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save Settings</button>
-    </div>
-</EditForm>
-
-@code {
-    [CascadingParameter]
-    private SettingsPage ParentPage { get; set; }
-    
-    private MembersSettings settings;
-    private string errorMessage;
-
-    protected override async Task OnInitializedAsync()
-    {
-        settings = (MembersSettings)await SettingsProvider.GetSettingsAsync();
-    }
-
-    private async Task HandleSave()
-    {
-        var result = await SettingsProvider.ValidateAsync(settings);
-        if (!result.IsValid)
-        {
-            errorMessage = result.ErrorMessage;
-            return;
-        }
-
-        try
-        {
-            await SettingsProvider.SaveAsync(settings);
-            Logger.LogInformation("Members settings saved");
-            await ParentPage.ShowSuccessMessage("Members settings saved successfully");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to save members settings");
-            errorMessage = "Failed to save settings. Please try again.";
-        }
-    }
-
-    private void OnCancel()
-    {
-        ParentPage?.OnTabCancel();
-    }
-
-    async ValueTask IAsyncDisposable.DisposeAsync()
-    {
-        // Cleanup
-    }
-}
-```
-
-### Settings Page Tab Layout
-
-```
-┌─────────────────────────────────────────────────────────┐
-│ Settings                                                │
-├─────────────────────────────────────────────────────────┤
-│ │ Application │ Members │ Events │ Finances │ ...      │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  Application Settings                                  │
-│  ┌─────────────────────────────────────────────────┐  │
-│  │ Organization Name: [____________]                │  │
-│  │ Annual Membership Fee: $[____]                   │  │
-│  │ Rehearsal Fee: $[____]                           │  │
-│  │ Membership Renewal Due Date: [____-____]         │  │
-│  │                                                  │  │
-│  │ [Cancel]  [Save Settings]                        │  │
-│  └─────────────────────────────────────────────────┘  │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
-```
-
-### Module Settings Registration
-
-Register settings tabs in module DependencyInjection:
-
-```csharp
-// Features/Members/DependencyInjection.cs
-public static IServiceCollection AddMembersModule(this IServiceCollection services)
-{
-    // ... other registrations ...
-    
-    // Settings tab registration
-    services.AddScoped<IMembersSettingsTabProvider, MembersSettingsTabProvider>();
-    services.AddScoped<ISettingsTabProvider>(sp => 
-        sp.GetRequiredService<IMembersSettingsTabProvider>());
-    
-    return services;
-}
-
-// Program.cs - All ISettingsTabProvider implementations auto-discovered
-builder.Services.Scan(scan => scan
-    .FromAssemblies(typeof(Program).Assembly)
-    .AddClasses(classes => classes.AssignableTo(typeof(ISettingsTabProvider)))
-    .AsImplementedInterfaces()
-    .WithScopedLifetime());
-```
-
-### Settings Tab Lifecycle
-
-1. **Page Load**: `/settings` route loads SettingsPage component
-2. **Tab Discovery**: Application discovers all registered `ISettingsTabProvider` instances
-3. **Tab Rendering**: Tabs rendered with tab headers sorted by `DisplayOrder`
-4. **Tab Selection**: User clicks tab, content component created and loaded
-5. **Data Load**: Tab component calls `SettingsProvider.GetSettingsAsync()`
-6. **Edit**: User modifies settings in form
-7. **Validation**: On save, form validates locally and calls `ValidateAsync()`
-8. **Persistence**: If valid, calls `SaveAsync()` to persist changes
-9. **Feedback**: User sees success/error message
-
-### Settings Persistence
-
-Settings are persisted through the module's infrastructure layer:
-
-```csharp
-// Features/Members/Infrastructure/MembersSettingsRepository.cs
-public class MembersSettingsRepository : IMembersSettingsRepository
-{
-    private readonly ApplicationDbContext _context;
-    
-    public async Task<MembersSettings> GetSettingsAsync()
-    {
-        // Load from database or return defaults
-        return await _context.MembersSettings.FirstOrDefaultAsync()
-            ?? MembersSettings.CreateDefaults();
-    }
-    
-    public async Task SaveAsync(MembersSettings settings)
-    {
-        var existing = await _context.MembersSettings.FirstOrDefaultAsync();
-        
-        if (existing == null)
-        {
-            _context.MembersSettings.Add(settings);
-        }
-        else
-        {
-            existing.DefaultMemberStatus = settings.DefaultMemberStatus;
-            existing.AutoArchiveInactiveDays = settings.AutoArchiveInactiveDays;
-        }
-        
-        await _context.SaveChangesAsync();
-    }
-}
-```
+See [Known Gotchas in `CLAUDE.md`](../CLAUDE.md#known-gotchas) for the MAUI WebView quirks around Settings tab rendering (Bootstrap JS bundle requirement, lazy-render/`StateHasChanged` handling to avoid concurrent `DbContext` access).
 
 ---
 
-## Navigation Menu System
+## Reports Pipeline
 
-The main navigation menu is modular and extensible. Each module defines its own menu items, which appear in the application's main navigation bar. Settings always appears as the final menu item.
+`IReportProvider` → `ReportData` (rows/columns/sections/subtotals) → `ReportViewer.razor` (modal "Generating…", synchronous; cancel appears after 5s) → `PdfReportRenderer` (QuestPDF) or `CsvReportExporter` (CsvHelper). All ten current reports follow this single pipeline:
 
-### Menu Architecture
+`IncomeStatement`, `TrialBalance`, `AccountRegister`, `MemberAccountSummary`, `MemberList`, `Committee`, `BalanceSheet`, `BankReconciliation`, `TaxSummary`, `GeneralLedger` — each is a class in `StageFright.Reports/Providers/` implementing `IReportProvider`, registered individually in `MauiProgram.RegisterCoreServices` and aggregated by `IReportProviderRegistry`.
 
-- **Centralized Discovery**: Menu items are auto-discovered via `IMenuItemProvider` at application startup
-- **Module Ownership**: Each module registers only its own menu items
-- **Hierarchical Support**: Menu items can have sub-items for feature grouping
-- **Visual Enhancement**: Optional icons distinguish menu items visually
-- **Dynamic Badges**: Real-time notification badges (e.g., pending count)
-- **Ordering**: Modules control their display order; Settings reserved for last
+In QuestPDF-rendered checkbox-style cells (e.g. `AttendanceRollPdfRenderer`), a checked box is a bordered `Container` with a centered "✓" glyph, never a solid filled box.
 
-### Menu Item Interface
+---
 
-```csharp
-// Application/Navigation/IMenuItemProvider.cs (published interface)
-public interface IMenuItemProvider
-{
-    string ModuleName { get; }          // e.g., "Members"
-    int DisplayOrder { get; }           // Module-level order (1, 2, 3...)
-    
-    IReadOnlyList<MenuItem> GetMenuItems();
-}
+## Finance / GL Integrity
 
-public class MenuItem
-{
-    public string Title { get; set; }              // "Members", "Upcoming Events"
-    public string Route { get; set; }             // "/members", "/events/upcoming"
-    public string Icon { get; set; }              // Optional: "users", "calendar"
-    public int DisplayOrder { get; set; }         // Item order within module
-    public List<MenuItem> SubItems { get; set; }  // Optional sub-menu
-    public string BadgeText { get; set; }         // Optional: "5", "3"
-    public bool IsActive { get; set; }            // Computed: is current page?
-}
-```
-
-### Module Menu Implementation Example
+Every fee or payment write wraps fee creation + paired GL debit/credit + balance assertion in one `DbContext` transaction via `IUnitOfWork.ExecuteInTransactionAsync`. `GLBalanceException` is thrown and the transaction rolled back if Σdebits ≠ Σcredits:
 
 ```csharp
-// Features/Members/UI/MembersMenuItemProvider.cs
-public class MembersMenuItemProvider : IMenuItemProvider
+public async Task ExecuteInTransactionAsync(Func<CancellationToken, Task> operation, CancellationToken ct = default)
 {
-    private readonly IMemberService _memberService;
-    
-    public string ModuleName => "Members";
-    public int DisplayOrder => 1;  // First module in menu
-    
-    public MembersMenuItemProvider(IMemberService memberService)
+    IDbContextTransaction? tx = null;
+    try
     {
-        _memberService = memberService;
+        tx = await _db.Database.BeginTransactionAsync(ct);
+        await operation(ct);
+        await tx.CommitAsync(ct);
     }
-    
-    public IReadOnlyList<MenuItem> GetMenuItems()
+    catch (GLBalanceException)
     {
-        // Compute badge text dynamically
-        var pendingCount = _memberService.GetPendingApprovalCountAsync().Result;
-        var pendingBadge = pendingCount > 0 ? pendingCount.ToString() : null;
-        
-        return new List<MenuItem>
-        {
-            new()
-            {
-                Title = "Members",
-                Route = "/members",
-                Icon = "users",
-                DisplayOrder = 1,
-                SubItems = new List<MenuItem>
-                {
-                    new() 
-                    { 
-                        Title = "Active Members", 
-                        Route = "/members/list", 
-                        DisplayOrder = 1 
-                    },
-                    new() 
-                    { 
-                        Title = "Pending Approval", 
-                        Route = "/members/pending", 
-                        BadgeText = pendingBadge,
-                        DisplayOrder = 2 
-                    },
-                    new() 
-                    { 
-                        Title = "Add Member", 
-                        Route = "/members/new", 
-                        DisplayOrder = 3 
-                    }
-                }
-            }
-        };
+        if (tx is not null) await SafeRollbackAsync(tx);
+        throw;
     }
-}
-
-// Features/Events/UI/EventsMenuItemProvider.cs
-public class EventsMenuItemProvider : IMenuItemProvider
-{
-    public string ModuleName => "Events";
-    public int DisplayOrder => 2;  // Second module in menu
-    
-    public IReadOnlyList<MenuItem> GetMenuItems()
-    {
-        return new List<MenuItem>
-        {
-            new()
-            {
-                Title = "Events",
-                Route = "/events",
-                Icon = "calendar",
-                DisplayOrder = 1,
-                SubItems = new List<MenuItem>
-                {
-                    new() { Title = "Upcoming", Route = "/events/upcoming", DisplayOrder = 1 },
-                    new() { Title = "Past", Route = "/events/past", DisplayOrder = 2 },
-                    new() { Title = "Create Event", Route = "/events/new", DisplayOrder = 3 }
-                }
-            }
-        };
-    }
+    // ... other exception translation, see UnitOfWork.cs
 }
 ```
 
-### Menu Registration
+GL is the authoritative source for member balances: `outstanding = Σ(debits) − Σ(credits)` per member. When summing financial amounts, only sum **payment-related** credit entries, not all GL credit entries, to avoid double-counting in double-entry accounting.
 
-Register in module's DependencyInjection:
+Financial records (`Fee`, `Payment`, `Transaction`) are **immutable and never deleted** — corrections use GL reversing pairs, not edits or deletes.
+
+---
+
+## Data Model
+
+**20 entities** in `StageFright.Core/Entities/`: `Member`, `CommitteeTerm`, `CommitteePositionRecord`, `CommitteeOfficeHolderType`, `AnnualGeneralMeeting`, `AgmAttendanceRecord`, `Rehearsal`, `AttendanceRecord`, `Event`, `EventType`, `ParticipationRecord`, `Account`, `Fee`, `Payment`, `Transaction`, `JournalEntry`, `BankReconciliation`, `ReconciliationLine`, `Settings`, `AuditTrailEntry`.
+
+- All primary keys are `Guid`, e.g.:
 
 ```csharp
-// Features/Members/DependencyInjection.cs
-public static IServiceCollection AddMembersModule(this IServiceCollection services)
+public class Member
 {
-    services.AddScoped<IMemberService, MemberService>();
-    services.AddScoped<IMembersMenuItemProvider, MembersMenuItemProvider>();
-    
-    // Register with menu system
-    services.AddScoped<IMenuItemProvider>(sp => 
-        sp.GetRequiredService<IMembersMenuItemProvider>());
-    
-    return services;
-}
+    public Guid Id { get; set; }
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string FullName => $"{FirstName} {LastName}".Trim();          // computed, not mapped
+    public MemberStatus Status { get; set; } = MemberStatus.Active;
 
-// Program.cs - Auto-discover all IMenuItemProvider implementations
-builder.Services.Scan(scan => scan
-    .FromAssemblies(typeof(Program).Assembly)
-    .AddClasses(classes => classes.AssignableTo(typeof(IMenuItemProvider)))
-    .AsImplementedInterfaces()
-    .WithScopedLifetime());
-```
+    // Soft-delete
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
+    public string? DeletedBy { get; set; }
 
-### Menu Rendering Order
-
-The application renders menu items in this order:
-
-```
-1. Dashboard (core, always first)
-2. Members (DisplayOrder: 1)
-3. Events (DisplayOrder: 2)
-4. Finances (DisplayOrder: 3)
-... [other modules by DisplayOrder] ...
-N. Settings (core, always last)
-```
-
-Sub-items within each module are ordered by their `DisplayOrder`.
-
-### Main Navigation Component
-
-```razor
-@* App/Layout/MainLayout.razor *@
-@using StageFright.Application.Navigation
-@inject IEnumerable<IMenuItemProvider> MenuProviders
-
-<nav class="main-navigation">
-    <div class="nav-brand">
-        <span>StageFright</span>
-    </div>
-    
-    <ul class="nav-menu">
-        @* Dashboard always first *@
-        <li class="nav-item">
-            <a href="/dashboard" class="nav-link">
-                <i class="icon icon-home"></i>
-                <span>Dashboard</span>
-            </a>
-        </li>
-        
-        @* Module menu items sorted by DisplayOrder *@
-        @foreach (var provider in MenuProviders
-            .OrderBy(p => p.DisplayOrder))
-        {
-            @foreach (var item in provider.GetMenuItems()
-                .OrderBy(m => m.DisplayOrder))
-            {
-                <li class="nav-item">
-                    <a href="@item.Route" 
-                       class="nav-link @(item.IsActive ? "active" : "")"
-                       title="@item.Title">
-                        @if (!string.IsNullOrEmpty(item.Icon))
-                        {
-                            <i class="icon icon-@item.Icon"></i>
-                        }
-                        <span>@item.Title</span>
-                        @if (!string.IsNullOrEmpty(item.BadgeText))
-                        {
-                            <span class="badge">@item.BadgeText</span>
-                        }
-                    </a>
-                    
-                    @* Sub-menu items *@
-                    @if (item.SubItems?.Count > 0)
-                    {
-                        <ul class="nav-submenu">
-                            @foreach (var sub in item.SubItems
-                                .OrderBy(s => s.DisplayOrder))
-                            {
-                                <li class="nav-subitem">
-                                    <a href="@sub.Route" 
-                                       class="nav-sublink @(sub.IsActive ? "active" : "")"
-                                       title="@sub.Title">
-                                        @sub.Title
-                                        @if (!string.IsNullOrEmpty(sub.BadgeText))
-                                        {
-                                            <span class="badge">@sub.BadgeText</span>
-                                        }
-                                    </a>
-                                </li>
-                            }
-                        </ul>
-                    }
-                </li>
-            }
-        }
-        
-        @* Settings always last *@
-        <li class="nav-item nav-settings">
-            <a href="/settings" class="nav-link">
-                <i class="icon icon-cog"></i>
-                <span>Settings</span>
-            </a>
-        </li>
-    </ul>
-</nav>
-
-@code {
-    protected override void OnInitialized()
-    {
-        // Update IsActive flag for all items based on current route
-        foreach (var provider in MenuProviders)
-        {
-            UpdateMenuItemStates(provider.GetMenuItems());
-        }
-    }
-    
-    private void UpdateMenuItemStates(IReadOnlyList<MenuItem> items)
-    {
-        // Compare item routes with current route and set IsActive
-        // Implementation depends on routing context
-    }
+    // Audit
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 }
 ```
 
-### Menu Item Guidelines
+- All entities carry `CreatedAt`; most carry `UpdatedAt`.
+- **Soft-delete** (`IsDeleted`, `DeletedAt`, `DeletedBy`) is present on every entity *except* `Fee`, `Payment`, `Transaction` (financial exemption), `JournalEntry` (immutable GL header, same exemption), `AuditTrailEntry` (governed by retention purge instead), `ReconciliationLine`, and `CommitteeTerm` — see each entity's doc-comment for its specific rationale.
+- `AttendanceRecord` carries soft-delete fields but they are never set by any MVP workflow — records are permanently immutable once saved.
+- **13 enums** in `StageFright.Core/Enums/`: `AccountType`, `AuditAction`, `FeeType`, `JournalEntryType`, `MemberStatus`, `PaymentMethod`, `PaymentType`, `PlatformThemePreference`, `ReconciliationStatus`, `ReportColumnAlignment`, `ReportFilterType`, `TaxCode`, `Theme`. (`CategoryType`/`Category` no longer exist — fully replaced by `Account`/`AccountType`, see the `ConvertCategoriesToAccounts` migration.)
 
-**Icon Usage**:
-- Use common, recognizable icons (e.g., "users", "calendar", "dollar-sign")
-- Icons are optional but recommended for visual distinction
-- See [UI_COMPONENT_STYLE_GUIDE.md](#icon-library) for complete icon reference
+---
 
-**Badge Usage**:
-- Badges display dynamic counts (e.g., "5" pending items)
-- Compute badge values dynamically; never hardcode
-- Clear badges when count reaches zero
+## Exception Hierarchy & Boundary Translation
 
-**Sub-menu Depth**:
-- Limit to 2 levels: menu item → sub-items
-- Avoid deeply nested menus; prioritize flat hierarchy
-- Group related features under one parent item
+Custom exceptions live in `StageFright.Core/Exceptions/`: `ConcurrencyException`, `DataAccessException`, `DataIntegrityException`, `DuplicateEntityException`, `EntityNotFoundException`, `GLBalanceException`, `ImportException`, `PluginLoadException`, `ReconciliationException`, `ValidationException`. Raw framework exceptions (`DbException`, `DbUpdateException`, `IOException`, etc.) are caught and re-thrown as one of these before crossing a layer boundary — see the `BaseRepository<TEntity>` example above, and `PluginLoader`'s `PluginLoadException` wrapping.
 
-**Route Isolation**:
-- Each module owns its route prefix (e.g., `/members/*`, `/events/*`)
-- Avoid route conflicts between modules
-- Use route parameters for entity IDs (e.g., `/members/edit/123`)
+---
 
-**Menu Isolation Rules**:
-- Modules MUST NOT depend on menu items from other modules
-- Menu contributions MUST be independent
-- Do NOT modify or remove menu items from other modules
-- Settings menu is reserved; modules cannot add items after Settings
+## Data Grid, List Box, and Toggle Standards
+
+- **Data grids**: every tabular view uses `RadzenDataGrid<TItem>` (never a plain `<table>`), following `MemberList.razor` as the reference: `AllowSorting="true" AllowPaging="true" PageSize="15" class="rz-shadow-0"`. `ReportViewer.razor` is the one exception — its dynamic columns and subtotal rows don't fit RadzenDataGrid's typed-column model, so it hand-rolls paging (also fixed at page size 15).
+- **List boxes**: every bordered list box (queued items, role lists, read-only summaries) uses `BorderedListBox<TItem>` (`StageFright.UI/Shared/BorderedListBox.razor`) — takes `Items`, a `RowTemplate`, an optional `OnRemove` (unset → read-only), and `EmptyText`. See the Setup Wizard's Chart of Accounts, Committee, and Review tabs.
+- **Toggles**: every on/off toggle uses `<RadzenSwitch>` (`@bind-Value` + `Change` callback, not `@bind:after`) — see the shell's own light/dark toggle above, or the Members List "show inactive" switch. `RadzenSwitch` renders no native `onchange`-wired `<input>`; drive it in bUnit via `cut.Find("[role=switch]").Click()` and assert `aria-checked`. The Setup Wizard's theme control (a Light/Dark `<select>`, FR-022 of spec 017) is a deliberate, documented exception — not a new default.
+
+---
+
+## Key Rules (non-negotiable)
+
+- **One class per file.** Every class, interface, record, struct, or enum lives in its own file named exactly after the type. Private nested types are the only exception. Any PR with multiple public types in one file is rejected in review.
+- **Simple over clever.** Prefer the simplest approach; keep code easily readable.
+- **Blazor components are always paired.** Every `.razor` file has a `.razor.cs` code-behind — `@code { }` blocks in `.razor` files are prohibited. A `.razor.css` isolation file is added only when styles are genuinely scoped to that component; most CSS lives in `StageFright.App/wwwroot/app.css`.
+- **No custom JavaScript.** All business logic and UI interaction is C#/Blazor. JavaScript bundled with a pre-written control/NuGet package (Radzen, Blazor.Bootstrap) is permitted; hand-written `.js` files and JS interop for business logic are not.
+- **Custom exceptions at every boundary** (see above).
+- **Exhaustive code-path test coverage.** Success, validation failure, exception, and boundary/null paths are all tested before merge. Tests follow `Should_[ExpectedBehavior]_When_[Condition]`; integration tests use the `_Integration` suffix.
+- **Soft-delete everywhere except finance** (see [Data Model](#data-model)).
+
+---
+
+## Testing Strategy
+
+Test frameworks: **xUnit v3** (`xunit.v3`), **bUnit** for Blazor components, **NSubstitute** for mocking (not Moq — there is no Moq package reference in the solution).
+
+### Unit tests (single layer, mocked dependencies)
+
+```csharp
+[Fact]
+public async Task Should_ReturnActiveMembersOnly_When_GetActiveMembersAsync_Called()
+{
+    var repository = Substitute.For<IMemberRepository>();
+    repository.GetAllAsync(Arg.Any<CancellationToken>())
+        .Returns(new List<Member> { new() { Id = Guid.NewGuid(), Status = MemberStatus.Active } });
+
+    var service = new MemberService(repository, /* other deps */);
+
+    var result = await service.GetActiveMembersAsync(TestContext.Current.CancellationToken);
+
+    Assert.Single(result);
+}
+```
+
+Note: NSubstitute's `Arg.Is<T>(x => ...)` predicate lambdas make the lambda parameter nullable-oblivious under `#nullable enable` — this is expected; append `!` at the flagged expression per the codebase convention (see `CLAUDE.md`'s Known Gotchas) rather than restructuring the assertion.
+
+### Integration tests (`StageFright.Data.Tests`, `_Integration` suffix)
+
+Use a real `StageFrightDbContext` against a SQLite connection (in-memory or file-backed), not EF Core's `UseInMemoryDatabase` provider — SQLite-specific behavior (transactions, unique constraints) must be exercised for real.
+
+### UI/component tests (bUnit, `StageFright.UI.Tests`)
+
+```csharp
+[Fact]
+public void Should_DisplayMembersList_When_MembersProvided()
+{
+    var service = Substitute.For<IMemberService>();
+    service.GetActiveMembersAsync(Arg.Any<CancellationToken>())
+        .Returns(new List<Member> { new() { FirstName = "John", LastName = "Doe" } });
+
+    using var ctx = new TestContext();
+    ctx.Services.AddSingleton(service);
+    var cut = ctx.RenderComponent<MemberList>();
+
+    Assert.Contains("John", cut.Markup);
+}
+```
+
+See `CLAUDE.md`'s Known Gotchas for the nested-`<EditForm>` bUnit limitation and the flaky "fee"-substring test note.
 
 ---
 
 ## Best Practices
 
 ### ✅ DO
-
-- Keep modules focused on a single business capability
-- Use dependency injection for all service dependencies
-- Create interfaces for all public services
-- Translate exceptions at layer boundaries
-- Write tests for all business logic
-- Use value objects for complex data
-- Isolate modules; communicate through interfaces only
-- Document public module interfaces
+- Keep module services focused on a single business capability
+- Inject repositories/services via constructor DI (interfaces from `StageFright.Core/Contracts/`)
+- Translate exceptions at every layer boundary
+- Write tests covering every reachable code path
+- Communicate cross-module only through published interfaces
 
 ### ❌ DON'T
-
-- Import Infrastructure layer from other modules
-- Create circular dependencies
-- Use static state or service locators
-- Mix business logic into UI or Infrastructure
-- Hardcode configuration or sensitive data
-- Create god objects (too many responsibilities)
-- Forget to mock external dependencies in tests
+- Import another module's concrete service class directly
+- Reach into `StageFright.Data` repositories from `StageFright.UI` — always go through a `StageFright.Core` service
+- Put business logic in `.razor` markup or code-behind beyond orchestration/validation-display
+- Hardcode configuration or use magic strings where an enum/constant exists
+- Add a hand-written `.js` file for anything business-logic-related
 
 ---
 
-## Example: Adding a New Module
+## Adding a New Module
 
-### 1. Create Folder Structure
-
-```bash
-mkdir -p src/Features/RehearsalScheduling/{Domain,Application,Infrastructure,UI,Tests}
-```
-
-### 2. Create Domain Layer
-
-```csharp
-// Domain/Entities/Rehearsal.cs
-public class Rehearsal
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public DateTime ScheduledDate { get; set; }
-    public TimeSpan Duration { get; set; }
-    
-    public void Reschedule(DateTime newDate)
-    {
-        if (newDate <= DateTime.Now) throw new ArgumentException("Date must be in future");
-        ScheduledDate = newDate;
-    }
-}
-
-// Domain/IRehearsalRepository.cs
-public interface IRehearsalRepository
-{
-    Task<Rehearsal> AddAsync(Rehearsal rehearsal);
-    Task<List<Rehearsal>> GetUpcomingAsync();
-}
-```
-
-### 3. Create Application Layer
-
-```csharp
-// Application/Services/IRehearsalService.cs
-public interface IRehearsalService
-{
-    Task<RehearsalDto> CreateRehearsalAsync(CreateRehearsalRequest request);
-    Task<List<RehearsalDto>> GetUpcomingRehearalsAsync();
-}
-
-// Application/Services/RehearsalService.cs
-public class RehearsalService : IRehearsalService
-{
-    private readonly IRehearsalRepository _repository;
-    
-    public RehearsalService(IRehearsalRepository repository)
-    {
-        _repository = repository;
-    }
-    
-    public async Task<RehearsalDto> CreateRehearsalAsync(CreateRehearsalRequest request)
-    {
-        var rehearsal = new Rehearsal 
-        { 
-            Name = request.Name,
-            ScheduledDate = request.ScheduledDate,
-            Duration = request.Duration
-        };
-        
-        await _repository.AddAsync(rehearsal);
-        
-        return new RehearsalDto
-        {
-            Id = rehearsal.Id,
-            Name = rehearsal.Name,
-            ScheduledDate = rehearsal.ScheduledDate
-        };
-    }
-}
-```
-
-### 4. Create Infrastructure Layer
-
-```csharp
-// Infrastructure/Repositories/RehearsalRepository.cs
-public class RehearsalRepository : IRehearsalRepository
-{
-    private readonly ApplicationDbContext _context;
-    
-    public async Task<Rehearsal> AddAsync(Rehearsal rehearsal)
-    {
-        _context.Rehearsals.Add(rehearsal);
-        await _context.SaveChangesAsync();
-        return rehearsal;
-    }
-}
-```
-
-### 5. Create UI Layer
-
-```razor
-@* UI/Pages/RehearalsPage.razor *@
-@page "/rehearsals"
-@inject IRehearsalService RehearsalService
-
-<PageHeader Title="Rehearsals" />
-
-@foreach (var rehearsal in rehearsals ?? new())
-{
-    <RehearsalCard Rehearsal="rehearsal" />
-}
-
-@code {
-    private List<RehearsalDto> rehearsals;
-    
-    protected override async Task OnInitializedAsync()
-    {
-        rehearsals = await RehearsalService.GetUpcomingRehearalsAsync();
-    }
-}
-```
-
-### 6. Create DashboardTile
-
-```csharp
-// DashboardTile.cs
-public class RehearsalsDashboardTile : IDashboardTile
-{
-    public string Title => "Upcoming Rehearsals";
-    public int Order => 2;
-    
-    // ... implementation
-}
-```
-
-### 7. Register Module
-
-```csharp
-// DependencyInjection.cs
-public static IServiceCollection AddRehearsalSchedulingModule(this IServiceCollection services)
-{
-    services.AddScoped<IRehearsalService, RehearsalService>();
-    services.AddScoped<IRehearsalRepository, RehearsalRepository>();
-    return services;
-}
-
-// Program.cs
-builder.Services.AddRehearsalSchedulingModule();
-```
+1. **Entities** (if any new ones): `StageFright.Core/Entities/<Entity>.cs`, one type per file.
+2. **Enums** (if the concept is shared/foundational): `StageFright.Core/Enums/<Enum>.cs`.
+3. **Contracts**: `StageFright.Core/Contracts/I<Service>.cs`, `I<Entity>Repository.cs`.
+4. **Repository**: `StageFright.Data/Repositories/<Entity>Repository.cs`, deriving from `BaseRepository<TEntity>` or `SoftDeletableBaseRepository<TEntity>` where possible.
+5. **EF Core mapping/migration**: add configuration under `StageFright.Data/Configurations/` if needed, then `dotnet ef migrations add <Name> --project src/StageFright.Data/ --startup-project src/StageFright.App/`.
+6. **Module service(s)**: `StageFright.Core/Modules/<ModuleName>/<Service>.cs`, implementing the contract, using injected repositories/other services only.
+7. **Menu item provider**: `StageFright.Core/Modules/<ModuleName>/<ModuleName>MenuItemProvider.cs` implementing `IMenuItemProvider`.
+8. **UI**: paired `.razor`/`.razor.cs` pages under `StageFright.UI/Pages/<ModuleName>/`, and any dashboard tile under `StageFright.UI/Modules/<ModuleName>/`.
+9. **Register everything** explicitly in `MauiProgram.RegisterRepositories`/`RegisterCoreServices` — there is no auto-discovery for core (non-plugin) types.
+10. **Tests**: unit tests for the service (`StageFright.Core.Tests`), repository integration tests (`StageFright.Data.Tests`), component tests (`StageFright.UI.Tests`) covering every reachable path.
 
 ---
 
 ## Summary
 
-The Vertical Slice Architecture provides:
+The layered-with-module-slices architecture provides:
 
-- **Modularity** — Each feature is independent
-- **Clarity** — Clear ownership and responsibility
-- **Testability** — Isolated testing at each layer
-- **Scalability** — New features added as new modules
-- **Maintainability** — Changes localized to one module
-
-Follow the pattern, respect module boundaries, and use published interfaces for communication.
-
----
+- **Clarity** — one project per layer, one folder per business capability within Core
+- **Testability** — services, repositories, and components are all independently testable
+- **Extensibility** — the five plugin-contract interfaces let external assemblies add tiles, settings tabs, menu items, reports, and schema without touching core code
+- **Consistency** — RadzenDataGrid, BorderedListBox, and RadzenSwitch as the single UI idiom per concern, and one report pipeline for every report
 
 For more details, see:
-- [Contributing Guide](../CONTRIBUTING.md)
+- [Setup Guide](SETUP.md)
 - [UI Component Style Guide](UI_COMPONENT_STYLE_GUIDE.md)
-- [Constitution](..\.specify\memory\constitution.md)
+- [XML Documentation Standards](XML-DOCUMENTATION-STANDARDS.md)
+- [Contributing Guide](../CONTRIBUTING.md)
+- [Constitution](../.specify/memory/constitution.md)

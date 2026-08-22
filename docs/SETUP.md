@@ -1,61 +1,62 @@
-# StageFright Community MVP — Project Setup Guide
+# StageFright Community — Project Setup Guide
 
 ## Overview
 
-StageFright Community is a desktop application built with .NET MAUI and Blazor, designed to streamline operations for small performing arts groups. This guide provides comprehensive setup instructions for developers.
+StageFright Community is a desktop application built with .NET MAUI and Blazor Hybrid, designed to streamline operations for small performing arts groups (member management, rehearsal/event attendance, double-entry finance, reporting). This guide covers developer setup. For how the solution is structured internally, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## System Requirements
 
 ### Minimum Requirements
-- **OS**: Windows 10.0.19041.0 or later, or macOS 10.15+ (Mac Catalyst)
-- **.NET**: .NET 10.0 SDK or later
-- **IDE**: Visual Studio 2022 or Visual Studio Code with C# Extensions
-- **Database**: SQLite (included with EF Core)
+- **OS**: Windows 10, build 19041 (10.0.19041.0) or later, or macOS (Mac Catalyst)
+- **.NET**: .NET 10.0 SDK, with the MAUI workload installed (`dotnet workload install maui`)
+- **IDE**: Visual Studio 2022 (17.14+) or Visual Studio Code with the C# Dev Kit
+- **Database**: SQLite (bundled via `Microsoft.EntityFrameworkCore.Sqlite`) — no separate install needed
 
 ### Recommended
-- Visual Studio 2022 Community or Professional Edition
-- 8 GB RAM
-- SSD for faster build times
+- Visual Studio 2022 Community or Professional
+- 8 GB+ RAM, SSD for faster build times
 
 ## Project Structure
 
 ```
 StageFrightCommunity/
 ├── src/
-│   ├── StageFright.Core/          # Domain entities, enums, exceptions, services
-│   │   ├── Entities/              # Member, Rehearsal, Event, etc.
-│   │   ├── Enums/                 # MemberStatus, CategoryType, etc.
-│   │   ├── Exceptions/            # Custom exception hierarchy
-│   │   └── Services/              # Business logic services
-│   ├── StageFright.Data/          # Data access layer with EF Core
-│   │   ├── Context/               # StageFrightContext and factory
-│   │   ├── Repositories/          # Repository interfaces and implementations
-│   │   └── Migrations/            # EF Core migrations
-│   ├── StageFright.Maui/          # MAUI application shell
-│   │   ├── Platforms/             # Platform-specific code
-│   │   ├── Resources/             # Assets, fonts, images
-│   │   ├── App.xaml(.cs)          # Application root
-│   │   ├── MauiProgram.cs         # DI and logging setup
-│   │   └── appsettings.json       # Configuration
-│   ├── StageFright.UI/            # Blazor component library
-│   │   ├── Pages/                 # Feature page components
-│   │   ├── Shared/                # Shared layout and components
-│   │   └── Styles/                # Component styles
-│   ├── StageFright.Plugins/       # Plugin contracts and discovery
-│   ├── StageFright.Reports/       # Reporting infrastructure
-│   └── StageFright.Proto/         # Protocol buffer definitions
+│   ├── StageFright.App/               # MAUI Blazor Hybrid host (composition root; MauiProgram.cs)
+│   │   ├── Platforms/                 # Platform-specific startup code
+│   │   ├── Resources/                 # Icons, fonts, splash
+│   │   ├── Seeding/                   # DEBUG-only data seeder
+│   │   ├── wwwroot/                   # app.css (the app's design system), index.html
+│   │   └── MauiProgram.cs             # DI registration, startup sequence, plugin discovery
+│   ├── StageFright.Core/              # Domain entities, enums, exceptions, contracts, module services
+│   │   ├── Entities/                  # 20 entities (Member, Fee, Payment, JournalEntry, ...)
+│   │   ├── Enums/                     # MemberStatus, AccountType, PaymentMethod, ...
+│   │   ├── Exceptions/                # Custom exception hierarchy
+│   │   ├── Contracts/                 # I<Service>/I<Entity>Repository interfaces
+│   │   └── Modules/                   # Agm, AuditTrail, Dashboard, Events, Finance, Members, Rehearsals, Settings
+│   ├── StageFright.Data/              # Centralized DAL
+│   │   ├── Repositories/              # One repository per entity
+│   │   ├── Migrations/                # EF Core migrations
+│   │   ├── PluginData/                # Plugin schema merge (PluginMigrationRunner)
+│   │   └── StageFrightDbContext.cs
+│   ├── StageFright.Plugins.Contracts/ # Extension-point interfaces (leaf assembly, no deps)
+│   ├── StageFright.Reports/           # Report pipeline: Providers/, Registry/, Rendering/ (QuestPDF, CsvHelper)
+│   └── StageFright.UI/                # Razor class library — all Blazor UI
+│       ├── Pages/                     # Dashboard, Events, Finance, Members, Rehearsals, Reports, Settings, Setup
+│       ├── Modules/                   # Dashboard-tile providers per module
+│       ├── Shared/                    # BorderedListBox, ReportViewer, AddAccountForm, ...
+│       └── Layout/                    # ShellLayout (sidebar nav), ThemeProvider
 ├── tests/
-│   ├── StageFright.Core.Tests/    # Unit tests for Core layer
-│   ├── StageFright.Data.Tests/    # Data access layer tests
-│   ├── StageFright.UI.Tests/      # UI component tests
-│   └── StageFright.Integration.Tests/ # End-to-end integration tests
-├── docs/                          # Documentation
-├── specs/                         # Feature specifications
-│   └── 001-initial-mvp/
-│       ├── spec.md               # Feature specification
-│       ├── plan.md               # Implementation plan
-│       └── tasks.md              # Task breakdown
-└── StageFright.slnx              # Solution file
+│   ├── StageFright.Core.Tests/        # Unit tests (xUnit v3 + NSubstitute)
+│   ├── StageFright.Data.Tests/        # SQLite-backed integration tests
+│   ├── StageFright.UI.Tests/          # bUnit component tests
+│   ├── StageFright.Integration.Tests/ # Cross-layer user-journey tests
+│   ├── StageFright.Reports.Tests/     # Report provider + PDF/CSV renderer tests
+│   └── StageFright.TestPlugin/        # Sample plugin fixture for the discovery pipeline
+├── docs/                              # This documentation set
+├── specs/                             # Spec Kit feature specs, one folder per feature (spec.md, plan.md, tasks.md, ...)
+├── .specify/                          # Spec Kit tooling + constitution.md
+├── TestData/                          # Auto-created; holds the dev SQLite database
+└── StageFrightCommunity.slnx          # Solution file
 ```
 
 ## Getting Started
@@ -67,21 +68,22 @@ git clone https://github.com/SteveTeece/StageFrightCommunity.git
 cd StageFrightCommunity
 ```
 
-### 2. Install Dependencies
-
-The project uses NuGet packages for all dependencies. Restore them with:
+### 2. Install the MAUI Workload and Restore Dependencies
 
 ```bash
+dotnet workload install maui
 dotnet restore
 ```
 
-Key dependencies:
-- **Microsoft.Maui**: Cross-platform UI framework
-- **Microsoft.AspNetCore.Components.WebView.Maui**: Blazor integration
-- **EntityFrameworkCore**: ORM for data access
-- **EntityFrameworkCore.Sqlite**: SQLite provider
-- **Serilog**: Structured logging
-- **xUnit, Moq, FluentAssertions**: Testing frameworks
+Key dependencies (versions centrally managed in `Directory.Packages.props` — see [Central Package Management](#central-package-management) below):
+- **Microsoft.Maui.Controls** / **Microsoft.AspNetCore.Components.WebView.Maui** — MAUI + Blazor Hybrid host
+- **Microsoft.EntityFrameworkCore.Sqlite** — ORM and SQLite provider
+- **Radzen.Blazor** — data grids, switches, and most interactive controls
+- **Blazor.Bootstrap** — tabs, sortable lists, theme-switcher JS assets
+- **QuestPDF** — PDF report rendering; **CsvHelper** — CSV export
+- **Serilog** (+ Console/File sinks) — structured logging
+- **OpenTelemetry** — tracing and runtime metrics (console exporter)
+- **xunit.v3**, **bunit**, **NSubstitute** — testing (there is no Moq reference — use NSubstitute for all mocking)
 
 ### 3. Build the Solution
 
@@ -89,194 +91,127 @@ Key dependencies:
 dotnet build
 ```
 
-To build for Release:
+Release configuration:
 
 ```bash
 dotnet build --configuration Release
 ```
 
+> **Always judge warning counts from a full rebuild** (`dotnet build -t:Rebuild`, or delete `bin`/`obj` first) — an incremental build after a small change only recompiles touched files and can look artificially clean.
+
 ### 4. Run Tests
 
-Run all tests:
+Run everything:
 
 ```bash
 dotnet test
 ```
 
-Run specific test project:
+Run a specific project:
 
 ```bash
 dotnet test tests/StageFright.Core.Tests/
 dotnet test tests/StageFright.Data.Tests/
 dotnet test tests/StageFright.UI.Tests/
 dotnet test tests/StageFright.Integration.Tests/
+dotnet test tests/StageFright.Reports.Tests/
 ```
 
-Run with code coverage:
+Run a single test by name filter:
 
 ```bash
-dotnet test /p:CollectCoverage=true /p:CoverletOutput=./coverage/ /p:CoverletOutputFormat=opencover
+dotnet test --filter "FullyQualifiedName~MemberServiceTests"
 ```
+
+**Always run without `--no-build`** when verifying a change is complete — `dotnet build`/`dotnet test` only report warnings for files actually recompiled in that pass.
 
 ### 5. Run the Application
 
-To run the MAUI application:
-
 ```bash
-dotnet run --project src/StageFright.Maui/
+dotnet run --project src/StageFright.App/
 ```
 
-The application will launch with a Blazor web view embedded in a MAUI container.
+The database auto-migrates on first run, and first-run detection redirects the UI to the `/setup` wizard before the dashboard loads.
 
 ## Database Setup
 
-### Initial Migration
+There is no `appsettings.json` connection-string configuration — the database path and log path are computed in code at startup (`MauiProgram.cs`):
 
-The database schema is managed through EF Core migrations. The initial migration (`20260520001_InitialSchema`) creates all tables and relationships.
+- **Database file**: `<repo-root>/TestData/stagefright.db`, auto-created on first run. The repo root is found by walking up from the executable directory until a `*.slnx` file or a `.git` folder is found.
+- **Logs**: rolling daily files (`stagefright-YYYYMMDD.log`, 7-day retention) under `FileSystem.AppDataDirectory/logs/` — the MAUI app-data directory, **not** the repo.
+- **Plugins**: loaded from `FileSystem.AppDataDirectory/Plugins/`, auto-created if missing.
 
-#### Apply Migrations
+### Apply / Create / Remove Migrations
 
-The first run of the application will automatically apply pending migrations. To manually apply migrations:
-
-```bash
-dotnet ef database update --project src/StageFright.Data/ --startup-project src/StageFright.Maui/
-```
-
-#### Create a New Migration
-
-When you modify entities, create a new migration:
+The startup-project for `dotnet ef` is always the MAUI app project:
 
 ```bash
-dotnet ef migrations add MigrationName --project src/StageFright.Data/ --startup-project src/StageFright.Maui/
+# Apply pending migrations
+dotnet ef database update --project src/StageFright.Data/ --startup-project src/StageFright.App/
+
+# Add a new migration after changing entities/configurations
+dotnet ef migrations add <Name> --project src/StageFright.Data/ --startup-project src/StageFright.App/
+
+# Remove the last (unapplied) migration
+dotnet ef migrations remove --project src/StageFright.Data/ --startup-project src/StageFright.App/
 ```
 
-#### Remove Last Migration
+The application also applies pending migrations automatically on startup — see `MauiProgram.RunStartupSequence`. If migration fails because the database file is corrupted or inaccessible, the app shows the `StartupError` recovery page instead of crashing.
 
-```bash
-dotnet ef migrations remove --project src/StageFright.Data/ --startup-project src/StageFright.Maui/
-```
+### Reset the Database
 
-### Database File Location
+1. Close the application.
+2. Delete `TestData/stagefright.db`.
+3. Run the app again (or `dotnet ef database update`) — the schema and first-run `/setup` wizard both come back clean.
 
-By default, the SQLite database is created at:
-- **Windows/MAUI**: `stagefright.db` in the application working directory
-- **Connection String**: Configured in `src/StageFright.Maui/appsettings.json`
+## Central Package Management
 
-To use a different database location, update the connection string:
+NuGet package versions are centrally managed via the root `Directory.Packages.props` (`ManagePackageVersionsCentrally`). When adding a new package reference:
 
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Data Source=C:\\path\\to\\stagefright.db"
-  }
-}
-```
+1. Add `<PackageReference Include="..." />` (**no** `Version` attribute) to the `.csproj`.
+2. Add the matching `<PackageVersion Include="..." Version="..." />` entry to `Directory.Packages.props`.
 
-## Configuration
-
-### Application Settings
-
-Edit `src/StageFright.Maui/appsettings.json` to configure:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Data Source=stagefright.db"
-  },
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft": "Warning"
-    }
-  },
-  "Serilog": {
-    "MinimumLevel": "Information"
-  }
-}
-```
-
-### Logging
-
-Logs are configured using Serilog and output to:
-- **Console**: Development debugging
-- **File**: `logs/stagefright-YYYYMMDD.txt` (rolling daily)
-
-Log levels:
-- `Debug`: Detailed diagnostic information
-- `Information`: General application flow
-- `Warning`: Potentially problematic situations
-- `Error`: Error events with potential recovery
-- `Fatal`: Critical failures requiring immediate attention
+Never pin a version directly in a `.csproj`.
 
 ## Development Workflow
 
+### Feature Development with Spec Kit
+
+Every non-trivial feature starts with a specification under `specs/<NNN-feature-name>/` (`spec.md`, `plan.md`, `tasks.md`, plus `data-model.md`/`contracts/`/`research.md` as needed), using the Spec Kit slash commands (`/speckit.specify`, `/speckit.clarify`, `/speckit.plan`, `/speckit.tasks`, `/speckit.implement`). Branches follow `NNN-descriptive-name` (e.g. `017-setup-wizard-tabs`). **When a code change touches behavior a spec doc describes, update that doc in the same task** — including small, presentation-only tweaks.
+
 ### Local Development
 
-1. **Create a feature branch**: `git checkout -b feature/your-feature`
-2. **Make changes** to entities, services, or UI
-3. **Run tests** to verify: `dotnet test`
-4. **Commit changes**: `git commit -m "feat: description"`
-5. **Push and create PR**: GitHub will run CI/CD checks
+1. Create a feature branch from `dev` (not `master`).
+2. Make changes, following [ARCHITECTURE.md](ARCHITECTURE.md) and the [UI Component Style Guide](UI_COMPONENT_STYLE_GUIDE.md).
+3. Run `dotnet build` and the full `dotnet test` suite (without `--no-build`) and confirm both are green before considering the task complete.
+4. Commit with a message matching the existing `git log` style.
+5. Push and open a PR **against `dev`** — PRs targeting `master` are rejected by convention (see [CONTRIBUTING.md](../CONTRIBUTING.md#pull-request-process)).
 
-### Adding New Features
+### Adding a New Module
 
-When adding new features:
-
-1. **Create/modify entities** in `src/StageFright.Core/Entities/`
-2. **Create migrations**: `dotnet ef migrations add FeatureName`
-3. **Implement repositories** in `src/StageFright.Data/Repositories/`
-4. **Add services** in `src/StageFright.Core/Services/` for business logic
-5. **Create UI components** in `src/StageFright.UI/Pages/`
-6. **Write tests** in appropriate test projects
-7. **Update documentation** in `docs/` and `specs/`
+See [ARCHITECTURE.md § Adding a New Module](ARCHITECTURE.md#adding-a-new-module) for the concrete file-by-file walkthrough (entity → contract → repository → migration → module service → menu provider → UI → manual DI registration → tests).
 
 ### Code Style
 
-The project follows C# coding standards:
-- Use PascalCase for class and method names
-- Use camelCase for local variables and parameters
-- Include XML documentation for public types and methods
-- Follow SOLID principles
-- Use async/await for I/O operations
-
-Example:
-
-```csharp
-/// <summary>
-/// Gets a member by their ID.
-/// </summary>
-/// <param name="id">The member ID.</param>
-/// <returns>The member if found; otherwise null.</returns>
-public async Task<Member?> GetMemberAsync(int id)
-{
-    return await _context.Members.FindAsync(id);
-}
-```
+- PascalCase for types/methods, camelCase for locals/parameters.
+- XML documentation (`///`) is **mandatory** for public types, methods, properties, and enum values — see [XML-DOCUMENTATION-STANDARDS.md](XML-DOCUMENTATION-STANDARDS.md).
+- One class/interface/record/struct/enum per file, file name matching the type exactly.
+- Async/await for all I/O.
 
 ## Continuous Integration
 
 ### GitHub Actions
 
-The project uses GitHub Actions for CI/CD. The workflow file `.github/workflows/ci.yml`:
+`.github/workflows/ci.yml` runs on `windows-latest`:
 
-1. **Restores** NuGet packages
-2. **Builds** the solution in Release configuration
-3. **Runs** all test projects
-4. **Uploads** test results as artifacts
+1. Sets up .NET 10 and installs the MAUI workload.
+2. `dotnet restore StageFrightCommunity.slnx -r win-x64`.
+3. `dotnet build StageFrightCommunity.slnx --configuration Release`.
+4. Runs each test project separately (Core, Data, Reports, UI, Integration), each emitting a `.trx` result file into `TestResults/`.
 
-Workflows run automatically on:
-- Push to `master`, `main`, or `dev` branches
-- Pull requests to these branches
+Triggers: push to `master`, `main`, `dev`, or `001-initial-mvp`; pull requests targeting `master`, `main`, or `dev`.
 
-> All pull requests must target `dev`, not `master`. PRs opened against `master` will be rejected — see [CONTRIBUTING.md](../CONTRIBUTING.md#pull-request-process).
-
-### Running Workflows Locally
-
-Test the workflow locally with act:
-
-```bash
-act -j build-and-test
-```
+> All pull requests must target `dev`, not `master`. PRs opened against `master` are rejected — see [CONTRIBUTING.md](../CONTRIBUTING.md#pull-request-process).
 
 ## Common Tasks
 
@@ -289,23 +224,15 @@ dotnet build
 
 ### Run with Debugging
 
-In Visual Studio:
-1. Set breakpoints in your code
-2. Press **F5** or click **Start Debugging**
-3. Use the Debug toolbar to step through code
+In Visual Studio: set breakpoints, press **F5**.
 
-From command line:
+From the command line:
+
 ```bash
-dotnet run --project src/StageFright.Maui/ --configuration Debug
+dotnet run --project src/StageFright.App/ --configuration Debug
 ```
 
-### Clear Database
-
-To reset the database to a clean state:
-
-1. Delete `stagefright.db` (or the file specified in connection string)
-2. Rebuild the project or run migrations again
-3. The database will be recreated on next run
+In `DEBUG` builds only, `IDebugDataSeeder` is registered and BlazorWebView developer tools are enabled.
 
 ### Update a Single Package
 
@@ -313,55 +240,42 @@ To reset the database to a clean state:
 dotnet add src/StageFright.Core/ package PackageName
 ```
 
-### View Dependency Tree
-
-```bash
-dotnet add src/StageFright.Core/ reference --show-resolved-version
-```
+Then add the matching `<PackageVersion>` entry to `Directory.Packages.props` (see [Central Package Management](#central-package-management)).
 
 ## Troubleshooting
 
 ### Build Fails with "Project not found"
 
-Ensure you're in the correct directory:
-```bash
-cd C:\SourceCode\StageFrightCommunity
-```
+Confirm you're at the repo root (where `StageFrightCommunity.slnx` lives) before running `dotnet build`/`dotnet run`.
 
 ### Tests Won't Run
 
-1. Ensure .NET SDK is installed: `dotnet --version`
-2. Restore packages: `dotnet restore`
-3. Build the solution: `dotnet build`
-4. Run tests: `dotnet test`
+1. `dotnet --version` — confirm the .NET 10 SDK is installed.
+2. `dotnet restore`
+3. `dotnet build`
+4. `dotnet test` (full rebuild if you need accurate warning counts too — see above)
 
 ### Database Migration Issues
 
-If migrations fail:
-
 ```bash
-# Remove last migration
-dotnet ef migrations remove --project src/StageFright.Data/
-
-# Recreate it
-dotnet ef migrations add MigrationName --project src/StageFright.Data/
-
-# Apply
-dotnet ef database update --project src/StageFright.Data/
+dotnet ef migrations remove --project src/StageFright.Data/ --startup-project src/StageFright.App/
+dotnet ef migrations add MigrationName --project src/StageFright.Data/ --startup-project src/StageFright.App/
+dotnet ef database update --project src/StageFright.Data/ --startup-project src/StageFright.App/
 ```
 
 ### MAUI Application Won't Start
 
-1. Check logs in `logs/` directory
-2. Verify `appsettings.json` exists in `src/StageFright.Maui/`
-3. Ensure database file path is writable
-4. Try: `dotnet clean && dotnet build && dotnet run`
+1. Check logs under `FileSystem.AppDataDirectory/logs/` (on Windows, typically under `%LOCALAPPDATA%\Packages\...` or the unpackaged app's local data folder, since `WindowsPackageType` is `None`).
+2. Confirm `TestData/` is writable — the database is created there relative to the repo root.
+3. Try: `dotnet clean && dotnet build && dotnet run --project src/StageFright.App/`.
+4. If the database file itself is corrupted, the app should show the `StartupError` recovery page rather than crash — check that page's message before assuming a build problem.
 
 ## Additional Resources
 
-- [ARCHITECTURE.md](./ARCHITECTURE.md) — System architecture and design patterns
-- [specs/001-initial-mvp/spec.md](./specs/001-initial-mvp/spec.md) — Feature specification
-- [specs/001-initial-mvp/plan.md](./specs/001-initial-mvp/plan.md) — Implementation plan
+- [ARCHITECTURE.md](ARCHITECTURE.md) — solution layout, module structure, extension points, data model
+- [UI_COMPONENT_STYLE_GUIDE.md](UI_COMPONENT_STYLE_GUIDE.md) — design tokens and component standards
+- [XML-DOCUMENTATION-STANDARDS.md](XML-DOCUMENTATION-STANDARDS.md) — `///` comment requirements
+- [specs/001-initial-mvp/spec.md](../specs/001-initial-mvp/spec.md) — original MVP specification
 - [.NET MAUI Documentation](https://learn.microsoft.com/en-us/dotnet/maui/)
 - [Entity Framework Core Documentation](https://learn.microsoft.com/en-us/ef/core/)
 - [Blazor Documentation](https://learn.microsoft.com/en-us/aspnet/core/blazor/)
@@ -369,23 +283,14 @@ dotnet ef database update --project src/StageFright.Data/
 ## Getting Help
 
 - Check existing [GitHub Issues](https://github.com/SteveTeece/StageFrightCommunity/issues)
-- Review [Pull Requests](https://github.com/SteveTeece/StageFrightCommunity/pulls) for similar work
-- Review documentation in `docs/` folder
-- Check log files in `logs/` directory for error details
+- Review [Pull Requests](https://github.com/SteveTeece/StageFrightCommunity/pulls) for similar prior work
+- Check log files under the MAUI app-data `logs/` directory for runtime error details
 
 ## Contributing
 
-Contributions are welcome! Please:
+1. Fork or branch from `dev`.
+2. Write tests for new behavior (every reachable code path — success, validation failure, exception, boundary).
+3. Ensure `dotnet build` and `dotnet test` are both green.
+4. Open a pull request against `dev` with a clear description.
 
-1. Fork the repository
-2. Create a feature branch
-3. Write tests for new features
-4. Ensure all tests pass
-5. Submit a pull request with a clear description
-
-For more details, see [CONTRIBUTING.md](./CONTRIBUTING.md).
-
----
-
-**Last Updated**: May 20, 2026  
-**Version**: 1.0.0
+For more details, see [CONTRIBUTING.md](../CONTRIBUTING.md).

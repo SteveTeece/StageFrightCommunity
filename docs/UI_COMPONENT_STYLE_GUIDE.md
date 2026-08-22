@@ -2,1658 +2,351 @@
 
 ## Philosophy
 
-StageFright Community embraces a **clean, simple, modern design** philosophy that prioritizes clarity, usability, and information density. Every visual element should serve a purpose; unnecessary clutter is eliminated without sacrificing accessibility or usability.
+StageFright Community's design system is **"Midnight Glass"** — a glassmorphism theme of soft gradient-orb backgrounds, frosted/blurred panels, and a condensed display typeface, defined entirely as CSS custom properties in `StageFright.App/wwwroot/app.css`. The source-of-truth mockup is `StageFright UI Options.dc.html` (repo root, palette "a").
+
+**Stack**: Bootstrap (via Blazor.Bootstrap) supplies layout/spacing utility classes (`d-flex`, `gap-2`, `mb-2`, `input-group`) and a few widgets (tabs, sortable lists); **Radzen.Blazor** supplies every interactive control that needs one (data grids, switches, most form inputs). There is no third, hand-rolled CSS framework — don't invent new utility classes when a Bootstrap one already does the job, and don't reach for a plain `<input>`/`<select>` where a Radzen or `RadzenSwitch` equivalent is the established pattern (see [Component Standards](#component-standards) below).
 
 **Key Principles:**
-- Clean and intentional design
-- Minimal but purposeful whitespace
-- Modern, professional aesthetics
-- Consistent visual language
-- Accessible to all users
-- Responsive and performant
+- One design-token source (`app.css`'s `--sf-*` custom properties) — never hardcode a color, always reference a token
+- Light and dark variants defined per `[data-bs-theme]`, toggled app-wide by `ThemeProvider`/the sidebar's `RadzenSwitch`
+- Compact, information-dense layouts using Bootstrap spacing utilities, not bespoke spacing CSS
+- Accessible: semantic roles, `aria-label`/`aria-live` on dynamic regions, keyboard-navigable sidebar
 
 ---
 
-## Color Palette
+## Design Tokens
 
-### Primary Colors
-
-```
-Primary Blue: #2563EB
-  Light: #3B82F6
-  Dark:  #1D4ED8
-  
-Secondary Gray: #6B7280
-  Light: #E5E7EB
-  Lighter: #F3F4F6
-  
-Success: #10B981
-Warning: #F59E0B
-Danger:  #EF4444
-Info:    #0EA5E9
-```
+All tokens are CSS custom properties defined once in `StageFright.App/wwwroot/app.css`, redefined per theme under `:root, [data-bs-theme="light"]` and `[data-bs-theme="dark"]`. Never hardcode a hex value in component markup or CSS — reference the token.
 
 ### Typography
 
-```
-Font Family: System font stack (Segoe UI, -apple-system, sans-serif)
-
-Heading 1: 28px, Bold (700), line-height 1.2, color #111827
-Heading 2: 24px, Bold (700), line-height 1.25, color #111827
-Heading 3: 20px, Semi-bold (600), line-height 1.3, color #111827
-
-Body:      16px, Regular (400), line-height 1.5, color #374151
-Small:     14px, Regular (400), line-height 1.43, color #6B7280
-Caption:   12px, Regular (400), line-height 1.33, color #9CA3AF
-```
-
-### Spacing Scale
-
-```
-xs: 4px
-sm: 8px
-md: 12px
-lg: 16px
-xl: 24px
-2xl: 32px
-3xl: 48px
-```
-
-All padding, margins, and gaps should use multiples of these values.
-
----
-
-## Layout Principles
-
-### Compact Grids
-
-Use tight, information-dense layouts with minimal whitespace. Default to compact spacing:
-
-```razor
-<!-- ❌ EXCESSIVE WHITESPACE -->
-<div style="padding: 40px; gap: 40px;">
-    <div>Item 1</div>
-    <div>Item 2</div>
-</div>
-
-<!-- ✅ COMPACT, INTENTIONAL SPACING -->
-<div style="padding: 16px; gap: 12px;">
-    <div>Item 1</div>
-    <div>Item 2</div>
-</div>
-```
-
-### Responsive Containers
+Display/body typeface is **Saira Semi Condensed** (bundled as `.woff2`, weights 400/500/600/700), falling back to `Segoe UI, system-ui, sans-serif`:
 
 ```css
-.page-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 16px;
-}
-
-.grid-layout {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 12px;
-}
-
-.card {
-    background: white;
-    border: 1px solid #E5E7EB;
-    border-radius: 6px;
-    padding: 12px;
+html, body {
+    font-family: 'Saira Semi Condensed', 'Segoe UI', system-ui, sans-serif;
 }
 ```
 
-### Section Dividers
+Radzen and Bootstrap both pick this up via `--rz-text-font-family` and `--bs-body-color`/`--bs-body-bg` overrides set on `.theme-root` (the wrapper `ThemeProvider` renders around the whole app), so a component never needs to set font-family itself.
 
-Use subtle dividers instead of heavy whitespace:
+### Color Tokens (excerpt)
+
+| Token | Light | Dark | Used for |
+|---|---|---|---|
+| `--sf-bg` | `#e6edfb` | `#050d1c` | Page background base (under the gradient orbs) |
+| `--sf-text` | `#0c1c38` | `#eaf1ff` | Primary text |
+| `--sf-sub` | `rgba(20,45,90,.6)` | `rgba(205,222,255,.62)` | Secondary/muted text |
+| `--sf-accent` / `--sf-accent2` | `#2b63e8` / `#0aa6d8` | `#4f8dff` / `#38d2ff` | Primary buttons, active nav, sidebar logo gradient |
+| `--sf-good` | `#0e9a6a` | `#3ddca0` | Positive balances, success states |
+| `--sf-bad` | `#d5445f` | `#ff7d92` | Negative balances, danger states, badges |
+| `--sf-glass` / `--sf-glass2` | `rgba(255,255,255,.55)` / `.8` | `rgba(255,255,255,.06)` / `.11` | Frosted panel backgrounds (sidebar, cards, pills) |
+| `--sf-brd` | `rgba(255,255,255,.9)` | `rgba(255,255,255,.14)` | Panel borders |
+| `--sf-line` | `rgba(10,40,90,.1)` | `rgba(255,255,255,.08)` | Hairline dividers |
+
+A handful of legacy alias tokens (`--sf-body-bg`, `--sf-card-bg`, `--sf-balance-positive`, etc.) exist purely for older styles that reference them; new CSS should use the primary tokens above directly.
+
+### Background: Gradient Orbs
+
+The shell background (`.shell-container`) is three soft radial gradients over `--sf-bg`, using `--sf-orb1/2/3`:
 
 ```css
-/* ✅ GOOD: Subtle divider */
-.section {
-    border-bottom: 1px solid #E5E7EB;
-    padding-bottom: 12px;
-    margin-bottom: 12px;
-}
+background:
+    radial-gradient(600px 420px at 12% 8%, var(--sf-orb1), transparent 65%),
+    radial-gradient(520px 400px at 88% 18%, var(--sf-orb2), transparent 60%),
+    radial-gradient(700px 500px at 55% 110%, var(--sf-orb3), transparent 60%),
+    var(--sf-bg);
+```
 
-/* ❌ BAD: Excessive gap */
-.section {
-    margin-bottom: 40px;
+### Frosted / Glass Panels
+
+Sidebar, cards, and pills share the same recipe: a translucent `--sf-glass*` background, a `--sf-brd` border, and `backdrop-filter: blur(...)`:
+
+```css
+.shell-sidebar {
+    background: var(--sf-glass);
+    border-right: 1px solid var(--sf-brd);
+    backdrop-filter: blur(24px);
+    box-shadow: 0 16px 44px var(--sf-dock-shadow), inset 0 1px 0 rgba(255,255,255,.14);
 }
 ```
 
 ---
 
-## Component Library
+## Layout
 
-### Form Controls
-
-#### Input Fields
+Use Bootstrap utility classes for spacing and flex layout (`d-flex`, `align-items-center`, `justify-content-between`, `gap-2`, `mb-2`, `flex-wrap`) rather than inline styles or bespoke CSS classes — this is the established pattern across every page (`MemberList.razor`, `SettingsPage.razor`, etc.):
 
 ```razor
-<div class="form-group">
-    <label for="name">Name</label>
-    <input 
-        type="text" 
-        id="name" 
-        class="form-control"
-        placeholder="Enter full name"
-        aria-label="Member name"
-    />
-    <span class="form-error" id="name-error">@ErrorMessage</span>
+<div class="page-header d-flex align-items-center justify-content-between mb-2">
+    <h1 class="h3 mb-0">Members</h1>
+    <button class="btn btn-primary btn-sm" @onclick="AddMember">Add Member</button>
 </div>
 ```
 
-```css
-.form-control {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #D1D5DB;
-    border-radius: 4px;
-    font-size: 14px;
-    line-height: 1.5;
-    transition: border-color 0.15s, box-shadow 0.15s;
-}
+Reach for a `.razor.css` isolation file only when a style is genuinely scoped to one component; everything else belongs in `app.css`.
 
-.form-control:focus {
-    outline: none;
-    border-color: #2563EB;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
+---
 
-.form-control:disabled {
-    background-color: #F3F4F6;
-    color: #9CA3AF;
-}
+## Component Standards
 
-.form-error {
-    display: block;
-    color: #EF4444;
-    font-size: 12px;
-    margin-top: 4px;
-}
-```
+### Data Grids — always `RadzenDataGrid<TItem>`
 
-#### Buttons
+Every tabular view uses `RadzenDataGrid<TItem>`, never a plain `<table>` or a `table-responsive` wrapper `div`. `MemberList.razor` is the reference:
 
 ```razor
-<!-- Primary Button -->
-<button class="btn btn-primary">Save</button>
+<RadzenDataGrid Data="@DisplayMembers" TItem="Member"
+                AllowSorting="true" AllowPaging="true" PageSize="15"
+                class="rz-shadow-0">
+    <Columns>
+        <RadzenDataGridColumn TItem="Member" Property="SortableFullName" Title="Name" Width="200px">
+            <Template Context="member">
+                <a href="#" @onclick:preventDefault @onclick="() => ViewMember(member.Id)"
+                   class="text-decoration-none fw-semibold">
+                    @member.SortableFullName
+                </a>
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Member" Property="Email" Title="Email" Width="200px" />
+    </Columns>
+</RadzenDataGrid>
+```
 
-<!-- Secondary Button -->
-<button class="btn btn-secondary">Cancel</button>
+A column needing a "select all" header checkbox uses a `HeaderTemplate`, not a separate control outside the grid.
 
-<!-- Danger Button -->
-<button class="btn btn-danger">Delete</button>
+**Exception**: `ReportViewer.razor` hand-rolls its own paging (fixed at page size 15) because its dynamic columns, section headers, and subtotal/grand-total rows don't fit RadzenDataGrid's typed-column model.
 
-<!-- Button Group -->
-<div class="button-group">
-    <button class="btn btn-secondary">Cancel</button>
-    <button class="btn btn-primary">Save</button>
-</div>
+### List Boxes — always `BorderedListBox<TItem>`
+
+Every bordered list box (queued items, role lists, read-only summaries) uses `BorderedListBox<TItem>` (`StageFright.UI/Shared/BorderedListBox.razor`), never a hand-rolled bordered `<div>`:
+
+```razor
+<BorderedListBox TItem="QueuedAccountRequest" Items="@_queuedAccounts" EmptyText="No accounts queued.">
+    <RowTemplate Context="account">
+        <span>@account.Name (@account.AccountType)</span>
+    </RowTemplate>
+</BorderedListBox>
+```
+
+It takes `Items`, a `RowTemplate`, an optional `OnRemove` (unset → read-only render; set → adds a per-row `×` remove button), and `EmptyText`. See the Setup Wizard's Chart of Accounts, Committee, and Review tabs for the reference usage.
+
+### Toggles — always `<RadzenSwitch>`
+
+Every on/off toggle uses `<RadzenSwitch>` with `@bind-Value`/`Value` + a `Change` callback (not `@bind:after`), never a hand-rolled Bootstrap `form-check form-switch` checkbox:
+
+```razor
+<label for="showInactiveSwitch" class="form-label mb-0">Show inactive members</label>
+<RadzenSwitch Name="showInactiveSwitch" @bind-Value="_showInactive" Change="@(async (bool _) => await LoadAsync())" />
+```
+
+`RadzenSwitch` renders no native `onchange`-wired `<input>`. In bUnit, drive it via `cut.Find("[role=switch]").Click()` and assert state via `.GetAttribute("aria-checked")`, not `.Change(bool)`/`HasAttribute("checked")`.
+
+> **Deliberate exception**: the Setup Wizard's own theme control is a Light/Dark `<select>` dropdown, not a switch (FR-022 of spec `017-setup-wizard-tabs`) — the wizard's screen-shell has no cascaded theme state to toggle live the way `ShellLayout` does. Don't take it as a new default over `RadzenSwitch`.
+
+### Buttons
+
+Bootstrap button classes, with the primary variant styled by the design tokens:
+
+```razor
+<button class="btn btn-primary btn-sm">Save</button>
+<button class="btn btn-secondary btn-sm">Cancel</button>
+<button class="btn btn-outline-danger btn-sm">Remove</button>
 ```
 
 ```css
-.btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.15s, opacity 0.15s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
 .btn-primary {
-    background-color: #2563EB;
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: #1D4ED8;
-}
-
-.btn-primary:active {
-    opacity: 0.95;
-}
-
-.btn-secondary {
-    background-color: #E5E7EB;
-    color: #374151;
-}
-
-.btn-secondary:hover {
-    background-color: #D1D5DB;
-}
-
-.btn-danger {
-    background-color: #EF4444;
-    color: white;
-}
-
-.button-group {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
+    background: linear-gradient(135deg, var(--sf-accent), var(--sf-accent2));
+    border: 0;
 }
 ```
 
-### Tables
+### Loading / Empty States — inline, not dedicated components
+
+There are **no** `<LoadingSpinner>`/`<EmptyState>`/`<Badge>`/`<IconButton>` shared components — those are conditional inline markup per page, following `MemberList.razor`'s pattern:
 
 ```razor
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Status</th>
-            <th class="text-right">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var member in members)
-        {
-            <tr>
-                <td>@member.Name</td>
-                <td>@member.Email</td>
-                <td><Badge Status="@member.Status" /></td>
-                <td class="text-right">
-                    <IconButton Icon="edit" OnClick="@(() => Edit(member))" />
-                    <IconButton Icon="delete" OnClick="@(() => Delete(member))" />
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+@if (_loading)
+{
+    <p role="status" aria-live="polite">Loading members…</p>
+}
+else if (!DisplayMembers.Any())
+{
+    <p class="text-muted">No members found.</p>
+}
 ```
+
+Keep this pattern for new pages rather than introducing a new shared loading/empty-state component.
+
+### Icons
+
+Sidebar and inline icons are Bootstrap Icons (MIT-licensed, https://icons.getbootstrap.com) inlined as CSS masks so they render in `currentColor` and follow theme/active state — not an icon font tag or emoji glyph:
 
 ```css
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-    background: white;
-}
-
-.table th {
-    background-color: #F3F4F6;
-    padding: 12px;
-    text-align: left;
-    font-weight: 600;
-    color: #374151;
-    border-bottom: 1px solid #E5E7EB;
-}
-
-.table td {
-    padding: 12px;
-    border-bottom: 1px solid #E5E7EB;
-}
-
-.table tbody tr:hover {
-    background-color: #F9FAFB;
-}
-
-.table-striped tbody tr:nth-child(odd) {
-    background-color: #F9FAFB;
-}
-
-.table-striped tbody tr:nth-child(odd):hover {
-    background-color: #F3F4F6;
-}
-
-.text-right {
-    text-align: right;
+.nav-icon {
+    width: 17px;
+    height: 17px;
+    background-color: currentColor;
+    -webkit-mask: center / contain no-repeat;
+    mask: center / contain no-repeat;
 }
 ```
 
-### Cards
+---
+
+## Navigation Shell
+
+Navigation is a **fixed vertical sidebar** (`Layout/ShellLayout.razor`), not a top nav bar. It's 232px wide (`--sf-sidebar-w`), frosted-glass styled, and renders `IEnumerable<IMenuItemProvider>` items ordered by `DisplayOrder`, with expandable sub-item groups (auto-expanding while a child route is active) and badge counts:
 
 ```razor
-<div class="card">
-    <div class="card-header">
-        <h3>Member Statistics</h3>
-    </div>
-    <div class="card-body">
-        <div class="stat-grid">
-            <div class="stat">
-                <div class="stat-value">245</div>
-                <div class="stat-label">Total Members</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value">18</div>
-                <div class="stat-label">Outstanding Fees</div>
-            </div>
-        </div>
-    </div>
-</div>
-```
-
-```css
-.card {
-    background: white;
-    border: 1px solid #E5E7EB;
-    border-radius: 6px;
-    overflow: hidden;
-}
-
-.card-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid #E5E7EB;
-    background-color: #F9FAFB;
-}
-
-.card-header h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: #111827;
-}
-
-.card-body {
-    padding: 16px;
-}
-
-.stat-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 12px;
-}
-
-.stat {
-    background-color: #F3F4F6;
-    padding: 12px;
-    border-radius: 4px;
-    text-align: center;
-}
-
-.stat-value {
-    font-size: 28px;
-    font-weight: 700;
-    color: #2563EB;
-}
-
-.stat-label {
-    font-size: 12px;
-    color: #6B7280;
-    margin-top: 4px;
+@foreach (var provider in MenuProviders.OrderBy(p => p.DisplayOrder))
+{
+    @foreach (var item in provider.GetMenuItems().OrderBy(i => i.DisplayOrder))
+    {
+        <li class="sidebar-item">
+            <a class="sidebar-link @(IsActive(item.Route) ? "active" : "")"
+               href="@item.Route" @onclick:preventDefault @onclick="() => Navigate(item.Route)">
+                <span class="nav-icon @IconClass(item.Route)" aria-hidden="true"></span>
+                <span class="sidebar-label">@item.Title</span>
+                @if (!string.IsNullOrEmpty(item.BadgeText))
+                {
+                    <span class="sidebar-badge" role="status" aria-label="@item.BadgeText items">@item.BadgeText</span>
+                }
+            </a>
+        </li>
+    }
 }
 ```
 
-### Badges and Status Indicators
-
-```razor
-<Badge Status="Active" />
-<Badge Status="Inactive" />
-<Badge Type="success">Paid</Badge>
-<Badge Type="warning">Pending</Badge>
-<Badge Type="danger">Outstanding</Badge>
-```
-
-```css
-.badge {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 500;
-    white-space: nowrap;
-}
-
-.badge-success {
-    background-color: #D1FAE5;
-    color: #065F46;
-}
-
-.badge-warning {
-    background-color: #FEF3C7;
-    color: #92400E;
-}
-
-.badge-danger {
-    background-color: #FEE2E2;
-    color: #991B1B;
-}
-
-.badge-info {
-    background-color: #E0F2FE;
-    color: #0C4A6E;
-}
-```
-
-### Empty States
-
-```razor
-<div class="empty-state">
-    <div class="empty-state-icon">
-        <Icon Name="inbox" />
-    </div>
-    <h3>No members found</h3>
-    <p>Get started by adding your first member to the system.</p>
-    <button class="btn btn-primary" onclick="location.href='/members/new'">
-        Add Member
-    </button>
-</div>
-```
-
-```css
-.empty-state {
-    text-align: center;
-    padding: 48px 16px;
-    background-color: #F9FAFB;
-    border-radius: 6px;
-    border: 1px dashed #D1D5DB;
-}
-
-.empty-state-icon {
-    font-size: 48px;
-    color: #D1D5DB;
-    margin-bottom: 16px;
-}
-
-.empty-state h3 {
-    margin: 0 0 8px 0;
-    color: #374151;
-    font-size: 18px;
-}
-
-.empty-state p {
-    margin: 0 0 16px 0;
-    color: #6B7280;
-    font-size: 14px;
-}
-```
-
-### Loading Indicators
-
-```razor
-<!-- Spinner -->
-<div class="spinner"></div>
-
-<!-- Skeleton Loader -->
-<div class="skeleton-line" style="width: 100%;"></div>
-<div class="skeleton-line" style="width: 80%;"></div>
-```
-
-```css
-.spinner {
-    width: 32px;
-    height: 32px;
-    border: 3px solid #E5E7EB;
-    border-top-color: #2563EB;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-.skeleton-line {
-    height: 12px;
-    background: linear-gradient(
-        90deg,
-        #E5E7EB 0%,
-        #F3F4F6 50%,
-        #E5E7EB 100%
-    );
-    background-size: 200% 100%;
-    border-radius: 4px;
-    margin-bottom: 8px;
-    animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-```
-
-### Alerts and Notifications
-
-```razor
-<div class="alert alert-success">
-    <span class="alert-icon">✓</span>
-    <span>Member created successfully!</span>
-    <button class="alert-close" onclick="this.parentElement.style.display='none';">×</button>
-</div>
-
-<div class="alert alert-warning">
-    <span class="alert-icon">⚠</span>
-    <span>3 members have outstanding fees</span>
-</div>
-
-<div class="alert alert-danger">
-    <span class="alert-icon">✕</span>
-    <span>Failed to save member: Email already exists</span>
-</div>
-```
-
-```css
-.alert {
-    padding: 12px 16px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 14px;
-    margin-bottom: 12px;
-}
-
-.alert-success {
-    background-color: #D1FAE5;
-    color: #065F46;
-    border: 1px solid #6EE7B7;
-}
-
-.alert-warning {
-    background-color: #FEF3C7;
-    color: #92400E;
-    border: 1px solid #FCD34D;
-}
-
-.alert-danger {
-    background-color: #FEE2E2;
-    color: #991B1B;
-    border: 1px solid #FCA5A5;
-}
-
-.alert-icon {
-    font-weight: 700;
-}
-
-.alert-close {
-    background: none;
-    border: none;
-    color: inherit;
-    cursor: pointer;
-    font-size: 18px;
-    margin-left: auto;
-    padding: 0;
-}
-```
+A pill-shaped light/dark `RadzenSwitch` sits in the top bar (`shell-topbar`, offset past the sidebar width), hidden on `/setup` per the Setup Wizard exception above. See [ARCHITECTURE.md § Navigation](ARCHITECTURE.md#navigation) for how `IMenuItemProvider` contributes items.
 
 ---
 
 ## Dashboard Tiles
 
-Dashboard tiles are the primary way features expose their functionality. Each tile should be compact, focused, and provide immediate value.
+Dashboard tiles opt into one of four grid footprints via `DashboardTileSize` (`StageFright.Plugins.Contracts`), mapped to CSS-Grid span classes in `app.css`:
 
-### Tile Structure
-
-```razor
-@* DashboardTile.cs *@
-public class MembersDashboardTile : IDashboardTile
-{
-    public string Title => "Members";
-    public int Order => 1;
-    public string Icon => "users";
-    
-    public async Task<IDashboardTileContent> GetContentAsync()
-    {
-        var activeCount = await _memberService.GetActiveMemberCountAsync();
-        var pendingFees = await _memberService.GetPendingFeeCountAsync();
-        
-        return new MembersTileContent
-        {
-            ActiveMembers = activeCount,
-            PendingFees = pendingFees,
-            RecentMembers = await _memberService.GetRecentMembersAsync(5)
-        };
-    }
-}
-
-@* MembersTile.razor *@
-<div class="dashboard-tile">
-    <div class="tile-header">
-        <h3>Members</h3>
-        <a href="/members" class="tile-link">View all →</a>
-    </div>
-    
-    <div class="tile-stats">
-        <div class="stat-box">
-            <div class="stat-number">@Content.ActiveMembers</div>
-            <div class="stat-name">Active</div>
-        </div>
-        <div class="stat-box alert">
-            <div class="stat-number">@Content.PendingFees</div>
-            <div class="stat-name">Pending Fees</div>
-        </div>
-    </div>
-    
-    <div class="tile-list">
-        @foreach (var member in Content.RecentMembers)
-        {
-            <div class="list-item">
-                <span>@member.Name</span>
-                <span class="status-badge">@member.Status</span>
-            </div>
-        }
-    </div>
-    
-    <button class="btn btn-secondary btn-sm" onclick="location.href='/members/new'">
-        Add Member
-    </button>
-</div>
-```
+| `TileSize` | CSS class | Grid footprint |
+|---|---|---|
+| `OneByOne` (default) | `.tile-size-1x1` | 1 col × 1 row |
+| `OneByTwo` | `.tile-size-1x2` | 2 cols × 1 row |
+| `TwoByOne` | `.tile-size-2x1` | 1 col × 2 rows |
+| `TwoByTwo` | `.tile-size-2x2` | 2 cols × 2 rows |
 
 ```css
-.dashboard-tile {
-    background: white;
-    border: 1px solid #E5E7EB;
-    border-radius: 6px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.tile-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #E5E7EB;
-    padding-bottom: 8px;
-}
-
-.tile-header h3 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.tile-link {
-    color: #2563EB;
-    text-decoration: none;
-    font-size: 13px;
-}
-
-.tile-link:hover {
-    text-decoration: underline;
-}
-
-.tile-stats {
+.sf-dash-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-auto-rows: minmax(120px, auto);
+    grid-auto-flow: dense;
+    gap: .5rem;
 }
 
-.stat-box {
-    background-color: #F3F4F6;
-    padding: 8px;
-    border-radius: 4px;
-    text-align: center;
-}
-
-.stat-box.alert {
-    background-color: #FEF3C7;
-}
-
-.stat-number {
-    font-size: 20px;
-    font-weight: 700;
-    color: #2563EB;
-}
-
-.stat-name {
-    font-size: 11px;
-    color: #6B7280;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.tile-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px;
-    border-radius: 4px;
-    background-color: #F9FAFB;
-    font-size: 13px;
-}
-
-.list-item:hover {
-    background-color: #F3F4F6;
-}
-
-.btn-sm {
-    padding: 6px 12px;
-    font-size: 13px;
-    width: 100%;
-}
+.tile-size-1x2 { grid-column: span 2; grid-row: span 1; }
 ```
+
+Below 576px every tile collapses to a single column. See [ARCHITECTURE.md § Dashboard Tiles](ARCHITECTURE.md#dashboard-tiles) for how a provider opts into a size.
 
 ---
 
-## Navigation Menu
+## Forms
 
-The main navigation menu is the primary way users access application features. Menu items can include icons and badges for visual communication of status and available actions.
-
-### Menu Structure
-
-```html
-<nav class="main-navigation">
-    <div class="nav-brand">
-        <span>StageFright</span>
-    </div>
-    
-    <ul class="nav-menu">
-        <!-- Dashboard (always first) -->
-        <li class="nav-item">
-            <a href="/dashboard" class="nav-link">
-                <i class="icon icon-home"></i>
-                <span>Dashboard</span>
-            </a>
-        </li>
-        
-        <!-- Module menu items (sorted by DisplayOrder) -->
-        <li class="nav-item">
-            <a href="/members" class="nav-link">
-                <i class="icon icon-users"></i>
-                <span>Members</span>
-            </a>
-            
-            <!-- Submenu items -->
-            <ul class="nav-submenu">
-                <li class="nav-subitem">
-                    <a href="/members/list" class="nav-sublink">Active Members</a>
-                </li>
-                <li class="nav-subitem">
-                    <a href="/members/pending" class="nav-sublink">
-                        Pending Approval
-                        <span class="badge">3</span>
-                    </a>
-                </li>
-                <li class="nav-subitem">
-                    <a href="/members/new" class="nav-sublink">Add Member</a>
-                </li>
-            </ul>
-        </li>
-        
-        <li class="nav-item">
-            <a href="/events" class="nav-link">
-                <i class="icon icon-calendar"></i>
-                <span>Events</span>
-            </a>
-        </li>
-        
-        <!-- Settings (always last) -->
-        <li class="nav-item nav-settings">
-            <a href="/settings" class="nav-link">
-                <i class="icon icon-cog"></i>
-                <span>Settings</span>
-            </a>
-        </li>
-    </ul>
-</nav>
-```
-
-### Navigation Styles
-
-```css
-/* Main navigation container */
-.main-navigation {
-    background-color: #FFFFFF;
-    border-bottom: 1px solid #E5E7EB;
-    padding: 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-/* Brand/logo area */
-.nav-brand {
-    padding: 12px 16px;
-    border-bottom: 1px solid #E5E7EB;
-    font-size: 16px;
-    font-weight: 600;
-    color: #1F2937;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Main menu list */
-.nav-menu {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Menu item */
-.nav-item {
-    position: relative;
-}
-
-.nav-item .nav-link {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    color: #374151;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s;
-    cursor: pointer;
-}
-
-.nav-item .nav-link:hover {
-    background-color: #F3F4F6;
-    color: #2563EB;
-}
-
-.nav-item .nav-link.active {
-    background-color: #EFF6FF;
-    color: #2563EB;
-    border-left: 3px solid #2563EB;
-    padding-left: 13px;
-}
-
-/* Icon in menu */
-.nav-link .icon {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-}
-
-/* Badge on menu items */
-.nav-link .badge {
-    margin-left: auto;
-    background-color: #EF4444;
-    color: white;
-    border-radius: 10px;
-    padding: 2px 6px;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-/* Submenu */
-.nav-submenu {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    background-color: #F9FAFB;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-}
-
-.nav-item:hover .nav-submenu,
-.nav-item.expanded .nav-submenu {
-    max-height: 500px;
-}
-
-/* Submenu item */
-.nav-subitem {
-    border-left: 3px solid transparent;
-}
-
-.nav-subitem .nav-sublink {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 16px 10px 24px;
-    color: #6B7280;
-    text-decoration: none;
-    font-size: 13px;
-    transition: all 0.2s;
-}
-
-.nav-subitem .nav-sublink:hover {
-    background-color: #F3F4F6;
-    color: #2563EB;
-}
-
-.nav-subitem .nav-sublink.active {
-    color: #2563EB;
-    background-color: #EFF6FF;
-    border-left-color: #2563EB;
-}
-
-.nav-subitem .badge {
-    background-color: #F97316;
-    color: white;
-    border-radius: 8px;
-    padding: 2px 6px;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-/* Settings menu item (always last) */
-.nav-item.nav-settings {
-    border-top: 1px solid #E5E7EB;
-    margin-top: 8px;
-}
-
-.nav-item.nav-settings .nav-link {
-    color: #374151;
-}
-
-.nav-item.nav-settings .nav-link:hover {
-    color: #2563EB;
-}
-
-/* Responsive: Collapse menu on small screens */
-@media (max-width: 768px) {
-    .main-navigation {
-        position: fixed;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 250px;
-        max-height: 100vh;
-        overflow-y: auto;
-        background: white;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        z-index: 200;
-    }
-    
-    .nav-link,
-    .nav-sublink {
-        padding-left: 16px;
-    }
-}
-```
-
-### Menu with Icons
-
-Icons enhance menu item recognition. Use consistent icon names and sizes:
-
-```css
-/* Icon sizing */
-.icon {
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-}
-
-.icon-home::before { content: "🏠"; }
-.icon-users::before { content: "👥"; }
-.icon-calendar::before { content: "📅"; }
-.icon-dollar-sign::before { content: "💰"; }
-.icon-cog::before { content: "⚙️"; }
-.icon-check::before { content: "✓"; }
-```
-
-Or use a proper icon library (FontAwesome, Material Icons, etc.):
-
-```html
-<!-- FontAwesome example -->
-<i class="fas fa-users"></i>
-<i class="fas fa-calendar"></i>
-<i class="fas fa-dollar-sign"></i>
-```
-
-### Active State Indicator
+`EditForm` + `DataAnnotationsValidator` + Bootstrap form classes, with Radzen inputs where the field needs one (dropdowns, numeric steppers, switches):
 
 ```razor
-@* Navigation component with active state *@
-@page "/"
-@inject NavigationManager NavManager
+<EditForm Model="@model" OnValidSubmit="@HandleSubmit">
+    <DataAnnotationsValidator />
 
-@foreach (var item in menuItems)
-{
-    var isActive = NavManager.Uri.Contains(item.Route);
-    <a href="@item.Route" class="nav-link @(isActive ? "active" : "")">
-        @item.Title
-    </a>
-}
+    <div class="mb-2">
+        <label class="form-label">Name *</label>
+        <InputText @bind-Value="model.Name" class="form-control form-control-sm" />
+        <ValidationMessage For="@(() => model.Name)" />
+    </div>
+
+    <div class="d-flex gap-2 justify-content-end">
+        <button type="button" class="btn btn-secondary btn-sm" @onclick="OnCancel">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+    </div>
+</EditForm>
 ```
 
-### Menu Item Badge Examples
-
-```html
-<!-- Pending items count -->
-<a href="/members/pending" class="nav-link">
-    <i class="icon icon-users"></i>
-    <span>Members</span>
-    <span class="badge">3</span>
-</a>
-
-<!-- New notifications -->
-<a href="/events" class="nav-link">
-    <i class="icon icon-calendar"></i>
-    <span>Events</span>
-    <span class="badge">5</span>
-</a>
-
-<!-- Urgent status -->
-<a href="/finances/invoices" class="nav-link">
-    <i class="icon icon-dollar-sign"></i>
-    <span>Invoices</span>
-    <span class="badge" style="background-color: #EF4444;">2</span>
-</a>
-```
-
----
-
-## Responsive Design
-
-### Breakpoints
-
-```css
-/* Mobile First */
-@media (min-width: 640px)  { /* sm */ }
-@media (min-width: 768px)  { /* md */ }
-@media (min-width: 1024px) { /* lg */ }
-@media (min-width: 1280px) { /* xl */ }
-@media (min-width: 1536px) { /* 2xl */ }
-```
-
-### Responsive Grid Example
-
-```css
-.grid-layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
-}
-
-@media (min-width: 768px) {
-    .grid-layout {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 1024px) {
-    .grid-layout {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-```
+> **bUnit limitation**: a shared child form component (e.g. `AddAccountForm`/`OpeningBalanceEntryForm`) rendered *inside* another component's own outer `<EditForm>` — as in the Setup Wizard — cannot have its nested `<form>` submit simulated by bUnit; its inner `<form>` collapses when bUnit builds its AngleSharp DOM. This is a bUnit limitation, not a production bug. In tests, invoke the child component's own `EventCallback` parameters directly (`cut.FindComponent<ChildTab>().Instance.OnSubmit.InvokeAsync(...)`) instead of simulating the nested submit.
 
 ---
 
 ## Accessibility
 
-### Semantic HTML
-
-```razor
-<!-- ✅ GOOD: Semantic HTML -->
-<nav>
-    <ul>
-        <li><a href="/members">Members</a></li>
-        <li><a href="/finances">Finances</a></li>
-    </ul>
-</nav>
-
-<!-- ❌ BAD: Div soup -->
-<div>
-    <div onclick="navigate('/members')">Members</div>
-</div>
-```
-
-### ARIA Labels
-
-```razor
-<button aria-label="Delete member" onclick="@DeleteMember">
-    <Icon Name="trash" />
-</button>
-
-<input 
-    aria-label="Search members" 
-    placeholder="Search..."
-    aria-describedby="search-help"
-/>
-<small id="search-help">Search by name or email</small>
-```
-
-### Color Contrast
-
-- All text must have WCAG AA contrast ratio (4.5:1 for normal text, 3:1 for large text)
-- Don't rely on color alone; use patterns or labels
-- Use accessible color combinations
-
-### Keyboard Navigation
-
-```razor
-<!-- Tab order must be logical -->
-<form>
-    <input type="text" />
-    <input type="email" />
-    <button type="submit">Save</button>
-</form>
-
-<!-- Custom components need tabindex management -->
-<div 
-    role="button"
-    tabindex="0"
-    @onkeydown="@((KeyboardEventArgs e) => e.Key == 'Enter' ? OnClick() : Task.CompletedTask)"
-    @onclick="OnClick"
->
-    Click or press Enter
-</div>
-```
+- Semantic elements and roles: `<nav role="navigation" aria-label="Main navigation">`, dynamic status text as `role="status" aria-live="polite"`.
+- Every icon-only or ambiguous control gets `aria-label` (e.g. `aria-label="Edit @member.SortableFullName"`, `aria-label="Remove"`).
+- Interactive sidebar links are keyboard-reachable (`tabindex="0"`) and expose `aria-expanded`/`aria-label` on the collapse chevron.
+- Don't rely on color alone — the light/dark good/bad tokens (`--sf-good`/`--sf-bad`) pair with text, not standalone color swatches.
+- All text must meet WCAG AA contrast against its token-defined background in both themes.
 
 ---
 
-## Performance Tips
+## Reports
 
-### Images
-
-- Use appropriately sized images
-- Lazy-load images below the fold
-- Use SVG for icons
-
-```razor
-<img 
-    src="member.jpg" 
-    alt="Member photo"
-    loading="lazy"
-    width="100"
-    height="100"
-/>
-```
-
-### CSS
-
-- Use CSS isolation for component styling
-- Minimize repaints and reflows
-- Avoid expensive pseudo-selectors
-
-```razor
-@* MembersPage.razor.css *@
-.members-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 12px;
-}
-```
-
-### JavaScript
-
-- Avoid inline JavaScript
-- Use Blazor event handlers instead of onclick strings
-- Defer non-critical scripts
-
----
-
-## Common Patterns
-
-### Form with Validation
-
-```razor
-<EditForm Model="@model" OnValidSubmit="@HandleSubmit">
-    <DataAnnotationsValidator />
-    
-    <div class="form-group">
-        <label>Name *</label>
-        <InputText @bind-Value="model.Name" class="form-control" />
-        <ValidationMessage For="@(() => model.Name)" />
-    </div>
-    
-    <div class="form-group">
-        <label>Email *</label>
-        <InputText @bind-Value="model.Email" class="form-control" />
-        <ValidationMessage For="@(() => model.Email)" />
-    </div>
-    
-    <div class="button-group">
-        <button type="button" class="btn btn-secondary" @onclick="OnCancel">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save</button>
-    </div>
-</EditForm>
-```
-
-### Modal Dialog
-
-```razor
-@if (showModal)
-{
-    <div class="modal-overlay" @onclick="@(() => showModal = false)">
-        <div class="modal" @onclick:stopPropagation="true">
-            <div class="modal-header">
-                <h2>Confirm Action</h2>
-                <button class="modal-close" @onclick="@(() => showModal = false)">×</button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to delete this member?
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" @onclick="@(() => showModal = false)">
-                    Cancel
-                </button>
-                <button class="btn btn-danger" @onclick="ConfirmDelete">
-                    Delete
-                </button>
-            </div>
-        </div>
-    </div>
-}
-```
-
-```css
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.modal {
-    background: white;
-    border-radius: 6px;
-    max-width: 500px;
-    width: 90%;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    border-bottom: 1px solid #E5E7EB;
-}
-
-.modal-body {
-    padding: 16px;
-}
-
-.modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    padding: 16px;
-    border-top: 1px solid #E5E7EB;
-}
-```
-
-### Settings Forms and Tabs
-
-Settings tabs use a consistent pattern with clear visual hierarchy and validation:
-
-```razor
-@* Features/Members/UI/Components/MembersSettingsTab.razor *@
-@implements IAsyncDisposable
-@inject IMembersSettingsService SettingsService
-@inject ILogger<MembersSettingsTab> Logger
-
-<div class="settings-tab">
-    @if (isLoading)
-    {
-        <div class="spinner-container">
-            <div class="spinner"></div>
-            <p>Loading settings...</p>
-        </div>
-    }
-    else if (settings != null)
-    {
-        <EditForm Model="@settings" OnValidSubmit="@HandleSave">
-            <DataAnnotationsValidator />
-            
-            <div class="settings-section">
-                <h3>Member Configuration</h3>
-                <p class="section-description">Configure default member settings and preferences</p>
-                
-                <div class="form-group">
-                    <label for="defaultStatus">Default Member Status</label>
-                    <InputSelect @bind-Value="settings.DefaultMemberStatus" 
-                                id="defaultStatus" class="form-control">
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                        <option value="Pending">Pending Review</option>
-                    </InputSelect>
-                    <ValidationMessage For="@(() => settings.DefaultMemberStatus)" />
-                    <small class="form-text">New members will have this status by default</small>
-                </div>
-                
-                <div class="form-group">
-                    <label for="autoArchiveDays">Auto-Archive Inactive After (days)</label>
-                    <InputNumber @bind-Value="settings.AutoArchiveInactiveDays" 
-                                id="autoArchiveDays" class="form-control" min="1" max="1095" />
-                    <ValidationMessage For="@(() => settings.AutoArchiveInactiveDays)" />
-                    <small class="form-text">Members inactive for this many days will be automatically archived</small>
-                </div>
-            </div>
-            
-            <div class="settings-section">
-                <h3>Contact Preferences</h3>
-                
-                <div class="form-group">
-                    <label>
-                        <InputCheckbox @bind-Value="settings.SendEmailNotifications" />
-                        Send email notifications to members
-                    </label>
-                </div>
-                
-                <div class="form-group">
-                    <label>
-                        <InputCheckbox @bind-Value="settings.SendSmsReminders" />
-                        Send SMS reminders for upcoming events
-                    </label>
-                </div>
-            </div>
-            
-            @if (!string.IsNullOrEmpty(errorMessage))
-            {
-                <div class="alert alert-danger">
-                    <strong>Error:</strong> @errorMessage
-                </div>
-            }
-            
-            @if (showSuccessMessage)
-            {
-                <div class="alert alert-success">
-                    Settings saved successfully
-                </div>
-            }
-            
-            <div class="settings-actions">
-                <button type="button" class="btn btn-secondary" disabled="@isSaving" @onclick="OnCancel">
-                    Cancel
-                </button>
-                <button type="submit" class="btn btn-primary" disabled="@isSaving">
-                    @if (isSaving)
-                    {
-                        <span class="spinner-sm"></span>
-                        <span>Saving...</span>
-                    }
-                    else
-                    {
-                        <span>Save Settings</span>
-                    }
-                </button>
-            </div>
-        </EditForm>
-    }
-</div>
-
-@code {
-    [CascadingParameter]
-    private SettingsPage ParentPage { get; set; }
-    
-    private MembersSettings settings;
-    private bool isLoading = true;
-    private bool isSaving = false;
-    private string errorMessage;
-    private bool showSuccessMessage = false;
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            settings = await SettingsService.GetSettingsAsync();
-            isLoading = false;
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to load members settings");
-            errorMessage = "Failed to load settings. Please refresh the page.";
-            isLoading = false;
-        }
-    }
-
-    private async Task HandleSave()
-    {
-        showSuccessMessage = false;
-        errorMessage = null;
-        isSaving = true;
-
-        try
-        {
-            var validation = await SettingsService.ValidateAsync(settings);
-            if (!validation.IsValid)
-            {
-                errorMessage = validation.ErrorMessage;
-                isSaving = false;
-                return;
-            }
-
-            await SettingsService.SaveAsync(settings);
-            
-            Logger.LogInformation("Members settings saved");
-            showSuccessMessage = true;
-            
-            // Clear success message after 3 seconds
-            await Task.Delay(3000);
-            showSuccessMessage = false;
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to save members settings");
-            errorMessage = "Failed to save settings. Please try again.";
-        }
-        finally
-        {
-            isSaving = false;
-        }
-    }
-
-    private void OnCancel()
-    {
-        ParentPage?.OnTabCancel();
-    }
-
-    async ValueTask IAsyncDisposable.DisposeAsync()
-    {
-        // Cleanup if needed
-    }
-}
-```
-
-**Settings Tab Styles**:
-
-```css
-/* Settings tab container and sections */
-.settings-tab {
-    padding: 24px;
-    max-width: 800px;
-}
-
-.settings-section {
-    margin-bottom: 32px;
-}
-
-.settings-section h3 {
-    font-size: 18px;
-    font-weight: 600;
-    color: #1F2937;
-    margin-bottom: 8px;
-}
-
-.section-description {
-    color: #6B7280;
-    font-size: 14px;
-    margin-bottom: 16px;
-}
-
-.settings-section .form-group {
-    margin-bottom: 16px;
-}
-
-.settings-section .form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #374151;
-}
-
-.settings-section .form-control {
-    width: 100%;
-    max-width: 400px;
-    padding: 8px 12px;
-    border: 1px solid #D1D5DB;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: border-color 0.2s;
-}
-
-.settings-section .form-control:focus {
-    outline: none;
-    border-color: #2563EB;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.settings-section .form-text {
-    display: block;
-    margin-top: 4px;
-    color: #6B7280;
-    font-size: 12px;
-}
-
-/* Checkboxes in settings */
-.settings-section .form-group label {
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
-    cursor: pointer;
-}
-
-.settings-section input[type="checkbox"] {
-    margin-right: 8px;
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-}
-
-/* Settings actions */
-.settings-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 32px;
-    padding-top: 16px;
-    border-top: 1px solid #E5E7EB;
-}
-
-.settings-actions .btn {
-    padding: 10px 16px;
-}
-
-/* Application Settings specific styling */
-.application-settings {
-    background-color: #F9FAFB;
-    padding: 16px;
-    border-radius: 6px;
-    margin-bottom: 16px;
-}
-
-.application-settings .form-group {
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: 16px;
-    align-items: center;
-    margin-bottom: 16px;
-}
-
-.application-settings .form-group:last-child {
-    margin-bottom: 0;
-}
-
-@media (max-width: 640px) {
-    .settings-section .form-control {
-        max-width: 100%;
-    }
-    
-    .application-settings .form-group {
-        grid-template-columns: 1fr;
-    }
-    
-    .settings-tab {
-        padding: 16px;
-    }
-}
-```
+`ReportViewer.razor` renders `ReportData` (rows/columns/sections/subtotals) inside a modal with a synchronous "Generating…" state; a Cancel action appears after 5 seconds. It is the one place that deviates from `RadzenDataGrid` (see above). In QuestPDF-rendered checkbox-style cells (`AttendanceRollPdfRenderer` etc.), render a checked box as a bordered `Container` with a centered "✓" glyph — **never** a solid filled box.
 
 ---
 
 ## Do's and Don'ts
 
 ### ✅ DO
-
-- Use the spacing scale for all margins and padding
-- Write semantic HTML with proper ARIA labels
-- Provide visual feedback for all interactions
-- Test with keyboard navigation
-- Use CSS isolation for component styling
-- Keep components focused and single-purpose
-- Test on multiple screen sizes
+- Reference `--sf-*` tokens for every color; never hardcode a hex value
+- Use `RadzenDataGrid`, `BorderedListBox`, and `RadzenSwitch` for their respective concerns — don't hand-roll an equivalent
+- Use Bootstrap utility classes for spacing/layout
+- Keep loading/empty states as simple inline conditional markup, matching existing pages
+- Add `aria-label`/`aria-live` to icon-only controls and dynamic status regions
+- Put component-scoped styles in a `.razor.css` isolation file only when truly scoped; otherwise use `app.css`
 
 ### ❌ DON'T
-
-- Use excessive whitespace; optimize for density
-- Add decorative elements that don't serve a purpose
-- Rely on color alone for meaning
-- Use hardcoded colors; use the palette
-- Create massive monolithic components
-- Use JavaScript when CSS can do it
-- Forget about accessibility
+- Introduce a second CSS framework or hand-rolled utility-class system alongside Bootstrap
+- Use a plain `<table>` or Bootstrap `form-check form-switch` where `RadzenDataGrid`/`RadzenSwitch` is the standard
+- Hardcode a color instead of a design token
+- Put `@code { }` blocks in a `.razor` file — logic belongs in the paired `.razor.cs`
+- Add a hand-written `.js` file for interaction that Blazor/Radzen/Blazor.Bootstrap already provides
 
 ---
 
 ## Testing UI Components
 
-### bUnit Testing Example
+bUnit + NSubstitute is the standard:
 
 ```csharp
 [Fact]
 public void Should_DisplayMembersList_When_ComponentRendered()
 {
-    // Arrange
-    var memberService = new Mock<IMemberService>();
-    memberService.Setup(s => s.GetActiveMembersAsync())
-        .ReturnsAsync(new List<MemberDto>
-        {
-            new() { Id = 1, Name = "John Doe", Email = "john@example.com" }
-        });
+    var memberService = Substitute.For<IMemberService>();
+    memberService.GetActiveMembersAsync(Arg.Any<CancellationToken>())
+        .Returns(new List<Member> { new() { FirstName = "John", LastName = "Doe" } });
 
-    var cut = RenderComponent<MembersComponent>(
-        ComponentParameter.CreateParameter("MemberService", memberService.Object)
-    );
+    using var ctx = new TestContext();
+    ctx.Services.AddSingleton(memberService);
+    var cut = ctx.RenderComponent<MemberList>();
 
-    // Act - wait for data load
-    cut.WaitForAsyncEvents();
-
-    // Assert
-    cut.Find("table tbody tr").TextContent.Should().Contain("John Doe");
+    Assert.Contains("John", cut.Markup);
 }
 
 [Fact]
-public void Should_ShowErrorAlert_When_LoadingMembersFails()
+public void Should_ToggleShowInactive_When_SwitchClicked()
 {
-    // Arrange
-    var memberService = new Mock<IMemberService>();
-    memberService.Setup(s => s.GetActiveMembersAsync())
-        .ThrowsAsync(new Exception("API error"));
+    // RadzenSwitch renders role="switch"; drive it via Click(), assert via aria-checked.
+    using var ctx = new TestContext();
+    var cut = ctx.RenderComponent<MemberList>();
 
-    var cut = RenderComponent<MembersComponent>(
-        ComponentParameter.CreateParameter("MemberService", memberService.Object)
-    );
+    cut.Find("[role=switch]").Click();
 
-    // Act
-    cut.WaitForAsyncEvents();
-
-    // Assert
-    cut.Find(".alert-danger").TextContent.Should().Contain("Failed to load members");
+    Assert.Equal("true", cut.Find("[role=switch]").GetAttribute("aria-checked"));
 }
 ```
+
+Known flaky tests: `ParticipationGridTests.DoesNotRender_FeeColumns` and `EventFormTests.DoesNotRender_FeeOrPaidFields` intermittently false-positive because bUnit-rendered markup embeds random lowercase-hex GUIDs and "fee" is a valid 3-hex-digit run — treat a failure there as this known flake (re-run in isolation) unless the diff actually touches Events/ParticipationGrid/EventForm.
 
 ---
 
 ## Questions & Support
 
-For questions about the style guide:
-- Check the [Contributing Guide](../CONTRIBUTING.md)
-- Review component examples in `src/UI/Components/`
-- Check existing implemented pages for patterns
-- Open an issue with screenshots of the UI element in question
+- Check [ARCHITECTURE.md](ARCHITECTURE.md) for how a component's data flows in from a service
+- Review existing pages under `src/StageFright.UI/Pages/` for the closest analogous pattern before introducing a new one
+- Check `StageFright.App/wwwroot/app.css` for the current token set before adding a new one
+- Open an issue with screenshots for any UI element in question
