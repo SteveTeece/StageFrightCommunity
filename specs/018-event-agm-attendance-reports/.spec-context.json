@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "event agm attendance reports",
   "branch": "018-event-agm-attendance-reports",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,48 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-22T22:28:24.690Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-22T23:11:55.553Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-22T23:12:01.920Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-22T23:12:08.371Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-22T23:13:27.495Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-22T23:27:21.270Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-22T23:30:42.400Z"
     }
   ],
   "livingSpecs": {
@@ -28,37 +70,105 @@
   },
   "coverage": {
     "FR-001": {
-      "title": "Print an event attendance sheet from the events list and detail page"
+      "title": "Print an event attendance sheet from the events list and detail page",
+      "tasks": [
+        "T005",
+        "T006",
+        "T014",
+        "T015"
+      ]
     },
     "FR-002": {
-      "title": "Event sheet lists members active as of the event date, past or future"
+      "title": "Event sheet lists members active as of the event date, past or future",
+      "tasks": [
+        "T003",
+        "T007",
+        "T012"
+      ]
     },
     "FR-003": {
-      "title": "Participated checkbox is blank until recorded, then matches real data"
+      "title": "Participated checkbox is blank until recorded, then matches real data",
+      "tasks": [
+        "T003",
+        "T007",
+        "T012"
+      ]
     },
     "FR-004": {
-      "title": "Print a past AGM attendance report from the Past AGMs list and detail page"
+      "title": "Print a past AGM attendance report from the Past AGMs list and detail page",
+      "tasks": [
+        "T019",
+        "T020",
+        "T028",
+        "T029"
+      ]
     },
     "FR-005": {
-      "title": "AGM report lists the fixed attendance roster with real attended/absent status"
+      "title": "AGM report lists the fixed attendance roster with real attended/absent status",
+      "tasks": [
+        "T017",
+        "T021",
+        "T026"
+      ]
     },
     "FR-007": {
-      "title": "Two-column print layout with minimal-width checkbox columns and wrapping headings"
+      "title": "Two-column print layout with minimal-width checkbox columns and wrapping headings",
+      "tasks": [
+        "T002",
+        "T031",
+        "T032",
+        "T033"
+      ]
     },
     "FR-008": {
-      "title": "Header shows organization name, report title, and relevant date, no generated-timestamp line"
+      "title": "Header shows organization name, report title, and relevant date, no generated-timestamp line",
+      "tasks": [
+        "T002",
+        "T013",
+        "T027",
+        "T033"
+      ]
     },
     "FR-010": {
-      "title": "Printing is read-only for Event, AGM, participation, attendance, and financial records"
+      "title": "Printing is read-only for Event, AGM, participation, attendance, and financial records",
+      "tasks": [
+        "T012",
+        "T026",
+        "T035"
+      ]
     },
     "FR-011": {
-      "title": "Sheets are produced and handed off consistent with other printable reports"
+      "title": "Sheets are produced and handed off consistent with other printable reports",
+      "tasks": [
+        "T014",
+        "T015",
+        "T028",
+        "T029",
+        "T035"
+      ]
     },
     "FR-006": {
-      "title": "Surnames shown in capitals, sorted by surname then first name"
+      "title": "Surnames shown in capitals, sorted by surname then first name",
+      "tasks": [
+        "T002",
+        "T003",
+        "T012",
+        "T017",
+        "T026"
+      ]
     },
     "FR-009": {
-      "title": "Empty-state message instead of a blank sheet when nobody to list"
+      "title": "Empty-state message instead of a blank sheet when nobody to list",
+      "tasks": [
+        "T005",
+        "T006",
+        "T014",
+        "T015",
+        "T019",
+        "T020",
+        "T028",
+        "T029"
+      ]
     }
   },
   "size": "normal",
@@ -83,5 +193,32 @@
     "No new 'scheduled future AGM' entity is introduced — a forward-looking AGM sheet is just a future Event of type Annual General Meeting",
     "No spreadsheet/CSV export for either sheet — print/PDF only",
     "No changes to how participation or AGM attendance is recorded — this feature only reads existing data"
-  ]
+  ],
+  "approach": "Follow spec 012's rehearsal-attendance-roll precedent exactly: one read-only Core service+DTO pair per owning module (Events, Agm) assembling a printable checkbox roster, and QuestPDF renderers in StageFright.Reports that hand off to the OS default viewer. The two new renderers share one internal two-column layout helper (CheckboxSheetPdfBuilder) so the event sheet and AGM sheet stay visually identical, without creating any Core-to-Core module coupling or touching the generic IReportProvider pipeline.",
+  "decisions": [
+    {
+      "decision": "Bypass the generic IReportProvider/ReportData/PdfReportRenderer pipeline; reuse spec 012s bespoke-renderer escape hatch instead",
+      "why": "ReportData is a flat single-table string-cell model with no multi-column/checkbox-glyph support, and printed reports must never gain shared-renderer complexity that all ten existing MVP reports would inherit",
+      "rejected": "Extending ReportData/PdfReportRenderer with a checkbox-column concept, or registering these as IReportProviders in the generic Reports menu"
+    },
+    {
+      "decision": "Two independent DTO/service pairs, one per owning module (Events, Agm), rather than one shared cross-module model",
+      "why": "Constitution SS4.1 forbids a module importing another modules concrete folder, and no neutral shared-DTO location exists in this codebase; the two data sources also differ in shape (live recompute vs fixed historical snapshot)",
+      "rejected": "A single shared AttendanceSheetData DTO in a new StageFright.Core/Shared/ folder"
+    },
+    {
+      "decision": "Share the QuestPDF two-column/checkbox-cell page-layout mechanics via one new internal CheckboxSheetPdfBuilder in StageFright.Reports, used by both new renderers; leave AttendanceRollPdfRenderer untouched",
+      "why": "User Story 3 requires the event sheet and AGM sheet to render identically; one shared implementation guarantees that where two hand-copies could drift, and StageFright.Reports is a downstream layer so sharing there creates no Core-to-Core module coupling",
+      "rejected": "Duplicating the ~90-line layout twice, or refactoring the existing two-checkbox-column AttendanceRollPdfRenderer to also use the new one-checkbox-column builder"
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Plan complete: 2 new Core service/DTO slices (Events, Agm), 2 new QuestPDF renderers plus 1 shared internal layout helper in StageFright.Reports, 4 UI page extensions, 4 DI registrations - no schema changes, no IReportProvider registration.",
+      "key_finding": "Every read this feature needs already exists on current repositories (IEventRepository.GetByIdWithDetailsAsync, IMemberRepository.GetActiveAsOfAsync, IAgmAttendanceRepository.GetByAgmAsync) so no new repository method is required anywhere."
+    },
+    "tasks": {
+      "summary": "37 tasks across Setup, Foundational (shared CheckboxSheetPdfBuilder), US1 Events sheet (P1), US2 AGM report (P2), US3 layout-consistency verification (P3), and Polish."
+    }
+  }
 }
