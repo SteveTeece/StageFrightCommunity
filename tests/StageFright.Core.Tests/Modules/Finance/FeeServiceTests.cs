@@ -122,7 +122,7 @@ public class FeeServiceTests : TestBase
 
         await _feeRepo.Received(1).AddAsync(
             Arg.Is<Fee>(f =>
-                f.MemberId == ActiveMember1Id &&
+                f!.MemberId == ActiveMember1Id &&
                 f.FeeType == FeeType.Annual &&
                 f.Amount == 50m &&
                 f.PaidAtCreation == false),
@@ -130,8 +130,8 @@ public class FeeServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Any(t => t.DebitAmount == 50m && t.GLAccount == "1200") &&
-                lines.Any(t => t.CreditAmount == 50m && t.GLAccount == "4000")),
+                lines!.Any(t => t.DebitAmount == 50m && t.GLAccount == "1200") &&
+                lines!.Any(t => t.CreditAmount == 50m && t.GLAccount == "4000")),
             Arg.Any<CancellationToken>());
     }
 
@@ -142,7 +142,7 @@ public class FeeServiceTests : TestBase
 
         await _feeRepo.Received(1).AddAsync(
             Arg.Is<Fee>(f =>
-                f.FeeDate.Month == 1 &&
+                f!.FeeDate.Month == 1 &&
                 f.FeeDate.Day == 1 &&
                 f.FeeDate.Year == DateTime.UtcNow.Year),
             Arg.Any<CancellationToken>());
@@ -155,7 +155,7 @@ public class FeeServiceTests : TestBase
 
         await _feeRepo.Received(1).AddAsync(
             Arg.Is<Fee>(f =>
-                f.DueDate.Month == 12 &&
+                f!.DueDate.Month == 12 &&
                 f.DueDate.Day == 31 &&
                 f.DueDate.Year == DateTime.UtcNow.Year),
             Arg.Any<CancellationToken>());
@@ -196,62 +196,62 @@ public class FeeServiceTests : TestBase
     // --- GST ---
 
     [Fact]
-    public async Task ApplyAnnualFees_NotRegistered_StampsNullGstCode_OnFeeAndGLLines()
+    public async Task ApplyAnnualFees_NotRegistered_StampsNullTaxCode_OnFeeAndGLLines()
     {
-        // settings default from ctor has IsGstRegistered == false
+        // settings default from ctor has IsTaxApplicable == false
         await _sut.ApplyAnnualFeesAsync(new[] { ActiveMember1Id }, Ct);
 
         await _feeRepo.Received(1).AddAsync(
-            Arg.Is<Fee>(f => f.GstCode == null),
+            Arg.Is<Fee>(f => f!.TaxCode == null),
             Arg.Any<CancellationToken>());
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.Count == 2 && lines.All(t => t.GstCode == null)),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.Count == 2 && lines.All(t => t.TaxCode == null)),
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task ApplyAnnualFees_RegisteredAndTaxable_Posts3Lines_SplitsGstToClearing()
+    public async Task ApplyAnnualFees_RegisteredAndTaxable_Posts3Lines_SplitsTaxToClearing()
     {
-        SetSettings(isGstRegistered: true, annualFeeGstCode: GstCode.Gst, annualFee: 110m);
+        SetSettings(isTaxApplicable: true, annualFeeTaxCode: TaxCode.Taxable, annualFee: 110m);
 
         await _sut.ApplyAnnualFeesAsync(new[] { ActiveMember1Id }, Ct);
 
         await _feeRepo.Received(1).AddAsync(
-            Arg.Is<Fee>(f => f.GstCode == GstCode.Gst && f.Amount == 110m),
+            Arg.Is<Fee>(f => f!.TaxCode == TaxCode.Taxable && f.Amount == 110m),
             Arg.Any<CancellationToken>());
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 3
+                lines!.Count == 3
                 && lines.Any(t => t.DebitAmount == 110m && t.GLAccount == "1200")
                 && lines.Any(t => t.CreditAmount == 100m && t.GLAccount == "4000")
-                && lines.Any(t => t.CreditAmount == 10m && t.AccountId == SystemAccounts.GstCollectedId)),
+                && lines.Any(t => t.CreditAmount == 10m && t.AccountId == SystemAccounts.TaxCollectedId)),
             Arg.Any<CancellationToken>());
     }
 
     [Theory]
-    [InlineData(GstCode.GstFree)]
-    [InlineData(GstCode.InputTaxed)]
-    public async Task ApplyAnnualFees_RegisteredButNotTaxable_Posts2Lines_NoGstSplit(GstCode code)
+    [InlineData(TaxCode.TaxExempt)]
+    [InlineData(TaxCode.Excluded)]
+    public async Task ApplyAnnualFees_RegisteredButNotTaxable_Posts2Lines_NoTaxSplit(TaxCode code)
     {
-        SetSettings(isGstRegistered: true, annualFeeGstCode: code, annualFee: 50m);
+        SetSettings(isTaxApplicable: true, annualFeeTaxCode: code, annualFee: 50m);
 
         await _sut.ApplyAnnualFeesAsync(new[] { ActiveMember1Id }, Ct);
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2 && lines.All(t => t.GstCode == code)),
+                lines!.Count == 2 && lines.All(t => t.TaxCode == code)),
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task ApplyAnnualFees_RegisteredWithNoFeeGstCodeSet_DefaultsToGstFree()
+    public async Task ApplyAnnualFees_RegisteredWithNoFeeTaxCodeSet_DefaultsToTaxFree()
     {
-        SetSettings(isGstRegistered: true, annualFeeGstCode: null, annualFee: 50m);
+        SetSettings(isTaxApplicable: true, annualFeeTaxCode: null, annualFee: 50m);
 
         await _sut.ApplyAnnualFeesAsync(new[] { ActiveMember1Id }, Ct);
 
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.GstCode == GstCode.GstFree)),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.All(t => t.TaxCode == TaxCode.TaxExempt)),
             Arg.Any<CancellationToken>());
     }
 
@@ -266,7 +266,7 @@ public class FeeServiceTests : TestBase
 
     // --- Helpers ---
 
-    private void SetSettings(bool isGstRegistered, GstCode? annualFeeGstCode, decimal annualFee) =>
+    private void SetSettings(bool isTaxApplicable, TaxCode? annualFeeTaxCode, decimal annualFee) =>
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>())
             .Returns(new Settings
             {
@@ -274,7 +274,7 @@ public class FeeServiceTests : TestBase
                 AnnualFee = annualFee, AttendanceFee = 10m,
                 MembershipRenewalMonth = 1, MaxAgeRangeYears = 150,
                 MinimumMemberAge = 0, SchemaVersion = "1.1.0",
-                IsGstRegistered = isGstRegistered, AnnualFeeGstCode = annualFeeGstCode,
+                IsTaxApplicable = isTaxApplicable, TaxRate = isTaxApplicable ? 10m : null, AnnualFeeTaxCode = annualFeeTaxCode,
                 CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
             });
 

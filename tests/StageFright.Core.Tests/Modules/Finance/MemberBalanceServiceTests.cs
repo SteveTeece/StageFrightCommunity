@@ -38,6 +38,11 @@ public class MemberBalanceServiceTests : TestBase
         _feeRepo.GetUnpaidOrderedFifoAsync(MemberWithBalanceId, Arg.Any<CancellationToken>())
             .Returns(new List<Fee> { MakeFee(MemberWithBalanceId, 80m) });
 
+        // Default: no GL settlements recorded against a fee unless a test overrides it — the
+        // fee is fully outstanding. Individual tests stub specific FeeIds to model settlement.
+        _glRepo.GetByFeeAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new List<Transaction>());
+
         _sut = new MemberBalanceService(_memberRepo, _feeRepo, _glRepo);
     }
 
@@ -68,7 +73,7 @@ public class MemberBalanceServiceTests : TestBase
     public async Task GetAllMemberBalancesAsync_FiltersOutFeesAlreadyCoveredByPayments()
     {
         // Repository has no per-fee paid flag, so it returns full FIFO history (paid + unpaid).
-        // The service must derive which prefix is paid off from the GL balance.
+        // The service must derive which fee is paid off from that fee's own GL settlements.
         var memberId = Guid.NewGuid();
         _memberRepo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(new List<Member> { MakeMember(memberId, "Mixed History") });
@@ -80,6 +85,12 @@ public class MemberBalanceServiceTests : TestBase
         var unpaidFee2 = MakeFee(memberId, 2m);
         _feeRepo.GetUnpaidOrderedFifoAsync(memberId, Arg.Any<CancellationToken>())
             .Returns(new List<Fee> { oldestPaidFee, unpaidFee1, unpaidFee2 });
+        _glRepo.GetByFeeAsync(oldestPaidFee.Id, Arg.Any<CancellationToken>())
+            .Returns(new List<Transaction>
+            {
+                new() { AccountId = SystemAccounts.MemberReceivableId, DebitAmount = 2m, CreditAmount = 0m, FeeId = oldestPaidFee.Id },
+                new() { AccountId = SystemAccounts.MemberReceivableId, DebitAmount = 0m, CreditAmount = 2m, FeeId = oldestPaidFee.Id },
+            });
 
         var result = await _sut.GetAllMemberBalancesAsync(Ct);
 
@@ -89,6 +100,40 @@ public class MemberBalanceServiceTests : TestBase
         Assert.DoesNotContain(oldestPaidFee, balance.Fees);
         Assert.Contains(unpaidFee1, balance.Fees);
         Assert.Contains(unpaidFee2, balance.Fees);
+    }
+
+    [Fact]
+    public async Task GetAllMemberBalancesAsync_AttributesCorrectFee_WhenNonOldestFeeWasSettledFirst()
+    {
+        // Regression for #278: a payment or forgiveness can settle an arbitrary fee (via
+        // RecordPaymentRequest.SelectedFeeIds / ReactivationForgivenessService), not
+        // necessarily the oldest one. The breakdown must reflect which fee's own GL entries
+        // were actually settled, not a FIFO-balance guess that always blames the oldest fee.
+        var memberId = Guid.NewGuid();
+        _memberRepo.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Member> { MakeMember(memberId, "Non-FIFO Settlement") });
+        _glRepo.GetMemberBalanceAsync(memberId, Arg.Any<CancellationToken>())
+            .Returns(4m); // 3 fees of $2 each = $6 total; $2 already paid off the MIDDLE fee
+
+        var oldestFee = MakeFee(memberId, 2m);
+        var middleFee = MakeFee(memberId, 2m);
+        var newestFee = MakeFee(memberId, 2m);
+        _feeRepo.GetUnpaidOrderedFifoAsync(memberId, Arg.Any<CancellationToken>())
+            .Returns(new List<Fee> { oldestFee, middleFee, newestFee });
+        _glRepo.GetByFeeAsync(middleFee.Id, Arg.Any<CancellationToken>())
+            .Returns(new List<Transaction>
+            {
+                new() { AccountId = SystemAccounts.MemberReceivableId, DebitAmount = 2m, CreditAmount = 0m, FeeId = middleFee.Id },
+                new() { AccountId = SystemAccounts.MemberReceivableId, DebitAmount = 0m, CreditAmount = 2m, FeeId = middleFee.Id },
+            });
+
+        var result = await _sut.GetAllMemberBalancesAsync(Ct);
+
+        var balance = Assert.Single(result, b => b.MemberId == memberId);
+        Assert.Equal(2, balance.Fees.Count);
+        Assert.Contains(oldestFee, balance.Fees);
+        Assert.DoesNotContain(middleFee, balance.Fees);
+        Assert.Contains(newestFee, balance.Fees);
     }
 
     [Fact]

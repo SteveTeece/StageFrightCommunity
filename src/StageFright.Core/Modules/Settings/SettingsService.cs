@@ -25,11 +25,20 @@ public class SettingsService : ISettingsService
 
     public async Task SaveAsync(global::StageFright.Core.Entities.Settings settings, CancellationToken ct = default)
     {
-#if !DEBUG
-        // ABN checksum validation is skipped in Debug builds — see SetupFormModel.Abn.
-        if (!string.IsNullOrEmpty(settings.Abn) && !AbnValidator.IsValid(settings.Abn))
-            throw new ValidationException("The ABN is not valid.", "Settings", nameof(SaveAsync));
-#endif
+        // Enforce Settings.IsTaxApplicable's documented invariant here — the single choke
+        // point every save path (General tab, Sales Tax tab, etc.) goes through — so turning
+        // tax off post-setup can't leave a stale rate/tax codes persisted (matches
+        // SetupService.InitializeAsync's setup-time behavior).
+        if (!settings.IsTaxApplicable)
+        {
+            settings.TaxRate = null;
+            settings.AnnualFeeTaxCode = null;
+            settings.AttendanceFeeTaxCode = null;
+        }
+        else if (settings.TaxRate is not (> 0))
+        {
+            throw new ValidationException("A tax rate greater than zero is required when sales tax applies.", "Settings", nameof(SaveAsync));
+        }
 
         if (settings.MinimumMemberAge < 0)
             throw new ValidationException("Minimum member age cannot be negative.", "Settings", nameof(SaveAsync));
@@ -39,6 +48,9 @@ public class SettingsService : ISettingsService
 
         if (settings.MinimumMemberAge > settings.MaxAgeRangeYears)
             throw new ValidationException("Minimum member age cannot exceed the maximum age range.", "Settings", nameof(SaveAsync));
+
+        if (settings.AuditRetentionYears < 1 || settings.AuditRetentionYears > 7)
+            throw new ValidationException("Audit retention period must be between 1 and 7 years.", "Settings", nameof(SaveAsync));
 
         var existing = await _repository.GetAsync(ct);
 

@@ -1,12 +1,31 @@
 using Microsoft.EntityFrameworkCore;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Exceptions;
 
 namespace StageFright.Data.Repositories;
 
 public class EventRepository : SoftDeletableBaseRepository<Event>, IEventRepository
 {
     public EventRepository(StageFrightDbContext db) : base(db) { }
+
+    /// <summary>
+    /// Overrides BaseRepository.GetAllAsync to enforce the date-descending order that
+    /// IEventRepository/IEventService document — previously only applied client-side by callers.
+    /// </summary>
+    public override async Task<IReadOnlyList<Event>> GetAllAsync(CancellationToken ct = default)
+    {
+        try
+        {
+            return await _db.Events
+                .OrderByDescending(e => e.Date)
+                .ToListAsync(ct);
+        }
+        catch (Exception ex) when (ex is not DataAccessException)
+        {
+            throw new DataAccessException(ex.Message, nameof(Event), nameof(GetAllAsync), null, ex);
+        }
+    }
 
     public async Task<Event?> GetMostRecentPastAsync(DateTime asOf, CancellationToken ct = default)
     {
@@ -42,15 +61,6 @@ public class EventRepository : SoftDeletableBaseRepository<Event>, IEventReposit
             .Where(e => e.Date >= startOfDay)
             .OrderBy(e => e.Date)
             .FirstOrDefaultAsync(ct);
-    }
-
-    public async Task<bool> AgmExistsInYearAsync(int year, CancellationToken ct = default)
-    {
-        return await _db.Events
-            .Include(e => e.EventType)
-            .Where(e => e.Date.Year == year
-                && e.EventType.Name == "Annual General Meeting")
-            .AnyAsync(ct);
     }
 
     public async Task<Event?> GetByIdWithDetailsAsync(Guid id, CancellationToken ct = default)

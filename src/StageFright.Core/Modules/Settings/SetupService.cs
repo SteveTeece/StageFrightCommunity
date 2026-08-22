@@ -3,6 +3,7 @@ using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.Events;
+using StageFright.Core.Modules.Finance;
 using SettingsEntity = StageFright.Core.Entities.Settings;
 
 namespace StageFright.Core.Modules.Settings;
@@ -17,17 +18,26 @@ public class SetupService : ISetupService
     private readonly ISettingsRepository _settingsRepo;
     private readonly IAccountRepository _accountRepo;
     private readonly IEventTypeRepository _eventTypeRepo;
+    private readonly ICommitteeOfficeHolderTypeService _officeHolderTypeService;
+    private readonly IAccountService _accountService;
+    private readonly IOpeningBalanceService _openingBalanceService;
     private readonly IAuditTrailService _audit;
 
     public SetupService(
         ISettingsRepository settingsRepo,
         IAccountRepository accountRepo,
         IEventTypeRepository eventTypeRepo,
+        ICommitteeOfficeHolderTypeService officeHolderTypeService,
+        IAccountService accountService,
+        IOpeningBalanceService openingBalanceService,
         IAuditTrailService audit)
     {
         _settingsRepo = settingsRepo;
         _accountRepo = accountRepo;
         _eventTypeRepo = eventTypeRepo;
+        _officeHolderTypeService = officeHolderTypeService;
+        _accountService = accountService;
+        _openingBalanceService = openingBalanceService;
         _audit = audit;
     }
 
@@ -45,23 +55,27 @@ public class SetupService : ISetupService
 
         Validate(request);
 
-        // GST codes only ever apply while registered — force them null otherwise, regardless
-        // of what the wizard happened to have selected before the user toggled registration off.
-        var annualFeeGstCode = request.IsGstRegistered ? request.AnnualFeeGstCode : null;
-        var attendanceFeeGstCode = request.IsGstRegistered ? request.AttendanceFeeGstCode : null;
+        // Tax codes and rate only ever apply while tax is applicable — force them null
+        // otherwise, regardless of what the wizard happened to have selected before the
+        // user toggled tax applicability off.
+        var taxRate = request.IsTaxApplicable ? request.TaxRate : null;
+        var annualFeeTaxCode = request.IsTaxApplicable ? request.AnnualFeeTaxCode : null;
+        var attendanceFeeTaxCode = request.IsTaxApplicable ? request.AttendanceFeeTaxCode : null;
 
         var settings = new SettingsEntity
         {
             Id = Guid.NewGuid(),
             OrganizationName = request.OrganizationName.Trim(),
-            Abn = request.Abn.Trim(),
             AnnualFee = request.AnnualFee,
             AttendanceFee = request.AttendanceFee,
             MembershipRenewalMonth = request.MembershipRenewalMonth,
-            IsGstRegistered = request.IsGstRegistered,
-            AnnualFeeGstCode = annualFeeGstCode,
-            AttendanceFeeGstCode = attendanceFeeGstCode,
-            CommitteeRenewalMonth = 1,
+            IsTaxApplicable = request.IsTaxApplicable,
+            TaxRate = taxRate,
+            AnnualFeeTaxCode = annualFeeTaxCode,
+            AttendanceFeeTaxCode = attendanceFeeTaxCode,
+            CommitteeRenewalMonth = request.CommitteeRenewalMonth,
+            GeneralCommitteeSeatCountTarget = request.GeneralCommitteeSeatCountTarget,
+            AuditRetentionYears = request.AuditRetentionYears,
             MaxAgeRangeYears = 150,
             MinimumMemberAge = 0,
             Theme = request.Theme,
@@ -73,6 +87,50 @@ public class SetupService : ISetupService
         await _settingsRepo.SaveAsync(settings, ct);
 
         await SeedDefaultEventTypesAsync(ct);
+
+        // Chart of Accounts entries queued during setup (FR-013) are created here, together
+        // with the rest of setup, so Finish stays one submission (FR-008). ClientId->real
+        // Account.Id is tracked so a queued account's opening balance (below) can be
+        // resolved to a real AccountId even though it didn't exist when it was queued.
+        var clientIdToAccountId = new Dictionary<Guid, Guid>();
+        if (request.QueuedAccounts is { Count: > 0 })
+        {
+            foreach (var queuedAccount in request.QueuedAccounts)
+            {
+                var created = await _accountService.CreateAsync(
+                    queuedAccount.Name, queuedAccount.Type, queuedAccount.IsBankAccount, ct);
+                clientIdToAccountId[queuedAccount.ClientId] = created.Id;
+            }
+        }
+
+        // Opening balances queued during setup (FR-018) post together as one journal entry,
+        // after any queued accounts above so a queued account's ClientId can already resolve.
+        if (request.QueuedOpeningBalances is { Count: > 0 })
+        {
+            var resolvedEntries = request.QueuedOpeningBalances
+                .Select(entry => new OpeningBalanceEntry
+                {
+                    AccountId = clientIdToAccountId.TryGetValue(entry.AccountId, out var realId)
+                        ? realId
+                        : entry.AccountId,
+                    Amount = entry.Amount
+                })
+                .ToList();
+
+            await _openingBalanceService.RecordOpeningBalancesAsync(new RecordOpeningBalancesRequest
+            {
+                AsAtDate = request.OpeningBalanceAsAtDate,
+                Entries = resolvedEntries
+            }, ct);
+        }
+
+        // Committee configuration is optional at every default (FR-021) — coordinators who
+        // skip this step get no custom titles, identical to configuring none from Settings.
+        if (request.CommitteeOfficeHolderTitles is { Count: > 0 })
+        {
+            foreach (var title in request.CommitteeOfficeHolderTitles)
+                await _officeHolderTypeService.AddAsync(title, ct);
+        }
 
         await _audit.LogAsync(
             entityType: "Settings",
@@ -104,14 +162,8 @@ public class SetupService : ISetupService
         if (string.IsNullOrWhiteSpace(request.OrganizationName))
             throw new ValidationException("OrganizationName is required.", "Settings", nameof(InitializeAsync));
 
-        if (string.IsNullOrWhiteSpace(request.Abn))
-            throw new ValidationException("A valid ABN is required.", "Settings", nameof(InitializeAsync));
-
-#if !DEBUG
-        // ABN checksum validation is skipped in Debug builds — see SetupFormModel.Abn.
-        if (!AbnValidator.IsValid(request.Abn.Trim()))
-            throw new ValidationException("A valid ABN is required.", "Settings", nameof(InitializeAsync));
-#endif
+        if (request.IsTaxApplicable && request.TaxRate is not (> 0))
+            throw new ValidationException("A tax rate greater than zero is required when sales tax applies.", "Settings", nameof(InitializeAsync));
 
         if (request.AnnualFee < 0)
             throw new ValidationException("AnnualFee must be zero or greater.", "Settings", nameof(InitializeAsync));
@@ -121,5 +173,8 @@ public class SetupService : ISetupService
 
         if (request.MembershipRenewalMonth < 1 || request.MembershipRenewalMonth > 12)
             throw new ValidationException("MembershipRenewalMonth must be between 1 and 12.", "Settings", nameof(InitializeAsync));
+
+        if (request.AuditRetentionYears < 1 || request.AuditRetentionYears > 7)
+            throw new ValidationException("Audit retention period must be between 1 and 7 years.", "Settings", nameof(InitializeAsync));
     }
 }

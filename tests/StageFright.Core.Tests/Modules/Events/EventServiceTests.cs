@@ -95,7 +95,7 @@ public class EventServiceTests : TestBase
 
         // Rate = 2 participated / 3 active * 100 ≈ 66.67
         await _eventRepo.Received(1).UpdateAsync(
-            Arg.Is<Event>(e => e.StoredParticipationRate.HasValue
+            Arg.Is<Event>(e => e!.StoredParticipationRate.HasValue
                 && e.StoredParticipationRate.Value > 66m
                 && e.StoredParticipationRate.Value < 67m),
             Arg.Any<CancellationToken>());
@@ -122,7 +122,7 @@ public class EventServiceTests : TestBase
         await svc.RecordParticipationAsync(EventId, items, Ct);
 
         await _eventRepo.Received(1).UpdateAsync(
-            Arg.Is<Event>(e => e.StoredParticipationRate == 100m),
+            Arg.Is<Event>(e => e!.StoredParticipationRate == 100m),
             Arg.Any<CancellationToken>());
     }
 
@@ -139,7 +139,7 @@ public class EventServiceTests : TestBase
         await svc.RecordParticipationAsync(EventId, Array.Empty<ParticipationBatchItem>(), Ct);
 
         await _eventRepo.Received(1).UpdateAsync(
-            Arg.Is<Event>(e => e.StoredParticipationRate == 0m),
+            Arg.Is<Event>(e => e!.StoredParticipationRate == 0m),
             Arg.Any<CancellationToken>());
     }
 
@@ -231,30 +231,6 @@ public class EventServiceTests : TestBase
         await svc.RecordParticipationAsync(todayEventId, items, Ct);
 
         await _eventRepo.Received(1).UpdateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>());
-    }
-
-    // --- AgmExistsInYearAsync ---
-
-    [Fact]
-    public async Task AgmExistsInYearAsync_DelegatesToRepository()
-    {
-        _eventRepo.AgmExistsInYearAsync(2026, Arg.Any<CancellationToken>()).Returns(true);
-
-        var svc = CreateService();
-        var result = await svc.AgmExistsInYearAsync(2026, Ct);
-
-        Assert.True(result);
-    }
-
-    [Fact]
-    public async Task AgmExistsInYearAsync_ReturnsFalse_WhenNotFound()
-    {
-        _eventRepo.AgmExistsInYearAsync(2025, Arg.Any<CancellationToken>()).Returns(false);
-
-        var svc = CreateService();
-        var result = await svc.AgmExistsInYearAsync(2025, Ct);
-
-        Assert.False(result);
     }
 
     // --- GetMostRecentPastAsync ---

@@ -28,9 +28,51 @@ public class MemberBalanceService : IMemberBalanceService
     public async Task<IReadOnlyList<OutstandingFee>> GetOutstandingFeesAsync(Guid memberId, CancellationToken ct = default)
     {
         var fees = await _feeRepo.GetUnpaidOrderedFifoAsync(memberId, ct);
+        return await BuildOutstandingFeesAsync(fees, ct);
+    }
 
+    public async Task<IReadOnlyList<MemberBalance>> GetAllMemberBalancesAsync(CancellationToken ct = default)
+    {
+        var members = await _memberRepo.GetAllAsync(ct);
+
+        var balances = new List<MemberBalance>();
+
+        foreach (var member in members)
+        {
+            var balance = await _glRepo.GetMemberBalanceAsync(member.Id, ct);
+            if (balance <= 0m)
+                continue;
+
+            var fees = await _feeRepo.GetUnpaidOrderedFifoAsync(member.Id, ct);
+            var outstandingFeeIds = (await BuildOutstandingFeesAsync(fees, ct))
+                .Select(o => o.FeeId)
+                .ToHashSet();
+
+            balances.Add(new MemberBalance
+            {
+                MemberId = member.Id,
+                Name = member.SortableFullName,
+                Balance = balance,
+                Fees = fees.Where(f => outstandingFeeIds.Contains(f.Id)).ToList()
+            });
+        }
+
+        return balances;
+    }
+
+    /// <summary>
+    /// Fees carry no per-record paid flag, so which fees are still owed is derived per-fee
+    /// from the GL: each fee's own MemberReceivable credits (from payments or forgiveness,
+    /// however they were allocated — not assumed to be FIFO) are summed and subtracted from
+    /// its original amount. This is the single source of truth for "is this specific fee
+    /// outstanding," shared by GetOutstandingFeesAsync and GetAllMemberBalancesAsync so both
+    /// agree on the same per-fee GL state instead of one of them guessing via a FIFO-balance
+    /// prefix walk.
+    /// </summary>
+    private async Task<IReadOnlyList<OutstandingFee>> BuildOutstandingFeesAsync(IReadOnlyList<Fee> feesFifoOrder, CancellationToken ct)
+    {
         var outstanding = new List<OutstandingFee>();
-        foreach (var fee in fees.OrderBy(f => f.FeeDate).ThenBy(f => f.CreatedAt).ThenBy(f => f.Id))
+        foreach (var fee in feesFifoOrder.OrderBy(f => f.FeeDate).ThenBy(f => f.CreatedAt).ThenBy(f => f.Id))
         {
             var feeTransactions = await _glRepo.GetByFeeAsync(fee.Id, ct);
             var alreadySettled = feeTransactions
@@ -49,54 +91,6 @@ public class MemberBalanceService : IMemberBalanceService
                 DueDate = fee.DueDate,
                 RemainingAmount = remainingAmount
             });
-        }
-
-        return outstanding;
-    }
-
-    public async Task<IReadOnlyList<MemberBalance>> GetAllMemberBalancesAsync(CancellationToken ct = default)
-    {
-        var members = await _memberRepo.GetAllAsync(ct);
-
-        var balances = new List<MemberBalance>();
-
-        foreach (var member in members)
-        {
-            var balance = await _glRepo.GetMemberBalanceAsync(member.Id, ct);
-            if (balance <= 0m)
-                continue;
-
-            var fees = await _feeRepo.GetUnpaidOrderedFifoAsync(member.Id, ct);
-
-            balances.Add(new MemberBalance
-            {
-                MemberId = member.Id,
-                Name = member.SortableFullName,
-                Balance = balance,
-                Fees = SelectOutstandingFees(fees, balance)
-            });
-        }
-
-        return balances;
-    }
-
-    /// <summary>
-    /// Fees carry no per-record paid flag — the GL balance is authoritative. Given fees in
-    /// FIFO order and the member's current outstanding balance, the fees already covered by
-    /// payments are exactly the oldest prefix summing to (total fees − balance), since payments
-    /// are allocated FIFO. This walks that prefix off and returns only the still-owed tail.
-    /// </summary>
-    private static IReadOnlyList<Fee> SelectOutstandingFees(IReadOnlyList<Fee> feesFifoOrder, decimal balance)
-    {
-        var paidAmount = feesFifoOrder.Sum(f => f.Amount) - balance;
-
-        var outstanding = new List<Fee>();
-        foreach (var fee in feesFifoOrder)
-        {
-            if (paidAmount >= fee.Amount)
-                paidAmount -= fee.Amount;
-            else
-                outstanding.Add(fee);
         }
 
         return outstanding;

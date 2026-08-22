@@ -80,6 +80,11 @@ public class AttendanceGridTests : RadzenGridTestContext
 
         _memberService.GetByStatusAsync(MemberStatus.Inactive, Arg.Any<CancellationToken>())
             .Returns(new List<Member>());
+
+        // Default: no paid-status data unless a test overrides it (only consulted once a
+        // rehearsal's attendance is already recorded).
+        _attendanceService.GetPaidStatusByRehearsalAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new Dictionary<Guid, bool>());
     }
 
     [Fact]
@@ -168,7 +173,7 @@ public class AttendanceGridTests : RadzenGridTestContext
         await _attendanceService.Received(1).RecordBatchAsync(
             RehearsalId,
             Arg.Is<IReadOnlyList<AttendanceBatchItem>>(items =>
-                items.Count == 2 && items.All(i => i.Attended)),
+                items!.Count == 2 && items.All(i => i.Attended)),
             Arg.Any<CancellationToken>());
     }
 
@@ -191,6 +196,30 @@ public class AttendanceGridTests : RadzenGridTestContext
             RehearsalId,
             Arg.Any<IReadOnlyList<AttendanceBatchItem>>(),
             Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public void WhenAttendanceAlreadyRecorded_PaidCheckbox_ReflectsActualPaidStatus_NotAttended()
+    {
+        // Regression for #281: the read-only "Paid" checkbox must not just mirror "Attended".
+        var member = ActiveMember("Carol");
+        var record = new AttendanceRecord
+        {
+            Id = Guid.NewGuid(), RehearsalId = RehearsalId, MemberId = member.Id,
+            Attended = true, Member = member, CreatedAt = DateTime.UtcNow
+        };
+        _rehearsalService.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Rehearsal> { LockedRehearsal });
+        _attendanceService.GetByRehearsalAsync(RehearsalId, Arg.Any<CancellationToken>())
+            .Returns(new List<AttendanceRecord> { record });
+        // Attended but the fee was marked unpaid at recording time — Paid must show unchecked.
+        _attendanceService.GetPaidStatusByRehearsalAsync(RehearsalId, Arg.Any<CancellationToken>())
+            .Returns(new Dictionary<Guid, bool> { [member.Id] = false });
+
+        var cut = RenderWithId();
+
+        var paidCheckbox = cut.Find($"input[aria-label='{member.SortableFullName} paid']");
+        Assert.False(paidCheckbox.HasAttribute("checked"));
     }
 
     [Fact]

@@ -59,7 +59,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
     {
         var memberId = Guid.NewGuid();
 
-        var balance = await _sut.GetMemberBalanceAsync(memberId);
+        var balance = await _sut.GetMemberBalanceAsync(memberId, TestContext.Current.CancellationToken);
 
         Assert.Equal(0m, balance);
     }
@@ -74,7 +74,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
             debitAccount: "0101", debitAccountId: MemberReceivableAccountId, debitAmount: 50m, debitMemberId: memberId,
             creditAccount: "1000", creditAccountId: IncomeAccountId, creditAmount: 50m, creditMemberId: null);
 
-        var balance = await _sut.GetMemberBalanceAsync(memberId);
+        var balance = await _sut.GetMemberBalanceAsync(memberId, TestContext.Current.CancellationToken);
 
         Assert.Equal(50m, balance);
     }
@@ -92,7 +92,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         await AddGLPairAsync("0100", CashAccountId, 30m, memberId,
                               "0101", MemberReceivableAccountId, 30m, memberId);
 
-        var balance = await _sut.GetMemberBalanceAsync(memberId);
+        var balance = await _sut.GetMemberBalanceAsync(memberId, TestContext.Current.CancellationToken);
 
         Assert.Equal(20m, balance);
     }
@@ -109,8 +109,8 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         await AddGLPairAsync("0101", MemberReceivableAccountId, 75m, member2,
                               "1000", IncomeAccountId, 75m, null);
 
-        var balance1 = await _sut.GetMemberBalanceAsync(member1);
-        var balance2 = await _sut.GetMemberBalanceAsync(member2);
+        var balance1 = await _sut.GetMemberBalanceAsync(member1, TestContext.Current.CancellationToken);
+        var balance2 = await _sut.GetMemberBalanceAsync(member2, TestContext.Current.CancellationToken);
 
         Assert.Equal(100m, balance1);
         Assert.Equal(75m, balance2);
@@ -121,7 +121,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task GetTotalOutstanding_ReturnsZero_WhenNoTransactions()
     {
-        var total = await _sut.GetTotalOutstandingAsync();
+        var total = await _sut.GetTotalOutstandingAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(0m, total);
     }
@@ -138,7 +138,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         await AddGLPairAsync("0101", MemberReceivableAccountId, 80m, member2,
                               "1000", IncomeAccountId, 80m, null);
 
-        var total = await _sut.GetTotalOutstandingAsync();
+        var total = await _sut.GetTotalOutstandingAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(130m, total);
     }
@@ -155,7 +155,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         await AddGLPairAsync("0100", CashAccountId, 40m, memberId,
                               "0101", MemberReceivableAccountId, 40m, memberId);
 
-        var total = await _sut.GetTotalOutstandingAsync();
+        var total = await _sut.GetTotalOutstandingAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(60m, total);
     }
@@ -178,7 +178,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         var from = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var to = new DateTime(2026, 3, 31, 0, 0, 0, DateTimeKind.Utc);
 
-        var txns = await _sut.GetByDateRangeAsync(from, to);
+        var txns = await _sut.GetByDateRangeAsync(from, to, TestContext.Current.CancellationToken);
 
         // 2 pairs = 4 transactions within Jan-Mar
         Assert.Equal(4, txns.Count);
@@ -196,7 +196,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         var from = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var to = new DateTime(2026, 12, 31, 0, 0, 0, DateTimeKind.Utc);
 
-        var txns = await _sut.GetByDateRangeAsync(from, to);
+        var txns = await _sut.GetByDateRangeAsync(from, to, TestContext.Current.CancellationToken);
 
         Assert.Empty(txns);
     }
@@ -219,7 +219,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         await AddGLPairAsync("0100", CashAccountId, 30m, memberId,
                               "0101", MemberReceivableAccountId, 30m, memberId);
 
-        var txns = await _sut.GetByMemberAsync(memberId, from, to);
+        var txns = await _sut.GetByMemberAsync(memberId, from, to, TestContext.Current.CancellationToken);
 
         Assert.Equal(2, txns.Count);
         Assert.All(txns, t => Assert.Equal(MemberReceivableAccountId, t.AccountId));
@@ -238,7 +238,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         var from = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var to = new DateTime(2026, 12, 31, 0, 0, 0, DateTimeKind.Utc);
 
-        var (totalDebits, totalCredits) = await _sut.GetBalanceTotalsAsync(from, to);
+        var (totalDebits, totalCredits) = await _sut.GetBalanceTotalsAsync(from, to, TestContext.Current.CancellationToken);
 
         Assert.Equal(100m, totalDebits);
         Assert.Equal(100m, totalCredits);
@@ -260,7 +260,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         var from = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var to = new DateTime(2026, 12, 31, 0, 0, 0, DateTimeKind.Utc);
 
-        var (totalDebits, totalCredits) = await _sut.GetBalanceTotalsAsync(from, to);
+        var (totalDebits, totalCredits) = await _sut.GetBalanceTotalsAsync(from, to, TestContext.Current.CancellationToken);
 
         // In a balanced double-entry system, total debits always equal total credits
         Assert.Equal(totalDebits, totalCredits);
@@ -275,19 +275,17 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         var date = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         await Assert.ThrowsAsync<Core.Exceptions.GLBalanceException>(() =>
-            _sut.AddPairAsync(
-                new Transaction
+            _sut.AddPairAsync(new Transaction
                 {
                     Id = Guid.NewGuid(), Date = date, AccountId = MemberReceivableAccountId,
                     DebitAmount = 50m, CreditAmount = 0m, GLAccount = "0101",
                     MemberId = memberId, CreatedAt = date
-                },
-                new Transaction
+                }, new Transaction
                 {
                     Id = Guid.NewGuid(), Date = date, AccountId = IncomeAccountId,
                     DebitAmount = 0m, CreditAmount = 40m, GLAccount = "1000",
                     MemberId = null, CreatedAt = date
-                }));
+                }, TestContext.Current.CancellationToken));
     }
 
     // --- GetOutstandingByFeeTypeAsync ---
@@ -295,7 +293,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task GetOutstandingByFeeType_ReturnsZero_WhenNoFeeLinkedTransactions()
     {
-        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync(DateTime.MaxValue);
+        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync(DateTime.MaxValue, TestContext.Current.CancellationToken);
 
         Assert.Equal(0m, attendance);
         Assert.Equal(0m, annual);
@@ -314,7 +312,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         // Partially pay the annual fee — FIFO allocation tags the payment with the fee it clears.
         await AddFeeLinkedPaymentAsync(memberId, annualFeeId, 40m);
 
-        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync(DateTime.MaxValue);
+        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync(DateTime.MaxValue, TestContext.Current.CancellationToken);
 
         Assert.Equal(20m, attendance);
         Assert.Equal(60m, annual);
@@ -331,7 +329,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         await AddGLPairAsync("0100", CashAccountId, 30m, memberId,
                               "0101", MemberReceivableAccountId, 30m, memberId);
 
-        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync(DateTime.MaxValue);
+        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync(DateTime.MaxValue, TestContext.Current.CancellationToken);
 
         Assert.Equal(0m, attendance);
         Assert.Equal(50m, annual);
@@ -344,7 +342,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         var annualFeeId = await SeedFeeAsync(memberId, FeeType.Annual, 100m);
         await AddFeeLinkedAccrualAsync(memberId, annualFeeId, 100m); // dated 2026-03-01
 
-        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync(new DateTime(2026, 2, 28, 0, 0, 0, DateTimeKind.Utc));
+        var (attendance, annual) = await _sut.GetOutstandingByFeeTypeAsync(new DateTime(2026, 2, 28, 0, 0, 0, DateTimeKind.Utc), TestContext.Current.CancellationToken);
 
         Assert.Equal(0m, attendance);
         Assert.Equal(0m, annual);
@@ -355,7 +353,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task GetOutstandingMemberCount_ReturnsZero_WhenNoTransactions()
     {
-        var count = await _sut.GetOutstandingMemberCountAsync(DateTime.MaxValue);
+        var count = await _sut.GetOutstandingMemberCountAsync(DateTime.MaxValue, TestContext.Current.CancellationToken);
 
         Assert.Equal(0, count);
     }
@@ -372,7 +370,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         await AddFeeLinkedAccrualAsync(memberB, feeIdB, 20m);
         await AddFeeLinkedPaymentAsync(memberB, feeIdB, 20m); // fully paid — no longer outstanding
 
-        var count = await _sut.GetOutstandingMemberCountAsync(DateTime.MaxValue);
+        var count = await _sut.GetOutstandingMemberCountAsync(DateTime.MaxValue, TestContext.Current.CancellationToken);
 
         Assert.Equal(1, count);
     }
@@ -384,7 +382,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         var feeId = await SeedFeeAsync(memberId, FeeType.Annual, 50m);
         await AddFeeLinkedAccrualAsync(memberId, feeId, 50m); // dated 2026-03-01
 
-        var count = await _sut.GetOutstandingMemberCountAsync(new DateTime(2026, 2, 28, 0, 0, 0, DateTimeKind.Utc));
+        var count = await _sut.GetOutstandingMemberCountAsync(new DateTime(2026, 2, 28, 0, 0, 0, DateTimeKind.Utc), TestContext.Current.CancellationToken);
 
         Assert.Equal(0, count);
     }
@@ -399,7 +397,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         await AddGLPairAsync("0101", MemberReceivableAccountId, 25m, memberId,
                               "1000", IncomeAccountId, 25m, null);
 
-        var count = await _sut.GetOutstandingMemberCountAsync(DateTime.MaxValue);
+        var count = await _sut.GetOutstandingMemberCountAsync(DateTime.MaxValue, TestContext.Current.CancellationToken);
 
         Assert.Equal(1, count);
     }

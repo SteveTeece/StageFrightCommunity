@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
+using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Modules.AuditTrail;
@@ -53,13 +55,13 @@ public sealed class StartupSequenceTests : IAsyncLifetime
             Timestamp = DateTime.UtcNow.AddMonths(-6)
         };
         await _db.AuditTrailEntries.AddRangeAsync(oldEntry, recentEntry);
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var repo = new AuditTrailRepository(_db);
         var svc = new AuditTrailService(repo, NullLogger<AuditTrailService>.Instance);
-        await svc.PurgeOlderThanAsync(DateTime.UtcNow.AddMonths(-12));
+        await svc.PurgeOlderThanAsync(DateTime.UtcNow.AddMonths(-12), TestContext.Current.CancellationToken);
 
-        var remaining = await _db.AuditTrailEntries.IgnoreQueryFilters().ToListAsync();
+        var remaining = await _db.AuditTrailEntries.IgnoreQueryFilters().ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.DoesNotContain(remaining, e => e.Id == oldEntry.Id);
         Assert.Contains(remaining, e => e.Id == recentEntry.Id);
     }
@@ -72,9 +74,60 @@ public sealed class StartupSequenceTests : IAsyncLifetime
         var svc = new AuditTrailService(repo, NullLogger<AuditTrailService>.Instance);
 
         var ex = await Record.ExceptionAsync(
-            () => svc.PurgeOlderThanAsync(DateTime.UtcNow.AddMonths(-12)));
+            () => svc.PurgeOlderThanAsync(DateTime.UtcNow.AddMonths(-12), TestContext.Current.CancellationToken));
 
         Assert.Null(ex);
+    }
+
+    [Fact]
+    public void AuditPurge_ResolvesViaDiContainer_ThroughInterfaceOnly()
+    {
+        // Regression for #275: DI only ever registers IAuditTrailService (the interface),
+        // so resolving the concrete AuditTrailService type (as the buggy MauiProgram code
+        // used to do) always returned null and silently skipped the purge. This mirrors
+        // MauiProgram's actual registration and confirms GetRequiredService<IAuditTrailService>()
+        // resolves successfully — the fixed call site's own approach.
+        var services = new ServiceCollection();
+        services.AddSingleton(_db);
+        services.AddScoped<IAuditTrailRepository, AuditTrailRepository>();
+        services.AddScoped<IAuditTrailService, AuditTrailService>();
+        services.AddLogging();
+        using var provider = services.BuildServiceProvider();
+
+        var resolved = provider.GetRequiredService<IAuditTrailService>();
+
+        Assert.NotNull(resolved);
+        Assert.IsType<AuditTrailService>(resolved);
+    }
+
+    [Fact]
+    public async Task AuditPurge_HonoursConfiguredRetentionPeriod()
+    {
+        var oldEnoughForOneYear = new AuditTrailEntry
+        {
+            Id = Guid.NewGuid(), EntityType = "Member", EntityId = Guid.NewGuid(),
+            Action = AuditAction.Create, UserId = "system",
+            Timestamp = DateTime.UtcNow.AddYears(-2)
+        };
+        var withinOneYear = new AuditTrailEntry
+        {
+            Id = Guid.NewGuid(), EntityType = "Member", EntityId = Guid.NewGuid(),
+            Action = AuditAction.Update, UserId = "system",
+            Timestamp = DateTime.UtcNow.AddMonths(-6)
+        };
+        await _db.AuditTrailEntries.AddRangeAsync(oldEnoughForOneYear, withinOneYear);
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var repo = new AuditTrailRepository(_db);
+        var svc = new AuditTrailService(repo, NullLogger<AuditTrailService>.Instance);
+
+        // A configured retention of 1 year -> cutoff is 1 year ago, matching MauiProgram's
+        // DateTime.UtcNow.AddYears(-retentionYears) computation.
+        await svc.PurgeOlderThanAsync(DateTime.UtcNow.AddYears(-1), TestContext.Current.CancellationToken);
+
+        var remaining = await _db.AuditTrailEntries.IgnoreQueryFilters().ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
+        Assert.DoesNotContain(remaining, e => e.Id == oldEnoughForOneYear.Id);
+        Assert.Contains(remaining, e => e.Id == withinOneYear.Id);
     }
 
     // --- Startup diagnostic service (T172 corrupted-DB error dialog) ---

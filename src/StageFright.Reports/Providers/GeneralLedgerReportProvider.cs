@@ -98,11 +98,11 @@ public class GeneralLedgerReportProvider : IReportProvider
             GeneratedAt = DateTime.UtcNow,
             Columns =
             [
-                new ReportColumn { Header = "Date", Alignment = ReportColumnAlignment.Left, Format = ReportColumnFormat.Date },
+                new ReportColumn { Header = "Date", Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
-                new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency },
-                new ReportColumn { Header = "Balance", Alignment = ReportColumnAlignment.Right, Format = ReportColumnFormat.Currency }
+                new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = "Balance", Alignment = ReportColumnAlignment.Right }
             ],
             Sections = sections
         };

@@ -8,16 +8,15 @@ namespace StageFright.Core.Modules.Finance;
 /// <summary>
 /// Posts opening balances under an OpeningBalance journal entry: one line per
 /// entered account at its normal side, with any residual plugged to the Opening
-/// Balance Equity account (3100). Member Receivable and the GST clearing accounts
-/// are excluded — those balances only arise from their own workflows.
+/// Balance Equity account (3100). Every other account — including Member Receivable
+/// and the tax clearing accounts, so a coordinator migrating from another system can
+/// seed real carried-over balances for them — is eligible; only Opening Balance
+/// Equity itself is excluded, since it's the plug target rather than an enterable row.
 /// </summary>
 public class OpeningBalanceService : IOpeningBalanceService
 {
     private static readonly Guid[] ExcludedAccountIds =
     {
-        SystemAccounts.MemberReceivableId,
-        SystemAccounts.GstCollectedId,
-        SystemAccounts.GstPaidId,
         SystemAccounts.OpeningBalanceEquityId
     };
 

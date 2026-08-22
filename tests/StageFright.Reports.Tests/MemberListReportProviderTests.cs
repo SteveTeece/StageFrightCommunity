@@ -41,7 +41,7 @@ public class MemberListReportProviderTests
         var member = MakeMember("Alice", dob);
         SetupActiveMembers(member);
 
-        var result = await _sut.GenerateAsync(new ReportFilterValues());
+        var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
 
         var row = result.Sections.Single().Rows.Single();
         var expectedAge = new AgeCalculationService().Calculate(dob, DateTime.UtcNow.Date);
@@ -59,7 +59,7 @@ public class MemberListReportProviderTests
         var member = MakeMember("Leap Day", dob);
         SetupActiveMembers(member);
 
-        var result = await _sut.GenerateAsync(new ReportFilterValues());
+        var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
 
         var row = result.Sections.Single().Rows.Single();
         var expectedAge = new AgeCalculationService().Calculate(dob, DateTime.UtcNow.Date);
@@ -72,7 +72,7 @@ public class MemberListReportProviderTests
         var member = MakeMember("No Dob", null);
         SetupActiveMembers(member);
 
-        var result = await _sut.GenerateAsync(new ReportFilterValues());
+        var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
 
         var row = result.Sections.Single().Rows.Single();
         Assert.Equal(string.Empty, row.Cells[5]);
@@ -84,7 +84,7 @@ public class MemberListReportProviderTests
         var active = MakeMember("Active One", DateTime.UtcNow.Date.AddYears(-30));
         SetupActiveMembers(active);
 
-        var result = await _sut.GenerateAsync(new ReportFilterValues());
+        var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
 
         var names = result.Sections.Single().Rows.Select(r => r.Cells[0]).ToList();
         Assert.Contains("Active One", names);

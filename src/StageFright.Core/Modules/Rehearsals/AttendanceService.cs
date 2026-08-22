@@ -9,8 +9,8 @@ namespace StageFright.Core.Modules.Rehearsals;
 /// <summary>
 /// Records batch attendance for a rehearsal in a single atomic transaction.
 /// GL pair logic:
-///   Accrual: Debit MemberReceivable (0101) / Credit first-available Income account.
-///   Payment: Debit Cash (0100) / Credit MemberReceivable (0101) — only when PaidAtCreation=true.
+///   Accrual: Debit MemberReceivable (1200) / Credit first-available Income account.
+///   Payment: Debit Cash (1100) / Credit MemberReceivable (1200) — only when PaidAtCreation=true.
 /// System account GUIDs are the seeded fixed values from StageFrightDbContext.
 /// </summary>
 public class AttendanceService : IAttendanceService
@@ -60,6 +60,14 @@ public class AttendanceService : IAttendanceService
         return await _attendanceRepo.GetByRehearsalAsync(rehearsalId, ct);
     }
 
+    public async Task<IReadOnlyDictionary<Guid, bool>> GetPaidStatusByRehearsalAsync(Guid rehearsalId, CancellationToken ct = default)
+    {
+        var fees = await _feeRepo.GetByRehearsalAsync(rehearsalId, ct);
+        return fees
+            .Where(f => f.FeeType == FeeType.Attendance)
+            .ToDictionary(f => f.MemberId, f => f.PaidAtCreation);
+    }
+
     public async Task RecordBatchAsync(Guid rehearsalId, IReadOnlyList<AttendanceBatchItem> items, CancellationToken ct = default)
     {
         var rehearsal = await _rehearsalRepo.GetByIdAsync(rehearsalId, ct)
@@ -80,13 +88,13 @@ public class AttendanceService : IAttendanceService
                 "No income account configured. Please set up accounts in Settings before recording attendance.",
                 "Account", nameof(RecordBatchAsync));
 
-        // Per-fee-type GST treatment, stamped on each Fee at accrual. GST is recognised
+        // Per-fee-type tax treatment, stamped on each Fee at accrual. Tax is recognised
         // at accrual only — the payment pair below always clears the gross receivable.
-        var gstCode = settings.IsGstRegistered
-            ? settings.AttendanceFeeGstCode ?? GstCode.GstFree
-            : (GstCode?)null;
-        var (incomeAmount, gstAmount) = gstCode == GstCode.Gst
-            ? GstCalculator.SplitInclusive(settings.AttendanceFee)
+        var taxCode = settings.IsTaxApplicable
+            ? settings.AttendanceFeeTaxCode ?? TaxCode.TaxExempt
+            : (TaxCode?)null;
+        var (incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
+            ? TaxCalculator.SplitInclusive(settings.AttendanceFee, settings.TaxRate ?? 0m)
             : (settings.AttendanceFee, 0m);
 
         int presentCount = 0;
@@ -135,13 +143,13 @@ public class AttendanceService : IAttendanceService
                     DueDate = rehearsal.Date,
                     PaidAtCreation = paidAtCreation,
                     RehearsalId = rehearsalId,
-                    GstCode = gstCode,
+                    TaxCode = taxCode,
                     CreatedAt = now
                 };
                 var savedFee = await _feeRepo.AddAsync(fee, innerCt);
 
                 // GL accrual: Debit MemberReceivable gross / Credit Income net
-                // (+ Credit GST Collected when the fee is taxable while registered).
+                // (+ Credit Tax Collected when the fee is taxable while tax applies).
                 var accrualLines = new List<Transaction>
                 {
                     new()
@@ -154,7 +162,7 @@ public class AttendanceService : IAttendanceService
                         GLAccount = SystemAccounts.MemberReceivableNumber,
                         MemberId = item.MemberId,
                         FeeId = savedFee.Id,
-                        GstCode = gstCode,
+                        TaxCode = taxCode,
                         Description = "Attendance fee accrual",
                         CreatedAt = now
                     },
@@ -168,26 +176,26 @@ public class AttendanceService : IAttendanceService
                         GLAccount = incomeAccount.AccountNumber,
                         MemberId = item.MemberId,
                         FeeId = savedFee.Id,
-                        GstCode = gstCode,
+                        TaxCode = taxCode,
                         Description = "Attendance fee income",
                         CreatedAt = now
                     }
                 };
 
-                if (gstAmount != 0m)
+                if (taxAmount != 0m)
                 {
                     accrualLines.Add(new Transaction
                     {
                         Id = Guid.NewGuid(),
                         Date = rehearsal.Date,
-                        AccountId = SystemAccounts.GstCollectedId,
+                        AccountId = SystemAccounts.TaxCollectedId,
                         DebitAmount = 0m,
-                        CreditAmount = gstAmount,
-                        GLAccount = SystemAccounts.GstCollectedNumber,
+                        CreditAmount = taxAmount,
+                        GLAccount = SystemAccounts.TaxCollectedNumber,
                         MemberId = item.MemberId,
                         FeeId = savedFee.Id,
-                        GstCode = gstCode,
-                        Description = "GST collected — attendance fee",
+                        TaxCode = taxCode,
+                        Description = "Tax collected — attendance fee",
                         CreatedAt = now
                     });
                 }

@@ -120,7 +120,7 @@ public class BackupService : IBackupService
         // deserialize as null. Initialize them to empty so they are safe to iterate.
         // Presence is determined via EntityCounts, which always includes every key even at 0.
         envelope.Members ??= [];
-        envelope.CommitteeMemberships ??= [];
+        envelope.CommitteePositionRecords ??= [];
         envelope.Rehearsals ??= [];
         envelope.Events ??= [];
         envelope.Fees ??= [];
@@ -128,6 +128,10 @@ public class BackupService : IBackupService
         envelope.Transactions ??= [];
         envelope.Accounts ??= [];
         envelope.AuditTrailEntries ??= [];
+        envelope.AnnualGeneralMeetings ??= [];
+        envelope.AgmAttendanceRecords ??= [];
+        envelope.CommitteeOfficeHolderTypes ??= [];
+        envelope.CommitteeTerms ??= [];
         envelope.EntityCounts ??= new Dictionary<string, int>();
 
         ValidateVersion(envelope.SchemaVersion);
@@ -156,8 +160,11 @@ public class BackupService : IBackupService
         // file is from an incompatible or truncated format.
         var counts = envelope.EntityCounts;
         if (!counts.ContainsKey("Members")) Fail("Members");
-        if (!counts.ContainsKey("CommitteeMemberships")) Fail("CommitteeMemberships");
+        if (!counts.ContainsKey("CommitteePositionRecords")) Fail("CommitteePositionRecords");
         if (!counts.ContainsKey("Rehearsals")) Fail("Rehearsals");
+        if (!counts.ContainsKey("AnnualGeneralMeetings")) Fail("AnnualGeneralMeetings");
+        if (!counts.ContainsKey("CommitteeOfficeHolderTypes")) Fail("CommitteeOfficeHolderTypes");
+        if (!counts.ContainsKey("CommitteeTerms")) Fail("CommitteeTerms");
         if (!counts.ContainsKey("Events")) Fail("Events");
         if (!counts.ContainsKey("Fees")) Fail("Fees");
         if (!counts.ContainsKey("Payments")) Fail("Payments");
@@ -185,7 +192,7 @@ public class BackupService : IBackupService
     private static BackupEnvelope MapToEnvelope(BackupSnapshot snapshot)
     {
         var members = snapshot.Members.Select(MapMember).ToList();
-        var committees = snapshot.CommitteeMemberships.Select(MapCommittee).ToList();
+        var committees = snapshot.CommitteePositionRecords.Select(MapCommittee).ToList();
         var rehearsals = snapshot.Rehearsals.Select(r => MapRehearsal(r, snapshot.AttendanceRecords)).ToList();
         var eventTypeMap = snapshot.EventTypes.ToDictionary(et => et.Id);
         var participationMap = snapshot.ParticipationRecords.ToLookup(pr => pr.EventId);
@@ -196,11 +203,15 @@ public class BackupService : IBackupService
         var accounts = snapshot.Accounts.Select(MapAccount).ToList();
         var settings = snapshot.Settings is not null ? MapSettings(snapshot.Settings) : null;
         var auditEntries = snapshot.AuditTrailEntries.Select(MapAuditEntry).ToList();
+        var agms = snapshot.AnnualGeneralMeetings.Select(MapAgm).ToList();
+        var agmAttendance = snapshot.AgmAttendanceRecords.Select(MapAgmAttendance).ToList();
+        var officeHolderTypes = snapshot.CommitteeOfficeHolderTypes.Select(MapOfficeHolderType).ToList();
+        var committeeTerms = snapshot.CommitteeTerms.Select(MapCommitteeTerm).ToList();
 
         var counts = new Dictionary<string, int>
         {
             ["Members"] = members.Count,
-            ["CommitteeMemberships"] = committees.Count,
+            ["CommitteePositionRecords"] = committees.Count,
             ["Rehearsals"] = rehearsals.Count,
             ["AttendanceRecords"] = rehearsals.Sum(r => r.AttendanceRecords.Count),
             ["Events"] = events.Count,
@@ -211,7 +222,11 @@ public class BackupService : IBackupService
             ["Transactions"] = transactions.Count,
             ["Accounts"] = accounts.Count,
             ["Settings"] = settings is null ? 0 : 1,
-            ["AuditTrailEntries"] = auditEntries.Count
+            ["AuditTrailEntries"] = auditEntries.Count,
+            ["AnnualGeneralMeetings"] = agms.Count,
+            ["AgmAttendanceRecords"] = agmAttendance.Count,
+            ["CommitteeOfficeHolderTypes"] = officeHolderTypes.Count,
+            ["CommitteeTerms"] = committeeTerms.Count
         };
 
         return new BackupEnvelope
@@ -220,7 +235,7 @@ public class BackupService : IBackupService
             GeneratedAt = DateTime.UtcNow,
             ApplicationVersion = "1.0.0",
             Members = members,
-            CommitteeMemberships = committees,
+            CommitteePositionRecords = committees,
             Rehearsals = rehearsals,
             Events = events,
             Fees = fees,
@@ -229,6 +244,10 @@ public class BackupService : IBackupService
             Accounts = accounts,
             Settings = settings,
             AuditTrailEntries = auditEntries,
+            AnnualGeneralMeetings = agms,
+            AgmAttendanceRecords = agmAttendance,
+            CommitteeOfficeHolderTypes = officeHolderTypes,
+            CommitteeTerms = committeeTerms,
             EntityCounts = counts
         };
     }
@@ -253,7 +272,7 @@ public class BackupService : IBackupService
         return new BackupSnapshot
         {
             Members = env.Members!.Select(MapMemberFromDto).ToList(),
-            CommitteeMemberships = env.CommitteeMemberships!.Select(MapCommitteeFromDto).ToList(),
+            CommitteePositionRecords = env.CommitteePositionRecords!.Select(MapCommitteeFromDto).ToList(),
             Rehearsals = env.Rehearsals!.Select(MapRehearsalFromDto).ToList(),
             AttendanceRecords = attendanceRecords,
             Events = env.Events!.Select(MapEventFromDto).ToList(),
@@ -264,7 +283,11 @@ public class BackupService : IBackupService
             Transactions = env.Transactions!.Select(MapTransactionFromDto).ToList(),
             Accounts = env.Accounts!.Select(MapAccountFromDto).ToList(),
             Settings = env.Settings is not null ? MapSettingsFromDto(env.Settings) : null,
-            AuditTrailEntries = env.AuditTrailEntries!.Select(MapAuditEntryFromDto).ToList()
+            AuditTrailEntries = env.AuditTrailEntries!.Select(MapAuditEntryFromDto).ToList(),
+            AnnualGeneralMeetings = env.AnnualGeneralMeetings!.Select(MapAgmFromDto).ToList(),
+            AgmAttendanceRecords = env.AgmAttendanceRecords!.Select(MapAgmAttendanceFromDto).ToList(),
+            CommitteeOfficeHolderTypes = env.CommitteeOfficeHolderTypes!.Select(MapOfficeHolderTypeFromDto).ToList(),
+            CommitteeTerms = env.CommitteeTerms!.Select(MapCommitteeTermFromDto).ToList()
         };
     }
 
@@ -280,11 +303,42 @@ public class BackupService : IBackupService
         CreatedAt = m.CreatedAt, UpdatedAt = m.UpdatedAt
     };
 
-    private static CommitteeMembershipBackupDto MapCommittee(CommitteeMembership c) => new()
+    private static CommitteePositionRecordBackupDto MapCommittee(CommitteePositionRecord c) => new()
     {
         Id = c.Id, MemberId = c.MemberId, Year = c.Year, Position = c.Position,
+        CommitteeTermId = c.CommitteeTermId, OfficeHolderTypeId = c.OfficeHolderTypeId,
+        StartDate = c.StartDate, EndDate = c.EndDate,
         IsDeleted = c.IsDeleted, DeletedAt = c.DeletedAt, DeletedBy = c.DeletedBy,
         CreatedAt = c.CreatedAt, UpdatedAt = c.UpdatedAt
+    };
+
+    private static AnnualGeneralMeetingBackupDto MapAgm(AnnualGeneralMeeting a) => new()
+    {
+        Id = a.Id, Date = a.Date, Notes = a.Notes,
+        GeneralCommitteeSeatCountTarget = a.GeneralCommitteeSeatCountTarget,
+        IsDeleted = a.IsDeleted, DeletedAt = a.DeletedAt, DeletedBy = a.DeletedBy,
+        CreatedAt = a.CreatedAt, UpdatedAt = a.UpdatedAt
+    };
+
+    private static AgmAttendanceRecordBackupDto MapAgmAttendance(AgmAttendanceRecord a) => new()
+    {
+        Id = a.Id, AnnualGeneralMeetingId = a.AnnualGeneralMeetingId, MemberId = a.MemberId,
+        Attended = a.Attended, CreatedAt = a.CreatedAt,
+        IsDeleted = a.IsDeleted, DeletedAt = a.DeletedAt, DeletedBy = a.DeletedBy
+    };
+
+    private static CommitteeOfficeHolderTypeBackupDto MapOfficeHolderType(CommitteeOfficeHolderType t) => new()
+    {
+        Id = t.Id, Name = t.Name, DisplayOrder = t.DisplayOrder, IsBuiltIn = t.IsBuiltIn,
+        IsDeleted = t.IsDeleted, DeletedAt = t.DeletedAt, DeletedBy = t.DeletedBy,
+        CreatedAt = t.CreatedAt, UpdatedAt = t.UpdatedAt
+    };
+
+    private static CommitteeTermBackupDto MapCommitteeTerm(CommitteeTerm t) => new()
+    {
+        Id = t.Id, StartedByAgmId = t.StartedByAgmId, StartDate = t.StartDate,
+        EndDate = t.EndDate, LabelYear = t.LabelYear,
+        CreatedAt = t.CreatedAt, UpdatedAt = t.UpdatedAt
     };
 
     private static RehearsalBackupDto MapRehearsal(Rehearsal r, IReadOnlyList<AttendanceRecord> allAttendance) => new()
@@ -366,8 +420,8 @@ public class BackupService : IBackupService
         MembershipRenewalMonth = s.MembershipRenewalMonth,
         CommitteeRenewalMonth = s.CommitteeRenewalMonth,
         MaxAgeRangeYears = s.MaxAgeRangeYears, MinimumMemberAge = s.MinimumMemberAge,
-        Theme = s.Theme, LastCommitteeResetYear = s.LastCommitteeResetYear,
-        SchemaVersion = s.SchemaVersion,
+        Theme = s.Theme, GeneralCommitteeSeatCountTarget = s.GeneralCommitteeSeatCountTarget,
+        SchemaVersion = s.SchemaVersion, AuditRetentionYears = s.AuditRetentionYears,
         IsDeleted = s.IsDeleted, DeletedAt = s.DeletedAt, DeletedBy = s.DeletedBy,
         CreatedAt = s.CreatedAt, UpdatedAt = s.UpdatedAt
     };
@@ -398,10 +452,41 @@ public class BackupService : IBackupService
         };
     }
 
-    private static CommitteeMembership MapCommitteeFromDto(CommitteeMembershipBackupDto d) => new()
+    private static CommitteePositionRecord MapCommitteeFromDto(CommitteePositionRecordBackupDto d) => new()
     {
         Id = d.Id, MemberId = d.MemberId, Year = d.Year, Position = d.Position,
+        CommitteeTermId = d.CommitteeTermId, OfficeHolderTypeId = d.OfficeHolderTypeId,
+        StartDate = d.StartDate, EndDate = d.EndDate,
         IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy,
+        CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
+    };
+
+    private static AnnualGeneralMeeting MapAgmFromDto(AnnualGeneralMeetingBackupDto d) => new()
+    {
+        Id = d.Id, Date = d.Date, Notes = d.Notes,
+        GeneralCommitteeSeatCountTarget = d.GeneralCommitteeSeatCountTarget,
+        IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy,
+        CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
+    };
+
+    private static AgmAttendanceRecord MapAgmAttendanceFromDto(AgmAttendanceRecordBackupDto d) => new()
+    {
+        Id = d.Id, AnnualGeneralMeetingId = d.AnnualGeneralMeetingId, MemberId = d.MemberId,
+        Attended = d.Attended, CreatedAt = d.CreatedAt,
+        IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy
+    };
+
+    private static CommitteeOfficeHolderType MapOfficeHolderTypeFromDto(CommitteeOfficeHolderTypeBackupDto d) => new()
+    {
+        Id = d.Id, Name = d.Name, DisplayOrder = d.DisplayOrder, IsBuiltIn = d.IsBuiltIn,
+        IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy,
+        CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
+    };
+
+    private static CommitteeTerm MapCommitteeTermFromDto(CommitteeTermBackupDto d) => new()
+    {
+        Id = d.Id, StartedByAgmId = d.StartedByAgmId, StartDate = d.StartDate,
+        EndDate = d.EndDate, LabelYear = d.LabelYear,
         CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
     };
 
@@ -479,8 +564,8 @@ public class BackupService : IBackupService
         MembershipRenewalMonth = d.MembershipRenewalMonth,
         CommitteeRenewalMonth = d.CommitteeRenewalMonth,
         MaxAgeRangeYears = d.MaxAgeRangeYears, MinimumMemberAge = d.MinimumMemberAge,
-        Theme = d.Theme, LastCommitteeResetYear = d.LastCommitteeResetYear,
-        SchemaVersion = d.SchemaVersion,
+        Theme = d.Theme, GeneralCommitteeSeatCountTarget = d.GeneralCommitteeSeatCountTarget,
+        SchemaVersion = d.SchemaVersion, AuditRetentionYears = d.AuditRetentionYears,
         IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy,
         CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
     };

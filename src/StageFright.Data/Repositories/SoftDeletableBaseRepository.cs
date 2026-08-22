@@ -16,36 +16,50 @@ public class SoftDeletableBaseRepository<TEntity> : BaseRepository<TEntity>, ISo
 
     public virtual async Task ArchiveAsync(Guid id, string deletedBy, CancellationToken ct = default)
     {
-        var entity = await _db.Set<TEntity>().FindAsync(new object[] { id }, ct)
-            ?? throw new EntityNotFoundException(typeof(TEntity).Name, id, nameof(ArchiveAsync));
+        try
+        {
+            var entity = await _db.Set<TEntity>().FindAsync(new object[] { id }, ct)
+                ?? throw new EntityNotFoundException(typeof(TEntity).Name, id, nameof(ArchiveAsync));
 
-        var isDeletedProp = typeof(TEntity).GetProperty("IsDeleted")!;
-        if ((bool)isDeletedProp.GetValue(entity)!)
-            throw new ValidationException($"{typeof(TEntity).Name} is already archived.", typeof(TEntity).Name, nameof(ArchiveAsync), id);
+            var isDeletedProp = typeof(TEntity).GetProperty("IsDeleted")!;
+            if ((bool)isDeletedProp.GetValue(entity)!)
+                throw new ValidationException($"{typeof(TEntity).Name} is already archived.", typeof(TEntity).Name, nameof(ArchiveAsync), id);
 
-        isDeletedProp.SetValue(entity, true);
-        typeof(TEntity).GetProperty("DeletedAt")!.SetValue(entity, DateTime.UtcNow);
-        typeof(TEntity).GetProperty("DeletedBy")!.SetValue(entity, deletedBy);
+            isDeletedProp.SetValue(entity, true);
+            typeof(TEntity).GetProperty("DeletedAt")!.SetValue(entity, DateTime.UtcNow);
+            typeof(TEntity).GetProperty("DeletedBy")!.SetValue(entity, deletedBy);
 
-        var updatedAtProp = typeof(TEntity).GetProperty("UpdatedAt");
-        updatedAtProp?.SetValue(entity, DateTime.UtcNow);
+            var updatedAtProp = typeof(TEntity).GetProperty("UpdatedAt");
+            updatedAtProp?.SetValue(entity, DateTime.UtcNow);
 
-        await _db.SaveChangesAsync(ct);
+            await _db.SaveChangesAsync(ct);
+        }
+        catch (Exception ex) when (ex is not EntityNotFoundException and not ValidationException and not DataAccessException)
+        {
+            throw new DataAccessException(ex.Message, typeof(TEntity).Name, nameof(ArchiveAsync), id, ex);
+        }
     }
 
     public virtual async Task RestoreAsync(Guid id, CancellationToken ct = default)
     {
-        var entity = await _db.Set<TEntity>().IgnoreQueryFilters().FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id, ct)
-            ?? throw new EntityNotFoundException(typeof(TEntity).Name, id, nameof(RestoreAsync));
+        try
+        {
+            var entity = await _db.Set<TEntity>().IgnoreQueryFilters().FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id, ct)
+                ?? throw new EntityNotFoundException(typeof(TEntity).Name, id, nameof(RestoreAsync));
 
-        typeof(TEntity).GetProperty("IsDeleted")!.SetValue(entity, false);
-        typeof(TEntity).GetProperty("DeletedAt")!.SetValue(entity, null);
-        typeof(TEntity).GetProperty("DeletedBy")!.SetValue(entity, null);
+            typeof(TEntity).GetProperty("IsDeleted")!.SetValue(entity, false);
+            typeof(TEntity).GetProperty("DeletedAt")!.SetValue(entity, null);
+            typeof(TEntity).GetProperty("DeletedBy")!.SetValue(entity, null);
 
-        var updatedAtProp = typeof(TEntity).GetProperty("UpdatedAt");
-        updatedAtProp?.SetValue(entity, DateTime.UtcNow);
+            var updatedAtProp = typeof(TEntity).GetProperty("UpdatedAt");
+            updatedAtProp?.SetValue(entity, DateTime.UtcNow);
 
-        await _db.SaveChangesAsync(ct);
+            await _db.SaveChangesAsync(ct);
+        }
+        catch (Exception ex) when (ex is not EntityNotFoundException and not DataAccessException)
+        {
+            throw new DataAccessException(ex.Message, typeof(TEntity).Name, nameof(RestoreAsync), id, ex);
+        }
     }
 
     public virtual async Task<IReadOnlyList<TEntity>> GetArchivedAsync(CancellationToken ct = default)

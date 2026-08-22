@@ -1,0 +1,39 @@
+@using StageFright.Core.Enums
+
+<div class="col-md-6">
+    <div class="form-check">
+        <InputCheckbox id="taxApplicable" class="form-check-input" @bind-Value="Model.IsTaxApplicable" @bind-Value:after="HandleTaxToggleChanged" />
+        <label class="form-check-label small" for="taxApplicable">Sales tax applies to this organisation</label>
+    </div>
+</div>
+
+@if (Model.IsTaxApplicable)
+{
+    <div class="col-12">
+        <div class="row g-2 mt-1">
+            <div class="col-md-6">
+                <label for="taxRate" class="form-label">Tax Rate (%) <span aria-hidden="true" class="text-danger">*</span></label>
+                <InputNumber id="taxRate" class="form-control form-control-sm" @bind-Value="Model.TaxRate" @bind-Value:format="N2" />
+                <ValidationMessage For="() => Model.TaxRate" class="text-danger small" />
+            </div>
+        </div>
+        <div class="row g-2 mt-1">
+            <div class="col-md-6">
+                <label for="annualFeeTaxCode" class="form-label">Annual Fee Tax Treatment</label>
+                <InputSelect id="annualFeeTaxCode" class="form-select form-select-sm" @bind-Value="Model.AnnualFeeTaxCode">
+                    <option value="">Tax-exempt (default)</option>
+                    <option value="@TaxCode.Taxable">Taxable</option>
+                    <option value="@TaxCode.TaxExempt">Tax-exempt</option>
+                </InputSelect>
+            </div>
+            <div class="col-md-6">
+                <label for="attendanceFeeTaxCode" class="form-label">Attendance Fee Tax Treatment</label>
+                <InputSelect id="attendanceFeeTaxCode" class="form-select form-select-sm" @bind-Value="Model.AttendanceFeeTaxCode">
+                    <option value="">Tax-exempt (default)</option>
+                    <option value="@TaxCode.Taxable">Taxable</option>
+                    <option value="@TaxCode.TaxExempt">Tax-exempt</option>
+                </InputSelect>
+            </div>
+        </div>
+    </div>
+}

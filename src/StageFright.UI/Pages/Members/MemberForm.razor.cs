@@ -10,7 +10,6 @@ public partial class MemberForm : ComponentBase
     [Parameter] public Guid? Id { get; set; }
 
     [Inject] private IMemberService MemberService { get; set; } = null!;
-    [Inject] private ICommitteeService CommitteeService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
 
     private readonly MemberFormModel _form = new();
@@ -18,7 +17,6 @@ public partial class MemberForm : ComponentBase
     private string? _globalError;
     private bool _loading = true;
     private bool _saving;
-    private bool _isCommitteeMember;
 
     private bool _isNew => Id is null;
 
@@ -40,15 +38,6 @@ public partial class MemberForm : ComponentBase
             _form.Email = member.Email;
             _form.JoinDate = member.JoinDate;
             _form.DateOfBirth = member.DateOfBirth;
-
-            var history = await CommitteeService.GetHistoryAsync(member.Id);
-            var currentYear = DateTime.UtcNow.Year;
-            var currentRecord = history.FirstOrDefault(h => h.Year == currentYear);
-            if (currentRecord is not null)
-            {
-                _isCommitteeMember = true;
-                _form.CommitteePosition = currentRecord.Position;
-            }
         }
         else
         {
@@ -58,23 +47,10 @@ public partial class MemberForm : ComponentBase
         _loading = false;
     }
 
-    private void OnCommitteeCheckChanged(ChangeEventArgs e)
-    {
-        _isCommitteeMember = e.Value is true;
-        if (!_isCommitteeMember)
-            _form.CommitteePosition = null;
-    }
-
     private async Task SaveAsync()
     {
         _errors = new();
         _globalError = null;
-
-        if (_isCommitteeMember && string.IsNullOrWhiteSpace(_form.CommitteePosition))
-        {
-            _errors["Position"] = "Position is required for committee members.";
-            return;
-        }
 
         _saving = true;
         try
@@ -93,9 +69,6 @@ public partial class MemberForm : ComponentBase
                 };
                 var member = await MemberService.CreateAsync(request);
 
-                if (_isCommitteeMember && !string.IsNullOrWhiteSpace(_form.CommitteePosition))
-                    await CommitteeService.AddOrUpdateAsync(member.Id, DateTime.UtcNow.Year, _form.CommitteePosition);
-
                 Nav.NavigateTo($"/members/{member.Id}");
             }
             else
@@ -111,9 +84,6 @@ public partial class MemberForm : ComponentBase
                     DateOfBirth = _form.DateOfBirth
                 };
                 await MemberService.UpdateAsync(Id!.Value, request);
-
-                if (_isCommitteeMember && !string.IsNullOrWhiteSpace(_form.CommitteePosition))
-                    await CommitteeService.AddOrUpdateAsync(Id!.Value, DateTime.UtcNow.Year, _form.CommitteePosition);
 
                 Nav.NavigateTo($"/members/{Id}");
             }
@@ -144,6 +114,5 @@ public partial class MemberForm : ComponentBase
         public string? Email { get; set; }
         public DateTime JoinDate { get; set; }
         public DateTime? DateOfBirth { get; set; }
-        public string? CommitteePosition { get; set; }
     }
 }

@@ -16,11 +16,12 @@ public class SettingsBackupDto
     [ProtoMember(7)] public int MaxAgeRangeYears { get; set; }
     [ProtoMember(8)] public int MinimumMemberAge { get; set; }
     [ProtoMember(9)] public Theme Theme { get; set; }
-    [ProtoMember(10)] public int? LastCommitteeResetYear { get; set; }
     [ProtoMember(11)] public string SchemaVersion { get; set; } = "1.0.0";
     [ProtoMember(12)] public bool IsDeleted { get; set; }
     [ProtoMember(13)] public DateTime? DeletedAt { get; set; }
     [ProtoMember(14)] public string? DeletedBy { get; set; }
     [ProtoMember(15)] public DateTime CreatedAt { get; set; }
     [ProtoMember(16)] public DateTime UpdatedAt { get; set; }
+    [ProtoMember(17)] public int? GeneralCommitteeSeatCountTarget { get; set; }
+    [ProtoMember(18)] public int AuditRetentionYears { get; set; } = 1;
 }

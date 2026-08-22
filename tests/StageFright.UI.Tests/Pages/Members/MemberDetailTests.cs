@@ -57,7 +57,7 @@ public class MemberDetailTests : BunitContext
                 CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
             });
         _committeeService.GetHistoryAsync(_memberId, Arg.Any<CancellationToken>())
-            .Returns(new List<CommitteeMembership>());
+            .Returns(new List<CommitteePositionRecord>());
 
         var cut = Render<MemberDetail>(p => p.Add(m => m.Id, _memberId));
 
@@ -71,7 +71,7 @@ public class MemberDetailTests : BunitContext
     {
         // _memberService default setup in the constructor returns a member with no DateOfBirth.
         _committeeService.GetHistoryAsync(_memberId, Arg.Any<CancellationToken>())
-            .Returns(new List<CommitteeMembership>());
+            .Returns(new List<CommitteePositionRecord>());
 
         var cut = Render<MemberDetail>(p => p.Add(m => m.Id, _memberId));
 
@@ -84,7 +84,7 @@ public class MemberDetailTests : BunitContext
     public async Task CurrentYearCommitteeRecord_RendersAriaBadge_WithCurrentYearLabel()
     {
         _committeeService.GetHistoryAsync(_memberId, Arg.Any<CancellationToken>())
-            .Returns(new List<CommitteeMembership>
+            .Returns(new List<CommitteePositionRecord>
             {
                 new()
                 {
@@ -104,7 +104,7 @@ public class MemberDetailTests : BunitContext
     public async Task CurrentYearRecord_IsWrapped_InStrongElement()
     {
         _committeeService.GetHistoryAsync(_memberId, Arg.Any<CancellationToken>())
-            .Returns(new List<CommitteeMembership>
+            .Returns(new List<CommitteePositionRecord>
             {
                 new()
                 {
@@ -126,7 +126,7 @@ public class MemberDetailTests : BunitContext
     public async Task NoCommitteeHistory_DoesNotRender_HistorySection()
     {
         _committeeService.GetHistoryAsync(_memberId, Arg.Any<CancellationToken>())
-            .Returns(new List<CommitteeMembership>());
+            .Returns(new List<CommitteePositionRecord>());
 
         var cut = Render<MemberDetail>(p => p.Add(m => m.Id, _memberId));
 
@@ -140,7 +140,7 @@ public class MemberDetailTests : BunitContext
     {
         var lastYear = _currentYear - 1;
         _committeeService.GetHistoryAsync(_memberId, Arg.Any<CancellationToken>())
-            .Returns(new List<CommitteeMembership>
+            .Returns(new List<CommitteePositionRecord>
             {
                 new()
                 {
@@ -155,5 +155,39 @@ public class MemberDetailTests : BunitContext
         // Historical entry is in a <span>, not <strong>
         var spans = cut.FindAll("section span");
         Assert.Contains(spans, s => s.TextContent.Contains(lastYear.ToString()));
+    }
+
+    [Fact]
+    public async Task NewModelPositionRecord_RendersTermLabelYearAndOfficeHolderTypeName_NotBlankLegacyFields()
+    {
+        var term = new CommitteeTerm
+        {
+            Id = Guid.NewGuid(), StartedByAgmId = Guid.NewGuid(), StartDate = DateTime.UtcNow.Date,
+            EndDate = null, LabelYear = _currentYear,
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        var officeHolderType = new CommitteeOfficeHolderType
+        {
+            Id = Guid.NewGuid(), Name = "President", DisplayOrder = 0, IsBuiltIn = true,
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        _committeeService.GetHistoryAsync(_memberId, Arg.Any<CancellationToken>())
+            .Returns(new List<CommitteePositionRecord>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(), MemberId = _memberId,
+                    CommitteeTermId = term.Id, CommitteeTerm = term,
+                    OfficeHolderTypeId = officeHolderType.Id, OfficeHolderType = officeHolderType,
+                    StartDate = term.StartDate, EndDate = null,
+                    CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+                }
+            });
+
+        var cut = Render<MemberDetail>(p => p.Add(m => m.Id, _memberId));
+
+        var strong = cut.Find("strong");
+        Assert.Contains(_currentYear.ToString(), strong.TextContent);
+        Assert.Contains("President", strong.TextContent);
     }
 }

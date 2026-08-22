@@ -147,7 +147,7 @@ public class ThemeProviderTests : BunitContext
         await cut.InvokeAsync(() => cut.Instance.ToggleAsync());
 
         await _settingsService.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s.Theme == Theme.Dark),
+            Arg.Is<Settings>(s => s!.Theme == Theme.Dark),
             Arg.Any<CancellationToken>());
     }
 

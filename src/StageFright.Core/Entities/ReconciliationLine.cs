@@ -5,6 +5,10 @@ namespace StageFright.Core.Entities;
 /// Unique on (ReconciliationId, TransactionId); the service additionally enforces that
 /// a transaction is cleared by at most one non-deleted reconciliation.
 /// The GL Transaction row itself is never modified.
+/// No soft-delete fields — a line is hard-removed when unticked while its reconciliation
+/// is still a draft (see BankReconciliationRepository.RemoveLineAsync), and is implicitly
+/// excluded once the parent reconciliation is soft-deleted (global query filter follows
+/// BankReconciliation.IsDeleted).
 /// </summary>
 public class ReconciliationLine
 {

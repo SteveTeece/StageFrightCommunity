@@ -1,0 +1,27 @@
+enabled: true
+exempt: ["*.config.*", "*.test.*", "**/migrations/**"]
+capabilities:
+  - name: audit-trail
+    match: ["src/StageFright.Core/Modules/AuditTrail/**"]
+  - name: dashboard
+    match: ["src/StageFright.Core/Modules/Dashboard/**", "src/StageFright.UI/Pages/Dashboard/**", "src/StageFright.UI/Shared/TileRenderer.razor*"]
+  - name: events
+    match: ["src/StageFright.Core/Modules/Events/**", "src/StageFright.UI/Pages/Events/**", "src/StageFright.UI/Modules/Events/**"]
+  - name: finance
+    match: ["src/StageFright.Core/Modules/Finance/**", "src/StageFright.UI/Pages/Finance/**", "src/StageFright.UI/Modules/Finance/**", "src/StageFright.UI/Shared/ReactivationForgivenessDialog.razor*"]
+  - name: members
+    match: ["src/StageFright.Core/Modules/Members/**", "src/StageFright.UI/Pages/Members/**", "src/StageFright.UI/Modules/Members/**"]
+  - name: rehearsals
+    match: ["src/StageFright.Core/Modules/Rehearsals/**", "src/StageFright.UI/Pages/Rehearsals/**", "src/StageFright.UI/Modules/Rehearsals/**"]
+  - name: settings
+    match: ["src/StageFright.Core/Modules/Settings/**", "src/StageFright.UI/Pages/Settings/**", "src/StageFright.UI/Shared/AbnInput.cs"]
+  - name: data-access
+    match: ["src/StageFright.Data/**"]
+  - name: reports-pipeline
+    match: ["src/StageFright.Reports/**", "src/StageFright.UI/Pages/Reports/**", "src/StageFright.UI/Modules/Reports/**", "src/StageFright.UI/Shared/ReportViewer.razor*"]
+  - name: plugin-contracts
+    match: ["src/StageFright.Plugins.Contracts/**"]
+  - name: app-host
+    match: ["src/StageFright.App/**", "src/StageFright.UI/Pages/Setup/**", "src/StageFright.UI/Layout/**", "src/StageFright.UI/App.razor*"]
+  - name: domain-model
+    match: ["src/StageFright.Core/Entities/**", "src/StageFright.Core/Enums/**", "src/StageFright.Core/Exceptions/**", "src/StageFright.Core/Contracts/**"]

@@ -43,7 +43,7 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
         var archivedMember = SeedMember("Bob", active: false, deleted: true);
         _db.Members.Add(member);
         _db.Members.Add(archivedMember);
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var svc = BuildService();
         var path = TempPath();
@@ -51,19 +51,19 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
         try
         {
             // Export
-            await svc.ExportAsync(path);
+            await svc.ExportAsync(path, TestContext.Current.CancellationToken);
 
             // Verify manifest
-            var manifest = await svc.GetManifestAsync(path);
+            var manifest = await svc.GetManifestAsync(path, TestContext.Current.CancellationToken);
             Assert.Equal("1.1.0", manifest.SchemaVersion);
             Assert.Equal(2, manifest.EntityCounts["Members"]);
 
             // Clear active members (simulate fresh restore target)
             // Import
-            await svc.ImportAsync(path);
+            await svc.ImportAsync(path, TestContext.Current.CancellationToken);
 
             // Both members should exist after restore
-            var allMembers = await _db.Members.IgnoreQueryFilters().ToListAsync();
+            var allMembers = await _db.Members.IgnoreQueryFilters().ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
             Assert.Contains(allMembers, m => m.Id == member.Id && m.FullName == "Alice");
             Assert.Contains(allMembers, m => m.Id == archivedMember.Id && m.IsDeleted);
         }
@@ -78,15 +78,15 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
     {
         var deleted = SeedMember("Deleted", active: false, deleted: true);
         _db.Members.Add(deleted);
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var svc = BuildService();
         var path = TempPath();
 
         try
         {
-            await svc.ExportAsync(path);
-            var manifest = await svc.GetManifestAsync(path);
+            await svc.ExportAsync(path, TestContext.Current.CancellationToken);
+            var manifest = await svc.GetManifestAsync(path, TestContext.Current.CancellationToken);
             Assert.Equal(1, manifest.EntityCounts["Members"]);
         }
         finally
@@ -103,14 +103,14 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
 
         try
         {
-            await svc.ExportAsync(path);
+            await svc.ExportAsync(path, TestContext.Current.CancellationToken);
 
             // Tamper: remove Accounts from EntityCounts to simulate a missing entity type
             var envelope = ReadEnvelope(path);
             envelope.EntityCounts.Remove("Accounts");
             WriteEnvelope(path, envelope);
 
-            var ex = await Assert.ThrowsAsync<ImportException>(() => svc.ImportAsync(path));
+            var ex = await Assert.ThrowsAsync<ImportException>(() => svc.ImportAsync(path, TestContext.Current.CancellationToken));
             Assert.Contains("Import file incomplete: missing Accounts", ex.Message);
         }
         finally
@@ -127,8 +127,8 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
 
         try
         {
-            await File.WriteAllBytesAsync(path, [0xDE, 0xAD, 0xBE, 0xEF]);
-            await Assert.ThrowsAsync<ImportException>(() => svc.ImportAsync(path));
+            await File.WriteAllBytesAsync(path, [0xDE, 0xAD, 0xBE, 0xEF], TestContext.Current.CancellationToken);
+            await Assert.ThrowsAsync<ImportException>(() => svc.ImportAsync(path, TestContext.Current.CancellationToken));
         }
         finally
         {
@@ -144,12 +144,12 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
 
         try
         {
-            await svc.ExportAsync(path);
+            await svc.ExportAsync(path, TestContext.Current.CancellationToken);
             var envelope = ReadEnvelope(path);
             envelope.SchemaVersion = "99.0.0";
             WriteEnvelope(path, envelope);
 
-            var ex = await Assert.ThrowsAsync<ImportException>(() => svc.ImportAsync(path));
+            var ex = await Assert.ThrowsAsync<ImportException>(() => svc.ImportAsync(path, TestContext.Current.CancellationToken));
             Assert.Contains("99.0.0", ex.Message);
             Assert.Contains("upgrade", ex.Message, StringComparison.OrdinalIgnoreCase);
         }
@@ -167,10 +167,10 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
 
         try
         {
-            await svc.ExportAsync(path);
+            await svc.ExportAsync(path, TestContext.Current.CancellationToken);
             var dir = Path.GetDirectoryName(path)!;
 
-            await svc.ImportAsync(path);
+            await svc.ImportAsync(path, TestContext.Current.CancellationToken);
 
             var checkpoints = Directory.GetFiles(dir, "StageFright-Checkpoint-*.sfbak");
             Assert.NotEmpty(checkpoints);
@@ -186,25 +186,25 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
     {
         var member = SeedMember("Original Name", active: true);
         _db.Members.Add(member);
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var svc = BuildService();
         var path = TempPath();
 
         try
         {
-            await svc.ExportAsync(path);
+            await svc.ExportAsync(path, TestContext.Current.CancellationToken);
 
             // Update name in DB after export
-            var tracked = await _db.Members.FindAsync(member.Id);
+            var tracked = await _db.Members.FindAsync(new object?[] { member.Id }, TestContext.Current.CancellationToken);
             tracked!.FirstName = "Updated Name";
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             // Import should restore "Original Name"
-            await svc.ImportAsync(path);
+            await svc.ImportAsync(path, TestContext.Current.CancellationToken);
 
             _db.ChangeTracker.Clear();
-            var restored = await _db.Members.IgnoreQueryFilters().FirstOrDefaultAsync(m => m.Id == member.Id);
+            var restored = await _db.Members.IgnoreQueryFilters().FirstOrDefaultAsync(m => m.Id == member.Id, cancellationToken: TestContext.Current.CancellationToken);
             Assert.Equal("Original Name", restored?.FirstName);
         }
         finally
@@ -218,14 +218,14 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
     {
         var member = SeedMember("Placeholder", active: true);
         _db.Members.Add(member);
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var svc = BuildService();
         var path = TempPath();
 
         try
         {
-            await svc.ExportAsync(path);
+            await svc.ExportAsync(path, TestContext.Current.CancellationToken);
 
             // Tamper the export into a pre-feature (legacy) shape: clear FirstName/LastName,
             // populate only the old combined LegacyName field.
@@ -236,10 +236,10 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
             dto.LegacyName = "Grace Hopper";
             WriteEnvelope(path, envelope);
 
-            await svc.ImportAsync(path);
+            await svc.ImportAsync(path, TestContext.Current.CancellationToken);
 
             _db.ChangeTracker.Clear();
-            var restored = await _db.Members.IgnoreQueryFilters().SingleAsync(m => m.Id == member.Id);
+            var restored = await _db.Members.IgnoreQueryFilters().SingleAsync(m => m.Id == member.Id, cancellationToken: TestContext.Current.CancellationToken);
             Assert.Equal("Grace", restored.FirstName);
             Assert.Equal("Hopper", restored.LastName);
         }
@@ -254,15 +254,15 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
     {
         _db.Members.Add(SeedMember("M1", active: true));
         _db.Members.Add(SeedMember("M2", active: true));
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var svc = BuildService();
         var path = TempPath();
 
         try
         {
-            await svc.ExportAsync(path);
-            var manifest = await svc.GetManifestAsync(path);
+            await svc.ExportAsync(path, TestContext.Current.CancellationToken);
+            var manifest = await svc.GetManifestAsync(path, TestContext.Current.CancellationToken);
             Assert.Equal(2, manifest.EntityCounts["Members"]);
         }
         finally

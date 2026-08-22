@@ -1,0 +1,1588 @@
+{
+  "workflow": "speckit",
+  "specName": "agm workflow",
+  "branch": "013-agm-workflow",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-31T05:09:28.282Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-31T05:22:43.039Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-31T10:36:28.577Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T10:49:20.366Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T10:54:21.792Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-31T10:57:13.137Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-31T11:14:18.101Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-31T11:33:04.633Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-31T11:40:34.732Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:43:43.413Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:57:39.378Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:57:39.545Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:57:39.712Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:57:39.879Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:57:40.038Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:57:40.208Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T11:57:40.380Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T12:03:28.833Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-31T12:07:21.465Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T00:09:26.663Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T00:09:27.008Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T00:09:27.290Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T00:09:27.583Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T00:14:28.628Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:15:51.042Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:23:33.617Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:23:34.417Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T070",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:42:14.267Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:57:50.580Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:57:50.742Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:57:50.903Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:57:51.070Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:57:51.234Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:58:04.100Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:58:04.258Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:58:04.428Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:58:04.590Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:58:04.746Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:58:04.909Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:58:47.772Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:58:47.945Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:58:48.111Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:58:48.271Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:58:48.437Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:58:48.656Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:58:48.835Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T069",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T03:58:49.002Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:01:00.668Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:05:34.622Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:07:26.982Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:14:42.117Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:28:56.852Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:28:57.027Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:45:46.801Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:45:46.979Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:45:47.150Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:45:47.309Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:45:47.482Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:45:47.643Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:48:58.917Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T050",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:59:59.549Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:59:59.728Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T04:59:59.911Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T053",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:15:43.464Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T054",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:15:43.659Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T055",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:30:31.096Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T056",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:30:31.259Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T057",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:30:31.444Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T058",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:30:31.603Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T059",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:36:38.434Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T060",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:36:38.673Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T063",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:36:38.938Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T061",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:42:17.088Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T062",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:42:17.267Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T064",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:52:28.224Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T065",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:52:28.407Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T066",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:52:28.583Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T067",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:52:28.772Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T068",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T05:58:33.866Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T071",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T06:08:44.368Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T072",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-01T06:39:32.724Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-01T06:39:33.103Z"
+    }
+  ],
+  "last_action": "All 72 tasks complete, 1434 tests green, manually verified live app end-to-end, 2 real bugs found+fixed during verification (archived-office-holder-type name loss, AgmDetail missing FR-029 dates) -- ready for mark-complete",
+  "coverage": {
+    "FR-001": {
+      "title": "The system MUST provide a dedicated Record AGM entry point from the Events menu, separate from the existing generic create event flow.",
+      "tasks": [
+        "T048"
+      ]
+    },
+    "FR-002": {
+      "title": "An Annual General Meeting MUST be recorded as its own record type with its own date, not as an entry in the general Events list.",
+      "tasks": [
+        "T002",
+        "T044"
+      ]
+    },
+    "FR-003": {
+      "title": "The system MUST no longer offer Annual General Meeting as a selectable type when creating a new generic event, while preserving existing events historically tagged with that type.",
+      "tasks": [
+        "T029",
+        "T030"
+      ]
+    },
+    "FR-004": {
+      "title": "The AGM screen MUST list active members for attendance marking, with individual and select/deselect-all marking.",
+      "tasks": [
+        "T045",
+        "T046"
+      ]
+    },
+    "FR-005": {
+      "title": "The member attendance list MUST NOT use page-number controls; the member grid MUST scroll independently while the rest of the page stays fixed.",
+      "tasks": [
+        "T045"
+      ]
+    },
+    "FR-006": {
+      "title": "The AGM screen MUST let the coordinator assign one member each to President, Secretary, and Treasurer, leaving a position vacant if unassigned.",
+      "tasks": [
+        "T044",
+        "T046"
+      ]
+    },
+    "FR-007": {
+      "title": "The AGM screen MUST let the coordinator assign members to additional office-holder positions and record a member as a general committee member.",
+      "tasks": [
+        "T022",
+        "T044",
+        "T046"
+      ]
+    },
+    "FR-008": {
+      "title": "The system MUST prevent a single member from being assigned to more than one office-holder position or general-committee slot within the same AGM.",
+      "tasks": [
+        "T041",
+        "T044",
+        "T046"
+      ]
+    },
+    "FR-009": {
+      "title": "Saving an AGM MUST persist the meeting, attendance, and committee position results together as one atomic operation.",
+      "tasks": [
+        "T041",
+        "T044"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Agm/AgmServiceTests.cs::RecordAsync_WrapsWriteInTransaction",
+        "tests/StageFright.Core.Tests/Modules/Agm/AgmServiceTests.cs::RecordAsync_RollsBackEntirely_OnMidTransactionFailure"
+      ]
+    },
+    "FR-010": {
+      "title": "Saving an AGM's election results MUST supersede any prior AGM's election results for the term without altering or deleting the prior AGM's own stored records.",
+      "tasks": [
+        "T023",
+        "T041",
+        "T044"
+      ]
+    },
+    "FR-011": {
+      "title": "Once an AGM has been saved, its attendance and election results MUST be displayed read-only with no edit path.",
+      "tasks": [
+        "T043",
+        "T047"
+      ]
+    },
+    "FR-012": {
+      "title": "The system MUST let the coordinator define additional office-holder position titles, including add/rename/reorder/archive.",
+      "tasks": [
+        "T022",
+        "T049",
+        "T051"
+      ]
+    },
+    "FR-013": {
+      "title": "The built-in President, Secretary, and Treasurer positions MUST NOT be renamed, reordered, or archived.",
+      "tasks": [
+        "T022",
+        "T049"
+      ]
+    },
+    "FR-016": {
+      "title": "The system MUST let the coordinator open a past AGM to view its attendance and elected positions read-only.",
+      "tasks": [
+        "T047",
+        "T067"
+      ]
+    },
+    "FR-017": {
+      "title": "The system MUST allow a past AGM record to be archived rather than permanently removed.",
+      "tasks": [
+        "T044",
+        "T065",
+        "T067"
+      ]
+    },
+    "FR-018": {
+      "title": "The existing annual committee-reset reminder banner and manual reset action MUST be removed.",
+      "tasks": [
+        "T025",
+        "T026",
+        "T027",
+        "T028",
+        "T069"
+      ]
+    },
+    "FR-019": {
+      "title": "The system MUST include automated tests covering every reachable code path introduced by this feature.",
+      "tasks": [
+        "T036",
+        "T037",
+        "T038",
+        "T039",
+        "T040",
+        "T041",
+        "T042",
+        "T043",
+        "T049",
+        "T050",
+        "T055",
+        "T056",
+        "T059",
+        "T060",
+        "T061",
+        "T064",
+        "T065",
+        "T068"
+      ]
+    },
+    "FR-014": {
+      "title": "The system MUST let the coordinator set a target general-committee seat count, snapshotted onto the AGM record at save time.",
+      "tasks": [
+        "T002",
+        "T044",
+        "T051"
+      ]
+    },
+    "FR-015": {
+      "title": "The system MUST provide a browsable list of past AGMs, most-recent-first, showing date and attendance count.",
+      "tasks": [
+        "T064",
+        "T066"
+      ]
+    },
+    "FR-020": {
+      "title": "The setup wizard MUST include a step for configuring committee office-holder titles and the seat count target.",
+      "tasks": [
+        "T053",
+        "T054"
+      ]
+    },
+    "FR-021": {
+      "title": "Completing committee configuration during setup MUST be optional, with identical behaviour if configured later from Settings.",
+      "tasks": [
+        "T053",
+        "T054"
+      ]
+    },
+    "FR-022": {
+      "title": "The setup wizard MUST let the coordinator select the calendar month the AGM is normally held.",
+      "tasks": [
+        "T057"
+      ]
+    },
+    "FR-023": {
+      "title": "A committee term MUST run from the AGM that elected it to the date of the next recorded AGM, not a fixed calendar year.",
+      "tasks": [
+        "T005",
+        "T044"
+      ]
+    },
+    "FR-024": {
+      "title": "A committee term MUST be labeled with the calendar year containing the majority of the days within that term.",
+      "tasks": [
+        "T005",
+        "T044",
+        "T055"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Agm/AgmServiceTests.cs::RecordAsync_OctoberAgm_LabelsTermWithFollowingYear",
+        "tests/StageFright.Core.Tests/Modules/Agm/AgmServiceTests.cs::RecordAsync_MarchAgm_LabelsTermWithItsOwnYear"
+      ]
+    },
+    "FR-025": {
+      "title": "Saving a new AGM's election results MUST supersede existing committee position records for the term it starts, not a fixed calendar year.",
+      "tasks": [
+        "T023",
+        "T044"
+      ]
+    },
+    "FR-026": {
+      "title": "The system MUST let the coordinator record a special/interim election to replace a departing committee member or office holder.",
+      "tasks": [
+        "T044",
+        "T062"
+      ]
+    },
+    "FR-027": {
+      "title": "Recording a special election MUST close the departing holder's record with an end date and create a new record for the incoming member.",
+      "tasks": [
+        "T044",
+        "T059"
+      ]
+    },
+    "FR-028": {
+      "title": "The system MUST allow more than one committee position record to exist for the same position within the same committee term.",
+      "tasks": [
+        "T006",
+        "T013",
+        "T044"
+      ]
+    },
+    "FR-029": {
+      "title": "When a position has more than one holder in a term, the system MUST display each holder's name with service start/end dates.",
+      "tasks": [
+        "T058",
+        "T060",
+        "T063"
+      ],
+      "tests": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs::Should_RenderDatedHolderList_OrderedByStartDate_When_SpecialElectionReplacedAHolder",
+        "tests/StageFright.UI.Tests/Pages/Events/AgmDetailTests.cs::Renders_MultipleHoldersForSamePosition_WithDatesAndOrderedByStartDate",
+        "tests/StageFright.Integration.Tests/Scenarios/V18_AgmWorkflowTests.cs::FullAgmWorkflow_RecordSpecialElectionReviewAndArchive_WorksEndToEnd"
+      ]
+    },
+    "FR-030": {
+      "title": "The AGM month setting MUST be the single source of truth for both the reset timing and the new committee term boundaries.",
+      "tasks": [
+        "T007",
+        "T026",
+        "T057"
+      ]
+    }
+  },
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 42,
+    "projectedTasks": 55,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "context": [
+    "area: src/StageFright.Core/Modules/Members/CommitteeService.cs, CommitteeAnnualResetService.cs (existing committee position + AGM-reset banner logic)",
+    "area: src/StageFright.Core/Entities/Event.cs, EventType.cs (AGM currently recorded as an Event with a system-default EventType)",
+    "area: src/StageFright.UI/Pages/Rehearsals/AttendanceGrid.razor, StageFright.UI/Pages/Events/ParticipationGrid.razor (existing attendance/participation grid patterns to follow, except for the no-paging requirement)",
+    "area: src/StageFright.Reports/Providers/CommitteeReportProvider.cs (existing President/Secretary/Treasurer + General Committee Members reporting convention reused by this feature)",
+    "constraint: soft-delete everywhere except Fee/Payment/Transaction (CLAUDE.md) — AGM and its attendance/office-holder records are non-financial and must be archivable, not hard-deletable",
+    "constraint: CommitteeMembership is unique per (MemberId, Year) — carried forward as the one-position-per-member-per-year rule (FR-008)",
+    "issue: #290 add committee settings and definitions to Startup wizard",
+    "issue: #292 separate committee service years from calendar years",
+    "area: src/StageFright.Core/Entities/CommitteeMembership.cs (Year int field — now must become a committee-term concept, not a bare calendar year)",
+    "area: src/StageFright.Core/Entities/Settings.cs (CommitteeRenewalMonth, LastCommitteeResetYear — existing fields the new AGM-month setting must unify with, not duplicate)"
+  ],
+  "intent": "Let a coordinator record an AGM's attendance and committee elections (office holders + general committee members) in one workflow, as its own record type separate from generic Events.",
+  "expectations": [
+    "No new AGM outcome types beyond attendance, office-holder elections, and general-committee elections in this release",
+    "No hard cap enforced on the general-committee seat count target — it is guidance only",
+    "No in-place editing of a saved AGM's attendance/election data — corrections are a new superseding AGM",
+    "No retroactive re-dating of committee position records created before AGM-to-AGM term tracking existed"
+  ],
+  "approach": "Replace Event-based AGM recording with a dedicated AnnualGeneralMeeting/AgmAttendanceRecord entity pair saved atomically alongside CommitteeOfficeHolderType/CommitteeTerm/CommitteePositionRecord (renamed+extended CommitteeMembership); each AGM save auto-closes the prior open term and opens a new one, which is also what makes the old manual reset banner obsolete and removable.",
+  "decisions": [
+    {
+      "decision": "Committee terms auto-supersede via chronological open/close (each AGM save closes the prior open CommitteeTerm and opens a new one)",
+      "why": "Mechanically satisfies the clarified same-term-rerun edge case without any bespoke supersede/delete operation - current committee is just whichever term has EndDate == null",
+      "rejected": "Explicit rewrite/soft-delete of the prior AGMs position records tied to one shared term row"
+    },
+    {
+      "decision": "Rename CommitteeMembership to CommitteePositionRecord in place, adding nullable CommitteeTermId/OfficeHolderTypeId/StartDate/EndDate alongside the existing legacy Year/Position fields",
+      "why": "Spec calls this entity existing-reused-extended and explicitly forbids retroactively re-dating historical calendar-year records",
+      "rejected": "Synthesizing a CommitteeTerm per historical Year value and backfilling all legacy rows"
+    },
+    {
+      "decision": "Delete CommitteeAnnualResetService/ICommitteeAnnualResetService entirely, including the Settings banner UI, LastCommitteeResetYear field, and the V13 integration test",
+      "why": "Atomic AGM-save (FR-009/FR-010) already does everything the manual reset button used to do; clarified Q1 chose full replacement over keeping both",
+      "rejected": "Repointing the banner at the new AnnualGeneralMeeting entity while keeping the manual reset action"
+    },
+    {
+      "decision": "Build the new Committee Settings tab as a 5th hardcoded core tab in SettingsPage.razor (OnClick/Shown-flag pattern), not via ISettingsTabProvider",
+      "why": "Research found ISettingsTabProvider is only actually used for plugin tabs and only gets the flakier OnShown wiring; the 4 real core tabs bypass it entirely with an OnClick fix for MAUI WebView concurrency issues",
+      "rejected": "Registering as a genuine ISettingsTabProvider plugin, which would reintroduce the documented Bootstrap/concurrent-DbContext gotcha"
+    },
+    {
+      "decision": "Model a special election as a service operation (close outgoing CommitteePositionRecord, open incoming one) rather than a new stored entity",
+      "why": "Spec Key Entities lists exactly 5 entities with no Special Election entity, and everything FR-026/027/028 need is expressible as start/end dates on CommitteePositionRecord rows",
+      "rejected": "A dedicated SpecialElection entity tracking outgoing/incoming member and replacement date as its own row"
+    },
+    {
+      "decision": "Drop Annual General Meeting from EventTypeService default seed list (fresh installs never get the row) and rewrite DebugDataSeeder.SeedAgmAsync/SeedCommitteeAsync against the new AgmService/office-holder-type model rather than preserving them",
+      "why": "User confirmed the seeded EventType row and dev/test fixture data are not real customer history - FR-003s preserve-existing-events requirement only matters for a genuine upgrading production install",
+      "rejected": "Migrating/preserving the current seed datas old Event+EventType-shaped AGM records"
+    },
+    {
+      "decision": "Fixed CommitteePositionRecordRepository.Include(OfficeHolderType) navigation loss for archived types via a manual post-fetch IgnoreQueryFilters() dictionary attach, rather than IgnoreQueryFilters() on the whole query",
+      "why": "IgnoreQueryFilters() is all-or-nothing per query in EF Core -- applying it to the whole GetByAgmAsync/GetByTermAsync/GetByMemberAsync query would also un-filter soft-deleted CommitteePositionRecord rows themselves, which must stay filtered",
+      "rejected": "Query-level .IgnoreQueryFilters() on the whole LINQ statement"
+    },
+    {
+      "decision": "Extended AgmDetail.razor with the same FR-029 holder-count-aware dated formatting already built for CommitteeReportProvider, discovered during manual verification rather than being in the original task list",
+      "why": "GetByAgmAsync joins through the whole CommitteeTerm the AGM started (not just that AGMs own original assignments), so a later special elections replacement shows up on the original AGMs detail page too -- without dates this reads as two people simultaneously holding one office, violating FR-029s general (not report-scoped) requirement",
+      "rejected": "Leaving AgmDetail as a flat undated list and treating FR-029 as satisfied by the Committee Report alone"
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Full plan produced: research.md (12 decisions), data-model.md (4 new + 1 extended entity, 2 removed services), contracts/agm-workflow-contract.md (routes, menu, service signatures), plan.md (Summary/Structure/Constitution Check, all PASS)",
+      "key_finding": "Saving a new AGM auto-closes the previously-open CommitteeTerm and opens a new one - this single mechanism is what makes the old manual reset banner obsolete, resolves the same-term-rerun edge case with no bespoke supersede logic, and is why FR-018s removal and FR-030s AGM-month reuse are safe independent changes"
+    },
+    "tasks": {
+      "summary": "71 tasks across Setup, Foundational (34 tasks: schema rename+4 new entities, services, backup, old-reset deletion), and 5 user-story phases (US1 MVP record/save/view, US2 office-holder config, US3 AGM-month term boundaries, US4 special elections, US5 past-AGM review), plus Polish."
+    },
+    "implement": {
+      "summary": "AGM workflow shipped end-to-end across all 5 user stories: dedicated Record AGM screen with atomic save, office-holder-title/seat-count configuration in Settings and setup wizard, AGM-month-driven committee terms with majority-of-days labeling, special elections with dated multi-holder display, and a browsable/archivable past-AGM list. 72/72 tasks complete, 1434 tests passing, manually verified live in the running app (which surfaced and fixed one real gap: archived office-holder titles losing their name on historical records, and AgmDetail lacking FR-029 dated formatting)."
+    }
+  },
+  "currentTask": "T072",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Confirmed dotnet restore/build/test all green before touching CommitteeMembership (496+130+140+409+177=1352 tests passed, 0 failed)"
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "New AnnualGeneralMeeting entity (Date, Notes, seat-count-target snapshot, soft-delete/audit, attendance nav)",
+      "files": [
+        "src/StageFright.Core/Entities/AnnualGeneralMeeting.cs"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "New AgmAttendanceRecord entity, immutable per-member attendance row",
+      "files": [
+        "src/StageFright.Core/Entities/AgmAttendanceRecord.cs"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "New CommitteeOfficeHolderType entity (Name, DisplayOrder, IsBuiltIn)",
+      "files": [
+        "src/StageFright.Core/Entities/CommitteeOfficeHolderType.cs"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "New CommitteeTerm entity (StartedByAgmId, StartDate, EndDate, LabelYear)",
+      "files": [
+        "src/StageFright.Core/Entities/CommitteeTerm.cs"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Renamed CommitteeMembership -> CommitteePositionRecord; Year/Position now legacy-nullable; added CommitteeTermId/OfficeHolderTypeId/StartDate/EndDate",
+      "files": [
+        "src/StageFright.Core/Entities/CommitteePositionRecord.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Settings gains GeneralCommitteeSeatCountTarget, drops LastCommitteeResetYear, relabels CommitteeRenewalMonth as AGM month",
+      "files": [
+        "src/StageFright.Core/Entities/Settings.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Member.CommitteeMemberships nav property renamed to CommitteePositionRecords",
+      "files": [
+        "src/StageFright.Core/Entities/Member.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "New AnnualGeneralMeetingConfiguration (HasQueryFilter on !IsDeleted, HasMany AttendanceRecords)",
+      "files": [
+        "src/StageFright.Data/Configurations/AnnualGeneralMeetingConfiguration.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "New AgmAttendanceRecordConfiguration (unique index on AnnualGeneralMeetingId+MemberId, Member FK)",
+      "files": [
+        "src/StageFright.Data/Configurations/AgmAttendanceRecordConfiguration.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Added CommitteeOfficeHolderTypeConfiguration (unique NOCASE index on Name, soft-delete filter)",
+      "files": [
+        "src/StageFright.Data/Configurations/CommitteeOfficeHolderTypeConfiguration.cs"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Added CommitteeTermConfiguration (no soft-delete filter, FK to starting AGM)",
+      "files": [
+        "src/StageFright.Data/Configurations/CommitteeTermConfiguration.cs"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Renamed CommitteeMembershipConfiguration to CommitteePositionRecordConfiguration with new filtered unique indexes replacing (MemberId,Year)",
+      "files": [
+        "src/StageFright.Data/Configurations/CommitteePositionRecordConfiguration.cs",
+        "src/StageFright.Data/Configurations/CommitteeMembershipConfiguration.cs(deleted)"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Updated MemberConfiguration to use renamed CommitteePositionRecords navigation",
+      "files": [
+        "src/StageFright.Data/Configurations/MemberConfiguration.cs"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Renamed CommitteeMemberships DbSet to CommitteePositionRecords; added DbSets for AnnualGeneralMeeting, AgmAttendanceRecord, CommitteeOfficeHolderType, CommitteeTerm; registered all 4 new EF configurations",
+      "files": [
+        "src/StageFright.Data/StageFrightDbContext.cs"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Generated AddAgmWorkflow migration (hand-corrected EF's auto-generated drop+recreate into a real RenameTable+AlterColumn for CommitteeMemberships->CommitteePositionRecords, and DropColumn+AddColumn instead of a semantic-mismatch RenameColumn for Settings.LastCommitteeResetYear->GeneralCommitteeSeatCountTarget); hand-added InsertData for 3 built-in CommitteeOfficeHolderType rows; verified by applying to a scratch SQLite db from empty through the full migration chain",
+      "files": [
+        "src/StageFright.Data/Migrations/20260801030745_AddAgmWorkflow.cs",
+        "src/StageFright.Data/Migrations/20260801030745_AddAgmWorkflow.Designer.cs",
+        "src/StageFright.Data/Migrations/StageFrightDbContextModelSnapshot.cs"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "IAgmService interface + RecordAgmRequest/RecordSpecialElectionRequest DTOs per contract",
+      "files": [
+        "src/StageFright.Core/Contracts/IAgmService.cs",
+        "src/StageFright.Core/Modules/Agm/RecordAgmRequest.cs",
+        "src/StageFright.Core/Modules/Agm/RecordSpecialElectionRequest.cs"
+      ]
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "AgmService.cs implementing all 5 IAgmService methods (RecordAsync with FR-008 pre-tx validation + term-close/open + LabelYear majority-of-days rule; GetByIdAsync; GetPastAsync; ArchiveAsync cascading to attendance records; RecordSpecialElectionAsync). Pulled forward from US1 to unblock T070 seeder rewrite per user request.",
+      "files": [
+        "src/StageFright.Core/Modules/Agm/AgmService.cs"
+      ]
+    },
+    "T070": {
+      "status": "DONE",
+      "did": "Rewrote SeedAgmAsync/SeedCommitteeAsync in DebugDataSeeder.cs against IAgmService.RecordAsync and the office-holder-type model: removed the standalone legacy SeedCommitteeAsync (year/position AddOrUpdateAsync), folded committee assignment into the per-year AGM call (President/Secretary/Treasurer via built-in office-holder-type lookup + 6 general committee members); dropped the now-nonexistent 'Annual General Meeting' EventType lookup; 2026 AGM (after SeedCurrentDate) is skipped entirely rather than seeding a phantom future AGM, leaving the term from the 2025 AGM open through the seed window.",
+      "files": [
+        "src/StageFright.App/Seeding/DebugDataSeeder.cs"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "IAgmRepository/AgmRepository with GetPastOrderedAsync (most-recent-first)",
+      "files": [
+        "src/StageFright.Core/Contracts/IAgmRepository.cs",
+        "src/StageFright.Data/Repositories/AgmRepository.cs"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "IAgmAttendanceRepository/AgmAttendanceRepository with AddRangeAsync + GetByAgmAsync",
+      "files": [
+        "src/StageFright.Core/Contracts/IAgmAttendanceRepository.cs",
+        "src/StageFright.Data/Repositories/AgmAttendanceRepository.cs"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "ICommitteeOfficeHolderTypeRepository/CommitteeOfficeHolderTypeRepository with GetActiveOrderedAsync + GetMaxCustomDisplayOrderAsync",
+      "files": [
+        "src/StageFright.Core/Contracts/ICommitteeOfficeHolderTypeRepository.cs",
+        "src/StageFright.Data/Repositories/CommitteeOfficeHolderTypeRepository.cs"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "ICommitteeTermRepository/CommitteeTermRepository with GetOpenAsync",
+      "files": [
+        "src/StageFright.Core/Contracts/ICommitteeTermRepository.cs",
+        "src/StageFright.Data/Repositories/CommitteeTermRepository.cs"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Renamed ICommitteeMembershipRepository/CommitteeMembershipRepository to ICommitteePositionRecordRepository/CommitteePositionRecordRepository; added GetByTermAsync/GetByAgmAsync/GetOpenByMemberInTermAsync, removed SoftDeleteCurrentYearAsync",
+      "files": [
+        "src/StageFright.Core/Contracts/ICommitteePositionRecordRepository.cs",
+        "src/StageFright.Data/Repositories/CommitteePositionRecordRepository.cs"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "ICommitteeOfficeHolderTypeService/CommitteeOfficeHolderTypeService: GetActiveAsync, AddAsync, RenameAsync/ReorderAsync/ArchiveAsync guarded against IsBuiltIn",
+      "files": [
+        "src/StageFright.Core/Contracts/ICommitteeOfficeHolderTypeService.cs",
+        "src/StageFright.Core/Modules/Members/CommitteeOfficeHolderTypeService.cs"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "Extended ICommitteeService/CommitteeService: removed SoftDeleteCurrentYearAsync, added GetCurrentAsync/GetByTermAsync/GetByAgmAsync",
+      "files": [
+        "src/StageFright.Core/Contracts/ICommitteeService.cs",
+        "src/StageFright.Core/Modules/Members/CommitteeService.cs"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "Deleted ICommitteeAnnualResetService and CommitteeAnnualResetService (superseded by atomic AGM save)",
+      "files": [
+        "src/StageFright.Core/Contracts/ICommitteeAnnualResetService.cs(deleted)",
+        "src/StageFright.Core/Modules/Members/CommitteeAnnualResetService.cs(deleted)"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "Removed AGM-banner/reset-committee UI from GeneralSettingsTab; relabeled CommitteeRenewalMonth select as AGM Month",
+      "files": [
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor",
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor.cs"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "MauiProgram DI: removed ICommitteeAnnualResetService registration; registered IAgmRepository/IAgmAttendanceRepository/ICommitteeOfficeHolderTypeRepository/ICommitteeTermRepository/ICommitteeOfficeHolderTypeService/IAgmService; renamed ICommitteeMembershipRepository registration to ICommitteePositionRecordRepository",
+      "files": [
+        "src/StageFright.App/MauiProgram.cs"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "Removed dead AgmExistsInYearAsync from IEventRepository/IEventService/EventRepository/EventService",
+      "files": [
+        "src/StageFright.Core/Contracts/IEventRepository.cs",
+        "src/StageFright.Core/Contracts/IEventService.cs",
+        "src/StageFright.Data/Repositories/EventRepository.cs",
+        "src/StageFright.Core/Modules/Events/EventService.cs"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "Fixed behavioral test fallout from T029/T030's AGM-exclusion: EventTypeServiceTests expected-count updated 5->4 + DoesNotContain assertion added, deleted obsolete SystemDefaults_IncludeAGM_WithIsSystemDefaultTrue test (directly contradicted FR-003); EventFormTests mock switched from GetAllAsync to GetSelectableForNewEventsAsync",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Events/EventTypeServiceTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Events/EventFormTests.cs"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "EventForm now loads GetSelectableForNewEventsAsync instead of GetAllAsync",
+      "files": [
+        "src/StageFright.UI/Pages/Events/EventForm.razor.cs"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "Renamed CommitteeMembershipBackupDto to CommitteePositionRecordBackupDto with 4 new fields; added AnnualGeneralMeetingBackupDto/AgmAttendanceRecordBackupDto/CommitteeOfficeHolderTypeBackupDto/CommitteeTermBackupDto; added GeneralCommitteeSeatCountTarget to SettingsBackupDto, removed LastCommitteeResetYear",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/Backup/CommitteePositionRecordBackupDto.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/AnnualGeneralMeetingBackupDto.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/AgmAttendanceRecordBackupDto.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/CommitteeOfficeHolderTypeBackupDto.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/CommitteeTermBackupDto.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/SettingsBackupDto.cs"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "BackupEnvelope/BackupSnapshot: renamed CommitteeMemberships to CommitteePositionRecords, added 4 new collections at next sequential ProtoMember numbers",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/Backup/BackupEnvelope.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/BackupSnapshot.cs"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "BackupService: renamed Committee mapping to CommitteePositionRecord, added mappers/EntityCounts/ValidateCompleteness/null-coalescing for the 4 new entities, added GeneralCommitteeSeatCountTarget to Settings mapping",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/BackupService.cs"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "BackupRepository: renamed CommitteeMemberships access, added FK-safe reads/UpsertCollectionAsync calls for the 4 new entities",
+      "files": [
+        "src/StageFright.Data/Repositories/BackupRepository.cs"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "MemberDetail: renamed _committeeHistory to List<CommitteePositionRecord>, added GetEffectiveYear/GetEffectiveLabel helpers and CommitteeTerm-aware IsCurrent",
+      "files": [
+        "src/StageFright.UI/Pages/Members/MemberDetail.razor",
+        "src/StageFright.UI/Pages/Members/MemberDetail.razor.cs"
+      ]
+    },
+    "T069": {
+      "status": "DONE",
+      "did": "Deleted V13_CommitteeResetAgmBannerTests.cs (superseded by deleted CommitteeAnnualResetService, coverage moves to V18 in Polish)",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V13_CommitteeResetAgmBannerTests.cs(deleted)"
+      ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "Renamed typeof(CommitteeMembership) to typeof(CommitteePositionRecord) at all 4 call sites",
+      "files": [
+        "tests/StageFright.Core.Tests/Entities/EntityFieldConstraintsTests.cs"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "Additional Foundational-rename ripple cleanup: V2_MemberManagementTests/V3_RehearsalAttendanceTests CommitteeMembershipRepository->CommitteePositionRecordRepository + BuildCommitteeService's new ICommitteeTermRepository arg; V5_EventsParticipationTests deleted dead AgmExistsInYearAsync test (method removed in T028)",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V2_MemberManagementTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V3_RehearsalAttendanceTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V5_EventsParticipationTests.cs"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "BackupServiceTests: renamed CommitteeMembership to CommitteePositionRecord in BuildMinimalSnapshot; added round-trip export/import coverage for AnnualGeneralMeeting/AgmAttendanceRecord/CommitteeOfficeHolderType/CommitteeTerm/CommitteePositionRecord including EntityCounts and ValidateCompleteness; also fixed incidental Foundational-rename compile breaks in MemberServiceTests.cs and EventServiceTests.cs (deleted dead AgmExistsInYearAsync tests, removed SoftDeleteCurrentYearAsync assertion)",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs",
+        "tests/StageFright.Core.Tests/Modules/Members/MemberServiceTests.cs",
+        "tests/StageFright.Core.Tests/Modules/Events/EventServiceTests.cs"
+      ]
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "Renamed CommitteeMembership to CommitteePositionRecord in MemberFormTests/MemberDetailTests; added MemberDetailTests case asserting new-model position record renders CommitteeTerm.LabelYear/OfficeHolderType.Name; fixed incidental SettingsCrossTabSaveTests.cs LastCommitteeResetYear compile break from T007",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Members/MemberFormTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Members/MemberDetailTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Settings/SettingsCrossTabSaveTests.cs"
+      ]
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "New CommitteeServiceTests.cs: full coverage of AddOrUpdateAsync (create/update/year-matching/transaction wrap), GetHistoryAsync, GetCurrentAsync (open-term/no-open-term), GetByTermAsync, GetByAgmAsync",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Members/CommitteeServiceTests.cs"
+      ]
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "New AgmServiceTests.cs: RecordAsync success/FR-008 validation (both duplicate shapes)/transaction rollback/term close-and-open, GetByIdAsync, GetPastAsync, plus ArchiveAsync and RecordSpecialElectionAsync baseline coverage per CLAUDE.md exhaustive-coverage rule (extended further by T055/T059)",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Agm/AgmServiceTests.cs"
+      ]
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "New AgmAttendanceGridTests.cs: one row per active member, default unchecked, select-all check/uncheck all rows, no pagination controls, independent scroll container class, GetAttendedMemberIds, empty-members warning",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Events/AgmAttendanceGridTests.cs"
+      ]
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "New RecordAgmTests.cs: field rendering, office-holder dropdown/general-committee checkbox rendering, FR-008 duplicate-member validation (blocks save + shows error), RecordAsync called with expected request shape, post-save redirect to AGM detail",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Events/RecordAgmTests.cs"
+      ]
+    },
+    "T045": {
+      "status": "DONE",
+      "did": "New AgmAttendanceGrid.razor(.cs): embeddable RadzenDataGrid (AllowPaging=false) wrapped in an overflow-y:auto scroll container, select-all HeaderTemplate checkbox, GetAttendedMemberIds() read back by the parent at save time",
+      "files": [
+        "src/StageFright.UI/Pages/Events/AgmAttendanceGrid.razor",
+        "src/StageFright.UI/Pages/Events/AgmAttendanceGrid.razor.cs"
+      ]
+    },
+    "T046": {
+      "status": "DONE",
+      "did": "New RecordAgm.razor(.cs) at /events/agm/new: meeting date/notes, embeds AgmAttendanceGrid, office-holder-type dropdowns (built-ins+custom via GetActiveAsync), general-committee checkboxes with seat-count-target progress, FR-008 client-side duplicate guard, calls IAgmService.RecordAsync and redirects to the saved AGM's detail view",
+      "files": [
+        "src/StageFright.UI/Pages/Events/RecordAgm.razor",
+        "src/StageFright.UI/Pages/Events/RecordAgm.razor.cs"
+      ]
+    },
+    "T047": {
+      "status": "DONE",
+      "did": "New AgmDetail.razor(.cs) at /events/agm/{id}: read-only attendance count + elected positions (built-ins first by DisplayOrder, then general committee); fixed CommitteePositionRecordRepository.GetByAgmAsync to Include Member/OfficeHolderType navigations (previously null, first real consumer); archive action deferred to US5/T067",
+      "files": [
+        "src/StageFright.UI/Pages/Events/AgmDetail.razor",
+        "src/StageFright.UI/Pages/Events/AgmDetail.razor.cs",
+        "src/StageFright.Data/Repositories/CommitteePositionRecordRepository.cs"
+      ]
+    },
+    "T048": {
+      "status": "DONE",
+      "did": "EventsMenuItemProvider: added SubItems (All Events/Record AGM/Past AGMs) per contract; new EventsMenuItemProviderTests.cs covering all 3 routes",
+      "files": [
+        "src/StageFright.Core/Modules/Events/EventsMenuItemProvider.cs",
+        "tests/StageFright.Core.Tests/Modules/Events/EventsMenuItemProviderTests.cs"
+      ]
+    },
+    "T049": {
+      "status": "DONE",
+      "did": "New CommitteeOfficeHolderTypeServiceTests.cs: GetActiveAsync ordering, AddAsync (create/trim/display-order sequencing/blank-name validation), RenameAsync (success/built-in guard/not-found/blank-name), ReorderAsync (sequential display orders from 3/built-in guard/not-found), ArchiveAsync (success/built-in guard/not-found)",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Members/CommitteeOfficeHolderTypeServiceTests.cs"
+      ]
+    },
+    "T050": {
+      "status": "DONE",
+      "did": "New CommitteeSettingsTabTests.cs: renders active titles, built-in shows Read-only not Archive button, custom shows Archive button + calls ArchiveAsync, add-title flow calls AddAsync, seat-count-target input renders current value and save calls SettingsService.SaveAsync with new value",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Settings/CommitteeSettingsTabTests.cs"
+      ]
+    },
+    "T051": {
+      "status": "DONE",
+      "did": "New CommitteeSettingsTab.razor(.cs): office-holder title add/archive mirroring EventTypesTab's pattern, GeneralCommitteeSeatCountTarget numeric input with its own merge-preserve save; added GeneralCommitteeSeatCountTarget to GeneralSettingsTab's own merge-preserve list (GstSettingsTab already had it) so no sibling tab clobbers a concurrent save",
+      "files": [
+        "src/StageFright.UI/Pages/Settings/CommitteeSettingsTab.razor",
+        "src/StageFright.UI/Pages/Settings/CommitteeSettingsTab.razor.cs",
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor.cs"
+      ]
+    },
+    "T052": {
+      "status": "DONE",
+      "did": "SettingsPage.razor(.cs): added 5th Committee tab (CommitteeShown flag, OnClick/lazy-render pattern matching the other 4), DefaultTabIndex gains committee=>4",
+      "files": [
+        "src/StageFright.UI/Pages/Settings/SettingsPage.razor",
+        "src/StageFright.UI/Pages/Settings/SettingsPage.razor.cs"
+      ]
+    },
+    "T053": {
+      "status": "DONE",
+      "did": "SetupWizard: new step 4 (AGM month select + comma-separated additional office-holder titles + seat-count-target, all optional per FR-021) shared with US3's AGM-month requirement (T057 pulled forward); review is now step 5, step-count/progress-bar/Next-gating updated to 5; fixed existing SetupWizardTests/SetupWizardNoSeederTests step-count fallout",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs",
+        "src/StageFright.UI/Pages/Setup/SetupFormModel.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardNoSeederTests.cs"
+      ]
+    },
+    "T054": {
+      "status": "DONE",
+      "did": "SetupRequest gains CommitteeRenewalMonth/CommitteeOfficeHolderTitles/GeneralCommitteeSeatCountTarget (all optional with defaults); SetupService.InitializeAsync sets Settings.CommitteeRenewalMonth/GeneralCommitteeSeatCountTarget from the request and seeds any coordinator-entered custom titles via ICommitteeOfficeHolderTypeService.AddAsync, leaving both at defaults when skipped; fixed SetupServiceTests/SetupServiceIntegrationTests constructor-change fallout",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/SetupRequest.cs",
+        "src/StageFright.Core/Modules/Settings/SetupService.cs",
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs",
+        "tests/StageFright.Data.Tests/Settings/SetupServiceIntegrationTests.cs"
+      ]
+    },
+    "T055": {
+      "status": "DONE",
+      "did": "Extended AgmServiceTests.cs: October AGM labels term with following year, March AGM labels term with its own year (FR-024 majority-of-days rule, already implemented in AgmService.RecordAsync)",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Agm/AgmServiceTests.cs"
+      ]
+    },
+    "T056": {
+      "status": "DONE",
+      "did": "Fixed CommitteeMembership->CommitteePositionRecord rename compile break in CommitteeReportProviderTests.cs; added coverage for CommitteeTerm.LabelYear grouping, legacy+term-record coexistence, OfficeHolderType.Name label resolution, and general-committee grouping for term-based rows",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T057": {
+      "status": "DONE",
+      "did": "AGM Month InputSelect already landed as part of T053's shared step-4 build (bound to _model.CommitteeRenewalMonth, month-name dropdown matching existing renewal-month selects); verified present, no further change needed",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor"
+      ]
+    },
+    "T058": {
+      "status": "DONE",
+      "did": "Re-keyed CommitteeReportProvider.GenerateAsync's grouping from Membership.Year to CommitteeTerm.LabelYear (falling back to legacy Year for pre-feature rows); fixed BuildPositionLines to resolve OfficeHolderType.Name as the position label for new-model rows (legacy Position field only meaningful pre-feature) — without this, all new-model records would have incorrectly landed in General Committee Members; renamed tuple field/constructor param Membership->PositionRecord; fixed 3 more SetupService construction call sites discovered during full-solution build verification (StartupBenchmarkTests/V1_FirstRunSetupTests/V10_ThemeTests)",
+      "files": [
+        "src/StageFright.Reports/Providers/CommitteeReportProvider.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/StartupBenchmarkTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V1_FirstRunSetupTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V10_ThemeTests.cs"
+      ]
+    },
+    "T059": {
+      "status": "DONE",
+      "did": "Extended AgmServiceTests.cs: RecordSpecialElectionAsync throws EntityNotFoundException when outgoing record missing, DataIntegrityException when term already closed, ValidationException when incoming member already holds an open slot in the term (FR-008 reused); plus audit-entry coverage for both outgoing/incoming records",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Agm/AgmServiceTests.cs"
+      ]
+    },
+    "T060": {
+      "status": "DONE",
+      "did": "Extended CommitteeReportProviderTests.cs: single holder renders name-only with no dates; >1 holder for the same term-tracked slot (special election) renders each holder with StartDate-EndDate/present, ordered by StartDate",
+      "files": [
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs"
+      ]
+    },
+    "T063": {
+      "status": "DONE",
+      "did": "CommitteeReportProvider.BuildPositionLines: replaced flat comma-joined MemberNames grouping with a holder-count-aware FormatHolders formatter — single holder (legacy or term-based) -> name only; multiple term-tracked holders (StartDate present on all) -> dated list ordered by StartDate; multiple legacy holders (no StartDate) -> unchanged plain alphabetical comma-join",
+      "files": [
+        "src/StageFright.Reports/Providers/CommitteeReportProvider.cs"
+      ]
+    },
+    "T061": {
+      "status": "DONE",
+      "did": "New RecordSpecialElectionTests.cs: outgoing-position/incoming-member dropdown rendering, replacement-date field, validation error when nothing selected, RecordSpecialElectionAsync called with expected request shape, post-save redirect to Past AGMs, empty-state warning when no current positions exist",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Events/RecordSpecialElectionTests.cs"
+      ]
+    },
+    "T062": {
+      "status": "DONE",
+      "did": "New RecordSpecialElection.razor(.cs) at /events/agm/special-election/new: selects an open (EndDate null) position from the current term via ICommitteeService.GetCurrentAsync, an incoming active member, and a replacement date, then calls IAgmService.RecordSpecialElectionAsync; fixed CommitteePositionRecordRepository.GetByTermAsync to Include Member/OfficeHolderType navigations (same gap class as T047's GetByAgmAsync fix, first real consumer)",
+      "files": [
+        "src/StageFright.UI/Pages/Events/RecordSpecialElection.razor",
+        "src/StageFright.UI/Pages/Events/RecordSpecialElection.razor.cs",
+        "src/StageFright.Data/Repositories/CommitteePositionRecordRepository.cs"
+      ]
+    },
+    "T064": {
+      "status": "DONE",
+      "did": "New AgmListTests.cs: most-recent-first rendering, date + attendance count columns, row click navigates to /events/agm/{id}, empty-state with Record AGM link",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Events/AgmListTests.cs"
+      ]
+    },
+    "T065": {
+      "status": "DONE",
+      "did": "New AgmDetailTests.cs: covers T047's base read-only rendering (date/notes/attendance-count/elected-positions/not-found) plus archive button rendering, ArchiveAsync call, and post-archive redirect to Past AGMs list",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Events/AgmDetailTests.cs"
+      ]
+    },
+    "T066": {
+      "status": "DONE",
+      "did": "New AgmList.razor(.cs) at /events/agm: RadzenDataGrid of IAgmService.GetPastAsync() results (AllowPaging=true, PageSize=15, rz-shadow-0 matching Members-grid conventions), date-as-link + attendance-count columns; fixed AgmRepository.GetPastOrderedAsync to Include AttendanceRecords (same missing-Include gap class as T047/T062, first real consumer needing the count)",
+      "files": [
+        "src/StageFright.UI/Pages/Events/AgmList.razor",
+        "src/StageFright.UI/Pages/Events/AgmList.razor.cs",
+        "src/StageFright.Data/Repositories/AgmRepository.cs"
+      ]
+    },
+    "T067": {
+      "status": "DONE",
+      "did": "AgmDetail.razor(.cs): added Archive action button calling IAgmService.ArchiveAsync and redirecting to /events/agm",
+      "files": [
+        "src/StageFright.UI/Pages/Events/AgmDetail.razor",
+        "src/StageFright.UI/Pages/Events/AgmDetail.razor.cs"
+      ]
+    },
+    "T068": {
+      "status": "DONE",
+      "did": "New V18_AgmWorkflowTests.cs: full journey against a real SQLite in-memory DB with real EF migrations - record an AGM (attendance+President+general committee member), verify CommitteeReportProvider picks it up (SC-002), record a special election replacing the President mid-term, verify reporting shows both holders with dates, review the past AGM via GetPastAsync/GetByIdAsync, archive it and verify it drops out of GetPastAsync with cascaded attendance soft-delete",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V18_AgmWorkflowTests.cs"
+      ]
+    },
+    "T071": {
+      "status": "DONE",
+      "did": "Removed the legacy one-member-at-a-time committee-position UI from MemberForm.razor(.cs): isCommittee checkbox + Position text input, _isCommitteeMember/OnCommitteeCheckChanged, MemberFormModel.CommitteePosition, OnInitializedAsync's GetHistoryAsync pre-population, both CommitteeService.AddOrUpdateAsync calls in SaveAsync, and the ICommitteeService injection (unused after removal); updated MemberFormTests.cs to drop the 3 committee-checkbox test cases and the _committeeService mock. ICommitteeService.AddOrUpdateAsync/GetHistoryAsync themselves are untouched (still used by MemberDetail.razor.cs's read-only history display)",
+      "files": [
+        "src/StageFright.UI/Pages/Members/MemberForm.razor",
+        "src/StageFright.UI/Pages/Members/MemberForm.razor.cs",
+        "tests/StageFright.UI.Tests/Pages/Members/MemberFormTests.cs"
+      ]
+    },
+    "T072": {
+      "status": "DONE",
+      "did": "Full solution build (0 errors) + all 5 test projects green (535+450+169+140+136=1430 tests, 0 failures); manually verified the running MAUI app end-to-end via CDP/WebView2 remote debugging: fresh-DB first-run correctly redirected to the new 5-step Setup wizard (org info -> fees -> GST -> new committee-config step with AGM month/office-holder titles/seat-count target -> review), added 3 members without the removed legacy committee checkbox, Record AGM (attendance grid + President/Secretary/Treasurer dropdowns + general committee checkboxes + live nav menu Record AGM/Past AGMs items) saved and redirected to AGM Detail, Past AGMs list showed correct date+attendance, Record Special Election replaced the President and redirected to Past AGMs, Committee Report correctly grouped by CommitteeTerm.LabelYear (August AGM -> majority-of-days label 2027), Archive removed the AGM from Past AGMs. Manual pass surfaced one real gap not caught by any existing test: AgmDetail.razor rendered a term's later special-election replacement as an undated duplicate row for the same office (e.g. two 'President' lines with no indication of succession) since GetByAgmAsync joins through the whole term, not just this AGM's own assignments -- fixed by extending AgmDetail with the same FR-029 holder-count-aware dated-formatting logic already used in CommitteeReportProvider (general committee stays a flat undated list, matching the report's own split), added regression test coverage, and re-verified live",
+      "files": [
+        "src/StageFright.UI/Pages/Events/AgmDetail.razor",
+        "src/StageFright.UI/Pages/Events/AgmDetail.razor.cs",
+        "tests/StageFright.UI.Tests/Pages/Events/AgmDetailTests.cs"
+      ]
+    }
+  },
+  "concerns": [
+    {
+      "note": "Mid-Phase-2 Foundational rename in progress. Reordered execution: doing T016 (EF migration) LAST in Phase 2 (after T017-T035) instead of tasks.md literal position (between T015 and Wave 3 repositories), because dotnet ef migrations add requires a full green build of StageFright.Data+App, and the literal doc order leaves ICommitteeMembershipRepository.cs/ICommitteeService.cs/BackupService.cs referencing the already-renamed CommitteeMembership entity unfixed at that point. Also deferring the IAgmService/AgmService DI line from T27s literal scope until AgmService.cs concrete class exists (T044, US1) - registering an interface with no implementation would break the build. Everything else in T027 (repo registrations, ICommitteeOfficeHolderTypeService, CommitteePositionRecordRepository rename, removing ICommitteeAnnualResetService registration) still belongs in T027 now.",
+      "step": "implement"
+    }
+  ],
+  "verified": [
+    {
+      "what": "Full production build (Core/Data/Reports/UI/App) green; EF migration AddAgmWorkflow verified against a real SQLite DB applied from empty; Data.Tests 140/140 pass; throwaway smoke test (deleted after) verified AgmService.RecordAsync/RecordSpecialElectionAsync/ArchiveAsync end-to-end including FR-008 rejection",
+      "command": "dotnet build StageFrightCommunity.slnx; dotnet test tests/StageFright.Data.Tests/",
+      "result": "production code green; remaining failures are only in *.Tests projects referencing the pre-existing deleted CommitteeMembership type, expected per tasks.md and deferred to US1 test tasks (T036-T043) plus a few undocumented gaps found (MemberServiceTests.cs, V2/V3/V11/V5 Integration.Tests)",
+      "warnings": [
+        "EF CLI (dotnet-ef 10.0.2 vs runtime 10.0.10) tooling version mismatch warning - informational only",
+        "PRAGMA foreign_keys=0 outside-transaction warning on AlterColumn/RenameTable migrations - pre-existing pattern also seen on AddJournalEntries and SplitMemberNameIntoFirstLastName migrations"
+      ]
+    },
+    {
+      "what": "Full solution build + all 5 test projects green",
+      "command": "dotnet build StageFrightCommunity.slnx; dotnet test (Core/UI/Integration/Data/Reports)",
+      "result": "0 build errors, 1434 tests passed, 0 failed",
+      "warnings": [
+        "pre-existing EF CLI tooling version mismatch (informational only, unrelated to this feature)"
+      ]
+    },
+    {
+      "what": "Manual end-to-end verification of the running MAUI app via WebView2 CDP remote debugging",
+      "command": "Setup wizard -> Add members -> Record AGM -> AGM Detail -> Past AGMs -> Record Special Election -> Committee Report -> Archive",
+      "result": "every screen rendered and behaved correctly; found and fixed one real gap (AgmDetail lacked FR-029 dated multi-holder formatting) not caught by any existing test",
+      "warnings": []
+    },
+    {
+      "what": "Spec.md edge case: archived custom office-holder title must still show its name on historical AGM/committee records",
+      "command": "diagnostic Data.Tests probe against real SQLite DB with CommitteeOfficeHolderTypeConfiguration.HasQueryFilter(!IsDeleted)",
+      "result": "confirmed a real bug (EF Core global query filter silently nulled the Include(OfficeHolderType) navigation once archived) and fixed it in CommitteePositionRecordRepository via a manual IgnoreQueryFilters() attach step across GetByMemberAsync/GetByTermAsync/GetByAgmAsync; added 4 permanent regression tests",
+      "warnings": []
+    }
+  ],
+  "telemetryInstanceId": "88a49091-e57b-4de3-adea-35e176853cba"
+}

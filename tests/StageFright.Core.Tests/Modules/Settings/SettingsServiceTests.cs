@@ -1,6 +1,7 @@
 using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.Settings;
 using StageFright.Core.Tests.Fixtures;
@@ -8,8 +9,8 @@ using StageFright.Core.Tests.Fixtures;
 namespace StageFright.Core.Tests.Setup;
 
 /// <summary>
-/// Unit tests for SettingsService.SaveAsync's Abn validation: empty passes (existing
-/// installs aren't blocked), malformed non-empty throws, valid non-empty saves successfully.
+/// Unit tests for SettingsService.SaveAsync's tax-applicability invariant: turning tax off
+/// clears the rate and both per-fee tax codes; turning it on requires a positive rate.
 /// </summary>
 public class SettingsServiceTests : TestBase
 {
@@ -18,62 +19,93 @@ public class SettingsServiceTests : TestBase
 
     private SettingsService CreateService() => new(_settingsRepo, _audit);
 
-    private static Settings ValidSettings(string? abn) => new()
+    private static Settings ValidSettings() => new()
     {
         Id = Guid.NewGuid(),
         OrganizationName = "Test Org",
-        Abn = abn,
         AnnualFee = 75m,
         AttendanceFee = 5m,
         MembershipRenewalMonth = 1
     };
 
     [Fact]
-    public async Task SaveAsync_Saves_WhenAbnEmpty()
+    public async Task SaveAsync_ClearsTaxFields_WhenIsTaxApplicableFalse()
     {
+        // Regression for #282 (originally GST): turning tax off post-setup must clear stale
+        // rate/tax codes, matching Settings.IsTaxApplicable's own doc comment.
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         var svc = CreateService();
 
-        var settings = ValidSettings(null);
-        await svc.SaveAsync(settings, Ct); // must not throw
+        var settings = ValidSettings();
+        settings.IsTaxApplicable = false;
+        settings.TaxRate = 10m;
+        settings.AnnualFeeTaxCode = TaxCode.Taxable;
+        settings.AttendanceFeeTaxCode = TaxCode.Taxable;
 
-        await _settingsRepo.Received(1).SaveAsync(settings, Arg.Any<CancellationToken>());
+        await svc.SaveAsync(settings, Ct);
+
+        Assert.Null(settings.TaxRate);
+        Assert.Null(settings.AnnualFeeTaxCode);
+        Assert.Null(settings.AttendanceFeeTaxCode);
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s!.TaxRate == null && s.AnnualFeeTaxCode == null && s.AttendanceFeeTaxCode == null),
+            Arg.Any<CancellationToken>());
     }
 
-#if !DEBUG
     [Fact]
-    public async Task SaveAsync_Throws_WhenAbnMalformed()
+    public async Task SaveAsync_PreservesTaxFields_WhenIsTaxApplicableTrue()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         var svc = CreateService();
 
-        var settings = ValidSettings("12345678901");
-        await Assert.ThrowsAsync<ValidationException>(() => svc.SaveAsync(settings, Ct));
+        var settings = ValidSettings();
+        settings.IsTaxApplicable = true;
+        settings.TaxRate = 15m;
+        settings.AnnualFeeTaxCode = TaxCode.Taxable;
+        settings.AttendanceFeeTaxCode = TaxCode.TaxExempt;
 
+        await svc.SaveAsync(settings, Ct);
+
+        Assert.Equal(15m, settings.TaxRate);
+        Assert.Equal(TaxCode.Taxable, settings.AnnualFeeTaxCode);
+        Assert.Equal(TaxCode.TaxExempt, settings.AttendanceFeeTaxCode);
+    }
+
+    [Fact]
+    public async Task SaveAsync_Throws_WhenTaxApplicableWithoutRate()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var settings = ValidSettings();
+        settings.IsTaxApplicable = true;
+        settings.TaxRate = null;
+
+        await Assert.ThrowsAsync<ValidationException>(() => svc.SaveAsync(settings, Ct));
         await _settingsRepo.DidNotReceive().SaveAsync(Arg.Any<Settings>(), Arg.Any<CancellationToken>());
     }
-#else
+
     [Fact]
-    public async Task SaveAsync_AllowsMalformedAbn_InDebugBuild()
+    public async Task SaveAsync_Throws_WhenTaxApplicableWithNonPositiveRate()
     {
-        // ABN checksum validation is disabled in Debug builds (see Settings.Abn).
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         var svc = CreateService();
 
-        var settings = ValidSettings("12345678901");
-        await svc.SaveAsync(settings, Ct); // must not throw
+        var settings = ValidSettings();
+        settings.IsTaxApplicable = true;
+        settings.TaxRate = 0m;
 
-        await _settingsRepo.Received(1).SaveAsync(settings, Arg.Any<CancellationToken>());
+        await Assert.ThrowsAsync<ValidationException>(() => svc.SaveAsync(settings, Ct));
+        await _settingsRepo.DidNotReceive().SaveAsync(Arg.Any<Settings>(), Arg.Any<CancellationToken>());
     }
-#endif
 
     [Fact]
-    public async Task SaveAsync_Saves_WhenAbnValid()
+    public async Task SaveAsync_Saves_WhenTaxNotApplicable()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         var svc = CreateService();
 
-        var settings = ValidSettings("51824753556");
+        var settings = ValidSettings();
         await svc.SaveAsync(settings, Ct); // must not throw
 
         await _settingsRepo.Received(1).SaveAsync(settings, Arg.Any<CancellationToken>());
@@ -85,7 +117,7 @@ public class SettingsServiceTests : TestBase
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         var svc = CreateService();
 
-        var settings = ValidSettings(null);
+        var settings = ValidSettings();
         settings.MinimumMemberAge = -1;
 
         await Assert.ThrowsAsync<ValidationException>(() => svc.SaveAsync(settings, Ct));
@@ -98,7 +130,7 @@ public class SettingsServiceTests : TestBase
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         var svc = CreateService();
 
-        var settings = ValidSettings(null);
+        var settings = ValidSettings();
         settings.MaxAgeRangeYears = -1;
 
         await Assert.ThrowsAsync<ValidationException>(() => svc.SaveAsync(settings, Ct));
@@ -111,7 +143,7 @@ public class SettingsServiceTests : TestBase
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         var svc = CreateService();
 
-        var settings = ValidSettings(null);
+        var settings = ValidSettings();
         settings.MinimumMemberAge = 20;
         settings.MaxAgeRangeYears = 19;
 
@@ -125,7 +157,7 @@ public class SettingsServiceTests : TestBase
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         var svc = CreateService();
 
-        var settings = ValidSettings(null);
+        var settings = ValidSettings();
         settings.MinimumMemberAge = 18;
         settings.MaxAgeRangeYears = 18;
 
@@ -139,9 +171,39 @@ public class SettingsServiceTests : TestBase
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         var svc = CreateService();
 
-        var settings = ValidSettings(null);
+        var settings = ValidSettings();
         settings.MinimumMemberAge = 0;
         settings.MaxAgeRangeYears = 0;
+
+        await svc.SaveAsync(settings, Ct); // must not throw
+        await _settingsRepo.Received(1).SaveAsync(settings, Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(8)]
+    public async Task SaveAsync_Throws_WhenAuditRetentionYearsOutOfRange(int years)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var settings = ValidSettings();
+        settings.AuditRetentionYears = years;
+
+        await Assert.ThrowsAsync<ValidationException>(() => svc.SaveAsync(settings, Ct));
+        await _settingsRepo.DidNotReceive().SaveAsync(Arg.Any<Settings>(), Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(7)]
+    public async Task SaveAsync_Saves_WhenAuditRetentionYearsAtBoundary(int years)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var settings = ValidSettings();
+        settings.AuditRetentionYears = years;
 
         await svc.SaveAsync(settings, Ct); // must not throw
         await _settingsRepo.Received(1).SaveAsync(settings, Arg.Any<CancellationToken>());

@@ -1,8 +1,8 @@
 ---
 title: StageFright Community — XML Documentation Standards
 author: Architecture Team
-date: 2026-05-19
-version: 1.0
+date: 2026-08-22
+version: 1.1
 status: Active
 ---
 
@@ -18,15 +18,17 @@ This document establishes mandatory XML documentation (triple-slash comments: `/
 - **Code Review Clarity**: Reviewers understand intent without reading implementation details
 - **Maintenance**: Future developers understand purpose, parameters, and expected behavior
 
+`StageFright.App.csproj` sets `<GenerateDocumentationFile>true</GenerateDocumentationFile>` (with `CS1591`, "missing XML comment for publicly visible type or member", suppressed there since `StageFright.App` is a composition-root project with few public APIs) — the library projects (`StageFright.Core`, `StageFright.Data`, `StageFright.UI`, `StageFright.Reports`, `StageFright.Plugins.Contracts`) are where this standard is enforced in practice.
+
 ## File Organization (Constitution §3.2.1, §4.5)
 
-Before writing XML documentation, every new class, interface, record, struct, or enum MUST be placed in its own dedicated file. This is a **mandatory, non-negotiable requirement** (see CONTRIBUTING.md and docs/ARCHITECTURE.md for detailed rules).
+Before writing XML documentation, every new class, interface, record, struct, or enum MUST be placed in its own dedicated file. This is a **mandatory, non-negotiable requirement** (see `CONTRIBUTING.md` and `docs/ARCHITECTURE.md` for detailed rules).
 
 **File Organization Rules**:
 - ✅ One type per file (exceptions: private nested types, compiler-generated types)
 - ✅ File name matches type name exactly (e.g., `MemberService.cs` for `class MemberService`)
 - ✅ Types separated by responsibility:
-  - Service interface separate from service implementation
+  - Service interface separate from service implementation (interfaces live in `StageFright.Core/Contracts/`; implementations in `StageFright.Core/Modules/<ModuleName>/`)
   - DTOs separate from domain entities
   - Request/response models in their own files
   - Enums and value objects in dedicated files
@@ -46,14 +48,20 @@ Before writing XML documentation, every new class, interface, record, struct, or
 - Enable easy import across the application
 - Establish a single source of truth for all enumeration types
 
-**Current Core Enums**:
-- `MemberStatus` — Active/Inactive participation status
-- `CategoryType` — Income/Expense classification
-- `FeeType` — Annual/Attendance/Other
-- `PaymentMethod` — Cash/Check/Card/ElectronicTransfer/Other
-- `PaymentType` — Annual/Attendance/Other
-- `Theme` — Dark/Light UI theme
+**Current Core Enums** (`StageFright.Core/Enums/`, 13 total):
+- `AccountType` — chart-of-accounts classification (replaced the old `CategoryType`/`Category` model entirely — see the `ConvertCategoriesToAccounts` migration)
 - `AuditAction` — Create/Update/Delete audit actions
+- `FeeType` — fee classification (annual, attendance, other)
+- `JournalEntryType` — general-journal entry classification
+- `MemberStatus` — Active/Inactive participation status
+- `PaymentMethod` — Cash/Check/Card/ElectronicTransfer/Other
+- `PaymentType` — payment classification
+- `PlatformThemePreference` — device-level theme preference source
+- `ReconciliationStatus` — bank reconciliation workflow state
+- `ReportColumnAlignment` — report-rendering column alignment
+- `ReportFilterType` — report filter input type
+- `TaxCode` — generic sales-tax code (spec `016-generic-sales-tax`)
+- `Theme` — Dark/Light UI theme
 
 ## Mandatory Requirements
 
@@ -68,11 +76,10 @@ Before writing XML documentation, every new class, interface, record, struct, or
 
 ```csharp
 /// <summary>
-/// Provides repository operations for Member entities, including create, read, update, and soft-delete.
-/// Implements filtering by member status (Active/Inactive/Archived) and effective date-based queries
-/// for historical reporting.
+/// A member of the performing arts group. Supports Active/Inactive status transitions
+/// and soft-delete (archival). Financial history is retained on archive.
 /// </summary>
-public class MemberRepository : BaseRepository<Member>, IMemberRepository
+public class Member
 {
     // Implementation
 }
@@ -111,14 +118,13 @@ public interface IMemberRepository : IRepository<Member>
 /// An enumerable of unpaid Fee records. Returns an empty collection if the member has no unpaid fees.
 /// Does not include archived fees. Ordered by FeeDate ascending (oldest first).
 /// </returns>
-/// <exception cref="ArgumentNullException">Thrown when memberId is null or empty GUID.</exception>
 /// <exception cref="DataAccessException">
 /// Thrown when database query fails (connection lost, corrupted data, permission denied).
 /// Check inner exception for underlying database error details.
 /// </exception>
 /// <remarks>
 /// FIFO allocation requires ordering by FeeDate, not by creation time.
-/// Fees are immutable (per FR-005); this query returns a snapshot at query time.
+/// Fees are immutable; this query returns a snapshot at query time.
 /// </remarks>
 public async Task<IEnumerable<Fee>> GetUnpaidAsync(Guid memberId)
 {
@@ -134,29 +140,13 @@ public async Task<IEnumerable<Fee>> GetUnpaidAsync(Guid memberId)
 - **Nullability**: When value can be null
 
 ```csharp
-/// <summary>
-/// Gets or sets the member's full legal name (required).
-/// Used for display, reports, and audit trails.
-/// </summary>
-/// <value>
-/// The member's name as a non-empty string (max 255 characters).
-/// Must not be null or whitespace when the member entity is persisted to the database.
-/// </value>
-public string Name
-{
-    get => _name ?? string.Empty;
-    set => _name = value?.Trim() ?? string.Empty;
-}
+/// <summary>Given name of the member.</summary>
+/// <value>Required, non-empty string, max 100 characters.</value>
+public string FirstName { get; set; } = string.Empty;
 
-/// <summary>
-/// Gets the member's calculated age in years.
-/// </summary>
-/// <value>
-/// Age derived from DateOfBirth using floor((today - DOB) / 365.25).
-/// Returns null if DateOfBirth is not set.
-/// Always positive; negative ages are impossible.
-/// </value>
-public int? Age => DateOfBirth.HasValue ? CalculateAge(DateOfBirth.Value) : null;
+/// <summary>Optional phone number.</summary>
+/// <value>Format validated when provided; null when not supplied.</value>
+public string? Phone { get; set; }
 ```
 
 #### 5. Public Enums and Enum Values
@@ -165,16 +155,22 @@ public int? Age => DateOfBirth.HasValue ? CalculateAge(DateOfBirth.Value) : null
 
 ```csharp
 /// <summary>
-/// Represents a member's participation status in the organization.
-/// Status is separate from archival (IsDeleted flag) per Constitution §3.5.
+/// Pre-set size a dashboard tile can render at. <see cref="OneByOne"/> is the default,
+/// matching every tile's current rendered size.
 /// </summary>
-public enum MemberStatus
+public enum DashboardTileSize
 {
-    /// <summary>Member is actively participating. Fees apply (annual + attendance).</summary>
-    Active = 0,
+    /// <summary>1 column x 1 row (default).</summary>
+    OneByOne,
 
-    /// <summary>Member exists but is not participating. No fees accrue.</summary>
-    Inactive = 1
+    /// <summary>2 columns x 1 row (double width).</summary>
+    OneByTwo,
+
+    /// <summary>1 column x 2 rows (double height).</summary>
+    TwoByOne,
+
+    /// <summary>2 columns x 2 rows (double width and height).</summary>
+    TwoByTwo
 }
 ```
 
@@ -185,30 +181,25 @@ public enum MemberStatus
 ```csharp
 /// <summary>Default maximum age range (in years) for member age validation.</summary>
 private const int DefaultMaxAge = 150;
-
-/// <summary>Payment method: cash payments (hand-counted tender).</summary>
-public const string PaymentMethodCash = "Cash";
 ```
 
 ### Scope: OPTIONAL (Recommended but Not Enforced)
 
 - **Internal/Private Methods**: Recommended for complex algorithms; not required.
   - Use regular `//` comments for implementation notes
-- **Test Code**: Test class public test methods should have summary; test setup/arrange/act/assert do not require XML comments
+- **Test Code**: Test class public test methods should have a summary; test setup/arrange/act/assert do not require XML comments
 - **Auto-Properties with Obvious Names**: May use minimal summary if purpose is self-evident
-  - Example: `public string Email { get; set; }` might use simple summary without elaborate examples
 
 ### Scope: NOT DOCUMENTED (No XML Comments Required)
 
 - Method implementations, local variables, loop bodies
 - Compiler-generated code (`partial` implementations, code-behind)
 - Private fields with obvious names (use `//` comment if needed for clarity)
+- `.razor.cs` code-behind's Blazor lifecycle overrides (`OnInitializedAsync`, `OnParametersSet`, etc.) when behavior is the framework default
 
 ## Format and Content Guidelines
 
 ### Structure: Use Only These XML Tags
-
-Use these standard XML comment tags:
 
 | Tag | Purpose | Required? |
 |-----|---------|-----------|
@@ -230,13 +221,11 @@ Use these standard XML comment tags:
 
 **GOOD** ✅:
 - `/// <summary>Retrieves all unpaid annual fees for the current year.</summary>`
-- `/// <summary>Validates member age against configured minimum age (default 0 years).</summary>`
 - `/// <summary>Applies a payment toward member's outstanding balance using FIFO allocation.</summary>`
 
 **BAD** ❌:
 - `/// <summary>Gets fees.</summary>` (too vague)
 - `/// <summary>This method retrieves unpaid annual fees for the current year.</summary>` (redundant "This method")
-- `/// <summary>Retrieves all unpaid annual fees for the current year. Also checks if the member is active.</summary>` (explain too much; keep to one sentence)
 
 #### 2. Parameters: Describe Constraints and Context
 
@@ -250,8 +239,6 @@ Use these standard XML comment tags:
 **BAD** ❌:
 ```csharp
 /// <param name="memberId">id</param>
-/// <param name="fromDate">date</param>
-/// <param name="toDate">date</param>
 ```
 
 #### 3. Return Values: Include Edge Cases
@@ -265,22 +252,17 @@ Use these standard XML comment tags:
 /// </returns>
 ```
 
-**BAD** ❌:
-```csharp
-/// <returns>Payment records.</returns>
-```
-
 #### 4. Exceptions: Explain When/Why Thrown
 
-**GOOD** ✅:
+Every custom exception in `StageFright.Core/Exceptions/` shares the same constructor shape — `(message, entityType, operationContext, entityId = null, innerException = null)` — so document what drives `message`, not the constructor plumbing:
+
 ```csharp
 /// <exception cref="ValidationException">
-/// Thrown when member age (calculated from DateOfBirth) is below the configured
-/// Minimum Member Age in Settings. Use GetSettingsAsync() to check minimum before
-/// attempting to create the member.
+/// Thrown when the calculated age is below <c>minimumMemberAge</c> or exceeds
+/// <c>maxAgeRangeYears</c>. Both bounds come from application Settings.
 /// </exception>
 /// <exception cref="DataAccessException">
-/// Thrown when database query fails due to connection loss or corrupted data.
+/// Thrown when the database query fails due to connection loss or corrupted data.
 /// Check inner exception details for root cause.
 /// </exception>
 ```
@@ -292,33 +274,19 @@ Use these standard XML comment tags:
 
 #### 5. Remarks: Extended Explanation (Use Sparingly)
 
-Use `<remarks>` for:
-- Implementation notes or performance characteristics
-- Architectural decisions affecting the API
-- Related methods that should be called together
-- Caveats or gotchas
+Use `<remarks>` for implementation notes, architectural decisions, related methods that should be called together, or caveats/gotchas.
 
 **GOOD** ✅:
 ```csharp
 /// <remarks>
 /// FIFO allocation requires ordering by FeeDate. This method returns fees in
 /// chronological order (oldest first) to support payment allocation logic.
-/// See also: Payment.AllocateAsync() which consumes this collection.
 /// </remarks>
-```
-
-**BAD** ❌:
-```csharp
-/// <remarks>This retrieves the fees.</remarks>
 ```
 
 ### Special Cases
 
 #### Case 1: Inheritance and Overrides
-
-When overriding a method, decide:
-- **If behavior is identical to base class**: Use `<inheritdoc />`
-- **If behavior is overridden**: Document the override-specific behavior
 
 ```csharp
 /// <inheritdoc />
@@ -331,44 +299,35 @@ public override async Task<IEnumerable<Member>> GetAllAsync()
 
 #### Case 2: Generic Types/Methods
 
-Document type parameters:
-
 ```csharp
 /// <summary>
-/// Base repository providing generic CRUD operations for domain entities.
+/// Generic IRepository implementation. Translates EF Core exceptions to domain exceptions
+/// before they leave the DAL boundary.
 /// </summary>
 /// <typeparam name="TEntity">The domain entity type managed by this repository.</typeparam>
-public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
+public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
 {
 }
 ```
 
 #### Case 3: Nullable Reference Types
 
-Use nullable annotations in summary:
-
 ```csharp
-/// <summary>
-/// Gets or sets optional member notes.
-/// </summary>
+/// <summary>Optional member notes.</summary>
 /// <value>Notes as a string, or null if no notes provided.</value>
 public string? Notes { get; set; }
 ```
 
 #### Case 4: Async Methods
 
-Mention async behavior in remarks if not obvious:
+Mention async behavior in `<remarks>` only if not obvious from the `Task`/`Task<T>` return type and method name.
 
-```csharp
-/// <summary>
-/// Asynchronously retrieves all unpaid fees for a member from the database.
-/// </summary>
-/// <remarks>This method is async and must be awaited to retrieve data from the database.</remarks>
-public async Task<IEnumerable<Fee>> GetUnpaidAsync(Guid memberId)
-{
-    // Implementation
-}
-```
+## Known Pitfall: Misplaced Comments Break the Build
+
+A misplaced `///` doc comment throws a compiler error, not a warning — this has bitten the codebase before (see `CLAUDE.md`'s Known Gotchas):
+
+- A `///` comment attached to one parameter inside a multi-line record's positional-parameter list, or one containing a bare `&`, throws `CS1587`/`CS1570`.
+- Adding even one `<param>` tag to a member's doc comment makes the compiler require `<param>` tags for **all** of that member's parameters (`CS1573`). For a record/method with many parameters, a plain `//` comment next to the parameter you actually want to explain is simpler than fully documenting every parameter just to satisfy the compiler.
 
 ## Code Review Checklist
 
@@ -384,6 +343,7 @@ Reviewers MUST verify:
 - [ ] Summary is concise (1-3 sentences) and specific
 - [ ] No stale/outdated documentation (matches current implementation)
 - [ ] No obvious facts repeated (avoid "This method" preamble)
+- [ ] No partial `<param>` tags on a multi-parameter member (all-or-nothing, per CS1573 above)
 
 **Rejection Criteria**: Code MUST NOT merge if:
 - Public types lack `<summary>`
@@ -398,23 +358,6 @@ Reviewers MUST verify:
 - **Go-to-Definition**: Press F12 or Ctrl-Click to see method documentation
 - **Quick Info**: Hover over a symbol to see documentation pop-up
 
-### StyleCop Analyzers (Optional)
-
-StyleCop.Analyzers can be configured to warn on missing XML documentation:
-
-```
-SA1600: Elements should be documented
-SA1601: Partial elements should be documented
-SA1602: Enumeration items should be documented
-```
-
-Configure in `.editorconfig`:
-
-```ini
-[*.cs]
-dotnet_diagnostic.SA1600.severity = warning
-```
-
 ### Documentation Generation
 
 Use `docfx` to generate static HTML documentation from XML comments:
@@ -423,59 +366,37 @@ Use `docfx` to generate static HTML documentation from XML comments:
 docfx docfx.json
 ```
 
-Outputs professional API documentation suitable for public release.
-
 ## Examples: Complete Annotated Code
 
-### Example 1: Service Class with Validation
+### Example 1: Service Class with Validation (real code — `StageFright.Core/Modules/Members/AgeCalculationService.cs`)
 
 ```csharp
 /// <summary>
-/// Provides age calculation and validation services for member registration.
-/// Enforces age range constraints and reports validation errors clearly.
+/// Calculates a member's age in completed years.
+/// Handles Feb-29 birthdays in non-leap years by treating Mar 1 as the anniversary.
 /// </summary>
 public class AgeCalculationService
 {
-    private const int DefaultMaxAge = 150;
-    private const int DefaultMinAge = 0;
+    /// <summary>
+    /// Returns age in whole years, or null when dob is null.
+    /// </summary>
+    public int? Calculate(DateTime? dob, DateTime today)
+    {
+        // Implementation
+    }
 
     /// <summary>
-    /// Calculates a person's age in years based on their date of birth.
+    /// Validates a date-of-birth value against system constraints.
+    /// No-ops when dob is null (DOB is optional).
     /// </summary>
-    /// <param name="dateOfBirth">
-    /// The person's date of birth (must be a past date, typically at least 1-2 days ago).
-    /// </param>
-    /// <param name="maxAgeRange">
-    /// Maximum allowed age in years (default 150). Throws if calculated age exceeds this value.
-    /// </param>
-    /// <param name="minAge">
-    /// Minimum required age in years (default 0). Throws if calculated age is below this value.
-    /// </param>
-    /// <returns>
-    /// Calculated age in years as an integer. Uses formula: floor((today - DOB) / 365.25).
-    /// </returns>
-    /// <exception cref="ValidationException">
-    /// Thrown if calculated age is below minAge or exceeds maxAgeRange.
-    /// Exception message is specific: "Age {calculated_age} is below minimum required age {minAge}."
-    /// </exception>
-    public int CalculateAge(DateTime dateOfBirth, int maxAgeRange = DefaultMaxAge, int minAge = DefaultMinAge)
+    public void ValidateDateOfBirth(DateTime? dob, DateTime today, int maxAgeRangeYears, int minimumMemberAge)
     {
-        var today = DateTime.Today;
-        var age = today.Year - dateOfBirth.Year;
-
-        if (dateOfBirth.Date > today.AddYears(-age))
-            age--;
-
-        if (age < minAge)
-            throw new ValidationException($"Age {age} is below minimum required age {minAge}.");
-
-        if (age > maxAgeRange)
-            throw new ValidationException($"Age {age} exceeds maximum allowed age range {maxAgeRange}.");
-
-        return age;
+        // Throws ValidationException("Member", nameof(ValidateDateOfBirth)) on any constraint violation
     }
 }
 ```
+
+Note the deliberately minimal `<param>` usage here — per the CS1573 pitfall above, a method with several parameters and a self-explanatory summary is documented with prose in the summary rather than forcing every parameter into its own `<param>` tag.
 
 ### Example 2: Repository Interface and Implementation
 
@@ -496,27 +417,11 @@ public interface IPaymentRepository : IRepository<Payment>
     /// </returns>
     /// <exception cref="DataAccessException">Thrown when database query fails.</exception>
     Task<IEnumerable<Payment>> GetByMemberAsync(Guid memberId);
-
-    /// <summary>
-    /// Updates only the Notes field on an existing payment.
-    /// Amount, Date, PaymentMethod, PaymentType, and Category fields are immutable and locked.
-    /// </summary>
-    /// <param name="paymentId">The payment's unique identifier.</param>
-    /// <param name="notes">New notes text (may be empty or null).</param>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown if the payment record is not found in the database.
-    /// </exception>
-    /// <exception cref="DataAccessException">Thrown when database update fails.</exception>
-    /// <remarks>
-    /// Modifying notes triggers an UpdatedAt timestamp update.
-    /// If UpdatedAt differs from CreatedAt, only Notes was modified (audit trail indicator).
-    /// </remarks>
-    Task UpdateNotesAsync(Guid paymentId, string notes);
 }
 
 /// <summary>
 /// Repository implementation for Payment entity.
-/// Enforces immutability: only Notes field can be edited after creation.
+/// Enforces immutability: financial records are never edited or deleted after creation.
 /// All payments are linked to GL transaction pairs for accounting integrity.
 /// </summary>
 public class PaymentRepository : BaseRepository<Payment>, IPaymentRepository
@@ -524,22 +429,7 @@ public class PaymentRepository : BaseRepository<Payment>, IPaymentRepository
     /// <inheritdoc />
     public async Task<IEnumerable<Payment>> GetByMemberAsync(Guid memberId)
     {
-        return await _dbSet
-            .Where(p => p.MemberId == memberId)
-            .OrderByDescending(p => p.Date)
-            .ToListAsync();
-    }
-
-    /// <inheritdoc />
-    public async Task UpdateNotesAsync(Guid paymentId, string notes)
-    {
-        var payment = await GetByIdAsync(paymentId);
-        if (payment == null)
-            throw new InvalidOperationException($"Payment with ID {paymentId} not found.");
-
-        payment.Notes = notes;
-        payment.UpdatedAt = DateTime.UtcNow;
-        await UpdateAsync(payment);
+        // Implementation
     }
 }
 ```
@@ -554,16 +444,18 @@ public class PaymentRepository : BaseRepository<Payment>, IPaymentRepository
 | **Stale docs** | Method refactored but docs not updated | Developers follow wrong guidance | Always update docs when changing behavior |
 | **"This" preamble** | `/// <summary>This method creates a member.</summary>` | Redundant with method name | Remove: "Creates a member." is sufficient |
 | **Missing exceptions** | Method throws `ValidationException` but not documented | Callers don't know to handle exception | Document all exceptions with `<exception cref="..."/>` |
+| **Partial `<param>` tags** | One `<param>` added to a 4-parameter method | Triggers CS1573 for the other three | Either document all parameters or use prose in `<summary>`/`//` instead |
 | **Repeating obvious** | `/// <summary>Gets the ID.</summary> public Guid Id { get; }` | Wastes reviewer time; obvious from property name | Acceptable for property; focus on complex types |
 
 ## References
 
-- [Microsoft: XML Documentation Comments (C#)](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/types/namespaces)
+- [Microsoft: XML Documentation Comments (C#)](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/xmldoc/)
 - [Recommended XML Documentation Tags](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/xmldoc/recommended-tags)
 - [IntelliSense from Code Comments](https://learn.microsoft.com/en-us/visualstudio/ide/create-xml-documentation-comments)
+- [ARCHITECTURE.md](ARCHITECTURE.md) — exception hierarchy and layer boundaries these comments document
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: 2026-05-19  
+**Document Version**: 1.1
+**Last Updated**: 2026-08-22
 **Status**: Active (mandatory from project start)

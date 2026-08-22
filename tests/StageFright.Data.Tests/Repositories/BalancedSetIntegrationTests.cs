@@ -62,11 +62,11 @@ public sealed class BalancedSetIntegrationTests : IAsyncLifetime
             MakeLine(SystemAccounts.CashId, "1100", credit: 100m)
         };
 
-        await _sut.AddBalancedSetAsync(lines);
+        await _sut.AddBalancedSetAsync(lines, TestContext.Current.CancellationToken);
 
-        Assert.Equal(3, await _db.Transactions.CountAsync());
-        Assert.Equal(100m, await _db.Transactions.SumAsync(t => t.DebitAmount));
-        Assert.Equal(100m, await _db.Transactions.SumAsync(t => t.CreditAmount));
+        Assert.Equal(3, await _db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(100m, await _db.Transactions.SumAsync(t => t.DebitAmount, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(100m, await _db.Transactions.SumAsync(t => t.CreditAmount, cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -79,21 +79,36 @@ public sealed class BalancedSetIntegrationTests : IAsyncLifetime
             Date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc),
             Description = "Hall hire",
             CreatedAt = DateTime.UtcNow
-        });
+        }, TestContext.Current.CancellationToken);
 
         var debit = MakeLine(ExpenseAccountId, "6000", debit: 50m);
         var credit = MakeLine(SystemAccounts.CashId, "1100", credit: 50m);
         debit.JournalEntryId = entry.Id;
         credit.JournalEntryId = entry.Id;
 
-        await _sut.AddBalancedSetAsync(new[] { debit, credit });
+        await _sut.AddBalancedSetAsync(new[] { debit, credit }, TestContext.Current.CancellationToken);
 
-        var reloaded = await _journalRepo.GetByIdAsync(entry.Id);
+        var reloaded = await _journalRepo.GetByIdAsync(entry.Id, TestContext.Current.CancellationToken);
         Assert.NotNull(reloaded);
         Assert.Equal(2, reloaded!.Transactions.Count);
     }
 
     // --- AddBalancedSetAsync: rejection + rollback ---
+
+    [Fact]
+    public async Task Should_ThrowDataAccessException_When_SaveChangesFailsPastValidation_Integration()
+    {
+        // Regression for #285: a balanced set (passes GLBalanceException validation) whose
+        // SaveChangesAsync fails for a real DB reason (here: duplicate primary key) must
+        // surface as DataAccessException, not a raw DbUpdateException, across the DAL boundary.
+        var duplicateId = Guid.NewGuid();
+        var debit = MakeLine(ExpenseAccountId, "6000", debit: 25m);
+        var credit = MakeLine(SystemAccounts.CashId, "1100", credit: 25m);
+        debit.Id = duplicateId;
+        credit.Id = duplicateId;
+
+        await Assert.ThrowsAsync<DataAccessException>(() => _sut.AddBalancedSetAsync(new[] { debit, credit }, TestContext.Current.CancellationToken));
+    }
 
     [Fact]
     public async Task Should_ThrowAndInsertNothing_When_SetIsImbalanced_Integration()
@@ -104,9 +119,9 @@ public sealed class BalancedSetIntegrationTests : IAsyncLifetime
             MakeLine(SystemAccounts.CashId, "1100", credit: 90m)
         };
 
-        await Assert.ThrowsAsync<GLBalanceException>(() => _sut.AddBalancedSetAsync(lines));
+        await Assert.ThrowsAsync<GLBalanceException>(() => _sut.AddBalancedSetAsync(lines, TestContext.Current.CancellationToken));
 
-        Assert.Equal(0, await _db.Transactions.CountAsync());
+        Assert.Equal(0, await _db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -114,9 +129,9 @@ public sealed class BalancedSetIntegrationTests : IAsyncLifetime
     {
         var lines = new[] { MakeLine(ExpenseAccountId, "6000", debit: 100m) };
 
-        await Assert.ThrowsAsync<GLBalanceException>(() => _sut.AddBalancedSetAsync(lines));
+        await Assert.ThrowsAsync<GLBalanceException>(() => _sut.AddBalancedSetAsync(lines, TestContext.Current.CancellationToken));
 
-        Assert.Equal(0, await _db.Transactions.CountAsync());
+        Assert.Equal(0, await _db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -126,9 +141,9 @@ public sealed class BalancedSetIntegrationTests : IAsyncLifetime
         badLine.CreditAmount = 50m;
         var lines = new[] { badLine, MakeLine(SystemAccounts.CashId, "1100", credit: 50m) };
 
-        await Assert.ThrowsAsync<GLBalanceException>(() => _sut.AddBalancedSetAsync(lines));
+        await Assert.ThrowsAsync<GLBalanceException>(() => _sut.AddBalancedSetAsync(lines, TestContext.Current.CancellationToken));
 
-        Assert.Equal(0, await _db.Transactions.CountAsync());
+        Assert.Equal(0, await _db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -141,9 +156,9 @@ public sealed class BalancedSetIntegrationTests : IAsyncLifetime
             MakeLine(SystemAccounts.CashId, "1100", credit: 0m)
         };
 
-        await Assert.ThrowsAsync<GLBalanceException>(() => _sut.AddBalancedSetAsync(lines));
+        await Assert.ThrowsAsync<GLBalanceException>(() => _sut.AddBalancedSetAsync(lines, TestContext.Current.CancellationToken));
 
-        Assert.Equal(0, await _db.Transactions.CountAsync());
+        Assert.Equal(0, await _db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -155,9 +170,9 @@ public sealed class BalancedSetIntegrationTests : IAsyncLifetime
             MakeLine(SystemAccounts.CashId, "1100", credit: -100m)
         };
 
-        await Assert.ThrowsAsync<GLBalanceException>(() => _sut.AddBalancedSetAsync(lines));
+        await Assert.ThrowsAsync<GLBalanceException>(() => _sut.AddBalancedSetAsync(lines, TestContext.Current.CancellationToken));
 
-        Assert.Equal(0, await _db.Transactions.CountAsync());
+        Assert.Equal(0, await _db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     // --- AddPairAsync delegation ---
@@ -165,21 +180,17 @@ public sealed class BalancedSetIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task Should_CommitPair_When_AddPairAsyncBalanced_Integration()
     {
-        await _sut.AddPairAsync(
-            MakeLine(ExpenseAccountId, "6000", debit: 25m),
-            MakeLine(SystemAccounts.CashId, "1100", credit: 25m));
+        await _sut.AddPairAsync(MakeLine(ExpenseAccountId, "6000", debit: 25m), MakeLine(SystemAccounts.CashId, "1100", credit: 25m), TestContext.Current.CancellationToken);
 
-        Assert.Equal(2, await _db.Transactions.CountAsync());
+        Assert.Equal(2, await _db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
     public async Task Should_Throw_When_AddPairAsyncImbalanced_Integration()
     {
-        await Assert.ThrowsAsync<GLBalanceException>(() => _sut.AddPairAsync(
-            MakeLine(ExpenseAccountId, "6000", debit: 25m),
-            MakeLine(SystemAccounts.CashId, "1100", credit: 30m)));
+        await Assert.ThrowsAsync<GLBalanceException>(() => _sut.AddPairAsync(MakeLine(ExpenseAccountId, "6000", debit: 25m), MakeLine(SystemAccounts.CashId, "1100", credit: 30m), TestContext.Current.CancellationToken));
 
-        Assert.Equal(0, await _db.Transactions.CountAsync());
+        Assert.Equal(0, await _db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     // --- JournalEntryRepository ---
@@ -194,9 +205,9 @@ public sealed class BalancedSetIntegrationTests : IAsyncLifetime
             Date = new DateTime(2026, 4, 1, 0, 0, 0, DateTimeKind.Utc),
             Description = "Move float",
             CreatedAt = DateTime.UtcNow
-        });
+        }, TestContext.Current.CancellationToken);
 
-        var reloaded = await _journalRepo.GetByIdAsync(entry.Id);
+        var reloaded = await _journalRepo.GetByIdAsync(entry.Id, TestContext.Current.CancellationToken);
 
         Assert.NotNull(reloaded);
         Assert.Equal(JournalEntryType.Transfer, reloaded!.Type);
@@ -206,13 +217,13 @@ public sealed class BalancedSetIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task Should_ReturnNull_When_JournalEntryNotFound_Integration()
     {
-        Assert.Null(await _journalRepo.GetByIdAsync(Guid.NewGuid()));
+        Assert.Null(await _journalRepo.GetByIdAsync(Guid.NewGuid(), TestContext.Current.CancellationToken));
     }
 
     [Fact]
     public async Task Should_ReportTypeExists_When_MatchingJournalEntryPresent_Integration()
     {
-        Assert.False(await _journalRepo.AnyOfTypeAsync(JournalEntryType.OpeningBalance));
+        Assert.False(await _journalRepo.AnyOfTypeAsync(JournalEntryType.OpeningBalance, TestContext.Current.CancellationToken));
 
         await _journalRepo.AddAsync(new JournalEntry
         {
@@ -220,10 +231,10 @@ public sealed class BalancedSetIntegrationTests : IAsyncLifetime
             Type = JournalEntryType.OpeningBalance,
             Date = new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc),
             CreatedAt = DateTime.UtcNow
-        });
+        }, TestContext.Current.CancellationToken);
 
-        Assert.True(await _journalRepo.AnyOfTypeAsync(JournalEntryType.OpeningBalance));
-        Assert.False(await _journalRepo.AnyOfTypeAsync(JournalEntryType.GeneralJournal));
+        Assert.True(await _journalRepo.AnyOfTypeAsync(JournalEntryType.OpeningBalance, TestContext.Current.CancellationToken));
+        Assert.False(await _journalRepo.AnyOfTypeAsync(JournalEntryType.GeneralJournal, TestContext.Current.CancellationToken));
     }
 
     // --- Helpers ---

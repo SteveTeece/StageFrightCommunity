@@ -37,14 +37,22 @@ public class PaymentRepository : IPaymentRepository
 
     public async Task UpdateNotesAsync(Guid id, string? notes, CancellationToken ct = default)
     {
-        var payment = await _db.Payments.FindAsync(new object[] { id }, ct)
-            ?? throw new EntityNotFoundException(nameof(Payment), id, nameof(UpdateNotesAsync));
+        string? oldNotes;
+        try
+        {
+            var payment = await _db.Payments.FindAsync(new object[] { id }, ct)
+                ?? throw new EntityNotFoundException(nameof(Payment), id, nameof(UpdateNotesAsync));
 
-        var oldNotes = payment.Notes;
-        payment.Notes = notes;
-        payment.UpdatedAt = DateTime.UtcNow;
+            oldNotes = payment.Notes;
+            payment.Notes = notes;
+            payment.UpdatedAt = DateTime.UtcNow;
 
-        await _db.SaveChangesAsync(ct);
+            await _db.SaveChangesAsync(ct);
+        }
+        catch (Exception ex) when (ex is not EntityNotFoundException and not DataAccessException)
+        {
+            throw new DataAccessException(ex.Message, nameof(Payment), nameof(UpdateNotesAsync), id, ex);
+        }
 
         await _audit.LogAsync(nameof(Payment), id, Core.Enums.AuditAction.Update,
             oldNotes, notes, ct: ct);

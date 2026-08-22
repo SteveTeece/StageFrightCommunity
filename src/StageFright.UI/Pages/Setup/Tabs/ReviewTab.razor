@@ -1,0 +1,54 @@
+@using StageFright.Core.Modules.Settings
+@using StageFright.UI.Shared
+
+<div class="mb-3">
+    <h2 class="h6">Review</h2>
+    <dl class="row small mb-2">
+        <dt class="col-5">Organisation Name</dt><dd class="col-7">@Model.OrganizationName</dd>
+        <dt class="col-5">Theme</dt><dd class="col-7">@(ThemeProvider?.CurrentTheme == Core.Enums.Theme.Dark ? "Dark" : "Light")</dd>
+        <dt class="col-5">Annual Fee</dt><dd class="col-7">@Model.AnnualFee.ToString("C")</dd>
+        <dt class="col-5">Attendance Fee</dt><dd class="col-7">@Model.AttendanceFee.ToString("C")</dd>
+        <dt class="col-5">Membership Renewal Month</dt><dd class="col-7">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Model.MembershipRenewalMonth)</dd>
+        <dt class="col-5">Sales Tax Applies</dt><dd class="col-7">@(Model.IsTaxApplicable ? "Yes" : "No")</dd>
+        @if (Model.IsTaxApplicable)
+        {
+            <dt class="col-5">Tax Rate</dt><dd class="col-7">@(Model.TaxRate?.ToString("N2") ?? "")%</dd>
+            <dt class="col-5">Annual Fee Tax Treatment</dt><dd class="col-7">@(Model.AnnualFeeTaxCode?.ToString() ?? "Tax-exempt (default)")</dd>
+            <dt class="col-5">Attendance Fee Tax Treatment</dt><dd class="col-7">@(Model.AttendanceFeeTaxCode?.ToString() ?? "Tax-exempt (default)")</dd>
+        }
+        <dt class="col-5">AGM Month</dt><dd class="col-7">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Model.CommitteeRenewalMonth)</dd>
+        <dt class="col-5">Audit Trail Retention</dt><dd class="col-7">@Model.AuditRetentionYears year@(Model.AuditRetentionYears == 1 ? "" : "s")</dd>
+        <dt class="col-5">Seat Count Target</dt><dd class="col-7">@(Model.GeneralCommitteeSeatCountTarget?.ToString() ?? "Not set")</dd>
+    </dl>
+
+    <div class="row g-3 mb-2">
+        <div class="col-md-6">
+            <h3 class="h6 small fw-semibold mb-1">Additional Office-Holder Titles</h3>
+            <BorderedListBox TItem="string" Items="QueuedCommitteeTitles" EmptyText="None.">
+                <RowTemplate Context="title"><span>@title</span></RowTemplate>
+            </BorderedListBox>
+        </div>
+
+        <div class="col-md-6">
+            <h3 class="h6 small fw-semibold mb-1">Queued Chart of Accounts Entries</h3>
+            <BorderedListBox TItem="QueuedAccountRequest" Items="QueuedAccounts" EmptyText="None queued.">
+                <RowTemplate Context="account">
+                    <span>@account.Name</span>
+                    <span class="text-muted small ms-2">
+                        @account.Type@(account.IsBankAccount ? " · Bank/Cash" : string.Empty)
+                    </span>
+                </RowTemplate>
+            </BorderedListBox>
+        </div>
+    </div>
+</div>
+
+@if (DebugSeederAvailable)
+{
+    <div class="mb-3">
+        <div class="form-check form-check-sm">
+            <input type="checkbox" id="seedData" class="form-check-input" checked="@SeedWithTestData" @onchange="OnSeedWithTestDataChangedAsync" />
+            <label for="seedData" class="form-check-label">Load sample data (members, rehearsals, events &amp; finances)</label>
+        </div>
+    </div>
+}

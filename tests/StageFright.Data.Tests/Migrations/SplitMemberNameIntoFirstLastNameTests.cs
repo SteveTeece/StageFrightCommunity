@@ -77,7 +77,7 @@ public sealed class SplitMemberNameIntoFirstLastNameTests : IDisposable
         await MigrateToLatestAsync();
 
         using var db = CreateContext();
-        var count = await db.Members.IgnoreQueryFilters().CountAsync();
+        var count = await db.Members.IgnoreQueryFilters().CountAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal(5, count);
     }
@@ -89,7 +89,7 @@ public sealed class SplitMemberNameIntoFirstLastNameTests : IDisposable
         await MigrateToLatestAsync();
 
         using var db = CreateContext();
-        var member = await db.Members.SingleAsync(m => m.Id == TwoWordId);
+        var member = await db.Members.SingleAsync(m => m.Id == TwoWordId, cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal("Jane", member.FirstName);
         Assert.Equal("Smith", member.LastName);
@@ -102,7 +102,7 @@ public sealed class SplitMemberNameIntoFirstLastNameTests : IDisposable
         await MigrateToLatestAsync();
 
         using var db = CreateContext();
-        var member = await db.Members.SingleAsync(m => m.Id == MononymId);
+        var member = await db.Members.SingleAsync(m => m.Id == MononymId, cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal("Cher", member.FirstName);
         Assert.Equal(string.Empty, member.LastName);
@@ -115,7 +115,7 @@ public sealed class SplitMemberNameIntoFirstLastNameTests : IDisposable
         await MigrateToLatestAsync();
 
         using var db = CreateContext();
-        var member = await db.Members.SingleAsync(m => m.Id == WhitespaceId);
+        var member = await db.Members.SingleAsync(m => m.Id == WhitespaceId, cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal("Jane", member.FirstName);
         Assert.Equal("Smith", member.LastName);
@@ -128,7 +128,7 @@ public sealed class SplitMemberNameIntoFirstLastNameTests : IDisposable
         await MigrateToLatestAsync();
 
         using var db = CreateContext();
-        var member = await db.Members.SingleAsync(m => m.Id == OverlongId);
+        var member = await db.Members.SingleAsync(m => m.Id == OverlongId, cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal(100, member.FirstName.Length);
         Assert.Equal(100, member.LastName.Length);
@@ -143,7 +143,7 @@ public sealed class SplitMemberNameIntoFirstLastNameTests : IDisposable
         await MigrateToLatestAsync();
 
         using var db = CreateContext();
-        var member = await db.Members.IgnoreQueryFilters().SingleAsync(m => m.Id == ArchivedId);
+        var member = await db.Members.IgnoreQueryFilters().SingleAsync(m => m.Id == ArchivedId, cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal("Old", member.FirstName);
         Assert.Equal("Member", member.LastName);
