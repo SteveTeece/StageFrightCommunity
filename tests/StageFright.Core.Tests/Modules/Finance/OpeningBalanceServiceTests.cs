@@ -162,9 +162,9 @@ public class OpeningBalanceServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Any(t => t.DebitAmount == 100m && t.AccountId == SystemAccounts.MemberReceivableId)
-                && lines.Any(t => t.CreditAmount == 50m && t.AccountId == SystemAccounts.TaxCollectedId)
-                && lines.Any(t => t.CreditAmount == 25m && t.AccountId == SystemAccounts.TaxPaidId)),
+                lines!.Any(t => t.DebitAmount == 100m && t.AccountId == SystemAccounts.MemberReceivableId)
+                && lines!.Any(t => t.CreditAmount == 50m && t.AccountId == SystemAccounts.TaxCollectedId)
+                && lines!.Any(t => t.CreditAmount == 25m && t.AccountId == SystemAccounts.TaxPaidId)),
             Arg.Any<CancellationToken>());
     }
 
@@ -191,7 +191,7 @@ public class OpeningBalanceServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 3
+                lines!.Count == 3
                 && lines.Any(t => t.DebitAmount == 5000m && t.AccountId == CashAccountId)
                 && lines.Any(t => t.CreditAmount == 1000m && t.AccountId == LoanAccountId)
                 && lines.Any(t => t.CreditAmount == 4000m && t.AccountId == SystemAccounts.OpeningBalanceEquityId && t.GLAccount == "3100")),
@@ -208,7 +208,7 @@ public class OpeningBalanceServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2
+                lines!.Count == 2
                 && lines.Any(t => t.CreditAmount == 3000m && t.AccountId == LoanAccountId)
                 && lines.Any(t => t.DebitAmount == 3000m && t.AccountId == SystemAccounts.OpeningBalanceEquityId)),
             Arg.Any<CancellationToken>());
@@ -225,8 +225,8 @@ public class OpeningBalanceServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Any(t => t.CreditAmount == 200m && t.AccountId == CashAccountId)
-                && lines.Any(t => t.DebitAmount == 200m && t.AccountId == SystemAccounts.OpeningBalanceEquityId)),
+                lines!.Any(t => t.CreditAmount == 200m && t.AccountId == CashAccountId)
+                && lines!.Any(t => t.DebitAmount == 200m && t.AccountId == SystemAccounts.OpeningBalanceEquityId)),
             Arg.Any<CancellationToken>());
     }
 
@@ -241,7 +241,7 @@ public class OpeningBalanceServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2 && lines.All(t => t.AccountId != LoanAccountId)),
+                lines!.Count == 2 && lines.All(t => t.AccountId != LoanAccountId)),
             Arg.Any<CancellationToken>());
     }
 
@@ -254,11 +254,11 @@ public class OpeningBalanceServiceTests : TestBase
         await _sut.RecordOpeningBalancesAsync(request, Ct);
 
         await _journalRepo.Received(1).AddAsync(
-            Arg.Is<JournalEntry>(j => j.Type == JournalEntryType.OpeningBalance && j.Date == request.AsAtDate),
+            Arg.Is<JournalEntry>(j => j!.Type == JournalEntryType.OpeningBalance && j.Date == request.AsAtDate),
             Arg.Any<CancellationToken>());
 
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.JournalEntryId != null)),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.All(t => t.JournalEntryId != null)),
             Arg.Any<CancellationToken>());
     }
 

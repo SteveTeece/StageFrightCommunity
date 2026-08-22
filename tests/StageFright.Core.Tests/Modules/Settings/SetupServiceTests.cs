@@ -103,7 +103,7 @@ public class SetupServiceTests : TestBase
         await svc.InitializeAsync(request, Ct);
 
         await _settingsRepo.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s.IsTaxApplicable == false && s.TaxRate == null
+            Arg.Is<Settings>(s => s!.IsTaxApplicable == false && s.TaxRate == null
                 && s.AnnualFeeTaxCode == null && s.AttendanceFeeTaxCode == null),
             Arg.Any<CancellationToken>());
     }
@@ -126,7 +126,7 @@ public class SetupServiceTests : TestBase
         await svc.InitializeAsync(request, Ct);
 
         await _settingsRepo.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s.IsTaxApplicable && s.TaxRate == 15m
+            Arg.Is<Settings>(s => s!.IsTaxApplicable && s.TaxRate == 15m
                 && s.AnnualFeeTaxCode == TaxCode.Taxable && s.AttendanceFeeTaxCode == TaxCode.TaxExempt),
             Arg.Any<CancellationToken>());
     }
@@ -195,7 +195,7 @@ public class SetupServiceTests : TestBase
         await svc.InitializeAsync(request, Ct);
 
         await _settingsRepo.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s.OrganizationName == "Test Org" && s.AnnualFee == 75m),
+            Arg.Is<Settings>(s => s!.OrganizationName == "Test Org" && s.AnnualFee == 75m),
             Arg.Any<CancellationToken>());
     }
 
@@ -224,7 +224,7 @@ public class SetupServiceTests : TestBase
         await svc.InitializeAsync(request, Ct);
 
         await _settingsRepo.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s.Theme == requestedTheme),
+            Arg.Is<Settings>(s => s!.Theme == requestedTheme),
             Arg.Any<CancellationToken>());
     }
 
@@ -251,7 +251,7 @@ public class SetupServiceTests : TestBase
         await svc.InitializeAsync(ValidRequest(), Ct);
 
         await _settingsRepo.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s.AuditRetentionYears == 1),
+            Arg.Is<Settings>(s => s!.AuditRetentionYears == 1),
             Arg.Any<CancellationToken>());
     }
 
@@ -269,7 +269,7 @@ public class SetupServiceTests : TestBase
         await svc.InitializeAsync(request, Ct);
 
         await _settingsRepo.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s.AuditRetentionYears == years),
+            Arg.Is<Settings>(s => s!.AuditRetentionYears == years),
             Arg.Any<CancellationToken>());
     }
 
@@ -355,7 +355,7 @@ public class SetupServiceTests : TestBase
 
         await _openingBalanceService.Received(1).RecordOpeningBalancesAsync(
             Arg.Is<RecordOpeningBalancesRequest>(r =>
-                r.AsAtDate == new DateTime(2026, 7, 1)
+                r!.AsAtDate == new DateTime(2026, 7, 1)
                 && r.Entries.Count == 1
                 && r.Entries[0].AccountId == realAccountId // resolved from clientId, not the raw ClientId
                 && r.Entries[0].Amount == 500m),
@@ -379,7 +379,7 @@ public class SetupServiceTests : TestBase
 
         await _openingBalanceService.Received(1).RecordOpeningBalancesAsync(
             Arg.Is<RecordOpeningBalancesRequest>(r =>
-                r.Entries.Count == 1 && r.Entries[0].AccountId == existingAccountId && r.Entries[0].Amount == 200m),
+                r!.Entries.Count == 1 && r.Entries[0].AccountId == existingAccountId && r.Entries[0].Amount == 200m),
             Arg.Any<CancellationToken>());
     }
 

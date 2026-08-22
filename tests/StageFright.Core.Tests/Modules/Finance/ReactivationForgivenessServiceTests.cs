@@ -108,8 +108,8 @@ public class ReactivationForgivenessServiceTests : TestBase
         // Debit BadDebtExpense (9900) / Credit MemberReceivable (0101) per fee
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Any(t => t.DebitAmount == 50m && t.GLAccount == "6999") &&
-                lines.Any(t => t.CreditAmount == 50m && t.GLAccount == "1200" && t.MemberId == MemberId)),
+                lines!.Any(t => t.DebitAmount == 50m && t.GLAccount == "6999") &&
+                lines!.Any(t => t.CreditAmount == 50m && t.GLAccount == "1200" && t.MemberId == MemberId)),
             Arg.Any<CancellationToken>());
     }
 
@@ -174,7 +174,7 @@ public class ReactivationForgivenessServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 3
+                lines!.Count == 3
                 && lines.Any(t => t.DebitAmount == 100m && t.GLAccount == "6999")
                 && lines.Any(t => t.DebitAmount == 10m && t.AccountId == SystemAccounts.TaxCollectedId)
                 && lines.Any(t => t.CreditAmount == 110m && t.GLAccount == "1200")
@@ -195,7 +195,7 @@ public class ReactivationForgivenessServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2
+                lines!.Count == 2
                 && lines.Any(t => t.DebitAmount == 50m && t.GLAccount == "6999")
                 && lines.Any(t => t.CreditAmount == 50m && t.GLAccount == "1200")
                 && lines.All(t => t.TaxCode == code)),
@@ -208,7 +208,7 @@ public class ReactivationForgivenessServiceTests : TestBase
         await _sut.ApplyForgivenessAsync(MemberId, new[] { PriorFee2025Id }, Ct);
 
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.FeeId == PriorFee2025Id)),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.All(t => t.FeeId == PriorFee2025Id)),
             Arg.Any<CancellationToken>());
     }
 

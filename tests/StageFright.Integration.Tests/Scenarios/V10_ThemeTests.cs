@@ -44,9 +44,9 @@ public sealed class V10_ThemeTests : IAsyncLifetime
         var svc = BuildSetupService();
         var request = new SetupRequest("Test Choir", 60m, 5m, 1, false, null, null, null, requestedTheme);
 
-        await svc.InitializeAsync(request);
+        await svc.InitializeAsync(request, TestContext.Current.CancellationToken);
 
-        var settings = await new SettingsRepository(_db).GetAsync();
+        var settings = await new SettingsRepository(_db).GetAsync(TestContext.Current.CancellationToken);
         Assert.Equal(requestedTheme, settings!.Theme);
     }
 
@@ -56,10 +56,10 @@ public sealed class V10_ThemeTests : IAsyncLifetime
         var settings = await SeedSettingsAsync(Theme.Light);
         settings.Theme = Theme.Dark;
 
-        await BuildSettingsService().SaveAsync(settings);
+        await BuildSettingsService().SaveAsync(settings, TestContext.Current.CancellationToken);
 
         _db.ChangeTracker.Clear();
-        var reloaded = await _db.Settings.FirstAsync();
+        var reloaded = await _db.Settings.FirstAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(Theme.Dark, reloaded.Theme);
     }
 
@@ -69,10 +69,10 @@ public sealed class V10_ThemeTests : IAsyncLifetime
         var settings = await SeedSettingsAsync(Theme.Dark);
         settings.Theme = Theme.Light;
 
-        await BuildSettingsService().SaveAsync(settings);
+        await BuildSettingsService().SaveAsync(settings, TestContext.Current.CancellationToken);
 
         _db.ChangeTracker.Clear();
-        var reloaded = await _db.Settings.FirstAsync();
+        var reloaded = await _db.Settings.FirstAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(Theme.Light, reloaded.Theme);
     }
 
@@ -84,11 +84,11 @@ public sealed class V10_ThemeTests : IAsyncLifetime
         // Simulate toggle: update Theme and save
         settings.Theme = Theme.Dark;
         var svc = BuildSettingsService();
-        await svc.SaveAsync(settings);
+        await svc.SaveAsync(settings, TestContext.Current.CancellationToken);
 
         // Simulate restart: read from fresh DbContext
         _db.ChangeTracker.Clear();
-        var afterRestart = await svc.GetAsync();
+        var afterRestart = await svc.GetAsync(TestContext.Current.CancellationToken);
         Assert.Equal(Theme.Dark, afterRestart!.Theme);
     }
 
@@ -99,10 +99,10 @@ public sealed class V10_ThemeTests : IAsyncLifetime
         settings.Theme = Theme.Light;
 
         var svc = BuildSettingsService();
-        await svc.SaveAsync(settings);
+        await svc.SaveAsync(settings, TestContext.Current.CancellationToken);
 
         _db.ChangeTracker.Clear();
-        var afterRestart = await svc.GetAsync();
+        var afterRestart = await svc.GetAsync(TestContext.Current.CancellationToken);
         Assert.Equal(Theme.Light, afterRestart!.Theme);
     }
 

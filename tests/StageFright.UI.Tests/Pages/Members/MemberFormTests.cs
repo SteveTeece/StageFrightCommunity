@@ -143,7 +143,7 @@ public class MemberFormTests : BunitContext
         await cut.Find("form").SubmitAsync();
 
         await _memberService.Received(1).CreateAsync(
-            Arg.Is<CreateMemberRequest>(r => r.FirstName == "Jane" && r.LastName == "Doe"),
+            Arg.Is<CreateMemberRequest>(r => r!.FirstName == "Jane" && r.LastName == "Doe"),
             Arg.Any<CancellationToken>());
     }
 
@@ -208,7 +208,7 @@ public class MemberFormTests : BunitContext
 
         await _memberService.Received(1).UpdateAsync(
             memberId,
-            Arg.Is<UpdateMemberRequest>(r => r.FirstName == "Updated" && r.LastName == "Member"),
+            Arg.Is<UpdateMemberRequest>(r => r!.FirstName == "Updated" && r.LastName == "Member"),
             Arg.Any<CancellationToken>());
     }
 }

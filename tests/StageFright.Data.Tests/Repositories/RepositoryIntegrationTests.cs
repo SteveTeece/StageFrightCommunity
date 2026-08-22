@@ -25,8 +25,8 @@ public class RepositoryIntegrationTests : IDisposable
         var repo = new MemberRepository(db);
         var member = CreateMember();
 
-        var added = await repo.AddAsync(member);
-        var found = await repo.GetByIdAsync(added.Id);
+        var added = await repo.AddAsync(member, TestContext.Current.CancellationToken);
+        var found = await repo.GetByIdAsync(added.Id, TestContext.Current.CancellationToken);
 
         Assert.NotNull(found);
         Assert.Equal("Test Member", found!.FullName);
@@ -38,11 +38,11 @@ public class RepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new MemberRepository(db);
 
-        var m1 = await repo.AddAsync(CreateMember("Alice"));
-        var m2 = await repo.AddAsync(CreateMember("Bob"));
-        await repo.ArchiveAsync(m1.Id, "system");
+        var m1 = await repo.AddAsync(CreateMember("Alice"), TestContext.Current.CancellationToken);
+        var m2 = await repo.AddAsync(CreateMember("Bob"), TestContext.Current.CancellationToken);
+        await repo.ArchiveAsync(m1.Id, "system", TestContext.Current.CancellationToken);
 
-        var all = await repo.GetAllAsync();
+        var all = await repo.GetAllAsync(TestContext.Current.CancellationToken);
         Assert.DoesNotContain(all, m => m.Id == m1.Id);
         Assert.Contains(all, m => m.Id == m2.Id);
     }
@@ -53,10 +53,10 @@ public class RepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new MemberRepository(db);
 
-        var m = await repo.AddAsync(CreateMember("Archived"));
-        await repo.ArchiveAsync(m.Id, "system");
+        var m = await repo.AddAsync(CreateMember("Archived"), TestContext.Current.CancellationToken);
+        await repo.ArchiveAsync(m.Id, "system", TestContext.Current.CancellationToken);
 
-        var archived = await repo.GetArchivedAsync();
+        var archived = await repo.GetArchivedAsync(TestContext.Current.CancellationToken);
         Assert.Contains(archived, a => a.Id == m.Id);
     }
 
@@ -66,11 +66,11 @@ public class RepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new MemberRepository(db);
 
-        var m = await repo.AddAsync(CreateMember("Restored"));
-        await repo.ArchiveAsync(m.Id, "system");
-        await repo.RestoreAsync(m.Id);
+        var m = await repo.AddAsync(CreateMember("Restored"), TestContext.Current.CancellationToken);
+        await repo.ArchiveAsync(m.Id, "system", TestContext.Current.CancellationToken);
+        await repo.RestoreAsync(m.Id, TestContext.Current.CancellationToken);
 
-        var restored = await repo.GetByIdAsync(m.Id);
+        var restored = await repo.GetByIdAsync(m.Id, TestContext.Current.CancellationToken);
         Assert.NotNull(restored);
         Assert.False(restored!.IsDeleted);
         Assert.Null(restored.DeletedAt);
@@ -83,11 +83,11 @@ public class RepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new MemberRepository(db);
 
-        var active = await repo.AddAsync(CreateMember("Active"));
-        var inactive = await repo.AddAsync(CreateMember("Inactive", MemberStatus.Inactive));
+        var active = await repo.AddAsync(CreateMember("Active"), TestContext.Current.CancellationToken);
+        var inactive = await repo.AddAsync(CreateMember("Inactive", MemberStatus.Inactive), TestContext.Current.CancellationToken);
 
-        var activeList = await repo.GetByStatusAsync(MemberStatus.Active);
-        var inactiveList = await repo.GetByStatusAsync(MemberStatus.Inactive);
+        var activeList = await repo.GetByStatusAsync(MemberStatus.Active, TestContext.Current.CancellationToken);
+        var inactiveList = await repo.GetByStatusAsync(MemberStatus.Inactive, TestContext.Current.CancellationToken);
 
         Assert.Contains(activeList, m => m.Id == active.Id);
         Assert.DoesNotContain(activeList, m => m.Id == inactive.Id);
@@ -105,9 +105,9 @@ public class RepositoryIntegrationTests : IDisposable
         member.ActivateDate = date.AddDays(-10);
         member.InactivateDate = date.AddDays(10);
 
-        await repo.AddAsync(member);
+        await repo.AddAsync(member, TestContext.Current.CancellationToken);
 
-        var results = await repo.GetActiveAsOfAsync(date);
+        var results = await repo.GetActiveAsOfAsync(date, TestContext.Current.CancellationToken);
         Assert.Contains(results, m => m.Id == member.Id);
     }
 
@@ -118,11 +118,11 @@ public class RepositoryIntegrationTests : IDisposable
     {
         using var db = _factory.CreateContext();
         var memberRepo = new MemberRepository(db);
-        var member = await memberRepo.AddAsync(CreateMember("FeeTest"));
+        var member = await memberRepo.AddAsync(CreateMember("FeeTest"), TestContext.Current.CancellationToken);
 
         var repo = new FeeRepository(db);
         var fee = CreateFee(member.Id);
-        var added = await repo.AddAsync(fee);
+        var added = await repo.AddAsync(fee, TestContext.Current.CancellationToken);
 
         Assert.NotEqual(Guid.Empty, added.Id);
     }
@@ -132,14 +132,14 @@ public class RepositoryIntegrationTests : IDisposable
     {
         using var db = _factory.CreateContext();
         var memberRepo = new MemberRepository(db);
-        var member = await memberRepo.AddAsync(CreateMember("AnnualCheck"));
+        var member = await memberRepo.AddAsync(CreateMember("AnnualCheck"), TestContext.Current.CancellationToken);
 
         var repo = new FeeRepository(db);
         var fee = CreateFee(member.Id, FeeType.Annual, year: 2026);
-        await repo.AddAsync(fee);
+        await repo.AddAsync(fee, TestContext.Current.CancellationToken);
 
-        Assert.True(await repo.AnnualFeeExistsAsync(member.Id, 2026));
-        Assert.False(await repo.AnnualFeeExistsAsync(member.Id, 2025));
+        Assert.True(await repo.AnnualFeeExistsAsync(member.Id, 2026, TestContext.Current.CancellationToken));
+        Assert.False(await repo.AnnualFeeExistsAsync(member.Id, 2025, TestContext.Current.CancellationToken));
     }
 
     // --- Settings repository (singleton) ---
@@ -150,7 +150,7 @@ public class RepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new SettingsRepository(db);
 
-        var result = await repo.GetAsync();
+        var result = await repo.GetAsync(TestContext.Current.CancellationToken);
         Assert.Null(result);
     }
 
@@ -172,8 +172,8 @@ public class RepositoryIntegrationTests : IDisposable
             UpdatedAt = DateTime.UtcNow
         };
 
-        await repo.SaveAsync(settings);
-        var retrieved = await repo.GetAsync();
+        await repo.SaveAsync(settings, TestContext.Current.CancellationToken);
+        var retrieved = await repo.GetAsync(TestContext.Current.CancellationToken);
 
         Assert.NotNull(retrieved);
         Assert.Equal("Test Org", retrieved!.OrganizationName);
@@ -197,15 +197,15 @@ public class RepositoryIntegrationTests : IDisposable
             UpdatedAt = DateTime.UtcNow
         };
 
-        await repo.SaveAsync(settings);
+        await repo.SaveAsync(settings, TestContext.Current.CancellationToken);
 
         settings.OrganizationName = "New Name";
-        await repo.SaveAsync(settings);
+        await repo.SaveAsync(settings, TestContext.Current.CancellationToken);
 
         using var db2 = _factory.CreateContext();
         var repo2 = new SettingsRepository(db2);
-        var count = await db2.Settings.CountAsync();
-        var retrieved = await repo2.GetAsync();
+        var count = await db2.Settings.CountAsync(cancellationToken: TestContext.Current.CancellationToken);
+        var retrieved = await repo2.GetAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(1, count);
         Assert.Equal("New Name", retrieved!.OrganizationName);
@@ -218,7 +218,7 @@ public class RepositoryIntegrationTests : IDisposable
     {
         using var db = _factory.CreateContext();
         var accountRepo = new AccountRepository(db);
-        var accounts = await accountRepo.GetAllAsync();
+        var accounts = await accountRepo.GetAllAsync(TestContext.Current.CancellationToken);
         var cat = accounts.First();
 
         var repo = new GLRepository(db);
@@ -237,7 +237,7 @@ public class RepositoryIntegrationTests : IDisposable
         };
 
         await Assert.ThrowsAsync<GLBalanceException>(
-            () => repo.AddPairAsync(debit, credit));
+            () => repo.AddPairAsync(debit, credit, TestContext.Current.CancellationToken));
     }
 
     // --- Account repository ---
@@ -248,7 +248,7 @@ public class RepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new AccountRepository(db);
 
-        var all = await repo.GetAllAsync();
+        var all = await repo.GetAllAsync(TestContext.Current.CancellationToken);
 
         Assert.Contains(all, c => c.AccountNumber == "1100" && c.IsSystem);
         Assert.Contains(all, c => c.AccountNumber == "1200" && c.IsSystem);
@@ -261,10 +261,10 @@ public class RepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new AccountRepository(db);
 
-        var systemCat = (await repo.GetAllAsync()).First(c => c.IsSystem);
+        var systemCat = (await repo.GetAllAsync(TestContext.Current.CancellationToken)).First(c => c.IsSystem);
 
         await Assert.ThrowsAsync<ValidationException>(
-            () => repo.ArchiveAsync(systemCat.Id, "system"));
+            () => repo.ArchiveAsync(systemCat.Id, "system", TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -273,7 +273,7 @@ public class RepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new AccountRepository(db);
 
-        var first = await repo.GetNextAccountNumberAsync(AccountType.Income, false);
+        var first = await repo.GetNextAccountNumberAsync(AccountType.Income, false, TestContext.Current.CancellationToken);
         Assert.Equal("4000", first);
 
         // Add a user income account
@@ -284,9 +284,9 @@ public class RepositoryIntegrationTests : IDisposable
             SortOrder = 10, IsSystem = false,
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         };
-        await repo.AddAsync(cat);
+        await repo.AddAsync(cat, TestContext.Current.CancellationToken);
 
-        var second = await repo.GetNextAccountNumberAsync(AccountType.Income, false);
+        var second = await repo.GetNextAccountNumberAsync(AccountType.Income, false, TestContext.Current.CancellationToken);
         Assert.Equal("4001", second);
     }
 
@@ -300,27 +300,26 @@ public class RepositoryIntegrationTests : IDisposable
         var rehearsalRepo = new RehearsalRepository(db);
         var attendanceRepo = new AttendanceRepository(db);
 
-        var zoe = await memberRepo.AddAsync(CreateMemberWithNames("Zoe", "Adams"));
-        var alice = await memberRepo.AddAsync(CreateMemberWithNames("Alice", "Baker"));
-        var bob = await memberRepo.AddAsync(CreateMemberWithNames("Bob", "Adams"));
+        var zoe = await memberRepo.AddAsync(CreateMemberWithNames("Zoe", "Adams"), TestContext.Current.CancellationToken);
+        var alice = await memberRepo.AddAsync(CreateMemberWithNames("Alice", "Baker"), TestContext.Current.CancellationToken);
+        var bob = await memberRepo.AddAsync(CreateMemberWithNames("Bob", "Adams"), TestContext.Current.CancellationToken);
 
         var rehearsal = await rehearsalRepo.AddAsync(new Rehearsal
         {
             Id = Guid.NewGuid(), Date = DateTime.UtcNow.Date, Time = new TimeSpan(19, 0, 0),
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
-        });
+        }, TestContext.Current.CancellationToken);
 
-        await attendanceRepo.AddBatchAsync(
-        [
+        await attendanceRepo.AddBatchAsync([
             new AttendanceRecord { Id = Guid.NewGuid(), RehearsalId = rehearsal.Id, MemberId = zoe.Id, Attended = true, CreatedAt = DateTime.UtcNow },
             new AttendanceRecord { Id = Guid.NewGuid(), RehearsalId = rehearsal.Id, MemberId = alice.Id, Attended = true, CreatedAt = DateTime.UtcNow },
             new AttendanceRecord { Id = Guid.NewGuid(), RehearsalId = rehearsal.Id, MemberId = bob.Id, Attended = false, CreatedAt = DateTime.UtcNow }
-        ]);
+        ], TestContext.Current.CancellationToken);
 
         // Real EF-translated SQL query — must sort by the mapped LastName/FirstName columns,
         // not the unmapped computed SortableFullName property (which would throw
         // InvalidOperationException at runtime instead of translating to SQL; see T042).
-        var result = await attendanceRepo.GetByRehearsalAsync(rehearsal.Id);
+        var result = await attendanceRepo.GetByRehearsalAsync(rehearsal.Id, TestContext.Current.CancellationToken);
 
         Assert.Equal([bob.Id, zoe.Id, alice.Id], result.Select(r => r.MemberId));
     }

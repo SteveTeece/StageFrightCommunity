@@ -163,7 +163,7 @@ public class SetupWizardTests : BunitContext
 
         await _setupService.Received(1).InitializeAsync(
             Arg.Is<SetupRequest>(r =>
-                r.OrganizationName == "My Choir"
+                r!.OrganizationName == "My Choir"
                 && r.AnnualFee == 80m
                 && r.CommitteeOfficeHolderTitles!.Contains("Publicity Officer")),
             Arg.Any<CancellationToken>());
@@ -199,7 +199,7 @@ public class SetupWizardTests : BunitContext
 
         await _setupService.Received(1).InitializeAsync(
             Arg.Is<SetupRequest>(r =>
-                r.QueuedAccounts != null
+                r!.QueuedAccounts != null
                 && r.QueuedAccounts.Count == 1
                 && r.QueuedAccounts[0].Name == "Petty Cash"),
             Arg.Any<CancellationToken>());
@@ -216,7 +216,7 @@ public class SetupWizardTests : BunitContext
         await cut.Find("form").SubmitAsync();
 
         await _setupService.Received(1).InitializeAsync(
-            Arg.Is<SetupRequest>(r => r.QueuedAccounts == null),
+            Arg.Is<SetupRequest>(r => r!.QueuedAccounts == null),
             Arg.Any<CancellationToken>());
 
         var nav = Services.GetRequiredService<NavigationManager>();
@@ -246,7 +246,7 @@ public class SetupWizardTests : BunitContext
         await cut.Find("form").SubmitAsync();
 
         await _setupService.Received(1).InitializeAsync(
-            Arg.Is<SetupRequest>(r => r.QueuedAccounts == null),
+            Arg.Is<SetupRequest>(r => r!.QueuedAccounts == null),
             Arg.Any<CancellationToken>());
     }
 
@@ -312,7 +312,7 @@ public class SetupWizardTests : BunitContext
 
         await _setupService.Received(1).InitializeAsync(
             Arg.Is<SetupRequest>(r =>
-                r.CommitteeOfficeHolderTitles!.Count == 2
+                r!.CommitteeOfficeHolderTitles!.Count == 2
                 && r.CommitteeOfficeHolderTitles.Contains("Publicity Officer")
                 && r.CommitteeOfficeHolderTitles.Contains("Webmaster")),
             Arg.Any<CancellationToken>());
@@ -328,7 +328,7 @@ public class SetupWizardTests : BunitContext
         await cut.Find("form").SubmitAsync();
 
         await _setupService.Received(1).InitializeAsync(
-            Arg.Is<SetupRequest>(r => r.CommitteeOfficeHolderTitles!.Count == 0),
+            Arg.Is<SetupRequest>(r => r!.CommitteeOfficeHolderTitles!.Count == 0),
             Arg.Any<CancellationToken>());
     }
 
@@ -363,7 +363,7 @@ public class SetupWizardTests : BunitContext
 
         await _setupService.Received(1).InitializeAsync(
             Arg.Is<SetupRequest>(r =>
-                r.QueuedOpeningBalances != null
+                r!.QueuedOpeningBalances != null
                 && r.QueuedOpeningBalances.Count == 1
                 && r.QueuedOpeningBalances[0].AccountId == accountId
                 && r.QueuedOpeningBalances[0].Amount == 500m
@@ -384,7 +384,7 @@ public class SetupWizardTests : BunitContext
         await cut.Find("form").SubmitAsync();
 
         await _setupService.Received(1).InitializeAsync(
-            Arg.Is<SetupRequest>(r => r.QueuedOpeningBalances == null),
+            Arg.Is<SetupRequest>(r => r!.QueuedOpeningBalances == null),
             Arg.Any<CancellationToken>());
 
         var nav = Services.GetRequiredService<NavigationManager>();

@@ -155,7 +155,7 @@ public class GeneralJournalServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2
+                lines!.Count == 2
                 && lines.Any(t => t.DebitAmount == 100m && t.AccountId == ExpenseAccountId && t.GLAccount == "6000")
                 && lines.Any(t => t.CreditAmount == 100m && t.AccountId == CashAccountId && t.GLAccount == "1100")),
             Arg.Any<CancellationToken>());
@@ -172,7 +172,7 @@ public class GeneralJournalServiceTests : TestBase
         await _sut.RecordJournalAsync(request, Ct);
 
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.Count == 3),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.Count == 3),
             Arg.Any<CancellationToken>());
     }
 
@@ -185,13 +185,13 @@ public class GeneralJournalServiceTests : TestBase
 
         await _journalRepo.Received(1).AddAsync(
             Arg.Is<JournalEntry>(j =>
-                j.Type == JournalEntryType.GeneralJournal
+                j!.Type == JournalEntryType.GeneralJournal
                 && j.Date == request.Date
                 && j.Description == "Correction"),
             Arg.Any<CancellationToken>());
 
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.JournalEntryId != null)),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.All(t => t.JournalEntryId != null)),
             Arg.Any<CancellationToken>());
     }
 

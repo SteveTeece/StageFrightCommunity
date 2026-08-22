@@ -20,10 +20,10 @@ public class MemberRepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new MemberRepository(db);
 
-        var active = await repo.AddAsync(Member("Alice", MemberStatus.Active));
-        var inactive = await repo.AddAsync(Member("Bob", MemberStatus.Inactive));
+        var active = await repo.AddAsync(Member("Alice", MemberStatus.Active), TestContext.Current.CancellationToken);
+        var inactive = await repo.AddAsync(Member("Bob", MemberStatus.Inactive), TestContext.Current.CancellationToken);
 
-        var result = await repo.GetByStatusAsync(MemberStatus.Active);
+        var result = await repo.GetByStatusAsync(MemberStatus.Active, TestContext.Current.CancellationToken);
 
         Assert.Contains(result, m => m.Id == active.Id);
         Assert.DoesNotContain(result, m => m.Id == inactive.Id);
@@ -35,10 +35,10 @@ public class MemberRepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new MemberRepository(db);
 
-        await repo.AddAsync(Member("Active One", MemberStatus.Active));
-        var inactive = await repo.AddAsync(Member("Inactive One", MemberStatus.Inactive));
+        await repo.AddAsync(Member("Active One", MemberStatus.Active), TestContext.Current.CancellationToken);
+        var inactive = await repo.AddAsync(Member("Inactive One", MemberStatus.Inactive), TestContext.Current.CancellationToken);
 
-        var result = await repo.GetByStatusAsync(MemberStatus.Inactive);
+        var result = await repo.GetByStatusAsync(MemberStatus.Inactive, TestContext.Current.CancellationToken);
 
         Assert.Contains(result, m => m.Id == inactive.Id);
         Assert.All(result, m => Assert.Equal(MemberStatus.Inactive, m.Status));
@@ -50,10 +50,10 @@ public class MemberRepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new MemberRepository(db);
 
-        var member = await repo.AddAsync(Member("Archived Active", MemberStatus.Active));
-        await repo.ArchiveAsync(member.Id, "system");
+        var member = await repo.AddAsync(Member("Archived Active", MemberStatus.Active), TestContext.Current.CancellationToken);
+        await repo.ArchiveAsync(member.Id, "system", TestContext.Current.CancellationToken);
 
-        var result = await repo.GetByStatusAsync(MemberStatus.Active);
+        var result = await repo.GetByStatusAsync(MemberStatus.Active, TestContext.Current.CancellationToken);
 
         Assert.DoesNotContain(result, m => m.Id == member.Id);
     }
@@ -70,9 +70,9 @@ public class MemberRepositoryIntegrationTests : IDisposable
         var m = Member("Effective Alice", MemberStatus.Active);
         m.ActivateDate = refDate.AddDays(-5);
         m.InactivateDate = null;
-        await repo.AddAsync(m);
+        await repo.AddAsync(m, TestContext.Current.CancellationToken);
 
-        var result = await repo.GetActiveAsOfAsync(refDate);
+        var result = await repo.GetActiveAsOfAsync(refDate, TestContext.Current.CancellationToken);
 
         Assert.Contains(result, r => r.Id == m.Id);
     }
@@ -86,9 +86,9 @@ public class MemberRepositoryIntegrationTests : IDisposable
         var refDate = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc);
         var m = Member("Late Joiner", MemberStatus.Active);
         m.ActivateDate = refDate.AddDays(5); // activated AFTER reference date
-        await repo.AddAsync(m);
+        await repo.AddAsync(m, TestContext.Current.CancellationToken);
 
-        var result = await repo.GetActiveAsOfAsync(refDate);
+        var result = await repo.GetActiveAsOfAsync(refDate, TestContext.Current.CancellationToken);
 
         Assert.DoesNotContain(result, r => r.Id == m.Id);
     }
@@ -103,9 +103,9 @@ public class MemberRepositoryIntegrationTests : IDisposable
         var m = Member("Early Leaver", MemberStatus.Inactive);
         m.ActivateDate = refDate.AddDays(-20);
         m.InactivateDate = refDate.AddDays(-10); // inactivated BEFORE reference date
-        await repo.AddAsync(m);
+        await repo.AddAsync(m, TestContext.Current.CancellationToken);
 
-        var result = await repo.GetActiveAsOfAsync(refDate);
+        var result = await repo.GetActiveAsOfAsync(refDate, TestContext.Current.CancellationToken);
 
         Assert.DoesNotContain(result, r => r.Id == m.Id);
     }
@@ -120,9 +120,9 @@ public class MemberRepositoryIntegrationTests : IDisposable
         var m = Member("Later Leaver", MemberStatus.Inactive);
         m.ActivateDate = refDate.AddDays(-20);
         m.InactivateDate = refDate.AddDays(10); // inactivated AFTER reference date -> was still active on refDate
-        await repo.AddAsync(m);
+        await repo.AddAsync(m, TestContext.Current.CancellationToken);
 
-        var result = await repo.GetActiveAsOfAsync(refDate);
+        var result = await repo.GetActiveAsOfAsync(refDate, TestContext.Current.CancellationToken);
 
         Assert.Contains(result, r => r.Id == m.Id);
     }
@@ -136,10 +136,10 @@ public class MemberRepositoryIntegrationTests : IDisposable
         var refDate = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc);
         var m = Member("Archived", MemberStatus.Active);
         m.ActivateDate = refDate.AddDays(-5);
-        await repo.AddAsync(m);
-        await repo.ArchiveAsync(m.Id, "system");
+        await repo.AddAsync(m, TestContext.Current.CancellationToken);
+        await repo.ArchiveAsync(m.Id, "system", TestContext.Current.CancellationToken);
 
-        var result = await repo.GetActiveAsOfAsync(refDate);
+        var result = await repo.GetActiveAsOfAsync(refDate, TestContext.Current.CancellationToken);
 
         Assert.DoesNotContain(result, r => r.Id == m.Id);
     }
@@ -152,11 +152,11 @@ public class MemberRepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new MemberRepository(db);
 
-        var normal = await repo.AddAsync(Member("Normal"));
-        var archived = await repo.AddAsync(Member("Archived"));
-        await repo.ArchiveAsync(archived.Id, "system");
+        var normal = await repo.AddAsync(Member("Normal"), TestContext.Current.CancellationToken);
+        var archived = await repo.AddAsync(Member("Archived"), TestContext.Current.CancellationToken);
+        await repo.ArchiveAsync(archived.Id, "system", TestContext.Current.CancellationToken);
 
-        var result = await repo.GetAllAsync();
+        var result = await repo.GetAllAsync(TestContext.Current.CancellationToken);
 
         Assert.Contains(result, m => m.Id == normal.Id);
         Assert.DoesNotContain(result, m => m.Id == archived.Id);

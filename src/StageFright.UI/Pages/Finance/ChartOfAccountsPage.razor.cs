@@ -13,7 +13,6 @@ public partial class ChartOfAccountsPage : ComponentBase
     [Inject] private IAccountBalanceService AccountBalanceService { get; set; } = null!;
 
     private bool _loading = true;
-    private bool _creating;
     private string? _errorMessage;
     private string? _successMessage;
 
@@ -62,7 +61,6 @@ public partial class ChartOfAccountsPage : ComponentBase
 
     private async Task HandleCreateAsync(NewAccountModel newAccountModel)
     {
-        _creating = true;
         _errorMessage = null;
         _successMessage = null;
 
@@ -82,10 +80,6 @@ public partial class ChartOfAccountsPage : ComponentBase
         catch (Exception ex)
         {
             _errorMessage = $"Failed to create account: {ex.Message}";
-        }
-        finally
-        {
-            _creating = false;
         }
     }
 

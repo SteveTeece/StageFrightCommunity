@@ -182,7 +182,7 @@ public class ParticipationGridTests : RadzenGridTestContext
         await _eventService.Received(1).RecordParticipationAsync(
             EventId,
             Arg.Is<IReadOnlyList<ParticipationBatchItem>>(items =>
-                items.Count == 2 && items.All(i => i.Participated)),
+                items!.Count == 2 && items.All(i => i.Participated)),
             Arg.Any<CancellationToken>());
     }
 

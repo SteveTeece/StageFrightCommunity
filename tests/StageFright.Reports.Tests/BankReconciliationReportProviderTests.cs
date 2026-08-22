@@ -64,7 +64,7 @@ public class BankReconciliationReportProviderTests
     [Fact]
     public async Task GenerateAsync_NoReconciliations_ProducesEmptyReportWithExplanation()
     {
-        var result = await _sut.GenerateAsync(new ReportFilterValues());
+        var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
 
         Assert.Empty(result.Sections);
         Assert.Contains("No reconciliations", result.SubTitle);
@@ -78,7 +78,7 @@ public class BankReconciliationReportProviderTests
         SetupReconciliation(CashId, opening: 100m, closing: 250m,
             cleared: [MakeTransaction(CashId, debit: 200m), MakeTransaction(CashId, credit: 50m)]);
 
-        var result = await _sut.GenerateAsync(new ReportFilterValues());
+        var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
 
         Assert.Equal(4, result.Sections.Count);
         Assert.Contains("Cleared Deposits", result.Sections[0].Heading);
@@ -93,7 +93,7 @@ public class BankReconciliationReportProviderTests
         SetupReconciliation(CashId, opening: 0m, closing: 150m,
             cleared: [MakeTransaction(CashId, debit: 200m), MakeTransaction(CashId, credit: 50m)]);
 
-        var result = await _sut.GenerateAsync(new ReportFilterValues());
+        var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
 
         var deposits = result.Sections[0];
         var payments = result.Sections[1];
@@ -110,7 +110,7 @@ public class BankReconciliationReportProviderTests
         SetupReconciliation(CashId, opening: 100m, closing: 250m,
             cleared: [MakeTransaction(CashId, debit: 200m), MakeTransaction(CashId, credit: 50m)]);
 
-        var result = await _sut.GenerateAsync(new ReportFilterValues());
+        var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
 
         var summary = result.Sections[3];
         var differenceRow = summary.Rows.Single(r => r.Cells[1] == "Difference");
@@ -125,7 +125,7 @@ public class BankReconciliationReportProviderTests
             .Returns(Task.FromResult<IReadOnlyList<Transaction>>(
                 new List<Transaction> { MakeTransaction(CashId, debit: 75m) }));
 
-        var result = await _sut.GenerateAsync(new ReportFilterValues());
+        var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
 
         var unpresented = result.Sections[2];
         Assert.Single(unpresented.Rows);
@@ -142,7 +142,7 @@ public class BankReconciliationReportProviderTests
 
         var filters = new ReportFilterValues();
         filters.Set("account", "1110");
-        var result = await _sut.GenerateAsync(filters);
+        var result = await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         Assert.Equal(4, result.Sections.Count);
         Assert.All(result.Sections, s => Assert.Contains("Savings", s.Heading));
@@ -156,7 +156,7 @@ public class BankReconciliationReportProviderTests
 
         var filters = new ReportFilterValues();
         filters.Set("account", "cash");
-        var result = await _sut.GenerateAsync(filters);
+        var result = await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         Assert.All(result.Sections, s => Assert.Contains("Cash on Hand", s.Heading));
     }

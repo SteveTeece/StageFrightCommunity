@@ -66,15 +66,15 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
             AttendedMemberIds: [PresidentMemberId, GeneralMemberId],
             AllActiveMemberIds: [PresidentMemberId, GeneralMemberId, ReplacementPresidentMemberId],
             OfficeHolderAssignments: new Dictionary<Guid, Guid> { [presidentTypeId] = PresidentMemberId },
-            GeneralCommitteeMemberIds: [GeneralMemberId]));
+            GeneralCommitteeMemberIds: [GeneralMemberId]), TestContext.Current.CancellationToken);
 
         Assert.Equal(agmDate, agm.Date);
 
-        var attendanceRecords = await _db.AgmAttendanceRecords.Where(a => a.AnnualGeneralMeetingId == agm.Id).ToListAsync();
+        var attendanceRecords = await _db.AgmAttendanceRecords.Where(a => a.AnnualGeneralMeetingId == agm.Id).ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(3, attendanceRecords.Count);
         Assert.Equal(2, attendanceRecords.Count(a => a.Attended));
 
-        var term = await _db.CommitteeTerms.SingleAsync(t => t.StartedByAgmId == agm.Id);
+        var term = await _db.CommitteeTerms.SingleAsync(t => t.StartedByAgmId == agm.Id, cancellationToken: TestContext.Current.CancellationToken);
         Assert.Null(term.EndDate);
         Assert.Equal(2026, term.LabelYear);
 
@@ -82,7 +82,7 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
         var reportProvider = new CommitteeReportProvider(new CommitteePositionRecordRepository(_db), new MemberRepository(_db));
         var filters = new ReportFilterValues();
         filters.Set("memberFilter", "Active Only");
-        var report = await reportProvider.GenerateAsync(filters);
+        var report = await reportProvider.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         var section = Assert.Single(report.Sections, s => s.Heading == "2026");
         Assert.Contains(section.Rows, r => r.Cells[1] == "President" && r.Cells[2] == "President, Alice");
@@ -90,20 +90,20 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
 
         // --- Special election: replace the President mid-term ---
         var outgoingPresidentRecord = await _db.CommitteePositionRecords
-            .SingleAsync(r => r.CommitteeTermId == term.Id && r.OfficeHolderTypeId == presidentTypeId && r.EndDate == null);
+            .SingleAsync(r => r.CommitteeTermId == term.Id && r.OfficeHolderTypeId == presidentTypeId && r.EndDate == null, cancellationToken: TestContext.Current.CancellationToken);
         var replacementDate = new DateTime(2026, 8, 1, 0, 0, 0, DateTimeKind.Utc);
 
         var incoming = await agmSvc.RecordSpecialElectionAsync(new RecordSpecialElectionRequest(
-            outgoingPresidentRecord.Id, ReplacementPresidentMemberId, replacementDate));
+            outgoingPresidentRecord.Id, ReplacementPresidentMemberId, replacementDate), TestContext.Current.CancellationToken);
 
         Assert.Equal(ReplacementPresidentMemberId, incoming.MemberId);
         Assert.Equal(replacementDate, incoming.StartDate);
 
-        var refreshedOutgoing = await _db.CommitteePositionRecords.SingleAsync(r => r.Id == outgoingPresidentRecord.Id);
+        var refreshedOutgoing = await _db.CommitteePositionRecords.SingleAsync(r => r.Id == outgoingPresidentRecord.Id, cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(replacementDate, refreshedOutgoing.EndDate);
 
         // Reporting now shows both holders with dates for the same slot (FR-029).
-        var reportAfterElection = await reportProvider.GenerateAsync(filters);
+        var reportAfterElection = await reportProvider.GenerateAsync(filters, TestContext.Current.CancellationToken);
         var sectionAfterElection = Assert.Single(reportAfterElection.Sections, s => s.Heading == "2026");
         var presidentRow = sectionAfterElection.Rows.Single(r => r.Cells[1] == "President");
         Assert.Contains("Alice", presidentRow.Cells[2]);
@@ -111,23 +111,23 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
         Assert.Contains("present", presidentRow.Cells[2]);
 
         // --- Review the past AGM ---
-        var pastAgms = await agmSvc.GetPastAsync();
+        var pastAgms = await agmSvc.GetPastAsync(TestContext.Current.CancellationToken);
         Assert.Contains(pastAgms, a => a.Id == agm.Id);
 
-        var reviewedAgm = await agmSvc.GetByIdAsync(agm.Id);
+        var reviewedAgm = await agmSvc.GetByIdAsync(agm.Id, TestContext.Current.CancellationToken);
         Assert.NotNull(reviewedAgm);
         Assert.Equal("Annual sitting", reviewedAgm!.Notes);
 
         // --- Archive it ---
-        await agmSvc.ArchiveAsync(agm.Id, "coordinator");
+        await agmSvc.ArchiveAsync(agm.Id, "coordinator", TestContext.Current.CancellationToken);
 
-        var pastAgmsAfterArchive = await agmSvc.GetPastAsync();
+        var pastAgmsAfterArchive = await agmSvc.GetPastAsync(TestContext.Current.CancellationToken);
         Assert.DoesNotContain(pastAgmsAfterArchive, a => a.Id == agm.Id);
 
         var archivedAttendance = await _db.AgmAttendanceRecords
             .IgnoreQueryFilters()
             .Where(a => a.AnnualGeneralMeetingId == agm.Id)
-            .ToListAsync();
+            .ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.All(archivedAttendance, a => Assert.True(a.IsDeleted));
     }
 

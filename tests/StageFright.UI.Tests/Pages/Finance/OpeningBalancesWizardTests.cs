@@ -159,7 +159,7 @@ public class OpeningBalancesWizardTests : BunitContext
 
         _openingService.Received(1).RecordOpeningBalancesAsync(
             Arg.Is<RecordOpeningBalancesRequest>(r =>
-                r.Entries.Count == 1
+                r!.Entries.Count == 1
                 && r.Entries[0].AccountId == CashAccountId
                 && r.Entries[0].Amount == 5000m),
             Arg.Any<CancellationToken>());

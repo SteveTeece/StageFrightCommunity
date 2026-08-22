@@ -88,7 +88,7 @@ public class RehearsalServiceTests : TestBase
 
         // Rate = 2/3 * 100 ≈ 66.67
         await _rehearsalRepo.Received(1).UpdateAsync(
-            Arg.Is<Rehearsal>(r => r.StoredAttendanceRate.HasValue && r.StoredAttendanceRate.Value > 66m && r.StoredAttendanceRate.Value < 67m),
+            Arg.Is<Rehearsal>(r => r!.StoredAttendanceRate.HasValue && r.StoredAttendanceRate.Value > 66m && r.StoredAttendanceRate.Value < 67m),
             Arg.Any<CancellationToken>());
     }
 
@@ -106,7 +106,7 @@ public class RehearsalServiceTests : TestBase
         await svc.FreezeAttendanceRateAsync(RehearsalId, rehearsal.Date, presentCount: 2, Ct);
 
         await _rehearsalRepo.Received(1).UpdateAsync(
-            Arg.Is<Rehearsal>(r => r.StoredAttendanceRate == 100m),
+            Arg.Is<Rehearsal>(r => r!.StoredAttendanceRate == 100m),
             Arg.Any<CancellationToken>());
     }
 
@@ -125,7 +125,7 @@ public class RehearsalServiceTests : TestBase
         await svc.FreezeAttendanceRateAsync(RehearsalId, rehearsal.Date, presentCount: 1, Ct);
 
         await _rehearsalRepo.Received(1).UpdateAsync(
-            Arg.Is<Rehearsal>(r => r.StoredAttendanceRate == 100m),
+            Arg.Is<Rehearsal>(r => r!.StoredAttendanceRate == 100m),
             Arg.Any<CancellationToken>());
     }
 
@@ -157,7 +157,7 @@ public class RehearsalServiceTests : TestBase
         await svc.FreezeAttendanceRateAsync(RehearsalId, rehearsal.Date, presentCount: 0, Ct);
 
         await _rehearsalRepo.Received(1).UpdateAsync(
-            Arg.Is<Rehearsal>(r => r.StoredAttendanceRate == 0m),
+            Arg.Is<Rehearsal>(r => r!.StoredAttendanceRate == 0m),
             Arg.Any<CancellationToken>());
     }
 

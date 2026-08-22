@@ -115,7 +115,7 @@ public class RecordSpecialElectionTests : BunitContext
 
         await _agmService.Received(1).RecordSpecialElectionAsync(
             Arg.Is<RecordSpecialElectionRequest>(r =>
-                r.OutgoingPositionRecordId == OutgoingPositionId &&
+                r!.OutgoingPositionRecordId == OutgoingPositionId &&
                 r.IncomingMemberId == IncomingMemberId &&
                 r.ReplacementDate.Date == replacementDate.Date),
             Arg.Any<CancellationToken>());
