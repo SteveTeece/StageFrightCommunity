@@ -1,13 +1,15 @@
 @using StageFright.Core.Enums
 
-<div class="mb-3">
+<div class="col-md-6">
     <div class="form-check">
         <InputCheckbox id="taxApplicable" class="form-check-input" @bind-Value="Model.IsTaxApplicable" @bind-Value:after="HandleTaxToggleChanged" />
         <label class="form-check-label small" for="taxApplicable">Sales tax applies to this organisation</label>
     </div>
+</div>
 
-    @if (Model.IsTaxApplicable)
-    {
+@if (Model.IsTaxApplicable)
+{
+    <div class="col-12">
         <div class="row g-2 mt-1">
             <div class="col-md-6">
                 <label for="taxRate" class="form-label">Tax Rate (%) <span aria-hidden="true" class="text-danger">*</span></label>
@@ -33,5 +35,5 @@
                 </InputSelect>
             </div>
         </div>
-    }
-</div>
+    </div>
+}

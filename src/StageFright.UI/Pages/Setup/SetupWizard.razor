@@ -29,8 +29,10 @@
                                 <ChildContent>
                                     <GeneralAppearanceTab Model="_model" />
                                     <MembershipFeesTab Model="_model" />
-                                    <ThemeSelectionTab />
-                                    <SalesTaxTab Model="_model" />
+                                    <div class="row g-3 mb-3">
+                                        <ThemeSelectionTab />
+                                        <SalesTaxTab Model="_model" />
+                                    </div>
                                 </ChildContent>
                                 <ErrorContent Context="tabError"><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
                             </ErrorBoundary>

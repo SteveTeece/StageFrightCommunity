@@ -6,8 +6,9 @@ namespace StageFright.UI.Pages.Setup.Tabs;
 
 /// <summary>Theme selection tab (US6) — Light/Dark dropdown, consistent with every other
 /// yes/no-or-choice control elsewhere in the wizard (FR-022). Rendered last in the
-/// Organisation Settings tab, directly above the Sales Tax section, so it sits after the
-/// fee/renewal/retention fields.</summary>
+/// Organisation Settings tab, after the fee/renewal/retention fields, paired side by side
+/// with the Sales Tax checkbox in a two-column row (SetupWizard.razor owns that wrapping
+/// row since the two are separate components).</summary>
 public partial class ThemeSelectionTab : ComponentBase
 {
     [CascadingParameter] private ThemeProvider? ThemeProvider { get; set; }
