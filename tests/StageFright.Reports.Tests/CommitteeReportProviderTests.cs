@@ -42,7 +42,7 @@ public class CommitteeReportProviderTests
         SetupCommittee(bob.Id, MakeCommittee(bob.Id, 2026, "Secretary"));
         SetupCommittee(carol.Id, MakeCommittee(carol.Id, 2024, "Treasurer"));
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         Assert.Equal(2, result.Sections.Count);
         Assert.Equal("2026", result.Sections[0].SummaryRow!.Cells[0]);
@@ -60,7 +60,7 @@ public class CommitteeReportProviderTests
         SetupCommittee(bob.Id, MakeCommittee(bob.Id, 2026, "Secretary"));
         SetupCommittee(carol.Id, MakeCommittee(carol.Id, 2026, "Treasurer"));
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         Assert.Equal(["Year", "Positions Recorded"], result.SummaryColumns!.Select(c => c.Header));
         var section = Assert.Single(result.Sections);
@@ -76,8 +76,8 @@ public class CommitteeReportProviderTests
         SetupCommittee(active.Id, MakeCommittee(active.Id, 2026, "President"));
         SetupCommittee(archived.Id, MakeCommittee(archived.Id, 2026, "Secretary"));
 
-        var activeOnly = await _sut.GenerateAsync(FiltersFor("Active Only"));
-        var all = await _sut.GenerateAsync(FiltersFor("All"));
+        var activeOnly = await _sut.GenerateAsync(FiltersFor("Active Only"), TestContext.Current.CancellationToken);
+        var all = await _sut.GenerateAsync(FiltersFor("All"), TestContext.Current.CancellationToken);
 
         Assert.Equal("1", Assert.Single(activeOnly.Sections).SummaryRow!.Cells[1]);
         Assert.Equal("2", Assert.Single(all.Sections).SummaryRow!.Cells[1]);
@@ -92,7 +92,7 @@ public class CommitteeReportProviderTests
         SetupCommittee(active.Id, MakeCommittee(active.Id, 2026, "President"));
         SetupCommittee(archived.Id, MakeCommittee(archived.Id, 2025, "Secretary"));
 
-        var result = await _sut.GenerateAsync(FiltersFor("Active Only"));
+        var result = await _sut.GenerateAsync(FiltersFor("Active Only"), TestContext.Current.CancellationToken);
 
         var section = Assert.Single(result.Sections);
         Assert.Equal("2026", section.SummaryRow!.Cells[0]);
@@ -103,7 +103,7 @@ public class CommitteeReportProviderTests
     {
         SetupMembers();
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         Assert.Empty(result.Sections);
     }
@@ -118,7 +118,7 @@ public class CommitteeReportProviderTests
         var term = MakeTerm(labelYear: 2027);
         SetupCommittee(alice.Id, MakeTermPositionRecord(alice.Id, term, officeHolderType: null));
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         var section = Assert.Single(result.Sections);
         Assert.Equal("2027", section.SummaryRow!.Cells[0]);
@@ -134,7 +134,7 @@ public class CommitteeReportProviderTests
         SetupCommittee(alice.Id, MakeTermPositionRecord(alice.Id, term, officeHolderType: null));
         SetupCommittee(bob.Id, MakeCommittee(bob.Id, 2024, "Treasurer"));
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         Assert.Equal(2, result.Sections.Count);
         Assert.Equal("2027", result.Sections[0].SummaryRow!.Cells[0]);
@@ -154,7 +154,7 @@ public class CommitteeReportProviderTests
         };
         SetupCommittee(alice.Id, MakeTermPositionRecord(alice.Id, term, officeHolderType));
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         var section = Assert.Single(result.Sections);
         Assert.Contains(section.Rows, r => r.Cells[1] == "President" && r.Cells[2] == "Alice");
@@ -168,7 +168,7 @@ public class CommitteeReportProviderTests
         var term = MakeTerm(labelYear: 2027);
         SetupCommittee(alice.Id, MakeTermPositionRecord(alice.Id, term, officeHolderType: null));
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         var section = Assert.Single(result.Sections);
         var lastRow = section.Rows[^1];
@@ -191,7 +191,7 @@ public class CommitteeReportProviderTests
         };
         SetupCommittee(alice.Id, MakeTermPositionRecord(alice.Id, term, president));
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         var section = Assert.Single(result.Sections);
         var presidentRow = section.Rows.Single(r => r.Cells[1] == "President");
@@ -223,7 +223,7 @@ public class CommitteeReportProviderTests
         _committeePositionRecords.GetByMemberAsync(bob.Id, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<CommitteePositionRecord>>([incoming]));
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         var section = Assert.Single(result.Sections);
         var presidentRow = section.Rows.Single(r => r.Cells[1] == "President");
@@ -245,7 +245,7 @@ public class CommitteeReportProviderTests
         SetupMembers(carol);
         SetupCommittee(carol.Id, MakeCommittee(carol.Id, 2026, "Treasurer"));
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         var section = Assert.Single(result.Sections);
         Assert.Contains(section.Rows, r => r.Cells[1] == "President" && r.Cells[2] == "Vacant");
@@ -264,7 +264,7 @@ public class CommitteeReportProviderTests
         SetupCommittee(bob.Id, MakeCommittee(bob.Id, 2026, "Welfare Officer"));
         SetupCommittee(carol.Id, MakeCommittee(carol.Id, 2026, "Publicity Officer"));
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         var section = Assert.Single(result.Sections);
         Assert.Equal(
@@ -283,7 +283,7 @@ public class CommitteeReportProviderTests
         SetupCommittee(zoe.Id, MakeCommittee(zoe.Id, 2026, "   "));
         SetupCommittee(bob.Id, MakeCommittee(bob.Id, 2026, ""));
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         var section = Assert.Single(result.Sections);
         var lastRow = section.Rows[^1];
@@ -304,7 +304,7 @@ public class CommitteeReportProviderTests
         SetupCommittee(carol.Id, MakeCommittee(carol.Id, 2026, "welfare officer"));
         SetupCommittee(dave.Id, MakeCommittee(dave.Id, 2026, "Welfare Officer "));
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         var section = Assert.Single(result.Sections);
         Assert.Single(section.Rows, r => r.Cells[1] == "President");
@@ -326,7 +326,7 @@ public class CommitteeReportProviderTests
         SetupCommittee(alice.Id, MakeCommittee(alice.Id, 2026, "President"));
         SetupCommittee(bob.Id, MakeCommittee(bob.Id, 2026, "President"));
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         var section = Assert.Single(result.Sections);
         var presidentRow = section.Rows.Single(r => r.Cells[1] == "President");
@@ -342,7 +342,7 @@ public class CommitteeReportProviderTests
         SetupCommittee(bob.Id, MakeCommittee(bob.Id, 2026, "Welfare Officer"));
         SetupCommittee(alice.Id, MakeCommittee(alice.Id, 2026, "Welfare Officer"));
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         var section = Assert.Single(result.Sections);
         var welfareRow = section.Rows.Single(r => r.Cells[1] == "Welfare Officer");
@@ -360,7 +360,7 @@ public class CommitteeReportProviderTests
         SetupCommittee(alice.Id, MakeCommittee(alice.Id, 2026, "President"));
         SetupCommittee(bob.Id, MakeCommittee(bob.Id, 2025, "Secretary"));
 
-        var result = await _sut.GenerateAsync(DefaultFilters());
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
 
         foreach (var section in result.Sections)
         {
@@ -378,7 +378,7 @@ public class CommitteeReportProviderTests
         SetupCommittee(alice.Id, MakeCommittee(alice.Id, 2026, "President"));
         SetupCommittee(bob.Id, MakeCommittee(bob.Id, 2026, "Welfare Officer"));
 
-        var report = await _sut.GenerateAsync(DefaultFilters());
+        var report = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
         var csv = new CsvReportExporter().Export(report);
         var lines = csv.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
@@ -397,7 +397,7 @@ public class CommitteeReportProviderTests
         SetupCommittee(bob.Id, MakeCommittee(bob.Id, 2026, "Welfare Officer"));
         SetupCommittee(carol.Id, MakeCommittee(carol.Id, 2026, ""));
 
-        var report = await _sut.GenerateAsync(DefaultFilters());
+        var report = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
         var bytes = new PdfReportRenderer().Render(report);
 
         Assert.NotNull(bytes);

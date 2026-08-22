@@ -100,7 +100,7 @@ public class ReactivationForgivenessDialogTests : BunitContext
         // Only PriorFeeId was pre-checked by default
         await _forgivenessService.Received(1).ApplyForgivenessAsync(
             MemberId,
-            Arg.Is<IReadOnlyList<Guid>>(ids => ids.Contains(PriorFeeId) && !ids.Contains(CurrentFeeId)),
+            Arg.Is<IReadOnlyList<Guid>>(ids => ids!.Contains(PriorFeeId) && !ids!.Contains(CurrentFeeId)),
             Arg.Any<CancellationToken>());
     }
 
@@ -118,7 +118,7 @@ public class ReactivationForgivenessDialogTests : BunitContext
 
         await _forgivenessService.Received(1).ApplyForgivenessAsync(
             MemberId,
-            Arg.Is<IReadOnlyList<Guid>>(ids => ids.Contains(PriorFeeId) && ids.Contains(CurrentFeeId)),
+            Arg.Is<IReadOnlyList<Guid>>(ids => ids!.Contains(PriorFeeId) && ids!.Contains(CurrentFeeId)),
             Arg.Any<CancellationToken>());
     }
 

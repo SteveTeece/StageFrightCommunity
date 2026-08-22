@@ -93,7 +93,7 @@ public class BankDepositServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2
+                lines!.Count == 2
                 && lines.Any(t => t.DebitAmount == 200m && t.AccountId == BankAccountId && t.GLAccount == "1110")
                 && lines.Any(t => t.CreditAmount == 200m && t.AccountId == CashAccountId && t.GLAccount == "1100")),
             Arg.Any<CancellationToken>());
@@ -107,11 +107,11 @@ public class BankDepositServiceTests : TestBase
         await _sut.RecordDepositAsync(request, Ct);
 
         await _journalRepo.Received(1).AddAsync(
-            Arg.Is<JournalEntry>(j => j.Type == JournalEntryType.BankDeposit && j.Date == request.Date),
+            Arg.Is<JournalEntry>(j => j!.Type == JournalEntryType.BankDeposit && j.Date == request.Date),
             Arg.Any<CancellationToken>());
 
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.JournalEntryId != null)),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.All(t => t.JournalEntryId != null)),
             Arg.Any<CancellationToken>());
     }
 
@@ -122,7 +122,7 @@ public class BankDepositServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.All(t => t.Description!.Contains("Bank deposit") && t.Description.Contains("Operating Account"))),
+                lines!.All(t => t.Description!.Contains("Bank deposit") && t.Description.Contains("Operating Account"))),
             Arg.Any<CancellationToken>());
     }
 
@@ -136,7 +136,7 @@ public class BankDepositServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.All(t => t.Description == "Rehearsal fee banking")),
+                lines!.All(t => t.Description == "Rehearsal fee banking")),
             Arg.Any<CancellationToken>());
     }
 

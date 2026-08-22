@@ -196,7 +196,7 @@ public class JournalEntryPageTests : BunitContext
 
         _journalService.Received(1).RecordJournalAsync(
             Arg.Is<RecordJournalRequest>(r =>
-                r.Description == "Correction"
+                r!.Description == "Correction"
                 && r.Lines.Count == 2
                 && r.Lines.Sum(l => l.DebitAmount) == 100m
                 && r.Lines.Sum(l => l.CreditAmount) == 100m),

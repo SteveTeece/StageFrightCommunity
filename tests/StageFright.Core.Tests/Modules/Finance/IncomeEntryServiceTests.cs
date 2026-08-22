@@ -155,7 +155,7 @@ public class IncomeEntryServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2
+                lines!.Count == 2
                 && lines.Any(t => t.DebitAmount == 250m && t.AccountId == CashAccountId && t.GLAccount == "1100")
                 && lines.Any(t => t.CreditAmount == 250m && t.AccountId == IncomeAccountId)),
             Arg.Any<CancellationToken>());
@@ -170,7 +170,7 @@ public class IncomeEntryServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Any(t => t.DebitAmount == 250m && t.AccountId == BankAccountId && t.GLAccount == "1110")),
+                lines!.Any(t => t.DebitAmount == 250m && t.AccountId == BankAccountId && t.GLAccount == "1110")),
             Arg.Any<CancellationToken>());
     }
 
@@ -182,11 +182,11 @@ public class IncomeEntryServiceTests : TestBase
         await _sut.RecordIncomeAsync(request, Ct);
 
         await _journalRepo.Received(1).AddAsync(
-            Arg.Is<JournalEntry>(j => j.Type == JournalEntryType.Income && j.Date == request.Date),
+            Arg.Is<JournalEntry>(j => j!.Type == JournalEntryType.Income && j.Date == request.Date),
             Arg.Any<CancellationToken>());
 
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.JournalEntryId != null)),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.All(t => t.JournalEntryId != null)),
             Arg.Any<CancellationToken>());
     }
 
@@ -199,7 +199,7 @@ public class IncomeEntryServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.All(t => t.MemberId == null && t.FeeId == null && t.PaymentId == null)),
+                lines!.All(t => t.MemberId == null && t.FeeId == null && t.PaymentId == null)),
             Arg.Any<CancellationToken>());
     }
 
@@ -215,7 +215,7 @@ public class IncomeEntryServiceTests : TestBase
         await _sut.RecordIncomeAsync(request, Ct);
 
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.Date == date)),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.All(t => t.Date == date)),
             Arg.Any<CancellationToken>());
     }
 
@@ -232,7 +232,7 @@ public class IncomeEntryServiceTests : TestBase
         await _sut.RecordIncomeAsync(request, Ct);
 
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.Description == "Christmas Raffle")),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.All(t => t.Description == "Christmas Raffle")),
             Arg.Any<CancellationToken>());
     }
 
@@ -248,7 +248,7 @@ public class IncomeEntryServiceTests : TestBase
         await _sut.RecordIncomeAsync(request, Ct);
 
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.Description!.Contains("Raffle Income"))),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.All(t => t.Description!.Contains("Raffle Income"))),
             Arg.Any<CancellationToken>());
     }
 
@@ -267,7 +267,7 @@ public class IncomeEntryServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2
+                lines!.Count == 2
                 && lines.All(t => t.TaxCode == null)
                 && lines.Any(t => t.DebitAmount == 110m)
                 && lines.Any(t => t.CreditAmount == 110m)),
@@ -286,7 +286,7 @@ public class IncomeEntryServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 3
+                lines!.Count == 3
                 && lines.Any(t => t.DebitAmount == 110m && t.AccountId == CashAccountId)
                 && lines.Any(t => t.CreditAmount == 100m && t.AccountId == IncomeAccountId)
                 && lines.Any(t => t.CreditAmount == 10m && t.AccountId == SystemAccounts.TaxCollectedId)
@@ -308,7 +308,7 @@ public class IncomeEntryServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2
+                lines!.Count == 2
                 && lines.Any(t => t.DebitAmount == 110m)
                 && lines.Any(t => t.CreditAmount == 110m)
                 && lines.All(t => t.TaxCode == code)),
@@ -326,7 +326,7 @@ public class IncomeEntryServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2 && lines.All(t => t.TaxCode == TaxCode.TaxExempt)),
+                lines!.Count == 2 && lines.All(t => t.TaxCode == TaxCode.TaxExempt)),
             Arg.Any<CancellationToken>());
     }
 

@@ -48,7 +48,7 @@ public class SettingsServiceTests : TestBase
         Assert.Null(settings.AnnualFeeTaxCode);
         Assert.Null(settings.AttendanceFeeTaxCode);
         await _settingsRepo.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s.TaxRate == null && s.AnnualFeeTaxCode == null && s.AttendanceFeeTaxCode == null),
+            Arg.Is<Settings>(s => s!.TaxRate == null && s.AnnualFeeTaxCode == null && s.AttendanceFeeTaxCode == null),
             Arg.Any<CancellationToken>());
     }
 

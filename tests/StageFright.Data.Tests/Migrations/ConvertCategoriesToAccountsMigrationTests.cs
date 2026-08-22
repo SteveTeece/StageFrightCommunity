@@ -94,8 +94,8 @@ public sealed class ConvertCategoriesToAccountsMigrationTests : IDisposable
         await MigrateToLatestAsync();
 
         using var db = CreateContext();
-        var accountCount = await db.Accounts.IgnoreQueryFilters().CountAsync();
-        var transactionCount = await db.Transactions.CountAsync();
+        var accountCount = await db.Accounts.IgnoreQueryFilters().CountAsync(cancellationToken: TestContext.Current.CancellationToken);
+        var transactionCount = await db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal(10, accountCount);      // 3 system + 3 user + 4 new system
         Assert.Equal(4, transactionCount);   // untouched
@@ -108,8 +108,8 @@ public sealed class ConvertCategoriesToAccountsMigrationTests : IDisposable
         await MigrateToLatestAsync();
 
         using var db = CreateContext();
-        var debits = await db.Transactions.SumAsync(t => t.DebitAmount);
-        var credits = await db.Transactions.SumAsync(t => t.CreditAmount);
+        var debits = await db.Transactions.SumAsync(t => t.DebitAmount, cancellationToken: TestContext.Current.CancellationToken);
+        var credits = await db.Transactions.SumAsync(t => t.CreditAmount, cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal(150m, debits);
         Assert.Equal(debits, credits);
@@ -125,8 +125,8 @@ public sealed class ConvertCategoriesToAccountsMigrationTests : IDisposable
         var gl = new GLRepository(db);
 
         // Pre-migration: 100 accrued − 50 paid = 50 outstanding.
-        Assert.Equal(50m, await gl.GetMemberBalanceAsync(MemberId));
-        Assert.Equal(50m, await gl.GetTotalOutstandingAsync());
+        Assert.Equal(50m, await gl.GetMemberBalanceAsync(MemberId, TestContext.Current.CancellationToken));
+        Assert.Equal(50m, await gl.GetTotalOutstandingAsync(TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public sealed class ConvertCategoriesToAccountsMigrationTests : IDisposable
         await MigrateToLatestAsync();
 
         using var db = CreateContext();
-        var byId = await db.Accounts.IgnoreQueryFilters().ToDictionaryAsync(a => a.Id);
+        var byId = await db.Accounts.IgnoreQueryFilters().ToDictionaryAsync(a => a.Id, cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal("1100", byId[CashId].AccountNumber);
         Assert.True(byId[CashId].IsBankAccount);
@@ -157,7 +157,7 @@ public sealed class ConvertCategoriesToAccountsMigrationTests : IDisposable
         var snapshots = await db.Transactions
             .OrderBy(t => t.CreatedAt).ThenBy(t => t.GLAccount)
             .Select(t => t.GLAccount)
-            .ToListAsync();
+            .ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal(new[] { "0101", "1000", "0100", "0101" }.OrderBy(s => s), snapshots.OrderBy(s => s));
     }
@@ -169,7 +169,7 @@ public sealed class ConvertCategoriesToAccountsMigrationTests : IDisposable
         await MigrateToLatestAsync();
 
         using var db = CreateContext();
-        var settings = await db.Settings.SingleAsync();
+        var settings = await db.Settings.SingleAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal(7, settings.FinancialYearStartMonth);
         Assert.Equal("1.1.0", settings.SchemaVersion);
@@ -184,10 +184,10 @@ public sealed class ConvertCategoriesToAccountsMigrationTests : IDisposable
         using var db = CreateContext();
 
         // AccountId FKs survive the column rename and still join to the renamed table.
-        var incomeLeg = await db.Transactions.SingleAsync(t => t.GLAccount == "1000");
+        var incomeLeg = await db.Transactions.SingleAsync(t => t.GLAccount == "1000", cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(IncomeCat1Id, incomeLeg.AccountId);
 
-        var account = await db.Accounts.SingleAsync(a => a.Id == incomeLeg.AccountId);
+        var account = await db.Accounts.SingleAsync(a => a.Id == incomeLeg.AccountId, cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal("4000", account.AccountNumber);
     }
 }

@@ -125,7 +125,7 @@ public class TaxSettingsTabTests : BunitContext
         await cut.Find("form").SubmitAsync();
 
         await _settingsService.Received(1).SaveAsync(
-            Arg.Is<AppSettings>(s => s.IsTaxApplicable && s.AnnualFeeTaxCode == TaxCode.Taxable),
+            Arg.Is<AppSettings>(s => s!.IsTaxApplicable && s.AnnualFeeTaxCode == TaxCode.Taxable),
             Arg.Any<CancellationToken>());
         Assert.Contains("Settings saved successfully", cut.Markup);
     }
@@ -149,7 +149,7 @@ public class TaxSettingsTabTests : BunitContext
 
         await _settingsService.Received(1).SaveAsync(
             Arg.Is<AppSettings>(s =>
-                s.IsTaxApplicable &&
+                s!.IsTaxApplicable &&
                 s.OrganizationName == "Renamed By General Tab"),
             Arg.Any<CancellationToken>());
     }

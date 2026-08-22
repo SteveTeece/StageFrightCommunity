@@ -55,6 +55,7 @@ public class DebugDataSeeder : IDebugDataSeeder
     private readonly IIncomeEntryService _incomeEntryService;
     private readonly IExpensePaymentService _expensePaymentService;
     private readonly IBankDepositService _bankDepositService;
+    private readonly IOpeningBalanceService _openingBalanceService;
     private readonly ISettingsService _settingsService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<DebugDataSeeder> _logger;
@@ -77,6 +78,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         IIncomeEntryService incomeEntryService,
         IExpensePaymentService expensePaymentService,
         IBankDepositService bankDepositService,
+        IOpeningBalanceService openingBalanceService,
         ISettingsService settingsService,
         IUnitOfWork unitOfWork,
         ILogger<DebugDataSeeder> logger)
@@ -98,6 +100,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         _incomeEntryService = incomeEntryService;
         _expensePaymentService = expensePaymentService;
         _bankDepositService = bankDepositService;
+        _openingBalanceService = openingBalanceService;
         _settingsService = settingsService;
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -155,6 +158,32 @@ public class DebugDataSeeder : IDebugDataSeeder
 
         var random = new Random(20250101); // fixed seed — deterministic across runs
         var attendanceProfile = BuildAttendanceProfile(activeMembers, random);
+
+        progress?.Report("Posting opening balances…");
+        // Covers the new bank account plus every eligible system account (all but the
+        // Opening Balance Equity plug itself) so a sample org starts with a realistic
+        // whole-of-chart position, not just a single bank figure. Bad Debt Expense is
+        // deliberately left at $0 — no historical bad debt is itself a legitimate
+        // starting position. Tax Collected/Paid only get a balance when the coordinator
+        // actually enabled sales tax during setup.
+        var openingBalanceEntries = new List<OpeningBalanceEntry>
+        {
+            new() { AccountId = bankAccount.Id, Amount = 2000m },
+            new() { AccountId = SystemAccounts.CashId, Amount = PettyCashFloat },
+            new() { AccountId = SystemAccounts.MemberReceivableId, Amount = 180m },
+            new() { AccountId = SystemAccounts.AccumulatedSurplusId, Amount = 12500m }
+        };
+        if (settings.IsTaxApplicable)
+        {
+            openingBalanceEntries.Add(new() { AccountId = SystemAccounts.TaxCollectedId, Amount = 45m });
+            openingBalanceEntries.Add(new() { AccountId = SystemAccounts.TaxPaidId, Amount = 20m });
+        }
+
+        await _openingBalanceService.RecordOpeningBalancesAsync(new RecordOpeningBalancesRequest
+        {
+            AsAtDate = Utc(2025, 1, 1),
+            Entries = openingBalanceEntries
+        }, ct);
 
         progress?.Report("Seeding historical transfers (pre-spec 009)…");
         await SeedHistoricalTransfersAsync(bankAccount, ct);

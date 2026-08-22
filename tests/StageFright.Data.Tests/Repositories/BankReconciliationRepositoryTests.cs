@@ -57,7 +57,7 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task Should_CreateDraftWithZeroOpeningBalance_When_FirstReconciliationForAccount_Integration()
     {
-        var draft = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 500m, "first rec");
+        var draft = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 500m, "first rec", TestContext.Current.CancellationToken);
 
         Assert.Equal(ReconciliationStatus.Draft, draft.Status);
         Assert.Equal(0m, draft.OpeningBalance);
@@ -69,10 +69,10 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task Should_ChainOpeningBalanceFromLastFinalised_When_PreviousReconciliationExists_Integration()
     {
-        var first = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 500m, null);
-        await _sut.FinaliseAsync(first.Id);
+        var first = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 500m, null, TestContext.Current.CancellationToken);
+        await _sut.FinaliseAsync(first.Id, TestContext.Current.CancellationToken);
 
-        var second = await _sut.CreateDraftAsync(SystemAccounts.CashId, July31, 750m, null);
+        var second = await _sut.CreateDraftAsync(SystemAccounts.CashId, July31, 750m, null, TestContext.Current.CancellationToken);
 
         Assert.Equal(500m, second.OpeningBalance);
     }
@@ -81,10 +81,10 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
     public async Task Should_NotChainOpeningBalanceFromDraft_When_PreviousReconciliationIsUnfinalised_Integration()
     {
         // A soft-deleted draft must not feed the opening balance either.
-        var abandoned = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 999m, null);
-        await _sut.SoftDeleteDraftAsync(abandoned.Id, "test");
+        var abandoned = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 999m, null, TestContext.Current.CancellationToken);
+        await _sut.SoftDeleteDraftAsync(abandoned.Id, "test", TestContext.Current.CancellationToken);
 
-        var next = await _sut.CreateDraftAsync(SystemAccounts.CashId, July31, 750m, null);
+        var next = await _sut.CreateDraftAsync(SystemAccounts.CashId, July31, 750m, null, TestContext.Current.CancellationToken);
 
         Assert.Equal(0m, next.OpeningBalance);
     }
@@ -94,46 +94,46 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task Should_AddAndRemoveLine_When_ReconciliationIsDraft_Integration()
     {
-        var draft = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 100m, null);
+        var draft = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 100m, null, TestContext.Current.CancellationToken);
         var txId = await SeedBankPairAsync(100m, June30.AddDays(-5));
 
-        await _sut.AddLineAsync(draft.Id, txId);
-        Assert.Equal(1, await _db.ReconciliationLines.CountAsync());
+        await _sut.AddLineAsync(draft.Id, txId, TestContext.Current.CancellationToken);
+        Assert.Equal(1, await _db.ReconciliationLines.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
 
-        await _sut.RemoveLineAsync(draft.Id, txId);
-        Assert.Equal(0, await _db.ReconciliationLines.CountAsync());
+        await _sut.RemoveLineAsync(draft.Id, txId, TestContext.Current.CancellationToken);
+        Assert.Equal(0, await _db.ReconciliationLines.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
     public async Task Should_ThrowReconciliationException_When_AddingLineToFinalisedReconciliation_Integration()
     {
-        var rec = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 0m, null);
-        await _sut.FinaliseAsync(rec.Id);
+        var rec = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 0m, null, TestContext.Current.CancellationToken);
+        await _sut.FinaliseAsync(rec.Id, TestContext.Current.CancellationToken);
         var txId = await SeedBankPairAsync(50m, June30.AddDays(-5));
 
-        await Assert.ThrowsAsync<ReconciliationException>(() => _sut.AddLineAsync(rec.Id, txId));
+        await Assert.ThrowsAsync<ReconciliationException>(() => _sut.AddLineAsync(rec.Id, txId, TestContext.Current.CancellationToken));
     }
 
     [Fact]
     public async Task Should_ThrowReconciliationException_When_RemovingLineFromFinalisedReconciliation_Integration()
     {
-        var rec = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 100m, null);
+        var rec = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 100m, null, TestContext.Current.CancellationToken);
         var txId = await SeedBankPairAsync(100m, June30.AddDays(-5));
-        await _sut.AddLineAsync(rec.Id, txId);
-        await _sut.FinaliseAsync(rec.Id);
+        await _sut.AddLineAsync(rec.Id, txId, TestContext.Current.CancellationToken);
+        await _sut.FinaliseAsync(rec.Id, TestContext.Current.CancellationToken);
 
-        await Assert.ThrowsAsync<ReconciliationException>(() => _sut.RemoveLineAsync(rec.Id, txId));
+        await Assert.ThrowsAsync<ReconciliationException>(() => _sut.RemoveLineAsync(rec.Id, txId, TestContext.Current.CancellationToken));
     }
 
     [Fact]
     public async Task Should_ThrowDataAccess_When_SameTransactionAddedTwiceToOneReconciliation_Integration()
     {
-        var draft = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 100m, null);
+        var draft = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 100m, null, TestContext.Current.CancellationToken);
         var txId = await SeedBankPairAsync(100m, June30.AddDays(-5));
-        await _sut.AddLineAsync(draft.Id, txId);
+        await _sut.AddLineAsync(draft.Id, txId, TestContext.Current.CancellationToken);
 
         // Unique (ReconciliationId, TransactionId) index rejects the duplicate.
-        await Assert.ThrowsAsync<DataAccessException>(() => _sut.AddLineAsync(draft.Id, txId));
+        await Assert.ThrowsAsync<DataAccessException>(() => _sut.AddLineAsync(draft.Id, txId, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -141,7 +141,7 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
     {
         var txId = await SeedBankPairAsync(50m, June30);
 
-        await Assert.ThrowsAsync<EntityNotFoundException>(() => _sut.AddLineAsync(Guid.NewGuid(), txId));
+        await Assert.ThrowsAsync<EntityNotFoundException>(() => _sut.AddLineAsync(Guid.NewGuid(), txId, TestContext.Current.CancellationToken));
     }
 
     // --- Finalise / delete lifecycle ---
@@ -149,11 +149,11 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task Should_SetStatusAndFinalisedAt_When_Finalising_Integration()
     {
-        var draft = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 0m, null);
+        var draft = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 0m, null, TestContext.Current.CancellationToken);
 
-        await _sut.FinaliseAsync(draft.Id);
+        await _sut.FinaliseAsync(draft.Id, TestContext.Current.CancellationToken);
 
-        var reloaded = await _sut.GetByIdAsync(draft.Id);
+        var reloaded = await _sut.GetByIdAsync(draft.Id, TestContext.Current.CancellationToken);
         Assert.Equal(ReconciliationStatus.Finalised, reloaded!.Status);
         Assert.NotNull(reloaded.FinalisedAt);
     }
@@ -161,21 +161,21 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task Should_ThrowReconciliationException_When_FinalisingTwice_Integration()
     {
-        var draft = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 0m, null);
-        await _sut.FinaliseAsync(draft.Id);
+        var draft = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 0m, null, TestContext.Current.CancellationToken);
+        await _sut.FinaliseAsync(draft.Id, TestContext.Current.CancellationToken);
 
-        await Assert.ThrowsAsync<ReconciliationException>(() => _sut.FinaliseAsync(draft.Id));
+        await Assert.ThrowsAsync<ReconciliationException>(() => _sut.FinaliseAsync(draft.Id, TestContext.Current.CancellationToken));
     }
 
     [Fact]
     public async Task Should_SoftDeleteDraft_When_Deleting_Integration()
     {
-        var draft = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 0m, null);
+        var draft = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 0m, null, TestContext.Current.CancellationToken);
 
-        await _sut.SoftDeleteDraftAsync(draft.Id, "test-user");
+        await _sut.SoftDeleteDraftAsync(draft.Id, "test-user", TestContext.Current.CancellationToken);
 
-        Assert.Null(await _sut.GetByIdAsync(draft.Id));
-        var raw = await _db.BankReconciliations.IgnoreQueryFilters().SingleAsync(r => r.Id == draft.Id);
+        Assert.Null(await _sut.GetByIdAsync(draft.Id, TestContext.Current.CancellationToken));
+        var raw = await _db.BankReconciliations.IgnoreQueryFilters().SingleAsync(r => r.Id == draft.Id, cancellationToken: TestContext.Current.CancellationToken);
         Assert.True(raw.IsDeleted);
         Assert.Equal("test-user", raw.DeletedBy);
         Assert.NotNull(raw.DeletedAt);
@@ -184,10 +184,10 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task Should_ThrowReconciliationException_When_DeletingFinalisedReconciliation_Integration()
     {
-        var rec = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 0m, null);
-        await _sut.FinaliseAsync(rec.Id);
+        var rec = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 0m, null, TestContext.Current.CancellationToken);
+        await _sut.FinaliseAsync(rec.Id, TestContext.Current.CancellationToken);
 
-        await Assert.ThrowsAsync<ReconciliationException>(() => _sut.SoftDeleteDraftAsync(rec.Id, "test"));
+        await Assert.ThrowsAsync<ReconciliationException>(() => _sut.SoftDeleteDraftAsync(rec.Id, "test", TestContext.Current.CancellationToken));
     }
 
     // --- Lookups ---
@@ -195,22 +195,22 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task Should_ReturnDraft_When_AccountHasOne_Integration()
     {
-        var draft = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 0m, null);
+        var draft = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 0m, null, TestContext.Current.CancellationToken);
 
-        var found = await _sut.GetDraftForAccountAsync(SystemAccounts.CashId);
+        var found = await _sut.GetDraftForAccountAsync(SystemAccounts.CashId, TestContext.Current.CancellationToken);
 
         Assert.Equal(draft.Id, found!.Id);
-        Assert.Null(await _sut.GetDraftForAccountAsync(Guid.NewGuid()));
+        Assert.Null(await _sut.GetDraftForAccountAsync(Guid.NewGuid(), TestContext.Current.CancellationToken));
     }
 
     [Fact]
     public async Task Should_ReturnNewestStatementFirst_When_GettingHistory_Integration()
     {
-        var first = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 0m, null);
-        await _sut.FinaliseAsync(first.Id);
-        var second = await _sut.CreateDraftAsync(SystemAccounts.CashId, July31, 0m, null);
+        var first = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 0m, null, TestContext.Current.CancellationToken);
+        await _sut.FinaliseAsync(first.Id, TestContext.Current.CancellationToken);
+        var second = await _sut.CreateDraftAsync(SystemAccounts.CashId, July31, 0m, null, TestContext.Current.CancellationToken);
 
-        var history = await _sut.GetByAccountAsync(SystemAccounts.CashId);
+        var history = await _sut.GetByAccountAsync(SystemAccounts.CashId, TestContext.Current.CancellationToken);
 
         Assert.Equal(2, history.Count);
         Assert.Equal(second.Id, history[0].Id);
@@ -220,23 +220,23 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task Should_DetectClearedElsewhere_When_TransactionBelongsToAnotherReconciliation_Integration()
     {
-        var rec = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 100m, null);
+        var rec = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 100m, null, TestContext.Current.CancellationToken);
         var txId = await SeedBankPairAsync(100m, June30.AddDays(-5));
-        await _sut.AddLineAsync(rec.Id, txId);
+        await _sut.AddLineAsync(rec.Id, txId, TestContext.Current.CancellationToken);
 
-        Assert.True(await _sut.IsTransactionClearedElsewhereAsync(txId, Guid.NewGuid()));
-        Assert.False(await _sut.IsTransactionClearedElsewhereAsync(txId, rec.Id));
+        Assert.True(await _sut.IsTransactionClearedElsewhereAsync(txId, Guid.NewGuid(), TestContext.Current.CancellationToken));
+        Assert.False(await _sut.IsTransactionClearedElsewhereAsync(txId, rec.Id, TestContext.Current.CancellationToken));
     }
 
     [Fact]
     public async Task Should_IgnoreDeletedReconciliations_When_CheckingClearedElsewhere_Integration()
     {
-        var rec = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 100m, null);
+        var rec = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 100m, null, TestContext.Current.CancellationToken);
         var txId = await SeedBankPairAsync(100m, June30.AddDays(-5));
-        await _sut.AddLineAsync(rec.Id, txId);
-        await _sut.SoftDeleteDraftAsync(rec.Id, "test");
+        await _sut.AddLineAsync(rec.Id, txId, TestContext.Current.CancellationToken);
+        await _sut.SoftDeleteDraftAsync(rec.Id, "test", TestContext.Current.CancellationToken);
 
-        Assert.False(await _sut.IsTransactionClearedElsewhereAsync(txId, Guid.NewGuid()));
+        Assert.False(await _sut.IsTransactionClearedElsewhereAsync(txId, Guid.NewGuid(), TestContext.Current.CancellationToken));
     }
 
     // --- GLRepository.GetUnreconciledByAccountAsync ---
@@ -246,10 +246,10 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
     {
         var clearedId = await SeedBankPairAsync(100m, June30.AddDays(-10));
         var unclearedId = await SeedBankPairAsync(50m, June30.AddDays(-5));
-        var rec = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 100m, null);
-        await _sut.AddLineAsync(rec.Id, clearedId);
+        var rec = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 100m, null, TestContext.Current.CancellationToken);
+        await _sut.AddLineAsync(rec.Id, clearedId, TestContext.Current.CancellationToken);
 
-        var unreconciled = await _glRepo.GetUnreconciledByAccountAsync(SystemAccounts.CashId);
+        var unreconciled = await _glRepo.GetUnreconciledByAccountAsync(SystemAccounts.CashId, ct: TestContext.Current.CancellationToken);
 
         var tx = Assert.Single(unreconciled);
         Assert.Equal(unclearedId, tx.Id);
@@ -259,11 +259,11 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
     public async Task Should_ReleaseClearedTransactions_When_ReconciliationIsSoftDeleted_Integration()
     {
         var txId = await SeedBankPairAsync(100m, June30.AddDays(-10));
-        var rec = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 100m, null);
-        await _sut.AddLineAsync(rec.Id, txId);
-        await _sut.SoftDeleteDraftAsync(rec.Id, "test");
+        var rec = await _sut.CreateDraftAsync(SystemAccounts.CashId, June30, 100m, null, TestContext.Current.CancellationToken);
+        await _sut.AddLineAsync(rec.Id, txId, TestContext.Current.CancellationToken);
+        await _sut.SoftDeleteDraftAsync(rec.Id, "test", TestContext.Current.CancellationToken);
 
-        var unreconciled = await _glRepo.GetUnreconciledByAccountAsync(SystemAccounts.CashId);
+        var unreconciled = await _glRepo.GetUnreconciledByAccountAsync(SystemAccounts.CashId, ct: TestContext.Current.CancellationToken);
 
         Assert.Contains(unreconciled, t => t.Id == txId);
     }
@@ -274,11 +274,11 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
         await SeedBankPairAsync(100m, June30.AddDays(-10));
         await SeedBankPairAsync(75m, July31); // after the cut-off
 
-        var unreconciled = await _glRepo.GetUnreconciledByAccountAsync(SystemAccounts.CashId, June30);
+        var unreconciled = await _glRepo.GetUnreconciledByAccountAsync(SystemAccounts.CashId, June30, TestContext.Current.CancellationToken);
 
         var tx = Assert.Single(unreconciled);
         Assert.Equal(100m, tx.DebitAmount);
-        Assert.Empty(await _glRepo.GetUnreconciledByAccountAsync(IncomeAccountId, June30.AddDays(-30)));
+        Assert.Empty(await _glRepo.GetUnreconciledByAccountAsync(IncomeAccountId, June30.AddDays(-30), TestContext.Current.CancellationToken));
     }
 
     // --- Helpers ---

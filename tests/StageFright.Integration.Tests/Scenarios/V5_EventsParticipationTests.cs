@@ -42,13 +42,13 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
     public async Task CreateEventType_PersistsWithCorrectFields()
     {
         var svc = BuildEventTypeService();
-        var created = await svc.CreateAsync("Charity Concert");
+        var created = await svc.CreateAsync("Charity Concert", TestContext.Current.CancellationToken);
 
         Assert.NotEqual(Guid.Empty, created.Id);
         Assert.Equal("Charity Concert", created.Name);
         Assert.False(created.IsSystemDefault);
 
-        var found = await new EventTypeRepository(_db).GetByIdAsync(created.Id);
+        var found = await new EventTypeRepository(_db).GetByIdAsync(created.Id, TestContext.Current.CancellationToken);
         Assert.NotNull(found);
         Assert.Equal("Charity Concert", found!.Name);
     }
@@ -57,14 +57,14 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
     public async Task ArchiveEventType_WhenNotReferenced_Succeeds()
     {
         var svc = BuildEventTypeService();
-        var created = await svc.CreateAsync("Temporary Type");
+        var created = await svc.CreateAsync("Temporary Type", TestContext.Current.CancellationToken);
 
-        await svc.ArchiveAsync(created.Id);
+        await svc.ArchiveAsync(created.Id, TestContext.Current.CancellationToken);
 
-        var active = await svc.GetAllAsync();
+        var active = await svc.GetAllAsync(TestContext.Current.CancellationToken);
         Assert.DoesNotContain(active, et => et.Id == created.Id);
 
-        var archived = await svc.GetArchivedAsync();
+        var archived = await svc.GetArchivedAsync(TestContext.Current.CancellationToken);
         Assert.Contains(archived, et => et.Id == created.Id);
     }
 
@@ -72,7 +72,7 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
     public async Task ArchiveEventType_WhenReferencedByEvent_Throws()
     {
         var svc = BuildEventTypeService();
-        var eventType = await svc.CreateAsync("Referenced Type");
+        var eventType = await svc.CreateAsync("Referenced Type", TestContext.Current.CancellationToken);
 
         // Create event referencing this type
         var eventSvc = BuildEventService();
@@ -80,10 +80,10 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
         {
             Date = new DateTime(2026, 9, 1, 0, 0, 0, DateTimeKind.Utc),
             EventTypeId = eventType.Id
-        });
+        }, TestContext.Current.CancellationToken);
 
         await Assert.ThrowsAsync<StageFright.Core.Exceptions.ValidationException>(
-            () => svc.ArchiveAsync(eventType.Id));
+            () => svc.ArchiveAsync(eventType.Id, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
         var svc = BuildEventTypeService();
 
         await Assert.ThrowsAsync<StageFright.Core.Exceptions.ValidationException>(
-            () => svc.ArchiveAsync(systemType.Id));
+            () => svc.ArchiveAsync(systemType.Id, TestContext.Current.CancellationToken));
     }
 
     // --- Event Scheduling ---
@@ -109,12 +109,12 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
             Date = new DateTime(2026, 8, 20, 0, 0, 0, DateTimeKind.Utc),
             EventTypeId = eventType.Id,
             Notes = "Annual concert"
-        });
+        }, TestContext.Current.CancellationToken);
 
         Assert.NotEqual(Guid.Empty, evt.Id);
         Assert.Null(evt.StoredParticipationRate);
 
-        var found = await new EventRepository(_db).GetByIdAsync(evt.Id);
+        var found = await new EventRepository(_db).GetByIdAsync(evt.Id, TestContext.Current.CancellationToken);
         Assert.NotNull(found);
         Assert.Null(found!.StoredParticipationRate);
     }
@@ -133,18 +133,18 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
         {
             Date = DateTime.UtcNow.Date.AddDays(-1),
             EventTypeId = agmType.Id
-        });
+        }, TestContext.Current.CancellationToken);
 
         await eventSvc.RecordParticipationAsync(agm.Id, new[]
         {
             new ParticipationBatchItem { MemberId = member1.Id, Participated = true },
             new ParticipationBatchItem { MemberId = member2.Id, Participated = true }
-        });
+        }, TestContext.Current.CancellationToken);
 
         // Verify no fees or GL transactions created
-        Assert.Equal(0, await _db.Fees.CountAsync());
-        Assert.Equal(0, await _db.Transactions.CountAsync());
-        Assert.Equal(0, await _db.Payments.CountAsync());
+        Assert.Equal(0, await _db.Fees.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(0, await _db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(0, await _db.Payments.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     // --- Participation Recording and Rate Freezing ---
@@ -161,15 +161,15 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
         {
             Date = DateTime.UtcNow.Date.AddDays(-1),
             EventTypeId = eventType.Id
-        });
+        }, TestContext.Current.CancellationToken);
 
         await eventSvc.RecordParticipationAsync(evt.Id, new[]
         {
             new ParticipationBatchItem { MemberId = member1.Id, Participated = true },
             new ParticipationBatchItem { MemberId = member2.Id, Participated = false }
-        });
+        }, TestContext.Current.CancellationToken);
 
-        var updated = await new EventRepository(_db).GetByIdAsync(evt.Id);
+        var updated = await new EventRepository(_db).GetByIdAsync(evt.Id, TestContext.Current.CancellationToken);
         Assert.NotNull(updated!.StoredParticipationRate);
         // 1 participated out of 2 active = 50%
         Assert.Equal(50m, updated.StoredParticipationRate!.Value);
@@ -186,14 +186,14 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
         {
             Date = DateTime.UtcNow.Date.AddDays(-1),
             EventTypeId = eventType.Id
-        });
+        }, TestContext.Current.CancellationToken);
 
         var items = new[] { new ParticipationBatchItem { MemberId = member.Id, Participated = true } };
-        await eventSvc.RecordParticipationAsync(evt.Id, items);
-        await eventSvc.RecordParticipationAsync(evt.Id, items); // second call is idempotent
+        await eventSvc.RecordParticipationAsync(evt.Id, items, TestContext.Current.CancellationToken);
+        await eventSvc.RecordParticipationAsync(evt.Id, items, TestContext.Current.CancellationToken); // second call is idempotent
 
         // Only one participation record created
-        Assert.Equal(1, await _db.ParticipationRecords.CountAsync(p => p.MemberId == member.Id));
+        Assert.Equal(1, await _db.ParticipationRecords.CountAsync(p => p.MemberId == member.Id, cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -207,20 +207,20 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
         {
             Date = DateTime.UtcNow.Date.AddDays(-1),
             EventTypeId = eventType.Id
-        });
+        }, TestContext.Current.CancellationToken);
 
         await eventSvc.RecordParticipationAsync(evt.Id, new[]
         {
             new ParticipationBatchItem { MemberId = member.Id, Participated = true }
-        });
+        }, TestContext.Current.CancellationToken);
 
-        var before = (await new EventRepository(_db).GetByIdAsync(evt.Id))!.StoredParticipationRate;
+        var before = (await new EventRepository(_db).GetByIdAsync(evt.Id, TestContext.Current.CancellationToken))!.StoredParticipationRate;
         Assert.NotNull(before);
 
         // Calling again with an empty batch is a no-op — the rate must NOT change
-        await eventSvc.RecordParticipationAsync(evt.Id, Array.Empty<ParticipationBatchItem>());
+        await eventSvc.RecordParticipationAsync(evt.Id, Array.Empty<ParticipationBatchItem>(), TestContext.Current.CancellationToken);
 
-        var after = (await new EventRepository(_db).GetByIdAsync(evt.Id))!.StoredParticipationRate;
+        var after = (await new EventRepository(_db).GetByIdAsync(evt.Id, TestContext.Current.CancellationToken))!.StoredParticipationRate;
         Assert.Equal(before, after);
     }
 

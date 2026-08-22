@@ -242,7 +242,7 @@ public class PaymentFormTests : RadzenGridTestContext
         await SubmitValidPayment(cut);
 
         await _paymentService.Received(1).RecordAsync(
-            Arg.Is<RecordPaymentRequest>(r => r.MemberId == MemberId && r.Amount == 50m
+            Arg.Is<RecordPaymentRequest>(r => r!.MemberId == MemberId && r.Amount == 50m
                 && r.SelectedFeeIds != null && r.SelectedFeeIds.Contains(FeeId)),
             Arg.Any<CancellationToken>());
     }

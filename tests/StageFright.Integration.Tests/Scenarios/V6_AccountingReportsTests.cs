@@ -83,7 +83,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     public async Task IncomeStatement_GeneratesReport_WithIncomeAndExpenseSections()
     {
         var sut = BuildIncomeStatementProvider();
-        var result = await sut.GenerateAsync(CurrentYearCustomPeriodFilters());
+        var result = await sut.GenerateAsync(CurrentYearCustomPeriodFilters(), TestContext.Current.CancellationToken);
 
         Assert.Equal("Statement of Income & Expenditure", result.Title);
         Assert.Contains(result.Sections, s => s.Heading == "Income");
@@ -94,7 +94,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     public async Task IncomeStatement_IncomeSection_ContainsMembershipDues()
     {
         var sut = BuildIncomeStatementProvider();
-        var result = await sut.GenerateAsync(CurrentYearCustomPeriodFilters());
+        var result = await sut.GenerateAsync(CurrentYearCustomPeriodFilters(), TestContext.Current.CancellationToken);
 
         var incomeSection = result.Sections.First(s => s.Heading == "Income");
         Assert.Contains(incomeSection.Rows, r => r.Cells.Any(c => c.Contains("Membership Dues")));
@@ -106,7 +106,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     public async Task TrialBalance_WhenBalanced_GeneratesReport()
     {
         var sut = BuildTrialBalanceProvider();
-        var result = await sut.GenerateAsync(CurrentYearFilters());
+        var result = await sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.Equal("Trial Balance", result.Title);
         Assert.Contains(result.Columns, c => c.Header == "Debit");
@@ -125,11 +125,11 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
             DebitAmount = 0, CreditAmount = 999m, // unbalanced
             Description = "Imbalance test", CreatedAt = DateTime.UtcNow
         });
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var sut = BuildTrialBalanceProvider();
         var ex = await Assert.ThrowsAsync<GLBalanceException>(
-            () => sut.GenerateAsync(CurrentYearFilters()));
+            () => sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken));
 
         Assert.Contains("GL Balance Verification Failed", ex.Message);
     }
@@ -140,7 +140,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     public async Task AccountRegister_GeneratesReport_InChronologicalOrder()
     {
         var sut = BuildAccountRegisterProvider();
-        var result = await sut.GenerateAsync(CurrentYearFilters());
+        var result = await sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.Equal("Account Register", result.Title);
         var rows = result.Sections.SelectMany(s => s.Rows).ToList();
@@ -155,7 +155,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     public async Task AccountRegister_HasRunningBalanceColumn()
     {
         var sut = BuildAccountRegisterProvider();
-        var result = await sut.GenerateAsync(CurrentYearFilters());
+        var result = await sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.Contains(result.Columns, c => c.Header.Contains("Balance", StringComparison.OrdinalIgnoreCase));
     }
@@ -166,7 +166,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     public async Task MemberAccountSummary_GeneratesReport_WithMemberSection()
     {
         var sut = BuildMemberAccountSummaryProvider();
-        var result = await sut.GenerateAsync(CurrentYearFilters());
+        var result = await sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.Equal("Member Account Summary", result.Title);
         Assert.Contains(result.Sections, s => s.Heading != null && s.Heading.Contains("Alice"));
@@ -212,13 +212,13 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
             new Transaction { Id = Guid.NewGuid(), Date = depositDate, AccountId = SystemAccounts.CashId, GLAccount = SystemAccounts.CashNumber, DebitAmount = 0m, CreditAmount = 80m, JournalEntryId = depositEntryId, Description = "Bank deposit — Savings", CreatedAt = DateTime.UtcNow }
         );
 
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var filters = new ReportFilterValues();
         filters.Set("dateFrom", "2026-05-01");
         filters.Set("dateTo", "2026-05-31");
 
-        var registerResult = await BuildAccountRegisterProvider().GenerateAsync(filters);
+        var registerResult = await BuildAccountRegisterProvider().GenerateAsync(filters, TestContext.Current.CancellationToken);
         var registerRows = registerResult.Sections.SelectMany(s => s.Rows).ToList();
 
         // Historical Transfer entry displays unchanged: original accounts, amount, date, description.
@@ -240,7 +240,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
             && r.Cells[3] == "80.00");
 
         // Trial Balance still balances across both entry types together (no GLBalanceException).
-        var trialBalanceResult = await BuildTrialBalanceProvider().GenerateAsync(filters);
+        var trialBalanceResult = await BuildTrialBalanceProvider().GenerateAsync(filters, TestContext.Current.CancellationToken);
         Assert.Equal("Trial Balance", trialBalanceResult.Title);
     }
 
@@ -250,7 +250,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     public async Task PdfRenderer_Render_ReturnsNonEmptyBytes()
     {
         var sut = BuildIncomeStatementProvider();
-        var report = await sut.GenerateAsync(CurrentYearCustomPeriodFilters());
+        var report = await sut.GenerateAsync(CurrentYearCustomPeriodFilters(), TestContext.Current.CancellationToken);
         var renderer = new PdfReportRenderer();
 
         var bytes = renderer.Render(report);
@@ -264,7 +264,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     public async Task CsvExporter_Export_FirstRowIsHeaders()
     {
         var sut = BuildIncomeStatementProvider();
-        var report = await sut.GenerateAsync(CurrentYearCustomPeriodFilters());
+        var report = await sut.GenerateAsync(CurrentYearCustomPeriodFilters(), TestContext.Current.CancellationToken);
         var exporter = new CsvReportExporter();
 
         var csv = exporter.Export(report);
