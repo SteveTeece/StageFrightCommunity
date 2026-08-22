@@ -1,0 +1,87 @@
+{
+  "workflow": "speckit",
+  "specName": "event agm attendance reports",
+  "branch": "018-event-agm-attendance-reports",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-22T22:24:59.907Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-22T22:28:24.690Z"
+    }
+  ],
+  "livingSpecs": {
+    "loaded": [
+      "events",
+      "reports-pipeline"
+    ]
+  },
+  "coverage": {
+    "FR-001": {
+      "title": "Print an event attendance sheet from the events list and detail page"
+    },
+    "FR-002": {
+      "title": "Event sheet lists members active as of the event date, past or future"
+    },
+    "FR-003": {
+      "title": "Participated checkbox is blank until recorded, then matches real data"
+    },
+    "FR-004": {
+      "title": "Print a past AGM attendance report from the Past AGMs list and detail page"
+    },
+    "FR-005": {
+      "title": "AGM report lists the fixed attendance roster with real attended/absent status"
+    },
+    "FR-007": {
+      "title": "Two-column print layout with minimal-width checkbox columns and wrapping headings"
+    },
+    "FR-008": {
+      "title": "Header shows organization name, report title, and relevant date, no generated-timestamp line"
+    },
+    "FR-010": {
+      "title": "Printing is read-only for Event, AGM, participation, attendance, and financial records"
+    },
+    "FR-011": {
+      "title": "Sheets are produced and handed off consistent with other printable reports"
+    },
+    "FR-006": {
+      "title": "Surnames shown in capitals, sorted by surname then first name"
+    },
+    "FR-009": {
+      "title": "Empty-state message instead of a blank sheet when nobody to list"
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 26,
+    "projectedTasks": 18,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "context": [
+    "living spec: events (capabilities/events/spec.md)",
+    "living spec: reports-pipeline (capabilities/reports-pipeline/spec.md)",
+    "area: src/StageFright.Core/Modules/Events, src/StageFright.Core/Modules/Agm",
+    "area: src/StageFright.UI/Pages/Events (EventList, EventDetail, AgmList, AgmDetail)",
+    "area: src/StageFright.Reports/Rendering (AttendanceRollPdfRenderer precedent from spec 012)",
+    "constraint: Events never generate financial records (events living spec)",
+    "constraint: printed reports hand off to the OS default viewer via a temp file, never an in-app viewer (reports-pipeline living spec)",
+    "constraint: PDF checkboxes render as a bordered box + checkmark glyph, never a solid filled box (CLAUDE.md)"
+  ],
+  "intent": "Let users print attendance/participation sheets for events and AGMs, blank ahead of time or reflecting real recorded data afterward, in the same format as the existing rehearsal attendance roll",
+  "expectations": [
+    "No new 'scheduled future AGM' entity is introduced — a forward-looking AGM sheet is just a future Event of type Annual General Meeting",
+    "No spreadsheet/CSV export for either sheet — print/PDF only",
+    "No changes to how participation or AGM attendance is recorded — this feature only reads existing data"
+  ]
+}
