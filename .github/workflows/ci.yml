@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [master, main, dev, "001-initial-mvp"]
+    branches: [master, main, dev]
   pull_request:
     branches: [master, main, dev]
 
@@ -31,7 +31,7 @@ jobs:
           dotnet build StageFrightCommunity.slnx
           --no-restore
           --configuration Release
-          -p:TreatWarningsAsErrors=false
+          -p:TreatWarningsAsErrors=true
 
       - name: Run Core unit tests
         run: >
