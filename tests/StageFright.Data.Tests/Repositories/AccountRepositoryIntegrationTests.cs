@@ -30,7 +30,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
         var account = await AddAccount(db, "Membership Fees", AccountType.Income, "4000");
         await AddTransaction(db, account.Id);
 
-        var result = await repo.IsReferencedByTransactionsAsync(account.Id);
+        var result = await repo.IsReferencedByTransactionsAsync(account.Id, TestContext.Current.CancellationToken);
 
         Assert.True(result);
     }
@@ -43,7 +43,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
 
         var account = await AddAccount(db, "Donations", AccountType.Income, "4000");
 
-        var result = await repo.IsReferencedByTransactionsAsync(account.Id);
+        var result = await repo.IsReferencedByTransactionsAsync(account.Id, TestContext.Current.CancellationToken);
 
         Assert.False(result);
     }
@@ -56,7 +56,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new AccountRepository(db);
 
-        var result = await repo.GetNextAccountNumberAsync(AccountType.Income, false);
+        var result = await repo.GetNextAccountNumberAsync(AccountType.Income, false, TestContext.Current.CancellationToken);
 
         Assert.Equal("4000", result);
     }
@@ -69,7 +69,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
 
         await AddAccount(db, "First Income", AccountType.Income, "4000");
 
-        var result = await repo.GetNextAccountNumberAsync(AccountType.Income, false);
+        var result = await repo.GetNextAccountNumberAsync(AccountType.Income, false, TestContext.Current.CancellationToken);
 
         Assert.Equal("4001", result);
     }
@@ -80,7 +80,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new AccountRepository(db);
 
-        var result = await repo.GetNextAccountNumberAsync(AccountType.Expense, false);
+        var result = await repo.GetNextAccountNumberAsync(AccountType.Expense, false, TestContext.Current.CancellationToken);
 
         Assert.Equal("6000", result);
     }
@@ -93,7 +93,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
 
         await AddAccount(db, "First Expense", AccountType.Expense, "6000");
 
-        var result = await repo.GetNextAccountNumberAsync(AccountType.Expense, false);
+        var result = await repo.GetNextAccountNumberAsync(AccountType.Expense, false, TestContext.Current.CancellationToken);
 
         Assert.Equal("6001", result);
     }
@@ -107,7 +107,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
         await AddAccount(db, "First", AccountType.Income, "4000");
         await AddAccount(db, "Jumped", AccountType.Income, "4007");
 
-        var result = await repo.GetNextAccountNumberAsync(AccountType.Income, false);
+        var result = await repo.GetNextAccountNumberAsync(AccountType.Income, false, TestContext.Current.CancellationToken);
 
         Assert.Equal("4008", result);
     }
@@ -121,7 +121,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
         await AddAccount(db, "Income 1", AccountType.Income, "4000");
         await AddAccount(db, "Income 2", AccountType.Income, "4001");
 
-        var result = await repo.GetNextAccountNumberAsync(AccountType.Expense, false);
+        var result = await repo.GetNextAccountNumberAsync(AccountType.Expense, false, TestContext.Current.CancellationToken);
 
         Assert.Equal("6000", result);
     }
@@ -133,7 +133,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
         var repo = new AccountRepository(db);
 
         // Bad Debt (6999) is seeded as a system Expense; it must not push user expenses to 7000.
-        var result = await repo.GetNextAccountNumberAsync(AccountType.Expense, false);
+        var result = await repo.GetNextAccountNumberAsync(AccountType.Expense, false, TestContext.Current.CancellationToken);
 
         Assert.Equal("6000", result);
     }
@@ -145,7 +145,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
         var repo = new AccountRepository(db);
 
         // Cash on Hand (1100) is a seeded system bank account; user bank accounts start at 1110.
-        var result = await repo.GetNextAccountNumberAsync(AccountType.Asset, true);
+        var result = await repo.GetNextAccountNumberAsync(AccountType.Asset, true, TestContext.Current.CancellationToken);
 
         Assert.Equal("1110", result);
     }
@@ -158,7 +158,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
 
         await AddAccount(db, "Operating Account", AccountType.Asset, "1110", isBank: true);
 
-        var result = await repo.GetNextAccountNumberAsync(AccountType.Asset, true);
+        var result = await repo.GetNextAccountNumberAsync(AccountType.Asset, true, TestContext.Current.CancellationToken);
 
         Assert.Equal("1111", result);
     }
@@ -169,7 +169,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new AccountRepository(db);
 
-        var result = await repo.GetNextAccountNumberAsync(AccountType.Asset, false);
+        var result = await repo.GetNextAccountNumberAsync(AccountType.Asset, false, TestContext.Current.CancellationToken);
 
         Assert.Equal("1300", result);
     }
@@ -181,10 +181,10 @@ public class AccountRepositoryIntegrationTests : IDisposable
         var repo = new AccountRepository(db);
 
         var account = await AddAccount(db, "Archived Income", AccountType.Income, "4000");
-        await repo.ArchiveAsync(account.Id, "system");
+        await repo.ArchiveAsync(account.Id, "system", TestContext.Current.CancellationToken);
 
         // Archived accounts still own their numbers (IgnoreQueryFilters).
-        var result = await repo.GetNextAccountNumberAsync(AccountType.Income, false);
+        var result = await repo.GetNextAccountNumberAsync(AccountType.Income, false, TestContext.Current.CancellationToken);
 
         Assert.Equal("4001", result);
     }
@@ -198,7 +198,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
         await AddAccount(db, "Last Possible", AccountType.Income, "4999");
 
         await Assert.ThrowsAsync<DataIntegrityException>(() =>
-            repo.GetNextAccountNumberAsync(AccountType.Income, false));
+            repo.GetNextAccountNumberAsync(AccountType.Income, false, TestContext.Current.CancellationToken));
     }
 
     // --- Archive guard ---
@@ -210,7 +210,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
         var repo = new AccountRepository(db);
 
         await Assert.ThrowsAsync<ValidationException>(() =>
-            repo.ArchiveAsync(CashAccountId, "system"));
+            repo.ArchiveAsync(CashAccountId, "system", TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -223,7 +223,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
         await AddTransaction(db, account.Id);
 
         await Assert.ThrowsAsync<ValidationException>(() =>
-            repo.ArchiveAsync(account.Id, "system"));
+            repo.ArchiveAsync(account.Id, "system", TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -234,12 +234,12 @@ public class AccountRepositoryIntegrationTests : IDisposable
 
         var account = await AddAccount(db, "To Archive", AccountType.Income, "4000");
 
-        await repo.ArchiveAsync(account.Id, "system");
+        await repo.ArchiveAsync(account.Id, "system", TestContext.Current.CancellationToken);
 
-        var allActive = await repo.GetAllAsync();
+        var allActive = await repo.GetAllAsync(TestContext.Current.CancellationToken);
         Assert.DoesNotContain(allActive, c => c.Id == account.Id);
 
-        var archived = await repo.GetArchivedAsync();
+        var archived = await repo.GetArchivedAsync(TestContext.Current.CancellationToken);
         Assert.Contains(archived, c => c.Id == account.Id);
     }
 
@@ -253,9 +253,9 @@ public class AccountRepositoryIntegrationTests : IDisposable
 
         var c1 = await AddAccount(db, "Active", AccountType.Income, "4000");
         var c2 = await AddAccount(db, "ToArchive", AccountType.Income, "4001");
-        await repo.ArchiveAsync(c2.Id, "system");
+        await repo.ArchiveAsync(c2.Id, "system", TestContext.Current.CancellationToken);
 
-        var all = await repo.GetAllAsync();
+        var all = await repo.GetAllAsync(TestContext.Current.CancellationToken);
         Assert.Contains(all, c => c.Id == c1.Id);
         Assert.DoesNotContain(all, c => c.Id == c2.Id);
     }
@@ -271,11 +271,11 @@ public class AccountRepositoryIntegrationTests : IDisposable
         var c1 = await AddAccount(db, "Cat A", AccountType.Income, "4000");
         var c2 = await AddAccount(db, "Cat B", AccountType.Income, "4001");
 
-        await repo.ReorderAsync(new[] { (c1.Id, 5), (c2.Id, 3) });
+        await repo.ReorderAsync(new[] { (c1.Id, 5), (c2.Id, 3) }, TestContext.Current.CancellationToken);
 
         using var db2 = _factory.CreateContext();
-        var updated1 = await db2.Accounts.FindAsync(c1.Id);
-        var updated2 = await db2.Accounts.FindAsync(c2.Id);
+        var updated1 = await db2.Accounts.FindAsync(new object?[] { c1.Id }, TestContext.Current.CancellationToken);
+        var updated2 = await db2.Accounts.FindAsync(new object?[] { c2.Id }, TestContext.Current.CancellationToken);
 
         Assert.Equal(5, updated1!.SortOrder);
         Assert.Equal(3, updated2!.SortOrder);

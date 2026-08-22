@@ -133,7 +133,7 @@ public class RecordAgmTests : RadzenGridTestContext
 
         await _agmService.Received(1).RecordAsync(
             Arg.Is<RecordAgmRequest>(r =>
-                r.AttendedMemberIds.Contains(Alice.Id) &&
+                r!.AttendedMemberIds.Contains(Alice.Id) &&
                 r.AllActiveMemberIds.Count == 2 &&
                 r.OfficeHolderAssignments[PresidentTypeId] == Alice.Id &&
                 r.GeneralCommitteeMemberIds.Contains(Bob.Id)),

@@ -59,7 +59,7 @@ public class BalanceSheetReportProviderTests
         SetupAccounts(MakeAccount(cashId, "Cash on Hand", AccountType.Asset, "1100"));
         SetupBalance(cashId, 1000m);
 
-        var result = await _sut.GenerateAsync(AsAtFilters());
+        var result = await _sut.GenerateAsync(AsAtFilters(), TestContext.Current.CancellationToken);
 
         var assets = result.Sections.First(s => s.Heading == "Assets");
         Assert.Contains(assets.Rows, r => r.Cells[0].Contains("Cash on Hand") && r.Cells[1] == "1000.00");
@@ -72,7 +72,7 @@ public class BalanceSheetReportProviderTests
         SetupAccounts(MakeAccount(liabId, "GST Collected", AccountType.Liability, "2310"));
         SetupBalance(liabId, -200m); // net credit position
 
-        var result = await _sut.GenerateAsync(AsAtFilters());
+        var result = await _sut.GenerateAsync(AsAtFilters(), TestContext.Current.CancellationToken);
 
         var liabilities = result.Sections.First(s => s.Heading == "Liabilities");
         Assert.Contains(liabilities.Rows, r => r.Cells[1] == "200.00");
@@ -90,7 +90,7 @@ public class BalanceSheetReportProviderTests
         SetupBalance(incomeId, -500m); // $500 net credit = $500 income
         SetupBalance(expenseId, 300m); // $300 net debit = $300 expense
 
-        var result = await _sut.GenerateAsync(AsAtFilters());
+        var result = await _sut.GenerateAsync(AsAtFilters(), TestContext.Current.CancellationToken);
 
         var equity = result.Sections.First(s => s.Heading == "Equity");
         Assert.Contains(equity.Rows, r => r.Cells[0] == "Accumulated Surplus" && r.Cells[1] == "200.00");
@@ -102,7 +102,7 @@ public class BalanceSheetReportProviderTests
         SetupAccounts(MakeAccount(SystemAccounts.AccumulatedSurplusId, "Accumulated Surplus", AccountType.Equity, SystemAccounts.AccumulatedSurplusNumber, isSystem: true));
         SetupBalance(SystemAccounts.AccumulatedSurplusId, 0m);
 
-        var result = await _sut.GenerateAsync(AsAtFilters());
+        var result = await _sut.GenerateAsync(AsAtFilters(), TestContext.Current.CancellationToken);
 
         var equity = result.Sections.First(s => s.Heading == "Equity");
         Assert.Single(equity.Rows, r => r.Cells[0] == "Accumulated Surplus");
@@ -118,7 +118,7 @@ public class BalanceSheetReportProviderTests
         _accounts.GetArchivedAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Account>>([account]));
         SetupBalance(archivedId, 0m);
 
-        var result = await _sut.GenerateAsync(AsAtFilters());
+        var result = await _sut.GenerateAsync(AsAtFilters(), TestContext.Current.CancellationToken);
 
         var assets = result.Sections.First(s => s.Heading == "Assets");
         Assert.DoesNotContain(assets.Rows, r => r.Cells[0].Contains("Old Petty Cash"));
@@ -146,7 +146,7 @@ public class BalanceSheetReportProviderTests
         SetupBalance(incomeId, -500m);
         SetupBalance(expenseId, 300m);
 
-        var result = await _sut.GenerateAsync(AsAtFilters());
+        var result = await _sut.GenerateAsync(AsAtFilters(), TestContext.Current.CancellationToken);
 
         var totalAssets = result.Sections.First(s => s.Heading == "Assets").Subtotal!.Cells[1];
         var totalLiabPlusEquity = result.GrandTotal!.Cells[1];
@@ -165,7 +165,7 @@ public class BalanceSheetReportProviderTests
         var filters = new ReportFilterValues();
         filters.Set("asAt", "2026-06-30");
 
-        await _sut.GenerateAsync(filters);
+        await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         await _gl.Received().GetAccountBalanceAsync(
             cashId,

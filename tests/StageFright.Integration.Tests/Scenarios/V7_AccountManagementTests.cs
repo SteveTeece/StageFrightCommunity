@@ -45,7 +45,7 @@ public sealed class V7_AccountManagementTests : IAsyncLifetime
     {
         var svc = BuildAccountService();
 
-        var account = await svc.CreateAsync("Membership Fees", AccountType.Income);
+        var account = await svc.CreateAsync("Membership Fees", AccountType.Income, ct: TestContext.Current.CancellationToken);
 
         Assert.Equal("4000", account.AccountNumber);
     }
@@ -55,8 +55,8 @@ public sealed class V7_AccountManagementTests : IAsyncLifetime
     {
         var svc = BuildAccountService();
 
-        await svc.CreateAsync("Membership Fees", AccountType.Income);
-        var second = await svc.CreateAsync("Concert Tickets", AccountType.Income);
+        await svc.CreateAsync("Membership Fees", AccountType.Income, ct: TestContext.Current.CancellationToken);
+        var second = await svc.CreateAsync("Concert Tickets", AccountType.Income, ct: TestContext.Current.CancellationToken);
 
         Assert.Equal("4001", second.AccountNumber);
     }
@@ -66,7 +66,7 @@ public sealed class V7_AccountManagementTests : IAsyncLifetime
     {
         var svc = BuildAccountService();
 
-        var account = await svc.CreateAsync("Hall Rental", AccountType.Expense);
+        var account = await svc.CreateAsync("Hall Rental", AccountType.Expense, ct: TestContext.Current.CancellationToken);
 
         Assert.Equal("6000", account.AccountNumber);
     }
@@ -76,8 +76,8 @@ public sealed class V7_AccountManagementTests : IAsyncLifetime
     {
         var svc = BuildAccountService();
 
-        await svc.CreateAsync("Hall Rental", AccountType.Expense);
-        var second = await svc.CreateAsync("Printing", AccountType.Expense);
+        await svc.CreateAsync("Hall Rental", AccountType.Expense, ct: TestContext.Current.CancellationToken);
+        var second = await svc.CreateAsync("Printing", AccountType.Expense, ct: TestContext.Current.CancellationToken);
 
         Assert.Equal("6001", second.AccountNumber);
     }
@@ -87,9 +87,9 @@ public sealed class V7_AccountManagementTests : IAsyncLifetime
     {
         var svc = BuildAccountService();
 
-        await svc.CreateAsync("Income A", AccountType.Income);
-        await svc.CreateAsync("Income B", AccountType.Income);
-        var expense = await svc.CreateAsync("Expense A", AccountType.Expense);
+        await svc.CreateAsync("Income A", AccountType.Income, ct: TestContext.Current.CancellationToken);
+        await svc.CreateAsync("Income B", AccountType.Income, ct: TestContext.Current.CancellationToken);
+        var expense = await svc.CreateAsync("Expense A", AccountType.Expense, ct: TestContext.Current.CancellationToken);
 
         Assert.Equal("6000", expense.AccountNumber);
     }
@@ -101,11 +101,11 @@ public sealed class V7_AccountManagementTests : IAsyncLifetime
     {
         var svc = BuildAccountService();
 
-        var account = await svc.CreateAsync("Membership", AccountType.Income);
+        var account = await svc.CreateAsync("Membership", AccountType.Income, ct: TestContext.Current.CancellationToken);
         await AddTransaction(account.Id, account.AccountNumber);
 
         var ex = await Assert.ThrowsAsync<ValidationException>(() =>
-            svc.ArchiveAsync(account.Id));
+            svc.ArchiveAsync(account.Id, TestContext.Current.CancellationToken));
 
         Assert.Contains("referenced by one or more transactions", ex.Message);
     }
@@ -115,12 +115,12 @@ public sealed class V7_AccountManagementTests : IAsyncLifetime
     {
         var svc = BuildAccountService();
 
-        var account = await svc.CreateAsync("Membership", AccountType.Income);
+        var account = await svc.CreateAsync("Membership", AccountType.Income, ct: TestContext.Current.CancellationToken);
         await AddTransaction(account.Id, account.AccountNumber);
 
-        await Assert.ThrowsAsync<ValidationException>(() => svc.ArchiveAsync(account.Id));
+        await Assert.ThrowsAsync<ValidationException>(() => svc.ArchiveAsync(account.Id, TestContext.Current.CancellationToken));
 
-        var inDb = await _db.Accounts.FindAsync(account.Id);
+        var inDb = await _db.Accounts.FindAsync(new object?[] { account.Id }, TestContext.Current.CancellationToken);
         Assert.False(inDb!.IsDeleted);
     }
 
@@ -131,7 +131,7 @@ public sealed class V7_AccountManagementTests : IAsyncLifetime
         var cashId = new Guid("00000000-0000-0000-0000-000000000001");
 
         var ex = await Assert.ThrowsAsync<ValidationException>(() =>
-            svc.ArchiveAsync(cashId));
+            svc.ArchiveAsync(cashId, TestContext.Current.CancellationToken));
 
         Assert.Contains("System accounts cannot be archived", ex.Message);
     }
@@ -143,14 +143,14 @@ public sealed class V7_AccountManagementTests : IAsyncLifetime
     {
         var svc = BuildAccountService();
 
-        var account = await svc.CreateAsync("Old Account", AccountType.Income);
+        var account = await svc.CreateAsync("Old Account", AccountType.Income, ct: TestContext.Current.CancellationToken);
 
-        await svc.ArchiveAsync(account.Id);
+        await svc.ArchiveAsync(account.Id, TestContext.Current.CancellationToken);
 
-        var all = await svc.GetAllAsync();
+        var all = await svc.GetAllAsync(TestContext.Current.CancellationToken);
         Assert.DoesNotContain(all, c => c.Id == account.Id);
 
-        var archived = await svc.GetArchivedAsync();
+        var archived = await svc.GetArchivedAsync(TestContext.Current.CancellationToken);
         Assert.Contains(archived, c => c.Id == account.Id);
     }
 
@@ -158,14 +158,14 @@ public sealed class V7_AccountManagementTests : IAsyncLifetime
     public async Task Archive_CreatesAuditEntry()
     {
         var svc = BuildAccountService();
-        var account = await svc.CreateAsync("Old Account", AccountType.Income);
+        var account = await svc.CreateAsync("Old Account", AccountType.Income, ct: TestContext.Current.CancellationToken);
 
-        await svc.ArchiveAsync(account.Id);
+        await svc.ArchiveAsync(account.Id, TestContext.Current.CancellationToken);
 
         var audit = await _db.AuditTrailEntries.FirstOrDefaultAsync(a =>
             a.EntityType == nameof(Account) &&
             a.EntityId == account.Id &&
-            a.Action == AuditAction.Delete);
+            a.Action == AuditAction.Delete, cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.NotNull(audit);
     }
@@ -177,12 +177,12 @@ public sealed class V7_AccountManagementTests : IAsyncLifetime
     {
         var svc = BuildAccountService();
 
-        var account = await svc.CreateAsync("Dormant Account", AccountType.Income);
-        await svc.ArchiveAsync(account.Id);
+        var account = await svc.CreateAsync("Dormant Account", AccountType.Income, ct: TestContext.Current.CancellationToken);
+        await svc.ArchiveAsync(account.Id, TestContext.Current.CancellationToken);
 
-        await svc.RestoreAsync(account.Id);
+        await svc.RestoreAsync(account.Id, TestContext.Current.CancellationToken);
 
-        var all = await svc.GetAllAsync();
+        var all = await svc.GetAllAsync(TestContext.Current.CancellationToken);
         Assert.Contains(all, c => c.Id == account.Id);
     }
 
@@ -193,13 +193,13 @@ public sealed class V7_AccountManagementTests : IAsyncLifetime
     {
         var svc = BuildAccountService();
 
-        var first = await svc.CreateAsync("Account A", AccountType.Income);
-        var second = await svc.CreateAsync("Account B", AccountType.Income);
+        var first = await svc.CreateAsync("Account A", AccountType.Income, ct: TestContext.Current.CancellationToken);
+        var second = await svc.CreateAsync("Account B", AccountType.Income, ct: TestContext.Current.CancellationToken);
 
-        await svc.ReorderAsync(new[] { (first.Id, 5), (second.Id, 3) });
+        await svc.ReorderAsync(new[] { (first.Id, 5), (second.Id, 3) }, TestContext.Current.CancellationToken);
 
-        var updatedFirst = await _db.Accounts.FindAsync(first.Id);
-        var updatedSecond = await _db.Accounts.FindAsync(second.Id);
+        var updatedFirst = await _db.Accounts.FindAsync(new object?[] { first.Id }, TestContext.Current.CancellationToken);
+        var updatedSecond = await _db.Accounts.FindAsync(new object?[] { second.Id }, TestContext.Current.CancellationToken);
 
         Assert.Equal(5, updatedFirst!.SortOrder);
         Assert.Equal(3, updatedSecond!.SortOrder);

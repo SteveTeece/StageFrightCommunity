@@ -39,20 +39,19 @@ public sealed class AddAuditRetentionYearsToSettingsMigrationTests : IDisposable
     {
         using (var db = CreateContext())
         {
-            await db.GetService<IMigrator>().MigrateAsync(PreMigration);
+            await db.GetService<IMigrator>().MigrateAsync(PreMigration, TestContext.Current.CancellationToken);
 
-            await db.Database.ExecuteSqlAsync(
-                $"""
+            await db.Database.ExecuteSqlAsync($"""
                 INSERT INTO Settings (Id, OrganizationName, Abn, AnnualFee, AttendanceFee, MembershipRenewalMonth, CommitteeRenewalMonth, FinancialYearStartMonth, IsGstRegistered, AnnualFeeGstCode, AttendanceFeeGstCode, GeneralCommitteeSeatCountTarget, MaxAgeRangeYears, MinimumMemberAge, Theme, ShowParticipationGraphs, SchemaVersion, IsDeleted, DeletedAt, DeletedBy, CreatedAt, UpdatedAt) VALUES
                 ({SettingsId}, 'Pre-Retention Org', NULL, 100.0, 10.0, 1, 1, 7, 0, NULL, NULL, NULL, 150, 0, 'Light', 1, '1.1.0', 0, NULL, NULL, '2026-01-01 00:00:00', '2026-01-01 00:00:00');
-                """);
+                """, cancellationToken: TestContext.Current.CancellationToken);
         }
 
         using (var db = CreateContext())
         {
-            await db.Database.MigrateAsync();
+            await db.Database.MigrateAsync(cancellationToken: TestContext.Current.CancellationToken);
 
-            var settings = await db.Settings.SingleAsync(s => s.Id == SettingsId);
+            var settings = await db.Settings.SingleAsync(s => s.Id == SettingsId, cancellationToken: TestContext.Current.CancellationToken);
 
             Assert.Equal(1, settings.AuditRetentionYears);
             Assert.Equal("Pre-Retention Org", settings.OrganizationName);

@@ -112,7 +112,7 @@ public class AttendanceServiceTests : TestBase
         await svc.RecordBatchAsync(RehearsalId, items, Ct);
 
         await _feeRepo.Received(1).AddAsync(
-            Arg.Is<Fee>(f => f.MemberId == ActiveMemberId && f.PaidAtCreation == true && f.FeeType == FeeType.Attendance),
+            Arg.Is<Fee>(f => f!.MemberId == ActiveMemberId && f.PaidAtCreation == true && f.FeeType == FeeType.Attendance),
             Arg.Any<CancellationToken>());
     }
 
@@ -127,8 +127,8 @@ public class AttendanceServiceTests : TestBase
         // Accrual: Debit MemberReceivable / Credit Income — must be called at least once
         await _glRepo.Received().AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Any(t => t.DebitAmount > 0 && t.AccountId == MemberReceivableAccountId) &&
-                lines.Any(t => t.CreditAmount > 0 && t.AccountId == IncomeAccountId)),
+                lines!.Any(t => t.DebitAmount > 0 && t.AccountId == MemberReceivableAccountId) &&
+                lines!.Any(t => t.CreditAmount > 0 && t.AccountId == IncomeAccountId)),
             Arg.Any<CancellationToken>());
     }
 
@@ -142,8 +142,8 @@ public class AttendanceServiceTests : TestBase
 
         // Payment: Debit Cash / Credit MemberReceivable
         await _glRepo.Received().AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount > 0 && t.AccountId == CashAccountId),
-            Arg.Is<Transaction>(t => t.CreditAmount > 0 && t.AccountId == MemberReceivableAccountId),
+            Arg.Is<Transaction>(t => t!.DebitAmount > 0 && t.AccountId == CashAccountId),
+            Arg.Is<Transaction>(t => t!.CreditAmount > 0 && t.AccountId == MemberReceivableAccountId),
             Arg.Any<CancellationToken>());
     }
 
@@ -157,7 +157,7 @@ public class AttendanceServiceTests : TestBase
 
         await _paymentRepo.Received(1).AddAsync(
             Arg.Is<Payment>(p =>
-                p.MemberId == ActiveMemberId &&
+                p!.MemberId == ActiveMemberId &&
                 p.PaymentMethod == PaymentMethod.Cash &&
                 p.PaymentType == PaymentType.Attendance &&
                 p.Amount == 10m),
@@ -175,7 +175,7 @@ public class AttendanceServiceTests : TestBase
         await svc.RecordBatchAsync(RehearsalId, items, Ct);
 
         await _feeRepo.Received(1).AddAsync(
-            Arg.Is<Fee>(f => f.PaidAtCreation == false),
+            Arg.Is<Fee>(f => f!.PaidAtCreation == false),
             Arg.Any<CancellationToken>());
     }
 
@@ -206,9 +206,9 @@ public class AttendanceServiceTests : TestBase
 
         await svc.RecordBatchAsync(RehearsalId, items, Ct);
 
-        await _feeRepo.Received(1).AddAsync(Arg.Is<Fee>(f => f.TaxCode == null), Arg.Any<CancellationToken>());
+        await _feeRepo.Received(1).AddAsync(Arg.Is<Fee>(f => f!.TaxCode == null), Arg.Any<CancellationToken>());
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.Count == 2 && lines.All(t => t.TaxCode == null)),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.Count == 2 && lines.All(t => t.TaxCode == null)),
             Arg.Any<CancellationToken>());
     }
 
@@ -223,7 +223,7 @@ public class AttendanceServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 3
+                lines!.Count == 3
                 && lines.Any(t => t.DebitAmount == 11m && t.AccountId == MemberReceivableAccountId)
                 && lines.Any(t => t.CreditAmount == 10m && t.AccountId == IncomeAccountId)
                 && lines.Any(t => t.CreditAmount == 1m && t.AccountId == SystemAccounts.TaxCollectedId)
@@ -244,7 +244,7 @@ public class AttendanceServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2 && lines.All(t => t.TaxCode == code)),
+                lines!.Count == 2 && lines.All(t => t.TaxCode == code)),
             Arg.Any<CancellationToken>());
     }
 
@@ -258,7 +258,7 @@ public class AttendanceServiceTests : TestBase
         await svc.RecordBatchAsync(RehearsalId, items, Ct);
 
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.TaxCode == TaxCode.TaxExempt)),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.All(t => t.TaxCode == TaxCode.TaxExempt)),
             Arg.Any<CancellationToken>());
     }
 
@@ -273,7 +273,7 @@ public class AttendanceServiceTests : TestBase
         await svc.RecordBatchAsync(RehearsalId, items, Ct);
 
         await _attendanceRepo.Received().AddBatchAsync(
-            Arg.Is<IReadOnlyList<AttendanceRecord>>(list => list.Any(r => r.MemberId == InactiveMemberId)),
+            Arg.Is<IReadOnlyList<AttendanceRecord>>(list => list!.Any(r => r.MemberId == InactiveMemberId)),
             Arg.Any<CancellationToken>());
         await _feeRepo.DidNotReceive().AddAsync(Arg.Any<Fee>(), Arg.Any<CancellationToken>());
     }
@@ -316,7 +316,7 @@ public class AttendanceServiceTests : TestBase
 
         await svc.RecordBatchAsync(todayRehearsalId, items, Ct);
 
-        await _feeRepo.Received(1).AddAsync(Arg.Is<Fee>(f => f.MemberId == ActiveMemberId), Arg.Any<CancellationToken>());
+        await _feeRepo.Received(1).AddAsync(Arg.Is<Fee>(f => f!.MemberId == ActiveMemberId), Arg.Any<CancellationToken>());
     }
 
     // --- Not attended ---

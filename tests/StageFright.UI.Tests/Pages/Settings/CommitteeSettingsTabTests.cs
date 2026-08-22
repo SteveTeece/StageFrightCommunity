@@ -123,7 +123,7 @@ public class CommitteeSettingsTabTests : RadzenGridTestContext
         await cut.Find("button.btn-primary").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
 
         await _settingsService.Received(1).SaveAsync(
-            Arg.Is<AppSettings>(s => s.GeneralCommitteeSeatCountTarget == 10),
+            Arg.Is<AppSettings>(s => s!.GeneralCommitteeSeatCountTarget == 10),
             Arg.Any<CancellationToken>());
     }
 }

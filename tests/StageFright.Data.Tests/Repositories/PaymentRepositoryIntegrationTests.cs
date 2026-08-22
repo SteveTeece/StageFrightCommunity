@@ -47,10 +47,10 @@ public sealed class PaymentRepositoryIntegrationTests : IAsyncLifetime
         var memberId = await SeedMemberAsync();
         var payment = MakePayment(memberId);
 
-        var saved = await _sut.AddAsync(payment);
+        var saved = await _sut.AddAsync(payment, TestContext.Current.CancellationToken);
 
         Assert.Equal(payment.Id, saved.Id);
-        var fromDb = await _sut.GetByIdAsync(payment.Id);
+        var fromDb = await _sut.GetByIdAsync(payment.Id, TestContext.Current.CancellationToken);
         Assert.NotNull(fromDb);
         Assert.Equal(payment.Amount, fromDb!.Amount);
         Assert.Equal(payment.PaymentMethod, fromDb.PaymentMethod);
@@ -61,7 +61,7 @@ public sealed class PaymentRepositoryIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task GetByIdAsync_ReturnsNull_WhenNotFound()
     {
-        var result = await _sut.GetByIdAsync(Guid.NewGuid());
+        var result = await _sut.GetByIdAsync(Guid.NewGuid(), TestContext.Current.CancellationToken);
 
         Assert.Null(result);
     }
@@ -75,10 +75,10 @@ public sealed class PaymentRepositoryIntegrationTests : IAsyncLifetime
 
         var p1 = MakePayment(memberId, date: new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
         var p2 = MakePayment(memberId, date: new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc));
-        await _sut.AddAsync(p1);
-        await _sut.AddAsync(p2);
+        await _sut.AddAsync(p1, TestContext.Current.CancellationToken);
+        await _sut.AddAsync(p2, TestContext.Current.CancellationToken);
 
-        var results = await _sut.GetByMemberAsync(memberId);
+        var results = await _sut.GetByMemberAsync(memberId, TestContext.Current.CancellationToken);
 
         Assert.Equal(2, results.Count);
         // OrderByDescending date: p2 first
@@ -91,10 +91,10 @@ public sealed class PaymentRepositoryIntegrationTests : IAsyncLifetime
         var member1 = await SeedMemberAsync();
         var member2 = await SeedMemberAsync();
 
-        await _sut.AddAsync(MakePayment(member1));
-        await _sut.AddAsync(MakePayment(member2));
+        await _sut.AddAsync(MakePayment(member1), TestContext.Current.CancellationToken);
+        await _sut.AddAsync(MakePayment(member2), TestContext.Current.CancellationToken);
 
-        var results = await _sut.GetByMemberAsync(member1);
+        var results = await _sut.GetByMemberAsync(member1, TestContext.Current.CancellationToken);
 
         Assert.Single(results);
         Assert.Equal(member1, results[0].MemberId);
@@ -106,11 +106,11 @@ public sealed class PaymentRepositoryIntegrationTests : IAsyncLifetime
     public async Task UpdateNotesAsync_UpdatesNotesField()
     {
         var memberId = await SeedMemberAsync();
-        var payment = await _sut.AddAsync(MakePayment(memberId, notes: "original"));
+        var payment = await _sut.AddAsync(MakePayment(memberId, notes: "original"), TestContext.Current.CancellationToken);
 
-        await _sut.UpdateNotesAsync(payment.Id, "updated note");
+        await _sut.UpdateNotesAsync(payment.Id, "updated note", TestContext.Current.CancellationToken);
 
-        var fromDb = await _sut.GetByIdAsync(payment.Id);
+        var fromDb = await _sut.GetByIdAsync(payment.Id, TestContext.Current.CancellationToken);
         Assert.Equal("updated note", fromDb!.Notes);
     }
 
@@ -118,15 +118,15 @@ public sealed class PaymentRepositoryIntegrationTests : IAsyncLifetime
     public async Task UpdateNotesAsync_BumpsUpdatedAt()
     {
         var memberId = await SeedMemberAsync();
-        var payment = await _sut.AddAsync(MakePayment(memberId));
+        var payment = await _sut.AddAsync(MakePayment(memberId), TestContext.Current.CancellationToken);
         var originalUpdatedAt = payment.UpdatedAt;
 
         // Wait a tick so timestamp differs
-        await Task.Delay(10);
+        await Task.Delay(10, TestContext.Current.CancellationToken);
 
-        await _sut.UpdateNotesAsync(payment.Id, "new note");
+        await _sut.UpdateNotesAsync(payment.Id, "new note", TestContext.Current.CancellationToken);
 
-        var fromDb = await _sut.GetByIdAsync(payment.Id);
+        var fromDb = await _sut.GetByIdAsync(payment.Id, TestContext.Current.CancellationToken);
         Assert.True(fromDb!.UpdatedAt > originalUpdatedAt);
     }
 
@@ -134,11 +134,11 @@ public sealed class PaymentRepositoryIntegrationTests : IAsyncLifetime
     public async Task UpdateNotesAsync_AcceptsNull_ClearingNotes()
     {
         var memberId = await SeedMemberAsync();
-        var payment = await _sut.AddAsync(MakePayment(memberId, notes: "some note"));
+        var payment = await _sut.AddAsync(MakePayment(memberId, notes: "some note"), TestContext.Current.CancellationToken);
 
-        await _sut.UpdateNotesAsync(payment.Id, null);
+        await _sut.UpdateNotesAsync(payment.Id, null, TestContext.Current.CancellationToken);
 
-        var fromDb = await _sut.GetByIdAsync(payment.Id);
+        var fromDb = await _sut.GetByIdAsync(payment.Id, TestContext.Current.CancellationToken);
         Assert.Null(fromDb!.Notes);
     }
 
@@ -146,16 +146,16 @@ public sealed class PaymentRepositoryIntegrationTests : IAsyncLifetime
     public async Task UpdateNotesAsync_ThrowsEntityNotFound_ForUnknownId()
     {
         await Assert.ThrowsAsync<EntityNotFoundException>(
-            () => _sut.UpdateNotesAsync(Guid.NewGuid(), "note"));
+            () => _sut.UpdateNotesAsync(Guid.NewGuid(), "note", TestContext.Current.CancellationToken));
     }
 
     [Fact]
     public async Task UpdateNotesAsync_CallsAuditService_WithOldAndNewNotes()
     {
         var memberId = await SeedMemberAsync();
-        var payment = await _sut.AddAsync(MakePayment(memberId, notes: "old note"));
+        var payment = await _sut.AddAsync(MakePayment(memberId, notes: "old note"), TestContext.Current.CancellationToken);
 
-        await _sut.UpdateNotesAsync(payment.Id, "new note");
+        await _sut.UpdateNotesAsync(payment.Id, "new note", TestContext.Current.CancellationToken);
 
         await _audit.Received(1).LogAsync(
             nameof(Payment), payment.Id, AuditAction.Update,

@@ -139,7 +139,7 @@ public class BackupServiceTests : TestBase
     public async Task GetManifestAsync_ThrowsImportException_OnCorruptFile()
     {
         var path = Path.Combine(Path.GetTempPath(), $"corrupt_{Guid.NewGuid()}.sfbak");
-        await File.WriteAllBytesAsync(path, [0xFF, 0xFF, 0xFF, 0xFF]);
+        await File.WriteAllBytesAsync(path, [0xFF, 0xFF, 0xFF, 0xFF], TestContext.Current.CancellationToken);
         var svc = CreateService();
 
         try
@@ -213,7 +213,7 @@ public class BackupServiceTests : TestBase
         var snapshot = BuildMinimalSnapshot();
         _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
         _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
-            .Returns(ci => ((Func<CancellationToken, Task>)ci[0])(Ct));
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0]!)(Ct));
         var svc = CreateService();
         var path = Path.Combine(Path.GetTempPath(), $"test_import_{Guid.NewGuid()}.sfbak");
 
@@ -240,7 +240,7 @@ public class BackupServiceTests : TestBase
             .Returns(ci =>
             {
                 checkpointCreated = true;
-                return ((Func<CancellationToken, Task>)ci[0])(Ct);
+                return ((Func<CancellationToken, Task>)ci[0]!)(Ct);
             });
         var svc = CreateService();
         var path = Path.Combine(Path.GetTempPath(), $"test_checkpoint_{Guid.NewGuid()}.sfbak");
@@ -310,7 +310,7 @@ public class BackupServiceTests : TestBase
         var snapshot = new BackupSnapshot { Members = [BuildMember()] };
         _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
         _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
-            .Returns(ci => ((Func<CancellationToken, Task>)ci[0])(Ct));
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0]!)(Ct));
         var svc = CreateService();
         var path = Path.Combine(Path.GetTempPath(), $"test_import_{Guid.NewGuid()}.sfbak");
 
@@ -354,7 +354,7 @@ public class BackupServiceTests : TestBase
         var snapshot = new BackupSnapshot { Members = [member] };
         _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
         _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
-            .Returns(ci => ((Func<CancellationToken, Task>)ci[0])(Ct));
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0]!)(Ct));
         var svc = CreateService();
         var path = Path.Combine(Path.GetTempPath(), $"test_import_{Guid.NewGuid()}.sfbak");
 
@@ -467,7 +467,7 @@ public class BackupServiceTests : TestBase
         };
         _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
         _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
-            .Returns(ci => ((Func<CancellationToken, Task>)ci[0])(Ct));
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0]!)(Ct));
         var svc = CreateService();
         var path = Path.Combine(Path.GetTempPath(), $"test_agm_import_{Guid.NewGuid()}.sfbak");
 
@@ -525,7 +525,7 @@ public class BackupServiceTests : TestBase
         };
         _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
         _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
-            .Returns(ci => ((Func<CancellationToken, Task>)ci[0])(Ct));
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0]!)(Ct));
         var svc = CreateService();
         var path = Path.Combine(Path.GetTempPath(), $"test_settings_import_{Guid.NewGuid()}.sfbak");
 

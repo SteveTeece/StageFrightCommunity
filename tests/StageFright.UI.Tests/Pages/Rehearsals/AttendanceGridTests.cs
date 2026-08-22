@@ -173,7 +173,7 @@ public class AttendanceGridTests : RadzenGridTestContext
         await _attendanceService.Received(1).RecordBatchAsync(
             RehearsalId,
             Arg.Is<IReadOnlyList<AttendanceBatchItem>>(items =>
-                items.Count == 2 && items.All(i => i.Attended)),
+                items!.Count == 2 && items.All(i => i.Attended)),
             Arg.Any<CancellationToken>());
     }
 

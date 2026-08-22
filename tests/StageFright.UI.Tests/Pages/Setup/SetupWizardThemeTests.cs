@@ -105,7 +105,7 @@ public class SetupWizardThemeTests : BunitContext
         await cut.Find("form").SubmitAsync();
 
         await _setupService.Received(1).InitializeAsync(
-            Arg.Is<SetupRequest>(r => r.Theme == Theme.Dark),
+            Arg.Is<SetupRequest>(r => r!.Theme == Theme.Dark),
             Arg.Any<CancellationToken>());
     }
 
@@ -120,7 +120,7 @@ public class SetupWizardThemeTests : BunitContext
         await cut.Find("form").SubmitAsync();
 
         await _setupService.Received(1).InitializeAsync(
-            Arg.Is<SetupRequest>(r => r.Theme == Theme.Light),
+            Arg.Is<SetupRequest>(r => r!.Theme == Theme.Light),
             Arg.Any<CancellationToken>());
     }
 }

@@ -41,9 +41,9 @@ public class SetupServiceIntegrationTests : IDisposable
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
 
         var request = new SetupRequest("My Choir", 80m, 6m, 3, false, null, null, null, Theme.Dark);
-        await svc.InitializeAsync(request);
+        await svc.InitializeAsync(request, TestContext.Current.CancellationToken);
 
-        var settings = await settingsRepo.GetAsync();
+        var settings = await settingsRepo.GetAsync(TestContext.Current.CancellationToken);
         Assert.NotNull(settings);
         Assert.Equal("My Choir", settings!.OrganizationName);
         Assert.Equal(80m, settings.AnnualFee);
@@ -71,9 +71,9 @@ public class SetupServiceIntegrationTests : IDisposable
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
 
-        await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark));
+        await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark), TestContext.Current.CancellationToken);
 
-        var all = await accountRepo.GetAllAsync();
+        var all = await accountRepo.GetAllAsync(TestContext.Current.CancellationToken);
         Assert.Contains(all, c => c.AccountNumber == "1100" && c.Name == "Cash on Hand" && c.IsSystem);
         Assert.Contains(all, c => c.AccountNumber == "1200" && c.IsSystem);
         Assert.Contains(all, c => c.AccountNumber == "6999" && c.IsSystem);
@@ -99,9 +99,9 @@ public class SetupServiceIntegrationTests : IDisposable
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
 
-        await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark));
+        await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark), TestContext.Current.CancellationToken);
 
-        var feeCount = await db.Fees.CountAsync();
+        var feeCount = await db.Fees.CountAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(0, feeCount);
     }
 
@@ -125,7 +125,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
 
-        Assert.False(await svc.IsSetupCompleteAsync());
+        Assert.False(await svc.IsSetupCompleteAsync(TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -148,9 +148,9 @@ public class SetupServiceIntegrationTests : IDisposable
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
 
-        await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark));
+        await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark), TestContext.Current.CancellationToken);
 
-        var settings = await settingsRepo.GetAsync();
+        var settings = await settingsRepo.GetAsync(TestContext.Current.CancellationToken);
         Assert.Equal(1, settings!.AuditRetentionYears);
     }
 
@@ -178,9 +178,9 @@ public class SetupServiceIntegrationTests : IDisposable
         {
             AuditRetentionYears = 7
         };
-        await svc.InitializeAsync(request);
+        await svc.InitializeAsync(request, TestContext.Current.CancellationToken);
 
-        var settings = await settingsRepo.GetAsync();
+        var settings = await settingsRepo.GetAsync(TestContext.Current.CancellationToken);
         Assert.Equal(7, settings!.AuditRetentionYears);
     }
 

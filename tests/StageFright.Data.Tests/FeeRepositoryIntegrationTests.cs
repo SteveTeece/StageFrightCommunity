@@ -47,7 +47,7 @@ public sealed class FeeRepositoryIntegrationTests : IAsyncLifetime
             new DateTime(year, 12, 31, 0, 0, 0, DateTimeKind.Utc),
             paidAtCreation: false);
 
-        var exists = await _sut.AnnualFeeExistsAsync(memberId, year);
+        var exists = await _sut.AnnualFeeExistsAsync(memberId, year, TestContext.Current.CancellationToken);
 
         Assert.True(exists);
     }
@@ -57,7 +57,7 @@ public sealed class FeeRepositoryIntegrationTests : IAsyncLifetime
     {
         var memberId = await SeedMemberAsync();
 
-        var exists = await _sut.AnnualFeeExistsAsync(memberId, 2026);
+        var exists = await _sut.AnnualFeeExistsAsync(memberId, 2026, TestContext.Current.CancellationToken);
 
         Assert.False(exists);
     }
@@ -74,7 +74,7 @@ public sealed class FeeRepositoryIntegrationTests : IAsyncLifetime
             paidAtCreation: true);
 
         // Paid or unpaid — both should return true
-        var exists = await _sut.AnnualFeeExistsAsync(memberId, year);
+        var exists = await _sut.AnnualFeeExistsAsync(memberId, year, TestContext.Current.CancellationToken);
 
         Assert.True(exists);
     }
@@ -90,7 +90,7 @@ public sealed class FeeRepositoryIntegrationTests : IAsyncLifetime
             paidAtCreation: false);
 
         // Query for 2026 — should not find the 2025 fee
-        var exists = await _sut.AnnualFeeExistsAsync(memberId, 2026);
+        var exists = await _sut.AnnualFeeExistsAsync(memberId, 2026, TestContext.Current.CancellationToken);
 
         Assert.False(exists);
     }
@@ -106,7 +106,7 @@ public sealed class FeeRepositoryIntegrationTests : IAsyncLifetime
             new DateTime(year, 3, 1, 0, 0, 0, DateTimeKind.Utc),
             paidAtCreation: true);
 
-        var exists = await _sut.AnnualFeeExistsAsync(memberId, year);
+        var exists = await _sut.AnnualFeeExistsAsync(memberId, year, TestContext.Current.CancellationToken);
 
         Assert.False(exists);
     }
@@ -121,7 +121,7 @@ public sealed class FeeRepositoryIntegrationTests : IAsyncLifetime
 
         await AddAttendanceFeeAsync(memberId, rehearsalId);
 
-        var exists = await _sut.AttendanceFeeExistsAsync(memberId, rehearsalId);
+        var exists = await _sut.AttendanceFeeExistsAsync(memberId, rehearsalId, TestContext.Current.CancellationToken);
 
         Assert.True(exists);
     }
@@ -132,7 +132,7 @@ public sealed class FeeRepositoryIntegrationTests : IAsyncLifetime
         var memberId = await SeedMemberAsync();
         var rehearsalId = Guid.NewGuid();
 
-        var exists = await _sut.AttendanceFeeExistsAsync(memberId, rehearsalId);
+        var exists = await _sut.AttendanceFeeExistsAsync(memberId, rehearsalId, TestContext.Current.CancellationToken);
 
         Assert.False(exists);
     }
@@ -146,7 +146,7 @@ public sealed class FeeRepositoryIntegrationTests : IAsyncLifetime
 
         await AddAttendanceFeeAsync(memberId, rehearsal1Id);
 
-        var exists = await _sut.AttendanceFeeExistsAsync(memberId, rehearsal2Id);
+        var exists = await _sut.AttendanceFeeExistsAsync(memberId, rehearsal2Id, TestContext.Current.CancellationToken);
 
         Assert.False(exists);
     }
@@ -170,10 +170,10 @@ public sealed class FeeRepositoryIntegrationTests : IAsyncLifetime
             CreatedAt = DateTime.UtcNow
         };
 
-        var saved = await _sut.AddAsync(fee);
+        var saved = await _sut.AddAsync(fee, TestContext.Current.CancellationToken);
 
         Assert.Equal(fee.Id, saved.Id);
-        var fromDb = await _sut.GetByIdAsync(fee.Id);
+        var fromDb = await _sut.GetByIdAsync(fee.Id, TestContext.Current.CancellationToken);
         Assert.NotNull(fromDb);
         Assert.Equal(FeeType.Annual, fromDb.FeeType);
         Assert.Equal(50m, fromDb.Amount);

@@ -27,12 +27,12 @@ public class CommitteePositionRecordRepositoryTests : IDisposable
         officeHolderType.IsDeleted = true;
         officeHolderType.DeletedAt = DateTime.UtcNow;
         officeHolderType.DeletedBy = "coordinator";
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         using var freshDb = _factory.CreateContext();
         var repo = new CommitteePositionRecordRepository(freshDb);
 
-        var records = await repo.GetByAgmAsync(agm.Id);
+        var records = await repo.GetByAgmAsync(agm.Id, TestContext.Current.CancellationToken);
 
         var record = Assert.Single(records);
         Assert.NotNull(record.OfficeHolderType);
@@ -49,12 +49,12 @@ public class CommitteePositionRecordRepositoryTests : IDisposable
         officeHolderType.IsDeleted = true;
         officeHolderType.DeletedAt = DateTime.UtcNow;
         officeHolderType.DeletedBy = "coordinator";
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         using var freshDb = _factory.CreateContext();
         var repo = new CommitteePositionRecordRepository(freshDb);
 
-        var records = await repo.GetByTermAsync(term.Id);
+        var records = await repo.GetByTermAsync(term.Id, TestContext.Current.CancellationToken);
 
         var record = Assert.Single(records);
         Assert.NotNull(record.OfficeHolderType);
@@ -72,12 +72,12 @@ public class CommitteePositionRecordRepositoryTests : IDisposable
         officeHolderType.IsDeleted = true;
         officeHolderType.DeletedAt = DateTime.UtcNow;
         officeHolderType.DeletedBy = "coordinator";
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         using var freshDb = _factory.CreateContext();
         var repo = new CommitteePositionRecordRepository(freshDb);
 
-        var records = await repo.GetByMemberAsync(member.Id);
+        var records = await repo.GetByMemberAsync(member.Id, TestContext.Current.CancellationToken);
 
         var record = Assert.Single(records);
         Assert.NotNull(record.OfficeHolderType);
@@ -116,12 +116,12 @@ public class CommitteePositionRecordRepositoryTests : IDisposable
         db.AnnualGeneralMeetings.Add(agm);
         db.CommitteeTerms.Add(term);
         db.CommitteePositionRecords.Add(position);
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         using var freshDb = _factory.CreateContext();
         var repo = new CommitteePositionRecordRepository(freshDb);
 
-        var records = await repo.GetByAgmAsync(agm.Id);
+        var records = await repo.GetByAgmAsync(agm.Id, TestContext.Current.CancellationToken);
 
         var record = Assert.Single(records);
         Assert.Null(record.OfficeHolderType);

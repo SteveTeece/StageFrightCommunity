@@ -62,7 +62,7 @@ public class TaxSummaryReportProviderTests
     {
         _settings.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
 
-        var result = await _sut.GenerateAsync(new ReportFilterValues());
+        var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
 
         Assert.Empty(result.Sections);
         Assert.Contains("does not apply", result.SubTitle);
@@ -74,7 +74,7 @@ public class TaxSummaryReportProviderTests
         _settings.GetAsync(Arg.Any<CancellationToken>())
             .Returns(MakeSettings(isTaxApplicable: false));
 
-        var result = await _sut.GenerateAsync(new ReportFilterValues());
+        var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
 
         Assert.Empty(result.Sections);
         Assert.Contains("does not apply", result.SubTitle);
@@ -110,7 +110,7 @@ public class TaxSummaryReportProviderTests
         filters.Set("dateFrom", $"{From:yyyy-MM-dd}");
         filters.Set("dateTo", $"{To:yyyy-MM-dd}");
 
-        var result = await _sut.GenerateAsync(filters);
+        var result = await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         var rows = result.Sections.Single().Rows;
         Assert.Equal("160.00", rows.Single(r => r.Cells[0] == "Total taxable sales").Cells[1]);   // 150 coded income + 10 tax on sales
@@ -143,7 +143,7 @@ public class TaxSummaryReportProviderTests
         filters.Set("dateFrom", $"{From:yyyy-MM-dd}");
         filters.Set("dateTo", $"{To:yyyy-MM-dd}");
 
-        var result = await _sut.GenerateAsync(filters);
+        var result = await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         Assert.Equal("15.00", result.GrandTotal!.Cells[1]);
         Assert.Contains("refundable", result.GrandTotal.Cells[0]);

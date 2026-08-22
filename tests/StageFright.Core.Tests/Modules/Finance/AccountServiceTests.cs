@@ -152,7 +152,7 @@ public class AccountServiceTests : TestBase
         await _sut.UpdateAsync(IncomeAccountId, "New Name", Ct);
 
         await _repo.Received(1).UpdateAsync(
-            Arg.Is<Account>(a => a.Id == IncomeAccountId && a.Name == "New Name"),
+            Arg.Is<Account>(a => a!.Id == IncomeAccountId && a.Name == "New Name"),
             Arg.Any<CancellationToken>());
         await _audit.Received(1).LogAsync(
             Arg.Any<string>(), IncomeAccountId, Arg.Is(AuditAction.Update),

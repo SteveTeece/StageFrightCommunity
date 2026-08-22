@@ -72,9 +72,9 @@ public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
         await svc.RecordIncomeAsync(new RecordIncomeRequest
         {
             Date = Today, Amount = 110m, AccountId = IncomeAccountId, TaxCode = TaxCode.Taxable
-        });
+        }, TestContext.Current.CancellationToken);
 
-        var lines = await _db.Transactions.ToListAsync();
+        var lines = await _db.Transactions.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(3, lines.Count);
         Assert.Equal(lines.Sum(t => t.DebitAmount), lines.Sum(t => t.CreditAmount));
 
@@ -97,9 +97,9 @@ public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
             BankAccountId = SystemAccounts.CashId,
             ExpenseAccountId = ExpenseAccountId,
             TaxCode = TaxCode.Taxable
-        });
+        }, TestContext.Current.CancellationToken);
 
-        var lines = await _db.Transactions.ToListAsync();
+        var lines = await _db.Transactions.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(3, lines.Count);
         Assert.Equal(lines.Sum(t => t.DebitAmount), lines.Sum(t => t.CreditAmount));
 
@@ -119,9 +119,9 @@ public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
         await svc.RecordIncomeAsync(new RecordIncomeRequest
         {
             Date = Today, Amount = 110m, AccountId = IncomeAccountId, TaxCode = TaxCode.Taxable
-        });
+        }, TestContext.Current.CancellationToken);
 
-        var lines = await _db.Transactions.ToListAsync();
+        var lines = await _db.Transactions.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(2, lines.Count);
         Assert.All(lines, t => Assert.Null(t.TaxCode));
     }
@@ -136,21 +136,21 @@ public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
         await BuildIncomeService().RecordIncomeAsync(new RecordIncomeRequest
         {
             Date = Today, Amount = 110m, AccountId = IncomeAccountId, TaxCode = TaxCode.Taxable
-        });
+        }, TestContext.Current.CancellationToken);
         await BuildExpenseService().RecordExpenseAsync(new RecordExpenseRequest
         {
             Date = Today, Amount = 110m,
             BankAccountId = SystemAccounts.CashId,
             ExpenseAccountId = ExpenseAccountId,
             TaxCode = TaxCode.Taxable
-        });
+        }, TestContext.Current.CancellationToken);
 
         var provider = new TaxSummaryReportProvider(new GLRepository(_db), new AccountRepository(_db), new SettingsRepository(_db));
         var filters = new StageFright.Reports.Models.ReportFilterValues();
         filters.Set("dateFrom", $"{Today.AddDays(-1):yyyy-MM-dd}");
         filters.Set("dateTo", $"{Today.AddDays(1):yyyy-MM-dd}");
 
-        var result = await provider.GenerateAsync(filters);
+        var result = await provider.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         var rows = result.Sections.Single().Rows;
         Assert.Equal("10.00", rows.Single(r => r.Cells[0] == "Tax collected on sales").Cells[1]);
@@ -165,7 +165,7 @@ public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
         await SeedSettingsAsync(isTaxApplicable: false);
 
         var provider = new TaxSummaryReportProvider(new GLRepository(_db), new AccountRepository(_db), new SettingsRepository(_db));
-        var result = await provider.GenerateAsync(new StageFright.Reports.Models.ReportFilterValues());
+        var result = await provider.GenerateAsync(new StageFright.Reports.Models.ReportFilterValues(), TestContext.Current.CancellationToken);
 
         Assert.Empty(result.Sections);
         Assert.Contains("does not apply", result.SubTitle);

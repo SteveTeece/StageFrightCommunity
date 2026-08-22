@@ -98,7 +98,7 @@ public sealed class V16_ChartOfAccountsBalanceTests : IAsyncLifetime
     [Fact]
     public async Task GetActiveAccountBalancesAsync_ReturnsDebitNormalBalance_ForAssetAccount()
     {
-        var result = await BuildAccountBalanceService().GetActiveAccountBalancesAsync();
+        var result = await BuildAccountBalanceService().GetActiveAccountBalancesAsync(TestContext.Current.CancellationToken);
 
         var savings = Assert.Single(result, r => r.AccountId == SavingsAccountId);
         Assert.Equal(190m, savings.Balance); // 250 debit - 60 credit
@@ -108,7 +108,7 @@ public sealed class V16_ChartOfAccountsBalanceTests : IAsyncLifetime
     [Fact]
     public async Task GetActiveAccountBalancesAsync_FlipsSign_ForIncomeAccount()
     {
-        var result = await BuildAccountBalanceService().GetActiveAccountBalancesAsync();
+        var result = await BuildAccountBalanceService().GetActiveAccountBalancesAsync(TestContext.Current.CancellationToken);
 
         var donations = Assert.Single(result, r => r.AccountId == DonationsIncomeAccountId);
         Assert.Equal(250m, donations.Balance); // net credit of 250, displayed positive
@@ -117,7 +117,7 @@ public sealed class V16_ChartOfAccountsBalanceTests : IAsyncLifetime
     [Fact]
     public async Task GetActiveAccountBalancesAsync_ReturnsDebitNormalBalance_ForExpenseAccount()
     {
-        var result = await BuildAccountBalanceService().GetActiveAccountBalancesAsync();
+        var result = await BuildAccountBalanceService().GetActiveAccountBalancesAsync(TestContext.Current.CancellationToken);
 
         var venueHire = Assert.Single(result, r => r.AccountId == VenueHireExpenseAccountId);
         Assert.Equal(60m, venueHire.Balance);
@@ -126,7 +126,7 @@ public sealed class V16_ChartOfAccountsBalanceTests : IAsyncLifetime
     [Fact]
     public async Task GetActiveAccountBalancesAsync_ReturnsZero_ForAccountWithNoTransactions()
     {
-        var result = await BuildAccountBalanceService().GetActiveAccountBalancesAsync();
+        var result = await BuildAccountBalanceService().GetActiveAccountBalancesAsync(TestContext.Current.CancellationToken);
 
         var empty = Assert.Single(result, r => r.AccountId == EmptyAccountId);
         Assert.Equal(0m, empty.Balance);
@@ -139,9 +139,9 @@ public sealed class V16_ChartOfAccountsBalanceTests : IAsyncLifetime
         var asAt = DateTime.UtcNow;
 
         var gl = new GLRepository(_db);
-        var expectedNetDebit = await gl.GetAccountBalanceAsync(SavingsAccountId, asAt);
+        var expectedNetDebit = await gl.GetAccountBalanceAsync(SavingsAccountId, asAt, TestContext.Current.CancellationToken);
 
-        var result = await BuildAccountBalanceService().GetActiveAccountBalancesAsync();
+        var result = await BuildAccountBalanceService().GetActiveAccountBalancesAsync(TestContext.Current.CancellationToken);
         var savings = Assert.Single(result, r => r.AccountId == SavingsAccountId);
 
         // Asset is debit-normal in both AccountBalanceService and BalanceSheetReportProvider
@@ -149,7 +149,7 @@ public sealed class V16_ChartOfAccountsBalanceTests : IAsyncLifetime
         Assert.Equal(expectedNetDebit, savings.Balance);
 
         var balanceSheet = BuildBalanceSheetProvider();
-        var report = await balanceSheet.GenerateAsync(new StageFright.Reports.Models.ReportFilterValues());
+        var report = await balanceSheet.GenerateAsync(new StageFright.Reports.Models.ReportFilterValues(), TestContext.Current.CancellationToken);
         var assetsSection = report.Sections.Single(s => s.Heading == "Assets");
         var savingsRow = assetsSection.Rows.Single(r => r.Cells[0].Contains("Savings"));
         Assert.Contains(savings.Balance!.Value.ToString("F2"), savingsRow.Cells[1]);

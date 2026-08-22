@@ -101,7 +101,7 @@ public class CommitteeServiceTests : TestBase
 
         // A different year's record must not be touched; a new one is created instead.
         await _repo.Received(1).AddAsync(
-            Arg.Is<CommitteePositionRecord>(r => r.Year == 2026), Arg.Any<CancellationToken>());
+            Arg.Is<CommitteePositionRecord>(r => r!.Year == 2026), Arg.Any<CancellationToken>());
         await _repo.DidNotReceive().UpdateAsync(lastYearRecord, Arg.Any<CancellationToken>());
     }
 

@@ -141,7 +141,7 @@ public class MemberServiceTests : TestBase
         await svc.UpdateAsync(member.Id, request, Ct);
 
         await _memberRepo.Received(1).UpdateAsync(
-            Arg.Is<Member>(m => m.FirstName == "Janet" && m.LastName == "Smith"),
+            Arg.Is<Member>(m => m!.FirstName == "Janet" && m.LastName == "Smith"),
             Arg.Any<CancellationToken>());
     }
 
@@ -186,7 +186,7 @@ public class MemberServiceTests : TestBase
         await svc.InactivateAsync(member.Id, Ct);
 
         await _memberRepo.Received(1).UpdateAsync(
-            Arg.Is<Member>(m => m.Status == MemberStatus.Inactive && m.InactivateDate != null),
+            Arg.Is<Member>(m => m!.Status == MemberStatus.Inactive && m.InactivateDate != null),
             Arg.Any<CancellationToken>());
     }
 
@@ -241,7 +241,7 @@ public class MemberServiceTests : TestBase
         await svc.ActivateAsync(member.Id, Ct);
 
         await _memberRepo.Received(1).UpdateAsync(
-            Arg.Is<Member>(m => m.Status == MemberStatus.Active && m.ActivateDate != null),
+            Arg.Is<Member>(m => m!.Status == MemberStatus.Active && m.ActivateDate != null),
             Arg.Any<CancellationToken>());
     }
 

@@ -83,8 +83,8 @@ public sealed class StartupBenchmarkTests : IAsyncLifetime
 
         // Simulate the database-initialisation phase of MauiProgram startup
         await using var ctx = new StageFrightDbContext(options);
-        await ctx.Database.OpenConnectionAsync();
-        await ctx.Database.MigrateAsync();
+        await ctx.Database.OpenConnectionAsync(cancellationToken: TestContext.Current.CancellationToken);
+        await ctx.Database.MigrateAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         sw.Stop();
 
@@ -111,7 +111,7 @@ public sealed class StartupBenchmarkTests : IAsyncLifetime
         var sw = Stopwatch.StartNew();
 
         // Simulate the first-run detection phase executed in App.razor OnInitializedAsync
-        var isComplete = await setupSvc.IsSetupCompleteAsync();
+        var isComplete = await setupSvc.IsSetupCompleteAsync(TestContext.Current.CancellationToken);
 
         sw.Stop();
 
@@ -141,14 +141,14 @@ public sealed class StartupBenchmarkTests : IAsyncLifetime
         // Phase 1: DB migration (mirrors MauiProgram.cs startup sequence)
         var migrationSw = Stopwatch.StartNew();
         await using var ctx = new StageFrightDbContext(options);
-        await ctx.Database.OpenConnectionAsync();
-        await ctx.Database.MigrateAsync();
+        await ctx.Database.OpenConnectionAsync(cancellationToken: TestContext.Current.CancellationToken);
+        await ctx.Database.MigrateAsync(cancellationToken: TestContext.Current.CancellationToken);
         migrationSw.Stop();
 
         // Phase 2: first-run detection (mirrors App.razor OnInitializedAsync)
         var detectionSw = Stopwatch.StartNew();
         var setupSvc = BuildSetupService(ctx);
-        var isComplete = await setupSvc.IsSetupCompleteAsync();
+        var isComplete = await setupSvc.IsSetupCompleteAsync(TestContext.Current.CancellationToken);
         detectionSw.Stop();
 
         totalSw.Stop();

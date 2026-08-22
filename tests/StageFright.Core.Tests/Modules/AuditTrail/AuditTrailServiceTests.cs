@@ -29,7 +29,7 @@ public class AuditTrailServiceTests : TestBase
 
         await _repository.Received(1).AddAsync(
             Arg.Is<AuditTrailEntry>(e =>
-                e.EntityType == "Member" &&
+                e!.EntityType == "Member" &&
                 e.EntityId == entityId &&
                 e.Action == AuditAction.Update &&
                 e.OldValue == "old" &&

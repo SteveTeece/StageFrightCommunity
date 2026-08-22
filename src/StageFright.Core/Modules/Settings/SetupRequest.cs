@@ -18,13 +18,13 @@ public record SetupRequest(
     IReadOnlyList<string>? CommitteeOfficeHolderTitles = null,
     int? GeneralCommitteeSeatCountTarget = null,
     int AuditRetentionYears = 1,
-    /// <summary>Chart of Accounts entries queued during setup (spec 017 FR-012/FR-013),
-    /// created together with the rest of setup at Finish.</summary>
+    // QueuedAccounts: Chart of Accounts entries queued during setup (spec 017 FR-012/FR-013),
+    // created together with the rest of setup at Finish.
     IReadOnlyList<QueuedAccountRequest>? QueuedAccounts = null,
-    /// <summary>Opening balance entries queued during setup (FR-017/FR-018). An entry's
-    /// <c>AccountId</c> is either a real existing account or a <see cref="QueuedAccountRequest.ClientId"/>
-    /// that <see cref="SetupService"/> resolves to the real id it assigns.</summary>
+    // QueuedOpeningBalances: opening balance entries queued during setup (FR-017/FR-018). An
+    // entry's AccountId is either a real existing account or a QueuedAccountRequest.ClientId
+    // that SetupService resolves to the real id it assigns.
     IReadOnlyList<OpeningBalanceEntry>? QueuedOpeningBalances = null,
-    /// <summary>The date queued opening balances are recorded as at. Ignored when
-    /// <see cref="QueuedOpeningBalances"/> is empty.</summary>
+    // OpeningBalanceAsAtDate: the date queued opening balances are recorded as at. Ignored
+    // when QueuedOpeningBalances is empty.
     DateTime OpeningBalanceAsAtDate = default);
