@@ -26,7 +26,7 @@
             <input id="committee-role-input" type="text" class="form-control"
                    @bind="_titleInput" @bind:event="oninput"
                    placeholder="e.g. Publicity Officer" />
-            <button id="committee-role-add-btn" type="button" class="btn btn-outline-primary" @onclick="HandleAddAsync">+</button>
+            <button id="committee-role-add-btn" type="button" class="btn btn-outline-primary" @onclick="HandleAddAsync" aria-label="Add title">&rarr;</button>
         </div>
         @if (_error is not null)
         {
@@ -38,6 +38,7 @@
         </div>
     </div>
     <div class="col-md-6">
+        <label class="form-label">Additional Titles</label>
         <BorderedListBox TItem="string" Items="QueuedTitles"
                           OnRemove="@(EventCallback.Factory.Create<string>(this, HandleRemoveAsync))"
                           EmptyText="No additional titles added yet.">

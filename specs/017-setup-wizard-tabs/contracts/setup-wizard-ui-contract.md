@@ -51,7 +51,7 @@ Caller supplies `OnSubmit`; the component owns field markup, `DataAnnotationsVal
 Following the existing wizard's convention of explicit `id`s on primary actions (`id="btn-next"`, `id="btn-finish"` already exist and are preserved — there is no `id="btn-back"`: the tabbed redesign has no dedicated Back button, since clicking any earlier tab header is the back mechanism):
 
 - Tab headers: rendered by `Tabs`/`Tab`'s own markup (no new ids needed — tests select by tab `Title` text, matching how `FinancePage.razor`'s own tests already do it).
-- `id="committee-role-input"`, `id="committee-role-add-btn"` — the +/entry pair on the Committee tab.
+- `id="committee-role-input"`, `id="committee-role-add-btn"` — the entry input/add-button pair on the Committee tab (the add button renders a right-arrow glyph, not a literal "+").
 - `AddAccountForm` renders `id="account-name"`, `id="account-type"`, `id="account-is-bank"` — the *same* ids `ChartOfAccountsPage` already used before extraction, reused as-is by every caller including the wizard's `ChartOfAccountsTab` (no `coa-tab-` prefix was needed in practice — the two callers are never both on screen at once, so the shared ids never collide).
 - `id="ob-tab-as-at-date"` — the wizard's Opening Balances tab as-at-date input (the standalone page's own Step 1 keeps its separate `id="asAtDate"`). The balance-entry table's per-row inputs mirror `OpeningBalancesWizard`'s existing `aria-label="Balance for @row.Account.Name"` pattern (no shared `id` possible across dynamic rows; tests select by `aria-label`).
 - `id="seedData"` — moved from wherever it renders today to the Review tab specifically (FR-025); not `seed-data-checkbox` as first drafted here.
