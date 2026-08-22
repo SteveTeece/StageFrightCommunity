@@ -1,15 +1,22 @@
 # StageFright Community
 
-A clean, modern, modular desktop application that reduces administrative overhead for community performing arts groups. Built with .NET MAUI and Blazor Hybrid, featuring accurate financial and attendance tracking with a plugin-friendly architecture.
+[![CI](https://github.com/SteveTeece/StageFrightCommunity/actions/workflows/ci.yml/badge.svg)](https://github.com/SteveTeece/StageFrightCommunity/actions/workflows/ci.yml)
+[![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![Top language](https://img.shields.io/github/languages/top/SteveTeece/StageFrightCommunity)](https://github.com/SteveTeece/StageFrightCommunity)
+[![Last commit](https://img.shields.io/github/last-commit/SteveTeece/StageFrightCommunity)](https://github.com/SteveTeece/StageFrightCommunity/commits/dev)
+[![Open issues](https://img.shields.io/github/issues/SteveTeece/StageFrightCommunity)](https://github.com/SteveTeece/StageFrightCommunity/issues)
+[![Repo size](https://img.shields.io/github/repo-size/SteveTeece/StageFrightCommunity)](https://github.com/SteveTeece/StageFrightCommunity)
+
+A clean, modern, modular desktop application that reduces administrative overhead for community performing arts groups. Built with .NET MAUI and Blazor Hybrid, featuring double-entry financial tracking and attendance management with a plugin-friendly architecture.
 
 ## Vision
 
 StageFright Community delivers a robust platform for managing members, finances, events, and attendance with:
 
 - **Clean, maintainable code** following SOLID principles
-- **Modular vertical slice architecture** for independent feature development
+- **Layered architecture with module slices** for independent feature development (see [Architecture Guide](docs/ARCHITECTURE.md))
 - **Dashboard-driven interface** for intuitive feature discovery
-- **Accurate financial tracking** with immutable transaction records
+- **Accurate, double-entry financial tracking** with immutable transaction records
 - **Extensible plugin system** for community-specific customization
 - **Modern, compact UI design** minimizing whitespace and visual clutter
 
@@ -17,60 +24,62 @@ StageFright Community delivers a robust platform for managing members, finances,
 
 ### Prerequisites
 
-- **.NET 8.0 or later**
-- **Visual Studio 2022** (recommended) or **Visual Studio Code** with C# extensions
-- **Windows 11** or **macOS 14+** for desktop platforms
+- **.NET 10.0 SDK** (with the MAUI workload: `dotnet workload install maui`)
+- **Visual Studio 2022** (recommended) or **Visual Studio Code** with the C# Dev Kit
+- **Windows 10 (build 19041+)** or **macOS (Mac Catalyst)**
 
 ### Building the Project
 
 ```bash
-# Restore dependencies
+# Restore dependencies (installs the MAUI workload first if needed)
+dotnet workload install maui
 dotnet restore
 
 # Build the solution
 dotnet build
 
 # Run the application
-dotnet run
+dotnet run --project src/StageFright.App/
 ```
 
 ### Running Tests
 
 ```bash
-# Run all tests with code-path coverage
-dotnet test --verbosity normal
+# Run all tests
+dotnet test
 
-# Run specific test project
-dotnet test tests/StageFright.Tests.csproj
+# Run a specific test project
+dotnet test tests/StageFright.Core.Tests/
 ```
+
+See [SETUP.md](docs/SETUP.md) for full developer setup, database/migration commands, and CI details.
 
 ## Architecture
 
-### Vertical Slice Module Architecture
+### Layered Architecture with Module Slices
 
-Each feature is organized as a self-contained vertical slice in its own folder:
+Rather than a per-module `Domain/Application/Infrastructure/UI` vertical slice, this is a **layered solution** — one project per architectural layer, with each business capability organized as a folder *inside* `StageFright.Core`:
 
 ```
-src/Features/
-├── Members/                    # Member management module
-│   ├── Domain/                # Entities, value objects, contracts
-│   ├── Application/           # Services, handlers, orchestration
-│   ├── Infrastructure/        # Repositories, data access
-│   ├── UI/                    # Blazor components and pages
-│   ├── Tests/                 # Unit and integration tests
-│   └── DashboardTile.cs       # Dashboard tile provider
-├── FinancialTracking/         # Financial tracking module
-├── EventScheduling/           # Event scheduling module
-└── [Other modules...]
+src/
+├── StageFright.App/          # MAUI Blazor Hybrid host — composition root only
+├── StageFright.Core/         # Entities, enums, exceptions, contracts, and
+│   └── Modules/<Name>/       #   per-module services + request/response DTOs + menu provider
+├── StageFright.Data/         # Centralized DAL — one repository per entity
+├── StageFright.Plugins.Contracts/  # Extension-point interfaces
+├── StageFright.Reports/      # Report pipeline
+└── StageFright.UI/           # All Blazor UI (pages, dashboard tiles, shared components)
 ```
+
+Current modules: `Agm`, `AuditTrail`, `Dashboard`, `Events`, `Finance`, `Members`, `Rehearsals`, `Settings`.
 
 **Key Principles:**
 - **No MediaTr or CQRS** — modules use direct service injection and standard patterns
-- **Self-contained ownership** — each module owns its full vertical slice
-- **Independent testing** — modules can be tested in isolation
-- **Dashboard tiles** — each module defines how it appears on the dashboard
+- **Repositories are centralized** in `StageFright.Data`, not module-owned — a deliberate deviation from pure vertical-slice architecture (one shared SQLite database)
+- **Explicit DI registration** — every service/repository/provider is registered by hand in `MauiProgram.cs`; there's no assembly-scanning auto-discovery for in-solution types
+- **Dashboard tiles** — each module defines how it appears on the dashboard, via a provider living in `StageFright.UI`
 
-See [Architecture Guide](docs/ARCHITECTURE.md) for detailed patterns.
+See [Architecture Guide](docs/ARCHITECTURE.md) for the full picture.
 
 ### Dashboard Tile System
 
@@ -81,64 +90,53 @@ The dashboard is the primary user interface for feature discovery. Each module e
 - Quick-action buttons
 - Activity feeds and status indicators
 
-Tiles are self-contained, independently rendered, and fail gracefully without breaking the dashboard.
+Tiles opt into one of four grid footprints (`OneByOne` default, `OneByTwo`, `TwoByOne`, `TwoByTwo`) and load in parallel — a failing tile shows "Unable to load" without breaking the dashboard.
 
 ### Settings System
 
 Configuration and preferences are managed through the **Settings page** (`/settings`), organized into tabs:
 
-- **Application Settings Tab** — Organization information, annual/rehearsal fees, membership renewal date
-- **Module Settings Tabs** — Each module provides its own settings tab for module-specific configuration (e.g., Members tab, Events tab)
+- **Built-in tabs** (General, Tax, Committee, Event Types, Backup & Restore) are hardcoded directly in the Settings page — not contributed by modules
+- **Plugin-contributed tabs** implement `ISettingsTabProvider` and are appended after the built-in tabs, discovered at runtime
 
-Module settings are optional; modules that have configurable options implement the `ISettingsTabProvider` interface to register a settings tab. The application auto-discovers and registers tabs at startup.
-
-**Core Application Settings**:
+**Core Application Settings** (General tab):
 - Organization/Group Name
 - Annual Membership Fee
-- Rehearsal/Event Fee  
+- Rehearsal/Event Fee
 - Membership Renewal Due Date
 
 ### Navigation Menu System
 
-Each module defines its own menu items in the main navigation bar. Menu items can include optional icons and are automatically ordered.
+Navigation renders as a **fixed vertical sidebar** (not a top nav bar). Each module defines its own menu items via `IMenuItemProvider`, registered explicitly (not auto-discovered) in `MauiProgram.cs`.
 
 - **Module Menu Items** — Each module contributes menu items for feature navigation
-- **Icon Support** — Optional icons visually represent menu functions
-- **Sub-menus** — Menu items can have child items for grouping related features
+- **Icon Support** — Sidebar icons are Bootstrap Icons inlined as CSS masks
+- **Sub-menus** — Expandable/collapsible groups, auto-expanding while a child route is active
 - **Dynamic Badges** — Real-time notification counts (e.g., "5" pending items)
 - **Settings Always Last** — Settings menu item is reserved and always appears at the end
-
-Menu items are registered via the `IMenuItemProvider` interface and auto-discovered at application startup. The application renders Dashboard first, then module menu items in order, and Settings last.
 
 **Example Navigation**:
 ```
 Dashboard
-├── Members (users icon)
-│   ├── Active Members
-│   ├── Pending Approval [3]
-│   └── Add Member
-├── Events (calendar icon)
-│   ├── Upcoming Events
-│   ├── Past Events
-│   └── Create Event
-├── Finances (dollar-sign icon)
-│   ├── Transactions
-│   ├── Reports [2]
-│   └── Income Summary
+├── Members
+├── Rehearsals
+├── Events
+├── Finance
+├── Agm
+├── AuditTrail
 ... [other modules] ...
-└── Settings (cog icon)
+└── Settings
 ```
 
-See [ARCHITECTURE.md](docs/ARCHITECTURE.md#navigation-menu-system) for menu system implementation details.
+See [ARCHITECTURE.md § Navigation](docs/ARCHITECTURE.md#navigation) for implementation details.
 
 ## UI Design
 
-The application follows a **clean, simple, modern design** philosophy:
+The application follows the **"Midnight Glass"** design system — a glassmorphism theme of soft gradient-orb backgrounds, frosted/blurred panels, and a condensed display typeface (Saira Semi Condensed), defined as CSS custom properties in `StageFright.App/wwwroot/app.css`:
 
-- **Minimal whitespace** — compact layouts optimized for information density
-- **Purposeful design** — every visual element serves a user goal
-- **Modern aesthetics** — professional color palettes, smooth animations, clear hierarchy
-- **Consistent components** — unified design language across all screens
+- **Minimal whitespace** — compact layouts using Bootstrap spacing utilities
+- **Design tokens** — every color is a `--sf-*` custom property, with light/dark variants
+- **Consistent components** — `RadzenDataGrid` for tables, `BorderedListBox` for bordered lists, `RadzenSwitch` for toggles
 - **Accessible** — keyboard-navigable, screen-reader compatible
 
 See [UI Component Style Guide](docs/UI_COMPONENT_STYLE_GUIDE.md) for detailed design standards and component examples.
@@ -150,35 +148,38 @@ See [UI Component Style Guide](docs/UI_COMPONENT_STYLE_GUIDE.md) for detailed de
 **All code must be tested.** Testing is a first-class citizen with mandatory coverage requirements:
 
 - **Every reachable code path** must have automated tests before merge
-- **Unit tests** for business logic and component behavior
-- **Integration tests** for service interactions and UI workflows
-- **UI integration tests** for all user-facing functions
+- **Unit tests** (xUnit v3 + NSubstitute) for business logic and component behavior
+- **Integration tests** (real SQLite) for service interactions
+- **UI tests** (bUnit) for Blazor components and user-facing functions
 - Tests must cover: success paths, validation failures, exceptions, boundary conditions, and state transitions
 
 ### Code Quality Standards
 
 - Follow SOLID principles (Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion)
 - Use custom domain exceptions at architectural boundaries
-- Implement soft-delete pattern for data preservation (financial records are immutable)
-- Maintain separation of concerns: Domain, Application, Infrastructure, UI, Cross-Cutting
+- Implement soft-delete pattern for data preservation (financial records — `Fee`, `Payment`, `Transaction` — are immutable and exempt)
+- One class/interface/record/struct/enum per file, file name matching the type exactly
 
 ### Custom Exceptions
 
-All exceptions crossing architectural boundaries must use project-defined custom exceptions:
+All exceptions crossing architectural boundaries must use one of the project-defined custom exceptions (`StageFright.Core/Exceptions/`):
 
-- `PersistenceException`
+- `DataAccessException`
 - `EntityNotFoundException`
 - `DuplicateEntityException`
 - `ConcurrencyException`
 - `DataIntegrityException`
 - `ValidationException`
-- `PluginException`
+- `GLBalanceException`
+- `ReconciliationException`
+- `ImportException`
+- `PluginLoadException`
 
-Raw framework exceptions must be translated at boundaries.
+Every one shares one constructor shape: `(message, entityType, operationContext, entityId = null, innerException = null)`. Raw framework exceptions must be translated at boundaries.
 
 ## Constitution & Governance
 
-This project operates under the **Spec Kit Constitution** (version 2.2.0), which defines:
+This project operates under the **Spec Kit Constitution** (version 2.6.0), which defines:
 
 - Architectural patterns and standards
 - Testing requirements and coverage expectations
@@ -186,14 +187,14 @@ This project operates under the **Spec Kit Constitution** (version 2.2.0), which
 - Module organization and plugin architecture
 - Specification structure and quality gates
 
-See [Constitution](\.specify\memory\constitution.md) for the complete governance framework.
+See [Constitution](.specify/memory/constitution.md) for the complete governance framework.
 
 ## Contributing
 
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
 - Development workflow
-- Module structure guidelines
+- Solution structure guidelines
 - Creating new features with specifications
 - Testing and quality requirements
 - Code review process
@@ -201,21 +202,24 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
 ## Technology Stack
 
-- **Framework**: .NET MAUI with Blazor Hybrid
+- **Framework**: .NET MAUI with Blazor Hybrid (target: `net10.0-windows10.0.19041.0` / `net10.0-maccatalyst`)
 - **Language**: C# 14
-- **UI**: Blazor components, Radzen Blazor (free components)
+- **UI**: Blazor components, Radzen Blazor (`Radzen.Blazor`), BlazorBootstrap (`Blazor.Bootstrap`)
 - **Platforms**: Windows desktop, macOS desktop
-- **Testing**: xUnit, bUnit, Playwright
+- **Testing**: xUnit v3, bUnit, NSubstitute
 - **Logging**: Serilog + OpenTelemetry
-- **Data**: Entity Framework Core
+- **Data**: Entity Framework Core against SQLite (`Microsoft.EntityFrameworkCore.Sqlite`)
+- **Reports**: QuestPDF (PDF), CsvHelper (CSV)
 
 ## Key Features
 
 - **Member Management** — Add, track, and manage member information
-- **Financial Tracking** — Immutable transaction records, fee tracking, payment processing
-- **Event Scheduling** — Schedule rehearsals and events, manage attendance
-- **Attendance Tracking** — Record attendance, generate reports
-- **Dashboard** — At-a-glance feature access through modular dashboard tiles
+- **Financial Tracking** — Double-entry GL, immutable transaction records, fee tracking, payment processing, bank reconciliation
+- **Event & Rehearsal Scheduling** — Schedule rehearsals and events, manage attendance
+- **AGM & Committee** — Annual general meeting workflow and committee term/position tracking
+- **Reporting** — Ten built-in reports (Income Statement, Trial Balance, Balance Sheet, General Ledger, and more) exported to PDF or CSV
+- **Dashboard** — At-a-glance feature access through modular, resizable dashboard tiles
+- **Plugin System** — Five extension points (dashboard tiles, settings tabs, menu items, reports, data access) for external assemblies
 
 ## License
 
@@ -229,7 +233,9 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
 ## Roadmap
 
-- **MVP** — Core member, financial, and event modules
-- **Phase 2** — Plugin architecture and extension points
-- **Phase 3** — Cloud sync and backup capabilities
-- **Phase 4** — Multi-discipline support and advanced reporting
+- **MVP** — Core member, financial, and event modules (shipped)
+- **Finance Expansion** — Double-entry GL, bank reconciliation, generic sales tax (shipped)
+- **Setup Wizard & Onboarding** — Guided first-run configuration (shipped)
+- **Plugin Ecosystem** — Third-party plugin distribution and discovery (infrastructure in place; ecosystem growth ongoing)
+- **Cloud Sync & Backup** — Optional cloud backup/sync
+- **Multi-Discipline Support** — Beyond performing arts groups, plus advanced reporting
