@@ -36,6 +36,28 @@
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
 
+    <!-- Blazor.Bootstrap ships static JS assets named "blazor.bootstrap.sortable-list.js" and
+         "blazor.bootstrap.theme-switcher.js". WinAppSDK's PRI resource indexer (task WinAppSdkGenerateProjectPriFile,
+         invoked from target "_GenerateProjectPriFileCore" as part of the SDK's "GenerateProjectPriFile" target
+         chain — see Microsoft.Windows.SDK.BuildTools.MSIX.Pri.targets) scans every packaged content file for the
+         "name.qualifier-value.ext" convention used by qualified assets (e.g. "logo.scale-200.png"), so it misreads
+         "sortable-list"/"theme-switcher" as unrecognized resource qualifiers and emits benign PRI249 warnings.
+         "_AppxLayoutAssetPackageFiles" is the SDK's own exclusion list, applied when target
+         "_GenerateProjectPriConfigurationFiles" builds its file layout from "@(PriOutputs)" (or, on older WinAppSDK
+         builds-tools versions, "@(PackagingOutputs)"). Populating it here — hooked to run immediately before that
+         target, once "GetPriOutputs" has already populated the source item earlier in the same dependency chain —
+         removes the two files from qualifier scanning only; it doesn't affect the actual output, since Blazor's own
+         static-web-asset copy to wwwroot (a separate RazorSDK mechanism) is untouched and BlazorWebView keeps
+         serving both files normally. -->
+    <Target Name="_ExcludeBlazorBootstrapAssetsFromPriLayout"
+            BeforeTargets="_GenerateProjectPriConfigurationFiles"
+            Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+        <ItemGroup>
+            <_AppxLayoutAssetPackageFiles Include="@(PriOutputs);@(PackagingOutputs)"
+                Condition="'%(Filename)%(Extension)' == 'blazor.bootstrap.sortable-list.js' or '%(Filename)%(Extension)' == 'blazor.bootstrap.theme-switcher.js'" />
+        </ItemGroup>
+    </Target>
+
     <ItemGroup>
         <PackageReference Include="Blazor.Bootstrap" />
         <PackageReference Include="Microsoft.Maui.Controls" />
