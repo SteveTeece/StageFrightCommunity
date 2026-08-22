@@ -122,7 +122,7 @@ public class FeeServiceTests : TestBase
 
         await _feeRepo.Received(1).AddAsync(
             Arg.Is<Fee>(f =>
-                f.MemberId == ActiveMember1Id &&
+                f!.MemberId == ActiveMember1Id &&
                 f.FeeType == FeeType.Annual &&
                 f.Amount == 50m &&
                 f.PaidAtCreation == false),
@@ -130,8 +130,8 @@ public class FeeServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Any(t => t.DebitAmount == 50m && t.GLAccount == "1200") &&
-                lines.Any(t => t.CreditAmount == 50m && t.GLAccount == "4000")),
+                lines!.Any(t => t.DebitAmount == 50m && t.GLAccount == "1200") &&
+                lines!.Any(t => t.CreditAmount == 50m && t.GLAccount == "4000")),
             Arg.Any<CancellationToken>());
     }
 
@@ -142,7 +142,7 @@ public class FeeServiceTests : TestBase
 
         await _feeRepo.Received(1).AddAsync(
             Arg.Is<Fee>(f =>
-                f.FeeDate.Month == 1 &&
+                f!.FeeDate.Month == 1 &&
                 f.FeeDate.Day == 1 &&
                 f.FeeDate.Year == DateTime.UtcNow.Year),
             Arg.Any<CancellationToken>());
@@ -155,7 +155,7 @@ public class FeeServiceTests : TestBase
 
         await _feeRepo.Received(1).AddAsync(
             Arg.Is<Fee>(f =>
-                f.DueDate.Month == 12 &&
+                f!.DueDate.Month == 12 &&
                 f.DueDate.Day == 31 &&
                 f.DueDate.Year == DateTime.UtcNow.Year),
             Arg.Any<CancellationToken>());
@@ -202,10 +202,10 @@ public class FeeServiceTests : TestBase
         await _sut.ApplyAnnualFeesAsync(new[] { ActiveMember1Id }, Ct);
 
         await _feeRepo.Received(1).AddAsync(
-            Arg.Is<Fee>(f => f.TaxCode == null),
+            Arg.Is<Fee>(f => f!.TaxCode == null),
             Arg.Any<CancellationToken>());
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.Count == 2 && lines.All(t => t.TaxCode == null)),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.Count == 2 && lines.All(t => t.TaxCode == null)),
             Arg.Any<CancellationToken>());
     }
 
@@ -217,11 +217,11 @@ public class FeeServiceTests : TestBase
         await _sut.ApplyAnnualFeesAsync(new[] { ActiveMember1Id }, Ct);
 
         await _feeRepo.Received(1).AddAsync(
-            Arg.Is<Fee>(f => f.TaxCode == TaxCode.Taxable && f.Amount == 110m),
+            Arg.Is<Fee>(f => f!.TaxCode == TaxCode.Taxable && f.Amount == 110m),
             Arg.Any<CancellationToken>());
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 3
+                lines!.Count == 3
                 && lines.Any(t => t.DebitAmount == 110m && t.GLAccount == "1200")
                 && lines.Any(t => t.CreditAmount == 100m && t.GLAccount == "4000")
                 && lines.Any(t => t.CreditAmount == 10m && t.AccountId == SystemAccounts.TaxCollectedId)),
@@ -239,7 +239,7 @@ public class FeeServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2 && lines.All(t => t.TaxCode == code)),
+                lines!.Count == 2 && lines.All(t => t.TaxCode == code)),
             Arg.Any<CancellationToken>());
     }
 
@@ -251,7 +251,7 @@ public class FeeServiceTests : TestBase
         await _sut.ApplyAnnualFeesAsync(new[] { ActiveMember1Id }, Ct);
 
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.TaxCode == TaxCode.TaxExempt)),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.All(t => t.TaxCode == TaxCode.TaxExempt)),
             Arg.Any<CancellationToken>());
     }
 

@@ -1,6 +1,7 @@
 @page "/finance/accounts"
 @using StageFright.Core.Enums
 @using StageFright.Core.Modules.Finance
+@using StageFright.UI.Shared
 
 <PageTitle>Chart of Accounts</PageTitle>
 
@@ -27,44 +28,7 @@
         <div class="card mb-2">
             <div class="card-body py-2">
                 <h6 class="card-title mb-2">Add Account</h6>
-                <EditForm Model="_newAccountModel" OnValidSubmit="HandleCreateAsync">
-                    <DataAnnotationsValidator />
-                    <div class="row g-2 align-items-start">
-                        <div class="col">
-                            <InputText id="account-name" class="form-control form-control-sm"
-                                       @bind-Value="_newAccountModel.Name"
-                                       placeholder="Account name"
-                                       aria-label="Account name" />
-                            <ValidationMessage For="() => _newAccountModel.Name" class="text-danger small" />
-                        </div>
-                        <div class="col-auto">
-                            <InputSelect id="account-type" class="form-select form-select-sm"
-                                         @bind-Value="_newAccountModel.Type"
-                                         aria-label="Account type">
-                                <option value="@AccountType.Asset">Asset</option>
-                                <option value="@AccountType.Liability">Liability</option>
-                                <option value="@AccountType.Equity">Equity</option>
-                                <option value="@AccountType.Income">Income</option>
-                                <option value="@AccountType.Expense">Expense</option>
-                            </InputSelect>
-                        </div>
-                        @if (_newAccountModel.Type == AccountType.Asset)
-                        {
-                            <div class="col-auto d-flex align-items-center">
-                                <div class="form-check form-check-sm mb-0">
-                                    <InputCheckbox id="account-is-bank" class="form-check-input"
-                                                   @bind-Value="_newAccountModel.IsBankAccount" />
-                                    <label class="form-check-label small" for="account-is-bank">Bank / cash account</label>
-                                </div>
-                            </div>
-                        }
-                        <div class="col-auto">
-                            <button type="submit" class="btn btn-primary btn-sm" disabled="@_creating">
-                                @(_creating ? "Creating…" : "Add Account")
-                            </button>
-                        </div>
-                    </div>
-                </EditForm>
+                <AddAccountForm OnSubmit="HandleCreateAsync" ExistingNames="ExistingAccountNames" />
             </div>
         </div>
 

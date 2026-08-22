@@ -13,10 +13,17 @@ shell commands, and other important information, read the current plan
 
 Always run `dotnet build` and the full test suite (without --no-build) after making code changes, and report the build/test results before considering a task complete.
 
+## Spec & Docs Workflow
+
+When a change touches behavior or UI that an existing `specs/<feature>/` doc (spec.md, contracts/, data-model.md, etc.) describes, always update that doc — and any other project documentation the change makes stale — in the same task, not as a separate follow-up. This applies even to small, presentation-only tweaks (e.g. a layout reorder): find the sentence that now reads wrong and fix it alongside the code.
+
 ## Git / Commit Workflow
 
 Always commit all changed and new files at the end of a task — this overrides the default behavior of only committing when explicitly asked. Stage everything (`git add -A`) and commit with a message describing the change, following the existing commit style (see `git log`), unless the user explicitly says not to commit or asks for only specific files to be committed. Still show the user what changed; committing automatically doesn't replace surfacing a summary of the work.
 
+## Editing Workflow
+
+This environment's GateGuard hook blocks the first `Write` of a new file and the first `Edit` of a given file with a `[Fact-Forcing Gate]` unless the immediately-preceding turn text states: (1) callers/importers of the file, (2) confirmation no duplicate already exists, (3) data-schema details if applicable, (4) the user's verbatim current instruction. State those four facts as plain text right before *every* Write/Edit call, not just the first per file — repeat edits to an already-touched file get gated too. A denied batch of several files usually succeeds when retried one file at a time with the same facts.
 
 ## Commands
 
@@ -102,11 +109,23 @@ Every fee or payment write wraps fee creation + paired GL debit/credit + balance
 
 ### Reports pipeline
 
-`IReportProvider` → `ReportData` (rows/columns/sections/subtotals) → `ReportViewer.razor` (modal "Generating…", synchronous) → `PdfReportRenderer` (QuestPDF) or `CsvReportExporter` (CsvHelper). Cancel appears after 5 s. All ten reports (`IncomeStatement`, `TrialBalance`, `AccountRegister`, `MemberAccountSummary`, `MemberList`, `Committee`, `BalanceSheet`, `BankReconciliation`, `TaxSummary`, `GeneralLedger`) follow this single pipeline.
+`IReportProvider` → `ReportData` (rows/columns/sections/subtotals) → `ReportViewer.razor` (modal "Generating…", synchronous) → `PdfReportRenderer` (QuestPDF) or `CsvReportExporter` (CsvHelper). Cancel appears after 5 s. All ten reports (`IncomeStatement`, `TrialBalance`, `AccountRegister`, `MemberAccountSummary`, `MemberList`, `Committee`, `BalanceSheet`, `BankReconciliation`, `TaxSummary`, `GeneralLedger`) follow this single pipeline. In QuestPDF-rendered checkbox-style cells (e.g. `AttendanceRollPdfRenderer`), a checked box is a bordered `Container` with a centered "✓" glyph, never a solid filled box.
 
 ### Data grid standards
 
 All tabular data uses `RadzenDataGrid<TItem>`, never plain `<table>` markup or a `table-responsive` wrapper div. Every grid instance follows the Members grid (`src/StageFright.UI/Pages/Members/MemberList.razor`) as the reference: `AllowSorting="true" AllowPaging="true" PageSize="15" class="rz-shadow-0"`. Grids needing a "select all" checkbox in a column header use a `HeaderTemplate` rather than a separate control outside the grid. `ReportViewer.razor` is the one exception — its dynamic columns, section headers, and subtotal/grand-total rows don't fit RadzenDataGrid's typed-column model, so it keeps hand-rolled paging (also fixed at a page size of 15) instead.
+
+### List box standards
+
+All bordered list boxes (queued items, role lists, read-only summaries) use `BorderedListBox<TItem>` (`src/StageFright.UI/Shared/BorderedListBox.razor`), never a hand-rolled bordered `<div>`. It takes `Items`, a `RowTemplate`, an optional `OnRemove` (unset renders read-only; set adds a per-row remove button), and `EmptyText`. See the Setup Wizard's Chart of Accounts, Committee, and Review tabs for the reference usage.
+
+### Toggle control standards
+
+Every on/off toggle uses `<RadzenSwitch>` (`@bind-Value` + a `Change` callback, not `@bind:after`), never a hand-rolled Bootstrap `form-check form-switch` checkbox — see the Members List "show inactive" switch or the Settings page's theme toggle. `RadzenSwitch` renders no native `onchange`-wired `<input>`; drive it in bUnit via `cut.Find("[role=switch]").Click()` and assert state via `GetAttribute("aria-checked")`, not `.Change(bool)`/`HasAttribute("checked")`. The Setup Wizard's own theme control is a deliberate, spec-mandated exception (FR-022 of spec 017) — a Light/Dark `<select>` dropdown, not a switch — because the wizard's screen-shell had no cascaded state to toggle live the way Settings does; don't take it as a new default over `RadzenSwitch`.
+
+### Dashboard tile sizing
+
+Dashboard tiles opt into one of four sizes via `DashboardTileSize` (`StageFright.Plugins.Contracts`) — `OneByOne` (default), `OneByTwo`, `TwoByOne`, `TwoByTwo`, named RowsByColumns — by overriding `IDashboardTileProvider.TileSize`. `Dashboard.razor.cs` maps the enum to a `tile-size-*` CSS class already defined in `app.css`'s CSS-Grid layout; resizing a tile only needs the provider's `TileSize` override plus its own inner chart/layout sizing — no `Dashboard.razor` or grid CSS changes.
 
 ### Data model highlights
 
@@ -133,12 +152,28 @@ All tabular data uses `RadzenDataGrid<TItem>`, never plain `<table>` markup or a
 
 **Soft-delete everywhere (except finance).** Never hard-delete application data. Financial records (`Fee`, `Payment`, `Transaction`) are explicitly exempt — they carry no soft-delete fields and must never be deleted at all.
 
-## Tech Stack & Conventions section.
+## Tech Stack & Conventions
 
 This is a MAUI Blazor project using BlazorBootstrap and Radzen for charts/UI controls and double-entry accounting for finances; prefer existing patterns (e.g. month-name dropdowns, BlazorBootstrap charts) over custom SVG.
 
 When summing financial amounts, only sum payment-related credit entries, not all GL credit entries, to avoid double-counting in double-entry accounting.
 
-## Known Gotchas section.
+## Known Gotchas
 
 Watch for MAUI WebView quirks: Settings tabs require the Bootstrap JS bundle and may need lazy rendering / StateHasChanged handling to avoid concurrent DbContext access and OnShown callback failures.
+
+bUnit cannot simulate a form submit through a nested `<EditForm>`/`<form>` (e.g. a shared component like `AddAccountForm`/`OpeningBalanceEntryForm` used inside the Setup Wizard's own outer `EditForm`) — its inner `<form>` collapses when bUnit builds its AngleSharp DOM. This is a bUnit limitation, not a production bug (real Blazor rendering resolves nested forms via native nearest-ancestor targeting); in tests, invoke the child component's own `EventCallback` parameters directly (`cut.FindComponent<ChildTab>().Instance.OnSubmit.InvokeAsync(...)`) instead of simulating the nested submit.
+
+`StageFright.UI.Tests` has at least two known-flaky tests asserting rendered markup does *not* contain "fee"/"Fee" (`ParticipationGridTests.DoesNotRender_FeeColumns`, `EventFormTests.DoesNotRender_FeeOrPaidFields`) — bUnit-rendered markup embeds random lowercase-hex GUIDs, and "fee" is a valid 3-hex-digit run, so these intermittently false-positive on an unrelated GUID. Treat a failure here as this known flake (re-run in isolation) rather than a regression, unless the diff actually touches Events/ParticipationGrid/EventForm.
+
+Verifying a UI change in the real MAUI app requires launching with `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9222` and driving the DOM over CDP; plain synthetic `element.click()` works for `@onclick` but does not reliably trigger Radzen's own interactive handlers (grid sort, expand/collapse) — those need a real dispatched mouse event (`Input.dispatchMouseEvent` at the element's `getBoundingClientRect()`). Screenshots must call `SetProcessDPIAware()` first or a scaled display silently crops the capture.
+
+**`dotnet build`/`dotnet test` only show warnings for files actually recompiled that run** — an incremental build after a small change can look "clean" while a full rebuild (`dotnet build -t:Rebuild`, or delete `bin`/`obj`) surfaces hundreds more. Always judge warning counts from a full rebuild, not an incremental one.
+
+Two systemic warning sources, if they reappear across many files at once, share one root cause each — fix at the source pattern, not file-by-file:
+- **`xUnit1051`** ("should use `TestContext.Current.CancellationToken`") fires on every async call in a test method (EF Core calls, service/repository calls with an optional `CancellationToken` parameter, `File.WriteAllBytesAsync`, etc.) that doesn't pass one. Fix: pass `TestContext.Current.CancellationToken` (positionally, or `cancellationToken:` for extension methods like `ToListAsync` where it isn't the last parameter). `dotnet format analyzers --diagnostics xUnit1051` cannot bulk-apply this — xunit.analyzers' `UseCancellationTokenFixer` doesn't support Fix-All-in-Solution and `dotnet format` errors out; it has to be applied per-diagnostic (a one-off Roslyn script, not a hand pattern) or by hand.
+- **`CS8602`/`CS8604`/`CS8600`/`CS8605`** (nullable-reference warnings) cluster heavily in files using NSubstitute's `Arg.Is<T>(x => ...)` predicate lambdas: NSubstitute's unconstrained generic `T` makes the lambda parameter nullable-oblivious under `#nullable enable`, so any member access or pass-through on it warns even though NSubstitute always invokes the predicate with the real non-null argument. Fix: append the null-forgiving operator (`!`) at the flagged expression, e.g. `r!.OrganizationName` or `lines!.Any(...)` — this is already the codebase's established convention (see existing `t.Description!.Contains(...)` calls), not a new pattern. Note the fix can be iterative: resolving the first `!` in a boolean chain can "unlock" a fresh warning on a later access in the same chain (narrowing doesn't always propagate past a fixed expression) — a full rebuild after fixing may reveal a few more of the same code, and that's expected, not a bug.
+
+A misplaced `///` XML doc comment (e.g. attached to one parameter inside a multi-line record's positional-parameter list, or containing a bare `&`) throws `CS1587`/`CS1570`, and adding even one `<param>` tag to a member's doc comment makes the compiler require `<param>` tags for *all* of that member's parameters (`CS1573`) — for a record with many parameters, a plain `//` comment next to the parameter is simpler than fully documenting every parameter.
+
+`StageFright.App` (the Windows head, `WindowsPackageType=None`) can show two `PRI249: Invalid qualifier` warnings from `WinAppSdkGenerateProjectPriFile` naming `SORTABLE-LIST`/`THEME-SWITCHER` — these come from the Blazor.Bootstrap package's own static JS assets (`blazor.bootstrap.sortable-list.js`, `blazor.bootstrap.theme-switcher.js`), which WinAppSDK's PRI resource indexer misreads as the `name.qualifier-value.ext` convention used by qualified assets (e.g. `logo.scale-200.png`); the warning is benign (build still succeeds, both files still get served) but not suppressible via `NoWarn`/`MSBuildWarningsAsMessages` since the native `makepri.exe` tool embeds "PRI249" as free text, not as a structured MSBuild warning code. Fixed by adding a `_GenerateProjectPriConfigurationFiles`-scoped `BeforeTargets` hook in `StageFright.App.csproj` that populates WinAppSDK's own exclusion item (`_AppxLayoutAssetPackageFiles`) from the two files' `PackagingOutputs`/`PriOutputs` entries — it removes them from PRI's qualifier scan only, not from Blazor's own static-web-asset copy to `wwwroot`. If new Blazor.Bootstrap component JS ever reintroduces a dash-containing filename that trips the same warning, extend that same `Condition` rather than re-deriving the mechanism from scratch.

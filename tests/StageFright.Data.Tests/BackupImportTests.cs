@@ -30,13 +30,13 @@ public class BackupImportTests_Integration : IDisposable
         try
         {
             // Export minimal DB
-            await svc.ExportAsync(exportPath);
+            await svc.ExportAsync(exportPath, TestContext.Current.CancellationToken);
 
             // Directory where checkpoint will be created
             var dir = Path.GetDirectoryName(exportPath)!;
             var beforeImport = DateTime.UtcNow;
 
-            await svc.ImportAsync(exportPath);
+            await svc.ImportAsync(exportPath, TestContext.Current.CancellationToken);
 
             // At least one checkpoint file should exist in the same directory
             var checkpoints = Directory.GetFiles(dir, "StageFright-Checkpoint-*.sfbak");
@@ -69,7 +69,7 @@ public class BackupImportTests_Integration : IDisposable
             UpdatedAt = DateTime.UtcNow
         };
         db.Members.Add(originalMember);
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Export current state (has one member)
         var svc = BuildBackupService(db);
@@ -77,7 +77,7 @@ public class BackupImportTests_Integration : IDisposable
 
         try
         {
-            await svc.ExportAsync(backupPath);
+            await svc.ExportAsync(backupPath, TestContext.Current.CancellationToken);
 
             // Add another member after export
             var laterMember = new Member
@@ -92,15 +92,15 @@ public class BackupImportTests_Integration : IDisposable
                 UpdatedAt = DateTime.UtcNow
             };
             db.Members.Add(laterMember);
-            await db.SaveChangesAsync();
+            await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             // Import from backup (only has one member)
-            await svc.ImportAsync(backupPath);
+            await svc.ImportAsync(backupPath, TestContext.Current.CancellationToken);
 
             // Original member should still exist (was in the backup)
-            var count = await db.Members.IgnoreQueryFilters().CountAsync();
+            var count = await db.Members.IgnoreQueryFilters().CountAsync(cancellationToken: TestContext.Current.CancellationToken);
             Assert.True(count >= 1);
-            Assert.True(await db.Members.IgnoreQueryFilters().AnyAsync(m => m.Id == originalMember.Id));
+            Assert.True(await db.Members.IgnoreQueryFilters().AnyAsync(m => m.Id == originalMember.Id, cancellationToken: TestContext.Current.CancellationToken));
         }
         finally
         {
@@ -119,7 +119,7 @@ public class BackupImportTests_Integration : IDisposable
 
         try
         {
-            await svc.ExportAsync(path);
+            await svc.ExportAsync(path, TestContext.Current.CancellationToken);
 
             // Tamper: remove Accounts from EntityCounts to simulate a missing entity type
             using var readStream = File.OpenRead(path);
@@ -130,7 +130,7 @@ public class BackupImportTests_Integration : IDisposable
             ProtoBuf.Serializer.Serialize(writeStream, envelope);
             writeStream.Close();
 
-            var ex = await Assert.ThrowsAsync<ImportException>(() => svc.ImportAsync(path));
+            var ex = await Assert.ThrowsAsync<ImportException>(() => svc.ImportAsync(path, TestContext.Current.CancellationToken));
             Assert.Contains("missing Accounts", ex.Message);
         }
         finally
@@ -150,7 +150,7 @@ public class BackupImportTests_Integration : IDisposable
 
         try
         {
-            await svc.ExportAsync(path);
+            await svc.ExportAsync(path, TestContext.Current.CancellationToken);
 
             using var readStream = File.OpenRead(path);
             var envelope = ProtoBuf.Serializer.Deserialize<StageFright.Core.Modules.Settings.Backup.BackupEnvelope>(readStream);
@@ -160,7 +160,7 @@ public class BackupImportTests_Integration : IDisposable
             ProtoBuf.Serializer.Serialize(writeStream, envelope);
             writeStream.Close();
 
-            await Assert.ThrowsAsync<ImportException>(() => svc.ImportAsync(path));
+            await Assert.ThrowsAsync<ImportException>(() => svc.ImportAsync(path, TestContext.Current.CancellationToken));
         }
         finally
         {
@@ -190,24 +190,24 @@ public class BackupImportTests_Integration : IDisposable
             UpdatedAt = DateTime.UtcNow
         };
         sourceDb.Members.Add(member);
-        await sourceDb.SaveChangesAsync();
+        await sourceDb.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var sourceSvc = BuildBackupService(sourceDb);
         var backupPath = TempFile();
 
         try
         {
-            await sourceSvc.ExportAsync(backupPath);
+            await sourceSvc.ExportAsync(backupPath, TestContext.Current.CancellationToken);
 
             // Second DB: import into fresh database
             using var targetFactory = new DbContextFactory();
             using var targetDb = targetFactory.CreateContext();
             var targetSvc = BuildBackupService(targetDb);
 
-            await targetSvc.ImportAsync(backupPath);
+            await targetSvc.ImportAsync(backupPath, TestContext.Current.CancellationToken);
 
             var restored = await targetDb.Members.IgnoreQueryFilters()
-                .FirstOrDefaultAsync(m => m.Id == member.Id);
+                .FirstOrDefaultAsync(m => m.Id == member.Id, cancellationToken: TestContext.Current.CancellationToken);
             Assert.NotNull(restored);
             Assert.Equal("Restored Member", restored!.FullName);
         }
@@ -233,14 +233,14 @@ public class BackupImportTests_Integration : IDisposable
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         };
         db.Members.Add(member);
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var svc = BuildBackupService(db);
         var path = TempFile();
 
         try
         {
-            await svc.ExportAsync(path);
+            await svc.ExportAsync(path, TestContext.Current.CancellationToken);
 
             // Tamper the export into a pre-feature (legacy) shape: clear FirstName/LastName,
             // populate only the old combined LegacyName field.
@@ -256,10 +256,10 @@ public class BackupImportTests_Integration : IDisposable
                 ProtoBuf.Serializer.Serialize(writeStream, envelope);
             }
 
-            await svc.ImportAsync(path);
+            await svc.ImportAsync(path, TestContext.Current.CancellationToken);
 
             db.ChangeTracker.Clear();
-            var restored = await db.Members.IgnoreQueryFilters().SingleAsync(m => m.Id == member.Id);
+            var restored = await db.Members.IgnoreQueryFilters().SingleAsync(m => m.Id == member.Id, cancellationToken: TestContext.Current.CancellationToken);
             Assert.Equal("Grace", restored.FirstName);
             Assert.Equal("Hopper", restored.LastName);
         }
@@ -289,15 +289,15 @@ public class BackupImportTests_Integration : IDisposable
             UpdatedAt = DateTime.UtcNow
         };
         db.Members.Add(deletedMember);
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var svc = BuildBackupService(db);
         var path = TempFile();
 
         try
         {
-            await svc.ExportAsync(path);
-            var manifest = await svc.GetManifestAsync(path);
+            await svc.ExportAsync(path, TestContext.Current.CancellationToken);
+            var manifest = await svc.GetManifestAsync(path, TestContext.Current.CancellationToken);
             Assert.Equal(1, manifest.EntityCounts["Members"]);
         }
         finally

@@ -415,7 +415,7 @@ public class ReportViewerTests : RadzenGridTestContext
         cut.Find("button.btn-primary").Click();
 
         await _provider.Received().GenerateAsync(
-            Arg.Is<ReportFilterValues>(f => f.Get("status") == "Archived"),
+            Arg.Is<ReportFilterValues>(f => f!.Get("status") == "Archived"),
             Arg.Any<CancellationToken>());
     }
 

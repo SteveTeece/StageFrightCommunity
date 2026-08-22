@@ -85,7 +85,7 @@ public class SettingsCrossTabSaveTests : BunitContext
         // General tab now saves its own (still-unrelated) change from its stale copy.
         await generalCut.Find("form").SubmitAsync();
 
-        var current = await fake.GetAsync();
+        var current = await fake.GetAsync(Xunit.TestContext.Current.CancellationToken);
         Assert.True(current!.IsTaxApplicable);
         Assert.Equal(999.00m, current.AnnualFee);
     }
@@ -110,7 +110,7 @@ public class SettingsCrossTabSaveTests : BunitContext
         // Sales Tax tab now saves its staged toggle from its stale copy.
         await taxCut.Find("form").SubmitAsync();
 
-        var current = await fake.GetAsync();
+        var current = await fake.GetAsync(Xunit.TestContext.Current.CancellationToken);
         Assert.Equal("Renamed Org", current!.OrganizationName);
         Assert.True(current.IsTaxApplicable);
     }

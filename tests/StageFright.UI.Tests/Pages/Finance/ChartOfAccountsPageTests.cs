@@ -272,6 +272,19 @@ public class ChartOfAccountsPageTests : RadzenGridTestContext
         Assert.Contains("already exists", cut.Markup);
     }
 
+    [Fact]
+    public void Should_RejectDuplicateName_ClientSide_WithoutCallingCreateAsync()
+    {
+        // The shared AddAccountForm's own ExistingNames check (fed from the page's active +
+        // archived accounts) now catches an obvious duplicate before ever calling the service.
+        var cut = Render<ChartOfAccountsPage>();
+        cut.Find("#account-name").Change("cash on hand"); // case-insensitive match on an existing account
+        cut.Find("form").Submit();
+
+        _accountService.DidNotReceive().CreateAsync(Arg.Any<string>(), Arg.Any<AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>());
+        Assert.Contains("already exists", cut.Markup);
+    }
+
     // --- Rename ---
 
     [Fact]

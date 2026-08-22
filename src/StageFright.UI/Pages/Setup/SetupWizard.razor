@@ -2,201 +2,121 @@
 @inherits ComponentBase
 @inject ISetupService SetupService
 @inject NavigationManager Nav
-@using StageFright.Core.Enums
+@using StageFright.UI.Pages.Setup.Tabs
 @using StageFright.UI.Shared
 
 <PageTitle>First-Time Setup — StageFright Community</PageTitle>
 
-<div class="container mt-3" style="max-width:560px">
-    <h1 class="mb-1">Welcome to StageFright Community</h1>
-    <p class="text-muted mb-1 small">Complete the short setup below to get started.</p>
-
-    <p class="text-muted mb-1 small">Step @_currentStep of 5</p>
-    <div class="progress mb-3" style="height:6px;" role="progressbar" aria-valuenow="@_currentStep" aria-valuemin="1" aria-valuemax="5">
-        <div class="progress-bar" style="width:@(_currentStep * 20)%"></div>
-    </div>
-
-    <div class="setup-theme-toggle d-flex align-items-center gap-2 mb-3">
-        <span class="small text-muted">Theme:</span>
-        <RadzenSwitch Name="setupThemeToggleSwitch"
-                      Value="@(ThemeProvider?.CurrentTheme == Core.Enums.Theme.Dark)"
-                      Change="@(async (bool _) => await HandleThemeToggleAsync())" />
-        <span class="small">@(ThemeProvider?.CurrentTheme == Core.Enums.Theme.Dark ? "Dark" : "Light")</span>
-    </div>
+<div class="mt-3">
+    <h1 class="mb-1">StageFright Community - Setup Wizard</h1>
+    <p class="text-muted mb-3 small">Complete the setup below to get started.</p>
 
     @if (_errorMessage is not null)
     {
         <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
     }
 
-    <EditForm EditContext="_editContext" OnValidSubmit="HandleValidSubmitAsync">
+    <EditForm EditContext="_editContext" OnValidSubmit="HandleValidSubmitAsync" OnInvalidSubmit="HandleInvalidSubmit">
         <DataAnnotationsValidator />
 
-        @if (_currentStep == 1)
-        {
-            <div class="mb-3">
-                <label for="orgName" class="form-label">Organisation Name <span aria-hidden="true" class="text-danger">*</span></label>
-                <InputText id="orgName" class="form-control form-control-sm" @bind-Value="_model.OrganizationName" placeholder="e.g. Springfield Choral Society" />
-                <ValidationMessage For="() => _model.OrganizationName" class="text-danger small" />
-            </div>
-        }
-        else if (_currentStep == 2)
-        {
-            <div class="row g-2 mb-2">
-                <div class="col">
-                    <label for="annualFee" class="form-label">Annual Fee</label>
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
-                        <InputNumber id="annualFee" class="form-control" @bind-Value="_model.AnnualFee" @bind-Value:format="N2" />
+        <Tabs @ref="_tabsRef">
+            <Tab Title="Organisation Settings" OnClick="@(() => SetActiveTab(0))">
+                <Content>
+                    <div class="pt-3">
+                        @if (_tabShown[0])
+                        {
+                            <ErrorBoundary>
+                                <ChildContent>
+                                    <GeneralAppearanceTab Model="_model" />
+                                    <MembershipFeesTab Model="_model" />
+                                    <div class="row g-3 mb-3">
+                                        <ThemeSelectionTab />
+                                        <SalesTaxTab Model="_model" />
+                                    </div>
+                                </ChildContent>
+                                <ErrorContent Context="tabError"><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                            </ErrorBoundary>
+                        }
                     </div>
-                    <ValidationMessage For="() => _model.AnnualFee" class="text-danger small" />
-                </div>
-                <div class="col">
-                    <label for="attendanceFee" class="form-label">Attendance Fee</label>
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
-                        <InputNumber id="attendanceFee" class="form-control" @bind-Value="_model.AttendanceFee" @bind-Value:format="N2" />
+                </Content>
+            </Tab>
+            <Tab Title="Chart of Accounts" OnClick="@(() => SetActiveTab(1))">
+                <Content>
+                    <div class="pt-3">
+                        @if (_tabShown[1])
+                        {
+                            <ErrorBoundary>
+                                <ChildContent>
+                                    <ChartOfAccountsTab QueuedAccounts="_queuedAccounts"
+                                                         OnAdd="HandleQueueAccount"
+                                                         OnRemove="HandleRemoveQueuedAccount" />
+                                </ChildContent>
+                                <ErrorContent Context="tabError"><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                            </ErrorBoundary>
+                        }
                     </div>
-                    <ValidationMessage For="() => _model.AttendanceFee" class="text-danger small" />
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label for="renewalMonth" class="form-label">Membership Renewal Month <span aria-hidden="true" class="text-danger">*</span></label>
-                <InputSelect id="renewalMonth" class="form-select form-select-sm" @bind-Value="_model.MembershipRenewalMonth">
-                    @for (var m = 1; m <= 12; m++)
-                    {
-                        var month = m;
-                        <option value="@month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
-                    }
-                </InputSelect>
-                <ValidationMessage For="() => _model.MembershipRenewalMonth" class="text-danger small" />
-            </div>
-
-            <div class="mb-3">
-                <label for="auditRetentionYears" class="form-label">Audit Trail Retention (years)</label>
-                <InputSelect id="auditRetentionYears" class="form-select form-select-sm" @bind-Value="_model.AuditRetentionYears">
-                    @for (var y = 1; y <= 7; y++)
-                    {
-                        var years = y;
-                        <option value="@years">@years year@(years == 1 ? "" : "s")</option>
-                    }
-                </InputSelect>
-                <div class="form-text small">How long audit trail history is kept before the startup purge removes it. Default 1 year.</div>
-                <ValidationMessage For="() => _model.AuditRetentionYears" class="text-danger small" />
-            </div>
-        }
-        else if (_currentStep == 3)
-        {
-            <div class="mb-3">
-                <div class="form-check">
-                    <InputCheckbox id="taxApplicable" class="form-check-input" @bind-Value="_model.IsTaxApplicable" @bind-Value:after="HandleTaxToggleChanged" />
-                    <label class="form-check-label small" for="taxApplicable">Sales tax applies to this organisation</label>
-                </div>
-
-                @if (_model.IsTaxApplicable)
-                {
-                    <div class="row g-2 mt-1">
-                        <div class="col-md-6">
-                            <label for="taxRate" class="form-label">Tax Rate (%) <span aria-hidden="true" class="text-danger">*</span></label>
-                            <InputNumber id="taxRate" class="form-control form-control-sm" @bind-Value="_model.TaxRate" @bind-Value:format="N2" />
-                            <ValidationMessage For="() => _model.TaxRate" class="text-danger small" />
-                        </div>
+                </Content>
+            </Tab>
+            <Tab Title="Opening Balances" OnClick="@(() => SetActiveTab(2))">
+                <Content>
+                    <div class="pt-3">
+                        @if (_tabShown[2])
+                        {
+                            <ErrorBoundary>
+                                <ChildContent>
+                                    <OpeningBalancesTab QueuedAccounts="_queuedAccounts"
+                                                         OnSubmit="HandleQueueOpeningBalances" />
+                                </ChildContent>
+                                <ErrorContent Context="tabError"><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                            </ErrorBoundary>
+                        }
                     </div>
-                    <div class="row g-2 mt-1">
-                        <div class="col-md-6">
-                            <label for="annualFeeTaxCode" class="form-label">Annual Fee Tax Treatment</label>
-                            <InputSelect id="annualFeeTaxCode" class="form-select form-select-sm" @bind-Value="_model.AnnualFeeTaxCode">
-                                <option value="">Tax-exempt (default)</option>
-                                <option value="@TaxCode.Taxable">Taxable</option>
-                                <option value="@TaxCode.TaxExempt">Tax-exempt</option>
-                            </InputSelect>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="attendanceFeeTaxCode" class="form-label">Attendance Fee Tax Treatment</label>
-                            <InputSelect id="attendanceFeeTaxCode" class="form-select form-select-sm" @bind-Value="_model.AttendanceFeeTaxCode">
-                                <option value="">Tax-exempt (default)</option>
-                                <option value="@TaxCode.Taxable">Taxable</option>
-                                <option value="@TaxCode.TaxExempt">Tax-exempt</option>
-                            </InputSelect>
-                        </div>
+                </Content>
+            </Tab>
+            <Tab Title="Committee" OnClick="@(() => SetActiveTab(3))">
+                <Content>
+                    <div class="pt-3">
+                        @if (_tabShown[3])
+                        {
+                            <ErrorBoundary>
+                                <ChildContent>
+                                    <CommitteeTab Model="_model"
+                                                  QueuedTitles="_queuedCommitteeTitles"
+                                                  OnAdd="HandleQueueCommitteeTitle"
+                                                  OnRemove="HandleRemoveQueuedCommitteeTitle" />
+                                </ChildContent>
+                                <ErrorContent Context="tabError"><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                            </ErrorBoundary>
+                        }
                     </div>
-                }
-            </div>
-        }
-        else if (_currentStep == 4)
-        {
-            <div class="mb-3">
-                <label for="agmMonth" class="form-label">AGM Month</label>
-                <InputSelect id="agmMonth" class="form-select form-select-sm" @bind-Value="_model.CommitteeRenewalMonth">
-                    @for (var m = 1; m <= 12; m++)
-                    {
-                        var month = m;
-                        <option value="@month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
-                    }
-                </InputSelect>
-                <div class="form-text small">The month your AGM is normally held. Drives committee term boundaries.</div>
-            </div>
+                </Content>
+            </Tab>
+            <Tab Title="Review" OnClick="@(() => SetActiveTab(4))">
+                <Content>
+                    <div class="pt-3">
+                        @if (_tabShown[4])
+                        {
+                            <ErrorBoundary>
+                                <ChildContent>
+                                    <ReviewTab Model="_model"
+                                               QueuedCommitteeTitles="_queuedCommitteeTitles"
+                                               QueuedAccounts="_queuedAccounts"
+                                               DebugSeederAvailable="_debugSeeder is not null"
+                                               SeedWithTestData="_seedWithTestData"
+                                               SeedWithTestDataChanged="@(v => _seedWithTestData = v)" />
+                                </ChildContent>
+                                <ErrorContent Context="tabError"><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                            </ErrorBoundary>
+                        }
+                    </div>
+                </Content>
+            </Tab>
+        </Tabs>
 
-            <div class="mb-3">
-                <label for="officeHolderTitles" class="form-label">Additional Office-Holder Titles</label>
-                <InputText id="officeHolderTitles" class="form-control form-control-sm"
-                           @bind-Value="_model.CommitteeOfficeHolderTitlesText"
-                           placeholder="e.g. Publicity Officer, Webmaster" />
-                <div class="form-text small">
-                    Optional, comma-separated. President/Secretary/Treasurer are always included.
-                    Can also be configured later from Settings.
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label for="seatCountTarget" class="form-label">General Committee Seat Count Target</label>
-                <InputNumber id="seatCountTarget" class="form-control form-control-sm" @bind-Value="_model.GeneralCommitteeSeatCountTarget" />
-                <div class="form-text small">Optional — guidance only, no hard cap is enforced when recording an AGM.</div>
-            </div>
-        }
-        else
-        {
-            <div class="mb-3">
-                <h2 class="h6">Review</h2>
-                <dl class="row small mb-2">
-                    <dt class="col-5">Organisation Name</dt><dd class="col-7">@_model.OrganizationName</dd>
-                    <dt class="col-5">Annual Fee</dt><dd class="col-7">@_model.AnnualFee.ToString("C")</dd>
-                    <dt class="col-5">Attendance Fee</dt><dd class="col-7">@_model.AttendanceFee.ToString("C")</dd>
-                    <dt class="col-5">Membership Renewal Month</dt><dd class="col-7">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(_model.MembershipRenewalMonth)</dd>
-                    <dt class="col-5">Sales Tax Applies</dt><dd class="col-7">@(_model.IsTaxApplicable ? "Yes" : "No")</dd>
-                    @if (_model.IsTaxApplicable)
-                    {
-                        <dt class="col-5">Tax Rate</dt><dd class="col-7">@(_model.TaxRate?.ToString("N2") ?? "")%</dd>
-                        <dt class="col-5">Annual Fee Tax Treatment</dt><dd class="col-7">@(_model.AnnualFeeTaxCode?.ToString() ?? "Tax-exempt (default)")</dd>
-                        <dt class="col-5">Attendance Fee Tax Treatment</dt><dd class="col-7">@(_model.AttendanceFeeTaxCode?.ToString() ?? "Tax-exempt (default)")</dd>
-                    }
-                    <dt class="col-5">AGM Month</dt><dd class="col-7">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(_model.CommitteeRenewalMonth)</dd>
-                    <dt class="col-5">Audit Trail Retention</dt><dd class="col-7">@_model.AuditRetentionYears year@(_model.AuditRetentionYears == 1 ? "" : "s")</dd>
-                    <dt class="col-5">Additional Office-Holder Titles</dt><dd class="col-7">@(string.IsNullOrWhiteSpace(_model.CommitteeOfficeHolderTitlesText) ? "None" : _model.CommitteeOfficeHolderTitlesText)</dd>
-                    <dt class="col-5">Seat Count Target</dt><dd class="col-7">@(_model.GeneralCommitteeSeatCountTarget?.ToString() ?? "Not set")</dd>
-                </dl>
-            </div>
-
-            @if (_debugSeeder is not null)
+        <div class="d-flex gap-2 mt-3">
+            @if (_currentTabIndex < _tabShown.Count - 1)
             {
-                <div class="mb-3">
-                    <div class="form-check form-check-sm">
-                        <InputCheckbox id="seedData" class="form-check-input" @bind-Value="_seedWithTestData" />
-                        <label for="seedData" class="form-check-label">Load sample data (members, rehearsals, events &amp; finances)</label>
-                    </div>
-                </div>
-            }
-        }
-
-        <div class="d-flex gap-2">
-            @if (_currentStep > 1)
-            {
-                <button type="button" id="btn-back" class="btn btn-outline-secondary btn-sm" @onclick="HandleBack" disabled="@_submitting">Back</button>
-            }
-            @if (_currentStep < 5)
-            {
-                <button type="button" id="btn-next" class="btn btn-primary btn-sm" @onclick="HandleNext">Next</button>
+                <button type="button" id="btn-next" class="btn btn-primary btn-sm" @onclick="HandleNextAsync">Next</button>
             }
             else
             {

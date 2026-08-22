@@ -49,7 +49,7 @@ public class GeneralLedgerReportProviderTests
             MakeTransaction(accountId, "Deposit", 50m, 0m, new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc)),
             MakeTransaction(accountId, "Withdrawal", 0m, 20m, new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc)));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         var section = result.Sections.First(s => s.Heading != null && s.Heading.Contains("Cash on Hand"));
         Assert.Equal("Opening Balance", section.Rows[0].Cells[1]);
@@ -68,7 +68,7 @@ public class GeneralLedgerReportProviderTests
         SetupOpeningBalance(accountId, 0m);
         SetupTransactions();
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.DoesNotContain(result.Sections, s => s.Heading != null && s.Heading.Contains("Unused Expense"));
     }
@@ -87,7 +87,7 @@ public class GeneralLedgerReportProviderTests
         var filters = CurrentYearFilters();
         filters.Set("account", "1100");
 
-        var result = await _sut.GenerateAsync(filters);
+        var result = await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         Assert.Single(result.Sections);
         Assert.Contains("Cash on Hand", result.Sections[0].Heading);
@@ -100,7 +100,7 @@ public class GeneralLedgerReportProviderTests
         filters.Set("dateFrom", "2026-03-01");
         filters.Set("dateTo", "2026-09-30");
 
-        await _sut.GenerateAsync(filters);
+        await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         await _gl.Received().GetByDateRangeAsync(
             new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc),
@@ -111,7 +111,7 @@ public class GeneralLedgerReportProviderTests
     [Fact]
     public async Task GenerateAsync_HasBalanceColumn()
     {
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.Contains(result.Columns, c => c.Header == "Balance");
     }

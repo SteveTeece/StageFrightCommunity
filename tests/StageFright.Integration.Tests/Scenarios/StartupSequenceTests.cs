@@ -55,13 +55,13 @@ public sealed class StartupSequenceTests : IAsyncLifetime
             Timestamp = DateTime.UtcNow.AddMonths(-6)
         };
         await _db.AuditTrailEntries.AddRangeAsync(oldEntry, recentEntry);
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var repo = new AuditTrailRepository(_db);
         var svc = new AuditTrailService(repo, NullLogger<AuditTrailService>.Instance);
-        await svc.PurgeOlderThanAsync(DateTime.UtcNow.AddMonths(-12));
+        await svc.PurgeOlderThanAsync(DateTime.UtcNow.AddMonths(-12), TestContext.Current.CancellationToken);
 
-        var remaining = await _db.AuditTrailEntries.IgnoreQueryFilters().ToListAsync();
+        var remaining = await _db.AuditTrailEntries.IgnoreQueryFilters().ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.DoesNotContain(remaining, e => e.Id == oldEntry.Id);
         Assert.Contains(remaining, e => e.Id == recentEntry.Id);
     }
@@ -74,7 +74,7 @@ public sealed class StartupSequenceTests : IAsyncLifetime
         var svc = new AuditTrailService(repo, NullLogger<AuditTrailService>.Instance);
 
         var ex = await Record.ExceptionAsync(
-            () => svc.PurgeOlderThanAsync(DateTime.UtcNow.AddMonths(-12)));
+            () => svc.PurgeOlderThanAsync(DateTime.UtcNow.AddMonths(-12), TestContext.Current.CancellationToken));
 
         Assert.Null(ex);
     }
@@ -116,16 +116,16 @@ public sealed class StartupSequenceTests : IAsyncLifetime
             Timestamp = DateTime.UtcNow.AddMonths(-6)
         };
         await _db.AuditTrailEntries.AddRangeAsync(oldEnoughForOneYear, withinOneYear);
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var repo = new AuditTrailRepository(_db);
         var svc = new AuditTrailService(repo, NullLogger<AuditTrailService>.Instance);
 
         // A configured retention of 1 year -> cutoff is 1 year ago, matching MauiProgram's
         // DateTime.UtcNow.AddYears(-retentionYears) computation.
-        await svc.PurgeOlderThanAsync(DateTime.UtcNow.AddYears(-1));
+        await svc.PurgeOlderThanAsync(DateTime.UtcNow.AddYears(-1), TestContext.Current.CancellationToken);
 
-        var remaining = await _db.AuditTrailEntries.IgnoreQueryFilters().ToListAsync();
+        var remaining = await _db.AuditTrailEntries.IgnoreQueryFilters().ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.DoesNotContain(remaining, e => e.Id == oldEnoughForOneYear.Id);
         Assert.Contains(remaining, e => e.Id == withinOneYear.Id);
     }

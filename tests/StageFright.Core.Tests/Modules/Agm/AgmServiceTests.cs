@@ -87,16 +87,16 @@ public class AgmServiceTests : TestBase
 
         await _attendanceRepo.Received(1).AddRangeAsync(
             Arg.Is<IEnumerable<AgmAttendanceRecord>>(records =>
-                records.Count() == 2 &&
-                records.Single(r => r.MemberId == attendedMemberId).Attended &&
-                !records.Single(r => r.MemberId == notAttendedMemberId).Attended),
+                records!.Count() == 2 &&
+                records!.Single(r => r.MemberId == attendedMemberId).Attended &&
+                !records!.Single(r => r.MemberId == notAttendedMemberId).Attended),
             Arg.Any<CancellationToken>());
 
         await _positionRepo.Received(1).AddAsync(
-            Arg.Is<CommitteePositionRecord>(r => r.MemberId == presidentMemberId && r.OfficeHolderTypeId == presidentTypeId),
+            Arg.Is<CommitteePositionRecord>(r => r!.MemberId == presidentMemberId && r.OfficeHolderTypeId == presidentTypeId),
             Arg.Any<CancellationToken>());
         await _positionRepo.Received(1).AddAsync(
-            Arg.Is<CommitteePositionRecord>(r => r.MemberId == generalMemberId && r.OfficeHolderTypeId == null),
+            Arg.Is<CommitteePositionRecord>(r => r!.MemberId == generalMemberId && r.OfficeHolderTypeId == null),
             Arg.Any<CancellationToken>());
 
         await _audit.Received(1).LogAsync(nameof(AnnualGeneralMeeting), result.Id, Enums.AuditAction.Create,
@@ -177,10 +177,10 @@ public class AgmServiceTests : TestBase
         await svc.RecordAsync(request, Ct);
 
         await _termRepo.Received(1).UpdateAsync(
-            Arg.Is<CommitteeTerm>(t => t.Id == openTerm.Id && t.EndDate == request.Date),
+            Arg.Is<CommitteeTerm>(t => t!.Id == openTerm.Id && t.EndDate == request.Date),
             Arg.Any<CancellationToken>());
         await _termRepo.Received(1).AddAsync(
-            Arg.Is<CommitteeTerm>(t => t.Id != openTerm.Id && t.EndDate == null && t.StartDate == request.Date),
+            Arg.Is<CommitteeTerm>(t => t!.Id != openTerm.Id && t.EndDate == null && t.StartDate == request.Date),
             Arg.Any<CancellationToken>());
     }
 
@@ -206,7 +206,7 @@ public class AgmServiceTests : TestBase
         await svc.RecordAsync(request, Ct);
 
         await _termRepo.Received(1).AddAsync(
-            Arg.Is<CommitteeTerm>(t => t.LabelYear == 2027), Arg.Any<CancellationToken>());
+            Arg.Is<CommitteeTerm>(t => t!.LabelYear == 2027), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -219,7 +219,7 @@ public class AgmServiceTests : TestBase
         await svc.RecordAsync(request, Ct);
 
         await _termRepo.Received(1).AddAsync(
-            Arg.Is<CommitteeTerm>(t => t.LabelYear == 2026), Arg.Any<CancellationToken>());
+            Arg.Is<CommitteeTerm>(t => t!.LabelYear == 2026), Arg.Any<CancellationToken>());
     }
 
     // --- GetByIdAsync ---
@@ -283,7 +283,7 @@ public class AgmServiceTests : TestBase
 
         await _agmRepo.Received(1).ArchiveAsync(agmId, "coordinator", Arg.Any<CancellationToken>());
         await _attendanceRepo.Received(1).UpdateAsync(
-            Arg.Is<AgmAttendanceRecord>(a => a.IsDeleted && a.DeletedBy == "coordinator"),
+            Arg.Is<AgmAttendanceRecord>(a => a!.IsDeleted && a.DeletedBy == "coordinator"),
             Arg.Any<CancellationToken>());
         await _audit.Received(1).LogAsync(nameof(AnnualGeneralMeeting), agmId, Enums.AuditAction.Delete,
             Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());

@@ -113,7 +113,7 @@ public class GeneralSettingsTabTests : BunitContext
 
         await _settingsService.Received(1).SaveAsync(
             Arg.Is<AppSettings>(s =>
-                s.IsTaxApplicable &&
+                s!.IsTaxApplicable &&
                 s.AnnualFeeTaxCode == TaxCode.Taxable &&
                 s.AttendanceFeeTaxCode == TaxCode.TaxExempt),
             Arg.Any<CancellationToken>());
@@ -141,7 +141,7 @@ public class GeneralSettingsTabTests : BunitContext
         await cut.Find("form").SubmitAsync();
 
         await _settingsService.Received(1).SaveAsync(
-            Arg.Is<AppSettings>(s => s.AuditRetentionYears == 7),
+            Arg.Is<AppSettings>(s => s!.AuditRetentionYears == 7),
             Arg.Any<CancellationToken>());
     }
 

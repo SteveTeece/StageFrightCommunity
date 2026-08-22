@@ -96,14 +96,14 @@ public class PaymentServiceTests : TestBase
 
         // Pair 1: $30 for fee1 (oldest)
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 30m && t.GLAccount == "1100"),
-            Arg.Is<Transaction>(t => t.CreditAmount == 30m && t.GLAccount == "1200"),
+            Arg.Is<Transaction>(t => t!.DebitAmount == 30m && t.GLAccount == "1100"),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 30m && t.GLAccount == "1200"),
             Arg.Any<CancellationToken>());
 
         // Pair 2: $80 for fee2
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 80m && t.GLAccount == "1100"),
-            Arg.Is<Transaction>(t => t.CreditAmount == 80m && t.GLAccount == "1200"),
+            Arg.Is<Transaction>(t => t!.DebitAmount == 80m && t.GLAccount == "1100"),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 80m && t.GLAccount == "1200"),
             Arg.Any<CancellationToken>());
     }
 
@@ -118,14 +118,14 @@ public class PaymentServiceTests : TestBase
 
         // Pair 1: $30 for fee1
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 30m && t.GLAccount == "1100"),
-            Arg.Is<Transaction>(t => t.CreditAmount == 30m && t.GLAccount == "1200"),
+            Arg.Is<Transaction>(t => t!.DebitAmount == 30m && t.GLAccount == "1100"),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 30m && t.GLAccount == "1200"),
             Arg.Any<CancellationToken>());
 
         // Pair 2: $20 partial for fee2
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 20m && t.GLAccount == "1100"),
-            Arg.Is<Transaction>(t => t.CreditAmount == 20m && t.GLAccount == "1200"),
+            Arg.Is<Transaction>(t => t!.DebitAmount == 20m && t.GLAccount == "1100"),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 20m && t.GLAccount == "1200"),
             Arg.Any<CancellationToken>());
     }
 
@@ -140,8 +140,8 @@ public class PaymentServiceTests : TestBase
 
         // Overpayment pair: Debit Cash / Credit MemberReceivable for $20
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 20m && t.GLAccount == "1100"),
-            Arg.Is<Transaction>(t => t.CreditAmount == 20m && t.GLAccount == "1200"),
+            Arg.Is<Transaction>(t => t!.DebitAmount == 20m && t.GLAccount == "1100"),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 20m && t.GLAccount == "1200"),
             Arg.Any<CancellationToken>());
     }
 
@@ -158,8 +158,8 @@ public class PaymentServiceTests : TestBase
 
         // Overpayment pair for the full $50 (entire amount is overpayment): Debit Cash / Credit MemberReceivable
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 50m && t.GLAccount == "1100"),
-            Arg.Is<Transaction>(t => t.CreditAmount == 50m && t.GLAccount == "1200"),
+            Arg.Is<Transaction>(t => t!.DebitAmount == 50m && t.GLAccount == "1100"),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 50m && t.GLAccount == "1200"),
             Arg.Any<CancellationToken>());
     }
 
@@ -200,12 +200,12 @@ public class PaymentServiceTests : TestBase
         await _sut.RecordAsync(MakeRequest(80m), Ct);
 
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 80m && t.GLAccount == "1100" && t.FeeId == Fee2Id),
-            Arg.Is<Transaction>(t => t.CreditAmount == 80m && t.GLAccount == "1200" && t.FeeId == Fee2Id),
+            Arg.Is<Transaction>(t => t!.DebitAmount == 80m && t.GLAccount == "1100" && t.FeeId == Fee2Id),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 80m && t.GLAccount == "1200" && t.FeeId == Fee2Id),
             Arg.Any<CancellationToken>());
 
         await _glRepo.DidNotReceive().AddPairAsync(
-            Arg.Is<Transaction>(t => t.FeeId == Fee1Id),
+            Arg.Is<Transaction>(t => t!.FeeId == Fee1Id),
             Arg.Any<Transaction>(),
             Arg.Any<CancellationToken>());
     }
@@ -216,8 +216,8 @@ public class PaymentServiceTests : TestBase
         var payment = await _sut.RecordAsync(MakeRequest(30m), Ct);
 
         await _glRepo.Received().AddPairAsync(
-            Arg.Is<Transaction>(t => t.PaymentId == payment.Id),
-            Arg.Is<Transaction>(t => t.PaymentId == payment.Id),
+            Arg.Is<Transaction>(t => t!.PaymentId == payment.Id),
+            Arg.Is<Transaction>(t => t!.PaymentId == payment.Id),
             Arg.Any<CancellationToken>());
     }
 
@@ -232,13 +232,13 @@ public class PaymentServiceTests : TestBase
         await _sut.RecordAsync(request, Ct);
 
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 30m && t.FeeId == Fee1Id),
-            Arg.Is<Transaction>(t => t.CreditAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Is<Transaction>(t => t!.DebitAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 30m && t.FeeId == Fee1Id),
             Arg.Any<CancellationToken>());
 
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 80m && t.FeeId == Fee2Id),
-            Arg.Is<Transaction>(t => t.CreditAmount == 80m && t.FeeId == Fee2Id),
+            Arg.Is<Transaction>(t => t!.DebitAmount == 80m && t.FeeId == Fee2Id),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 80m && t.FeeId == Fee2Id),
             Arg.Any<CancellationToken>());
     }
 
@@ -252,14 +252,14 @@ public class PaymentServiceTests : TestBase
 
         // Fee1 (oldest) fully settled at $30
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 30m && t.FeeId == Fee1Id),
-            Arg.Is<Transaction>(t => t.CreditAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Is<Transaction>(t => t!.DebitAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 30m && t.FeeId == Fee1Id),
             Arg.Any<CancellationToken>());
 
         // Fee2 partially settled at $20 — remaining $60 untouched
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 20m && t.FeeId == Fee2Id),
-            Arg.Is<Transaction>(t => t.CreditAmount == 20m && t.FeeId == Fee2Id),
+            Arg.Is<Transaction>(t => t!.DebitAmount == 20m && t.FeeId == Fee2Id),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 20m && t.FeeId == Fee2Id),
             Arg.Any<CancellationToken>());
     }
 
@@ -273,12 +273,12 @@ public class PaymentServiceTests : TestBase
         await _sut.RecordAsync(request, Ct);
 
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 80m && t.FeeId == Fee2Id),
-            Arg.Is<Transaction>(t => t.CreditAmount == 80m && t.FeeId == Fee2Id),
+            Arg.Is<Transaction>(t => t!.DebitAmount == 80m && t.FeeId == Fee2Id),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 80m && t.FeeId == Fee2Id),
             Arg.Any<CancellationToken>());
 
         await _glRepo.DidNotReceive().AddPairAsync(
-            Arg.Is<Transaction>(t => t.FeeId == Fee1Id),
+            Arg.Is<Transaction>(t => t!.FeeId == Fee1Id),
             Arg.Any<Transaction>(),
             Arg.Any<CancellationToken>());
     }
@@ -315,8 +315,8 @@ public class PaymentServiceTests : TestBase
 
         Assert.Equal(30m, payment.Amount);
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 30m && t.FeeId == Fee1Id),
-            Arg.Is<Transaction>(t => t.CreditAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Is<Transaction>(t => t!.DebitAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 30m && t.FeeId == Fee1Id),
             Arg.Any<CancellationToken>());
     }
 
@@ -331,12 +331,12 @@ public class PaymentServiceTests : TestBase
         await _sut.RecordAsync(request, Ct);
 
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 30m && t.FeeId == Fee1Id),
-            Arg.Is<Transaction>(t => t.CreditAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Is<Transaction>(t => t!.DebitAmount == 30m && t.FeeId == Fee1Id),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 30m && t.FeeId == Fee1Id),
             Arg.Any<CancellationToken>());
         await _glRepo.Received(1).AddPairAsync(
-            Arg.Is<Transaction>(t => t.DebitAmount == 80m && t.FeeId == Fee2Id),
-            Arg.Is<Transaction>(t => t.CreditAmount == 80m && t.FeeId == Fee2Id),
+            Arg.Is<Transaction>(t => t!.DebitAmount == 80m && t.FeeId == Fee2Id),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 80m && t.FeeId == Fee2Id),
             Arg.Any<CancellationToken>());
     }
 

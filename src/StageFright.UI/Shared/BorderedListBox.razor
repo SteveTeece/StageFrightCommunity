@@ -1,0 +1,27 @@
+@typeparam TItem
+
+<div class="bordered-list-box" role="@(OnRemove is null ? "list" : "listbox")">
+    @if (Items.Count == 0)
+    {
+        <p class="bordered-list-box-empty text-muted small mb-0">@EmptyText</p>
+    }
+    else
+    {
+        @foreach (var item in Items)
+        {
+            <div class="bordered-list-box-row" role="@(OnRemove is null ? "listitem" : "option")">
+                <div class="bordered-list-box-row-content">
+                    @RowTemplate(item)
+                </div>
+                @if (OnRemove is not null)
+                {
+                    <button type="button" class="btn btn-outline-danger btn-sm bordered-list-box-remove"
+                            aria-label="Remove"
+                            @onclick="() => HandleRemoveAsync(item)">
+                        &times;
+                    </button>
+                }
+            </div>
+        }
+    }
+</div>
