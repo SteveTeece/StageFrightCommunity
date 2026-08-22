@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using StageFright.Core.Contracts;
+using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Modules.Settings;
 using StageFright.UI.Shared;
@@ -21,6 +22,11 @@ public partial class ChartOfAccountsTab : ComponentBase
 
     private IReadOnlyList<string> _existingAccountNames = Array.Empty<string>();
 
+    /// <summary>Active accounts (including system accounts) that will already exist once
+    /// setup finishes, shown read-only in the "Existing Accounts" list alongside the
+    /// queued list so the coordinator sees the whole chart of accounts up front.</summary>
+    private IReadOnlyList<Account> _existingAccounts = Array.Empty<Account>();
+
     /// <summary>Duplicate-check set for AddAccountForm: real accounts (active + archived,
     /// matching ChartOfAccountsPage's own comparison set) union names already queued this
     /// setup session (FR-014).</summary>
@@ -31,6 +37,7 @@ public partial class ChartOfAccountsTab : ComponentBase
     {
         var active = await AccountService.GetAllAsync();
         var archived = await AccountService.GetArchivedAsync();
+        _existingAccounts = active.OrderBy(a => a.AccountNumber).ToList();
         _existingAccountNames = active.Concat(archived).Select(a => a.Name).ToList();
     }
 

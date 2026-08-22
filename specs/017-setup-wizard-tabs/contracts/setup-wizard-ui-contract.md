@@ -9,7 +9,7 @@ Unchanged: `@page "/setup"`, still resolved by `Blazor Router` per the app-host 
 ## Tab order
 
 1. **Organisation Settings** — organisation name, theme dropdown (FR-022), annual fee, attendance fee, membership renewal month, audit retention years, tax-applicable checkbox, tax rate, annual/attendance fee tax treatment. Originally three separate tabs ("General", "Membership & Fees", "Sales Tax"); merged into one over two rounds so the wizard reads as fewer, denser steps — the three source components (`GeneralAppearanceTab`, `MembershipFeesTab`, `SalesTaxTab`) are unchanged and simply render one after the other inside this tab's content.
-2. **Chart of Accounts** — queued-account form (shared `AddAccountForm`) + bordered list of queued accounts.
+2. **Chart of Accounts** — two-column layout: queued-account form (shared `AddAccountForm`) on the left; on the right, a read-only bordered list of every account that already exists (including seeded system accounts, each badged "System") above the existing bordered list of queued accounts.
 3. **Opening Balances** — queued balance entries (shared `OpeningBalanceEntryForm`), covering existing + queued accounts; must come after Chart of Accounts per spec Assumptions.
 4. **Committee** — AGM month, seat count target, office-holder role queue (+ / bordered list). Moved to sit directly before Review — no other tab's data depends on Committee's, so relocating it is presentation-only.
 5. **Review** — read-only summary of every tab, two bordered-list summaries (roles, accounts), "load sample data" checkbox (FR-025), Finish button.

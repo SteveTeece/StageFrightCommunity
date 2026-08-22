@@ -10,8 +10,9 @@ namespace StageFright.Core.Tests.Modules.Finance;
 
 /// <summary>
 /// Unit tests for OpeningBalanceService — normal-side posting, Opening Balance
-/// Equity plug, account eligibility (Member Receivable / GST / OBE excluded),
-/// rerun detection, and audit logging.
+/// Equity plug, account eligibility (only the Opening Balance Equity plug account
+/// itself is excluded — Member Receivable and the tax clearing accounts are
+/// eligible), rerun detection, and audit logging.
 /// </summary>
 public class OpeningBalanceServiceTests : TestBase
 {
@@ -54,14 +55,14 @@ public class OpeningBalanceServiceTests : TestBase
     // --- GetOpeningBalanceAccountsAsync ---
 
     [Fact]
-    public async Task Should_ExcludeReceivableTaxAndPlugAccounts_When_GettingEligibleAccounts()
+    public async Task Should_ExcludeOnlyPlugAccount_When_GettingEligibleAccounts()
     {
         var result = await _sut.GetOpeningBalanceAccountsAsync(Ct);
 
-        Assert.Equal(3, result.Count);
-        Assert.DoesNotContain(result, a => a.Id == SystemAccounts.MemberReceivableId);
-        Assert.DoesNotContain(result, a => a.Id == SystemAccounts.TaxCollectedId);
-        Assert.DoesNotContain(result, a => a.Id == SystemAccounts.TaxPaidId);
+        Assert.Equal(6, result.Count);
+        Assert.Contains(result, a => a.Id == SystemAccounts.MemberReceivableId);
+        Assert.Contains(result, a => a.Id == SystemAccounts.TaxCollectedId);
+        Assert.Contains(result, a => a.Id == SystemAccounts.TaxPaidId);
         Assert.DoesNotContain(result, a => a.Id == SystemAccounts.OpeningBalanceEquityId);
     }
 
@@ -143,10 +144,28 @@ public class OpeningBalanceServiceTests : TestBase
     public async Task Should_ThrowValidation_When_EntryTargetsExcludedAccount()
     {
         var request = MakeRequest(
-            new OpeningBalanceEntry { AccountId = SystemAccounts.MemberReceivableId, Amount = 100m });
+            new OpeningBalanceEntry { AccountId = SystemAccounts.OpeningBalanceEquityId, Amount = 100m });
 
         await Assert.ThrowsAsync<ValidationException>(
             () => _sut.RecordOpeningBalancesAsync(request, Ct));
+    }
+
+    [Fact]
+    public async Task Should_AcceptEntry_When_TargetingMemberReceivableOrTaxAccount()
+    {
+        var request = MakeRequest(
+            new OpeningBalanceEntry { AccountId = SystemAccounts.MemberReceivableId, Amount = 100m },
+            new OpeningBalanceEntry { AccountId = SystemAccounts.TaxCollectedId, Amount = 50m },
+            new OpeningBalanceEntry { AccountId = SystemAccounts.TaxPaidId, Amount = 25m });
+
+        await _sut.RecordOpeningBalancesAsync(request, Ct);
+
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines.Any(t => t.DebitAmount == 100m && t.AccountId == SystemAccounts.MemberReceivableId)
+                && lines.Any(t => t.CreditAmount == 50m && t.AccountId == SystemAccounts.TaxCollectedId)
+                && lines.Any(t => t.CreditAmount == 25m && t.AccountId == SystemAccounts.TaxPaidId)),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]

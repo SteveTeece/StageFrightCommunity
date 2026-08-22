@@ -1,25 +1,49 @@
+@using StageFright.Core.Entities
 @using StageFright.Core.Modules.Settings
 @using StageFright.UI.Shared
 
 <p class="text-muted small">
     Queue any new accounts to add to your Chart of Accounts. This is optional — you can
-    always add accounts later from Finance ▸ Chart of Accounts.
+    always add accounts later from Finance ▸ Chart of Accounts. Every account listed here —
+    including the system accounts already seeded for you — will exist once setup finishes.
 </p>
 
-<div class="mb-3">
-    <AddAccountForm OnSubmit="HandleAddAsync" ExistingNames="ExistingNames" SubmitButtonText="Queue Account" />
-</div>
+<div class="row g-3">
+    <div class="col-md-6">
+        <h6 class="mb-1">Add Account</h6>
+        <AddAccountForm OnSubmit="HandleAddAsync" ExistingNames="ExistingNames" SubmitButtonText="Queue Account" />
+    </div>
+    <div class="col-md-6">
+        <div class="mb-3">
+            <h6 class="mb-1">Existing Accounts</h6>
+            <BorderedListBox TItem="Account" Items="_existingAccounts"
+                              EmptyText="No accounts exist yet.">
+                <RowTemplate Context="account">
+                    <code class="me-1">@account.AccountNumber</code>
+                    <span>@account.Name</span>
+                    <span class="text-muted small ms-2">
+                        @account.Type@(account.IsBankAccount ? " · Bank/Cash" : string.Empty)
+                    </span>
+                    @if (account.IsSystem)
+                    {
+                        <span class="badge bg-secondary ms-1" title="System account">System</span>
+                    }
+                </RowTemplate>
+            </BorderedListBox>
+        </div>
 
-<div class="mb-3">
-    <h6 class="mb-1">Queued Accounts</h6>
-    <BorderedListBox TItem="QueuedAccountRequest" Items="QueuedAccounts"
-                      OnRemove="@(EventCallback.Factory.Create<QueuedAccountRequest>(this, HandleRemoveAsync))"
-                      EmptyText="No accounts queued yet.">
-        <RowTemplate Context="account">
-            <span>@account.Name</span>
-            <span class="text-muted small ms-2">
-                @account.Type@(account.IsBankAccount ? " · Bank/Cash" : string.Empty)
-            </span>
-        </RowTemplate>
-    </BorderedListBox>
+        <div class="mb-3">
+            <h6 class="mb-1">Queued Accounts</h6>
+            <BorderedListBox TItem="QueuedAccountRequest" Items="QueuedAccounts"
+                              OnRemove="@(EventCallback.Factory.Create<QueuedAccountRequest>(this, HandleRemoveAsync))"
+                              EmptyText="No accounts queued yet.">
+                <RowTemplate Context="account">
+                    <span>@account.Name</span>
+                    <span class="text-muted small ms-2">
+                        @account.Type@(account.IsBankAccount ? " · Bank/Cash" : string.Empty)
+                    </span>
+                </RowTemplate>
+            </BorderedListBox>
+        </div>
+    </div>
 </div>
