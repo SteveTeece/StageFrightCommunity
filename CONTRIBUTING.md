@@ -1,12 +1,12 @@
 # Contributing to StageFright Community
 
-Thank you for your interest in contributing! This guide explains how to develop features, maintain code quality, and follow our architectural standards.
+Thank you for your interest in contributing! This guide explains how to develop features, maintain code quality, and follow our architectural standards. It stays in sync with the [Constitution](.specify/memory/constitution.md) and [Architecture Guide](docs/ARCHITECTURE.md) — when in doubt about a detail this file simplifies, those two are authoritative.
 
 ## Development Workflow
 
 ### 1. Feature Creation with Specifications
 
-Every feature starts with a specification. We use **Spec Kit** for structured feature development:
+Every non-trivial feature starts with a specification. We use **Spec Kit** for structured feature development:
 
 ```bash
 # Create a new feature specification
@@ -14,18 +14,15 @@ Every feature starts with a specification. We use **Spec Kit** for structured fe
 ```
 
 This creates:
-- Feature branch (e.g., `003-feature-name`)
+- Feature branch (e.g., `018-feature-name`)
 - Specification directory under `specs/`
 - Template files for planning and task generation
 
 ### 2. Feature Branch Naming
 
-Branches follow the pattern: `NNN-descriptive-name` or `YYYYMMDD-HHMMSS-descriptive-name`
+Branches follow the pattern: `NNN-descriptive-name`, incrementing from the highest existing spec number under `specs/`.
 
-Examples:
-- `001-user-authentication`
-- `002-financial-tracking`
-- `003-event-scheduling`
+Examples: `016-generic-sales-tax`, `017-setup-wizard-tabs`.
 
 ### 3. Specification, Planning, and Implementation
 
@@ -48,58 +45,45 @@ For each feature:
 # When complete: /speckit.implement or manual implementation
 ```
 
-All commands generate artifacts in `specs/[NNN-feature-name]/`.
+All commands generate artifacts in `specs/<NNN-feature-name>/` (`spec.md`, `plan.md`, `tasks.md`, plus `data-model.md`/`contracts/`/`research.md` as needed). **When a code change touches behavior a spec doc describes, update that doc in the same task** — including small, presentation-only tweaks.
 
-## Module Structure (Vertical Slice)
+## Solution Structure (Layered, with Module Slices in Core)
 
-Each feature is organized as a **vertical slice module** following this pattern:
+This is **not** a per-module `Domain/Application/Infrastructure/UI` vertical slice. It's a layered solution — one project per architectural layer — with each business capability organized as a folder *inside* `StageFright.Core`. See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full picture; the essentials:
 
 ```
-src/Features/[ModuleName]/
-├── Domain/
-│   ├── Entities/
-│   │   ├── [Entity].cs
-│   │   └── ...
-│   ├── ValueObjects/
-│   ├── Events/
-│   └── [DomainContracts].cs
-│
-├── Application/
-│   ├── Services/
-│   │   └── [ServiceName].cs
-│   ├── Handlers/
-│   ├── DTOs/
-│   └── Interfaces/
-│
-├── Infrastructure/
-│   ├── Repositories/
-│   │   └── [Entity]Repository.cs
-│   ├── DataAccess/
-│   └── ExternalServices/
-│
-├── UI/
-│   ├── Pages/
-│   │   └── [PageName].razor
-│   ├── Components/
-│   │   └── [ComponentName].razor
-│   └── Models/
-│
-├── Tests/
-│   ├── Unit/
-│   ├── Integration/
-│   └── UI/
-│
-├── DashboardTile.cs           # Dashboard tile provider
-└── README.md                  # Module documentation
+src/
+├── StageFright.App/                    # MAUI Blazor Hybrid host — composition root only
+│   └── MauiProgram.cs                  # ALL DI registration + startup sequence
+├── StageFright.Core/
+│   ├── Entities/                       # Domain entities (Guid PKs)
+│   ├── Enums/                          # Shared enums
+│   ├── Exceptions/                     # Custom exception hierarchy
+│   ├── Contracts/                      # I<Service>/I<Entity>Repository interfaces
+│   └── Modules/<ModuleName>/           # This module's services + request/response DTOs
+│                                       # + its IMenuItemProvider
+├── StageFright.Data/
+│   └── Repositories/                   # ALL repositories, one per entity — centralized,
+│                                       # NOT module-owned (see below)
+├── StageFright.Plugins.Contracts/      # Extension-point interfaces, no dependencies
+├── StageFright.Reports/                # Report pipeline (Providers/, Registry/, Rendering/)
+└── StageFright.UI/
+    ├── Pages/<ModuleName>/             # Paired .razor/.razor.cs pages
+    ├── Modules/<ModuleName>/           # This module's IDashboardTileProvider
+    ├── Shared/                         # BorderedListBox, ReportViewer, etc.
+    └── Layout/                         # ShellLayout (sidebar nav), ThemeProvider
 ```
+
+Current modules: `Agm`, `AuditTrail`, `Dashboard`, `Events`, `Finance`, `Members`, `Rehearsals`, `Settings`.
 
 ### Key Rules
 
-1. **No Cross-Module Imports**: Import only from `Domain/` folders (published interfaces)
-2. **No MediaTr or CQRS**: Use direct service injection
-3. **Standard Repository Pattern**: Repositories in Infrastructure layer
-4. **Service Injection**: Use MAUI DI container for dependency resolution
-5. **Dashboard Tiles**: Each module provides at least one dashboard tile
+1. **Repositories Are Centralized, Not Module-Owned**: every repository lives in `StageFright.Data/Repositories/`, implementing an interface from `StageFright.Core/Contracts/` — this is a deliberate, permanent deviation from pure vertical-slice ownership (keeps one `DbContext`/migration history for the shared SQLite database), not something to "fix" by moving repositories into `Modules/`.
+2. **Dashboard-Tile Providers Live in `StageFright.UI`, Not Core**: a tile provider needs a Blazor component `Type` reference, which `StageFright.Core` intentionally can't have.
+3. **No Cross-Module Imports**: a module injects another module's published interface from `StageFright.Core/Contracts/` — never its concrete service class, and never a `StageFright.Data` repository directly from UI code.
+4. **No MediaTr or CQRS**: use direct service injection and explicit request/response models.
+5. **Explicit DI Registration**: every service, repository, and core provider is registered by hand in `MauiProgram.cs` (`services.AddScoped<IX, X>()` per type) — there is no assembly-scanning/auto-discovery for in-solution types. Only plugin assemblies discovered from the `Plugins/` directory at runtime are registered reflectively (see [ARCHITECTURE.md § Plugin Discovery & Loading](docs/ARCHITECTURE.md#plugin-discovery--loading)).
+6. **Dashboard Tiles**: modules that expose dashboard-visible functionality provide at least one `IDashboardTileProvider`.
 
 ### File Organization - Single Responsibility (MANDATORY)
 
@@ -109,257 +93,110 @@ src/Features/[ModuleName]/
 - ✅ One class per file maximum
 - ✅ File name must exactly match the class/interface name (e.g., `MemberService.cs` for `class MemberService`)
 - ✅ Each responsibility level gets separate files:
-  - Services and their interfaces in separate files
+  - A service and its interface are in separate files (interface in `Contracts/`, implementation in `Modules/<Name>/`)
   - DTOs separate from domain entities
   - Request/response objects in dedicated files
-  - Enums and value objects in their own files
-  
+  - Enums in their own files
+
 **Exception**: Private nested types that serve a single purpose within their parent class may remain inline.
 
 **Code Review**: PRs with multiple classes in a single file will be **rejected**. This is a blocking requirement.
 
 **Example Structure**:
 ```
-Domain/
-├── Member.cs           # only the Member entity
-├── MemberStatus.cs     # only the MemberStatus enum
-├── MemberEmail.cs      # only the MemberEmail value object
-└── IMemberRepository.cs # only the IMemberRepository interface
+StageFright.Core/
+├── Entities/Member.cs                  # only the Member entity
+├── Enums/MemberStatus.cs               # only the MemberStatus enum
+├── Contracts/IMemberService.cs         # only the IMemberService interface
+├── Contracts/IMemberRepository.cs      # only the IMemberRepository interface
+└── Modules/Members/
+    ├── MemberService.cs                # only the MemberService class
+    ├── CreateMemberRequest.cs          # only the CreateMemberRequest DTO
+    └── MemberMenuItemProvider.cs       # only the menu-item provider
 
-Application/
-├── IMemberService.cs   # only the IMemberService interface
-├── MemberService.cs    # only the MemberService class
-├── CreateMemberRequest.cs  # only the CreateMemberRequest DTO
-└── MemberDto.cs        # only the MemberDto
-
-Infrastructure/
-├── MemberRepository.cs # only the MemberRepository class
-└── MemberRepositoryExtensions.cs # only the extensions
+StageFright.Data/Repositories/
+└── MemberRepository.cs                 # only the MemberRepository class
 ```
 
 This enforces SOLID principles and keeps files focused and maintainable.
 
-### Module Template
-
-Every new module should include a `README.md`:
-
-```markdown
-# [ModuleName] Module
-
-## Purpose
-[Brief description of what this module does]
-
-## Responsibilities
-- [What this module owns]
-
-## Dependencies
-- [External dependencies]
-
-## Dashboard Tiles
-- [Tile 1]: [description]
-- [Tile 2]: [description]
-
-## Settings Tab (Optional)
-- [If applicable] Settings tab configuration and fields
-
-## Key Entities
-- [Entity 1]: [description]
-- [Entity 2]: [description]
-```
-
 ## Dashboard Tiles
 
-Each module exposes functionality on the dashboard through tiles (see Constitution §4.2):
+Each module that exposes dashboard-visible functionality does so through `IDashboardTileProvider` (`StageFright.Plugins.Contracts`), implemented in `StageFright.UI/Modules/<ModuleName>/` (see Constitution §4.2):
 
 ```csharp
-// Features/Members/DashboardTile.cs
-public class MembersDashboardTile : IDashboardTile
+// StageFright.UI/Modules/Members/MembersDashboardTileProvider.cs
+public class MembersDashboardTileProvider : IDashboardTileProvider
 {
-    private readonly IMemberService _memberService;
-    
+    public string TileId => "members-overview";
     public string Title => "Members";
-    public int Order => 1;
-    public string Icon => "users";
-    
-    public MembersDashboardTile(IMemberService memberService)
+    public string ModuleName => "Members";
+    public int DisplayOrder => 1;
+    public Type TileComponentType => typeof(MembersTile);
+    public string? NavigateRoute => "/members";
+    public string? ActionText => "View Members";
+
+    // Optional — defaults to DashboardTileSize.OneByOne
+    public DashboardTileSize TileSize => DashboardTileSize.OneByOne;
+
+    public async Task<TileData> GetTileDataAsync(CancellationToken ct)
     {
-        _memberService = memberService;
-    }
-    
-    public async Task<IDashboardTileContent> GetContentAsync()
-    {
-        var activeCount = await _memberService.GetActiveMemberCountAsync();
-        var pendingFees = await _memberService.GetPendingFeeCountAsync();
-        var recent = await _memberService.GetRecentMembersAsync(5);
-        
-        return new MembersTileContent
-        {
-            ActiveMembers = activeCount,
-            PendingFees = pendingFees,
-            RecentMembers = recent
-        };
+        // Load and shape the data the tile component needs
     }
 }
 ```
 
-**Tile Content**: Each tile should include:
-- Summary metrics or status information
-- Charts/graphs for data visualization
-- Quick-action buttons for common tasks
-- Recent activity feeds
-- Status indicators
+**Tile Sizing**: opt into `OneByOne` (default, 1×1), `OneByTwo` (2 cols × 1 row), `TwoByOne` (1 col × 2 rows), or `TwoByTwo` (2×2) via `TileSize`. The dashboard's CSS grid maps each to a `tile-size-1x1`/`1x2`/`2x1`/`2x2` class — no grid CSS changes needed to resize a tile.
 
-See [UI Component Style Guide](docs/UI_COMPONENT_STYLE_GUIDE.md#dashboard-tiles) for detailed tile design patterns.
+**Failure Isolation**: tiles load in parallel; a throwing provider must render "Unable to load" without blocking the other tiles.
+
+See [UI Component Style Guide § Dashboard Tiles](docs/UI_COMPONENT_STYLE_GUIDE.md#dashboard-tiles) for design patterns.
 
 ## Settings Tabs
 
-Modules MAY define a settings tab for configuration (see Constitution §4.3). Settings tabs appear in the application Settings page under `/settings`.
+The core application's own tabs (General, Tax, Committee, Event Types, Backup & Restore) are **hardcoded directly in `SettingsPage.razor`** — they are not contributed via `ISettingsTabProvider`. That interface exists solely for **plugin-contributed** tabs, rendered after the built-in ones; `SettingsPage.razor` resolves `IEnumerable<ISettingsTabProvider>` separately and skips a duplicate `TabKey` with a logged warning (see Constitution §4.3).
 
-### Module Settings Tab Implementation
-
-```csharp
-// Features/Members/Application/ISettingsTabProvider.cs (published interface)
-public interface IMembersSettingsTabProvider : ISettingsTabProvider
-{
-    // Inherits from ISettingsTabProvider
-}
-
-// Features/Members/DashboardTile.cs (implements provider)
-public class MembersSettingsTabProvider : ISettingsTabProvider
-{
-    private readonly IMembersSettingsService _settingsService;
-    
-    public string TabTitle => "Members";
-    public string TabIcon => "users";
-    public int DisplayOrder => 2;
-    
-    public Type SettingsComponentType => typeof(MembersSettingsTab);
-    
-    public async Task<ISettingsTab> GetSettingsAsync()
-    {
-        return await _settingsService.GetSettingsAsync();
-    }
-    
-    public async Task<ValidationResult> ValidateAsync(ISettingsTab settings)
-    {
-        return await _settingsService.ValidateAsync(settings);
-    }
-    
-    public async Task SaveAsync(ISettingsTab settings)
-    {
-        await _settingsService.SaveAsync(settings);
-    }
-}
-
-// Features/Members/UI/Components/MembersSettingsTab.razor
-@implements IAsyncDisposable
-@inject IMembersSettingsTabProvider SettingsProvider
-
-<EditForm Model="@settings" OnValidSubmit="@HandleSave">
-    <DataAnnotationsValidator />
-    
-    <div class="settings-group">
-        <h3>Member Settings</h3>
-        
-        <div class="form-group">
-            <label>Default Member Status</label>
-            <InputSelect @bind-Value="settings.DefaultMemberStatus">
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-            </InputSelect>
-            <ValidationMessage For="@(() => settings.DefaultMemberStatus)" />
-        </div>
-        
-        <div class="form-group">
-            <label>Auto-Archive Inactive Days</label>
-            <InputNumber @bind-Value="settings.AutoArchiveInactiveDays" />
-            <ValidationMessage For="@(() => settings.AutoArchiveInactiveDays)" />
-        </div>
-    </div>
-    
-    <div class="settings-actions">
-        <button type="button" class="btn btn-secondary" @onclick="OnCancel">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save Settings</button>
-    </div>
-</EditForm>
-
-@code {
-    private MembersSettings settings;
-
-    protected override async Task OnInitializedAsync()
-    {
-        settings = (MembersSettings)await SettingsProvider.GetSettingsAsync();
-    }
-
-    private async Task HandleSave()
-    {
-        var result = await SettingsProvider.ValidateAsync(settings);
-        if (!result.IsValid)
-        {
-            // Show validation errors
-            return;
-        }
-
-        await SettingsProvider.SaveAsync(settings);
-        // Notify parent that save succeeded
-    }
-
-    private void OnCancel()
-    {
-        // Notify parent to close or revert
-    }
-}
-```
-
-### Module Settings Registration
-
-Register settings tabs in module DependencyInjection:
+### Plugin Settings Tab Implementation
 
 ```csharp
-// Features/Members/DependencyInjection.cs
-public static IServiceCollection AddMembersModule(this IServiceCollection services)
+// Real ISettingsTabProvider shape — no GetSettingsAsync/ValidateAsync/SaveAsync on the
+// interface itself. Persistence and validation live entirely inside the tab's own
+// Blazor component (SettingsComponentType).
+public class MyPluginSettingsTabProvider : ISettingsTabProvider
 {
-    services.AddScoped<IMemberService, MemberService>();
-    services.AddScoped<IMembersSettingsTabProvider, MembersSettingsTabProvider>();
-    
-    // Register with settings system
-    services.AddScoped<ISettingsTabProvider>(sp => 
-        sp.GetRequiredService<IMembersSettingsTabProvider>());
-    
-    return services;
+    public string TabTitle => "My Plugin";
+    public string TabIcon => "puzzle";
+    public string TabKey => "my-plugin";       // deep-link: /settings?tab=my-plugin
+    public int DisplayOrder => 100;             // plugin tabs: 100+; core tabs: 0–99
+    public Type SettingsComponentType => typeof(MyPluginSettingsTab);
 }
+
+// MyPluginSettingsTab.razor.cs — owns its own load/validate/save, e.g. via an injected
+// plugin-specific settings service. Follow the paired .razor/.razor.cs rule (see below).
 ```
 
-### Application Settings Tab
+### Core Application Settings (Not Module- or Plugin-Provided)
 
-The core application provides built-in settings (Constitution §4.3):
+Part of the built-in General tab (Constitution §4.3):
 
 - **Organization Name** — Name of the group/organization
 - **Annual Membership Fee** — Annual fee amount
 - **Rehearsal/Event Fee** — Per-rehearsal or per-event fee
 - **Membership Renewal Due Date** — Month and day (e.g., "September 1")
 
-These settings are NOT provided by any module; they're part of the core application.
-
 ## Navigation Menu Items
 
-Modules SHOULD define menu items for feature navigation (see Constitution §4.5). Menu items appear in the main navigation, with Settings always last.
+Modules that need navigation define an `IMenuItemProvider` in their own `StageFright.Core/Modules/<ModuleName>/` folder (Constitution §4.6). The shell renders these as a **fixed vertical sidebar** — not a top nav bar — with Settings always last.
 
-### Menu Item Implementation
+### Menu Item Implementation (the real contract — no `IsActive` field)
 
 ```csharp
-// Features/Members/Application/IMenuItemProvider.cs (published interface)
-public interface IMembersMenuItemProvider : IMenuItemProvider
-{
-    // Inherits from IMenuItemProvider
-}
-
-// Features/Members/UI/MembersMenuItemProvider.cs (implements provider)
-public class MembersMenuItemProvider : IMenuItemProvider
+// StageFright.Core/Modules/Members/MemberMenuItemProvider.cs
+public class MemberMenuItemProvider : IMenuItemProvider
 {
     public string ModuleName => "Members";
     public int DisplayOrder => 1;
-    
+
     public IReadOnlyList<MenuItem> GetMenuItems()
     {
         return new List<MenuItem>
@@ -369,98 +206,31 @@ public class MembersMenuItemProvider : IMenuItemProvider
                 Title = "Members",
                 Route = "/members",
                 Icon = "users",
-                DisplayOrder = 1,
-                SubItems = new List<MenuItem>
-                {
-                    new() 
-                    { 
-                        Title = "Active Members", 
-                        Route = "/members/list", 
-                        DisplayOrder = 1 
-                    },
-                    new() 
-                    { 
-                        Title = "Pending Approval", 
-                        Route = "/members/pending", 
-                        BadgeText = "3",
-                        DisplayOrder = 2 
-                    },
-                    new() 
-                    { 
-                        Title = "Add Member", 
-                        Route = "/members/new", 
-                        DisplayOrder = 3 
-                    }
-                }
+                DisplayOrder = 1
             }
         };
     }
 }
 ```
 
+`MenuItem`'s real properties: `Title`, `Route`, `Icon`, `ShortLabel`, `DisplayOrder`, `SubItems`, `BadgeText`. There is **no `IsActive` field** — the shell computes active-state from the current route at render time, it isn't stored on the model.
+
 ### Menu Item Registration
 
-Register menu items in module DependencyInjection:
+Register explicitly in `MauiProgram.RegisterCoreServices` — one line per provider, no scanning:
 
 ```csharp
-// Features/Members/DependencyInjection.cs
-public static IServiceCollection AddMembersModule(this IServiceCollection services)
-{
-    services.AddScoped<IMemberService, MemberService>();
-    services.AddScoped<IMembersMenuItemProvider, MembersMenuItemProvider>();
-    
-    // Register with menu system
-    services.AddScoped<IMenuItemProvider>(sp => 
-        sp.GetRequiredService<IMembersMenuItemProvider>());
-    
-    return services;
-}
-```
-
-### Menu Item Characteristics
-
-- **Title**: Display text in the navigation menu
-- **Route**: Target URL path (e.g., "/members/list")
-- **Icon**: Optional icon name for visual representation (e.g., "users", "calendar", "dollar-sign")
-- **DisplayOrder**: Order within module menu items (lower numbers first)
-- **SubItems**: Optional child menu items for grouping related features
-- **BadgeText**: Optional notification badge (e.g., "5" for pending items)
-
-### Menu Item Examples
-
-**Members Module** (primary navigation):
-```
-Members
-├── Active Members
-├── Pending Approval [3]
-└── Add Member
-```
-
-**Events Module** (with icon):
-```
-📅 Events
-├── Upcoming Events
-├── Past Events
-└── Create Event
-```
-
-**Finances Module** (hierarchical):
-```
-💰 Finances
-├── Transactions
-├── Reports
-├── Invoices [2]
-└── Income Summary
+services.AddSingleton<IMenuItemProvider, MemberMenuItemProvider>();
 ```
 
 ### Important Rules
 
-- **Settings Always Last**: Never add menu items after Settings
-- **Module Order**: Use `DisplayOrder` to control module placement relative to other modules
-- **Icon Guidelines**: Use common, recognizable icons (see UI_COMPONENT_STYLE_GUIDE.md for icon reference)
-- **No Hardcoding**: Compute badge text dynamically (e.g., pending count)
-- **Route Prefixes**: Each module owns its route prefix (e.g., `/members/*`, `/events/*`)
-- **Sub-menu Depth**: Avoid deeply nested sub-menus; 2 levels maximum is recommended
+- **Settings Always Last**: never add menu items after Settings
+- **Module Order**: use `DisplayOrder` to control module placement relative to other modules
+- **Icon Guidelines**: sidebar icons are Bootstrap Icons inlined as CSS masks (see [UI_COMPONENT_STYLE_GUIDE.md](docs/UI_COMPONENT_STYLE_GUIDE.md#icons))
+- **No Hardcoding**: compute badge text dynamically (e.g., pending count)
+- **Route Prefixes**: each module owns its route prefix (e.g., `/members/*`, `/events/*`)
+- **Sub-menu Depth**: 2 levels maximum (menu item → sub-items)
 
 ## Testing Requirements
 
@@ -474,79 +244,65 @@ This includes:
 - ✅ State transitions
 - ✅ All UI user journeys
 
+Test frameworks: **xUnit v3**, **bUnit** for Blazor components, **NSubstitute** for mocking — there is no Moq dependency in the solution; use `Substitute.For<T>()`, not `Mock<T>`.
+
 ### Test Organization
 
 ```
 tests/
-├── StageFright.Tests/
-│   ├── Unit/
-│   │   └── [ModuleName]/
-│   │       ├── Services/
-│   │       ├── Repositories/
-│   │       └── [ComponentName]Tests.cs
-│   │
-│   ├── Integration/
-│   │   └── [ModuleName]/
-│   │       ├── Services/
-│   │       ├── Workflows/
-│   │       └── [Scenario]IntegrationTests.cs
-│   │
-│   └── UI/
-│       ├── Pages/
-│       ├── Components/
-│       └── [PageName]UITests.cs
+├── StageFright.Core.Tests/         # Unit tests — services, domain logic
+├── StageFright.Data.Tests/         # Integration tests — real SQLite connection
+├── StageFright.UI.Tests/           # bUnit component tests
+├── StageFright.Integration.Tests/  # Cross-layer user-journey tests
+├── StageFright.Reports.Tests/      # Report provider + PDF/CSV renderer tests
+└── StageFright.TestPlugin/         # Sample plugin fixture for the discovery pipeline
 ```
 
 ### Test Naming Convention
 
 ```csharp
-// Unit/Integration tests
+// Unit/integration tests
 [Fact]
 public void Should_[ExpectedBehavior]_When_[Condition]() { }
 
-// UI tests
+// Integration tests specifically
 [Fact]
-public void Should_[ExpectedBehavior]_When_[UserAction]_UI() { }
+public async Task Should_[ExpectedBehavior]_When_[Condition]_Integration() { }
 ```
 
 ### Writing Tests
 
-**Test must be deterministic** — no timing dependencies, use explicit waits.
+**Tests must be deterministic** — no timing dependencies, use explicit waits.
 
-Example unit test:
+Example unit test (NSubstitute, not Moq):
 ```csharp
 [Fact]
-public void Should_ValidateMemberEmail_When_CreatingNewMember()
+public void Should_ThrowValidationException_When_EmailIsInvalid()
 {
     // Arrange
-    var service = new MemberService(mockRepository.Object);
-    var member = new MemberCreateRequest { Email = "invalid-email" };
+    var repository = Substitute.For<IMemberRepository>();
+    var service = new MemberService(repository /*, other deps */);
+    var request = new CreateMemberRequest { Email = "invalid-email" };
 
     // Act & Assert
-    Assert.Throws<ValidationException>(() => service.CreateMember(member));
+    Assert.Throws<ValidationException>(() => service.Create(request));
 }
 ```
 
-Example UI integration test:
+Example bUnit component test:
 ```csharp
 [Fact]
-public async Task Should_DisplayMemberList_When_NavigatingToMembersPage()
+public void Should_DisplayMembersList_When_ComponentRendered()
 {
-    // Arrange
-    var cut = RenderComponent<MembersPage>(
-        ComponentParameter.CreateParameter("MemberService", mockMemberService.Object)
-    );
+    var memberService = Substitute.For<IMemberService>();
+    memberService.GetActiveMembersAsync(Arg.Any<CancellationToken>())
+        .Returns(new List<Member> { new() { FirstName = "John", LastName = "Doe" } });
 
-    // Act - wait for data load
-    await cut.InvokeAsync(() => cut.Instance.OnInitializedAsync());
+    using var ctx = new TestContext();
+    ctx.Services.AddSingleton(memberService);
+    var cut = ctx.RenderComponent<MemberList>();
 
-    // Assert
-    cut.MarkupMatches(@"
-        <h1>Members</h1>
-        <table>
-            <tr><td>John Doe</td></tr>
-        </table>
-    ");
+    Assert.Contains("John", cut.Markup);
 }
 ```
 
@@ -554,103 +310,110 @@ public async Task Should_DisplayMemberList_When_NavigatingToMembersPage()
 
 ### Design Principles
 
-All UI must follow the **UI Component Style Guide** ([docs/UI_COMPONENT_STYLE_GUIDE.md](docs/UI_COMPONENT_STYLE_GUIDE.md)):
+All UI must follow the **UI Component Style Guide** ([docs/UI_COMPONENT_STYLE_GUIDE.md](docs/UI_COMPONENT_STYLE_GUIDE.md)) — the "Midnight Glass" design system:
 
-- **Clean & Simple** — minimal visual clutter
-- **Compact Layouts** — optimized information density
-- **Modern Design** — professional, contemporary aesthetics
-- **Consistent Language** — unified component library
+- **Clean & Simple** — minimal visual clutter, tokens over hardcoded colors
+- **Compact Layouts** — Bootstrap spacing utility classes, not bespoke CSS
+- **Consistent Components** — `RadzenDataGrid` for tables, `BorderedListBox` for bordered lists, `RadzenSwitch` for toggles — never a hand-rolled equivalent
 - **Accessible** — keyboard and screen-reader support
 
 ### Blazor Component Structure
 
+Every component is a paired `.razor`/`.razor.cs` file — `@code { }` blocks in `.razor` are prohibited:
+
 ```razor
-@* Pages/MembersPage.razor *@
+@* Pages/Members/MemberList.razor *@
 @page "/members"
-@inject IMemberService MemberService
-@inject ILogger<MembersPage> Logger
 
-<PageHeader Title="Members" />
-
-<div class="members-container">
-    @if (members == null)
-    {
-        <LoadingSpinner />
-    }
-    else if (members.Count == 0)
-    {
-        <EmptyState Message="No members found" ActionText="Add Member" OnAction="NavigateToCreate" />
-    }
-    else
-    {
-        <MembersTable Members="members" OnDelete="HandleDelete" />
-    }
+<div class="d-flex align-items-center justify-content-between mb-2">
+    <h1 class="h3 mb-0">Members</h1>
+    <button class="btn btn-primary btn-sm" @onclick="AddMember">Add Member</button>
 </div>
 
-@code {
-    private List<MemberDto> members;
+@if (_loading)
+{
+    <p role="status" aria-live="polite">Loading members…</p>
+}
+else
+{
+    <RadzenDataGrid Data="@_members" TItem="Member" AllowSorting="true" AllowPaging="true"
+                     PageSize="15" class="rz-shadow-0">
+        <Columns>
+            <RadzenDataGridColumn TItem="Member" Property="SortableFullName" Title="Name" />
+        </Columns>
+    </RadzenDataGrid>
+}
+```
+
+```csharp
+// Pages/Members/MemberList.razor.cs
+public partial class MemberList
+{
+    [Inject] private IMemberService MemberService { get; set; } = default!;
+    [Inject] private ILogger<MemberList> Logger { get; set; } = default!;
+
+    private List<Member> _members = new();
+    private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            members = await MemberService.GetActiveMembers();
+            _members = (await MemberService.GetActiveMembersAsync(CancellationToken.None)).ToList();
         }
-        catch (Exception ex)
+        catch (DataAccessException ex)
         {
             Logger.LogError(ex, "Failed to load members");
-            // Show user-friendly error
+        }
+        finally
+        {
+            _loading = false;
         }
     }
 
-    private async Task HandleDelete(int memberId)
-    {
-        // Implementation
-    }
-
-    private void NavigateToCreate() => NavigationManager.NavigateTo("/members/new");
+    private void AddMember() { /* ... */ }
 }
 ```
 
 ### CSS & Styling
 
-- Use CSS isolation: `MembersPage.razor.css`
-- Follow BEM naming: `.members-container__list--active`
-- Minimal utility classes; prefer semantic CSS
-- Coordinate with UI component library (Radzen, custom components)
+- Global stylesheet (`StageFright.App/wwwroot/app.css`) is the default home for CSS — layout, typography, `--sf-*` design tokens, Bootstrap overrides, and anything shared across two or more components
+- `.razor.css` CSS isolation is added only when a component needs styles genuinely scoped to it
+- Never hardcode a color — reference an `--sf-*` token
 
 ## Custom Exceptions
 
-All exceptions crossing architectural boundaries must be project-defined custom exceptions.
+All exceptions crossing architectural boundaries must be one of the project-defined custom exceptions in `StageFright.Core/Exceptions/`:
 
-### Exception Hierarchy
+```
+ConcurrencyException, DataAccessException, DataIntegrityException, DuplicateEntityException,
+EntityNotFoundException, GLBalanceException, ImportException, PluginLoadException,
+ReconciliationException, ValidationException
+```
+
+Every one of them shares a single constructor shape:
 
 ```csharp
-public abstract class StageFrightException : Exception
-{
-    public string CorrelationId { get; }
-    public DateTime Timestamp { get; }
-}
-
-public class ValidationException : StageFrightException
-{
-    public string FieldName { get; }
-    public object AttemptedValue { get; }
-}
-
-public class EntityNotFoundException : StageFrightException
+public sealed class DataAccessException : Exception
 {
     public string EntityType { get; }
-    public object EntityId { get; }
-}
+    public Guid? EntityId { get; }
+    public string OperationContext { get; }
+    public DateTime Timestamp { get; } = DateTime.UtcNow;
+    public Guid CorrelationId { get; } = Guid.NewGuid();
 
-public class PersistenceException : StageFrightException
-{
-    public string Operation { get; }
+    public DataAccessException(string message, string entityType, string operationContext,
+        Guid? entityId = null, Exception? innerException = null)
+        : base(message, innerException)
+    {
+        EntityType = entityType;
+        EntityId = entityId;
+        OperationContext = operationContext;
+    }
 }
-
-// ... and others
 ```
+
+Don't invent a new exception type with a different constructor shape — add a case to an existing type's `OperationContext`/message instead, or propose a new type that follows the same shape.
 
 ### Boundary Translation
 
@@ -658,22 +421,29 @@ public class PersistenceException : StageFrightException
 
 ```csharp
 // ✅ GOOD: Translation at repository boundary
-public async Task<Member> GetMemberAsync(int id)
+public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken ct = default)
 {
     try
     {
-        return await _context.Members.FindAsync(id);
+        var entry = await _db.Set<TEntity>().AddAsync(entity, ct);
+        await _db.SaveChangesAsync(ct);
+        return entry.Entity;
     }
-    catch (DbUpdateException ex)
+    catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("UNIQUE", StringComparison.OrdinalIgnoreCase) == true)
     {
-        throw new PersistenceException("Failed to query members", innerException: ex);
+        throw new DuplicateEntityException($"A {typeof(TEntity).Name} with these values already exists.",
+            typeof(TEntity).Name, nameof(AddAsync), null, ex);
+    }
+    catch (Exception ex) when (ex is not DuplicateEntityException and not DataAccessException)
+    {
+        throw new DataAccessException(ex.Message, typeof(TEntity).Name, nameof(AddAsync), null, ex);
     }
 }
 
 // ❌ BAD: Raw exception leaks to Application layer
-public async Task<Member> GetMemberAsync(int id)
+public async Task<Member?> GetByIdAsync(Guid id)
 {
-    return await _context.Members.FindAsync(id);  // DbUpdateException!
+    return await _db.Members.FindAsync(id);  // any raw EF exception leaks unwrapped
 }
 ```
 
@@ -681,70 +451,47 @@ public async Task<Member> GetMemberAsync(int id)
 
 ### Soft Delete Rules
 
-**All application data must use soft delete** (except financial records, which are immutable):
+**All application data must use soft delete** (except financial records, which are immutable) — real fields, matching `Member`:
 
 ```csharp
 public class Member
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Email { get; set; }
-    
-    // Soft delete fields
+    public Guid Id { get; set; }
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+
+    // Soft-delete fields
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }
-    public string DeletedBy { get; set; }
+    public string? DeletedBy { get; set; }
 }
-
-// Query filtering
-var activeMembers = await _context.Members
-    .Where(m => !m.IsDeleted)
-    .ToListAsync();
 ```
 
 ### Financial Data Immutability
 
-**Financial records NEVER soft-delete or hard-delete:**
-
-```csharp
-public class IncomeTransaction
-{
-    public int Id { get; set; }
-    public DateTime TransactionDate { get; set; }
-    public decimal Amount { get; set; }
-    
-    // NO IsDeleted, NO DeletedAt
-    // To correct errors: create reversing transactions
-}
-```
+**`Fee`, `Payment`, and `Transaction` NEVER soft-delete or hard-delete** — they carry no soft-delete fields at all. To correct an error, create a reversing GL transaction pair; never edit or delete the original record.
 
 ## Logging & Observability
 
 ### Structured Logging with Serilog
 
 ```csharp
-private readonly ILogger<MemberService> _logger;
-
-public void CreateMember(MemberCreateRequest request)
+public async Task<Member> CreateMemberAsync(CreateMemberRequest request, CancellationToken ct)
 {
     try
     {
-        _logger.LogInformation("Creating new member: {MemberName}", request.Name);
-        
-        var member = new Member { Name = request.Name, Email = request.Email };
-        _repository.Add(member);
-        
-        _logger.LogInformation("Member created successfully: {MemberId}", member.Id);
+        _logger.LogInformation("Creating new member: {MemberName}", request.FirstName + " " + request.LastName);
+
+        var member = new Member { FirstName = request.FirstName, LastName = request.LastName };
+        var created = await _repository.AddAsync(member, ct);
+
+        _logger.LogInformation("Member created successfully: {MemberId}", created.Id);
+        return created;
     }
     catch (ValidationException ex)
     {
         _logger.LogWarning(ex, "Validation failed for member creation: {Reason}", ex.Message);
         throw;
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "Unexpected error creating member");
-        throw new PersistenceException("Failed to create member", innerException: ex);
     }
 }
 ```
@@ -765,16 +512,17 @@ public void CreateMember(MemberCreateRequest request)
 
 Before submitting a pull request, verify:
 
-- [ ] All tests pass locally
+- [ ] `dotnet build` and the full `dotnet test` suite are green (without `--no-build`)
 - [ ] Code-path coverage complete (success, failure, exceptions, boundaries)
-- [ ] Custom exceptions used at boundaries
-- [ ] Soft-delete implemented where required
+- [ ] Custom exceptions used at boundaries (one of the real ten types, correct constructor shape)
+- [ ] Soft-delete implemented where required (not on `Fee`/`Payment`/`Transaction`/`JournalEntry`/`AuditTrailEntry`/`ReconciliationLine`/`CommitteeTerm`)
 - [ ] No raw framework exceptions leak across layers
-- [ ] UI follows design guide (clean, simple, modern)
-- [ ] Module structure follows vertical slice pattern
+- [ ] UI follows the [UI Component Style Guide](docs/UI_COMPONENT_STYLE_GUIDE.md) (RadzenDataGrid/BorderedListBox/RadzenSwitch, design tokens)
+- [ ] File organization follows §4.1/§4.5 of the [Constitution](.specify/memory/constitution.md) (module folder in Core, centralized repository in Data)
 - [ ] No hardcoded values or magic strings
 - [ ] Logging implemented for observability
 - [ ] Comments explain WHY, not WHAT
+- [ ] Any touched `specs/<feature>/` doc updated alongside the code change
 - [ ] Commit messages are clear and descriptive
 
 ## Pull Request Process
@@ -782,14 +530,13 @@ Before submitting a pull request, verify:
 > **Target branch**: All pull requests must be opened against `dev`, not `master`. PRs targeting `master` will be rejected.
 
 1. **Branch**: Create feature branch from `dev`
-2. **Implement**: Follow vertical slice pattern, write tests first
+2. **Implement**: Follow the layered/module-slice pattern (§4.1 of the Constitution), write tests for every reachable path
 3. **Commit**: Use clear, descriptive commit messages
    ```
    feat(members): Add soft-delete support for members
 
    - Add IsDeleted, DeletedAt, DeletedBy fields to Member entity
    - Filter inactive members from queries by default
-   - Add MemberStatus view for inactive member management
    - Add unit and integration tests for soft-delete behavior
    ```
 4. **Push**: Push to origin
@@ -805,99 +552,92 @@ Before submitting a pull request, verify:
 
 ### Q: How do I create a new module?
 
-1. Create folder: `src/Features/[ModuleName]/`
-2. Create subfolders: Domain/, Application/, Infrastructure/, UI/, Tests/
-3. Create `DashboardTile.cs` to define how the module appears on dashboard
-4. Create `README.md` describing the module
-5. Implement following vertical slice pattern (no cross-module imports)
+See [ARCHITECTURE.md § Adding a New Module](docs/ARCHITECTURE.md#adding-a-new-module) for the concrete file-by-file walkthrough — in short: entity (Core/Entities) → contract (Core/Contracts) → repository (Data/Repositories) → migration → module service + menu provider (Core/Modules/<Name>) → UI pages + dashboard tile (UI/Pages, UI/Modules/<Name>) → explicit DI registration in `MauiProgram.cs` → tests in each matching test project.
 
 ### Q: What if my feature needs to communicate with another module?
 
-Use dependency injection to reference published interfaces from the other module's Domain layer, not private implementation details. Example:
+Inject the other module's published interface from `StageFright.Core/Contracts/`, not its concrete service class or its repository:
 
 ```csharp
-// ✅ GOOD: Inject published interface
-public class EventSchedulingService
+// ✅ GOOD: inject the published interface
+public class EventService
 {
-    public EventSchedulingService(IMemberRepository memberRepository) { }
+    public EventService(IMemberRepository memberRepository) { }
 }
 
-// ❌ BAD: Direct import from Infrastructure
-public class EventSchedulingService
+// ❌ BAD: import a concrete type from another module or reach into Data directly
+public class EventService
 {
-    public EventSchedulingService(MemberRepository repository) { }
+    public EventService(MemberService memberService) { }   // concrete cross-module import
 }
 ```
 
 ### Q: How do I test async operations?
 
-Use `xUnit` and `Task`-based tests:
+Use `xUnit` and `Task`-based tests, passing `TestContext.Current.CancellationToken` rather than `CancellationToken.None`/`default`:
 
 ```csharp
 [Fact]
-public async Task Should_LoadMembersAsync_When_PageInitialized()
+public async Task Should_LoadMembersAsync_When_Called()
 {
-    // Arrange
-    var service = new MemberService(mockRepository.Object);
+    var repository = Substitute.For<IMemberRepository>();
+    var service = new MemberService(repository);
 
-    // Act
-    var result = await service.GetActiveMembersAsync();
+    var result = await service.GetActiveMembersAsync(TestContext.Current.CancellationToken);
 
-    // Assert
     Assert.NotEmpty(result);
 }
 ```
 
 ### Q: What's the difference between Unit and Integration tests?
 
-- **Unit**: Test a single class in isolation, mock dependencies
-- **Integration**: Test multiple components together with realistic (in-memory) data
+- **Unit** (`StageFright.Core.Tests`): a single service in isolation, dependencies mocked with NSubstitute
+- **Integration** (`StageFright.Data.Tests`, `_Integration` suffix): a real `StageFrightDbContext` against a real SQLite connection — not EF Core's `UseInMemoryDatabase` provider, so SQLite-specific behavior (transactions, unique constraints) is exercised for real
 
 ### Q: How do I handle errors in Blazor components?
 
 ```razor
-@if (errorMessage != null)
+@if (!string.IsNullOrEmpty(_errorMessage))
 {
-    <ErrorAlert Message="@errorMessage" OnDismiss="() => errorMessage = null" />
+    <div class="alert alert-danger">@_errorMessage</div>
 }
+```
 
-@code {
-    private string errorMessage;
-
-    protected override async Task OnInitializedAsync()
+```csharp
+protected override async Task OnInitializedAsync()
+{
+    try
     {
-        try
-        {
-            data = await Service.LoadData();
-        }
-        catch (ValidationException ex)
-        {
-            errorMessage = $"Invalid input: {ex.Message}";
-        }
-        catch (EntityNotFoundException ex)
-        {
-            errorMessage = "Item not found";
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Unexpected error");
-            errorMessage = "An unexpected error occurred. Please try again.";
-        }
+        _data = await Service.LoadDataAsync(CancellationToken.None);
+    }
+    catch (ValidationException ex)
+    {
+        _errorMessage = $"Invalid input: {ex.Message}";
+    }
+    catch (EntityNotFoundException)
+    {
+        _errorMessage = "Item not found";
+    }
+    catch (DataAccessException ex)
+    {
+        Logger.LogError(ex, "Unexpected error loading data");
+        _errorMessage = "An unexpected error occurred. Please try again.";
     }
 }
 ```
 
 ## Resources
 
-- [Constitution](\.specify\memory\constitution.md) — Governance framework
+- [Constitution](.specify/memory/constitution.md) — Governance framework
 - [Architecture Guide](docs/ARCHITECTURE.md) — Detailed architecture patterns
+- [Setup Guide](docs/SETUP.md) — Developer environment setup
 - [UI Component Style Guide](docs/UI_COMPONENT_STYLE_GUIDE.md) — Design standards
-- [Spec Kit Documentation](\.specify\README.md) — Feature specification workflow
+- [XML Documentation Standards](docs/XML-DOCUMENTATION-STANDARDS.md) — `///` comment requirements
 - [.NET MAUI Documentation](https://learn.microsoft.com/en-us/dotnet/maui/)
 - [Blazor Documentation](https://learn.microsoft.com/en-us/aspnet/core/blazor/)
 
 ## Questions?
 
 - Check existing issues and discussions
-- Review specification and plan artifacts for design decisions
+- Review specification and plan artifacts under `specs/` for design decisions
 - Ask questions in GitHub Discussions

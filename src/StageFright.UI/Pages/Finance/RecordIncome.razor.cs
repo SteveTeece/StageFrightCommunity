@@ -19,13 +19,14 @@ public partial class RecordIncome : ComponentBase
     private IReadOnlyList<Account> _bankAccounts = [];
     private bool _loading = true;
     private bool _saving;
-    private bool _isGstRegistered;
+    private bool _isTaxApplicable;
+    private decimal _taxRate;
     private string? _successMessage;
     private string? _errorMessage;
 
-    private string? GstInclusiveHint =>
-        _isGstRegistered && _form.GstCode == GstCode.Gst && _form.Amount > 0m
-            ? $"Includes GST of {GstCalculator.SplitInclusive(_form.Amount).Gst:C}"
+    private string? TaxInclusiveHint =>
+        _isTaxApplicable && _form.TaxCode == TaxCode.Taxable && _form.Amount > 0m
+            ? $"Includes tax of {TaxCalculator.SplitInclusive(_form.Amount, _taxRate).Tax:C}"
             : null;
 
     protected override async Task OnInitializedAsync()
@@ -40,7 +41,8 @@ public partial class RecordIncome : ComponentBase
             _form.DepositAccountId = SystemAccounts.CashId;
 
             var settings = await SettingsService.GetAsync();
-            _isGstRegistered = settings?.IsGstRegistered ?? false;
+            _isTaxApplicable = settings?.IsTaxApplicable ?? false;
+            _taxRate = settings?.TaxRate ?? 0m;
         }
         catch (Exception ex)
         {
@@ -78,7 +80,7 @@ public partial class RecordIncome : ComponentBase
                 Amount = _form.Amount,
                 AccountId = _form.AccountId,
                 DepositAccountId = _form.DepositAccountId == Guid.Empty ? null : _form.DepositAccountId,
-                GstCode = _isGstRegistered ? _form.GstCode : null,
+                TaxCode = _isTaxApplicable ? _form.TaxCode : null,
                 Description = string.IsNullOrWhiteSpace(_form.Description) ? null : _form.Description.Trim()
             };
 
@@ -100,7 +102,7 @@ public partial class RecordIncome : ComponentBase
         _successMessage = null;
         _errorMessage = null;
         _form.Amount = 0m;
-        _form.GstCode = null;
+        _form.TaxCode = null;
         _form.Description = null;
         _form.Date = DateTime.Today;
     }

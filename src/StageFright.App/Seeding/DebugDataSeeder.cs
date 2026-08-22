@@ -2,6 +2,8 @@ using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Modules.Agm;
+using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Events;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Members;
@@ -14,23 +16,27 @@ namespace StageFright.App.Seeding;
 /// after the first-run wizard completes: 51 members (43 active/3 inactive/5 archived), a
 /// petty-cash + single bank-account chart of accounts, 40 Monday-night rehearsals per year
 /// during NSW school terms with probabilistic attendance, annual subscription fees, a July
-/// Eisteddfod, a September Maclean/Yamba concert weekend, an annual raffle, committee
-/// membership, an AGM, and a spread of dated operating expenses (insurance, musical
-/// director, hall hire, costumes, licensing, printing, bank fees). Financial activity is
-/// generated as if "today" were 1 July 2026 — nothing dated after that is posted, so
-/// rehearsals/events in the second half of 2026 are scheduled but not yet paid/settled.
-/// Only runs when the user opts in via the setup wizard checkbox.
+/// Eisteddfod, a September Maclean/Yamba concert weekend, an annual raffle, an AGM each year
+/// with realistic (not full-house) attendance plus a mid-term committee resignation and
+/// special election, and a spread of dated operating expenses (insurance, musical director,
+/// hall hire, costumes, licensing, printing, bank fees). Financial activity is generated as
+/// if "today" were 27 October 2026 (the day after the 2026 AGM) — nothing dated after that
+/// is posted, so the tail end of Term 4 2026 rehearsals are scheduled but not yet
+/// paid/settled. Only runs when the user opts in via the setup wizard checkbox. The whole run
+/// is wrapped in an AuditTrailSuppressionScope — seeded records are a synthetic starting
+/// fixture, not real user actions, so they produce no audit trail entries (issue #296).
 /// </summary>
 public class DebugDataSeeder : IDebugDataSeeder
 {
     private const decimal PettyCashFloat = 50m;
 
     /// <summary>
-    /// Seed data is generated as if "today" were 1 July 2026. Financial transactions
-    /// (fees, payments, income, expenses) dated after this are not posted — they
-    /// represent activity that has not happened yet from the seed data's point of view.
+    /// Seed data is generated as if "today" were 27 October 2026 — the day after the 2026
+    /// AGM, so both years' AGMs are recorded. Financial transactions (fees, payments,
+    /// income, expenses) dated after this are not posted — they represent activity that
+    /// has not happened yet from the seed data's point of view.
     /// </summary>
-    private static readonly DateTime SeedCurrentDate = Utc(2026, 7, 1);
+    private static readonly DateTime SeedCurrentDate = Utc(2026, 10, 27);
 
     private readonly IMemberService _memberService;
     private readonly IMemberRepository _memberRepository;
@@ -38,6 +44,8 @@ public class DebugDataSeeder : IDebugDataSeeder
     private readonly IAttendanceService _attendanceService;
     private readonly IEventTypeService _eventTypeService;
     private readonly IEventService _eventService;
+    private readonly ICommitteeOfficeHolderTypeService _officeHolderTypeService;
+    private readonly IAgmService _agmService;
     private readonly ICommitteeService _committeeService;
     private readonly IPaymentService _paymentService;
     private readonly IFeeRepository _feeRepository;
@@ -47,6 +55,7 @@ public class DebugDataSeeder : IDebugDataSeeder
     private readonly IIncomeEntryService _incomeEntryService;
     private readonly IExpensePaymentService _expensePaymentService;
     private readonly IBankDepositService _bankDepositService;
+    private readonly IOpeningBalanceService _openingBalanceService;
     private readonly ISettingsService _settingsService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<DebugDataSeeder> _logger;
@@ -58,6 +67,8 @@ public class DebugDataSeeder : IDebugDataSeeder
         IAttendanceService attendanceService,
         IEventTypeService eventTypeService,
         IEventService eventService,
+        ICommitteeOfficeHolderTypeService officeHolderTypeService,
+        IAgmService agmService,
         ICommitteeService committeeService,
         IPaymentService paymentService,
         IFeeRepository feeRepository,
@@ -67,6 +78,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         IIncomeEntryService incomeEntryService,
         IExpensePaymentService expensePaymentService,
         IBankDepositService bankDepositService,
+        IOpeningBalanceService openingBalanceService,
         ISettingsService settingsService,
         IUnitOfWork unitOfWork,
         ILogger<DebugDataSeeder> logger)
@@ -77,6 +89,8 @@ public class DebugDataSeeder : IDebugDataSeeder
         _attendanceService = attendanceService;
         _eventTypeService = eventTypeService;
         _eventService = eventService;
+        _officeHolderTypeService = officeHolderTypeService;
+        _agmService = agmService;
         _committeeService = committeeService;
         _paymentService = paymentService;
         _feeRepository = feeRepository;
@@ -86,6 +100,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         _incomeEntryService = incomeEntryService;
         _expensePaymentService = expensePaymentService;
         _bankDepositService = bankDepositService;
+        _openingBalanceService = openingBalanceService;
         _settingsService = settingsService;
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -99,6 +114,11 @@ public class DebugDataSeeder : IDebugDataSeeder
             _logger.LogInformation("Debug seed data already present ({Count} members); skipping.", existing.Count);
             return;
         }
+
+        // Seeded records are a synthetic starting fixture, not something a real user did —
+        // suppress audit trail writes for the whole run (issue #296). The `using` guarantees
+        // suppression lifts even if a step below throws partway through.
+        using var _ = AuditTrailSuppressionScope.Begin();
 
         _logger.LogInformation("Seeding debug data...");
 
@@ -127,16 +147,43 @@ public class DebugDataSeeder : IDebugDataSeeder
         var eventTypes = await _eventTypeService.GetAllAsync(ct);
         var eisteddfodType = eventTypes.First(et => et.Name == "Eisteddfod");
         var performanceType = eventTypes.First(et => et.Name == "Performance");
-        var agmType = eventTypes.First(et => et.Name == "Annual General Meeting");
+
+        var officeHolderTypes = await _officeHolderTypeService.GetActiveAsync(ct);
+        var presidentType = officeHolderTypes.First(t => t.Name == "President");
+        var secretaryType = officeHolderTypes.First(t => t.Name == "Secretary");
+        var treasurerType = officeHolderTypes.First(t => t.Name == "Treasurer");
 
         var settings = await _settingsService.GetAsync(ct)
             ?? throw new InvalidOperationException("Settings must be initialised before seeding debug data.");
 
-        progress?.Report("Assigning committee positions…");
-        await SeedCommitteeAsync(activeMembers, ct);
-
         var random = new Random(20250101); // fixed seed — deterministic across runs
         var attendanceProfile = BuildAttendanceProfile(activeMembers, random);
+
+        progress?.Report("Posting opening balances…");
+        // Covers the new bank account plus every eligible system account (all but the
+        // Opening Balance Equity plug itself) so a sample org starts with a realistic
+        // whole-of-chart position, not just a single bank figure. Bad Debt Expense is
+        // deliberately left at $0 — no historical bad debt is itself a legitimate
+        // starting position. Tax Collected/Paid only get a balance when the coordinator
+        // actually enabled sales tax during setup.
+        var openingBalanceEntries = new List<OpeningBalanceEntry>
+        {
+            new() { AccountId = bankAccount.Id, Amount = 2000m },
+            new() { AccountId = SystemAccounts.CashId, Amount = PettyCashFloat },
+            new() { AccountId = SystemAccounts.MemberReceivableId, Amount = 180m },
+            new() { AccountId = SystemAccounts.AccumulatedSurplusId, Amount = 12500m }
+        };
+        if (settings.IsTaxApplicable)
+        {
+            openingBalanceEntries.Add(new() { AccountId = SystemAccounts.TaxCollectedId, Amount = 45m });
+            openingBalanceEntries.Add(new() { AccountId = SystemAccounts.TaxPaidId, Amount = 20m });
+        }
+
+        await _openingBalanceService.RecordOpeningBalancesAsync(new RecordOpeningBalancesRequest
+        {
+            AsAtDate = Utc(2025, 1, 1),
+            Entries = openingBalanceEntries
+        }, ct);
 
         progress?.Report("Seeding historical transfers (pre-spec 009)…");
         await SeedHistoricalTransfersAsync(bankAccount, ct);
@@ -161,7 +208,13 @@ public class DebugDataSeeder : IDebugDataSeeder
             await SeedRaffleAsync(year, raffleIncomeAccount, ct);
 
             progress?.Report($"Seeding {year} AGM…");
-            await SeedAgmAsync(year, activeMembers, agmType, ct);
+            var agm = await SeedAgmAsync(year, activeMembers, presidentType.Id, secretaryType.Id, treasurerType.Id, random, ct);
+
+            if (year == 2025 && agm is not null)
+            {
+                progress?.Report("Seeding mid-term committee resignation…");
+                await SeedSpecialElectionAsync(agm.Id, activeMembers, ct);
+            }
 
             progress?.Report($"Seeding {year} operating expenses…");
             await SeedOperatingExpensesAsync(
@@ -279,30 +332,6 @@ public class DebugDataSeeder : IDebugDataSeeder
             await _memberService.ArchiveAsync(member.Id, ct);
 
         return (active, inactive, archived);
-    }
-
-    // -------------------------------------------------------------------------
-    // Committee
-    // -------------------------------------------------------------------------
-
-    /// <summary>
-    /// The committee term runs 1 year from the last Monday in October; the same nine
-    /// members hold the same positions across both the 2025 and 2026 calendar years.
-    /// </summary>
-    private async Task SeedCommitteeAsync(IReadOnlyList<Member> activeMembers, CancellationToken ct)
-    {
-        string[] positions =
-        [
-            "President", "Secretary", "Treasurer", "Welfare Officer",
-            "Committee Member", "Committee Member", "Committee Member", "Committee Member", "Committee Member"
-        ];
-
-        for (var i = 0; i < positions.Length; i++)
-        {
-            var member = activeMembers[i];
-            await _committeeService.AddOrUpdateAsync(member.Id, 2025, positions[i], ct);
-            await _committeeService.AddOrUpdateAsync(member.Id, 2026, positions[i], ct);
-        }
     }
 
     // -------------------------------------------------------------------------
@@ -500,9 +529,9 @@ public class DebugDataSeeder : IDebugDataSeeder
         Settings settings,
         CancellationToken ct)
     {
-        var gstCode = settings.IsGstRegistered ? (settings.AnnualFeeGstCode ?? GstCode.GstFree) : (GstCode?)null;
-        var (incomeAmount, gstAmount) = gstCode == GstCode.Gst
-            ? GstCalculator.SplitInclusive(settings.AnnualFee)
+        var taxCode = settings.IsTaxApplicable ? (settings.AnnualFeeTaxCode ?? TaxCode.TaxExempt) : (TaxCode?)null;
+        var (incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
+            ? TaxCalculator.SplitInclusive(settings.AnnualFee, settings.TaxRate ?? 0m)
             : (settings.AnnualFee, 0m);
 
         Fee savedFee = null!;
@@ -518,7 +547,7 @@ public class DebugDataSeeder : IDebugDataSeeder
                 FeeDate = feeDate,
                 DueDate = dueDate,
                 PaidAtCreation = false,
-                GstCode = gstCode,
+                TaxCode = taxCode,
                 CreatedAt = now
             };
             savedFee = await _feeRepository.AddAsync(fee, innerCt);
@@ -530,7 +559,7 @@ public class DebugDataSeeder : IDebugDataSeeder
                     Id = Guid.NewGuid(), Date = feeDate,
                     AccountId = SystemAccounts.MemberReceivableId, GLAccount = SystemAccounts.MemberReceivableNumber,
                     DebitAmount = settings.AnnualFee, CreditAmount = 0m,
-                    MemberId = memberId, FeeId = savedFee.Id, GstCode = gstCode,
+                    MemberId = memberId, FeeId = savedFee.Id, TaxCode = taxCode,
                     Description = $"Annual membership fee {year}", CreatedAt = now
                 },
                 new()
@@ -538,20 +567,20 @@ public class DebugDataSeeder : IDebugDataSeeder
                     Id = Guid.NewGuid(), Date = feeDate,
                     AccountId = incomeAccount.Id, GLAccount = incomeAccount.AccountNumber,
                     DebitAmount = 0m, CreditAmount = incomeAmount,
-                    FeeId = savedFee.Id, GstCode = gstCode,
+                    FeeId = savedFee.Id, TaxCode = taxCode,
                     Description = $"Annual membership fee income {year}", CreatedAt = now
                 }
             };
 
-            if (gstAmount != 0m)
+            if (taxAmount != 0m)
             {
                 lines.Add(new Transaction
                 {
                     Id = Guid.NewGuid(), Date = feeDate,
-                    AccountId = SystemAccounts.GstCollectedId, GLAccount = SystemAccounts.GstCollectedNumber,
-                    DebitAmount = 0m, CreditAmount = gstAmount,
-                    FeeId = savedFee.Id, GstCode = gstCode,
-                    Description = $"GST collected — annual membership fee {year}", CreatedAt = now
+                    AccountId = SystemAccounts.TaxCollectedId, GLAccount = SystemAccounts.TaxCollectedNumber,
+                    DebitAmount = 0m, CreditAmount = taxAmount,
+                    FeeId = savedFee.Id, TaxCode = taxCode,
+                    Description = $"Tax collected — annual membership fee {year}", CreatedAt = now
                 });
             }
 
@@ -750,21 +779,75 @@ public class DebugDataSeeder : IDebugDataSeeder
     // Annual General Meeting
     // -------------------------------------------------------------------------
 
-    private async Task SeedAgmAsync(int year, IReadOnlyList<Member> activeMembers, EventType agmType, CancellationToken ct)
+    /// <summary>
+    /// Records the AGM through IAgmService: President/Secretary/Treasurer (the three
+    /// built-in office-holder titles) and 6 general committee members, all re-elected
+    /// unopposed each year. Attendance is a realistic 70–85% turnout rather than a
+    /// full house — the elected/nominated members always attend their own election, but
+    /// the rest of the membership turns up at the same rate a small club AGM typically
+    /// draws. The AGM closes whatever committee term was previously open and starts a
+    /// new one. Returns null (and seeds nothing) when the AGM date falls after
+    /// SeedCurrentDate — i.e. it hasn't happened yet from the seed data's point of view.
+    /// </summary>
+    private async Task<AnnualGeneralMeeting?> SeedAgmAsync(
+        int year,
+        IReadOnlyList<Member> activeMembers,
+        Guid presidentTypeId,
+        Guid secretaryTypeId,
+        Guid treasurerTypeId,
+        Random random,
+        CancellationToken ct)
     {
         var agmDate = GetAgmDate(year);
-        var evt = await _eventService.ScheduleAsync(new ScheduleEventRequest
-        {
-            Date = agmDate,
-            EventTypeId = agmType.Id,
-            Notes = $"{year} Annual General Meeting — new committee term commences"
-        }, ct);
+        if (agmDate > SeedCurrentDate)
+            return null;
 
-        if (agmDate <= SeedCurrentDate)
+        var memberIds = activeMembers.Select(m => m.Id).ToList();
+        var officeHolderAssignments = new Dictionary<Guid, Guid>
         {
-            var items = activeMembers.Select(m => new ParticipationBatchItem { MemberId = m.Id, Participated = true }).ToList();
-            await _eventService.RecordParticipationAsync(evt.Id, items, ct);
-        }
+            [presidentTypeId] = activeMembers[0].Id,
+            [secretaryTypeId] = activeMembers[1].Id,
+            [treasurerTypeId] = activeMembers[2].Id
+        };
+        var generalCommitteeMemberIds = activeMembers.Skip(3).Take(6).Select(m => m.Id).ToList();
+
+        var assignedMemberIds = new HashSet<Guid>(officeHolderAssignments.Values);
+        assignedMemberIds.UnionWith(generalCommitteeMemberIds);
+
+        var attendanceRate = 0.70 + random.NextDouble() * 0.15; // 70–85% turnout, varies by year
+        var attendedMemberIds = memberIds
+            .Where(id => assignedMemberIds.Contains(id) || random.NextDouble() < attendanceRate)
+            .ToList();
+
+        return await _agmService.RecordAsync(new RecordAgmRequest(
+            Date: agmDate,
+            Notes: $"{year} Annual General Meeting — new committee term commences",
+            AttendedMemberIds: attendedMemberIds,
+            AllActiveMemberIds: memberIds,
+            OfficeHolderAssignments: officeHolderAssignments,
+            GeneralCommitteeMemberIds: generalCommitteeMemberIds), ct);
+    }
+
+    /// <summary>
+    /// Mid-term regression fixture: one general committee member elected at the 2025 AGM
+    /// resigns partway through the term and is replaced by special election ahead of the
+    /// 2026 AGM. A single unbroken committee term never exercises AgmDetail's dated,
+    /// multi-holder rendering for a position (FR-029) — this gives it a seeded example.
+    /// </summary>
+    private async Task SeedSpecialElectionAsync(Guid agmId, IReadOnlyList<Member> activeMembers, CancellationToken ct)
+    {
+        var replacementDate = Utc(2026, 3, 16);
+        if (replacementDate > SeedCurrentDate)
+            return;
+
+        var positions = await _committeeService.GetByAgmAsync(agmId, ct);
+        var outgoing = positions.First(p => p.OfficeHolderTypeId is null);
+        var incoming = activeMembers[9]; // not otherwise assigned an officeholder or committee role
+
+        await _agmService.RecordSpecialElectionAsync(new RecordSpecialElectionRequest(
+            OutgoingPositionRecordId: outgoing.Id,
+            IncomingMemberId: incoming.Id,
+            ReplacementDate: replacementDate), ct);
     }
 
     // -------------------------------------------------------------------------

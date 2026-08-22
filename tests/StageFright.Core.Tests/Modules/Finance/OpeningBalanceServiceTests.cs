@@ -10,8 +10,9 @@ namespace StageFright.Core.Tests.Modules.Finance;
 
 /// <summary>
 /// Unit tests for OpeningBalanceService — normal-side posting, Opening Balance
-/// Equity plug, account eligibility (Member Receivable / GST / OBE excluded),
-/// rerun detection, and audit logging.
+/// Equity plug, account eligibility (only the Opening Balance Equity plug account
+/// itself is excluded — Member Receivable and the tax clearing accounts are
+/// eligible), rerun detection, and audit logging.
 /// </summary>
 public class OpeningBalanceServiceTests : TestBase
 {
@@ -41,8 +42,8 @@ public class OpeningBalanceServiceTests : TestBase
             {
                 MakeAccount(CashAccountId, "Cash on Hand", AccountType.Asset, "1100", isSystem: true, isBank: true),
                 MakeAccount(SystemAccounts.MemberReceivableId, "Member Receivable", AccountType.Asset, "1200", isSystem: true),
-                MakeAccount(SystemAccounts.GstCollectedId, "GST Collected", AccountType.Liability, "2310", isSystem: true),
-                MakeAccount(SystemAccounts.GstPaidId, "GST Paid", AccountType.Liability, "2320", isSystem: true),
+                MakeAccount(SystemAccounts.TaxCollectedId, "GST Collected", AccountType.Liability, "2310", isSystem: true),
+                MakeAccount(SystemAccounts.TaxPaidId, "GST Paid", AccountType.Liability, "2320", isSystem: true),
                 MakeAccount(SystemAccounts.OpeningBalanceEquityId, "Opening Balance Equity", AccountType.Equity, "3100", isSystem: true),
                 MakeAccount(LoanAccountId, "Committee Loan", AccountType.Liability, "2000"),
                 MakeAccount(IncomeAccountId, "Raffle Income", AccountType.Income, "4000")
@@ -54,14 +55,14 @@ public class OpeningBalanceServiceTests : TestBase
     // --- GetOpeningBalanceAccountsAsync ---
 
     [Fact]
-    public async Task Should_ExcludeReceivableGstAndPlugAccounts_When_GettingEligibleAccounts()
+    public async Task Should_ExcludeOnlyPlugAccount_When_GettingEligibleAccounts()
     {
         var result = await _sut.GetOpeningBalanceAccountsAsync(Ct);
 
-        Assert.Equal(3, result.Count);
-        Assert.DoesNotContain(result, a => a.Id == SystemAccounts.MemberReceivableId);
-        Assert.DoesNotContain(result, a => a.Id == SystemAccounts.GstCollectedId);
-        Assert.DoesNotContain(result, a => a.Id == SystemAccounts.GstPaidId);
+        Assert.Equal(6, result.Count);
+        Assert.Contains(result, a => a.Id == SystemAccounts.MemberReceivableId);
+        Assert.Contains(result, a => a.Id == SystemAccounts.TaxCollectedId);
+        Assert.Contains(result, a => a.Id == SystemAccounts.TaxPaidId);
         Assert.DoesNotContain(result, a => a.Id == SystemAccounts.OpeningBalanceEquityId);
     }
 
@@ -143,10 +144,28 @@ public class OpeningBalanceServiceTests : TestBase
     public async Task Should_ThrowValidation_When_EntryTargetsExcludedAccount()
     {
         var request = MakeRequest(
-            new OpeningBalanceEntry { AccountId = SystemAccounts.MemberReceivableId, Amount = 100m });
+            new OpeningBalanceEntry { AccountId = SystemAccounts.OpeningBalanceEquityId, Amount = 100m });
 
         await Assert.ThrowsAsync<ValidationException>(
             () => _sut.RecordOpeningBalancesAsync(request, Ct));
+    }
+
+    [Fact]
+    public async Task Should_AcceptEntry_When_TargetingMemberReceivableOrTaxAccount()
+    {
+        var request = MakeRequest(
+            new OpeningBalanceEntry { AccountId = SystemAccounts.MemberReceivableId, Amount = 100m },
+            new OpeningBalanceEntry { AccountId = SystemAccounts.TaxCollectedId, Amount = 50m },
+            new OpeningBalanceEntry { AccountId = SystemAccounts.TaxPaidId, Amount = 25m });
+
+        await _sut.RecordOpeningBalancesAsync(request, Ct);
+
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines!.Any(t => t.DebitAmount == 100m && t.AccountId == SystemAccounts.MemberReceivableId)
+                && lines!.Any(t => t.CreditAmount == 50m && t.AccountId == SystemAccounts.TaxCollectedId)
+                && lines!.Any(t => t.CreditAmount == 25m && t.AccountId == SystemAccounts.TaxPaidId)),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -172,7 +191,7 @@ public class OpeningBalanceServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 3
+                lines!.Count == 3
                 && lines.Any(t => t.DebitAmount == 5000m && t.AccountId == CashAccountId)
                 && lines.Any(t => t.CreditAmount == 1000m && t.AccountId == LoanAccountId)
                 && lines.Any(t => t.CreditAmount == 4000m && t.AccountId == SystemAccounts.OpeningBalanceEquityId && t.GLAccount == "3100")),
@@ -189,7 +208,7 @@ public class OpeningBalanceServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2
+                lines!.Count == 2
                 && lines.Any(t => t.CreditAmount == 3000m && t.AccountId == LoanAccountId)
                 && lines.Any(t => t.DebitAmount == 3000m && t.AccountId == SystemAccounts.OpeningBalanceEquityId)),
             Arg.Any<CancellationToken>());
@@ -206,8 +225,8 @@ public class OpeningBalanceServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Any(t => t.CreditAmount == 200m && t.AccountId == CashAccountId)
-                && lines.Any(t => t.DebitAmount == 200m && t.AccountId == SystemAccounts.OpeningBalanceEquityId)),
+                lines!.Any(t => t.CreditAmount == 200m && t.AccountId == CashAccountId)
+                && lines!.Any(t => t.DebitAmount == 200m && t.AccountId == SystemAccounts.OpeningBalanceEquityId)),
             Arg.Any<CancellationToken>());
     }
 
@@ -222,7 +241,7 @@ public class OpeningBalanceServiceTests : TestBase
 
         await _glRepo.Received(1).AddBalancedSetAsync(
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
-                lines.Count == 2 && lines.All(t => t.AccountId != LoanAccountId)),
+                lines!.Count == 2 && lines.All(t => t.AccountId != LoanAccountId)),
             Arg.Any<CancellationToken>());
     }
 
@@ -235,11 +254,11 @@ public class OpeningBalanceServiceTests : TestBase
         await _sut.RecordOpeningBalancesAsync(request, Ct);
 
         await _journalRepo.Received(1).AddAsync(
-            Arg.Is<JournalEntry>(j => j.Type == JournalEntryType.OpeningBalance && j.Date == request.AsAtDate),
+            Arg.Is<JournalEntry>(j => j!.Type == JournalEntryType.OpeningBalance && j.Date == request.AsAtDate),
             Arg.Any<CancellationToken>());
 
         await _glRepo.Received(1).AddBalancedSetAsync(
-            Arg.Is<IReadOnlyList<Transaction>>(lines => lines.All(t => t.JournalEntryId != null)),
+            Arg.Is<IReadOnlyList<Transaction>>(lines => lines!.All(t => t.JournalEntryId != null)),
             Arg.Any<CancellationToken>());
     }
 

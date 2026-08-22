@@ -69,12 +69,12 @@ public sealed class V17_BankDepositTests : IAsyncLifetime
             Date = Today, Amount = 200m,
             ToAccountId = SavingsAccountId,
             Description = "Move float to savings"
-        });
+        }, TestContext.Current.CancellationToken);
 
-        var entry = Assert.Single(await _db.JournalEntries.ToListAsync());
+        var entry = Assert.Single(await _db.JournalEntries.ToListAsync(cancellationToken: TestContext.Current.CancellationToken));
         Assert.Equal(JournalEntryType.BankDeposit, entry.Type);
 
-        var lines = await _db.Transactions.Where(t => t.JournalEntryId == entry.Id).ToListAsync();
+        var lines = await _db.Transactions.Where(t => t.JournalEntryId == entry.Id).ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(2, lines.Count);
 
         var debit = Assert.Single(lines, t => t.DebitAmount > 0m);
@@ -94,11 +94,11 @@ public sealed class V17_BankDepositTests : IAsyncLifetime
         {
             Date = Today, Amount = 300m,
             ToAccountId = SavingsAccountId
-        });
+        }, TestContext.Current.CancellationToken);
 
         var glRepo = new GLRepository(_db);
-        Assert.Equal(-300m, await glRepo.GetAccountBalanceAsync(SystemAccounts.CashId, Today));
-        Assert.Equal(300m, await glRepo.GetAccountBalanceAsync(SavingsAccountId, Today));
+        Assert.Equal(-300m, await glRepo.GetAccountBalanceAsync(SystemAccounts.CashId, Today, TestContext.Current.CancellationToken));
+        Assert.Equal(300m, await glRepo.GetAccountBalanceAsync(SavingsAccountId, Today, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -110,10 +110,10 @@ public sealed class V17_BankDepositTests : IAsyncLifetime
         {
             Date = Today, Amount = 0m,
             ToAccountId = SavingsAccountId
-        }));
+        }, TestContext.Current.CancellationToken));
 
-        Assert.Equal(0, await _db.JournalEntries.CountAsync());
-        Assert.Equal(0, await _db.Transactions.CountAsync());
+        Assert.Equal(0, await _db.JournalEntries.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(0, await _db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -125,10 +125,10 @@ public sealed class V17_BankDepositTests : IAsyncLifetime
         {
             Date = Today, Amount = 50m,
             ToAccountId = VenueHireAccountId // expense, not a bank account
-        }));
+        }, TestContext.Current.CancellationToken));
 
-        Assert.Equal(0, await _db.JournalEntries.CountAsync());
-        Assert.Equal(0, await _db.Transactions.CountAsync());
+        Assert.Equal(0, await _db.JournalEntries.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(0, await _db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -140,10 +140,10 @@ public sealed class V17_BankDepositTests : IAsyncLifetime
         {
             Date = Today, Amount = 50m,
             ToAccountId = SystemAccounts.CashId
-        }));
+        }, TestContext.Current.CancellationToken));
 
-        Assert.Equal(0, await _db.JournalEntries.CountAsync());
-        Assert.Equal(0, await _db.Transactions.CountAsync());
+        Assert.Equal(0, await _db.JournalEntries.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(0, await _db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     // --- Helpers ---

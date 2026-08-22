@@ -140,14 +140,6 @@ public class EventTypeServiceTests : TestBase
     // --- System defaults ---
 
     [Fact]
-    public async Task SystemDefaults_IncludeAGM_WithIsSystemDefaultTrue()
-    {
-        // Verify the seeded default names include AGM
-        var defaults = EventTypeService.GetDefaultEventTypeNames();
-        Assert.Contains("Annual General Meeting", defaults);
-    }
-
-    [Fact]
     public async Task SystemDefaults_IncludeExpectedTypes()
     {
         var defaults = EventTypeService.GetDefaultEventTypeNames();
@@ -155,7 +147,8 @@ public class EventTypeServiceTests : TestBase
         Assert.Contains("Eisteddfod", defaults);
         Assert.Contains("Fund raiser", defaults);
         Assert.Contains("Promotional", defaults);
-        Assert.Equal(5, defaults.Count);
+        Assert.DoesNotContain("Annual General Meeting", defaults);
+        Assert.Equal(4, defaults.Count);
     }
 
     // --- Helpers ---

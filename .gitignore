@@ -101,3 +101,7 @@ temp/
 .Spotlight-V100
 .Trashes
 ehthumbs.db
+
+# Python bytecode cache (spec-kit companion extension scripts)
+__pycache__/
+*.pyc

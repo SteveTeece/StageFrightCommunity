@@ -12,17 +12,16 @@ using StageFright.UI.Pages.Members;
 namespace StageFright.UI.Tests.Pages.Members;
 
 /// <summary>
-/// bUnit tests for MemberForm — validation, committee checkbox, and submit behavior.
+/// bUnit tests for MemberForm — validation and submit behavior. Committee assignment is no
+/// longer part of this form (spec 013) — it's recorded via the Record AGM screen instead.
 /// </summary>
 public class MemberFormTests : BunitContext
 {
     private readonly IMemberService _memberService = Substitute.For<IMemberService>();
-    private readonly ICommitteeService _committeeService = Substitute.For<ICommitteeService>();
 
     public MemberFormTests()
     {
         Services.AddSingleton(_memberService);
-        Services.AddSingleton(_committeeService);
 
         _memberService.CreateAsync(Arg.Any<CreateMemberRequest>(), Arg.Any<CancellationToken>())
             .Returns(new Member
@@ -36,14 +35,6 @@ public class MemberFormTests : BunitContext
                 ActivateDate = DateTime.UtcNow.Date,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
-            });
-
-        _committeeService.AddOrUpdateAsync(Arg.Any<Guid>(), Arg.Any<int>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(new CommitteeMembership
-            {
-                Id = Guid.NewGuid(), MemberId = Guid.NewGuid(),
-                Year = DateTime.UtcNow.Year, Position = "President",
-                CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
             });
     }
 
@@ -142,33 +133,6 @@ public class MemberFormTests : BunitContext
     }
 
     [Fact]
-    public async Task CommitteeCheckbox_WhenChecked_ShowsPositionField()
-    {
-        var cut = Render<MemberForm>();
-
-        cut.Find("#isCommittee").Change(true);
-
-        // Position field should now be visible
-        cut.Find("#position");
-    }
-
-    [Fact]
-    public async Task CommitteeCheckbox_Checked_SubmitWithoutPosition_ShowsPositionRequired()
-    {
-        var cut = Render<MemberForm>();
-
-        cut.Find("#isCommittee").Change(true);
-        cut.Find("#firstName").Change("Jane");
-        cut.Find("#lastName").Change("Doe");
-        cut.Find("#address").Change("1 Main St");
-
-        await cut.Find("form").SubmitAsync();
-
-        var invalid = cut.Find("#position.is-invalid, #position + .invalid-feedback");
-        Assert.NotNull(invalid);
-    }
-
-    [Fact]
     public async Task ValidSubmit_CallsCreateAsync()
     {
         var cut = Render<MemberForm>();
@@ -179,7 +143,7 @@ public class MemberFormTests : BunitContext
         await cut.Find("form").SubmitAsync();
 
         await _memberService.Received(1).CreateAsync(
-            Arg.Is<CreateMemberRequest>(r => r.FirstName == "Jane" && r.LastName == "Doe"),
+            Arg.Is<CreateMemberRequest>(r => r!.FirstName == "Jane" && r.LastName == "Doe"),
             Arg.Any<CancellationToken>());
     }
 
@@ -195,25 +159,6 @@ public class MemberFormTests : BunitContext
 
         var nav = Services.GetRequiredService<NavigationManager>();
         Assert.Contains("/members/", nav.Uri);
-    }
-
-    [Fact]
-    public async Task CommitteeCheckbox_Checked_WithPosition_CallsAddOrUpdateAsync()
-    {
-        var cut = Render<MemberForm>();
-
-        cut.Find("#isCommittee").Change(true);
-        cut.Find("#firstName").Change("Jane");
-        cut.Find("#lastName").Change("Doe");
-        cut.Find("#address").Change("1 Main St");
-        cut.Find("#position").Change("President");
-        await cut.Find("form").SubmitAsync();
-
-        await _committeeService.Received(1).AddOrUpdateAsync(
-            Arg.Any<Guid>(),
-            Arg.Is<int>(y => y == DateTime.UtcNow.Year),
-            Arg.Is<string>(p => p == "President"),
-            Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -263,7 +208,7 @@ public class MemberFormTests : BunitContext
 
         await _memberService.Received(1).UpdateAsync(
             memberId,
-            Arg.Is<UpdateMemberRequest>(r => r.FirstName == "Updated" && r.LastName == "Member"),
+            Arg.Is<UpdateMemberRequest>(r => r!.FirstName == "Updated" && r.LastName == "Member"),
             Arg.Any<CancellationToken>());
     }
 }

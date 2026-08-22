@@ -15,17 +15,6 @@ public class Settings
     /// <summary>Display name of the performing arts group. Required (setup wizard).</summary>
     public string OrganizationName { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Australian Business Number, stored as a plain 11-digit string (no spaces). A standing
-    /// organisation-identity fact — unlike the GST properties below, never nulled by GST toggling.
-    /// Required for new installs (setup wizard); existing installs may have none on file.
-    /// </summary>
-#if !DEBUG
-    // ABN checksum validation is skipped in Debug builds — see SetupFormModel.Abn.
-    [Abn]
-#endif
-    public string? Abn { get; set; }
-
     /// <summary>Annual membership fee amount. Required. Precision: decimal(18,2). Must be ≥ 0.</summary>
     public decimal AnnualFee { get; set; }
 
@@ -35,8 +24,17 @@ public class Settings
     /// <summary>Month (1–12) when membership renewals are due. Required.</summary>
     public int MembershipRenewalMonth { get; set; }
 
-    /// <summary>Month (1–12) when committee positions are reviewed. Default: 1 (January).</summary>
+    /// <summary>
+    /// Month (1–12) the AGM is normally held. Single source of truth for both committee
+    /// term boundaries and (formerly) the reset reminder timing. Default: 1 (January).
+    /// </summary>
     public int CommitteeRenewalMonth { get; set; } = 1;
+
+    /// <summary>
+    /// Coordinator-configured target number of general committee member seats (FR-014).
+    /// Null when unset. Snapshotted onto each AnnualGeneralMeeting at save time.
+    /// </summary>
+    public int? GeneralCommitteeSeatCountTarget { get; set; }
 
     /// <summary>
     /// First month (1–12) of the financial year used by reports and FY presets.
@@ -45,22 +43,30 @@ public class Settings
     public int FinancialYearStartMonth { get; set; } = 7;
 
     /// <summary>
-    /// True when the organisation is registered for GST. When false all GST UI is
-    /// hidden, postings are 2-line, and GST codes stay null. Default: false.
+    /// True when sales tax applies to the organisation. When false all tax UI is
+    /// hidden, postings are 2-line, and tax codes/rate stay null. Default: false.
     /// </summary>
-    public bool IsGstRegistered { get; set; }
+    public bool IsTaxApplicable { get; set; }
 
     /// <summary>
-    /// GST treatment applied to annual fee accruals while registered.
-    /// Null means GST-free (the default for NFP membership fees).
+    /// The organisation's sales tax rate, in percentage points (e.g. 10 means 10%).
+    /// Present only while <see cref="IsTaxApplicable"/> is true; null otherwise.
+    /// User-configurable — unlike the retired hardcoded GST rate, a rate change is a
+    /// Settings change, not a code change.
     /// </summary>
-    public GstCode? AnnualFeeGstCode { get; set; }
+    public decimal? TaxRate { get; set; }
 
     /// <summary>
-    /// GST treatment applied to attendance fee accruals while registered.
-    /// Null means GST-free.
+    /// Tax treatment applied to annual fee accruals while tax applies.
+    /// Null means tax-exempt (the default for NFP membership fees).
     /// </summary>
-    public GstCode? AttendanceFeeGstCode { get; set; }
+    public TaxCode? AnnualFeeTaxCode { get; set; }
+
+    /// <summary>
+    /// Tax treatment applied to attendance fee accruals while tax applies.
+    /// Null means tax-exempt.
+    /// </summary>
+    public TaxCode? AttendanceFeeTaxCode { get; set; }
 
     /// <summary>Maximum member age accepted by the system (years). Default: 150.</summary>
     public int MaxAgeRangeYears { get; set; } = 150;
@@ -78,14 +84,14 @@ public class Settings
     /// </summary>
     public bool ShowParticipationGraphs { get; set; } = true;
 
-    /// <summary>
-    /// The calendar year for which the annual committee reset was last performed.
-    /// Null until the first reset. Used to drive the AGM reminder banner (FR-031).
-    /// </summary>
-    public int? LastCommitteeResetYear { get; set; }
-
     /// <summary>Semver schema version recorded by migrations and backup manifests (NFR-002).</summary>
     public string SchemaVersion { get; set; } = "1.1.0";
+
+    /// <summary>
+    /// Number of years audit trail entries are retained before the startup purge hard-deletes
+    /// them. Range: 1–7. Default: 1 year.
+    /// </summary>
+    public int AuditRetentionYears { get; set; } = 1;
 
     // --- Soft-delete fields (never set; singleton row) ---
 

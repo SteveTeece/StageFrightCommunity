@@ -23,8 +23,25 @@ public class DashboardService : IDashboardService
 
     public Task<IReadOnlyList<IDashboardTileProvider>> GetTilesAsync(CancellationToken ct = default)
     {
-        IReadOnlyList<IDashboardTileProvider> sorted = [.. _providers.OrderBy(p => p.DisplayOrder)];
-        return Task.FromResult(sorted);
+        var sorted = _providers.OrderBy(p => p.DisplayOrder);
+
+        var seenTileIds = new HashSet<string>();
+        var deduped = new List<IDashboardTileProvider>();
+        foreach (var provider in sorted)
+        {
+            if (!seenTileIds.Add(provider.TileId))
+            {
+                _logger.LogWarning(
+                    "Duplicate dashboard TileId {TileId} ({Title}) skipped; a provider with this TileId is already registered",
+                    provider.TileId, provider.Title);
+                continue;
+            }
+
+            deduped.Add(provider);
+        }
+
+        IReadOnlyList<IDashboardTileProvider> result = deduped;
+        return Task.FromResult(result);
     }
 
     public async Task<TileLoadResult> LoadTileAsync(IDashboardTileProvider provider, CancellationToken ct = default)

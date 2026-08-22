@@ -7,8 +7,8 @@ namespace StageFright.Core.Modules.Finance;
 
 /// <summary>
 /// Records member payments with FIFO GL allocation.
-/// Per fee in FIFO order: Debit Cash (0100) / Credit MemberReceivable (0101).
-/// Overpayment (payment > balance): Debit Cash (0100) / Credit MemberReceivable (0101) — creates negative (credit) balance.
+/// Per fee in FIFO order: Debit Cash (1100) / Credit MemberReceivable (1200).
+/// Overpayment (payment > balance): Debit Cash (1100) / Credit MemberReceivable (1200) — creates negative (credit) balance.
 /// </summary>
 public class PaymentService : IPaymentService
 {

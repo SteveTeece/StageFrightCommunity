@@ -61,7 +61,7 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
         await SeedFeeAsync(member.Id, CurrentYear - 1, 50m);
 
         var svc = BuildForgivenessService();
-        var items = await svc.GetForgivenessItemsAsync(member.Id);
+        var items = await svc.GetForgivenessItemsAsync(member.Id, TestContext.Current.CancellationToken);
 
         var item = Assert.Single(items);
         Assert.True(item.IsDefaultForgiven);
@@ -74,7 +74,7 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
         await SeedFeeAsync(member.Id, CurrentYear, 50m);
 
         var svc = BuildForgivenessService();
-        var items = await svc.GetForgivenessItemsAsync(member.Id);
+        var items = await svc.GetForgivenessItemsAsync(member.Id, TestContext.Current.CancellationToken);
 
         var item = Assert.Single(items);
         Assert.False(item.IsDefaultForgiven);
@@ -94,7 +94,7 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
         Assert.Equal(50m, balanceBefore);
 
         var svc = BuildForgivenessService();
-        await svc.ApplyForgivenessAsync(member.Id, new[] { fee2024Id });
+        await svc.ApplyForgivenessAsync(member.Id, new[] { fee2024Id }, TestContext.Current.CancellationToken);
 
         var balanceAfter = await GetBalanceAsync(member.Id);
         Assert.Equal(0m, balanceAfter);
@@ -102,7 +102,7 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
         // GL pair created: Debit BadDebt / Credit MemberReceivable
         var forgivenessTxns = await _db.Transactions
             .Where(t => t.FeeId == fee2024Id && t.AccountId == BadDebtAccountId)
-            .ToListAsync();
+            .ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Single(forgivenessTxns);
         Assert.Equal(50m, forgivenessTxns[0].DebitAmount);
@@ -118,7 +118,7 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
 
         var svc = BuildForgivenessService();
         // Override: explicitly include current-year fee
-        await svc.ApplyForgivenessAsync(member.Id, new[] { currentFeeId });
+        await svc.ApplyForgivenessAsync(member.Id, new[] { currentFeeId }, TestContext.Current.CancellationToken);
 
         var balance = await GetBalanceAsync(member.Id);
         Assert.Equal(0m, balance);
@@ -135,11 +135,11 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
         await SeedGLDebitAsync(member.Id, fee2025Id, 60m);
 
         var svc = BuildForgivenessService();
-        await svc.ApplyForgivenessAsync(member.Id, new[] { fee2024Id, fee2025Id });
+        await svc.ApplyForgivenessAsync(member.Id, new[] { fee2024Id, fee2025Id }, TestContext.Current.CancellationToken);
 
         var badDebtTxns = await _db.Transactions
             .Where(t => t.AccountId == BadDebtAccountId && t.MemberId == member.Id)
-            .ToListAsync();
+            .ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal(2, badDebtTxns.Count);
     }
@@ -153,21 +153,21 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
         var feeId = await SeedFeeAsync(member.Id, CurrentYear - 1, 50m);
         await SeedGLDebitAsync(member.Id, feeId, 50m);
 
-        var feeBefore = await _db.Fees.FindAsync(feeId);
+        var feeBefore = await _db.Fees.FindAsync(new object?[] { feeId }, TestContext.Current.CancellationToken);
         var amountBefore = feeBefore!.Amount;
         var createdAtBefore = feeBefore.CreatedAt;
 
         var svc = BuildForgivenessService();
-        await svc.ApplyForgivenessAsync(member.Id, new[] { feeId });
+        await svc.ApplyForgivenessAsync(member.Id, new[] { feeId }, TestContext.Current.CancellationToken);
 
         // Re-fetch from DB
         _db.ChangeTracker.Clear();
-        var feeAfter = await _db.Fees.FindAsync(feeId);
+        var feeAfter = await _db.Fees.FindAsync(new object?[] { feeId }, TestContext.Current.CancellationToken);
 
         Assert.Equal(amountBefore, feeAfter!.Amount);
         Assert.Equal(createdAtBefore, feeAfter.CreatedAt);
         // Fee count unchanged (no new Fee rows added)
-        Assert.Equal(1, await _db.Fees.Where(f => f.MemberId == member.Id).CountAsync());
+        Assert.Equal(1, await _db.Fees.Where(f => f.MemberId == member.Id).CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     // --- Helpers ---
@@ -177,10 +177,11 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
         var feeRepo = new FeeRepository(_db);
         var glRepo = new GLRepository(_db);
         var memberRepo = new MemberRepository(_db);
+        var settingsRepo = new SettingsRepository(_db);
         var auditRepo = NSubstitute.Substitute.For<StageFright.Core.Contracts.IAuditTrailRepository>();
         var audit = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var unitOfWork = new UnitOfWork(_db);
-        return new ReactivationForgivenessService(feeRepo, glRepo, memberRepo, audit, unitOfWork);
+        return new ReactivationForgivenessService(feeRepo, glRepo, memberRepo, settingsRepo, audit, unitOfWork);
     }
 
     private async Task<decimal> GetBalanceAsync(Guid memberId)

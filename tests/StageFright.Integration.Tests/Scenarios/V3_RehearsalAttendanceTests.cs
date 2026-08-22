@@ -85,12 +85,12 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
             Date = new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc),
             Time = TimeSpan.FromHours(19),
             Notes = "Summer session"
-        });
+        }, TestContext.Current.CancellationToken);
 
         Assert.NotEqual(Guid.Empty, rehearsal.Id);
         Assert.Null(rehearsal.StoredAttendanceRate);
 
-        var found = await new RehearsalRepository(_db).GetByIdAsync(rehearsal.Id);
+        var found = await new RehearsalRepository(_db).GetByIdAsync(rehearsal.Id, TestContext.Current.CancellationToken);
         Assert.NotNull(found);
         Assert.Null(found!.StoredAttendanceRate);
     }
@@ -107,10 +107,10 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         await attendanceSvc.RecordBatchAsync(rehearsal.Id, new[]
         {
             new AttendanceBatchItem { MemberId = member.Id, Attended = true, MarkAsUnpaid = false }
-        });
+        }, TestContext.Current.CancellationToken);
 
         // Fee created with PaidAtCreation=true
-        var fee = await _db.Fees.FirstOrDefaultAsync(f => f.MemberId == member.Id);
+        var fee = await _db.Fees.FirstOrDefaultAsync(f => f.MemberId == member.Id, cancellationToken: TestContext.Current.CancellationToken);
         Assert.NotNull(fee);
         Assert.True(fee!.PaidAtCreation);
         Assert.Equal(FeeType.Attendance, fee.FeeType);
@@ -118,7 +118,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         Assert.Equal(rehearsal.Id, fee.RehearsalId);
 
         // GL pairs: accrual + payment = 4 transactions
-        var transactions = await _db.Transactions.Where(t => t.MemberId == member.Id).ToListAsync();
+        var transactions = await _db.Transactions.Where(t => t.MemberId == member.Id).ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(4, transactions.Count);
 
         // Accrual debit: MemberReceivable
@@ -131,7 +131,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         Assert.Contains(transactions, t => t.CreditAmount == 10m && t.AccountId == MemberReceivableAccountId);
 
         // Payment record auto-created
-        var payment = await _db.Payments.FirstOrDefaultAsync(p => p.MemberId == member.Id);
+        var payment = await _db.Payments.FirstOrDefaultAsync(p => p.MemberId == member.Id, cancellationToken: TestContext.Current.CancellationToken);
         Assert.NotNull(payment);
         Assert.Equal(PaymentMethod.Cash, payment!.PaymentMethod);
         Assert.Equal(PaymentType.Attendance, payment.PaymentType);
@@ -150,18 +150,18 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         await attendanceSvc.RecordBatchAsync(rehearsal.Id, new[]
         {
             new AttendanceBatchItem { MemberId = member.Id, Attended = true, MarkAsUnpaid = true }
-        });
+        }, TestContext.Current.CancellationToken);
 
-        var fee = await _db.Fees.FirstOrDefaultAsync(f => f.MemberId == member.Id);
+        var fee = await _db.Fees.FirstOrDefaultAsync(f => f.MemberId == member.Id, cancellationToken: TestContext.Current.CancellationToken);
         Assert.NotNull(fee);
         Assert.False(fee!.PaidAtCreation);
 
         // Only 2 GL transactions (accrual pair only, no payment pair)
-        var transactions = await _db.Transactions.Where(t => t.MemberId == member.Id).ToListAsync();
+        var transactions = await _db.Transactions.Where(t => t.MemberId == member.Id).ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(2, transactions.Count);
 
         // No Payment record
-        Assert.Equal(0, await _db.Payments.CountAsync(p => p.MemberId == member.Id));
+        Assert.Equal(0, await _db.Payments.CountAsync(p => p.MemberId == member.Id, cancellationToken: TestContext.Current.CancellationToken));
     }
 
     // --- Inactive member ---
@@ -176,12 +176,12 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         await attendanceSvc.RecordBatchAsync(rehearsal.Id, new[]
         {
             new AttendanceBatchItem { MemberId = member.Id, Attended = true, MarkAsUnpaid = false }
-        });
+        }, TestContext.Current.CancellationToken);
 
         // No fee, no GL, no payment
-        Assert.Equal(0, await _db.Fees.CountAsync(f => f.MemberId == member.Id));
-        Assert.Equal(0, await _db.Transactions.CountAsync(t => t.MemberId == member.Id));
-        Assert.Equal(0, await _db.Payments.CountAsync(p => p.MemberId == member.Id));
+        Assert.Equal(0, await _db.Fees.CountAsync(f => f.MemberId == member.Id, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(0, await _db.Transactions.CountAsync(t => t.MemberId == member.Id, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(0, await _db.Payments.CountAsync(p => p.MemberId == member.Id, cancellationToken: TestContext.Current.CancellationToken));
     }
 
     // --- StoredAttendanceRate frozen ---
@@ -198,9 +198,9 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         {
             new AttendanceBatchItem { MemberId = member1.Id, Attended = true },
             new AttendanceBatchItem { MemberId = member2.Id, Attended = false }
-        });
+        }, TestContext.Current.CancellationToken);
 
-        var updated = await new RehearsalRepository(_db).GetByIdAsync(rehearsal.Id);
+        var updated = await new RehearsalRepository(_db).GetByIdAsync(rehearsal.Id, TestContext.Current.CancellationToken);
         Assert.NotNull(updated!.StoredAttendanceRate);
         // 1 present out of 2 active = 50%
         Assert.Equal(50m, updated.StoredAttendanceRate!.Value);
@@ -217,11 +217,11 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
 
         var items = new[] { new AttendanceBatchItem { MemberId = member.Id, Attended = true } };
 
-        await attendanceSvc.RecordBatchAsync(rehearsal.Id, items);
-        await attendanceSvc.RecordBatchAsync(rehearsal.Id, items); // second call is idempotent
+        await attendanceSvc.RecordBatchAsync(rehearsal.Id, items, TestContext.Current.CancellationToken);
+        await attendanceSvc.RecordBatchAsync(rehearsal.Id, items, TestContext.Current.CancellationToken); // second call is idempotent
 
         // Only one fee created
-        Assert.Equal(1, await _db.Fees.CountAsync(f => f.MemberId == member.Id));
+        Assert.Equal(1, await _db.Fees.CountAsync(f => f.MemberId == member.Id, cancellationToken: TestContext.Current.CancellationToken));
     }
 
     // --- No edit UI after save ---
@@ -236,15 +236,15 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         await attendanceSvc.RecordBatchAsync(rehearsal.Id, new[]
         {
             new AttendanceBatchItem { MemberId = member.Id, Attended = true }
-        });
+        }, TestContext.Current.CancellationToken);
 
         // Calling FreezeAttendanceRateAsync again with a different count must be a no-op
         var rehearsalSvc = BuildRehearsalService();
-        var before = (await new RehearsalRepository(_db).GetByIdAsync(rehearsal.Id))!.StoredAttendanceRate;
+        var before = (await new RehearsalRepository(_db).GetByIdAsync(rehearsal.Id, TestContext.Current.CancellationToken))!.StoredAttendanceRate;
 
-        await rehearsalSvc.FreezeAttendanceRateAsync(rehearsal.Id, rehearsal.Date, presentCount: 999);
+        await rehearsalSvc.FreezeAttendanceRateAsync(rehearsal.Id, rehearsal.Date, presentCount: 999, ct: TestContext.Current.CancellationToken);
 
-        var after = (await new RehearsalRepository(_db).GetByIdAsync(rehearsal.Id))!.StoredAttendanceRate;
+        var after = (await new RehearsalRepository(_db).GetByIdAsync(rehearsal.Id, TestContext.Current.CancellationToken))!.StoredAttendanceRate;
         Assert.Equal(before, after);
     }
 
@@ -256,7 +256,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         var svc = BuildAttendanceRollService();
 
         await Assert.ThrowsAsync<StageFright.Core.Exceptions.EntityNotFoundException>(
-            () => svc.GenerateAsync(Guid.NewGuid()));
+            () => svc.GenerateAsync(Guid.NewGuid(), TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -268,18 +268,18 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         smithAlice.LastName = "Smith";
         var jones = await AddActiveMember("Zoe");
         jones.LastName = "Jones";
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var deletedMember = await AddActiveMember("Deleted");
         deletedMember.LastName = "Ghost";
         deletedMember.IsDeleted = true;
         deletedMember.DeletedAt = DateTime.UtcNow;
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var rehearsal = await ScheduleRehearsal();
         var svc = BuildAttendanceRollService();
 
-        var result = await svc.GenerateAsync(rehearsal.Id);
+        var result = await svc.GenerateAsync(rehearsal.Id, TestContext.Current.CancellationToken);
 
         Assert.Equal(3, result.Members.Count);
         Assert.Equal("Jones", result.Members[0].LastName);
@@ -296,7 +296,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         var rehearsal = await ScheduleRehearsal();
         var svc = BuildAttendanceRollService();
 
-        var result = await svc.GenerateAsync(rehearsal.Id);
+        var result = await svc.GenerateAsync(rehearsal.Id, TestContext.Current.CancellationToken);
 
         Assert.Empty(result.Members);
     }
@@ -316,10 +316,10 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
             new AttendanceBatchItem { MemberId = paidMember.Id, Attended = true, MarkAsUnpaid = false },
             new AttendanceBatchItem { MemberId = unpaidMember.Id, Attended = true, MarkAsUnpaid = true },
             new AttendanceBatchItem { MemberId = absentMember.Id, Attended = false }
-        });
+        }, TestContext.Current.CancellationToken);
 
         var svc = BuildAttendanceRollService();
-        var result = await svc.GenerateAsync(rehearsal.Id);
+        var result = await svc.GenerateAsync(rehearsal.Id, TestContext.Current.CancellationToken);
 
         var paidRow = result.Members.Single(m => m.FirstName == "Paid");
         Assert.True(paidRow.Attended);
@@ -343,15 +343,15 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         var laterInactivated = await AddActiveMember("StillOnRoll");
         laterInactivated.Status = MemberStatus.Inactive;
         laterInactivated.InactivateDate = new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc);
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Not active until after the rehearsal date -> excluded from the roll
         var joinedLater = await AddActiveMember("NotYetJoined");
         joinedLater.ActivateDate = new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc);
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var svc = BuildAttendanceRollService();
-        var result = await svc.GenerateAsync(rehearsal.Id);
+        var result = await svc.GenerateAsync(rehearsal.Id, TestContext.Current.CancellationToken);
 
         Assert.Contains(result.Members, m => m.FirstName == "StillOnRoll");
         Assert.DoesNotContain(result.Members, m => m.FirstName == "NotYetJoined");
@@ -409,7 +409,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
     private MemberService BuildMemberService()
     {
         var memberRepo = new MemberRepository(_db);
-        var committeeRepo = new CommitteeMembershipRepository(_db);
+        var committeeRepo = new CommitteePositionRecordRepository(_db);
         var settingsRepo = new SettingsRepository(_db);
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);

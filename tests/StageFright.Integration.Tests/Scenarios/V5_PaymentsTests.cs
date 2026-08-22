@@ -72,7 +72,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
         await ApplyFeeForMemberAsync(member.Id, 2026, 60m);
 
         var glRepo = new GLRepository(_db);
-        var balanceBefore = await glRepo.GetMemberBalanceAsync(member.Id);
+        var balanceBefore = await glRepo.GetMemberBalanceAsync(member.Id, TestContext.Current.CancellationToken);
         Assert.Equal(110m, balanceBefore);
 
         var paymentSvc = BuildPaymentService();
@@ -83,11 +83,11 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             Amount = 110m,
             PaymentMethod = PaymentMethod.Cash,
             PaymentType = PaymentType.Annual
-        });
+        }, TestContext.Current.CancellationToken);
 
         Assert.NotEqual(Guid.Empty, payment.Id);
 
-        var balanceAfter = await glRepo.GetMemberBalanceAsync(member.Id);
+        var balanceAfter = await glRepo.GetMemberBalanceAsync(member.Id, TestContext.Current.CancellationToken);
         Assert.Equal(0m, balanceAfter);
     }
 
@@ -109,10 +109,10 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             Amount = 50m,
             PaymentMethod = PaymentMethod.Cash,
             PaymentType = PaymentType.Annual
-        });
+        }, TestContext.Current.CancellationToken);
 
         var glRepo = new GLRepository(_db);
-        var balanceAfter = await glRepo.GetMemberBalanceAsync(member.Id);
+        var balanceAfter = await glRepo.GetMemberBalanceAsync(member.Id, TestContext.Current.CancellationToken);
 
         // $50 payment covers 2025 fee; 2026 fee ($60) remains
         Assert.Equal(60m, balanceAfter);
@@ -135,10 +135,10 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             Amount = 70m,
             PaymentMethod = PaymentMethod.Cash,
             PaymentType = PaymentType.Annual
-        });
+        }, TestContext.Current.CancellationToken);
 
         var glRepo = new GLRepository(_db);
-        var balance = await glRepo.GetMemberBalanceAsync(member.Id);
+        var balance = await glRepo.GetMemberBalanceAsync(member.Id, TestContext.Current.CancellationToken);
 
         // $70 paid, $50 owed → $20 credit = -$20 outstanding
         Assert.Equal(-20m, balance);
@@ -161,11 +161,11 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             PaymentMethod = PaymentMethod.Cash,
             PaymentType = PaymentType.Annual,
             Notes = "original note"
-        });
+        }, TestContext.Current.CancellationToken);
 
-        await paymentSvc.UpdateNotesAsync(payment.Id, "updated note");
+        await paymentSvc.UpdateNotesAsync(payment.Id, "updated note", TestContext.Current.CancellationToken);
 
-        var fromDb = await _db.Payments.FindAsync(payment.Id);
+        var fromDb = await _db.Payments.FindAsync(new object?[] { payment.Id }, TestContext.Current.CancellationToken);
         Assert.Equal("updated note", fromDb!.Notes);
     }
 
@@ -177,7 +177,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
         var paymentSvc = BuildPaymentService();
 
         await Assert.ThrowsAsync<EntityNotFoundException>(
-            () => paymentSvc.UpdateNotesAsync(Guid.NewGuid(), "anything"));
+            () => paymentSvc.UpdateNotesAsync(Guid.NewGuid(), "anything", TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -208,7 +208,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             Amount = 50m,
             PaymentMethod = PaymentMethod.Cash,
             PaymentType = PaymentType.Annual
-        });
+        }, TestContext.Current.CancellationToken);
 
         // Second payment should clear the 2026 fee — not re-touch the already-settled 2025 fee.
         await paymentSvc.RecordAsync(new RecordPaymentRequest
@@ -218,18 +218,18 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             Amount = 60m,
             PaymentMethod = PaymentMethod.Cash,
             PaymentType = PaymentType.Annual
-        });
+        }, TestContext.Current.CancellationToken);
 
         var glRepo = new GLRepository(_db);
-        var balance = await glRepo.GetMemberBalanceAsync(member.Id);
+        var balance = await glRepo.GetMemberBalanceAsync(member.Id, TestContext.Current.CancellationToken);
         Assert.Equal(0m, balance);
 
         var fee2025Credits = await _db.Transactions
             .Where(t => t.FeeId == fee2025Id && t.AccountId == MemberReceivableAccountId)
-            .SumAsync(t => t.CreditAmount);
+            .SumAsync(t => t.CreditAmount, cancellationToken: TestContext.Current.CancellationToken);
         var fee2026Credits = await _db.Transactions
             .Where(t => t.FeeId == fee2026Id && t.AccountId == MemberReceivableAccountId)
-            .SumAsync(t => t.CreditAmount);
+            .SumAsync(t => t.CreditAmount, cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal(50m, fee2025Credits);
         Assert.Equal(60m, fee2026Credits);
@@ -251,11 +251,11 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             Amount = 50m,
             PaymentMethod = PaymentMethod.Cash,
             PaymentType = PaymentType.Annual
-        });
+        }, TestContext.Current.CancellationToken);
 
         var paymentTxns = await _db.Transactions
             .Where(t => t.PaymentId == payment.Id)
-            .ToListAsync();
+            .ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal(2, paymentTxns.Count);
         Assert.All(paymentTxns, t => Assert.Equal(payment.Id, t.PaymentId));
@@ -280,15 +280,15 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             PaymentMethod = PaymentMethod.Cash,
             PaymentType = PaymentType.Annual,
             SelectedFeeIds = [fee2025Id, fee2026Id]
-        });
+        }, TestContext.Current.CancellationToken);
 
         var glRepo = new GLRepository(_db);
-        var balanceAfter = await glRepo.GetMemberBalanceAsync(member.Id);
+        var balanceAfter = await glRepo.GetMemberBalanceAsync(member.Id, TestContext.Current.CancellationToken);
         Assert.Equal(0m, balanceAfter);
 
         var paymentTxns = await _db.Transactions
             .Where(t => t.PaymentId == payment.Id && t.FeeId != null)
-            .ToListAsync();
+            .ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.All(paymentTxns, t => Assert.True(t.FeeId == fee2025Id || t.FeeId == fee2026Id));
     }
 
@@ -309,14 +309,14 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             PaymentMethod = PaymentMethod.Cash,
             PaymentType = PaymentType.Annual,
             SelectedFeeIds = [fee2025Id]
-        });
+        }, TestContext.Current.CancellationToken);
 
         var fee2025Credits = await _db.Transactions
             .Where(t => t.FeeId == fee2025Id && t.AccountId == MemberReceivableAccountId)
-            .SumAsync(t => t.CreditAmount);
+            .SumAsync(t => t.CreditAmount, cancellationToken: TestContext.Current.CancellationToken);
         var fee2026Credits = await _db.Transactions
             .Where(t => t.FeeId == fee2026Id && t.AccountId == MemberReceivableAccountId)
-            .SumAsync(t => t.CreditAmount);
+            .SumAsync(t => t.CreditAmount, cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal(30m, fee2025Credits);
         Assert.Equal(0m, fee2026Credits);
@@ -338,7 +338,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             PaymentMethod = PaymentMethod.Cash,
             PaymentType = PaymentType.Annual,
             SelectedFeeIds = []
-        }));
+        }, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -358,7 +358,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             PaymentMethod = PaymentMethod.Cash,
             PaymentType = PaymentType.Annual,
             SelectedFeeIds = [fee2025Id]
-        }));
+        }, TestContext.Current.CancellationToken));
     }
 
     // --- Helpers ---

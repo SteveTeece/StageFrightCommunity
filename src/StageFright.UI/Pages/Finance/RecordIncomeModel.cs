@@ -8,6 +8,6 @@ internal sealed class RecordIncomeModel
     public decimal Amount { get; set; }
     public Guid AccountId { get; set; }
     public Guid DepositAccountId { get; set; }
-    public GstCode? GstCode { get; set; }
+    public TaxCode? TaxCode { get; set; }
     public string? Description { get; set; }
 }

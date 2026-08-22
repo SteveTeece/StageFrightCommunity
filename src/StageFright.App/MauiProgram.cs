@@ -8,6 +8,7 @@ using Serilog;
 using Serilog.Events;
 using StageFright.App.Seeding;
 using StageFright.Core.Contracts;
+using StageFright.Core.Modules.Agm;
 using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Dashboard;
 using StageFright.Core.Modules.Finance;
@@ -84,12 +85,35 @@ public static class MauiProgram
                 sp.GetServices<IDataAccessProvider>(),
                 sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<PluginMigrationRunner>>()));
 
+        // Plugin discovery must register into the IServiceCollection before the container
+        // is built — the built ServiceProvider does not implement IServiceCollection, so
+        // registrations attempted afterward are never resolvable (issue #273).
+        DiscoverAndRegisterPlugins(builder.Services, pluginsPath);
+
         // Run startup sequence after the app is built
         var app = builder.Build();
 
-        RunStartupSequence(app.Services, dbPath, pluginsPath, connectionString, diagnosticService);
+        RunStartupSequence(app.Services, dbPath, connectionString, diagnosticService);
 
         return app;
+    }
+
+    private static void DiscoverAndRegisterPlugins(IServiceCollection services, string pluginsPath)
+    {
+        // Auto-create Plugins directory (FR-021)
+        try
+        {
+            Directory.CreateDirectory(pluginsPath);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Log.Error(ex, "Failed to create Plugins directory at {Path}; plugin discovery skipped", pluginsPath);
+            return;
+        }
+
+        using var loggerFactory = LoggerFactory.Create(b => b.AddSerilog());
+        var logger = loggerFactory.CreateLogger("PluginLoader");
+        PluginLoader.DiscoverAndRegister(services, pluginsPath, logger);
     }
 
     private static string FindRepoRoot(string startDir)
@@ -131,7 +155,11 @@ public static class MauiProgram
     private static void RegisterRepositories(IServiceCollection services)
     {
         services.AddScoped<IMemberRepository, MemberRepository>();
-        services.AddScoped<ICommitteeMembershipRepository, CommitteeMembershipRepository>();
+        services.AddScoped<ICommitteePositionRecordRepository, CommitteePositionRecordRepository>();
+        services.AddScoped<IAgmRepository, AgmRepository>();
+        services.AddScoped<IAgmAttendanceRepository, AgmAttendanceRepository>();
+        services.AddScoped<ICommitteeOfficeHolderTypeRepository, CommitteeOfficeHolderTypeRepository>();
+        services.AddScoped<ICommitteeTermRepository, CommitteeTermRepository>();
         services.AddScoped<IRehearsalRepository, RehearsalRepository>();
         services.AddScoped<IAttendanceRepository, AttendanceRepository>();
         services.AddScoped<IEventRepository, EventRepository>();
@@ -163,7 +191,8 @@ public static class MauiProgram
         services.AddScoped<MemberValidationService>();
         services.AddScoped<IMemberService, MemberService>();
         services.AddScoped<ICommitteeService, CommitteeService>();
-        services.AddScoped<ICommitteeAnnualResetService, CommitteeAnnualResetService>();
+        services.AddScoped<ICommitteeOfficeHolderTypeService, CommitteeOfficeHolderTypeService>();
+        services.AddScoped<IAgmService, AgmService>();
 
         // Rehearsals module (Phase 5)
         services.AddScoped<IRehearsalService, RehearsalService>();
@@ -225,7 +254,7 @@ public static class MauiProgram
         services.AddScoped<IReportProvider, MemberListReportProvider>();
         services.AddScoped<IReportProvider, CommitteeReportProvider>();
         services.AddScoped<IReportProvider, BankReconciliationReportProvider>();
-        services.AddScoped<IReportProvider, BasSummaryReportProvider>();
+        services.AddScoped<IReportProvider, TaxSummaryReportProvider>();
         services.AddScoped<IReportProvider, BalanceSheetReportProvider>();
         services.AddScoped<IReportProvider, GeneralLedgerReportProvider>();
         services.AddScoped<IReportProviderRegistry, ReportProviderRegistry>();
@@ -235,23 +264,8 @@ public static class MauiProgram
         services.AddSingleton<IMenuItemProvider, SettingsMenuItemProvider>();
     }
 
-    private static void RunStartupSequence(IServiceProvider services, string dbPath, string pluginsPath, string connectionString, StartupDiagnosticService diagnosticService)
+    private static void RunStartupSequence(IServiceProvider services, string dbPath, string connectionString, StartupDiagnosticService diagnosticService)
     {
-        // Auto-create Plugins directory (FR-021)
-        try
-        {
-            Directory.CreateDirectory(pluginsPath);
-        }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        {
-            Log.Error(ex, "Failed to create Plugins directory at {Path}; plugin discovery skipped", pluginsPath);
-        }
-
-        // Discover and register plugins
-        using var loggerFactory = LoggerFactory.Create(b => b.AddSerilog());
-        var logger = loggerFactory.CreateLogger("PluginLoader");
-        PluginLoader.DiscoverAndRegister(services as IServiceCollection ?? new ServiceCollection(), pluginsPath, logger);
-
         // Run core EF Core migration + startup tasks
         using var scope = services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<StageFrightDbContext>();
@@ -280,12 +294,19 @@ public static class MauiProgram
         var migrationRunner = scope.ServiceProvider.GetRequiredService<PluginMigrationRunner>();
         migrationRunner.RunAsync().GetAwaiter().GetResult();
 
-        // Audit trail startup purge (FR-022): failure is tolerated, startup continues
+        // Audit trail startup purge (FR-022): failure is tolerated, startup continues.
+        // Resolved via the registered interface — resolving the concrete AuditTrailService
+        // type here previously returned null (it was never registered by concrete type),
+        // silently skipping the purge while still logging a false "complete" message.
         try
         {
-            var auditService = scope.ServiceProvider.GetService<AuditTrailService>();
-            auditService?.PurgeOlderThanAsync(DateTime.UtcNow.AddMonths(-12)).GetAwaiter().GetResult();
-            Log.Information("Audit trail startup purge complete");
+            var auditService = scope.ServiceProvider.GetRequiredService<IAuditTrailService>();
+            var settingsService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
+            var settings = settingsService.GetAsync().GetAwaiter().GetResult();
+            var retentionYears = settings?.AuditRetentionYears ?? 1;
+
+            auditService.PurgeOlderThanAsync(DateTime.UtcNow.AddYears(-retentionYears)).GetAwaiter().GetResult();
+            Log.Information("Audit trail startup purge complete (retention: {RetentionYears} year(s))", retentionYears);
         }
         catch (Exception ex)
         {

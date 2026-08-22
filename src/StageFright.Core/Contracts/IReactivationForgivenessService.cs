@@ -4,7 +4,7 @@ namespace StageFright.Core.Contracts;
 
 /// <summary>
 /// Service for the reactivation forgiveness workflow: writing off prior outstanding fees
-/// to BadDebtExpense (GL#9900) when a member is reactivated.
+/// to BadDebtExpense (GL#6999) when a member is reactivated.
 /// </summary>
 public interface IReactivationForgivenessService
 {
@@ -17,7 +17,7 @@ public interface IReactivationForgivenessService
 
     /// <summary>
     /// Writes off the selected fees to BadDebtExpense via GL reversal pairs
-    /// (Debit BadDebtExpense GL#9900 / Credit MemberReceivable GL#0101 per fee).
+    /// (Debit BadDebtExpense GL#6999 / Credit MemberReceivable GL#1200 per fee).
     /// Runs inside a unit-of-work transaction. Audits each forgiveness with Action=Forgiveness.
     /// Fee records are never modified.
     /// </summary>

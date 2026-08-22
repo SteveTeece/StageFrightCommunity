@@ -75,8 +75,8 @@ public class IncomeEntryService : IIncomeEntryService
                 "The deposit account must be a bank/cash account.", nameof(Account), nameof(RecordIncomeAsync));
 
         var settings = await _settingsRepo.GetAsync(ct);
-        var isRegistered = settings?.IsGstRegistered ?? false;
-        var gstCode = isRegistered ? (request.GstCode ?? GstCode.GstFree) : (GstCode?)null;
+        var isTaxApplicable = settings?.IsTaxApplicable ?? false;
+        var taxCode = isTaxApplicable ? (request.TaxCode ?? TaxCode.TaxExempt) : (TaxCode?)null;
 
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
@@ -94,10 +94,10 @@ public class IncomeEntryService : IIncomeEntryService
                 CreatedAt = now
             }, innerCt);
 
-            // Taxable while registered: DR Bank gross / CR Income net / CR GST Collected.
-            // Otherwise a 2-line pair; unregistered postings carry no GST code at all.
-            var (incomeAmount, gstAmount) = gstCode == GstCode.Gst
-                ? GstCalculator.SplitInclusive(request.Amount)
+            // Taxable while tax applies: DR Bank gross / CR Income net / CR Tax Collected.
+            // Otherwise a 2-line pair; postings while tax doesn't apply carry no tax code at all.
+            var (incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
+                ? TaxCalculator.SplitInclusive(request.Amount, settings?.TaxRate ?? 0m)
                 : (request.Amount, 0m);
 
             var lines = new List<Transaction>
@@ -111,7 +111,7 @@ public class IncomeEntryService : IIncomeEntryService
                     CreditAmount = 0m,
                     GLAccount = depositAccount.AccountNumber,
                     JournalEntryId = entry.Id,
-                    GstCode = gstCode,
+                    TaxCode = taxCode,
                     Description = description,
                     CreatedAt = now
                 },
@@ -124,25 +124,25 @@ public class IncomeEntryService : IIncomeEntryService
                     CreditAmount = incomeAmount,
                     GLAccount = account.AccountNumber,
                     JournalEntryId = entry.Id,
-                    GstCode = gstCode,
+                    TaxCode = taxCode,
                     Description = description,
                     CreatedAt = now
                 }
             };
 
-            if (gstAmount != 0m)
+            if (taxAmount != 0m)
             {
                 lines.Add(new Transaction
                 {
                     Id = Guid.NewGuid(),
                     Date = request.Date,
-                    AccountId = SystemAccounts.GstCollectedId,
+                    AccountId = SystemAccounts.TaxCollectedId,
                     DebitAmount = 0m,
-                    CreditAmount = gstAmount,
-                    GLAccount = SystemAccounts.GstCollectedNumber,
+                    CreditAmount = taxAmount,
+                    GLAccount = SystemAccounts.TaxCollectedNumber,
                     JournalEntryId = entry.Id,
-                    GstCode = gstCode,
-                    Description = $"GST collected — {description}",
+                    TaxCode = taxCode,
+                    Description = $"Tax collected — {description}",
                     CreatedAt = now
                 });
             }

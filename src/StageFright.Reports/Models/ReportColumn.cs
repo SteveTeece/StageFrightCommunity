@@ -10,7 +10,4 @@ public class ReportColumn
 
     /// <summary>Horizontal alignment for cell values in this column.</summary>
     public ReportColumnAlignment Alignment { get; init; } = ReportColumnAlignment.Left;
-
-    /// <summary>Display format applied when rendering cell values.</summary>
-    public ReportColumnFormat Format { get; init; } = ReportColumnFormat.Text;
 }

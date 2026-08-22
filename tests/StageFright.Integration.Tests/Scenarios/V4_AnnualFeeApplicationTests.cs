@@ -84,7 +84,7 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         await AddInactiveMember("Charlie");
 
         var svc = BuildFeeService();
-        var eligible = await svc.GetEligibleMembersAsync();
+        var eligible = await svc.GetEligibleMembersAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(2, eligible.Count);
         Assert.All(eligible, m => Assert.Equal(MemberStatus.Active, m.Status));
@@ -100,7 +100,7 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         await AddAnnualFeeForMember(active1.Id, paidAtCreation: false);
 
         var svc = BuildFeeService();
-        var eligible = await svc.GetEligibleMembersAsync();
+        var eligible = await svc.GetEligibleMembersAsync(TestContext.Current.CancellationToken);
 
         Assert.Single(eligible);
         Assert.Equal(active2.Id, eligible[0].Id);
@@ -115,7 +115,7 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         await AddAnnualFeeForMember(active.Id, paidAtCreation: true);
 
         var svc = BuildFeeService();
-        var eligible = await svc.GetEligibleMembersAsync();
+        var eligible = await svc.GetEligibleMembersAsync(TestContext.Current.CancellationToken);
 
         Assert.Empty(eligible);
     }
@@ -129,7 +129,7 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         await AddAnnualFeeForMemberInYear(active.Id, DateTime.UtcNow.Year - 1);
 
         var svc = BuildFeeService();
-        var eligible = await svc.GetEligibleMembersAsync();
+        var eligible = await svc.GetEligibleMembersAsync(TestContext.Current.CancellationToken);
 
         Assert.Single(eligible);
     }
@@ -142,12 +142,12 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         var member = await AddActiveMember("Frank");
         var svc = BuildFeeService();
 
-        var count = await svc.ApplyAnnualFeesAsync(new[] { member.Id });
+        var count = await svc.ApplyAnnualFeesAsync(new[] { member.Id }, TestContext.Current.CancellationToken);
 
         Assert.Equal(1, count);
 
         // Fee created
-        var fee = await _db.Fees.FirstOrDefaultAsync(f => f.MemberId == member.Id);
+        var fee = await _db.Fees.FirstOrDefaultAsync(f => f.MemberId == member.Id, cancellationToken: TestContext.Current.CancellationToken);
         Assert.NotNull(fee);
         Assert.Equal(FeeType.Annual, fee!.FeeType);
         Assert.Equal(50m, fee.Amount);
@@ -159,7 +159,7 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         Assert.Equal(31, fee.DueDate.Day);
 
         // GL pair: debit MemberReceivable (member-specific), credit Income (org-level, MemberId=null)
-        var allTransactions = await _db.Transactions.ToListAsync();
+        var allTransactions = await _db.Transactions.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(2, allTransactions.Count);
 
         Assert.Contains(allTransactions, t =>
@@ -175,12 +175,12 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         var active2 = await AddActiveMember("Harriet");
 
         var svc = BuildFeeService();
-        var count = await svc.ApplyAnnualFeesAsync(new[] { active1.Id, active2.Id });
+        var count = await svc.ApplyAnnualFeesAsync(new[] { active1.Id, active2.Id }, TestContext.Current.CancellationToken);
 
         Assert.Equal(2, count);
-        Assert.Equal(2, await _db.Fees.CountAsync());
+        Assert.Equal(2, await _db.Fees.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
         // 2 GL pairs = 4 transactions total (2 MemberReceivable debits + 2 Income credits)
-        Assert.Equal(4, await _db.Transactions.CountAsync());
+        Assert.Equal(4, await _db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -190,16 +190,16 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         var inactive = await AddInactiveMember("Janet");
 
         var svc = BuildFeeService();
-        var eligible = await svc.GetEligibleMembersAsync();
+        var eligible = await svc.GetEligibleMembersAsync(TestContext.Current.CancellationToken);
 
         // Only Ian is eligible; Janet is not in the list
         Assert.DoesNotContain(eligible, m => m.Id == inactive.Id);
 
-        var count = await svc.ApplyAnnualFeesAsync(eligible.Select(m => m.Id).ToList());
+        var count = await svc.ApplyAnnualFeesAsync(eligible.Select(m => m.Id).ToList(), TestContext.Current.CancellationToken);
         Assert.Equal(1, count);
 
         // Janet has no fee
-        Assert.False(await _db.Fees.AnyAsync(f => f.MemberId == inactive.Id));
+        Assert.False(await _db.Fees.AnyAsync(f => f.MemberId == inactive.Id, cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -209,11 +209,11 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         var svc = BuildFeeService();
 
         var glRepo = new GLRepository(_db);
-        var balanceBefore = await glRepo.GetTotalOutstandingAsync();
+        var balanceBefore = await glRepo.GetTotalOutstandingAsync(TestContext.Current.CancellationToken);
 
-        await svc.ApplyAnnualFeesAsync(new[] { member.Id });
+        await svc.ApplyAnnualFeesAsync(new[] { member.Id }, TestContext.Current.CancellationToken);
 
-        var balanceAfter = await glRepo.GetTotalOutstandingAsync();
+        var balanceAfter = await glRepo.GetTotalOutstandingAsync(TestContext.Current.CancellationToken);
 
         // MemberReceivable debit increases outstanding balance by 50
         Assert.Equal(balanceBefore + 50m, balanceAfter);
@@ -224,10 +224,10 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
     {
         var svc = BuildFeeService();
 
-        var count = await svc.ApplyAnnualFeesAsync(Array.Empty<Guid>());
+        var count = await svc.ApplyAnnualFeesAsync(Array.Empty<Guid>(), TestContext.Current.CancellationToken);
 
         Assert.Equal(0, count);
-        Assert.Equal(0, await _db.Fees.CountAsync());
+        Assert.Equal(0, await _db.Fees.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     // --- Helpers ---

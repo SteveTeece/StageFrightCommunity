@@ -41,7 +41,7 @@ public class FinanceSummaryServiceTests
             Txn(_incomeAccount.Id, credit: 250m, date: AsOf.AddDays(-1)),
             Txn(_expenseAccount.Id, debit: 100m, date: AsOf.AddMonths(-2)));
 
-        var summary = await _service.GetSummaryAsync(AsOf);
+        var summary = await _service.GetSummaryAsync(AsOf, TestContext.Current.CancellationToken);
 
         Assert.Equal(650m, summary.CurrentBalance);
     }
@@ -54,7 +54,7 @@ public class FinanceSummaryServiceTests
             Txn(_systemIncomeAccount.Id, credit: 9_999m, date: AsOf.AddDays(-1)),
             Txn(_systemExpenseAccount.Id, debit: 5_000m, date: AsOf.AddDays(-1)));
 
-        var summary = await _service.GetSummaryAsync(AsOf);
+        var summary = await _service.GetSummaryAsync(AsOf, TestContext.Current.CancellationToken);
 
         Assert.Equal(100m, summary.CurrentBalance);
         Assert.Equal(100m, summary.MonthIncome);
@@ -70,7 +70,7 @@ public class FinanceSummaryServiceTests
             Txn(_expenseAccount.Id, debit: 200m, date: AsOf.AddDays(-2)),
             Txn(_expenseAccount.Id, credit: 40m, date: AsOf.AddDays(-2))); // expense refund
 
-        var summary = await _service.GetSummaryAsync(AsOf);
+        var summary = await _service.GetSummaryAsync(AsOf, TestContext.Current.CancellationToken);
 
         Assert.Equal(250m, summary.MonthIncome);
         Assert.Equal(160m, summary.MonthExpenses);
@@ -85,7 +85,7 @@ public class FinanceSummaryServiceTests
             Txn(_incomeAccount.Id, credit: 150m, date: new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc)),
             Txn(_expenseAccount.Id, debit: 60m, date: new DateTime(2026, 7, 3, 0, 0, 0, DateTimeKind.Utc)));
 
-        var summary = await _service.GetSummaryAsync(AsOf);
+        var summary = await _service.GetSummaryAsync(AsOf, TestContext.Current.CancellationToken);
 
         Assert.Equal(150m, summary.MonthIncome);
         Assert.Equal(60m, summary.MonthExpenses);
@@ -97,7 +97,7 @@ public class FinanceSummaryServiceTests
     {
         SetupTransactions();
 
-        var summary = await _service.GetSummaryAsync(AsOf);
+        var summary = await _service.GetSummaryAsync(AsOf, TestContext.Current.CancellationToken);
 
         Assert.Equal(0m, summary.CurrentBalance);
         Assert.Equal(0m, summary.MonthIncome);
@@ -109,7 +109,7 @@ public class FinanceSummaryServiceTests
     {
         SetupTransactions();
 
-        await _service.GetSummaryAsync(AsOf);
+        await _service.GetSummaryAsync(AsOf, TestContext.Current.CancellationToken);
 
         await _glRepository.Received(1).GetByDateRangeAsync(
             Arg.Is<DateTime>(d => d == DateTime.MinValue),
@@ -124,7 +124,7 @@ public class FinanceSummaryServiceTests
     {
         SetupTransactions();
 
-        var result = await _service.GetMonthlyCashFlowAsync(AsOf, 6);
+        var result = await _service.GetMonthlyCashFlowAsync(AsOf, 6, TestContext.Current.CancellationToken);
 
         Assert.Equal(6, result.Count);
         Assert.Equal((2026, 2), (result[0].Year, result[0].Month));
@@ -139,7 +139,7 @@ public class FinanceSummaryServiceTests
             Txn(_expenseAccount.Id, debit: 120m, date: new DateTime(2026, 5, 20, 0, 0, 0, DateTimeKind.Utc)),
             Txn(_incomeAccount.Id, credit: 80m, date: new DateTime(2026, 7, 2, 0, 0, 0, DateTimeKind.Utc)));
 
-        var result = await _service.GetMonthlyCashFlowAsync(AsOf, 6);
+        var result = await _service.GetMonthlyCashFlowAsync(AsOf, 6, TestContext.Current.CancellationToken);
 
         var may = result.Single(m => m.Month == 5);
         var july = result.Single(m => m.Month == 7);
@@ -155,7 +155,7 @@ public class FinanceSummaryServiceTests
         SetupTransactions(
             Txn(_incomeAccount.Id, credit: 100m, date: new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc)));
 
-        var result = await _service.GetMonthlyCashFlowAsync(AsOf, 3);
+        var result = await _service.GetMonthlyCashFlowAsync(AsOf, 3, TestContext.Current.CancellationToken);
 
         Assert.Equal(0m, result[0].Income);
         Assert.Equal(0m, result[0].Expenses);
@@ -169,7 +169,7 @@ public class FinanceSummaryServiceTests
         var asOf = new DateTime(2026, 2, 15, 0, 0, 0, DateTimeKind.Utc);
         SetupTransactions();
 
-        var result = await _service.GetMonthlyCashFlowAsync(asOf, 4);
+        var result = await _service.GetMonthlyCashFlowAsync(asOf, 4, TestContext.Current.CancellationToken);
 
         Assert.Equal((2025, 11), (result[0].Year, result[0].Month));
         Assert.Equal((2025, 12), (result[1].Year, result[1].Month));
@@ -183,7 +183,7 @@ public class FinanceSummaryServiceTests
         SetupTransactions(
             Txn(_systemIncomeAccount.Id, credit: 500m, date: new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc)));
 
-        var result = await _service.GetMonthlyCashFlowAsync(AsOf, 2);
+        var result = await _service.GetMonthlyCashFlowAsync(AsOf, 2, TestContext.Current.CancellationToken);
 
         Assert.All(result, m => Assert.Equal(0m, m.Income));
     }
@@ -194,7 +194,7 @@ public class FinanceSummaryServiceTests
     public async Task Should_ThrowArgumentOutOfRange_When_MonthsIsNotPositive(int months)
     {
         await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
-            () => _service.GetMonthlyCashFlowAsync(AsOf, months));
+            () => _service.GetMonthlyCashFlowAsync(AsOf, months, TestContext.Current.CancellationToken));
     }
 
     // --- GetOutstandingFeeSummaryAsync ---
@@ -205,7 +205,7 @@ public class FinanceSummaryServiceTests
         _glRepository.GetOutstandingByFeeTypeAsync(Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns((Attendance: 120m, Annual: 480m));
 
-        var summary = await _service.GetOutstandingFeeSummaryAsync();
+        var summary = await _service.GetOutstandingFeeSummaryAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(120m, summary.OutstandingAttendanceFees);
         Assert.Equal(480m, summary.OutstandingAnnualFees);
@@ -217,7 +217,7 @@ public class FinanceSummaryServiceTests
         _glRepository.GetOutstandingByFeeTypeAsync(Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns((Attendance: 0m, Annual: 0m));
 
-        var summary = await _service.GetOutstandingFeeSummaryAsync();
+        var summary = await _service.GetOutstandingFeeSummaryAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(0m, summary.OutstandingAttendanceFees);
         Assert.Equal(0m, summary.OutstandingAnnualFees);
@@ -230,11 +230,11 @@ public class FinanceSummaryServiceTests
     {
         var asOf = new DateTime(2026, 7, 4, 0, 0, 0, DateTimeKind.Utc);
         _glRepository.GetOutstandingMemberCountAsync(Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
-            .Returns(callInfo => ((DateTime)callInfo[0]).Month);
+            .Returns(callInfo => ((DateTime)callInfo[0]!).Month);
         _glRepository.GetOutstandingByFeeTypeAsync(Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
-            .Returns(callInfo => ((decimal)((DateTime)callInfo[0]).Month * 10m, (decimal)((DateTime)callInfo[0]).Month * 20m));
+            .Returns(callInfo => ((decimal)((DateTime)callInfo[0]!).Month * 10m, (decimal)((DateTime)callInfo[0]!).Month * 20m));
 
-        var trend = await _service.GetOutstandingBalanceTrendAsync(asOf);
+        var trend = await _service.GetOutstandingBalanceTrendAsync(asOf, TestContext.Current.CancellationToken);
 
         Assert.Equal(7, trend.Count);
         for (var i = 0; i < trend.Count; i++)
@@ -256,7 +256,7 @@ public class FinanceSummaryServiceTests
         _glRepository.GetOutstandingByFeeTypeAsync(Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns((Attendance: 100m, Annual: 150m));
 
-        var trend = await _service.GetOutstandingBalanceTrendAsync(asOf);
+        var trend = await _service.GetOutstandingBalanceTrendAsync(asOf, TestContext.Current.CancellationToken);
 
         var entry = Assert.Single(trend);
         Assert.Equal(1, entry.Month);

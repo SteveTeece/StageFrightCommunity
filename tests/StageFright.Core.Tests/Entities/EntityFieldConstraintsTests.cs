@@ -42,7 +42,7 @@ public class EntityFieldConstraintsTests : TestBase
     // Soft-deletable entities must have all three soft-delete fields
     [Theory]
     [InlineData(typeof(Member))]
-    [InlineData(typeof(CommitteeMembership))]
+    [InlineData(typeof(CommitteePositionRecord))]
     [InlineData(typeof(Rehearsal))]
     [InlineData(typeof(AttendanceRecord))]
     [InlineData(typeof(Event))]
@@ -59,7 +59,7 @@ public class EntityFieldConstraintsTests : TestBase
 
     [Theory]
     [InlineData(typeof(Member))]
-    [InlineData(typeof(CommitteeMembership))]
+    [InlineData(typeof(CommitteePositionRecord))]
     [InlineData(typeof(Rehearsal))]
     [InlineData(typeof(Account))]
     [InlineData(typeof(Settings))]
@@ -72,7 +72,7 @@ public class EntityFieldConstraintsTests : TestBase
 
     [Theory]
     [InlineData(typeof(Member))]
-    [InlineData(typeof(CommitteeMembership))]
+    [InlineData(typeof(CommitteePositionRecord))]
     [InlineData(typeof(Rehearsal))]
     [InlineData(typeof(Account))]
     [InlineData(typeof(Settings))]
@@ -119,7 +119,7 @@ public class EntityFieldConstraintsTests : TestBase
     // All entities have a Guid Id primary key
     [Theory]
     [InlineData(typeof(Member))]
-    [InlineData(typeof(CommitteeMembership))]
+    [InlineData(typeof(CommitteePositionRecord))]
     [InlineData(typeof(Rehearsal))]
     [InlineData(typeof(Fee))]
     [InlineData(typeof(Payment))]

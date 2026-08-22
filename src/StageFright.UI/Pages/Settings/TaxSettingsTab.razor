@@ -1,0 +1,92 @@
+@using StageFright.Core.Entities
+@using StageFright.Core.Enums
+@using AppSettings = StageFright.Core.Entities.Settings
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+}
+
+@if (!string.IsNullOrEmpty(_successMessage))
+{
+    <div class="alert alert-success py-1 mb-2 small" role="status">@_successMessage</div>
+}
+
+@if (_settings is null)
+{
+    <p role="status">Loading settings…</p>
+}
+else
+{
+    var s = _settings;
+
+    <EditForm Model="s" OnValidSubmit="HandleSaveAsync">
+        <DataAnnotationsValidator />
+
+        <div class="mb-2">
+            <label class="form-label">Sales Tax</label>
+            <div class="d-flex align-items-center gap-2">
+                <RadzenSwitch Name="taxApplicable"
+                              Value="@s.IsTaxApplicable"
+                              Disabled="@(_pendingTaxToggle is not null)"
+                              Change="@((bool v) => HandleTaxToggleRequested(v))" />
+                <label class="form-check-label small" for="taxApplicable">
+                    Sales tax applies to this organisation
+                </label>
+            </div>
+
+            @if (_pendingTaxToggle is not null)
+            {
+                <div class="alert alert-warning py-1 mb-2 small" role="alert" id="tax-toggle-confirm">
+                    @if (_pendingTaxToggle == true)
+                    {
+                        <span><strong>Confirm:</strong> future income and expense postings will split out sales tax, and tax reporting will be enabled.</span>
+                    }
+                    else
+                    {
+                        <span><strong>Confirm:</strong> tax fields will be hidden and future postings will no longer carry a tax code.</span>
+                    }
+                    <div class="mt-1">
+                        <button type="button" class="btn btn-sm btn-warning" id="tax-toggle-confirm-btn" @onclick="ConfirmTaxToggle">Confirm</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary ms-1" @onclick="CancelTaxToggle">Cancel</button>
+                    </div>
+                </div>
+            }
+
+            @if (s.IsTaxApplicable)
+            {
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6">
+                        <label for="taxRate" class="form-label">Tax Rate (%) <span class="text-danger">*</span></label>
+                        <InputNumber id="taxRate" class="form-control form-control-sm" @bind-Value="s.TaxRate" @bind-Value:format="N2" />
+                        <ValidationMessage For="() => s.TaxRate" />
+                    </div>
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6">
+                        <label for="annualFeeTaxCode" class="form-label">Annual Fee Tax Treatment</label>
+                        <InputSelect id="annualFeeTaxCode" class="form-select form-select-sm" @bind-Value="s.AnnualFeeTaxCode">
+                            <option value="">Tax-exempt (default)</option>
+                            <option value="@TaxCode.Taxable">Taxable</option>
+                            <option value="@TaxCode.TaxExempt">Tax-exempt</option>
+                        </InputSelect>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="attendanceFeeTaxCode" class="form-label">Attendance Fee Tax Treatment</label>
+                        <InputSelect id="attendanceFeeTaxCode" class="form-select form-select-sm" @bind-Value="s.AttendanceFeeTaxCode">
+                            <option value="">Tax-exempt (default)</option>
+                            <option value="@TaxCode.Taxable">Taxable</option>
+                            <option value="@TaxCode.TaxExempt">Tax-exempt</option>
+                        </InputSelect>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
+                @(_saving ? "Saving…" : "Save Settings")
+            </button>
+        </div>
+    </EditForm>
+}

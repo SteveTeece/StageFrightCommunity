@@ -77,7 +77,7 @@ public class IncomeStatementReportProviderTests
         SetupAccounts(MakeAccount(catId, "Membership Dues", AccountType.Income, "4000"));
         SetupMovements((catId, 0m, 100m));
 
-        var result = await _sut.GenerateAsync(PeriodFilters("This FY"));
+        var result = await _sut.GenerateAsync(PeriodFilters("This FY"), TestContext.Current.CancellationToken);
 
         var incomeSection = result.Sections.First(s => s.Heading == "Income");
         Assert.Contains(incomeSection.Rows, r => r.Cells[0].Contains("Membership Dues"));
@@ -90,7 +90,7 @@ public class IncomeStatementReportProviderTests
         SetupAccounts(MakeAccount(catId, "Dues", AccountType.Income, "4000"));
         SetupMovements((catId, 0m, 150m));
 
-        var result = await _sut.GenerateAsync(PeriodFilters("This FY"));
+        var result = await _sut.GenerateAsync(PeriodFilters("This FY"), TestContext.Current.CancellationToken);
 
         var incomeSection = result.Sections.First(s => s.Heading == "Income");
         Assert.Equal("150.00", incomeSection.Subtotal!.Cells[1]);
@@ -103,7 +103,7 @@ public class IncomeStatementReportProviderTests
         SetupAccounts(MakeAccount(catId, "Hall Hire", AccountType.Expense, "6000"));
         SetupMovements((catId, 200m, 0m));
 
-        var result = await _sut.GenerateAsync(PeriodFilters("This FY"));
+        var result = await _sut.GenerateAsync(PeriodFilters("This FY"), TestContext.Current.CancellationToken);
 
         var expenseSection = result.Sections.First(s => s.Heading == "Expenses");
         Assert.Contains(expenseSection.Rows, r => r.Cells[0].Contains("Hall Hire"));
@@ -119,7 +119,7 @@ public class IncomeStatementReportProviderTests
             MakeAccount(expId, "Hall", AccountType.Expense, "6000"));
         SetupMovements((incId, 0m, 300m), (expId, 100m, 0m));
 
-        var result = await _sut.GenerateAsync(PeriodFilters("This FY"));
+        var result = await _sut.GenerateAsync(PeriodFilters("This FY"), TestContext.Current.CancellationToken);
 
         Assert.Equal("Surplus", result.GrandTotal!.Cells[0]);
         Assert.Equal("200.00", result.GrandTotal.Cells[1]);
@@ -135,7 +135,7 @@ public class IncomeStatementReportProviderTests
             MakeAccount(expId, "Hall", AccountType.Expense, "6000"));
         SetupMovements((incId, 0m, 50m), (expId, 200m, 0m));
 
-        var result = await _sut.GenerateAsync(PeriodFilters("This FY"));
+        var result = await _sut.GenerateAsync(PeriodFilters("This FY"), TestContext.Current.CancellationToken);
 
         Assert.Equal("(Deficit)", result.GrandTotal!.Cells[0]);
         Assert.Equal("-150.00", result.GrandTotal.Cells[1]);
@@ -144,7 +144,7 @@ public class IncomeStatementReportProviderTests
     [Fact]
     public async Task GenerateAsync_EmptySections_HandledWithoutThrowing()
     {
-        var result = await _sut.GenerateAsync(PeriodFilters("This FY"));
+        var result = await _sut.GenerateAsync(PeriodFilters("This FY"), TestContext.Current.CancellationToken);
 
         Assert.NotNull(result);
         Assert.Equal("Statement of Income & Expenditure", result.Title);
@@ -155,7 +155,7 @@ public class IncomeStatementReportProviderTests
     {
         var (from, to) = FinancialYearCalculator.GetRange(DateTime.UtcNow, FinancialYearCalculator.DefaultStartMonth);
 
-        await _sut.GenerateAsync(PeriodFilters("This FY"));
+        await _sut.GenerateAsync(PeriodFilters("This FY"), TestContext.Current.CancellationToken);
 
         await _gl.Received().GetAccountMovementsAsync(from, to, Arg.Any<CancellationToken>());
     }
@@ -165,7 +165,7 @@ public class IncomeStatementReportProviderTests
     {
         var (from, to) = FinancialYearCalculator.GetPreviousRange(DateTime.UtcNow, FinancialYearCalculator.DefaultStartMonth);
 
-        await _sut.GenerateAsync(PeriodFilters("Last FY"));
+        await _sut.GenerateAsync(PeriodFilters("Last FY"), TestContext.Current.CancellationToken);
 
         await _gl.Received().GetAccountMovementsAsync(from, to, Arg.Any<CancellationToken>());
     }
@@ -177,7 +177,7 @@ public class IncomeStatementReportProviderTests
         filters.Set("dateFrom", "2026-01-01");
         filters.Set("dateTo", "2026-06-30");
 
-        await _sut.GenerateAsync(filters);
+        await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         await _gl.Received().GetAccountMovementsAsync(
             new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
@@ -188,7 +188,7 @@ public class IncomeStatementReportProviderTests
     [Fact]
     public async Task GenerateAsync_CompareOff_ColumnsAreAccountAndAmount()
     {
-        var result = await _sut.GenerateAsync(PeriodFilters("This FY"));
+        var result = await _sut.GenerateAsync(PeriodFilters("This FY"), TestContext.Current.CancellationToken);
 
         Assert.Equal(2, result.Columns.Count);
         Assert.Equal("Amount", result.Columns[1].Header);
@@ -209,7 +209,7 @@ public class IncomeStatementReportProviderTests
         var filters = PeriodFilters("This FY");
         filters.Set("compare", "true");
 
-        var result = await _sut.GenerateAsync(filters);
+        var result = await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         Assert.Equal(3, result.Columns.Count);
         Assert.Equal("Prior Period", result.Columns[2].Header);

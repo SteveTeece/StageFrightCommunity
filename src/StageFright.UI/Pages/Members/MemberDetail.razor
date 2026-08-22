@@ -69,24 +69,24 @@ else
         <section aria-label="Committee History" class="mb-2">
             <h2 class="h6 mb-1">Committee History</h2>
             <ul class="list-unstyled small mb-0">
-                @foreach (var record in _committeeHistory.OrderByDescending(r => r.Year))
+                @foreach (var record in _committeeHistory.OrderByDescending(GetEffectiveYear))
                 {
                     <li class="mb-1">
-                        @if (record.Year == _currentYear)
+                        @if (IsCurrent(record))
                         {
                             <strong>
-                                @record.Year
+                                @GetEffectiveYear(record)
                                 <span role="status"
                                       aria-label="Current year"
                                       style="background-color:hsl(120,40%,70%);padding:1px 6px;border-radius:4px;font-size:.8em;font-weight:normal">
                                     Current
                                 </span>
-                                — @record.Position
+                                — @GetEffectiveLabel(record)
                             </strong>
                         }
                         else
                         {
-                            <span>@record.Year — @record.Position</span>
+                            <span>@GetEffectiveYear(record) — @GetEffectiveLabel(record)</span>
                         }
                     </li>
                 }

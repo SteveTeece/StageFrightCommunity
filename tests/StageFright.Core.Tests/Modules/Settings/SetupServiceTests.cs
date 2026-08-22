@@ -3,6 +3,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Settings;
 using StageFright.Core.Tests.Fixtures;
 
@@ -17,6 +18,9 @@ public class SetupServiceTests : TestBase
     private readonly ISettingsRepository _settingsRepo = Substitute.For<ISettingsRepository>();
     private readonly IAccountRepository _accountRepo = Substitute.For<IAccountRepository>();
     private readonly IEventTypeRepository _eventTypeRepo = Substitute.For<IEventTypeRepository>();
+    private readonly ICommitteeOfficeHolderTypeService _officeHolderTypeService = Substitute.For<ICommitteeOfficeHolderTypeService>();
+    private readonly IAccountService _accountService = Substitute.For<IAccountService>();
+    private readonly IOpeningBalanceService _openingBalanceService = Substitute.For<IOpeningBalanceService>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
 
     public SetupServiceTests()
@@ -25,7 +29,9 @@ public class SetupServiceTests : TestBase
             .Returns(ci => ci.ArgAt<StageFright.Core.Entities.EventType>(0));
     }
 
-    private SetupService CreateService() => new(_settingsRepo, _accountRepo, _eventTypeRepo, _audit);
+    private SetupService CreateService() => new(
+        _settingsRepo, _accountRepo, _eventTypeRepo, _officeHolderTypeService,
+        _accountService, _openingBalanceService, _audit);
 
     // --- IsSetupCompleteAsync ---
 
@@ -60,41 +66,27 @@ public class SetupServiceTests : TestBase
     }
 
     [Fact]
-    public async Task InitializeAsync_Throws_WhenAbnMissing()
+    public async Task InitializeAsync_Throws_WhenTaxApplicableWithoutRate()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         var svc = CreateService();
 
-        var request = ValidRequest() with { Abn = "" };
+        var request = ValidRequest() with { IsTaxApplicable = true, TaxRate = null };
         await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
     }
 
-#if !DEBUG
     [Fact]
-    public async Task InitializeAsync_Throws_WhenAbnChecksumInvalid()
+    public async Task InitializeAsync_Throws_WhenTaxApplicableWithNonPositiveRate()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         var svc = CreateService();
 
-        var request = ValidRequest() with { Abn = "12345678901" };
+        var request = ValidRequest() with { IsTaxApplicable = true, TaxRate = 0m };
         await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
     }
-#else
-    [Fact]
-    public async Task InitializeAsync_AllowsAbnChecksumInvalid_InDebugBuild()
-    {
-        // ABN checksum validation is disabled in Debug builds (see SetupService.Validate)
-        // so developers can complete setup without a real, checksum-valid ABN.
-        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
-        var svc = CreateService();
-
-        var request = ValidRequest() with { Abn = "12345678901" };
-        await svc.InitializeAsync(request, Ct);
-    }
-#endif
 
     [Fact]
-    public async Task InitializeAsync_ForcesGstCodesNull_WhenNotRegistered()
+    public async Task InitializeAsync_ForcesTaxFieldsNull_WhenNotApplicable()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
@@ -103,19 +95,21 @@ public class SetupServiceTests : TestBase
 
         var request = ValidRequest() with
         {
-            IsGstRegistered = false,
-            AnnualFeeGstCode = GstCode.Gst,
-            AttendanceFeeGstCode = GstCode.Gst
+            IsTaxApplicable = false,
+            TaxRate = 10m,
+            AnnualFeeTaxCode = TaxCode.Taxable,
+            AttendanceFeeTaxCode = TaxCode.Taxable
         };
         await svc.InitializeAsync(request, Ct);
 
         await _settingsRepo.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s.IsGstRegistered == false && s.AnnualFeeGstCode == null && s.AttendanceFeeGstCode == null),
+            Arg.Is<Settings>(s => s!.IsTaxApplicable == false && s.TaxRate == null
+                && s.AnnualFeeTaxCode == null && s.AttendanceFeeTaxCode == null),
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task InitializeAsync_PersistsGstCodes_WhenRegistered()
+    public async Task InitializeAsync_PersistsTaxFields_WhenApplicable()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
@@ -124,14 +118,16 @@ public class SetupServiceTests : TestBase
 
         var request = ValidRequest() with
         {
-            IsGstRegistered = true,
-            AnnualFeeGstCode = GstCode.Gst,
-            AttendanceFeeGstCode = GstCode.GstFree
+            IsTaxApplicable = true,
+            TaxRate = 15m,
+            AnnualFeeTaxCode = TaxCode.Taxable,
+            AttendanceFeeTaxCode = TaxCode.TaxExempt
         };
         await svc.InitializeAsync(request, Ct);
 
         await _settingsRepo.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s.IsGstRegistered && s.AnnualFeeGstCode == GstCode.Gst && s.AttendanceFeeGstCode == GstCode.GstFree),
+            Arg.Is<Settings>(s => s!.IsTaxApplicable && s.TaxRate == 15m
+                && s.AnnualFeeTaxCode == TaxCode.Taxable && s.AttendanceFeeTaxCode == TaxCode.TaxExempt),
             Arg.Any<CancellationToken>());
     }
 
@@ -199,7 +195,7 @@ public class SetupServiceTests : TestBase
         await svc.InitializeAsync(request, Ct);
 
         await _settingsRepo.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s.OrganizationName == "Test Org" && s.AnnualFee == 75m),
+            Arg.Is<Settings>(s => s!.OrganizationName == "Test Org" && s.AnnualFee == 75m),
             Arg.Any<CancellationToken>());
     }
 
@@ -228,18 +224,173 @@ public class SetupServiceTests : TestBase
         await svc.InitializeAsync(request, Ct);
 
         await _settingsRepo.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s.Theme == requestedTheme),
+            Arg.Is<Settings>(s => s!.Theme == requestedTheme),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(8)]
+    public async Task InitializeAsync_Throws_WhenAuditRetentionYearsOutOfRange(int years)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var request = ValidRequest() with { AuditRetentionYears = years };
+        await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
+    }
+
+    [Fact]
+    public async Task InitializeAsync_PersistsDefaultAuditRetentionYears_WhenNotSpecified()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        await svc.InitializeAsync(ValidRequest(), Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s!.AuditRetentionYears == 1),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(7)]
+    public async Task InitializeAsync_PersistsRequestedAuditRetentionYears(int years)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        var request = ValidRequest() with { AuditRetentionYears = years };
+        await svc.InitializeAsync(request, Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s!.AuditRetentionYears == years),
+            Arg.Any<CancellationToken>());
+    }
+
+    // --- Queued accounts / opening balances (spec 017) ---
+
+    [Fact]
+    public async Task InitializeAsync_CreatesNoAccounts_WhenQueuedAccountsEmpty()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        await svc.InitializeAsync(ValidRequest(), Ct);
+
+        await _accountService.DidNotReceive().CreateAsync(
+            Arg.Any<string>(), Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitializeAsync_PostsNoOpeningBalances_WhenQueuedOpeningBalancesEmpty()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        await svc.InitializeAsync(ValidRequest(), Ct);
+
+        await _openingBalanceService.DidNotReceive().RecordOpeningBalancesAsync(
+            Arg.Any<RecordOpeningBalancesRequest>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitializeAsync_CreatesEachQueuedAccount()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        _accountService.CreateAsync(Arg.Any<string>(), Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns(ci => new Account
+            {
+                Id = Guid.NewGuid(),
+                Name = ci.ArgAt<string>(0),
+                Type = ci.ArgAt<Core.Enums.AccountType>(1),
+                IsBankAccount = ci.ArgAt<bool>(2)
+            });
+        var svc = CreateService();
+
+        var request = ValidRequest() with
+        {
+            QueuedAccounts =
+            [
+                new QueuedAccountRequest(Guid.NewGuid(), "Community Bank Account", Core.Enums.AccountType.Asset, true),
+                new QueuedAccountRequest(Guid.NewGuid(), "Merchandise Income", Core.Enums.AccountType.Income, false)
+            ]
+        };
+        await svc.InitializeAsync(request, Ct);
+
+        await _accountService.Received(1).CreateAsync("Community Bank Account", Core.Enums.AccountType.Asset, true, Arg.Any<CancellationToken>());
+        await _accountService.Received(1).CreateAsync("Merchandise Income", Core.Enums.AccountType.Income, false, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitializeAsync_ResolvesQueuedAccountClientId_ToItsRealAccountId_BeforePosting()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var realAccountId = Guid.NewGuid();
+        var clientId = Guid.NewGuid();
+        _accountService.CreateAsync("Community Bank Account", Core.Enums.AccountType.Asset, true, Arg.Any<CancellationToken>())
+            .Returns(new Account { Id = realAccountId, Name = "Community Bank Account", Type = Core.Enums.AccountType.Asset, IsBankAccount = true });
+        var svc = CreateService();
+
+        var request = ValidRequest() with
+        {
+            QueuedAccounts = [new QueuedAccountRequest(clientId, "Community Bank Account", Core.Enums.AccountType.Asset, true)],
+            QueuedOpeningBalances = [new OpeningBalanceEntry { AccountId = clientId, Amount = 500m }],
+            OpeningBalanceAsAtDate = new DateTime(2026, 7, 1)
+        };
+        await svc.InitializeAsync(request, Ct);
+
+        await _openingBalanceService.Received(1).RecordOpeningBalancesAsync(
+            Arg.Is<RecordOpeningBalancesRequest>(r =>
+                r!.AsAtDate == new DateTime(2026, 7, 1)
+                && r.Entries.Count == 1
+                && r.Entries[0].AccountId == realAccountId // resolved from clientId, not the raw ClientId
+                && r.Entries[0].Amount == 500m),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitializeAsync_PassesThroughExistingAccountReference_Unchanged()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var existingAccountId = Guid.NewGuid(); // not a QueuedAccounts ClientId — an already-real account
+        var svc = CreateService();
+
+        var request = ValidRequest() with
+        {
+            QueuedOpeningBalances = [new OpeningBalanceEntry { AccountId = existingAccountId, Amount = 200m }]
+        };
+        await svc.InitializeAsync(request, Ct);
+
+        await _openingBalanceService.Received(1).RecordOpeningBalancesAsync(
+            Arg.Is<RecordOpeningBalancesRequest>(r =>
+                r!.Entries.Count == 1 && r.Entries[0].AccountId == existingAccountId && r.Entries[0].Amount == 200m),
             Arg.Any<CancellationToken>());
     }
 
     private static SetupRequest ValidRequest() => new(
         OrganizationName: "Test Org",
-        Abn: "51824753556",
         AnnualFee: 75m,
         AttendanceFee: 5m,
         MembershipRenewalMonth: 1,
-        IsGstRegistered: false,
-        AnnualFeeGstCode: null,
-        AttendanceFeeGstCode: null,
+        IsTaxApplicable: false,
+        TaxRate: null,
+        AnnualFeeTaxCode: null,
+        AttendanceFeeTaxCode: null,
         Theme: Theme.Dark);
 }

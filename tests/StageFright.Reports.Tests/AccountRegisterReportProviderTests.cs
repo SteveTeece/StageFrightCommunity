@@ -48,7 +48,7 @@ public class AccountRegisterReportProviderTests
         _gl.GetByDateRangeAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<Transaction>>(new[] { t1, t2 }.ToList()));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         var rows = result.Sections.SelectMany(s => s.Rows).ToList();
         // First row should be Jan 1 (earlier date)
@@ -69,7 +69,7 @@ public class AccountRegisterReportProviderTests
                 MakeTransaction(catId, "Dues", 30m, 0, new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc)),
             }.ToList()));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
         var rows = result.Sections.SelectMany(s => s.Rows).ToList();
 
         // After credit 100: balance = 100 (credit side)
@@ -85,7 +85,7 @@ public class AccountRegisterReportProviderTests
         _gl.GetByDateRangeAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<Transaction>>(Array.Empty<Transaction>().ToList()));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.NotNull(result);
         Assert.Equal("Account Register", result.Title);
@@ -102,7 +102,7 @@ public class AccountRegisterReportProviderTests
         filters.Set("dateFrom", "2026-03-01");
         filters.Set("dateTo", "2026-09-30");
 
-        await _sut.GenerateAsync(filters);
+        await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         await _gl.Received().GetByDateRangeAsync(
             new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc),
@@ -117,7 +117,7 @@ public class AccountRegisterReportProviderTests
         _gl.GetByDateRangeAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<Transaction>>(Array.Empty<Transaction>().ToList()));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.Contains(result.Columns, c => c.Header.Contains("Balance", StringComparison.OrdinalIgnoreCase));
     }

@@ -19,9 +19,10 @@ public partial class SettingsPage : ComponentBase
     // Lazy-render flags: each tab's content is only instantiated when the tab is first shown.
     // This prevents multiple tab components from accessing the shared DbContext concurrently.
     internal bool GeneralShown;
-    internal bool GstShown;
+    internal bool TaxShown;
     internal bool EventTypesShown;
     internal bool BackupShown;
+    internal bool CommitteeShown;
 
     protected override void OnInitialized()
     {
@@ -35,9 +36,10 @@ public partial class SettingsPage : ComponentBase
             // The Categories tab is retired — chart-of-accounts management lives at /finance/accounts.
             DefaultTabIndex = TabQuery?.ToLowerInvariant() switch
             {
-                "gst" => 1,
+                "tax" => 1,
                 "event-types" => 2,
                 "backup" => 3,
+                "committee" => 4,
                 _ => 0
             };
             Logger.LogDebug("SettingsPage: DefaultTabIndex={DefaultTabIndex}", DefaultTabIndex);
@@ -45,9 +47,10 @@ public partial class SettingsPage : ComponentBase
             // Eagerly show only the default-active tab; all others render lazily on first click.
             switch (DefaultTabIndex)
             {
-                case 1: GstShown = true; break;
+                case 1: TaxShown = true; break;
                 case 2: EventTypesShown = true; break;
                 case 3: BackupShown = true; break;
+                case 4: CommitteeShown = true; break;
                 default: GeneralShown = true; break;
             }
 
@@ -65,9 +68,10 @@ public partial class SettingsPage : ComponentBase
     // callback that can be missed in the MAUI WebView). Blazor automatically calls
     // StateHasChanged after an EventCallback, so no manual call is needed.
     internal void OnGeneralClicked()    { GeneralShown    = true; NavToTab("general"); }
-    internal void OnGstClicked()        { GstShown        = true; NavToTab("gst"); }
+    internal void OnTaxClicked()        { TaxShown        = true; NavToTab("tax"); }
     internal void OnEventTypesClicked() { EventTypesShown = true; NavToTab("event-types"); }
     internal void OnBackupClicked()     { BackupShown     = true; NavToTab("backup"); }
+    internal void OnCommitteeClicked()  { CommitteeShown  = true; NavToTab("committee"); }
 
     private void NavToTab(string key) =>
         Nav.NavigateTo($"/settings?tab={key}", replace: true);

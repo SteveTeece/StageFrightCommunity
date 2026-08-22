@@ -164,7 +164,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
 
         // Working provider can generate successfully
         var provider = registry.GetProvider("working-report");
-        var result = await provider!.GenerateAsync(new ReportFilterValues());
+        var result = await provider!.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
         Assert.Equal("Working", result.Title);
     }
 
@@ -177,13 +177,13 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
             MakeMember("Alice", MemberStatus.Active, isDeleted: false),
             MakeMember("Bob", MemberStatus.Inactive, isDeleted: false),
             MakeMember("Charlie", MemberStatus.Active, isDeleted: true));
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var provider = new MemberListReportProvider(new MemberRepository(_db), new AgeCalculationService());
         var filters = new ReportFilterValues();
         filters.Set("memberStatus", "Active");
 
-        var result = await provider.GenerateAsync(filters);
+        var result = await provider.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         var names = result.Sections.SelectMany(s => s.Rows).Select(r => r.Cells[0]).ToList();
         Assert.Contains("Alice", names);
@@ -199,19 +199,19 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
         var activeMember = MakeMember("Active Member", MemberStatus.Active, isDeleted: false);
         var archivedMember = MakeMember("Archived Member", MemberStatus.Inactive, isDeleted: true);
         _db.Members.AddRange(activeMember, archivedMember);
-        _db.CommitteeMemberships.AddRange(
-            new CommitteeMembership { Id = Guid.NewGuid(), MemberId = activeMember.Id, Year = 2026, Position = "Chair", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new CommitteeMembership { Id = Guid.NewGuid(), MemberId = archivedMember.Id, Year = 2025, Position = "Treasurer", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow });
-        await _db.SaveChangesAsync();
+        _db.CommitteePositionRecords.AddRange(
+            new CommitteePositionRecord { Id = Guid.NewGuid(), MemberId = activeMember.Id, Year = 2026, Position = "Chair", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new CommitteePositionRecord { Id = Guid.NewGuid(), MemberId = archivedMember.Id, Year = 2025, Position = "Treasurer", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow });
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var provider = new CommitteeReportProvider(
-            new CommitteeMembershipRepository(_db),
+            new CommitteePositionRecordRepository(_db),
             new MemberRepository(_db));
 
         var filters = new ReportFilterValues();
         filters.Set("memberFilter", "Active Only");
 
-        var result = await provider.GenerateAsync(filters);
+        var result = await provider.GenerateAsync(filters, TestContext.Current.CancellationToken);
         var names = result.Sections.SelectMany(s => s.Rows).Select(r => r.Cells[2]).ToList();
 
         Assert.Contains("Active Member", names);
@@ -226,7 +226,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
         var catRepo = new AccountRepository(_db);
         var memberRepo = new MemberRepository(_db);
         var feeRepo = new FeeRepository(_db);
-        var committeeRepo = new CommitteeMembershipRepository(_db);
+        var committeeRepo = new CommitteePositionRecordRepository(_db);
 
         return new ReportProviderRegistry(
             new IReportProvider[]

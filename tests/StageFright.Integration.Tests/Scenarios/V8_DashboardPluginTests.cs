@@ -29,7 +29,7 @@ public sealed class V8_DashboardPluginTests
     {
         var svc = BuildDashboardService();
 
-        var tiles = await svc.GetTilesAsync();
+        var tiles = await svc.GetTilesAsync(TestContext.Current.CancellationToken);
 
         // Members=10, Rehearsals=20, Finance=40 — all DisplayOrder < 100
         var coreTiles = tiles.Where(t => t.DisplayOrder < 100).ToList();
@@ -41,7 +41,7 @@ public sealed class V8_DashboardPluginTests
     {
         var svc = BuildDashboardService();
 
-        var tiles = await svc.GetTilesAsync();
+        var tiles = await svc.GetTilesAsync(TestContext.Current.CancellationToken);
 
         var orders = tiles.Select(t => t.DisplayOrder).ToList();
         Assert.Equal(orders.OrderBy(x => x).ToList(), orders);
@@ -51,10 +51,10 @@ public sealed class V8_DashboardPluginTests
     public async Task LoadTileAsync_MembersTile_ReturnsNavigableTileData()
     {
         var svc = BuildDashboardService();
-        var tiles = await svc.GetTilesAsync();
+        var tiles = await svc.GetTilesAsync(TestContext.Current.CancellationToken);
         var membersTile = tiles.Single(t => t.TileId == "members");
 
-        var result = await svc.LoadTileAsync(membersTile);
+        var result = await svc.LoadTileAsync(membersTile, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Data);
@@ -65,10 +65,10 @@ public sealed class V8_DashboardPluginTests
     public async Task LoadTileAsync_RehearsalsTile_ReturnsNavigableTileData()
     {
         var svc = BuildDashboardService();
-        var tiles = await svc.GetTilesAsync();
+        var tiles = await svc.GetTilesAsync(TestContext.Current.CancellationToken);
         var tile = tiles.Single(t => t.TileId == "rehearsals");
 
-        var result = await svc.LoadTileAsync(tile);
+        var result = await svc.LoadTileAsync(tile, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsSuccess);
         Assert.Equal("/rehearsals", result.Data!.NavigateRoute);
@@ -78,10 +78,10 @@ public sealed class V8_DashboardPluginTests
     public async Task LoadTileAsync_FinanceTile_ReturnsNavigableTileData()
     {
         var svc = BuildDashboardService();
-        var tiles = await svc.GetTilesAsync();
+        var tiles = await svc.GetTilesAsync(TestContext.Current.CancellationToken);
         var tile = tiles.Single(t => t.TileId == "finance");
 
-        var result = await svc.LoadTileAsync(tile);
+        var result = await svc.LoadTileAsync(tile, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsSuccess);
         Assert.Equal("/finance", result.Data!.NavigateRoute);
@@ -92,7 +92,7 @@ public sealed class V8_DashboardPluginTests
     {
         var svc = BuildDashboardService();
 
-        var tiles = await svc.GetTilesAsync();
+        var tiles = await svc.GetTilesAsync(TestContext.Current.CancellationToken);
 
         var cashFlow = tiles.Single(t => t.TileId == "finance-cashflow");
         var trend = tiles.Single(t => t.TileId == "rehearsals-attendance-trend");
@@ -107,7 +107,7 @@ public sealed class V8_DashboardPluginTests
     {
         var svc = BuildDashboardService();
 
-        var tiles = await svc.GetTilesAsync();
+        var tiles = await svc.GetTilesAsync(TestContext.Current.CancellationToken);
 
         var membersTile = tiles.Single(t => t.TileId == "members");
         Assert.Equal(DashboardTileSize.OneByOne, membersTile.TileSize);
@@ -139,8 +139,8 @@ public sealed class V8_DashboardPluginTests
         var svc = new DashboardService([slowProvider, fastProvider], NullLogger<DashboardService>.Instance);
 
         // Start both loads simultaneously
-        var slowTask = svc.LoadTileAsync(slowProvider);
-        var fastTask = svc.LoadTileAsync(fastProvider);
+        var slowTask = svc.LoadTileAsync(slowProvider, TestContext.Current.CancellationToken);
+        var fastTask = svc.LoadTileAsync(fastProvider, TestContext.Current.CancellationToken);
 
         // Fast tile should complete before slow tile
         var fastResult = await fastTask;
@@ -161,7 +161,7 @@ public sealed class V8_DashboardPluginTests
             .ThrowsAsync(new InvalidOperationException("Database error"));
 
         var svc = BuildDashboardService(extraProviders: [throwingProvider]);
-        var tiles = await svc.GetTilesAsync();
+        var tiles = await svc.GetTilesAsync(TestContext.Current.CancellationToken);
 
         var membersTile = tiles.Single(t => t.TileId == "members");
         var brokenTile = tiles.Single(t => t.TileId == "broken");
@@ -196,7 +196,7 @@ public sealed class V8_DashboardPluginTests
         var testProvider = new TestTileProvider();
         var svc = BuildDashboardService(extraProviders: [testProvider]);
 
-        var tiles = await svc.GetTilesAsync();
+        var tiles = await svc.GetTilesAsync(TestContext.Current.CancellationToken);
 
         var extensionTiles = tiles.Where(t => t.DisplayOrder >= 100).ToList();
         Assert.Contains(extensionTiles, t => t.TileId == "test-tile");
@@ -208,7 +208,7 @@ public sealed class V8_DashboardPluginTests
         var testProvider = new TestTileProvider();
         var svc = new DashboardService([testProvider], NullLogger<DashboardService>.Instance);
 
-        var result = await svc.LoadTileAsync(testProvider);
+        var result = await svc.LoadTileAsync(testProvider, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsSuccess);
         Assert.Contains("Test Metric", result.Data!.Metrics.Keys);
@@ -220,7 +220,7 @@ public sealed class V8_DashboardPluginTests
         var testProvider = new TestTileProvider();
         var svc = BuildDashboardService(extraProviders: [testProvider]);
 
-        var tiles = await svc.GetTilesAsync();
+        var tiles = await svc.GetTilesAsync(TestContext.Current.CancellationToken);
 
         var trend = tiles.Single(t => t.TileId == "rehearsals-attendance-trend");
         var plugin = tiles.Single(t => t.TileId == "test-tile");
@@ -237,7 +237,7 @@ public sealed class V8_DashboardPluginTests
         var testProvider = new TestTileProvider();
         var svc = BuildDashboardService(extraProviders: [testProvider]);
 
-        var tiles = await svc.GetTilesAsync();
+        var tiles = await svc.GetTilesAsync(TestContext.Current.CancellationToken);
         var tileList = tiles.ToList();
 
         var testIndex = tileList.FindIndex(t => t.TileId == "test-tile");

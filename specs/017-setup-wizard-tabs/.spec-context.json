@@ -1,0 +1,1197 @@
+{
+  "workflow": "speckit",
+  "specName": "setup wizard tabs",
+  "branch": "017-setup-wizard-tabs",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-20T14:05:17.021Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-20T14:12:06.012Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-20T14:57:00.942Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-20T15:05:20.066Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-20T15:05:26.180Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-20T15:06:37.437Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-21T01:43:56.714Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-21T02:03:46.820Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-21T02:07:43.546Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T02:11:50.486Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T02:16:45.021Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T02:18:39.650Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T02:21:11.467Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T02:22:53.289Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T02:34:24.099Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T02:34:24.848Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T02:34:25.299Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T02:55:00.607Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T02:55:01.015Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T02:55:01.431Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T02:58:59.853Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T02:59:00.890Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T03:03:51.353Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T03:03:51.713Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T03:28:31.460Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T03:28:32.448Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T03:28:32.865Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T03:28:33.304Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T03:28:33.729Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T03:36:17.693Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T03:44:27.895Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T03:47:38.449Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T03:47:38.889Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T04:18:10.107Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T04:18:10.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T04:18:10.774Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T04:18:11.189Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T04:18:11.614Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T04:53:20.202Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T07:13:03.684Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T07:38:17.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T07:38:17.720Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T07:41:37.787Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T07:51:53.291Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T07:51:53.567Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:10:01.042Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:20:58.447Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:20:58.668Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:25:00.815Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:55:01.781Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:55:02.095Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:55:02.355Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T08:55:02.584Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T09:17:08.128Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T09:17:08.317Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T09:17:08.522Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T09:17:08.734Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T09:41:42.680Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T050",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T09:41:42.894Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T09:59:16.519Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T09:59:16.834Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T053",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-21T09:59:17.071Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-21T09:59:17.482Z"
+    }
+  ],
+  "livingSpecs": {
+    "loaded": [
+      "settings",
+      "app-host",
+      "finance"
+    ],
+    "synced": [
+      "settings"
+    ]
+  },
+  "coverage": {
+    "FR-001": {
+      "title": "Setup wizard MUST present its settings as a single screen with a tab strip",
+      "tasks": [
+        "T016",
+        "T017",
+        "T018",
+        "T019",
+        "T020",
+        "T021"
+      ]
+    },
+    "FR-002": {
+      "title": "Each tab groups logically related settings; no 1-2-setting tabs",
+      "tasks": [
+        "T016",
+        "T017",
+        "T018",
+        "T019",
+        "T020",
+        "T021"
+      ]
+    },
+    "FR-003": {
+      "title": "Tabs navigable both by direct click and by Next",
+      "tasks": [
+        "T021"
+      ]
+    },
+    "FR-004": {
+      "title": "Next MUST NOT advance past a tab whose own required fields fail validation",
+      "tasks": [
+        "T021"
+      ]
+    },
+    "FR-005": {
+      "title": "Last tab MUST be a review tab displaying every value read-only",
+      "tasks": [
+        "T020",
+        "T021"
+      ]
+    },
+    "FR-006": {
+      "title": "Review tab MUST display queued roles/accounts as bordered list boxes",
+      "tasks": [
+        "T045",
+        "T046"
+      ]
+    },
+    "FR-007": {
+      "title": "Every list box anywhere in the app MUST be a bordered list (app-wide convention)",
+      "tasks": [
+        "T002",
+        "T052"
+      ]
+    },
+    "FR-008": {
+      "title": "Finish MUST validate all tabs and create queued items together in one submission",
+      "tasks": [
+        "T008",
+        "T021",
+        "T031",
+        "T037"
+      ]
+    },
+    "FR-009": {
+      "title": "Committee roles added one at a time via a + control"
+    },
+    "FR-010": {
+      "title": "Added roles shown in a bordered list box, removable before finishing"
+    },
+    "FR-011": {
+      "title": "Blank or duplicate (case-insensitive) title rejected",
+      "tasks": [
+        "T041"
+      ]
+    },
+    "FR-012": {
+      "title": "Chart of Accounts tab offers the same fields as the standalone add-account control",
+      "tasks": [
+        "T003",
+        "T030"
+      ]
+    },
+    "FR-013": {
+      "title": "Queued account held in wizard state, not created until Finish",
+      "tasks": [
+        "T008",
+        "T030",
+        "T031"
+      ]
+    },
+    "FR-014": {
+      "title": "Duplicate account name (queued or persisted) rejected same as standalone page",
+      "tasks": [
+        "T003",
+        "T030"
+      ]
+    },
+    "FR-015": {
+      "title": "Adding an account is optional, never blocks finishing setup"
+    },
+    "FR-016": {
+      "title": "Add-account fields/validation are a single shared experience (immediate vs deferred)",
+      "tasks": [
+        "T003",
+        "T006",
+        "T030"
+      ]
+    },
+    "FR-017": {
+      "title": "Opening Balances tab covers every eligible existing + queued account",
+      "tasks": [
+        "T035"
+      ]
+    },
+    "FR-018": {
+      "title": "Opening balance entries deferred, posted together at Finish",
+      "tasks": [
+        "T008",
+        "T035",
+        "T037"
+      ]
+    },
+    "FR-019": {
+      "title": "Opening-balance experience is shared: immediate-post on the standalone page, deferred on the wizard tab"
+    },
+    "FR-020": {
+      "title": "Opening Balances tab stays in sync with Chart of Accounts tab additions/removals"
+    },
+    "FR-022": {
+      "title": "Theme is a dropdown selector, applies immediately",
+      "tasks": [
+        "T049"
+      ]
+    },
+    "FR-023": {
+      "title": "Every other yes/no setting is a checkbox, not a toggle switch",
+      "tasks": [
+        "T049"
+      ]
+    },
+    "FR-024": {
+      "title": "Regrouping into tabs preserves every field, rule, and default"
+    },
+    "FR-026": {
+      "title": "Debug seeder must include opening balances for the accounts it seeds",
+      "tasks": [
+        "T036"
+      ]
+    },
+    "FR-021": {
+      "title": "Finish blocked unless opening balances posted or sample data selected",
+      "tests": [
+        "SetupWizardTests.cs::Finish_Blocked_When_NoBalanceEntered_AndSampleDataUnselected",
+        "SetupWizardTests.cs::Finish_Succeeds_When_BalanceEntered",
+        "SetupWizardTests.cs::Finish_Succeeds_When_SampleDataSelected_AndNoBalanceEntered"
+      ]
+    },
+    "FR-025": {
+      "title": "Sample-data checkbox is debug-build-only and lives on the review tab",
+      "tasks": [
+        "T020",
+        "T021"
+      ]
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 12,
+    "projectedTasks": 22,
+    "scopeSignal": "larger",
+    "verdict": "normal"
+  },
+  "context": [
+    "living spec: settings",
+    "living spec: app-host",
+    "area: src/StageFright.UI/Pages/Setup/SetupWizard.razor(.cs), SetupFormModel.cs",
+    "constraint: reuse the Tabs/Tab BlazorBootstrap component already used by FinancePage.razor",
+    "constraint: RadzenDataGrid for tabular data per CLAUDE.md data-grid standards",
+    "constraint: no @code blocks — every .razor pairs with a .razor.cs",
+    "living spec: finance",
+    "area: src/StageFright.UI/Pages/Finance/OpeningBalancesWizard.razor(.cs), ChartOfAccountsPage.razor(.cs), OpeningBalanceService.cs, AccountService.cs",
+    "constraint: Fee/Payment/Transaction/JournalEntry are immutable and financially exempt from soft-delete; opening balances post as one ACID GL transaction with a balancing Opening Balance Equity plug"
+  ],
+  "intent": "Replace the setup wizard's linear five-step flow with a single tabbed screen, logically regrouped, that also lets coordinators queue committee roles, Chart of Accounts entries, and opening balances (all bordered list boxes, an app-wide convention) and review everything before finishing — opening balances are mandatory unless sample data is loaded instead.",
+  "expectations": [
+    "Settings page's own General tab (post-setup theme toggle) is unchanged — only the /setup wizard is in scope",
+    "No change to what data first-run setup captures, validates, or defaults — only how it's grouped/entered"
+  ],
+  "approach": "Extract the standalone Chart of Accounts add-account form and the standalone Opening Balances entry table into shared, callback-driven components; the setup wizard rebuilds on the Finance-screen Tabs/Tab component, feeding those shared components a queuing callback instead of the standalone pages' immediate-persist callback, and SetupService composes IAccountService/IOpeningBalanceService at Finish so everything is created together.",
+  "decisions": [
+    {
+      "decision": "Reuse the Tabs/Tab BlazorBootstrap component from FinancePage.razor",
+      "why": "issue explicitly references the Finance screen tabs; already proven in this codebase",
+      "rejected": "RadzenTabs or hand-rolled nav-tabs markup"
+    },
+    {
+      "decision": "Shared AddAccountForm/OpeningBalanceEntryForm take an OnSubmit callback, no internal mode flag",
+      "why": "keeps persistence knowledge out of the shared component (Dependency Inversion); standalone pages keep immediate-create/post unchanged, wizard queues instead",
+      "rejected": "an internal Immediate/Deferred enum branching inside the shared component"
+    },
+    {
+      "decision": "SetupRequest/SetupService.InitializeAsync compose IAccountService and IOpeningBalanceService directly",
+      "why": "neither service depends on a Settings record existing, so Finish stays one service call, matching how CommitteeOfficeHolderTitles already works",
+      "rejected": "UI layer calling AccountService/OpeningBalanceService itself after SetupService.InitializeAsync returns"
+    },
+    {
+      "decision": "BorderedListBox is one generic shared component, not a CSS class applied four times",
+      "why": "FR-007 requires one true application-wide convention; a shared component guarantees it in code including overflow/scroll handling",
+      "rejected": "a shared .bordered-list-box CSS class applied independently in each of the four places"
+    },
+    {
+      "decision": "Debug seeder posts an explicit OpeningBalance entry for its seeded accounts, before its historical-transaction simulation",
+      "why": "FR-026 requires seeded accounts to have opening balances specifically; todays seeder only reaches balances via simulated years of transactions with no OpeningBalance journal entry",
+      "rejected": "leaving the seeder unchanged and relying on simulated history alone"
+    },
+    {
+      "decision": "Nested EditForm/form composition (AddAccountForm/OpeningBalanceEntryForm inside the wizards outer EditForm) is accepted as-is; bUnit cannot simulate a DOM submit through the inner form (its form tag collapses when bUnit builds its AngleSharp DOM), so wizard-level tests invoke the child tabs OnAdd/OnSubmit callback parameters directly instead of simulating nested-form submission.",
+      "why": "Real Blazor rendering builds the DOM via direct primitive operations (not HTML-string reparsing), so nested forms resolve correctly in the live app via native nearest-form-ancestor targeting; the collapse is a bUnit test-harness limitation, not a production bug, and reworking the shared-component composition to avoid nesting was out of scope and would have undermined the shared-callback design research.md already committed to.",
+      "rejected": "Restructuring ChartOfAccountsTab/OpeningBalancesTab to not wrap AddAccountForm/OpeningBalanceEntryForm in their own EditForm when embedded in the wizard"
+    }
+  ],
+  "step_summaries": {
+    "tasks": {
+      "summary": "53 tasks across 9 phases (Setup, Foundational, US1, US4, US2, US5, US3, US6, Polish); phase order follows the real dependency chain (US4 pulled ahead of US2 since the P1 opening-balances story needs the P2 accounts tab first) rather than raw spec priority"
+    }
+  },
+  "currentTask": "T053",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Confirmed baseline dotnet build (0 errors) and dotnet test (1464/1464 passing across 5 projects) before any change"
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Created BorderedListBox<TItem> shared component (Items/RowTemplate/OnRemove/EmptyText) with app-wide bordered-list CSS in app.css",
+      "files": [
+        "src/StageFright.UI/Shared/BorderedListBox.razor",
+        "src/StageFright.UI/Shared/BorderedListBox.razor.cs",
+        "src/StageFright.App/wwwroot/app.css"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "Created AddAccountForm shared component + NewAccountModel (extracted from ChartOfAccountsPage's inline form); added ExistingNames param for in-component duplicate-name checking (contract gap resolved)",
+      "files": [
+        "src/StageFright.UI/Shared/AddAccountForm.razor",
+        "src/StageFright.UI/Shared/AddAccountForm.razor.cs",
+        "src/StageFright.UI/Shared/NewAccountModel.cs"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Created OpeningBalanceEntryForm shared component (folds standalone Step2+3 into one entry table+submit); moved OpeningBalanceRowModel to Shared; added AsAtDate/HasExistingOpeningBalances/SubmitButtonText params (contract gaps resolved); reconciles rows against Accounts param for FR-020 sync",
+      "files": [
+        "src/StageFright.UI/Shared/OpeningBalanceEntryForm.razor",
+        "src/StageFright.UI/Shared/OpeningBalanceEntryForm.razor.cs",
+        "src/StageFright.UI/Shared/OpeningBalanceRowModel.cs"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Extended SetupRequest with QueuedAccounts/QueuedOpeningBalances/OpeningBalanceAsAtDate; added QueuedAccountRequest record with ClientId local reference for pre-real-Guid queued-account balance entries",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/SetupRequest.cs",
+        "src/StageFright.Core/Modules/Settings/QueuedAccountRequest.cs"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Refactored ChartOfAccountsPage to consume shared AddAccountForm with immediate-create OnSubmit; removed inline markup/NewAccountModel",
+      "files": [
+        "src/StageFright.UI/Pages/Finance/ChartOfAccountsPage.razor",
+        "src/StageFright.UI/Pages/Finance/ChartOfAccountsPage.razor.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Refactored OpeningBalancesWizard to consume shared OpeningBalanceEntryForm, folding old Step2+3 into one step (Step 1 of 2: as-at date, Step 2 of 2: entry form); moved OpeningBalanceRowModel to Shared, deleted old copy",
+      "files": [
+        "src/StageFright.UI/Pages/Finance/OpeningBalancesWizard.razor",
+        "src/StageFright.UI/Pages/Finance/OpeningBalancesWizard.razor.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Extended SetupService: injected IAccountService/IOpeningBalanceService; InitializeAsync now creates queued accounts (mapping ClientId->real Id), resolves and posts queued opening balances, then runs the existing committee-title loop",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/SetupService.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "New BorderedListBoxTests.cs: RowTemplate render, OnRemove unset/set (read-only vs interactive), remove callback, EmptyText default/custom",
+      "files": [
+        "tests/StageFright.UI.Tests/Shared/BorderedListBoxTests.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "New AddAccountFormTests.cs: valid submit, blank/duplicate rejection, Asset-only bank checkbox, SubmitButtonText, form clears after submit",
+      "files": [
+        "tests/StageFright.UI.Tests/Shared/AddAccountFormTests.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "New OpeningBalanceEntryFormTests.cs: one row per account, negative amount accepted, live plug, ShowAlreadyPostedWarning gating, built request correctness, submit-disabled-when-all-zero",
+      "files": [
+        "tests/StageFright.UI.Tests/Shared/OpeningBalanceEntryFormTests.cs"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Verified ChartOfAccountsPageTests.cs's 20 existing tests pass unmodified against the AddAccountForm-based refactor (all ids preserved); added new test for the client-side ExistingNames duplicate check",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Finance/ChartOfAccountsPageTests.cs"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Rewrote OpeningBalancesWizardTests.cs for the folded 2-step flow (Step1 as-at date, Step2 entry+plug+post via shared component); removed the obsolete separate-confirm-step test since Step2 now IS confirm+post",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Finance/OpeningBalancesWizardTests.cs"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Extended SetupServiceTests.cs: empty-queue no-op coverage, each QueuedAccounts entry created, ClientId->real AccountId resolution verified before posting, existing-account reference passed through unchanged, AsAtDate passed correctly",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Updated V1_FirstRunSetupTests.cs BuildSetupService() for the new SetupService constructor (real AccountService/OpeningBalanceService against the in-memory SQLite db); also fixed 3 unplanned seam-drift call sites (SetupServiceIntegrationTests.cs, StartupBenchmarkTests.cs, V10_ThemeTests.cs)",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V1_FirstRunSetupTests.cs",
+        "tests/StageFright.Data.Tests/Settings/SetupServiceIntegrationTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/StartupBenchmarkTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V10_ThemeTests.cs"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "New GeneralAppearanceTab.razor(.cs): org name + theme RadzenSwitch, relocated unchanged; made SetupFormModel public (was internal) since it's now a Blazor [Parameter] type",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor.cs",
+        "src/StageFright.UI/Pages/Setup/SetupFormModel.cs"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "New MembershipFeesTab.razor(.cs): fees, renewal month, audit retention, relocated unchanged",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/MembershipFeesTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/MembershipFeesTab.razor.cs"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "New SalesTaxTab.razor(.cs): tax applicability/rate/per-fee treatment + toggle-off clearing, relocated unchanged",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/SalesTaxTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/SalesTaxTab.razor.cs"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "New CommitteeTab.razor(.cs): AGM month, seat target, legacy comma-separated titles textbox, relocated unchanged (US5 upgrades later)",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/CommitteeTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/CommitteeTab.razor.cs"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "New ReviewTab.razor(.cs): basic dl read-only summary of every setting + relocated debug seed-data checkbox (satisfies FR-025 as-is)",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/ReviewTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/ReviewTab.razor.cs"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Rewrote SetupWizard.razor(.cs): hosts BlazorBootstrap Tabs/Tab (5 tabs), OnClick-based lazy-render + tab-tracking matching SettingsPage's established MAUI WebView pattern; Next validates whole model then ShowTabByIndexAsync; OnInvalidSubmit surfaces a banner error; Finish orchestration unchanged. Fixed a Tabs/BlazorBootstrap.Tabs namespace collision and ErrorBoundary/EditForm Context ambiguity discovered via build",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "Rewrote SetupWizardTests.cs for the tabbed flow: tab order, Next gating, direct-tab-click nav preserving values, Finish composing SetupRequest, seeding overlay, invalid-finish banner. Discovered bUnit needs both tabs.initialize and tabs.show JS mocks",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "Rewrote SetupWizardNoSeederTests.cs for tabbed navigation (4 Next clicks to Review instead of step counting)",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardNoSeederTests.cs"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "Rewrote SetupWizardThemeTests.cs for tabbed navigation to Review; same theme-toggle/Finish-composition assertions",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardThemeTests.cs"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "New GeneralAppearanceTabTests.cs; discovered EditForm.ChildContent is generic (RenderFragment<EditContext>), needs manual RenderTreeBuilder construction, not bUnit's AddChildContent<T> shorthand",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/GeneralAppearanceTabTests.cs"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "New MembershipFeesTabTests.cs: all fields bind, 12 renewal-month options",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/MembershipFeesTabTests.cs"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "New SalesTaxTabTests.cs: rate/treatment fields conditional on applicability, toggle-off clears them",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/SalesTaxTabTests.cs"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "New CommitteeTabTests.cs (legacy shape): all fields bind, 12 AGM-month options",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/CommitteeTabTests.cs"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "New ReviewTabTests.cs (basic shape): summarises org name/fees, seed-data checkbox conditional on DebugSeederAvailable, checkbox invokes SeedWithTestDataChanged",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/ReviewTabTests.cs"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Created ChartOfAccountsTab hosting AddAccountForm in queuing mode + BorderedListBox of queued accounts",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/ChartOfAccountsTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/ChartOfAccountsTab.razor.cs"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "Wired ChartOfAccountsTab into SetupWizard at position 5 (before Review); added queue state + add/remove handlers; Finish composes SetupRequest.QueuedAccounts",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "New ChartOfAccountsTabTests.cs: add/duplicate(real+queued)/blank/remove, Asset-only bank flag, empty-queue text",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/ChartOfAccountsTabTests.cs"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "SetupWizardTests.cs updated for 6-tab flow; added Finish-composes-QueuedAccounts, empty-queue-finishes-normally, and remove-excludes-from-finish tests; fixed collateral SetupWizardNoSeederTests/SetupWizardThemeTests for the inserted tab",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardNoSeederTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardThemeTests.cs"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "Extended V1_FirstRunSetupTests.cs: InitializeAsync with QueuedAccounts creates each real Account; re-init guard prevents duplicate creation on a second call",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V1_FirstRunSetupTests.cs"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "New OpeningBalancesTab.razor(.cs): hosts OpeningBalanceEntryForm with existing+queued accounts (queued shown via placeholder Account keyed by ClientId), own as-at-date input defaulting to today, ShowAlreadyPostedWarning=false",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/OpeningBalancesTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/OpeningBalancesTab.razor.cs"
+      ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "DebugDataSeeder now injects IOpeningBalanceService and posts an explicit OpeningBalance journal entry (000 to Community Bank Account, as at 2025-01-01) before SeedHistoricalTransfersAsync runs",
+      "files": [
+        "src/StageFright.App/Seeding/DebugDataSeeder.cs"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "Wired OpeningBalancesTab into SetupWizard at position 6 (after Chart of Accounts, before Review); queued-balance state + FR-020 removal cleanup; Finish composes QueuedOpeningBalances+AsAtDate and is blocked unless a balance is queued or sample data is selected (FR-021); fixed collateral SetupWizardTests/NoSeeder/Theme test files",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardNoSeederTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardThemeTests.cs"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "New OpeningBalancesTabTests.cs: rows for existing+queued accounts, negative amount, plug recalculation, row sync on QueuedAccounts add/remove, OnSubmit request composition, as-at-date default",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/OpeningBalancesTabTests.cs"
+      ]
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "SetupWizardTests.cs: added Finish-blocked-no-balance-no-sampledata, Finish-succeeds-with-balance, Finish-succeeds-with-sampledata-no-balance tests (FR-021)",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs"
+      ]
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "Extended V1_FirstRunSetupTests.cs: InitializeAsync with QueuedOpeningBalances posts one balanced OpeningBalance JournalEntry; queued-account ClientId reference resolves to its real just-created AccountId",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V1_FirstRunSetupTests.cs"
+      ]
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "CommitteeTab: replaced comma-separated textbox with type-and-+-to-add widget + BorderedListBox<string>; rejects blank/case-insensitive duplicates",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/CommitteeTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/CommitteeTab.razor.cs"
+      ]
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "Wired CommitteeTab's queue into SetupWizard; Finish composes CommitteeOfficeHolderTitles directly from the List<string> queue instead of comma-splitting",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs"
+      ]
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "CommitteeTabTests.cs rewritten for +/- widget: blank/duplicate rejected, remove works, 5-titles addable/removable with no dupes/blanks (SC-004)",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/CommitteeTabTests.cs"
+      ]
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "SetupWizardTests.cs: Finish composes queued title list from the +/- widget; empty queue still finishes with no titles",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs"
+      ]
+    },
+    "T045": {
+      "status": "DONE",
+      "did": "ReviewTab: replaced plain-text committee-titles line with a read-only BorderedListBox summary; added a new read-only BorderedListBox for queued Chart of Accounts entries (FR-006); removed now-dead SetupFormModel.CommitteeOfficeHolderTitlesText",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/ReviewTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/ReviewTab.razor.cs",
+        "src/StageFright.UI/Pages/Setup/SetupFormModel.cs"
+      ]
+    },
+    "T046": {
+      "status": "DONE",
+      "did": "Passed queued-roles list (US5) and queued-accounts list (US4) into ReviewTab as parameters from SetupWizard",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor"
+      ]
+    },
+    "T047": {
+      "status": "DONE",
+      "did": "ReviewTabTests.cs: roles and accounts render as bordered lists (not plain text), empty-state text, read-only (no remove buttons)",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/ReviewTabTests.cs"
+      ]
+    },
+    "T048": {
+      "status": "DONE",
+      "did": "SetupWizardTests.cs: every tab's entered value (org name, committee title, queued account) visible on Review without navigating back (US3 Acceptance Scenario 1)",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs"
+      ]
+    },
+    "T049": {
+      "status": "DONE",
+      "did": "GeneralAppearanceTab: replaced RadzenSwitch theme toggle with a Light/Dark <select> dropdown applying via ThemeProvider immediately on change (FR-022); verified SalesTaxTab/ReviewTab booleans already render as checkboxes (FR-023, no change needed)",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor.cs"
+      ]
+    },
+    "T050": {
+      "status": "DONE",
+      "did": "SetupWizardThemeTests.cs and GeneralAppearanceTabTests.cs updated: [role=switch] selectors replaced with #themeSelect dropdown selection pattern; same Finish-composition assertions",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardThemeTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/GeneralAppearanceTabTests.cs"
+      ]
+    },
+    "T051": {
+      "status": "DONE",
+      "did": "Reconciled contracts/setup-wizard-ui-contract.md: added AddAccountForm.ExistingNames, OpeningBalanceEntryForm's AsAtDate/HasExistingOpeningBalances/SubmitButtonText params; fixed id=seedData (was seed-data-checkbox), id=ob-tab-as-at-date wording, removed nonexistent btn-back reference, added id=themeSelect",
+      "files": [
+        "specs/017-setup-wizard-tabs/contracts/setup-wizard-ui-contract.md"
+      ]
+    },
+    "T052": {
+      "status": "DONE",
+      "did": "Added List box standards note to CLAUDE.md's Tech Stack & Conventions, mirroring Data grid standards",
+      "files": [
+        "CLAUDE.md"
+      ]
+    },
+    "T053": {
+      "status": "DONE",
+      "did": "Full verification: dotnet build (0 errors) and dotnet test --no-build across all 5 projects: 1535 passed, 0 failed, 0 skipped (Core 562, UI 512, Data 148, Integration 175, Reports 138). Manual Debug-build Load-sample-data GUI walkthrough NOT performed this session (see concern)."
+    }
+  },
+  "concerns": [
+    {
+      "note": "T008s SetupService constructor change had 3 call sites tasks.md did not anticipate (SetupServiceIntegrationTests.cs, StartupBenchmarkTests.cs, V10_ThemeTests.cs) beyond the 2 planned (T014, T015) - fixed inline as Wave-2 reconciliation per the implement skills seam-drift step",
+      "step": "implement"
+    },
+    {
+      "note": "SetupFormModel.CommitteeOfficeHolderTitlesText is now write-only dead weight (nothing binds to it since CommitteeTab moved to the +/- widget) until Phase 7/T045 updates ReviewTab off it; Review currently always shows the titles line as \"None\" regardless of what is queued, an intentional interim gap per tasks.md phase ordering, fixed next phase.",
+      "step": "implement"
+    },
+    {
+      "note": "T036/T053 note a manual Debug-build Load-sample-data GUI walkthrough (confirming Finance > Trial Balance shows the seeded OpeningBalance entry) that was NOT performed this session -- launching/driving the full MAUI WinUI app plus a 2-year seed run was judged disproportionate given the code path is already covered by OpeningBalanceServices existing test suite and T040s identical-shape integration tests. Recommend the user do this one manual check before treating US2s debug-seeder behavior as fully verified.",
+      "step": "implement"
+    }
+  ],
+  "last_action": "All 53 tasks complete (T001-T053). Full solution build/test green: 1535 tests, 0 failures. Spec 017 implementation done; manual Load-sample-data GUI walkthrough still outstanding (see concern).",
+  "telemetryInstanceId": "d07d346e-b06e-47b7-b101-c89451a62504",
+  "verified": [
+    {
+      "what": "Phase 4 (US4) checkpoint: full solution build + full test suite",
+      "command": "dotnet build && dotnet test",
+      "result": "0 build errors; 1506 tests passed across all 5 projects (Core 562, UI 485, Data 148, Integration 173, Reports 138)",
+      "warnings": []
+    },
+    {
+      "what": "Phase 5 (US2) checkpoint: full solution build + full test suite",
+      "command": "dotnet build && dotnet test",
+      "result": "0 build errors; 1520 tests passed across all 5 projects (Core 562, UI 497, Data 148, Integration 175, Reports 138)",
+      "warnings": []
+    },
+    {
+      "what": "Phase 6 (US5) checkpoint: full solution build + full test suite",
+      "command": "dotnet build && dotnet test",
+      "result": "0 build errors; 1529 tests passed across all 5 projects (Core 562, UI 506, Data 148, Integration 175, Reports 138)",
+      "warnings": []
+    },
+    {
+      "what": "Phase 7 (US3) checkpoint: full solution build + full test suite",
+      "command": "dotnet build && dotnet test",
+      "result": "0 build errors; 1535 tests passed across all 5 projects (Core 562, UI 512, Data 148, Integration 175, Reports 138)",
+      "warnings": []
+    },
+    {
+      "what": "Phase 8 (US6) checkpoint: full solution build + full test suite — all six user stories now independently functional",
+      "command": "dotnet build && dotnet test",
+      "result": "0 build errors; 1535 tests passed across all 5 projects (Core 562, UI 512, Data 148, Integration 175, Reports 138)",
+      "warnings": []
+    },
+    {
+      "what": "Final full verification: dotnet build + dotnet test --no-build across all 5 projects, all 53 tasks complete",
+      "command": "dotnet build && dotnet test --no-build",
+      "result": "0 build errors, 950 pre-existing warnings (none introduced by this feature); 1535 tests passed, 0 failed, 0 skipped (Core 562, UI 512, Data 148, Integration 175, Reports 138)",
+      "warnings": []
+    }
+  ]
+}

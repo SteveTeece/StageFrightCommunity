@@ -45,7 +45,7 @@ public class TrialBalanceReportProviderTests
         SetupBalanceTotals(1000m, 1000m);
         SetupAccounts();
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.NotNull(result);
         Assert.Equal("Trial Balance", result.Title);
@@ -57,7 +57,7 @@ public class TrialBalanceReportProviderTests
         SetupBalanceTotals(500m, 500m);
         SetupAccounts();
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.Contains(result.Sections, s => s.Heading == "Assets");
     }
@@ -68,7 +68,7 @@ public class TrialBalanceReportProviderTests
         SetupBalanceTotals(200m, 200m);
         SetupAccounts(MakeAccount(Guid.NewGuid(), "Dues", AccountType.Income, "1000"));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.Contains(result.Sections, s => s.Heading == "Income");
     }
@@ -79,7 +79,7 @@ public class TrialBalanceReportProviderTests
         SetupBalanceTotals(300m, 300m);
         SetupAccounts(MakeAccount(Guid.NewGuid(), "Hall", AccountType.Expense, "2000"));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.Contains(result.Sections, s => s.Heading == "Expenses");
     }
@@ -90,7 +90,7 @@ public class TrialBalanceReportProviderTests
         SetupBalanceTotals(0m, 0m);
         SetupAccounts();
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.Contains(result.Columns, c => c.Header == "Debit");
         Assert.Contains(result.Columns, c => c.Header == "Credit");
@@ -103,7 +103,7 @@ public class TrialBalanceReportProviderTests
         SetupAccounts();
 
         var ex = await Assert.ThrowsAsync<GLBalanceException>(
-            () => _sut.GenerateAsync(CurrentYearFilters()));
+            () => _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken));
 
         Assert.NotNull(ex);
     }
@@ -115,7 +115,7 @@ public class TrialBalanceReportProviderTests
         SetupAccounts();
 
         var ex = await Assert.ThrowsAsync<GLBalanceException>(
-            () => _sut.GenerateAsync(CurrentYearFilters()));
+            () => _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken));
 
         // FR-034 exact message format
         Assert.Contains("GL Balance Verification Failed", ex.Message);
@@ -130,7 +130,7 @@ public class TrialBalanceReportProviderTests
         SetupBalanceTotals(100.00m, 100.00m);
         SetupAccounts();
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.NotNull(result);
     }
@@ -141,7 +141,7 @@ public class TrialBalanceReportProviderTests
         SetupBalanceTotals(500m, 500m);
         SetupAccounts();
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.NotNull(result.GrandTotal);
         Assert.Contains("500.00", result.GrandTotal!.Cells[1]); // total debits

@@ -55,7 +55,7 @@ public class MemberAccountSummaryReportProviderTests
         SetupOutstandingFees(m1.Id, MakeOutstandingFee(50m, Today.AddDays(10)));
         SetupOutstandingFees(m2.Id, MakeOutstandingFee(30m, Today.AddDays(10)));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.Contains(result.Sections, s => s.Heading != null && s.Heading.Contains("Alice"));
         Assert.Contains(result.Sections, s => s.Heading != null && s.Heading.Contains("Bob"));
@@ -72,7 +72,7 @@ public class MemberAccountSummaryReportProviderTests
 
         var filters = CurrentYearFilters();
         filters.Set("includeArchived", "true");
-        var result = await _sut.GenerateAsync(filters);
+        var result = await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         Assert.Contains(result.Sections, s => s.Heading != null && s.Heading.Contains("Old Member"));
     }
@@ -86,7 +86,7 @@ public class MemberAccountSummaryReportProviderTests
         SetupMemberTransactions(archived.Id);
         SetupOutstandingFees(archived.Id, MakeOutstandingFee(10m, Today.AddDays(-5)));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.DoesNotContain(result.Sections, s => s.Heading != null && s.Heading.Contains("Old Member"));
     }
@@ -104,7 +104,7 @@ public class MemberAccountSummaryReportProviderTests
         SetupOutstandingFees(paidUp.Id);
         SetupOutstandingFees(owing.Id, MakeOutstandingFee(20m, Today.AddDays(10)));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.DoesNotContain(result.Sections, s => s.Heading != null && s.Heading.Contains("Paid Up"));
         Assert.Contains(result.Sections, s => s.Heading != null && s.Heading.Contains("Still Owing"));
@@ -119,7 +119,7 @@ public class MemberAccountSummaryReportProviderTests
         SetupMemberTransactions(inCredit.Id);
         SetupOutstandingFees(inCredit.Id);
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.Empty(result.Sections);
     }
@@ -135,7 +135,7 @@ public class MemberAccountSummaryReportProviderTests
         // Original fee was 100, 60 already settled via GL — only 40 remains, 90+ days overdue
         SetupOutstandingFees(memberId, MakeOutstandingFee(40m, Today.AddDays(-100)));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Partial Payer"));
         Assert.Equal("Current: 0.00", section.SummaryRow!.Cells[1]);
@@ -157,7 +157,7 @@ public class MemberAccountSummaryReportProviderTests
             MakeOutstandingFee(5m, Today.AddDays(-100), feeDate: Today.AddMonths(-6)),
             MakeOutstandingFee(5m, Today.AddDays(10), feeDate: Today.AddMonths(-1)));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Credit Holder"));
         Assert.Equal("Current: 5.00", section.SummaryRow!.Cells[1]);
@@ -178,7 +178,7 @@ public class MemberAccountSummaryReportProviderTests
             MakeOutstandingFee(5m, Today.AddDays(-45)),   // 60 days
             MakeOutstandingFee(7m, Today.AddDays(-95)));  // 90+
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Bucket Tester"));
         Assert.Equal("Current: 4.00", section.SummaryRow!.Cells[1]);
@@ -200,7 +200,7 @@ public class MemberAccountSummaryReportProviderTests
             MakeDebitTransaction(memberId, new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), "Fee accrued", 100m));
         SetupOutstandingFees(memberId, MakeOutstandingFee(100m, Today.AddDays(10)));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("New Debtor"));
         Assert.Equal("Opening Balance", section.Rows[0].Cells[0]);
@@ -219,7 +219,7 @@ public class MemberAccountSummaryReportProviderTests
             MakeCreditTransaction(memberId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), "Payment", 40m));
         SetupOutstandingFees(memberId, MakeOutstandingFee(60m, Today.AddDays(10)));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Partial Settler"));
         Assert.Equal("100.00", section.Rows[0].Cells[4]);
@@ -239,7 +239,7 @@ public class MemberAccountSummaryReportProviderTests
             MakeDebitTransaction(memberId, Today.AddMonths(-1), "Unpaid fee accrual", 30m, unpaidFeeId));
         SetupOutstandingFees(memberId, MakeOutstandingFee(30m, Today.AddDays(10), feeId: unpaidFeeId));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Mixed History"));
         var descriptions = section.Rows.SelectMany(r => r.Cells).ToList();
@@ -258,7 +258,7 @@ public class MemberAccountSummaryReportProviderTests
             MakeCreditTransaction(memberId, Today.AddMonths(-1), "Overpayment credit", 5m));
         SetupOutstandingFees(memberId, MakeOutstandingFee(10m, Today.AddDays(10)));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Adjustment Case"));
         var descriptions = section.Rows.SelectMany(r => r.Cells).ToList();
@@ -281,7 +281,7 @@ public class MemberAccountSummaryReportProviderTests
             MakeDebitTransaction(memberId, Today.AddMonths(-1), "Unpaid fee accrual", 30m, unpaidFeeId));
         SetupOutstandingFees(memberId, MakeOutstandingFee(30m, Today.AddDays(10), feeId: unpaidFeeId));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Reconciled Debtor"));
         Assert.Equal("Opening Balance", section.Rows[0].Cells[0]);
@@ -305,7 +305,7 @@ public class MemberAccountSummaryReportProviderTests
         var oldest = MakeTransaction(memberId, new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc), "Oldest");
         SetupMemberTransactions(memberId, newest, oldest, mid);
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Ledger Reader"));
         Assert.Equal("Opening Balance", section.Rows[0].Cells[0]);
@@ -320,7 +320,7 @@ public class MemberAccountSummaryReportProviderTests
     public async Task GenerateAsync_ReportTitle_IsMemberAccountSummary()
     {
         SetupMembers();
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
         Assert.Equal("Member Account Summary", result.Title);
     }
 
@@ -333,7 +333,7 @@ public class MemberAccountSummaryReportProviderTests
         SetupMemberTransactions(memberId);
         SetupOutstandingFees(memberId, MakeOutstandingFee(20m, Today.AddDays(-45)));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.Equal(["Date / Item", "Description", "Debit", "Credit", "Balance"],
             result.Columns.Select(c => c.Header));
@@ -356,7 +356,7 @@ public class MemberAccountSummaryReportProviderTests
         SetupOutstandingFees(m1.Id, MakeOutstandingFee(50m, Today.AddDays(10)));
         SetupOutstandingFees(m2.Id, MakeOutstandingFee(30m, Today.AddDays(10)));
 
-        var result = await _sut.GenerateAsync(CurrentYearFilters());
+        var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.Equal(6, result.SummaryColumns?.Count);
         Assert.Equal(["Member", "Current", "30 Days", "60 Days", "90+ Days", "Balance"],

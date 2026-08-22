@@ -72,12 +72,12 @@ public sealed class V14_ExpensesTransfersTests : IAsyncLifetime
             BankAccountId = SystemAccounts.CashId,
             ExpenseAccountId = VenueHireAccountId,
             Payee = "Town Hall", Description = "March rehearsal venue"
-        });
+        }, TestContext.Current.CancellationToken);
 
-        var entry = Assert.Single(await _db.JournalEntries.ToListAsync());
+        var entry = Assert.Single(await _db.JournalEntries.ToListAsync(cancellationToken: TestContext.Current.CancellationToken));
         Assert.Equal(JournalEntryType.ExpensePayment, entry.Type);
 
-        var lines = await _db.Transactions.Where(t => t.JournalEntryId == entry.Id).ToListAsync();
+        var lines = await _db.Transactions.Where(t => t.JournalEntryId == entry.Id).ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(2, lines.Count);
 
         var debit = Assert.Single(lines, t => t.DebitAmount > 0m);
@@ -100,11 +100,11 @@ public sealed class V14_ExpensesTransfersTests : IAsyncLifetime
             Date = Today, Amount = 120.50m,
             BankAccountId = SystemAccounts.CashId,
             ExpenseAccountId = VenueHireAccountId
-        });
+        }, TestContext.Current.CancellationToken);
 
         var glRepo = new GLRepository(_db);
-        Assert.Equal(-120.50m, await glRepo.GetAccountBalanceAsync(SystemAccounts.CashId, Today));
-        Assert.Equal(120.50m, await glRepo.GetAccountBalanceAsync(VenueHireAccountId, Today));
+        Assert.Equal(-120.50m, await glRepo.GetAccountBalanceAsync(SystemAccounts.CashId, Today, TestContext.Current.CancellationToken));
+        Assert.Equal(120.50m, await glRepo.GetAccountBalanceAsync(VenueHireAccountId, Today, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -117,10 +117,10 @@ public sealed class V14_ExpensesTransfersTests : IAsyncLifetime
             Date = Today, Amount = 50m,
             BankAccountId = VenueHireAccountId, // not a bank account
             ExpenseAccountId = VenueHireAccountId
-        }));
+        }, TestContext.Current.CancellationToken));
 
-        Assert.Equal(0, await _db.JournalEntries.CountAsync());
-        Assert.Equal(0, await _db.Transactions.CountAsync());
+        Assert.Equal(0, await _db.JournalEntries.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(0, await _db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -133,10 +133,10 @@ public sealed class V14_ExpensesTransfersTests : IAsyncLifetime
             Date = Today, Amount = 0m,
             BankAccountId = SystemAccounts.CashId,
             ExpenseAccountId = VenueHireAccountId
-        }));
+        }, TestContext.Current.CancellationToken));
 
-        Assert.Equal(0, await _db.JournalEntries.CountAsync());
-        Assert.Equal(0, await _db.Transactions.CountAsync());
+        Assert.Equal(0, await _db.JournalEntries.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(0, await _db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     // --- Combined journey ---
@@ -149,23 +149,23 @@ public sealed class V14_ExpensesTransfersTests : IAsyncLifetime
             Date = Today, Amount = 99.95m,
             BankAccountId = SystemAccounts.CashId,
             ExpenseAccountId = VenueHireAccountId
-        });
+        }, TestContext.Current.CancellationToken);
 
         await BuildBankDepositService().RecordDepositAsync(new RecordBankDepositRequest
         {
             Date = Today, Amount = 250m,
             ToAccountId = SavingsAccountId
-        });
+        }, TestContext.Current.CancellationToken);
 
-        var totalDebits = await _db.Transactions.SumAsync(t => t.DebitAmount);
-        var totalCredits = await _db.Transactions.SumAsync(t => t.CreditAmount);
+        var totalDebits = await _db.Transactions.SumAsync(t => t.DebitAmount, cancellationToken: TestContext.Current.CancellationToken);
+        var totalCredits = await _db.Transactions.SumAsync(t => t.CreditAmount, cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(totalDebits, totalCredits);
 
-        var entries = await _db.JournalEntries.ToListAsync();
+        var entries = await _db.JournalEntries.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(2, entries.Count);
         foreach (var entry in entries)
         {
-            var lines = await _db.Transactions.Where(t => t.JournalEntryId == entry.Id).ToListAsync();
+            var lines = await _db.Transactions.Where(t => t.JournalEntryId == entry.Id).ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
             Assert.Equal(lines.Sum(t => t.DebitAmount), lines.Sum(t => t.CreditAmount));
         }
     }
