@@ -90,10 +90,11 @@
             {
                 <div class="btn-theme-toggle"
                      aria-label="@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? "Switch to dark mode" : "Switch to light mode")">
-                    <span>@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? "Light" : "Dark")</span>
+                    <label for="themeToggleSwitch" class="btn-theme-toggle-label">Theme</label>
                     <RadzenSwitch Name="themeToggleSwitch"
                                   Value="@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Dark)"
                                   Change="@(async (bool _) => await ToggleThemeAsync())" />
+                    <span>@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? "Light" : "Dark")</span>
                 </div>
             }
         </nav>
