@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "agm scheduling",
   "branch": "019-agm-scheduling",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,34 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-23T01:39:21.856Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-23T03:12:23.813Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T03:21:28.048Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T03:24:35.001Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T03:27:05.291Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
@@ -83,5 +111,29 @@
     "Editing/rescheduling a saved AGM's date",
     "Changes to the recorded-AGM report's PDF layout (two-column/checkbox styling) — that shipped in spec 018 and is reused as-is",
     "Changes to the special-election (mid-term replacement) workflow"
-  ]
+  ],
+  "approach": "Split IAgmService into ScheduleAsync (new, date+notes only) and a re-shaped RecordAsync(agmId, request) that completes an existing scheduled AGM, mirroring RehearsalService.ScheduleAsync + AttendanceService.RecordBatchAsync. A new AnnualGeneralMeeting.IsRecorded flag tracks state directly on the row; a new IAgmRepository.ExistsForYearAsync enforces one non-archived AGM per calendar year; the existing spec-018 AgmAttendanceSheetService/renderer is extended with an IsRecorded branch to print a blank all-unchecked report for scheduled AGMs.",
+  "decisions": [
+    {
+      "decision": "Add AnnualGeneralMeeting.IsRecorded (bool), not a nullable proxy field",
+      "why": "Spec explicitly requires state tracked directly on the row, not inferred from attendance-row presence; an AGM recorded with zero active members must still read as recorded (Edge Case 5)",
+      "rejected": "Reusing Rehearsal.StoredAttendanceRate.HasValue-style nullable-proxy pattern"
+    },
+    {
+      "decision": "Enforce one-AGM-per-calendar-year via an app-level ValidationException check (IAgmRepository.ExistsForYearAsync), not a DB unique constraint",
+      "why": "Matches this codebase existing convention (RecordAsync duplicate-assignment check is app-level too); single-user desktop SQLite app makes the race window irrelevant",
+      "rejected": "A computed/persisted year column with a unique index"
+    },
+    {
+      "decision": "Scheduled-AGM attendance sheet uses currently-active members (GetByStatusAsync), not active-as-of-the-AGM-date",
+      "why": "Spec Edge Cases requires the printed roster to reflect membership at print time, not at scheduling time, since the AGM date can be far in the future",
+      "rejected": "GetActiveAsOfAsync(agm.Date), matching AttendanceRollService pattern exactly"
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Full plan.md/research.md/data-model.md/contracts/ written: schedule-then-record split for IAgmService mirroring Rehearsals, new IsRecorded flag, ExistsForYearAsync uniqueness guard, extended AgmAttendanceSheetService for blank scheduled-AGM reports.",
+      "key_finding": "AgmAttendanceSheetService.GenerateAsync and AgmList/AgmDetail print handlers already exist from spec 018 and can be extended with an IsRecorded branch rather than building a new report pipeline."
+    }
+  }
 }
