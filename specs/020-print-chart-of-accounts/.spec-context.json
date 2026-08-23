@@ -1,0 +1,97 @@
+{
+  "workflow": "speckit",
+  "specName": "print chart of accounts",
+  "branch": "020-print-chart-of-accounts",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-23T05:56:46.456Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T06:01:27.082Z"
+    }
+  ],
+  "coverage": {
+    "FR-001": {
+      "title": "Chart of Accounts screen provides a Print Chart of Accounts button"
+    },
+    "FR-002": {
+      "title": "Screen provides an off-by-default option to include current balances"
+    },
+    "FR-003": {
+      "title": "Print produces a document listing every active account"
+    },
+    "FR-004": {
+      "title": "Document groups accounts by type in fixed order"
+    },
+    "FR-005": {
+      "title": "Accounts within a type section ordered by account number ascending"
+    },
+    "FR-006": {
+      "title": "Each row shows number, name, and system/bank indicator"
+    },
+    "FR-007": {
+      "title": "Balance shown per account when include-balances is on"
+    },
+    "FR-008": {
+      "title": "Printed balance matches the Chart of Accounts screen's figure"
+    },
+    "FR-009": {
+      "title": "No balance column when include-balances is off"
+    },
+    "FR-010": {
+      "title": "Per-account balance error shows an indicator without blocking the rest"
+    },
+    "FR-011": {
+      "title": "Archived accounts excluded from the document"
+    },
+    "FR-012": {
+      "title": "No combined grand-total balance figure"
+    },
+    "FR-013": {
+      "title": "Generated document opens automatically"
+    },
+    "FR-014": {
+      "title": "Report also available from the central Reports menu with CSV export"
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 7,
+    "projectedTasks": 12,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "context": [
+    "living spec: finance",
+    "living spec: reports-pipeline",
+    "living spec: app-host",
+    "area: src/StageFright.UI/Pages/Finance/ChartOfAccountsPage.razor(.cs)",
+    "area: src/StageFright.Reports/Providers/*.cs (existing IReportProvider pattern, e.g. TrialBalanceReportProvider)",
+    "constraint: per-account balance failures isolated (HasError indicator), never break the rest of the report",
+    "constraint: reports contributed only through IReportProvider, auto-discovered via DI — no menu code needed",
+    "constraint: Print/CSV hand off to the OS default app via a temp file, never an in-app viewer"
+  ],
+  "intent": "Let a user print the chart of accounts, grouped by account type/number, with an optional current-balance column",
+  "expectations": [
+    "Archived accounts are not included in the printed report",
+    "No combined grand-total balance figure is shown",
+    "No new persisted entity or migration — reuses the existing Account entity and balance calculation"
+  ],
+  "livingSpecs": {
+    "loaded": [
+      "finance",
+      "reports-pipeline",
+      "app-host"
+    ]
+  }
+}
