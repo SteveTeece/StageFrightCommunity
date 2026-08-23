@@ -15,4 +15,7 @@ public class AgmRepository : SoftDeletableBaseRepository<AnnualGeneralMeeting>, 
             .OrderByDescending(a => a.Date)
             .ToListAsync(ct);
     }
+
+    public async Task<bool> ExistsForYearAsync(int year, CancellationToken ct = default) =>
+        await _db.AnnualGeneralMeetings.AnyAsync(a => a.Date.Year == year, ct);
 }

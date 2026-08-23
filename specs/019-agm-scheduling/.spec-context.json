@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "agm scheduling",
   "branch": "019-agm-scheduling",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -67,9 +67,287 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-23T03:45:28.584Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-23T03:54:20.959Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:13:26.961Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:14:46.461Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:14:46.692Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:18:35.870Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:18:36.113Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:37.799Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:38.016Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:38.229Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:38.471Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:38.765Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:38.981Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:39.191Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:39.393Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:39.606Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:53.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:53.472Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:53.708Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:53.916Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:54.127Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:54.336Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:54.589Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:31:54.825Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:39:53.689Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:39:54.239Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:39:54.813Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:39:55.367Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:39:55.931Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:39:56.494Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:44:03.276Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:44:03.428Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:45:27.465Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:57:32.767Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T04:57:32.922Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T04:57:33.227Z"
     }
   ],
-  "last_action": "living specs evaluated — skipped (not configured)",
+  "last_action": "All 33/33 tasks complete — 1620/1620 tests pass, live-app walkthrough confirmed every acceptance scenario, one real bug (stale nav labels) found and fixed",
   "coverage": {
     "FR-001": {
       "title": "Schedule an AGM with just date and optional notes",
@@ -80,6 +358,11 @@
         "T013",
         "T017",
         "T018"
+      ],
+      "tests": [
+        "AgmServiceTests.cs::ScheduleAsync_PersistsDateNotesAndIsRecordedFalse",
+        "ScheduleAgmTests.cs",
+        "V19_AgmSchedulingTests.cs"
       ]
     },
     "FR-002": {
@@ -112,6 +395,10 @@
         "T019",
         "T027",
         "T028"
+      ],
+      "tests": [
+        "AgmServiceTests.cs::RecordAsync_ThrowsValidationException_WhenAgmDateInFuture",
+        "RecordAgmTests.cs::FutureDatedAgm_ShowsGuardMessage"
       ]
     },
     "FR-006": {
@@ -148,6 +435,10 @@
       "tasks": [
         "T029",
         "T030"
+      ],
+      "tests": [
+        "AgmAttendanceSheetServiceTests.cs::GenerateAsync_ScheduledAgm_Returns_ActiveMembers_SortedBySurname_AllUnchecked",
+        "V19_AgmSchedulingTests.cs"
       ]
     },
     "FR-011": {
@@ -188,6 +479,11 @@
         "T017",
         "T018",
         "T031"
+      ],
+      "tests": [
+        "AgmRepositoryTests.cs",
+        "AgmServiceTests.cs::ScheduleAsync_ThrowsValidationException_AndPersistsNothing_WhenYearAlreadyHasAnAgm",
+        "V19_AgmSchedulingTests.cs"
       ]
     }
   },
@@ -226,6 +522,16 @@
       "decision": "Scheduled-AGM attendance sheet uses currently-active members (GetByStatusAsync), not active-as-of-the-AGM-date",
       "why": "Spec Edge Cases requires the printed roster to reflect membership at print time, not at scheduling time, since the AGM date can be far in the future",
       "rejected": "GetActiveAsOfAsync(agm.Date), matching AttendanceRollService pattern exactly"
+    },
+    {
+      "decision": "Merged US1 (T017 ScheduleAsync) and US2 (T027 reshaped RecordAsync) service/interface changes into single edits rather than strictly sequential waves",
+      "why": "IAgmService interface change forces AgmService to implement both new methods simultaneously to keep the build compiling at every step — the dotnet-build-on-edit hook made this concrete",
+      "rejected": "Editing AgmService twice (once per story) while leaving it non-compiling in between"
+    },
+    {
+      "decision": "Fixed DebugDataSeeder.cs, V18_AgmWorkflowTests.cs, and EventsMenuItemProvider.cs even though none are named as numbered tasks",
+      "why": "All three broke (compile error or stale UI label) as a direct consequence of the RecordAsync/RecordAgmRequest signature change and page renames tasks.md does mandate; CLAUDE.md requires a full green build/test and consistent docs/UI",
+      "rejected": "Leaving them broken/stale since tasks.md did not explicitly enumerate them"
     }
   ],
   "step_summaries": {
@@ -235,6 +541,264 @@
     },
     "tasks": {
       "summary": "33 tasks across Setup, Foundational, and 3 user-story phases (US1 Schedule P1, US2 Record P1, US3 Print P2) plus Polish; full requirement coverage FR-001..FR-015"
+    },
+    "implement": {
+      "summary": "Schedule-then-record AGM workflow shipped: IAgmService.ScheduleAsync (new) + reshaped RecordAsync(agmId, request); AnnualGeneralMeeting.IsRecorded flag with backfill migration; ExistsForYearAsync one-per-calendar-year guard; AgmAttendanceSheetService prints a blank all-unchecked report for scheduled AGMs from the active roster. All 15 FRs and 6 SCs verified via 34 new/updated automated tests plus a live CDP walkthrough that also caught and fixed a stale nav-menu label bug."
     }
-  }
+  },
+  "currentTask": "T033",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Confirmed baseline dotnet build and full test suite green (1586 tests) before any change"
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Added IsRecorded bool to AnnualGeneralMeeting entity",
+      "files": [
+        "src/StageFright.Core/Entities/AnnualGeneralMeeting.cs"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "Added IsRecorded ProtoMember(10) to AnnualGeneralMeetingBackupDto",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/Backup/AnnualGeneralMeetingBackupDto.cs"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Generated EF migration AddIsRecordedToAgm with backfill UPDATE for pre-existing rows",
+      "files": [
+        "src/StageFright.Data/Migrations/20260823041629_AddIsRecordedToAgm.cs",
+        "20260823041629_AddIsRecordedToAgm.Designer.cs",
+        "StageFrightDbContextModelSnapshot.cs"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Mapped IsRecorded in BackupService MapAgm/MapAgmFromDto",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/BackupService.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Added ExistsForYearAsync to IAgmRepository + doc fix on GetPastOrderedAsync",
+      "files": [
+        "src/StageFright.Core/Contracts/IAgmRepository.cs"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "New ScheduleAgmRequest record (Date, Notes)",
+      "files": [
+        "src/StageFright.Core/Modules/Agm/ScheduleAgmRequest.cs"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Added ScheduleAsync + changed RecordAsync signature on IAgmService",
+      "files": [
+        "src/StageFright.Core/Contracts/IAgmService.cs"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "AgmDetail branches on IsRecorded: scheduled shows badge+date/notes only, recorded keeps full view",
+      "files": [
+        "src/StageFright.UI/Pages/Events/AgmDetail.razor"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "AgmList adds Status column, renames heading/empty-state/button, Attendance shows em-dash when unrecorded",
+      "files": [
+        "src/StageFright.UI/Pages/Events/AgmList.razor"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Implemented AgmRepository.ExistsForYearAsync",
+      "files": [
+        "src/StageFright.Data/Repositories/AgmRepository.cs"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "Implemented AgmService.ScheduleAsync (year-uniqueness guard, IsRecorded=false, audit Create)",
+      "files": [
+        "src/StageFright.Core/Modules/Agm/AgmService.cs"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "New ScheduleAgm.razor/.razor.cs page at /events/agm/new",
+      "files": [
+        "src/StageFright.UI/Pages/Events/ScheduleAgm.razor",
+        "ScheduleAgm.razor.cs"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Added ScheduleAsync test cases to AgmServiceTests",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Agm/AgmServiceTests.cs"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "Rewrote RecordAsync test suite to new (Guid agmId, RecordAgmRequest) shape with not-found/already-recorded/future-date guard cases",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Agm/AgmServiceTests.cs"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "Rewrote RecordAgmTests for /events/agm/{Id}/record route with guard-message cases",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Events/RecordAgmTests.cs"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "Dropped Date/Notes from RecordAgmRequest",
+      "files": [
+        "src/StageFright.Core/Modules/Agm/RecordAgmRequest.cs"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "Changed IAgmService.RecordAsync to (Guid agmId, RecordAgmRequest, ...)",
+      "files": [
+        "src/StageFright.Core/Contracts/IAgmService.cs"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "Added per-row Record action to AgmList when !IsRecorded",
+      "files": [
+        "src/StageFright.UI/Pages/Events/AgmList.razor"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "Added Record Attendance & Elections button to AgmDetail scheduled branch",
+      "files": [
+        "src/StageFright.UI/Pages/Events/AgmDetail.razor"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "Reshaped AgmService.RecordAsync to load-then-update an existing scheduled AGM with IsRecorded/date guards",
+      "files": [
+        "src/StageFright.Core/Modules/Agm/AgmService.cs"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "Moved RecordAgm to /events/agm/{Id:guid}/record, loads existing AGM with not-found/already-recorded/future-date guards",
+      "files": [
+        "src/StageFright.UI/Pages/Events/RecordAgm.razor",
+        "RecordAgm.razor.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "New AgmRepositoryTests.cs covering ExistsForYearAsync (year match, none, archived-excluded, cross-year)",
+      "files": [
+        "tests/StageFright.Data.Tests/Repositories/AgmRepositoryTests.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "New ScheduleAgmTests.cs bUnit suite for ScheduleAgm page",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Events/ScheduleAgmTests.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Extended AgmListTests with Status column and heading/copy assertions",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Events/AgmListTests.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Extended AgmDetailTests with scheduled-vs-recorded branch assertions",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Events/AgmDetailTests.cs"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Extended AgmListTests with per-row Record action cases",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Events/AgmListTests.cs"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "Extended AgmDetailTests with Record button navigation case",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Events/AgmDetailTests.cs"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "Added IMemberRepository mock + scheduled-AGM/empty-roster/recorded-never-calls-memberRepo cases to AgmAttendanceSheetServiceTests",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Agm/AgmAttendanceSheetServiceTests.cs"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "AgmAttendanceSheetService branches GenerateAsync on IsRecorded; scheduled branch uses IMemberRepository.GetByStatusAsync(Active)",
+      "files": [
+        "src/StageFright.Core/Modules/Agm/AgmAttendanceSheetService.cs",
+        "src/StageFright.Core/Contracts/IAgmAttendanceSheetService.cs"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "New V19_AgmSchedulingTests.cs end-to-end: schedule -> print blank -> record -> print recorded -> reject same-year -> archive frees year -> schedule replacement",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V19_AgmSchedulingTests.cs"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "Full dotnet build + dotnet test across all 5 projects green: 1620 tests passing (150 Reports, 590 Core, 543 UI, 152 Data, 185 Integration)"
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "Live-app CDP walkthrough of all US1/US2/US3 acceptance scenarios and edge cases against a running dotnet run instance; found and fixed a real nav-menu label staleness bug (EventsMenuItemProvider still said Record AGM/Past AGMs)",
+      "files": [
+        "src/StageFright.Core/Modules/Events/EventsMenuItemProvider.cs",
+        "src/StageFright.UI/Pages/Events/RecordSpecialElection.razor",
+        "tests/StageFright.Core.Tests/Modules/Events/EventsMenuItemProviderTests.cs"
+      ]
+    }
+  },
+  "verified": [
+    {
+      "what": "Full solution build",
+      "command": "dotnet build",
+      "result": "0 warnings, 0 errors across all 12 projects"
+    },
+    {
+      "what": "Full test suite",
+      "command": "dotnet test",
+      "result": "1620/1620 tests passing across all 5 test projects (150 Reports, 590 Core, 543 UI, 152 Data, 185 Integration) — up from 1586 baseline"
+    },
+    {
+      "what": "Live-app manual walkthrough via WebView2 CDP",
+      "command": "dotnet run --project src/StageFright.App/ + CDP-driven navigation",
+      "result": "Schedule/print-blank/record/print-recorded/reject-duplicate-year/archive-frees-year/catch-up-past-date all confirmed working end-to-end; found and fixed a stale nav-menu label bug (EventsMenuItemProvider)",
+      "warnings": [
+        "Did not click Print live to avoid spawning an external PDF viewer process in the session — FR-014 read-only guarantee instead verified via V19 integration test asserting unchanged row counts before/after GenerateAsync calls"
+      ]
+    }
+  ]
 }
