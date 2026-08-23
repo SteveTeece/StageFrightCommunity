@@ -3,7 +3,7 @@
   "specName": "theme toggle placement",
   "branch": "021-theme-toggle-placement",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "implemented",
   "history": [
     {
       "step": "specify",
@@ -101,6 +101,21 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-23T10:50:23.692Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T11:01:20.469Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T11:01:20.469Z"
     }
   ],
   "last_action": "T001-T005+T007 done, build+1651 tests pass; T006 (manual visual verify) left open",
