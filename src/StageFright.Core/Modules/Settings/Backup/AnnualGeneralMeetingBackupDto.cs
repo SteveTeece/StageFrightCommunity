@@ -15,4 +15,5 @@ public class AnnualGeneralMeetingBackupDto
     [ProtoMember(7)] public string? DeletedBy { get; set; }
     [ProtoMember(8)] public DateTime CreatedAt { get; set; }
     [ProtoMember(9)] public DateTime UpdatedAt { get; set; }
+    [ProtoMember(10)] public bool IsRecorded { get; set; }
 }

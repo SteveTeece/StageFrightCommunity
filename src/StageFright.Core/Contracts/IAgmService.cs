@@ -6,8 +6,20 @@ namespace StageFright.Core.Contracts;
 /// <summary>Application service contract for recording and reviewing Annual General Meetings.</summary>
 public interface IAgmService
 {
-    /// <summary>Records a complete AGM (meeting, attendance, and every election) atomically.</summary>
-    Task<AnnualGeneralMeeting> RecordAsync(RecordAgmRequest request, CancellationToken ct = default);
+    /// <summary>Schedules an AGM (date + optional notes only); creates no attendance, elected
+    /// position, or committee term (FR-001, FR-002). Rejects a second non-archived AGM in the
+    /// same calendar year (FR-015).</summary>
+    /// <exception cref="Exceptions.ValidationException">Another non-archived AGM already exists
+    /// for request.Date's calendar year.</exception>
+    Task<AnnualGeneralMeeting> ScheduleAsync(ScheduleAgmRequest request, CancellationToken ct = default);
+
+    /// <summary>Records attendance and committee elections against a previously scheduled AGM
+    /// (FR-004), updating that same row.</summary>
+    /// <exception cref="Exceptions.EntityNotFoundException">agmId does not match a saved AGM.</exception>
+    /// <exception cref="Exceptions.ValidationException">The AGM's Date is still in the future
+    /// (FR-005), or it has already been recorded (FR-006), or a member is assigned more than one
+    /// committee slot from this AGM (unchanged rule).</exception>
+    Task<AnnualGeneralMeeting> RecordAsync(Guid agmId, RecordAgmRequest request, CancellationToken ct = default);
 
     /// <summary>Returns the AGM with the given id, or null if not found.</summary>
     Task<AnnualGeneralMeeting?> GetByIdAsync(Guid id, CancellationToken ct = default);

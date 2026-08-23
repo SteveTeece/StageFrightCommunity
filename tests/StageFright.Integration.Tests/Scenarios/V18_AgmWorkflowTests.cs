@@ -58,11 +58,10 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
         var agmSvc = BuildAgmService();
         var presidentTypeId = await GetBuiltInOfficeHolderTypeIdAsync("President");
 
-        // --- Record the AGM: attendance + President + one general committee member ---
+        // --- Schedule then record the AGM: attendance + President + one general committee member ---
         var agmDate = new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc);
-        var agm = await agmSvc.RecordAsync(new RecordAgmRequest(
-            Date: agmDate,
-            Notes: "Annual sitting",
+        var scheduled = await agmSvc.ScheduleAsync(new ScheduleAgmRequest(agmDate, "Annual sitting"), TestContext.Current.CancellationToken);
+        var agm = await agmSvc.RecordAsync(scheduled.Id, new RecordAgmRequest(
             AttendedMemberIds: [PresidentMemberId, GeneralMemberId],
             AllActiveMemberIds: [PresidentMemberId, GeneralMemberId, ReplacementPresidentMemberId],
             OfficeHolderAssignments: new Dictionary<Guid, Guid> { [presidentTypeId] = PresidentMemberId },
@@ -148,9 +147,9 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
         var agmSvc = BuildAgmService();
         var presidentTypeId = await GetBuiltInOfficeHolderTypeIdAsync("President");
 
-        var agm = await agmSvc.RecordAsync(new RecordAgmRequest(
-            Date: new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc),
-            Notes: "Annual sitting",
+        var scheduled = await agmSvc.ScheduleAsync(new ScheduleAgmRequest(
+            new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), "Annual sitting"), TestContext.Current.CancellationToken);
+        var agm = await agmSvc.RecordAsync(scheduled.Id, new RecordAgmRequest(
             AttendedMemberIds: [PresidentMemberId],
             AllActiveMemberIds: [PresidentMemberId, GeneralMemberId, ReplacementPresidentMemberId],
             OfficeHolderAssignments: new Dictionary<Guid, Guid> { [presidentTypeId] = PresidentMemberId },
@@ -172,9 +171,9 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
     {
         var agmSvc = BuildAgmService();
 
-        var agm = await agmSvc.RecordAsync(new RecordAgmRequest(
-            Date: new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc),
-            Notes: "Empty sitting",
+        var scheduled = await agmSvc.ScheduleAsync(new ScheduleAgmRequest(
+            new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), "Empty sitting"), TestContext.Current.CancellationToken);
+        var agm = await agmSvc.RecordAsync(scheduled.Id, new RecordAgmRequest(
             AttendedMemberIds: [],
             AllActiveMemberIds: [],
             OfficeHolderAssignments: new Dictionary<Guid, Guid>(),
@@ -189,7 +188,7 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
     // --- Helpers ---
 
     private StageFright.Core.Modules.Agm.AgmAttendanceSheetService BuildAgmAttendanceSheetService() =>
-        new(new AgmRepository(_db), new AgmAttendanceRepository(_db));
+        new(new AgmRepository(_db), new AgmAttendanceRepository(_db), new MemberRepository(_db));
 
     private AgmService BuildAgmService()
     {
