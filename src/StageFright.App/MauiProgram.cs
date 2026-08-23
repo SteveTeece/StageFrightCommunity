@@ -252,6 +252,7 @@ public static class MauiProgram
 
         // Reports module (Phase 10 + 11)
         services.AddScoped<IReportProvider, IncomeStatementReportProvider>();
+        services.AddScoped<IReportProvider, ChartOfAccountsReportProvider>();
         services.AddScoped<IReportProvider, TrialBalanceReportProvider>();
         services.AddScoped<IReportProvider, AccountRegisterReportProvider>();
         services.AddScoped<IReportProvider, MemberAccountSummaryReportProvider>();
