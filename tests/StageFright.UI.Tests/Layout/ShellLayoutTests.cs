@@ -257,13 +257,13 @@ public class ShellLayoutTests : BunitContext
     // --- Theme toggle ---
 
     [Fact]
-    public void Should_RenderThemeToggleShowingLight_When_ThemeIsLight()
+    public void Should_RenderThemeToggleInsideSidebar_When_ThemeIsLight()
     {
         AddProvider(0, new MenuItem { Title = "Dashboard", Route = "/dashboard" });
 
         var cut = Render<ShellLayout>();
 
-        Assert.Contains("Light", cut.Find(".btn-theme-toggle").TextContent);
+        Assert.Contains("Light", cut.Find(".shell-sidebar .btn-theme-toggle").TextContent);
     }
 
     [Fact]
@@ -272,7 +272,7 @@ public class ShellLayoutTests : BunitContext
         AddProvider(0, new MenuItem { Title = "Dashboard", Route = "/dashboard" });
 
         var cut = Render<ShellLayout>();
-        cut.Find(".btn-theme-toggle [role=switch]").Click();
+        cut.Find(".shell-sidebar .btn-theme-toggle [role=switch]").Click();
 
         Assert.Equal("dark", cut.Find("[data-bs-theme]").GetAttribute("data-bs-theme"));
         Assert.Contains("Dark", cut.Find(".btn-theme-toggle").TextContent);
@@ -287,6 +287,16 @@ public class ShellLayoutTests : BunitContext
         var cut = Render<ShellLayout>();
 
         Assert.Empty(cut.FindAll(".btn-theme-toggle"));
+    }
+
+    [Fact]
+    public void Should_NotRenderSeparateTopBar_When_LayoutRenders()
+    {
+        AddProvider(0, new MenuItem { Title = "Dashboard", Route = "/dashboard" });
+
+        var cut = Render<ShellLayout>();
+
+        Assert.Empty(cut.FindAll(".shell-topbar"));
     }
 
     // --- Brand ---

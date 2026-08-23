@@ -84,10 +84,8 @@
                     }
                 }
             </ul>
-        </nav>
 
-        <!-- Top bar: shared light/dark toggle (hidden on the Setup Wizard, which has its own) -->
-        <header class="shell-topbar" role="banner">
+            <!-- Theme toggle: pinned to the bottom of the sidebar (hidden on the Setup Wizard, which has its own) -->
             @if (CurrentPath != "/setup")
             {
                 <div class="btn-theme-toggle"
@@ -98,7 +96,7 @@
                                   Change="@(async (bool _) => await ToggleThemeAsync())" />
                 </div>
             }
-        </header>
+        </nav>
 
         <!-- Main content area -->
         <main class="shell-content" role="main">

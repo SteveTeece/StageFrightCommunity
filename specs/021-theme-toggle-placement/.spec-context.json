@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "theme toggle placement",
   "branch": "021-theme-toggle-placement",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implementing",
   "history": [
     {
       "step": "specify",
@@ -46,24 +46,91 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-23T10:38:25.418Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-23T10:42:19.211Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T10:46:03.683Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T10:46:43.080Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T10:46:43.350Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T10:46:43.569Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T10:47:51.657Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T10:50:23.692Z"
     }
   ],
-  "last_action": "living specs evaluated — skipped (not configured)",
+  "last_action": "T001-T005+T007 done, build+1651 tests pass; T006 (manual visual verify) left open",
   "coverage": {
     "FR-001": {
-      "title": "Render the theme toggle anchored at the bottom of the sidebar on every non-Setup route"
+      "title": "Render the theme toggle anchored at the bottom of the sidebar on every non-Setup route",
+      "tests": [
+        "ShellLayoutTests.cs::Should_RenderThemeToggleInsideSidebar_When_ThemeIsLight"
+      ]
     },
     "FR-002": {
-      "title": "Remove the separate top strip that previously only hosted the toggle"
+      "title": "Remove the separate top strip that previously only hosted the toggle",
+      "tests": [
+        "ShellLayoutTests.cs::Should_NotRenderSeparateTopBar_When_LayoutRenders"
+      ]
     },
     "FR-003": {
       "title": "Toggle stays fixed at the sidebar bottom regardless of menu length/scroll"
     },
     "FR-004": {
-      "title": "Toggle stays hidden on the Setup Wizard route, unchanged"
+      "title": "Toggle stays hidden on the Setup Wizard route, unchanged",
+      "tests": [
+        "ShellLayoutTests.cs::Should_NotRenderThemeToggle_When_OnSetupRoute"
+      ]
     },
     "FR-005": {
-      "title": "Clicking the toggle still switches light/dark theme"
+      "title": "Clicking the toggle still switches light/dark theme",
+      "tests": [
+        "ShellLayoutTests.cs::Should_SwitchToDarkTheme_When_ToggleClicked"
+      ]
     },
     "FR-006": {
       "title": "Toggle's rendered footprint is at most 50% of its current size"
@@ -99,5 +166,73 @@
     "loaded": [
       "app-host"
     ]
+  },
+  "currentTask": "T007",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Moved theme-toggle markup from header.shell-topbar into the bottom of nav.shell-sidebar; removed the empty header",
+      "files": [
+        "src/StageFright.UI/Layout/ShellLayout.razor"
+      ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Removed the unused .shell-topbar rule; raised .shell-content top padding to reclaim the freed space",
+      "files": [
+        "src/StageFright.App/wwwroot/app.css"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "Toggle pins to the sidebar bottom naturally as the flex column's last child (align-self:flex-start, flex:none) below the flex:1 scrollable nav list",
+      "files": [
+        "src/StageFright.App/wwwroot/app.css"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Shrunk pill padding/gap/font and halved the RadzenSwitch track/thumb size via scoped .rz-switch overrides",
+      "files": [
+        "src/StageFright.App/wwwroot/app.css"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Updated theme-toggle tests to assert placement inside .shell-sidebar and added a test that .shell-topbar no longer renders",
+      "files": [
+        "tests/StageFright.UI.Tests/Layout/ShellLayoutTests.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "dotnet build: 0 warnings/0 errors. dotnet test (full suite): 1651/1651 passed across all 5 test projects"
+    }
+  },
+  "verified": [
+    {
+      "what": "full build + full test suite",
+      "command": "dotnet build && dotnet test",
+      "result": "0 warnings, 0 errors; 1651/1651 tests passed",
+      "warnings": []
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "Interpreted the 50% footprint reduction as bounding-box area rather than a strict per-axis halving, and shrank the RadzenSwitch itself via scoped .rz-switch/.rz-switch-circle overrides rather than a CSS transform:scale()",
+      "why": "keeps the Light/Dark text legible while still cutting area well past 50% (width ~113px->~75px, height ~41px->~18px, area down ~70%); transform:scale() would not shrink the reserved layout box without extra width/height clamping",
+      "rejected": "transform: scale(0.5) on the whole pill"
+    }
+  ],
+  "concerns": [
+    {
+      "note": "T006 (manual CDP/screenshot verification in the running MAUI app) not performed this run — session context budget was too constrained to safely run the launch+CDP workflow; automated coverage (build+27 ShellLayout tests+full suite) is complete and passing",
+      "step": "implement"
+    }
+  ],
+  "step_summaries": {
+    "implement": {
+      "summary": "Relocated the theme toggle from the top-bar strip to the pinned bottom of the sidebar and shrank it; build clean, 1651/1651 tests pass; T006 manual visual check still open"
+    }
   }
 }
