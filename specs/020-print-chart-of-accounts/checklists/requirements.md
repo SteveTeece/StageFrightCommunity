@@ -1,0 +1,35 @@
+# Specification Quality Checklist: Print Chart of Accounts
+
+**Purpose**: Validate Companion specification completeness before planning
+**Created**: 2026-08-23
+**Feature**: [spec.md](../spec.md)
+
+## Content Quality
+
+- [x] No implementation details (languages, frameworks, APIs)
+- [x] Focused on user value and business needs
+- [x] Written for non-technical stakeholders
+- [x] All mandatory sections completed (User Scenarios, Requirements, Success Criteria)
+
+## Requirement Completeness
+
+- [x] Any [NEEDS CLARIFICATION] markers are genuine ambiguities (≤3) deferred to clarify — not unresolved guesses
+- [x] Each Functional Requirement is a single, testable MUST/SHOULD statement
+- [x] Success criteria are measurable
+- [x] Success criteria are technology-agnostic (no implementation details)
+- [x] All acceptance scenarios are defined
+- [x] Edge cases are identified
+- [x] Scope is clearly bounded
+- [x] Dependencies and assumptions identified
+
+## Feature Readiness
+
+- [x] All functional requirements have clear acceptance criteria
+- [x] User scenarios cover primary flows
+- [x] Feature meets measurable outcomes defined in Success Criteria
+- [x] No implementation details leak into the specification
+
+## Notes
+
+- No [NEEDS CLARIFICATION] markers were needed — every open question from the source issue (what "hierarchy" means, the include-balances default, the "checkbox" control, archived-account scope) had a clear, low-risk informed default, recorded under Assumptions in spec.md instead of deferred to clarify.
+- Story 3 (Reports-menu availability) is an assumed extension beyond the issue's literal text, flagged as such and explicitly droppable — reviewers should confirm it's wanted during the review-spec gate.
