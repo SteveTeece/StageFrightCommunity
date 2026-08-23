@@ -150,6 +150,29 @@ html, body {
     padding: 1rem 1.25rem 1rem calc(var(--sf-sidebar-w) + 1.25rem);
 }
 
+/* Shrink every RadzenSwitch toggle app-wide by 25% (default 3rem x 1.8rem
+   track), scaling the thumb and its checked-state offset to match. This
+   intentionally does NOT affect the sidebar's own theme toggle: the more
+   specific ".btn-theme-toggle .rz-switch" rule below already sets its own
+   (smaller, spec-mandated) size and wins on CSS specificity regardless of
+   rule order. */
+.rz-switch {
+    width: 2.25rem;
+    min-width: 2.25rem;
+    height: 1.35rem;
+}
+
+.rz-switch .rz-switch-circle:before {
+    width: .945rem;
+    height: .945rem;
+    inset-inline-start: .2025rem;
+    margin-block-start: -.4725rem;
+}
+
+.rz-switch.rz-switch-checked .rz-switch-circle:before {
+    transform: translateX(.9rem);
+}
+
 /* Theme toggle (current theme name + RadzenSwitch) — pinned to the
    bottom of the sidebar as the last flex child, below the scrollable nav
    list; shrunk to roughly a third of its former footprint. The outer pill
