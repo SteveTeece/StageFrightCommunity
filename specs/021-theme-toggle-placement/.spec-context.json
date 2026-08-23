@@ -1,0 +1,103 @@
+{
+  "workflow": "speckit",
+  "specName": "theme toggle placement",
+  "branch": "021-theme-toggle-placement",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-23T10:31:32.335Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T10:36:31.628Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-23T10:38:24.607Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T10:38:24.899Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-23T10:38:25.162Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T10:38:25.418Z"
+    }
+  ],
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "Render the theme toggle anchored at the bottom of the sidebar on every non-Setup route"
+    },
+    "FR-002": {
+      "title": "Remove the separate top strip that previously only hosted the toggle"
+    },
+    "FR-003": {
+      "title": "Toggle stays fixed at the sidebar bottom regardless of menu length/scroll"
+    },
+    "FR-004": {
+      "title": "Toggle stays hidden on the Setup Wizard route, unchanged"
+    },
+    "FR-005": {
+      "title": "Clicking the toggle still switches light/dark theme"
+    },
+    "FR-006": {
+      "title": "Toggle's rendered footprint is at most 50% of its current size"
+    },
+    "FR-007": {
+      "title": "Toggle still visually/textually indicates the active theme"
+    },
+    "FR-008": {
+      "title": "Toggle retains an accessible name for its current theme/action"
+    },
+    "FR-009": {
+      "title": "Toggle's clickable target remains reliably usable despite the shrink"
+    }
+  },
+  "size": "simple",
+  "classification": {
+    "projectedFiles": 4,
+    "projectedTasks": 7,
+    "scopeSignal": "smaller",
+    "verdict": "simple"
+  },
+  "context": [
+    "area: src/StageFright.UI/Layout/ShellLayout.razor + app.css + ShellLayoutTests.cs",
+    "constraint: CLAUDE.md Toggle control standards — RadzenSwitch stays the control, no hand-rolled switch"
+  ],
+  "intent": "Relocate the theme toggle from its own top-bar strip to a pinned, >=50%-smaller control at the bottom of the sidebar menu, reclaiming screen space without changing its light/dark behavior.",
+  "expectations": [
+    "Changing the Setup Wizard's own theme dropdown control is out of scope",
+    "Changing theme persistence, ThemeProvider logic, or the set of available themes is out of scope"
+  ],
+  "approach": "Move the .btn-theme-toggle block from the top-bar header into the bottom of the sidebar nav, drop the now-empty top-bar strip, and shrink the toggle's CSS footprint by >=50%; update ShellLayoutTests.cs selectors to match.",
+  "livingSpecs": {
+    "loaded": [
+      "app-host"
+    ]
+  }
+}
