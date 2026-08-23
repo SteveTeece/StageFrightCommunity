@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Events;
 using StageFright.Core.Modules.Members;
@@ -224,7 +225,155 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
         Assert.Equal(before, after);
     }
 
+    // --- Event Attendance Sheet (spec 018) ---
+
+    [Fact]
+    public async Task EventAttendanceSheet_GenerateAsync_Throws_ForUnknownEvent()
+    {
+        var svc = BuildEventAttendanceSheetService();
+
+        await Assert.ThrowsAsync<EntityNotFoundException>(
+            () => svc.GenerateAsync(Guid.NewGuid(), TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task EventAttendanceSheet_GenerateAsync_Returns_OnlyActiveMembers_SortedBySurname()
+    {
+        var eventType = await AddEventType("Performance");
+        var eventDate = DateTime.UtcNow.Date.AddDays(-1);
+        await AddActiveMemberWithSurname("Bob", "Smith", eventDate);
+        await AddActiveMemberWithSurname("Zoe", "Jones", eventDate);
+
+        var eventSvc = BuildEventService();
+        var evt = await eventSvc.ScheduleAsync(new ScheduleEventRequest
+        {
+            Date = eventDate,
+            EventTypeId = eventType.Id
+        }, TestContext.Current.CancellationToken);
+
+        var svc = BuildEventAttendanceSheetService();
+        var result = await svc.GenerateAsync(evt.Id, TestContext.Current.CancellationToken);
+
+        Assert.Equal(2, result.Members.Count);
+        Assert.Equal("Jones", result.Members[0].LastName);
+        Assert.Equal("Smith", result.Members[1].LastName);
+    }
+
+    [Fact]
+    public async Task EventAttendanceSheet_GenerateAsync_Excludes_SoftDeletedMember()
+    {
+        var eventType = await AddEventType("Performance");
+        var eventDate = DateTime.UtcNow.Date.AddDays(-1);
+        await AddActiveMemberWithSurname("Alice", "Anderson", eventDate);
+        var deleted = await AddActiveMemberWithSurname("Bob", "Baker", eventDate);
+        deleted.IsDeleted = true;
+        deleted.DeletedAt = DateTime.UtcNow;
+        deleted.DeletedBy = "coordinator";
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var eventSvc = BuildEventService();
+        var evt = await eventSvc.ScheduleAsync(new ScheduleEventRequest
+        {
+            Date = eventDate,
+            EventTypeId = eventType.Id
+        }, TestContext.Current.CancellationToken);
+
+        var svc = BuildEventAttendanceSheetService();
+        var result = await svc.GenerateAsync(evt.Id, TestContext.Current.CancellationToken);
+
+        Assert.Single(result.Members);
+        Assert.Equal("Anderson", result.Members[0].LastName);
+    }
+
+    [Fact]
+    public async Task EventAttendanceSheet_GenerateAsync_ReflectsRecordedParticipation()
+    {
+        var eventType = await AddEventType("Performance");
+        var eventDate = DateTime.UtcNow.Date.AddDays(-1);
+        var member = await AddActiveMemberWithSurname("Alice", "Anderson", eventDate);
+
+        var eventSvc = BuildEventService();
+        var evt = await eventSvc.ScheduleAsync(new ScheduleEventRequest
+        {
+            Date = eventDate,
+            EventTypeId = eventType.Id
+        }, TestContext.Current.CancellationToken);
+
+        var svc = BuildEventAttendanceSheetService();
+        var before = await svc.GenerateAsync(evt.Id, TestContext.Current.CancellationToken);
+        Assert.False(before.Members[0].Participated);
+
+        await eventSvc.RecordParticipationAsync(evt.Id, new[]
+        {
+            new ParticipationBatchItem { MemberId = member.Id, Participated = true }
+        }, TestContext.Current.CancellationToken);
+
+        var after = await svc.GenerateAsync(evt.Id, TestContext.Current.CancellationToken);
+        Assert.True(after.Members[0].Participated);
+    }
+
+    [Fact]
+    public async Task EventAttendanceSheet_GenerateAsync_Works_ForFutureDatedAgmTypeEvent()
+    {
+        // Edge Case (spec Assumptions): a forward-scheduled AGM is printed through the generic
+        // event attendance sheet, same as any other future event — no special-casing exists.
+        var agmType = await AddSystemEventType("Annual General Meeting");
+        var futureDate = DateTime.UtcNow.Date.AddMonths(1);
+        await AddActiveMemberWithSurname("Alice", "Anderson", futureDate);
+
+        var eventSvc = BuildEventService();
+        var evt = await eventSvc.ScheduleAsync(new ScheduleEventRequest
+        {
+            Date = futureDate,
+            EventTypeId = agmType.Id
+        }, TestContext.Current.CancellationToken);
+
+        var svc = BuildEventAttendanceSheetService();
+        var result = await svc.GenerateAsync(evt.Id, TestContext.Current.CancellationToken);
+
+        Assert.Equal("Annual General Meeting", result.EventTypeName);
+        Assert.Single(result.Members);
+        Assert.False(result.Members[0].Participated);
+    }
+
+    [Fact]
+    public async Task EventAttendanceSheet_GenerateAsync_ReturnsEmptyList_WhenNoActiveMembers()
+    {
+        var eventType = await AddEventType("Performance");
+        var eventDate = DateTime.UtcNow.Date.AddDays(-1);
+
+        var eventSvc = BuildEventService();
+        var evt = await eventSvc.ScheduleAsync(new ScheduleEventRequest
+        {
+            Date = eventDate,
+            EventTypeId = eventType.Id
+        }, TestContext.Current.CancellationToken);
+
+        var svc = BuildEventAttendanceSheetService();
+        var result = await svc.GenerateAsync(evt.Id, TestContext.Current.CancellationToken);
+
+        Assert.Empty(result.Members);
+    }
+
     // --- Helpers ---
+
+    private EventAttendanceSheetService BuildEventAttendanceSheetService() =>
+        new(new EventRepository(_db), new MemberRepository(_db));
+
+    private async Task<Member> AddActiveMemberWithSurname(string firstName, string lastName, DateTime eventDate)
+    {
+        var member = new Member
+        {
+            Id = Guid.NewGuid(), FirstName = firstName, LastName = lastName, StreetAddress = "1 Test St",
+            Status = MemberStatus.Active,
+            ActivateDate = eventDate.AddYears(-1),
+            JoinDate = eventDate.AddYears(-1),
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        _db.Members.Add(member);
+        await _db.SaveChangesAsync();
+        return member;
+    }
 
     private EventService BuildEventService()
     {

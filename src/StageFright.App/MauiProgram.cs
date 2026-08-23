@@ -193,6 +193,8 @@ public static class MauiProgram
         services.AddScoped<ICommitteeService, CommitteeService>();
         services.AddScoped<ICommitteeOfficeHolderTypeService, CommitteeOfficeHolderTypeService>();
         services.AddScoped<IAgmService, AgmService>();
+        services.AddScoped<IAgmAttendanceSheetService, AgmAttendanceSheetService>();
+        services.AddScoped<IAgmAttendanceSheetPdfRenderer, AgmAttendanceSheetPdfRenderer>();
 
         // Rehearsals module (Phase 5)
         services.AddScoped<IRehearsalService, RehearsalService>();
@@ -203,6 +205,8 @@ public static class MauiProgram
         // Events module (Phase 12)
         services.AddScoped<IEventTypeService, EventTypeService>();
         services.AddScoped<IEventService, EventService>();
+        services.AddScoped<IEventAttendanceSheetService, EventAttendanceSheetService>();
+        services.AddScoped<IEventAttendanceSheetPdfRenderer, EventAttendanceSheetPdfRenderer>();
 
         // Finance module (Phase 6 + 9)
         services.AddScoped<IFeeService, FeeService>();
