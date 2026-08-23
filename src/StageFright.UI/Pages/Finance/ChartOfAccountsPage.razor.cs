@@ -1,7 +1,11 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
 using StageFright.Core.Modules.Finance;
+using StageFright.Reports.Models;
+using StageFright.Reports.Registry;
+using StageFright.Reports.Rendering;
 using StageFright.UI.Shared;
 using CoreValidationException = StageFright.Core.Exceptions.ValidationException;
 
@@ -11,6 +15,10 @@ public partial class ChartOfAccountsPage : ComponentBase
 {
     [Inject] private IAccountService AccountService { get; set; } = null!;
     [Inject] private IAccountBalanceService AccountBalanceService { get; set; } = null!;
+    [Inject] private IReportProviderRegistry ReportProviderRegistry { get; set; } = null!;
+    [Inject] private IPdfReportRenderer PdfRenderer { get; set; } = null!;
+    [Inject] private ISettingsService SettingsService { get; set; } = null!;
+    [Inject] private ILogger<ChartOfAccountsPage> Logger { get; set; } = null!;
 
     private bool _loading = true;
     private string? _errorMessage;
@@ -19,6 +27,7 @@ public partial class ChartOfAccountsPage : ComponentBase
     private List<AccountBalance> _accounts = new();
     private List<AccountBalance> _archivedAccounts = new();
     private AccountType? _typeFilter;
+    private bool _includeBalances;
 
     private Guid? _editingId;
     private string _editName = string.Empty;
@@ -156,4 +165,37 @@ public partial class ChartOfAccountsPage : ComponentBase
         }
     }
 
+    private async Task PrintAsync()
+    {
+        _errorMessage = null;
+        _successMessage = null;
+
+        try
+        {
+            var provider = ReportProviderRegistry.GetProvider("chart-of-accounts");
+            if (provider == null)
+            {
+                _errorMessage = "Unable to print. Please try again.";
+                return;
+            }
+
+            var filters = new ReportFilterValues();
+            filters.Set("includeBalances", _includeBalances ? "true" : "false");
+            var report = await provider.GenerateAsync(filters);
+
+            var settings = await SettingsService.GetAsync();
+            var orgName = settings?.OrganizationName ?? string.Empty;
+            var bytes = PdfRenderer.Render(report, orgName);
+            var tempPath = Path.Combine(Path.GetTempPath(), $"chart-of-accounts_{Guid.NewGuid():N}.pdf");
+            File.WriteAllBytes(tempPath, bytes);
+#pragma warning disable CA1416
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(tempPath) { UseShellExecute = true });
+#pragma warning restore CA1416
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to print chart of accounts");
+            _errorMessage = "Unable to print. Please try again.";
+        }
+    }
 }

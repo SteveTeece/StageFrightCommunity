@@ -176,3 +176,17 @@ When the GL balance calculation fails for a single account, the Chart of Account
 ## Uncovered
 
 _None — every file in the area was read._
+
+### The Chart of Accounts can be printed as a PDF, grouped by type, with an optional current-balances column
+
+#### Scenario: Printing without balances
+- **WHEN** a user on the Chart of Accounts screen clicks "Print Chart of Accounts" with the "Include Current Balances" option off
+- **THEN** a PDF opens listing every active account under fixed Assets/Liabilities/Equity/Income/Expenses headings, ordered by account number within each section, showing only account number and name (with a plain-text "(System)"/"(Bank)" indicator where applicable), no balance figures, and no combined grand-total row
+
+#### Scenario: Printing with balances
+- **WHEN** the "Include Current Balances" option is on at print time
+- **THEN** the same PDF additionally shows each account's current balance (matching the figure the Chart of Accounts screen shows for that account), with a per-account "Error" indicator in place of any balance that could not be calculated, and archived accounts never appear
+
+#### Scenario: Also available from the Reports menu
+- **WHEN** a user opens the central Reports menu
+- **THEN** "Chart of Accounts" is listed under the Finance section, generates the same grouped/ordered report with the same include-balances option, and exports to CSV matching what was shown on screen
