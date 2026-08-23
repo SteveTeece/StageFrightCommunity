@@ -17,6 +17,12 @@ I also made the decision to use Github SpecKit to guide the AI towards spec driv
 
 To contribute to this project, I encourage you to use the Github SpecKit workflow and an AI agent, but this is not a requirement. Claude Code is the agent I prefer to use, but you are free to use other agents (or no agents at all).
 
+Create an issue for the bug fix/change/update/feature. Don't just start coding it without approval. Pull requests not directly linked to an issue will be rejected.
+
+The master branch will always contain the code for the most recent release. The dev branch will contain the latest code updates, features and changes that are being assembled for the next release.  Only pull requests against the dev branch will be accepted.
+
+Make a fork of this repo and use that as your private scratch pad. When you are ready for a review and merge, create a pull request to dev.
+
 ## Vision
 
 StageFright Community delivers a robust platform for managing members, finances, events, and attendance with:
