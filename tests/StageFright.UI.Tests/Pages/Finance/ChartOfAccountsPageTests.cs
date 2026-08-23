@@ -6,7 +6,11 @@ using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.Finance;
+using StageFright.Reports.Models;
+using StageFright.Reports.Registry;
+using StageFright.Reports.Rendering;
 using StageFright.UI.Pages.Finance;
+using SettingsEntity = StageFright.Core.Entities.Settings;
 
 namespace StageFright.UI.Tests.Pages.Finance;
 
@@ -20,6 +24,9 @@ public class ChartOfAccountsPageTests : RadzenGridTestContext
 {
     private readonly IAccountService _accountService = Substitute.For<IAccountService>();
     private readonly IAccountBalanceService _accountBalanceService = Substitute.For<IAccountBalanceService>();
+    private readonly IReportProviderRegistry _reportProviderRegistry = Substitute.For<IReportProviderRegistry>();
+    private readonly IPdfReportRenderer _pdfRenderer = Substitute.For<IPdfReportRenderer>();
+    private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
 
     private static readonly Guid IncomeAccountId = Guid.NewGuid();
     private static readonly Guid BankAccountId = Guid.NewGuid();
@@ -31,6 +38,19 @@ public class ChartOfAccountsPageTests : RadzenGridTestContext
     {
         Services.AddSingleton(_accountService);
         Services.AddSingleton(_accountBalanceService);
+        Services.AddSingleton(_reportProviderRegistry);
+        Services.AddSingleton(_pdfRenderer);
+        Services.AddSingleton(_settingsService);
+
+        _settingsService.GetAsync(Arg.Any<CancellationToken>())
+            .Returns(new SettingsEntity
+            {
+                Id = Guid.NewGuid(), OrganizationName = "Test Choir",
+                AnnualFee = 50m, AttendanceFee = 10m,
+                MembershipRenewalMonth = 1, MaxAgeRangeYears = 150,
+                MinimumMemberAge = 0, SchemaVersion = "1.0.0",
+                CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+            });
 
         _accountService.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(DefaultActiveAccounts());
@@ -222,6 +242,95 @@ public class ChartOfAccountsPageTests : RadzenGridTestContext
         Assert.Equal("4000", cells[0].TextContent.Trim());
         Assert.Equal("1100", cells[1].TextContent.Trim());
         Assert.Equal("1110", cells[2].TextContent.Trim());
+    }
+
+    // --- Print Chart of Accounts ---
+
+    [Fact]
+    public void PrintButton_Renders_WithVerbatimLabel()
+    {
+        var cut = Render<ChartOfAccountsPage>();
+
+        cut.FindAll("button").First(b => b.TextContent.Trim() == "Print Chart of Accounts");
+    }
+
+    [Fact]
+    public async Task ClickPrint_ProviderNotFound_ShowsErrorAlert_AndDoesNotRenderPdf()
+    {
+        _reportProviderRegistry.GetProvider("chart-of-accounts").Returns((IReportProvider?)null);
+
+        var cut = Render<ChartOfAccountsPage>();
+        await cut.FindAll("button").First(b => b.TextContent.Trim() == "Print Chart of Accounts")
+            .ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        Assert.Contains("alert-danger", cut.Markup);
+        _pdfRenderer.DidNotReceive().Render(Arg.Any<ReportData>(), Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task ClickPrint_ProviderThrows_ShowsErrorAlert_AndDoesNotRenderPdf()
+    {
+        var provider = Substitute.For<IReportProvider>();
+        provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<ReportData>(new InvalidOperationException("boom")));
+        _reportProviderRegistry.GetProvider("chart-of-accounts").Returns(provider);
+
+        var cut = Render<ChartOfAccountsPage>();
+        await cut.FindAll("button").First(b => b.TextContent.Trim() == "Print Chart of Accounts")
+            .ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        Assert.Contains("alert-danger", cut.Markup);
+        _pdfRenderer.DidNotReceive().Render(Arg.Any<ReportData>(), Arg.Any<string>());
+    }
+
+    [Fact]
+    public void IncludeBalancesSwitch_Renders_DefaultingToUnchecked()
+    {
+        var cut = Render<ChartOfAccountsPage>();
+
+        Assert.Equal("false", cut.Find("[role=switch]").GetAttribute("aria-checked"));
+    }
+
+    [Fact]
+    public async Task ClickPrint_SwitchLeftOff_PassesIncludeBalancesFalse()
+    {
+        var provider = MakeStubbingProvider();
+
+        var cut = Render<ChartOfAccountsPage>();
+        await cut.FindAll("button").First(b => b.TextContent.Trim() == "Print Chart of Accounts")
+            .ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        await provider.Received(1).GenerateAsync(
+            Arg.Is<ReportFilterValues>(f => f!.Get("includeBalances") == "false"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ClickPrint_SwitchTurnedOn_PassesIncludeBalancesTrue()
+    {
+        var provider = MakeStubbingProvider();
+
+        var cut = Render<ChartOfAccountsPage>();
+        cut.Find("[role=switch]").Click();
+        await cut.FindAll("button").First(b => b.TextContent.Trim() == "Print Chart of Accounts")
+            .ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        await provider.Received(1).GenerateAsync(
+            Arg.Is<ReportFilterValues>(f => f!.Get("includeBalances") == "true"),
+            Arg.Any<CancellationToken>());
+    }
+
+    private IReportProvider MakeStubbingProvider()
+    {
+        var provider = Substitute.For<IReportProvider>();
+        provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>())
+            .Returns(new ReportData { Title = "Chart of Accounts" });
+        _reportProviderRegistry.GetProvider("chart-of-accounts").Returns(provider);
+        // Throw once GenerateAsync has been observed, so the flow never reaches
+        // File.WriteAllBytes/Process.Start — the same seam-avoidance technique as T005.
+        _pdfRenderer.Render(Arg.Any<ReportData>(), Arg.Any<string>())
+            .Returns(_ => throw new InvalidOperationException("stop before file/process"));
+        return provider;
     }
 
     // --- Add form ---
