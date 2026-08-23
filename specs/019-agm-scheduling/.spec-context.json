@@ -1,0 +1,87 @@
+{
+  "workflow": "speckit",
+  "specName": "agm scheduling",
+  "branch": "019-agm-scheduling",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-23T01:35:13.956Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T01:39:21.856Z"
+    }
+  ],
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "Schedule an AGM with just date and optional notes"
+    },
+    "FR-002": {
+      "title": "Scheduling creates no attendance/elections/committee term"
+    },
+    "FR-003": {
+      "title": "AGM list shows recorded/not-recorded status for every AGM"
+    },
+    "FR-004": {
+      "title": "Record attendance/elections against an existing scheduled AGM"
+    },
+    "FR-005": {
+      "title": "Reject recording before the AGM date arrives"
+    },
+    "FR-006": {
+      "title": "Reject recording an already-recorded AGM a second time"
+    },
+    "FR-007": {
+      "title": "Recording keeps existing duplicate-assignment and term-rollover rules"
+    },
+    "FR-008": {
+      "title": "Detail page shows only date/notes until recorded"
+    },
+    "FR-009": {
+      "title": "Print attendance report reachable for any AGM from list and detail"
+    },
+    "FR-010": {
+      "title": "Scheduled AGM report lists active members with unchecked boxes"
+    },
+    "FR-011": {
+      "title": "Recorded AGM report keeps showing the fixed captured roster"
+    },
+    "FR-012": {
+      "title": "Empty-state message when nobody to list on scheduled AGM report"
+    },
+    "FR-013": {
+      "title": "Archiving works for scheduled AGMs without requiring recording first"
+    },
+    "FR-014": {
+      "title": "Printing stays read-only for scheduled and recorded AGMs"
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 28,
+    "projectedTasks": 32,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "context": [
+    "area: src/StageFright.Core/Modules/Agm (AgmService, RecordAgmRequest)",
+    "area: src/StageFright.UI/Pages/Events (AgmList, AgmDetail, RecordAgm)",
+    "constraint: mirrors Rehearsal/Event schedule-then-record split (RehearsalService.ScheduleAsync + AttendanceService.RecordBatchAsync date guard)",
+    "constraint: reuses AgmAttendanceSheetService/AgmAttendanceSheetPdfRenderer from spec 018 rather than a new renderer"
+  ],
+  "intent": "Let AGMs be scheduled ahead of time (date + notes only) and recorded later, and let a blank attendance report print for a scheduled-but-unrecorded AGM, closing the gap spec 018 explicitly punted on.",
+  "expectations": [
+    "Editing/rescheduling a saved AGM's date",
+    "Changes to the recorded-AGM report's PDF layout (two-column/checkbox styling) — that shipped in spec 018 and is reused as-is",
+    "Changes to the special-election (mid-term replacement) workflow"
+  ]
+}
