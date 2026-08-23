@@ -22,6 +22,15 @@ public class AnnualGeneralMeeting
     /// </summary>
     public int? GeneralCommitteeSeatCountTarget { get; set; }
 
+    /// <summary>
+    /// True once attendance and elections have been recorded against this AGM (FR-004);
+    /// false for a scheduled-but-not-yet-recorded AGM (FR-001, FR-002). Set once, inside
+    /// RecordAsync, and never cleared — tracked directly on the row, never inferred from
+    /// AttendanceRecords (an AGM recorded with zero active members must still read as
+    /// recorded, not as still-scheduled).
+    /// </summary>
+    public bool IsRecorded { get; set; }
+
     // --- Soft-delete fields ---
 
     /// <summary>True when this AGM has been archived (FR-017).</summary>

@@ -316,6 +316,7 @@ public class BackupService : IBackupService
     {
         Id = a.Id, Date = a.Date, Notes = a.Notes,
         GeneralCommitteeSeatCountTarget = a.GeneralCommitteeSeatCountTarget,
+        IsRecorded = a.IsRecorded,
         IsDeleted = a.IsDeleted, DeletedAt = a.DeletedAt, DeletedBy = a.DeletedBy,
         CreatedAt = a.CreatedAt, UpdatedAt = a.UpdatedAt
     };
@@ -465,6 +466,7 @@ public class BackupService : IBackupService
     {
         Id = d.Id, Date = d.Date, Notes = d.Notes,
         GeneralCommitteeSeatCountTarget = d.GeneralCommitteeSeatCountTarget,
+        IsRecorded = d.IsRecorded,
         IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy,
         CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
     };
