@@ -150,9 +150,11 @@ html, body {
     padding: 1rem 1.25rem 1rem calc(var(--sf-sidebar-w) + 1.25rem);
 }
 
-/* Theme toggle pill (current theme name + RadzenSwitch) — pinned to the
+/* Theme toggle (current theme name + RadzenSwitch) — pinned to the
    bottom of the sidebar as the last flex child, below the scrollable nav
-   list; shrunk to roughly a third of its former footprint. */
+   list; shrunk to roughly a third of its former footprint. The outer pill
+   chrome (border/glass background) is intentionally transparent in both
+   themes so only the label text and switch itself are visible. */
 .btn-theme-toggle {
     display: flex;
     align-items: center;
@@ -162,12 +164,14 @@ html, body {
     margin-top: 10px;
     padding: 3px 8px;
     border-radius: 999px;
-    border: 1px solid var(--sf-brd);
-    background: var(--sf-glass2);
+    border: 1px solid transparent;
+    background: transparent;
     color: var(--sf-text);
     font: 500 .7rem 'Saira Semi Condensed', sans-serif;
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
+}
+
+.btn-theme-toggle-label {
+    cursor: pointer;
 }
 
 /* Shrink the embedded RadzenSwitch itself (default 3rem x 1.8rem) to half
