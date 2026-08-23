@@ -34,6 +34,20 @@ else
                     @AttendedCount(agm) of @agm.AttendanceRecords.Count
                 </Template>
             </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="AnnualGeneralMeeting" Title="Actions" Width="120px" Sortable="false">
+                <Template Context="agm">
+                    <button class="btn btn-outline-secondary btn-sm text-nowrap"
+                            @onclick="() => PrintAttendanceReport(agm.Id)"
+                            aria-label="Print attendance report for @agm.Date.ToString("d MMMM yyyy")">
+                        Print
+                    </button>
+                </Template>
+            </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
+}
+
+@if (!string.IsNullOrEmpty(_printMessage))
+{
+    <div class="alert alert-warning py-1 mb-2 small mt-2" role="alert">@_printMessage</div>
 }

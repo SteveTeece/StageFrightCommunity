@@ -4,19 +4,27 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Agm;
+using StageFright.Reports.Rendering;
 using StageFright.UI.Pages.Events;
+using SettingsEntity = StageFright.Core.Entities.Settings;
 
 namespace StageFright.UI.Tests.Pages.Events;
 
 /// <summary>
 /// bUnit tests for AgmDetail — read-only attendance/position rendering (FR-011, FR-016, from
-/// US1/T047) plus the archive action (FR-017, US5).
+/// US1/T047), the archive action (FR-017, US5), and the Print Attendance Report action
+/// (issue #302).
 /// </summary>
 public class AgmDetailTests : BunitContext
 {
     private readonly IAgmService _agmService = Substitute.For<IAgmService>();
     private readonly ICommitteeService _committeeService = Substitute.For<ICommitteeService>();
     private readonly IAgmAttendanceRepository _attendanceRepository = Substitute.For<IAgmAttendanceRepository>();
+    private readonly IAgmAttendanceSheetService _agmAttendanceSheetService = Substitute.For<IAgmAttendanceSheetService>();
+    private readonly IAgmAttendanceSheetPdfRenderer _agmAttendanceSheetPdfRenderer = Substitute.For<IAgmAttendanceSheetPdfRenderer>();
+    private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
 
     private static readonly Guid AgmId = Guid.NewGuid();
 
@@ -25,6 +33,19 @@ public class AgmDetailTests : BunitContext
         Services.AddSingleton(_agmService);
         Services.AddSingleton(_committeeService);
         Services.AddSingleton(_attendanceRepository);
+        Services.AddSingleton(_agmAttendanceSheetService);
+        Services.AddSingleton(_agmAttendanceSheetPdfRenderer);
+        Services.AddSingleton(_settingsService);
+
+        _settingsService.GetAsync(Arg.Any<CancellationToken>())
+            .Returns(new SettingsEntity
+            {
+                Id = Guid.NewGuid(), OrganizationName = "Test Choir",
+                AnnualFee = 50m, AttendanceFee = 10m,
+                MembershipRenewalMonth = 1, MaxAgeRangeYears = 150,
+                MinimumMemberAge = 0, SchemaVersion = "1.0.0",
+                CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+            });
     }
 
     private static AnnualGeneralMeeting MakeAgm(string? notes = null) => new()
@@ -167,6 +188,54 @@ public class AgmDetailTests : BunitContext
         var cut = Render<AgmDetail>(p => p.Add(x => x.Id, AgmId));
 
         Assert.Contains("AGM not found", cut.Markup);
+    }
+
+    // --- Print Attendance Report ---
+
+    [Fact]
+    public void PrintButton_Renders_OnceAgmLoads()
+    {
+        _agmService.GetByIdAsync(AgmId, Arg.Any<CancellationToken>()).Returns(MakeAgm());
+        _attendanceRepository.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<AgmAttendanceRecord>());
+        _committeeService.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<CommitteePositionRecord>());
+
+        var cut = Render<AgmDetail>(p => p.Add(x => x.Id, AgmId));
+
+        cut.Find("button[aria-label='Print attendance report']");
+    }
+
+    [Fact]
+    public async Task ClickPrint_EmptyMembers_ShowsMessage_AndDoesNotRenderPdf()
+    {
+        _agmService.GetByIdAsync(AgmId, Arg.Any<CancellationToken>()).Returns(MakeAgm());
+        _attendanceRepository.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<AgmAttendanceRecord>());
+        _committeeService.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<CommitteePositionRecord>());
+        _agmAttendanceSheetService.GenerateAsync(AgmId, Arg.Any<CancellationToken>())
+            .Returns(new AgmAttendanceSheetData { AgmDate = MakeAgm().Date, Members = Array.Empty<AgmAttendanceSheetMember>() });
+
+        var cut = Render<AgmDetail>(p => p.Add(x => x.Id, AgmId));
+        await cut.Find("button[aria-label='Print attendance report']")
+            .ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        Assert.Contains("No attendance records found", cut.Markup);
+        _agmAttendanceSheetPdfRenderer.DidNotReceive().Render(Arg.Any<AgmAttendanceSheetData>(), Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task ClickPrint_ServiceThrows_ShowsErrorMessage_AndDoesNotRenderPdf()
+    {
+        _agmService.GetByIdAsync(AgmId, Arg.Any<CancellationToken>()).Returns(MakeAgm());
+        _attendanceRepository.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<AgmAttendanceRecord>());
+        _committeeService.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<CommitteePositionRecord>());
+        _agmAttendanceSheetService.GenerateAsync(AgmId, Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<AgmAttendanceSheetData>(new EntityNotFoundException("AnnualGeneralMeeting", AgmId, "GenerateAsync")));
+
+        var cut = Render<AgmDetail>(p => p.Add(x => x.Id, AgmId));
+        await cut.Find("button[aria-label='Print attendance report']")
+            .ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        Assert.Contains("Unable to print", cut.Markup);
+        _agmAttendanceSheetPdfRenderer.DidNotReceive().Render(Arg.Any<AgmAttendanceSheetData>(), Arg.Any<string>());
     }
 
     // --- Archive action (US5) ---
