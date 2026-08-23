@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "print chart of accounts",
   "branch": "020-print-chart-of-accounts",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,34 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-23T06:01:27.082Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-23T06:26:33.102Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T06:34:42.442Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T06:34:49.839Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T06:35:31.037Z"
     }
   ],
   "coverage": {
@@ -93,5 +121,39 @@
       "reports-pipeline",
       "app-host"
     ]
+  },
+  "approach": "Add a Print button plus an off-by-default include-balances RadzenSwitch to ChartOfAccountsPage, backed by one new ChartOfAccountsReportProvider that reuses IAccountBalanceService for grouped, ordered, error-isolated balances. The page prints directly via IReportProviderRegistry, IPdfReportRenderer, and Process.Start (no preview modal); registering the provider in DI alone satisfies the Reports-menu and CSV story.",
+  "decisions": [
+    {
+      "decision": "Reuse IAccountBalanceService as the sole balance source for the report",
+      "why": "Guarantees FR-008 (matches screen figure) by construction and reuses its existing per-account HasError isolation (FR-010) instead of re-deriving GL sums",
+      "rejected": "Querying IGLRepository directly in the new provider, duplicating the normal-side sign-flip and try/catch logic"
+    },
+    {
+      "decision": "Print button hands off directly to a temp PDF via IReportProviderRegistry, IPdfReportRenderer, and Process.Start, bypassing ReportViewer",
+      "why": "FR-013 requires the document to open automatically, matching the existing quick-print pattern used by the RehearsalList attendance roll button and other screen-level print buttons",
+      "rejected": "Navigating to /reports?reportId=chart-of-accounts and triggering print from the preview modal"
+    },
+    {
+      "decision": "Balance column is structurally omitted, not blank, when includeBalances is off",
+      "why": "FR-009 requires no balance column at all; PdfReportRenderer and CSV export already tolerate a shorter Cells list per row so no renderer change is needed",
+      "rejected": "Always including a Balance column with empty-string cells when the option is off"
+    },
+    {
+      "decision": "System and bank indicator is a plain-text suffix on the Name cell",
+      "why": "The spec edge case calls for plain text suitable for print rather than the on-screen badge widgets, for two rarely-set booleans",
+      "rejected": "A dedicated Flags column"
+    },
+    {
+      "decision": "DisplayOrder is set to 15, between Income Statement (10) and Trial Balance (20)",
+      "why": "Keeps the existing Finance DisplayOrder sequence meaningful without renumbering any existing provider",
+      "rejected": "Appending at DisplayOrder 70, the end of the Finance list"
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Plan complete: one new ChartOfAccountsReportProvider plus a Print button and switch on ChartOfAccountsPage, reusing IAccountBalanceService and the existing quick-print temp-file pattern; no new entity or migration",
+      "key_finding": "AccountBalanceService already provides matching-figure, per-account-error-isolated balances the report can reuse verbatim, and the RehearsalList attendance-roll button is the exact precedent for a screen-level auto-opening print action outside ReportViewer"
+    }
   }
 }
