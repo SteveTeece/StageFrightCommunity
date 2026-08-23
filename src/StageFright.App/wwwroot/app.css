@@ -154,13 +154,14 @@ html, body {
    bottom of the sidebar as the last flex child, below the scrollable nav
    list; shrunk to roughly a third of its former footprint. The outer pill
    chrome (border/glass background) is intentionally transparent in both
-   themes so only the label text and switch itself are visible. */
+   themes so only the label text and switch itself are visible. Stretches
+   to the sidebar's full width so the "Theme" label pins to the left edge
+   and the switch pins to the right edge. */
 .btn-theme-toggle {
     display: flex;
     align-items: center;
-    align-self: flex-start;
+    justify-content: space-between;
     flex: none;
-    gap: 5px;
     margin-top: 10px;
     padding: 3px 8px;
     border-radius: 999px;
@@ -172,6 +173,12 @@ html, body {
 
 .btn-theme-toggle-label {
     cursor: pointer;
+}
+
+.btn-theme-toggle-switch-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 /* Shrink the embedded RadzenSwitch itself (default 3rem x 1.8rem) to half
