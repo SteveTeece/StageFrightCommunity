@@ -94,12 +94,12 @@ As a person printing these sheets, I want the event and AGM attendance sheets to
 
 ### Measurable Outcomes
 
-- **SC-001**: A user can generate and print an event's attendance sheet, or a past AGM's attendance report, in a few clicks, without maintaining any separate manual roll.
-- **SC-002**: 100% of members active as of an event's date appear on that event's printed sheet, and no archived or soft-deleted members appear.
-- **SC-003**: When an event's participation has not yet been recorded, 100% of "Participated" checkboxes print blank; once recorded, 100% of checkboxes match the actual recorded value.
-- **SC-004**: 100% of members on a recorded AGM's attendance roster appear on its printed report, with checkboxes matching actual recorded attendance with 100% accuracy.
-- **SC-005**: Members appear in correct alphabetical surname order, with surnames in capitals, on 100% of generated sheets.
-- **SC-006**: For a typical event or AGM roster size, the two-column layout keeps a printed sheet to a single page where a single-column layout would need two.
+- [X] **SC-001**: A user can generate and print an event's attendance sheet, or a past AGM's attendance report, in a few clicks, without maintaining any separate manual roll. — Verified via bUnit tests confirming a single Print button click on the Events/AGM list and detail pages drives generate → render → save → launch, mirroring the shipped Rehearsals "Print Roll" one-click pattern.
+- [X] **SC-002**: 100% of members active as of an event's date appear on that event's printed sheet, and no archived or soft-deleted members appear. — Verified via `EventAttendanceSheetServiceTests` (active-as-of-date filtering) and a real-SQLite integration test confirming a soft-deleted member is excluded.
+- [X] **SC-003**: When an event's participation has not yet been recorded, 100% of "Participated" checkboxes print blank; once recorded, 100% of checkboxes match the actual recorded value. — Verified via unit tests for both states plus a real-SQLite before/after-recording integration test.
+- [X] **SC-004**: 100% of members on a recorded AGM's attendance roster appear on its printed report, with checkboxes matching actual recorded attendance with 100% accuracy. — Verified via `AgmAttendanceSheetServiceTests` and a real-SQLite integration test against a recorded AGM's persisted roster.
+- [X] **SC-005**: Members appear in correct alphabetical surname order, with surnames in capitals, on 100% of generated sheets. — Verified via sorting unit tests on both services and a manual visual check of rendered PDFs showing capitalized surnames on both sheets.
+- [X] **SC-006**: For a typical event or AGM roster size, the two-column layout keeps a printed sheet to a single page where a single-column layout would need two. — Verified via a manual visual check: a 40-member roster fits one page in two 32-row columns (would need two pages single-column), plus automated pagination-boundary tests at the exact column-fill thresholds.
 
 ## Assumptions
 
@@ -108,3 +108,21 @@ As a person printing these sheets, I want the event and AGM attendance sheets to
 - Print actions are added to both the list and detail pages for events, and both the list and detail pages for AGMs, so a user can print from wherever they are already reviewing the record.
 - Neither sheet needs a spreadsheet-style export; like the rehearsal roll, its value is the printable checkbox layout, either for hand-marking ahead of the event or as a compact printed record afterward.
 - Printing either sheet never creates, updates, or deletes any Event, AnnualGeneralMeeting, ParticipationRecord, AgmAttendanceRecord, Member, Fee, Payment, or Transaction record.
+
+## ADDED Requirements
+<!-- capability: events -->
+
+### Users can print a read-only attendance sheet for any event
+The events list and event detail page SHALL each offer a "Print" action that generates a two-column, checkbox-style PDF listing every member active as of the event's date, with a "Participated" checkbox that prints blank until participation has been recorded for that event and matches the real recorded value afterward. Printing MUST NOT create, modify, or delete any Event, ParticipationRecord, or Member record.
+
+#### Scenario: printing before participation is recorded
+- **WHEN** a user clicks Print for an event whose participation has not yet been recorded
+- **THEN** every member active as of the event's date appears on the generated PDF with a blank "Participated" checkbox
+
+#### Scenario: printing after participation is recorded
+- **WHEN** a user clicks Print for an event whose participation has already been recorded
+- **THEN** each listed member's checkbox on the generated PDF matches their actual recorded participation
+
+#### Scenario: no active members to list
+- **WHEN** a user clicks Print for an event with nobody active as of its date
+- **THEN** the system shows an inline empty-state message instead of generating a blank PDF

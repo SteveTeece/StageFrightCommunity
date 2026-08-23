@@ -15,10 +15,22 @@ else
 {
     <div class="page-header d-flex align-items-center justify-content-between mb-2">
         <h1 class="h3 mb-0">AGM — @_agm!.Date.ToString("d MMMM yyyy")</h1>
-        <button class="btn btn-outline-danger btn-sm" @onclick="ArchiveAsync" disabled="@_archiving">
-            @(_archiving ? "Archiving…" : "Archive")
-        </button>
+        <div class="d-flex gap-1">
+            <button class="btn btn-outline-secondary btn-sm"
+                    @onclick="PrintAttendanceReport"
+                    aria-label="Print attendance report">
+                Print Attendance Report
+            </button>
+            <button class="btn btn-outline-danger btn-sm" @onclick="ArchiveAsync" disabled="@_archiving">
+                @(_archiving ? "Archiving…" : "Archive")
+            </button>
+        </div>
     </div>
+
+    @if (!string.IsNullOrEmpty(_printMessage))
+    {
+        <div class="alert alert-warning py-1 mb-2 small" role="alert">@_printMessage</div>
+    }
 
     @if (!string.IsNullOrWhiteSpace(_agm.Notes))
     {
