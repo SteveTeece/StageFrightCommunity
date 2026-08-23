@@ -15,8 +15,20 @@ else if (_event is not null)
 {
     <div class="page-header d-flex align-items-center justify-content-between mb-2">
         <h1 class="h3 mb-0">@_event.Date.ToString("dddd, d MMMM yyyy")</h1>
-        <a href="/events" class="btn btn-outline-secondary btn-sm">Back to Events</a>
+        <div class="d-flex gap-1">
+            <button class="btn btn-outline-secondary btn-sm"
+                    @onclick="PrintAttendanceSheet"
+                    aria-label="Print attendance sheet">
+                Print Attendance Sheet
+            </button>
+            <a href="/events" class="btn btn-outline-secondary btn-sm">Back to Events</a>
+        </div>
     </div>
+
+    @if (!string.IsNullOrEmpty(_printMessage))
+    {
+        <div class="alert alert-warning py-1 mb-2 small" role="alert">@_printMessage</div>
+    }
 
     <div class="row g-2 mb-2">
         <div class="col-md-6">
