@@ -819,9 +819,10 @@ public class DebugDataSeeder : IDebugDataSeeder
             .Where(id => assignedMemberIds.Contains(id) || random.NextDouble() < attendanceRate)
             .ToList();
 
-        return await _agmService.RecordAsync(new RecordAgmRequest(
-            Date: agmDate,
-            Notes: $"{year} Annual General Meeting — new committee term commences",
+        var scheduled = await _agmService.ScheduleAsync(new ScheduleAgmRequest(
+            agmDate, $"{year} Annual General Meeting — new committee term commences"), ct);
+
+        return await _agmService.RecordAsync(scheduled.Id, new RecordAgmRequest(
             AttendedMemberIds: attendedMemberIds,
             AllActiveMemberIds: memberIds,
             OfficeHolderAssignments: officeHolderAssignments,

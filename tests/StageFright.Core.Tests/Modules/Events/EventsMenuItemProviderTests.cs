@@ -20,20 +20,20 @@ public class EventsMenuItemProviderTests
     }
 
     [Fact]
-    public void GetMenuItems_Includes_RecordAgm_RoutingToNewAgmForm()
+    public void GetMenuItems_Includes_ScheduleAgm_RoutingToNewAgmForm()
     {
         var eventsItem = Assert.Single(_sut.GetMenuItems());
 
-        var recordAgm = Assert.Single(eventsItem.SubItems, item => item.Title == "Record AGM");
-        Assert.Equal("/events/agm/new", recordAgm.Route);
+        var scheduleAgm = Assert.Single(eventsItem.SubItems, item => item.Title == "Schedule AGM");
+        Assert.Equal("/events/agm/new", scheduleAgm.Route);
     }
 
     [Fact]
-    public void GetMenuItems_Includes_PastAgms_RoutingToAgmList()
+    public void GetMenuItems_Includes_Agms_RoutingToAgmList()
     {
         var eventsItem = Assert.Single(_sut.GetMenuItems());
 
-        var pastAgms = Assert.Single(eventsItem.SubItems, item => item.Title == "Past AGMs");
-        Assert.Equal("/events/agm", pastAgms.Route);
+        var agms = Assert.Single(eventsItem.SubItems, item => item.Title == "AGMs");
+        Assert.Equal("/events/agm", agms.Route);
     }
 }

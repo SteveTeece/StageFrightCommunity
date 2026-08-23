@@ -8,8 +8,8 @@ using StageFright.Core.Tests.Fixtures;
 namespace StageFright.Core.Tests.Modules.Agm;
 
 /// <summary>
-/// Unit tests for AgmService — atomic AGM recording, committee-term chaining, archiving,
-/// and special elections.
+/// Unit tests for AgmService — scheduling, atomic AGM recording against a previously scheduled
+/// AGM, committee-term chaining, archiving, and special elections.
 /// </summary>
 public class AgmServiceTests : TestBase
 {
@@ -29,6 +29,7 @@ public class AgmServiceTests : TestBase
 
         _agmRepo.AddAsync(Arg.Any<AnnualGeneralMeeting>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.ArgAt<AnnualGeneralMeeting>(0));
+        _agmRepo.ExistsForYearAsync(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(false);
         _termRepo.AddAsync(Arg.Any<CommitteeTerm>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.ArgAt<CommitteeTerm>(0));
         _positionRepo.AddAsync(Arg.Any<CommitteePositionRecord>(), Arg.Any<CancellationToken>())
@@ -47,28 +48,102 @@ public class AgmServiceTests : TestBase
         new(_agmRepo, _attendanceRepo, _termRepo, _positionRepo, _settingsService, _audit, _unitOfWork);
 
     private static RecordAgmRequest MakeRequest(
-        DateTime? date = null,
         IReadOnlyList<Guid>? attended = null,
         IReadOnlyList<Guid>? allActive = null,
         IReadOnlyDictionary<Guid, Guid>? officeHolders = null,
         IReadOnlyList<Guid>? generalCommittee = null) => new(
-            date ?? new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc),
-            "Annual sitting",
             attended ?? [],
             allActive ?? [],
             officeHolders ?? new Dictionary<Guid, Guid>(),
             generalCommittee ?? []);
 
+    /// <summary>Seeds a scheduled (not-yet-recorded) AGM that GetByIdAsync will return.</summary>
+    private AnnualGeneralMeeting SeedScheduledAgm(DateTime? date = null, Guid? id = null)
+    {
+        var agm = new AnnualGeneralMeeting
+        {
+            Id = id ?? Guid.NewGuid(),
+            Date = date ?? new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc),
+            Notes = "Annual sitting",
+            IsRecorded = false,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        _agmRepo.GetByIdAsync(agm.Id, Arg.Any<CancellationToken>()).Returns(agm);
+        return agm;
+    }
+
+    // --- ScheduleAsync ---
+
+    [Fact]
+    public async Task ScheduleAsync_PersistsDateNotesAndIsRecordedFalse()
+    {
+        var svc = CreateService();
+        var date = new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc);
+
+        var result = await svc.ScheduleAsync(new ScheduleAgmRequest(date, "Annual sitting"), Ct);
+
+        Assert.Equal(date, result.Date);
+        Assert.Equal("Annual sitting", result.Notes);
+        Assert.False(result.IsRecorded);
+    }
+
+    [Fact]
+    public async Task ScheduleAsync_CreatesNoAttendanceElectionsOrTerm()
+    {
+        var svc = CreateService();
+        await svc.ScheduleAsync(new ScheduleAgmRequest(DateTime.UtcNow, null), Ct);
+
+        await _attendanceRepo.DidNotReceive().AddRangeAsync(Arg.Any<IEnumerable<AgmAttendanceRecord>>(), Arg.Any<CancellationToken>());
+        await _positionRepo.DidNotReceive().AddAsync(Arg.Any<CommitteePositionRecord>(), Arg.Any<CancellationToken>());
+        await _termRepo.DidNotReceive().AddAsync(Arg.Any<CommitteeTerm>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ScheduleAsync_WrapsWriteInTransaction()
+    {
+        var svc = CreateService();
+        await svc.ScheduleAsync(new ScheduleAgmRequest(DateTime.UtcNow, null), Ct);
+
+        await _unitOfWork.Received(1).ExecuteInTransactionAsync(
+            Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ScheduleAsync_LogsAuditCreate()
+    {
+        var svc = CreateService();
+        var result = await svc.ScheduleAsync(new ScheduleAgmRequest(DateTime.UtcNow, null), Ct);
+
+        await _audit.Received(1).LogAsync(nameof(AnnualGeneralMeeting), result.Id, Enums.AuditAction.Create,
+            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ScheduleAsync_ThrowsValidationException_AndPersistsNothing_WhenYearAlreadyHasAnAgm()
+    {
+        _agmRepo.ExistsForYearAsync(2026, Arg.Any<CancellationToken>()).Returns(true);
+
+        var svc = CreateService();
+        var request = new ScheduleAgmRequest(new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), null);
+
+        await Assert.ThrowsAsync<ValidationException>(() => svc.ScheduleAsync(request, Ct));
+        await _unitOfWork.DidNotReceive().ExecuteInTransactionAsync(
+            Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>());
+        await _agmRepo.DidNotReceive().AddAsync(Arg.Any<AnnualGeneralMeeting>(), Arg.Any<CancellationToken>());
+    }
+
     // --- RecordAsync ---
 
     [Fact]
-    public async Task RecordAsync_PersistsMeeting_AttendanceAndPositions_Atomically()
+    public async Task RecordAsync_PersistsAttendanceAndPositions_Atomically()
     {
         var presidentTypeId = Guid.NewGuid();
         var presidentMemberId = Guid.NewGuid();
         var generalMemberId = Guid.NewGuid();
         var attendedMemberId = Guid.NewGuid();
         var notAttendedMemberId = Guid.NewGuid();
+        var scheduled = SeedScheduledAgm();
 
         var request = MakeRequest(
             attended: [attendedMemberId],
@@ -79,10 +154,10 @@ public class AgmServiceTests : TestBase
         _termRepo.GetOpenAsync(Arg.Any<CancellationToken>()).Returns((CommitteeTerm?)null);
 
         var svc = CreateService();
-        var result = await svc.RecordAsync(request, Ct);
+        var result = await svc.RecordAsync(scheduled.Id, request, Ct);
 
-        Assert.Equal(request.Date, result.Date);
-        Assert.Equal("Annual sitting", result.Notes);
+        Assert.Equal(scheduled.Date, result.Date);
+        Assert.True(result.IsRecorded);
         Assert.Equal(5, result.GeneralCommitteeSeatCountTarget);
 
         await _attendanceRepo.Received(1).AddRangeAsync(
@@ -99,23 +174,72 @@ public class AgmServiceTests : TestBase
             Arg.Is<CommitteePositionRecord>(r => r!.MemberId == generalMemberId && r.OfficeHolderTypeId == null),
             Arg.Any<CancellationToken>());
 
-        await _audit.Received(1).LogAsync(nameof(AnnualGeneralMeeting), result.Id, Enums.AuditAction.Create,
+        await _audit.Received(1).LogAsync(nameof(AnnualGeneralMeeting), result.Id, Enums.AuditAction.Update,
             Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RecordAsync_SetsIsRecordedTrue()
+    {
+        var scheduled = SeedScheduledAgm();
+        _termRepo.GetOpenAsync(Arg.Any<CancellationToken>()).Returns((CommitteeTerm?)null);
+
+        var svc = CreateService();
+        var result = await svc.RecordAsync(scheduled.Id, MakeRequest(), Ct);
+
+        Assert.True(result.IsRecorded);
+        await _agmRepo.Received(1).UpdateAsync(Arg.Is<AnnualGeneralMeeting>(a => a!.IsRecorded), Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task RecordAsync_WrapsWriteInTransaction()
     {
+        var scheduled = SeedScheduledAgm();
+        _termRepo.GetOpenAsync(Arg.Any<CancellationToken>()).Returns((CommitteeTerm?)null);
+
         var svc = CreateService();
-        await svc.RecordAsync(MakeRequest(), Ct);
+        await svc.RecordAsync(scheduled.Id, MakeRequest(), Ct);
 
         await _unitOfWork.Received(1).ExecuteInTransactionAsync(
             Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
+    public async Task RecordAsync_ThrowsEntityNotFoundException_WhenAgmIdUnknown()
+    {
+        _agmRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns((AnnualGeneralMeeting?)null);
+
+        var svc = CreateService();
+        await Assert.ThrowsAsync<EntityNotFoundException>(() => svc.RecordAsync(Guid.NewGuid(), MakeRequest(), Ct));
+    }
+
+    [Fact]
+    public async Task RecordAsync_ThrowsValidationException_WhenAgmDateInFuture()
+    {
+        var scheduled = SeedScheduledAgm(date: DateTime.Today.AddDays(5));
+
+        var svc = CreateService();
+        await Assert.ThrowsAsync<ValidationException>(() => svc.RecordAsync(scheduled.Id, MakeRequest(), Ct));
+        await _unitOfWork.DidNotReceive().ExecuteInTransactionAsync(
+            Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RecordAsync_ThrowsValidationException_WhenAgmAlreadyRecorded()
+    {
+        var agm = SeedScheduledAgm();
+        agm.IsRecorded = true;
+
+        var svc = CreateService();
+        await Assert.ThrowsAsync<ValidationException>(() => svc.RecordAsync(agm.Id, MakeRequest(), Ct));
+        await _unitOfWork.DidNotReceive().ExecuteInTransactionAsync(
+            Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task RecordAsync_ThrowsValidationException_WhenMemberAppearsInOfficeHolderAndGeneralCommittee()
     {
+        var scheduled = SeedScheduledAgm();
         var duplicateMemberId = Guid.NewGuid();
         var typeId = Guid.NewGuid();
         var request = MakeRequest(
@@ -124,7 +248,7 @@ public class AgmServiceTests : TestBase
 
         var svc = CreateService();
 
-        await Assert.ThrowsAsync<ValidationException>(() => svc.RecordAsync(request, Ct));
+        await Assert.ThrowsAsync<ValidationException>(() => svc.RecordAsync(scheduled.Id, request, Ct));
         await _unitOfWork.DidNotReceive().ExecuteInTransactionAsync(
             Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>());
     }
@@ -132,6 +256,7 @@ public class AgmServiceTests : TestBase
     [Fact]
     public async Task RecordAsync_ThrowsValidationException_WhenMemberHoldsTwoOfficeHolderAssignments()
     {
+        var scheduled = SeedScheduledAgm();
         var duplicateMemberId = Guid.NewGuid();
         var request = MakeRequest(officeHolders: new Dictionary<Guid, Guid>
         {
@@ -141,30 +266,32 @@ public class AgmServiceTests : TestBase
 
         var svc = CreateService();
 
-        await Assert.ThrowsAsync<ValidationException>(() => svc.RecordAsync(request, Ct));
+        await Assert.ThrowsAsync<ValidationException>(() => svc.RecordAsync(scheduled.Id, request, Ct));
     }
 
     [Fact]
     public async Task RecordAsync_RollsBackEntirely_OnMidTransactionFailure()
     {
+        var scheduled = SeedScheduledAgm();
         _attendanceRepo.AddRangeAsync(Arg.Any<IEnumerable<AgmAttendanceRecord>>(), Arg.Any<CancellationToken>())
             .Returns<Task>(_ => throw new DataAccessException("simulated failure", nameof(AgmAttendanceRecord), "AddRangeAsync"));
 
         var svc = CreateService();
         var request = MakeRequest(allActive: [Guid.NewGuid()]);
 
-        await Assert.ThrowsAsync<DataAccessException>(() => svc.RecordAsync(request, Ct));
+        await Assert.ThrowsAsync<DataAccessException>(() => svc.RecordAsync(scheduled.Id, request, Ct));
 
         // Nothing downstream of the failure point should have been written.
         await _termRepo.DidNotReceive().AddAsync(Arg.Any<CommitteeTerm>(), Arg.Any<CancellationToken>());
         await _positionRepo.DidNotReceive().AddAsync(Arg.Any<CommitteePositionRecord>(), Arg.Any<CancellationToken>());
-        await _audit.DidNotReceive().LogAsync(nameof(AnnualGeneralMeeting), Arg.Any<Guid>(), Enums.AuditAction.Create,
+        await _audit.DidNotReceive().LogAsync(nameof(AnnualGeneralMeeting), Arg.Any<Guid>(), Enums.AuditAction.Update,
             Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task RecordAsync_ClosesPreviouslyOpenTerm_AndOpensNewOne()
     {
+        var scheduled = SeedScheduledAgm(date: new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc));
         var openTerm = new CommitteeTerm
         {
             Id = Guid.NewGuid(), StartedByAgmId = Guid.NewGuid(), StartDate = new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc),
@@ -172,25 +299,25 @@ public class AgmServiceTests : TestBase
         };
         _termRepo.GetOpenAsync(Arg.Any<CancellationToken>()).Returns(openTerm);
 
-        var request = MakeRequest(date: new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc));
         var svc = CreateService();
-        await svc.RecordAsync(request, Ct);
+        await svc.RecordAsync(scheduled.Id, MakeRequest(), Ct);
 
         await _termRepo.Received(1).UpdateAsync(
-            Arg.Is<CommitteeTerm>(t => t!.Id == openTerm.Id && t.EndDate == request.Date),
+            Arg.Is<CommitteeTerm>(t => t!.Id == openTerm.Id && t.EndDate == scheduled.Date),
             Arg.Any<CancellationToken>());
         await _termRepo.Received(1).AddAsync(
-            Arg.Is<CommitteeTerm>(t => t!.Id != openTerm.Id && t.EndDate == null && t.StartDate == request.Date),
+            Arg.Is<CommitteeTerm>(t => t!.Id != openTerm.Id && t.EndDate == null && t.StartDate == scheduled.Date),
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task RecordAsync_DoesNotCloseAnyTerm_WhenNoneIsOpen()
     {
+        var scheduled = SeedScheduledAgm();
         _termRepo.GetOpenAsync(Arg.Any<CancellationToken>()).Returns((CommitteeTerm?)null);
 
         var svc = CreateService();
-        await svc.RecordAsync(MakeRequest(), Ct);
+        await svc.RecordAsync(scheduled.Id, MakeRequest(), Ct);
 
         await _termRepo.DidNotReceive().UpdateAsync(Arg.Any<CommitteeTerm>(), Arg.Any<CancellationToken>());
         await _termRepo.Received(1).AddAsync(Arg.Any<CommitteeTerm>(), Arg.Any<CancellationToken>());
@@ -199,24 +326,24 @@ public class AgmServiceTests : TestBase
     [Fact]
     public async Task RecordAsync_OctoberAgm_LabelsTermWithFollowingYear()
     {
+        var scheduled = SeedScheduledAgm(date: new DateTime(2025, 10, 15, 0, 0, 0, DateTimeKind.Utc));
         _termRepo.GetOpenAsync(Arg.Any<CancellationToken>()).Returns((CommitteeTerm?)null);
 
-        var request = MakeRequest(date: new DateTime(2026, 10, 15, 0, 0, 0, DateTimeKind.Utc));
         var svc = CreateService();
-        await svc.RecordAsync(request, Ct);
+        await svc.RecordAsync(scheduled.Id, MakeRequest(), Ct);
 
         await _termRepo.Received(1).AddAsync(
-            Arg.Is<CommitteeTerm>(t => t!.LabelYear == 2027), Arg.Any<CancellationToken>());
+            Arg.Is<CommitteeTerm>(t => t!.LabelYear == 2026), Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task RecordAsync_MarchAgm_LabelsTermWithItsOwnYear()
     {
+        var scheduled = SeedScheduledAgm(date: new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc));
         _termRepo.GetOpenAsync(Arg.Any<CancellationToken>()).Returns((CommitteeTerm?)null);
 
-        var request = MakeRequest(date: new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc));
         var svc = CreateService();
-        await svc.RecordAsync(request, Ct);
+        await svc.RecordAsync(scheduled.Id, MakeRequest(), Ct);
 
         await _termRepo.Received(1).AddAsync(
             Arg.Is<CommitteeTerm>(t => t!.LabelYear == 2026), Arg.Any<CancellationToken>());

@@ -13,9 +13,9 @@ using SettingsEntity = StageFright.Core.Entities.Settings;
 namespace StageFright.UI.Tests.Pages.Events;
 
 /// <summary>
-/// bUnit tests for AgmList — most-recent-first ordering, date + attendance count columns,
-/// row click navigating to AGM detail (FR-015), and the Print attendance report action
-/// (issue #302).
+/// bUnit tests for AgmList — most-recent-first ordering, date/status/attendance columns, row
+/// click navigating to AGM detail, the per-row Record action for scheduled AGMs (FR-003), and
+/// the Print attendance report action (issue #302).
 /// </summary>
 public class AgmListTests : RadzenGridTestContext
 {
@@ -45,11 +45,11 @@ public class AgmListTests : RadzenGridTestContext
             });
     }
 
-    private static AnnualGeneralMeeting MakeAgm(Guid id, DateTime date, int attendedCount, int notAttendedCount)
+    private static AnnualGeneralMeeting MakeAgm(Guid id, DateTime date, int attendedCount, int notAttendedCount, bool isRecorded = true)
     {
         var agm = new AnnualGeneralMeeting
         {
-            Id = id, Date = date, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+            Id = id, Date = date, IsRecorded = isRecorded, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         };
         for (var i = 0; i < attendedCount; i++)
             agm.AttendanceRecords.Add(new AgmAttendanceRecord { Id = Guid.NewGuid(), AnnualGeneralMeetingId = id, MemberId = Guid.NewGuid(), Attended = true, CreatedAt = DateTime.UtcNow });
@@ -100,7 +100,7 @@ public class AgmListTests : RadzenGridTestContext
     }
 
     [Fact]
-    public void NoAgms_ShowsEmptyState_WithRecordAgmLink()
+    public void NoAgms_ShowsEmptyState_WithScheduleAgmLink()
     {
         _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting>());
 
@@ -109,6 +109,66 @@ public class AgmListTests : RadzenGridTestContext
         Assert.Contains("No AGMs have been recorded yet", cut.Markup);
         var link = cut.Find("a.btn-primary");
         Assert.Equal("/events/agm/new", link.GetAttribute("href"));
+    }
+
+    // --- Status column (FR-003) ---
+
+    [Fact]
+    public void StatusColumn_ShowsRecorded_ForRecordedAgm()
+    {
+        var agm = MakeAgm(NewerAgmId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), 1, 0, isRecorded: true);
+        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
+
+        var cut = Render<AgmList>();
+
+        Assert.Contains("Recorded", cut.Markup);
+    }
+
+    [Fact]
+    public void StatusColumn_ShowsScheduled_ForScheduledAgm()
+    {
+        var agm = MakeAgm(NewerAgmId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), 0, 0, isRecorded: false);
+        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
+
+        var cut = Render<AgmList>();
+
+        Assert.Contains("Scheduled", cut.Markup);
+    }
+
+    [Fact]
+    public void AttendanceColumn_ShowsEmDash_ForScheduledAgm()
+    {
+        var agm = MakeAgm(NewerAgmId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), 0, 0, isRecorded: false);
+        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
+
+        var cut = Render<AgmList>();
+
+        Assert.Contains("—", cut.Markup);
+    }
+
+    // --- Record action (FR-004) ---
+
+    [Fact]
+    public void RecordAction_Renders_ForScheduledAgm_AndNavigatesToRecordRoute()
+    {
+        var agm = MakeAgm(NewerAgmId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), 0, 0, isRecorded: false);
+        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
+
+        var cut = Render<AgmList>();
+
+        var link = cut.Find("a.btn-primary");
+        Assert.Equal($"/events/agm/{NewerAgmId}/record", link.GetAttribute("href"));
+    }
+
+    [Fact]
+    public void RecordAction_DoesNotRender_ForRecordedAgm()
+    {
+        var agm = MakeAgm(NewerAgmId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), 1, 0, isRecorded: true);
+        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
+
+        var cut = Render<AgmList>();
+
+        Assert.Empty(cut.FindAll("a.btn-primary"));
     }
 
     // --- Print Attendance Report ---

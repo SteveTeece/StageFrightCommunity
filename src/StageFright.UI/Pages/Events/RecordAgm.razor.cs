@@ -9,6 +9,8 @@ namespace StageFright.UI.Pages.Events;
 
 public partial class RecordAgm : ComponentBase
 {
+    [Parameter] public Guid Id { get; set; }
+
     [Inject] private IAgmService AgmService { get; set; } = null!;
     [Inject] private IMemberService MemberService { get; set; } = null!;
     [Inject] private ICommitteeOfficeHolderTypeService OfficeHolderTypeService { get; set; } = null!;
@@ -16,8 +18,7 @@ public partial class RecordAgm : ComponentBase
     [Inject] private NavigationManager Nav { get; set; } = null!;
 
     private AgmAttendanceGrid? _attendanceGrid;
-    private DateTime _date = DateTime.Today;
-    private string? _notes;
+    private AnnualGeneralMeeting? _agm;
     private List<Member> _activeMembers = [];
     private List<CommitteeOfficeHolderType> _officeHolderTypes = [];
     private Dictionary<Guid, Guid?> _officeHolderAssignments = new();
@@ -25,10 +26,36 @@ public partial class RecordAgm : ComponentBase
     private int? _seatCountTarget;
     private bool _loading = true;
     private bool _saving;
+    private string? _guardMessage;
     private string? _errorMessage;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
+        _loading = true;
+        _guardMessage = null;
+
+        _agm = await AgmService.GetByIdAsync(Id);
+        if (_agm is null)
+        {
+            _guardMessage = "AGM not found.";
+            _loading = false;
+            return;
+        }
+
+        if (_agm.IsRecorded)
+        {
+            _guardMessage = "This AGM has already been recorded.";
+            _loading = false;
+            return;
+        }
+
+        if (_agm.Date.Date > DateTime.Today)
+        {
+            _guardMessage = "This AGM's date has not yet arrived.";
+            _loading = false;
+            return;
+        }
+
         _activeMembers = (await MemberService.GetByStatusAsync(MemberStatus.Active))
             .OrderBy(m => m.LastName).ThenBy(m => m.FirstName)
             .ToList();
@@ -76,14 +103,12 @@ public partial class RecordAgm : ComponentBase
         try
         {
             var request = new RecordAgmRequest(
-                _date,
-                _notes,
                 _attendanceGrid?.GetAttendedMemberIds() ?? [],
                 _activeMembers.Select(m => m.Id).ToList(),
                 assignedOfficeHolders,
                 _generalCommitteeMemberIds.ToList());
 
-            var agm = await AgmService.RecordAsync(request);
+            var agm = await AgmService.RecordAsync(Id, request);
             Nav.NavigateTo($"/events/agm/{agm.Id}");
         }
         catch (ValidationException ex)

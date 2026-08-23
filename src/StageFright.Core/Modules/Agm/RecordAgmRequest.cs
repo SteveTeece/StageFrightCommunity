@@ -1,9 +1,7 @@
 namespace StageFright.Core.Modules.Agm;
 
-/// <summary>Request to record a complete AGM: meeting details, attendance, and every election.</summary>
+/// <summary>Request to record attendance and every election against an already-scheduled AGM.</summary>
 public record RecordAgmRequest(
-    DateTime Date,
-    string? Notes,
     IReadOnlyList<Guid> AttendedMemberIds,
     IReadOnlyList<Guid> AllActiveMemberIds,
     IReadOnlyDictionary<Guid, Guid> OfficeHolderAssignments,
