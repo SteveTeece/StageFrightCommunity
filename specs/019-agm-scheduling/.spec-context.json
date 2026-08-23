@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "agm scheduling",
   "branch": "019-agm-scheduling",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -46,51 +46,149 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-23T03:27:05.291Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-23T03:32:56.289Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T03:45:01.445Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T03:45:28.584Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
   "coverage": {
     "FR-001": {
-      "title": "Schedule an AGM with just date and optional notes"
+      "title": "Schedule an AGM with just date and optional notes",
+      "tasks": [
+        "T006",
+        "T011",
+        "T012",
+        "T013",
+        "T017",
+        "T018"
+      ]
     },
     "FR-002": {
-      "title": "Scheduling creates no attendance/elections/committee term"
+      "title": "Scheduling creates no attendance/elections/committee term",
+      "tasks": [
+        "T006",
+        "T017"
+      ]
     },
     "FR-003": {
-      "title": "AGM list shows recorded/not-recorded status for every AGM"
+      "title": "AGM list shows recorded/not-recorded status for every AGM",
+      "tasks": [
+        "T009",
+        "T015"
+      ]
     },
     "FR-004": {
-      "title": "Record attendance/elections against an existing scheduled AGM"
+      "title": "Record attendance/elections against an existing scheduled AGM",
+      "tasks": [
+        "T019",
+        "T023",
+        "T024",
+        "T027",
+        "T028"
+      ]
     },
     "FR-005": {
-      "title": "Reject recording before the AGM date arrives"
+      "title": "Reject recording before the AGM date arrives",
+      "tasks": [
+        "T019",
+        "T027",
+        "T028"
+      ]
     },
     "FR-006": {
-      "title": "Reject recording an already-recorded AGM a second time"
+      "title": "Reject recording an already-recorded AGM a second time",
+      "tasks": [
+        "T019",
+        "T027",
+        "T028"
+      ]
     },
     "FR-007": {
-      "title": "Recording keeps existing duplicate-assignment and term-rollover rules"
+      "title": "Recording keeps existing duplicate-assignment and term-rollover rules",
+      "tasks": [
+        "T019",
+        "T027"
+      ]
     },
     "FR-008": {
-      "title": "Detail page shows only date/notes until recorded"
+      "title": "Detail page shows only date/notes until recorded",
+      "tasks": [
+        "T010",
+        "T014"
+      ]
     },
     "FR-009": {
-      "title": "Print attendance report reachable for any AGM from list and detail"
+      "title": "Print attendance report reachable for any AGM from list and detail",
+      "tasks": [
+        "T029",
+        "T030"
+      ]
     },
     "FR-010": {
-      "title": "Scheduled AGM report lists active members with unchecked boxes"
+      "title": "Scheduled AGM report lists active members with unchecked boxes",
+      "tasks": [
+        "T029",
+        "T030"
+      ]
     },
     "FR-011": {
-      "title": "Recorded AGM report keeps showing the fixed captured roster"
+      "title": "Recorded AGM report keeps showing the fixed captured roster",
+      "tasks": [
+        "T029",
+        "T030"
+      ]
     },
     "FR-012": {
-      "title": "Empty-state message when nobody to list on scheduled AGM report"
+      "title": "Empty-state message when nobody to list on scheduled AGM report",
+      "tasks": [
+        "T029",
+        "T030"
+      ]
     },
     "FR-013": {
-      "title": "Archiving works for scheduled AGMs without requiring recording first"
+      "title": "Archiving works for scheduled AGMs without requiring recording first",
+      "tasks": [
+        "T031"
+      ]
     },
     "FR-014": {
-      "title": "Printing stays read-only for scheduled and recorded AGMs"
+      "title": "Printing stays read-only for scheduled and recorded AGMs",
+      "tasks": [
+        "T029",
+        "T030",
+        "T033"
+      ]
+    },
+    "FR-015": {
+      "title": "Reject a second same-year AGM; archiving frees the calendar year",
+      "tasks": [
+        "T006",
+        "T007",
+        "T011",
+        "T016",
+        "T017",
+        "T018",
+        "T031"
+      ]
     }
   },
   "size": "normal",
@@ -134,6 +232,9 @@
     "plan": {
       "summary": "Full plan.md/research.md/data-model.md/contracts/ written: schedule-then-record split for IAgmService mirroring Rehearsals, new IsRecorded flag, ExistsForYearAsync uniqueness guard, extended AgmAttendanceSheetService for blank scheduled-AGM reports.",
       "key_finding": "AgmAttendanceSheetService.GenerateAsync and AgmList/AgmDetail print handlers already exist from spec 018 and can be extended with an IsRecorded branch rather than building a new report pipeline."
+    },
+    "tasks": {
+      "summary": "33 tasks across Setup, Foundational, and 3 user-story phases (US1 Schedule P1, US2 Record P1, US3 Print P2) plus Polish; full requirement coverage FR-001..FR-015"
     }
   }
 }
