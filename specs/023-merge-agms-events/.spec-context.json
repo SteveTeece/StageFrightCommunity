@@ -308,7 +308,7 @@
       "summary": "Phase 1 (baseline build/test verification) and Phase 2 (Foundational: ICombinedEventListService merge/sort/route-mapping layer -- enum, DTO, interface, implementation, unit tests, DI registration) complete and green. Phases 3-6 (UI wiring for US1-US3, Polish) not yet started, per explicit scope."
     }
   },
-  "currentTask": "T007",
+  "currentTask": "T008",
   "task_summaries": {
     "T003": {
       "status": "DONE",
