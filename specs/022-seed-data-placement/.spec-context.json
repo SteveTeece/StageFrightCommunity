@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "seed data placement",
   "branch": "dev",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -46,6 +46,20 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-25T08:54:59.722Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-25T08:57:09.803Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-25T08:58:54.336Z"
     }
   ],
   "livingSpecs": {
@@ -55,31 +69,67 @@
   },
   "coverage": {
     "FR-001": {
-      "title": "Present Load sample data on the Organisation Settings tab instead of Review"
+      "title": "Present Load sample data on the Organisation Settings tab instead of Review",
+      "tasks": [
+        "T003",
+        "T005",
+        "T006"
+      ]
     },
     "FR-002": {
-      "title": "Review tab shows sample-data choice read-only, not as a checkbox"
+      "title": "Review tab shows sample-data choice read-only, not as a checkbox",
+      "tasks": [
+        "T002",
+        "T004"
+      ]
     },
     "FR-003": {
-      "title": "Sample data selected disables Chart of Accounts, Opening Balances, Committee tabs"
+      "title": "Sample data selected disables Chart of Accounts, Opening Balances, Committee tabs",
+      "tasks": [
+        "T007",
+        "T009",
+        "T010"
+      ]
     },
     "FR-004": {
-      "title": "Next skips the three bypassed tabs when sample data is selected"
+      "title": "Next skips the three bypassed tabs when sample data is selected",
+      "tasks": [
+        "T007",
+        "T010"
+      ]
     },
     "FR-005": {
-      "title": "Finish does not require Chart of Accounts/balance/committee data when sample data selected"
+      "title": "Finish does not require Chart of Accounts/balance/committee data when sample data selected",
+      "tasks": [
+        "T007",
+        "T011"
+      ]
     },
     "FR-006": {
-      "title": "Checking sample data discards already-queued account/balance/committee entries"
+      "title": "Checking sample data discards already-queued account/balance/committee entries",
+      "tasks": [
+        "T012",
+        "T013"
+      ]
     },
     "FR-007": {
-      "title": "Unchecking sample data re-enables the three tabs, starting empty"
+      "title": "Unchecking sample data re-enables the three tabs, starting empty",
+      "tasks": [
+        "T012",
+        "T013"
+      ]
     },
     "FR-008": {
-      "title": "Debug seeder must already cover accounts/balances/committee data it bypasses"
+      "title": "Debug seeder must already cover accounts/balances/committee data it bypasses",
+      "tasks": [
+        "T011"
+      ]
     },
     "FR-009": {
-      "title": "No other tab's fields/validation/defaults change"
+      "title": "No other tab's fields/validation/defaults change",
+      "tasks": [
+        "T008"
+      ]
     }
   },
   "size": "normal",
@@ -124,6 +174,9 @@
     "plan": {
       "summary": "Plan complete: SampleDataTab component, Tab.Disabled-driven bypass with a code guard, Next-skip, queue-clear-on-check; FR-008 verified needing no seeder changes.",
       "key_finding": "BlazorBootstrap 3.5.0 Tab already exposes a Disabled bool parameter (confirmed via assembly reflection), avoiding any custom CSS/JS for tab unavailability."
+    },
+    "tasks": {
+      "summary": "17 tasks across 3 user-story phases + Polish: US1 relocates the checkbox (6 tasks), US2 wires tab-disable + Next-skip + FR-008 verification (5 tasks), US3 adds queue-discard-on-check (2 tasks), Polish updates specs 017/app-host docs and runs the full build/test gate (4 tasks)."
     }
   }
 }
