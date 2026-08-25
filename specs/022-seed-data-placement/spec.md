@@ -91,6 +91,33 @@ A coordinator can change their mind about sample data before finishing setup —
 - **SC-003**: 100% of setups completed with sample data selected result in a chart of accounts, an opening-balance position, and committee/AGM data being present, with zero manual entry required in any of the three bypassed tabs.
 - **SC-004**: A coordinator can toggle "Load sample data" on and off at least once before finishing and reach a successful Finish in both the bypassed and full-manual-entry state, with no leftover data from the other state.
 
+## MODIFIED Requirements
+<!-- capability: app-host -->
+
+### Optional sample-data seeding is a debug-only, opt-in, non-blocking capability
+
+Sample-data seeding MUST NOT be offered or reachable in release builds, MUST require explicit user opt-in even when available, and MUST run without freezing the setup UI, reporting incremental progress back to it. It MUST also be safe to invoke against a database that already has data. The opt-in control lives on the Organisation Settings tab (the wizard's first tab), and selecting it disables the Chart of Accounts, Opening Balances, and Committee tabs — sample data supplies that information itself, so manual entry on those tabs is bypassed rather than merely optional.
+
+#### Scenario: release build reaches the setup wizard
+- **WHEN** no debug seeder is registered in the container
+- **THEN** the sample-data checkbox is not shown at all, on any tab, and no tab is ever disabled
+
+#### Scenario: user opts into sample data in a debug build
+- **WHEN** the checkbox is checked on the Organisation Settings tab and setup is submitted
+- **THEN** seeding runs off the UI thread while progress messages update the wizard in place, and normal navigation to `/dashboard` still follows once seeding finishes
+
+#### Scenario: seeding runs against a database that already has member data
+- **WHEN** the seeder is invoked and active members already exist
+- **THEN** it exits without creating duplicate data
+
+#### Scenario: coordinator selects sample data before reaching the manual-entry tabs
+- **WHEN** the checkbox is checked on the Organisation Settings tab
+- **THEN** the Chart of Accounts, Opening Balances, and Committee tab headers become unavailable and Next advances directly from Organisation Settings to Review
+
+#### Scenario: coordinator had already queued manual entries before selecting sample data
+- **WHEN** the checkbox is checked after an account, opening balance, or committee title was already queued
+- **THEN** every queued entry is discarded so it is never submitted alongside the seeded sample data
+
 ## Assumptions
 
 - "Seed Data checkbox" in the issue refers to the existing debug-only "Load sample data" checkbox already present on the Review tab (per spec 017's FR-025); this feature relocates and extends it rather than introducing a second checkbox.

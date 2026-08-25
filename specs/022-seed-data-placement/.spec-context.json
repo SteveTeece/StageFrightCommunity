@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "seed data placement",
   "branch": "dev",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implemented",
   "history": [
     {
       "step": "specify",
@@ -60,10 +60,163 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-25T08:58:54.336Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-25T08:59:20.129Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:00:27.662Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:01:08.558Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:03:09.704Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:03:09.875Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:04:59.720Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:04:59.928Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:05:00.199Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:05:00.431Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:05:00.667Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:10:16.784Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:10:16.944Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:10:17.098Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:13:42.843Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:16:18.363Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:16:18.529Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:18:31.055Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T09:19:00.525Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-25T09:19:00.925Z"
     }
   ],
   "livingSpecs": {
     "loaded": [
+      "app-host"
+    ],
+    "synced": [
       "app-host"
     ]
   },
@@ -74,6 +227,9 @@
         "T003",
         "T005",
         "T006"
+      ],
+      "tests": [
+        "SetupWizardTests.cs::SeedDataCheckbox_RendersOnOrganisationSettingsTab_WhenSeederAvailable"
       ]
     },
     "FR-002": {
@@ -81,6 +237,10 @@
       "tasks": [
         "T002",
         "T004"
+      ],
+      "tests": [
+        "ReviewTabTests.cs::SeedDataChoice_RendersReadOnlyRow_WhenDebugSeederAvailable",
+        "ReviewTabTests.cs::SeedDataChoice_IsReadOnly_NoCheckboxRendered"
       ]
     },
     "FR-003": {
@@ -89,6 +249,10 @@
         "T007",
         "T009",
         "T010"
+      ],
+      "tests": [
+        "SetupWizardTests.cs::ChartOfAccountsOpeningBalancesCommittee_BecomeDisabled_WhenSampleDataChecked",
+        "SetupWizardTests.cs::ClickingBypassedTabHeader_DoesNotNavigate_WhenSampleDataChecked"
       ]
     },
     "FR-004": {
@@ -96,6 +260,9 @@
       "tasks": [
         "T007",
         "T010"
+      ],
+      "tests": [
+        "SetupWizardTests.cs::Next_SkipsBypassedTabs_GoesStraightToReview_WhenSampleDataChecked"
       ]
     },
     "FR-005": {
@@ -103,6 +270,9 @@
       "tasks": [
         "T007",
         "T011"
+      ],
+      "tests": [
+        "SetupWizardTests.cs::Finish_Succeeds_When_SampleDataSelected_AndNoBalanceEntered"
       ]
     },
     "FR-006": {
@@ -110,6 +280,9 @@
       "tasks": [
         "T012",
         "T013"
+      ],
+      "tests": [
+        "SetupWizardTests.cs::CheckingSampleData_DiscardsQueuedAccountBalanceAndCommitteeTitle"
       ]
     },
     "FR-007": {
@@ -117,18 +290,29 @@
       "tasks": [
         "T012",
         "T013"
+      ],
+      "tests": [
+        "SetupWizardTests.cs::UncheckingSampleData_MakesTabsAvailableAgain_StartingEmpty",
+        "SetupWizardTests.cs::Finish_Blocked_AfterUncheckingSampleData_WithNoBalanceEntered"
       ]
     },
     "FR-008": {
       "title": "Debug seeder must already cover accounts/balances/committee data it bypasses",
       "tasks": [
         "T011"
+      ],
+      "tests": [
+        "DebugDataSeeder.cs source verification (T011) - no automated test",
+        "direct code inspection"
       ]
     },
     "FR-009": {
       "title": "No other tab's fields/validation/defaults change",
       "tasks": [
         "T008"
+      ],
+      "tests": [
+        "SetupWizardNoSeederTests.cs::Tabs_AreNeverDisabled_WhenSeederNotRegistered"
       ]
     }
   },
@@ -168,6 +352,16 @@
       "decision": "FR-008 requires no DebugDataSeeder.cs changes",
       "why": "source inspection confirms the seeder already creates chart-of-accounts entries, a full opening-balance position, and elects a full committee across two AGMs",
       "rejected": "n/a - verification, not a design choice; tasks.md still carries a verification task per the specs own instruction"
+    },
+    {
+      "decision": "Assert BlazorBootstrap Tab.Disabled at the component-parameter level (cut.FindComponents<Tab>()...Instance.Disabled) rather than via rendered CSS class",
+      "why": "BlazorBootstrap applies its disabled CSS class through the same JS interop that drives Bootstraps tab.js, which bUnit tests stub as a no-op - the rendered DOM never shows a disabled class regardless of the Disabled parameters true value, discovered via a debug run that dumped the actual rendered markup",
+      "rejected": "asserting a disabled CSS class/aria-disabled attribute in the DOM - unreliable in bUnit for this specific component due to the unstubbed JS dependency"
+    },
+    {
+      "decision": "Rewrote 5 existing SetupWizardTests that previously satisfied the Finish opening-balance gate via #seedData to use a real queued opening balance instead",
+      "why": "those tests also assert on queued accounts/committee titles surviving to Finish, but FR-006 now makes checking sample data discard those queues - checking it in those tests would make the assertions self-contradictory",
+      "rejected": "leaving the tests checking #seedData and accepting the resulting assertion failures as expected - would misrepresent an actual regression as expected breakage"
     }
   ],
   "step_summaries": {
@@ -177,6 +371,152 @@
     },
     "tasks": {
       "summary": "17 tasks across 3 user-story phases + Polish: US1 relocates the checkbox (6 tasks), US2 wires tab-disable + Next-skip + FR-008 verification (5 tasks), US3 adds queue-discard-on-check (2 tasks), Polish updates specs 017/app-host docs and runs the full build/test gate (4 tasks)."
+    },
+    "implement": {
+      "summary": "All 17 tasks complete across US1 (checkbox relocated), US2 (tab-disable + Next-skip + FR-008 verified needing no seeder change), US3 (queue-discard-on-check), and Polish (specs 017/app-host docs updated via living-spec fold, full rebuild 0 warnings, full suite 1662/1662 passing)."
     }
-  }
+  },
+  "currentTask": "T017",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Created SampleDataTabTests.cs with the checkbox visibility/change/reflects-value tests (moved from ReviewTabTests)",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/SampleDataTabTests.cs"
+      ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Replaced ReviewTabTests checkbox-interaction tests with read-only-row assertions",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/ReviewTabTests.cs"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Removed interactive checkbox from ReviewTab; added read-only Load sample data row and dropped SeedWithTestDataChanged param/handler",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/ReviewTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/ReviewTab.razor.cs"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "Created SampleDataTab.razor/.razor.cs, moving the checkbox markup from ReviewTab unchanged",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/SampleDataTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/SampleDataTab.razor.cs"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Wired SampleDataTab into Organisation Settings tab; removed SeedWithTestDataChanged wiring from the Review Tab",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Added HandleSeedWithTestDataChanged(bool) to SetupWizard.razor.cs",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Added Disabled binding to the Chart of Accounts/Opening Balances/Committee Tab elements",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Added IsTabBypassed helper, guarded SetActiveTab, and made HandleNextAsync skip bypassed indices",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Extended HandleSeedWithTestDataChanged to clear the three queues when value becomes true",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Added tab-disable/click-blocked/Next-skip tests to SetupWizardTests; fixed 8 existing tests whose old #seedData-on-Review flow the relocation broke",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Updated SeedDataCheckbox_IsAbsent test to check the Organisation Settings tab; added Tabs_AreNeverDisabled_WhenSeederNotRegistered",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardNoSeederTests.cs"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Added queue-discard-on-check, uncheck-reenables, and finish-blocked-after-uncheck tests to SetupWizardTests",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Verified FR-008 via source inspection of DebugDataSeeder.cs - already creates non-system accounts, posts a full opening-balance position, and elects a full committee across two AGMs; no seeder changes needed",
+      "files": [
+        "src/StageFright.App/Seeding/DebugDataSeeder.cs"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Updated specs/017 spec.md: FR-025, its edge-case bullet, an assumption, and an acceptance scenario to reflect the checkbox's new location on Organisation Settings; amended the ADDED Requirements tab-strip description with the bypass behavior",
+      "files": [
+        "specs/017-setup-wizard-tabs/spec.md"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Authored a MODIFIED Requirements delta in spec.md marked capability:app-host and folded it into capabilities/app-host/spec.md via --fold-living-spec, updating the sample-data-seeding requirement and adding two new bypass/discard scenarios",
+      "files": [
+        "specs/022-seed-data-placement/spec.md",
+        "capabilities/app-host/spec.md"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Full rebuild (0 warnings/errors) and full test suite run (1662/1662 passed) confirmed clean"
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "Cross-checked SC-001..SC-004 against the test suite - all satisfied; recorded per-FR test coverage",
+      "files": [
+        "specs/022-seed-data-placement/spec.md"
+      ]
+    }
+  },
+  "verified": [
+    {
+      "what": "FR-008: DebugDataSeeder already covers chart-of-accounts/opening-balances/committee data the three bypassed tabs would otherwise capture",
+      "command": "source inspection of src/StageFright.App/Seeding/DebugDataSeeder.cs (lines 126-138 account creation, 169-187 RecordOpeningBalancesAsync, 783-829 AGM/committee election)",
+      "result": "confirmed - no seeder gap; no source change needed",
+      "warnings": []
+    },
+    {
+      "what": "Full rebuild + full test suite",
+      "command": "dotnet build -t:Rebuild StageFrightCommunity.slnx; dotnet test StageFrightCommunity.slnx",
+      "result": "Build: 0 warnings, 0 errors. Tests: 1662/1662 passed across all 5 projects (Core 590, Reports 174, UI 561, Data 152, Integration 185) - 0 failed, 0 skipped",
+      "warnings": []
+    },
+    {
+      "what": "Success criteria cross-check",
+      "command": "manual mapping of SC-001..SC-004 against the Phase 1-3 test suite",
+      "result": "SC-001: SeedDataCheckbox_RendersOnOrganisationSettingsTab_WhenSeederAvailable + ReviewTab SeedDataChoice_IsReadOnly_NoCheckboxRendered. SC-002: ClickingBypassedTabHeader_DoesNotNavigate + Next_SkipsBypassedTabs_GoesStraightToReview. SC-003: T011 seeder verification + Finish_Succeeds_When_SampleDataSelected_AndNoBalanceEntered/ValidSubmit_FinishesNormally_When_NoAccountsQueued/ValidSubmit_FinishesWithNoTitles_When_QueueLeftEmpty. SC-004: CheckingSampleData_DiscardsQueuedAccountBalanceAndCommitteeTitle + UncheckingSampleData_MakesTabsAvailableAgain_StartingEmpty + Finish_Blocked_AfterUncheckingSampleData_WithNoBalanceEntered. All four satisfied.",
+      "warnings": []
+    }
+  ],
+  "last_action": "all 17 tasks done - 1662/1662 tests pass, 0 build warnings"
 }
