@@ -1,0 +1,77 @@
+{
+  "workflow": "speckit",
+  "specName": "seed data placement",
+  "branch": "dev",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-25T08:26:23.867Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-25T08:31:23.616Z"
+    }
+  ],
+  "livingSpecs": {
+    "loaded": [
+      "app-host"
+    ]
+  },
+  "coverage": {
+    "FR-001": {
+      "title": "Present Load sample data on the Organisation Settings tab instead of Review"
+    },
+    "FR-002": {
+      "title": "Review tab shows sample-data choice read-only, not as a checkbox"
+    },
+    "FR-003": {
+      "title": "Sample data selected disables Chart of Accounts, Opening Balances, Committee tabs"
+    },
+    "FR-004": {
+      "title": "Next skips the three bypassed tabs when sample data is selected"
+    },
+    "FR-005": {
+      "title": "Finish does not require Chart of Accounts/balance/committee data when sample data selected"
+    },
+    "FR-006": {
+      "title": "Checking sample data discards already-queued account/balance/committee entries"
+    },
+    "FR-007": {
+      "title": "Unchecking sample data re-enables the three tabs, starting empty"
+    },
+    "FR-008": {
+      "title": "Debug seeder must already cover accounts/balances/committee data it bypasses"
+    },
+    "FR-009": {
+      "title": "No other tab's fields/validation/defaults change"
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 14,
+    "projectedTasks": 20,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "context": [
+    "living spec: app-host (capabilities/app-host/spec.md — Optional sample-data seeding section)",
+    "area: src/StageFright.UI/Pages/Setup/ (SetupWizard.razor(.cs), Tabs/ReviewTab, Tabs/GeneralAppearanceTab, Tabs/ChartOfAccountsTab, Tabs/OpeningBalancesTab, Tabs/CommitteeTab)",
+    "area: src/StageFright.App/Seeding/DebugDataSeeder.cs (verify accounts/opening-balances/committee coverage per FR-008)",
+    "constraint: spec 017's existing rule — Finish requires a posted opening balance OR sample data selected — preserved unchanged (FR-005)",
+    "constraint: this feature is scoped to the /setup first-run wizard only; standalone Chart of Accounts, Opening Balances, and Settings pages are unaffected"
+  ],
+  "intent": "Let a coordinator decide up front (on the Organisation Settings tab) whether to load sample data, and skip manual Chart of Accounts, Opening Balances, and Committee entry entirely when they do.",
+  "expectations": [
+    "Standalone Finance ▸ Chart of Accounts and Opening Balances pages, and the Settings page's post-setup committee configuration, are out of scope — unchanged.",
+    "Release-build behavior (no debug seeder registered) is unchanged — the checkbox and its bypass never appear.",
+    "No new entities, services, or database schema changes — this is wizard-navigation and in-session-queue behavior only."
+  ]
+}
