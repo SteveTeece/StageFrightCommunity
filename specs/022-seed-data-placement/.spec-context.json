@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "seed data placement",
   "branch": "dev",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,34 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-25T08:31:23.616Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-25T08:43:47.672Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T08:54:26.976Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T08:54:30.622Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-25T08:54:59.722Z"
     }
   ],
   "livingSpecs": {
@@ -73,5 +101,29 @@
     "Standalone Finance ▸ Chart of Accounts and Opening Balances pages, and the Settings page's post-setup committee configuration, are out of scope — unchanged.",
     "Release-build behavior (no debug seeder registered) is unchanged — the checkbox and its bypass never appear.",
     "No new entities, services, or database schema changes — this is wizard-navigation and in-session-queue behavior only."
-  ]
+  ],
+  "approach": "Add a new SampleDataTab sub-component to the Organisation Settings tab (moving the existing checkbox markup as-is), bind BlazorBootstrap's native Tab.Disabled to _seedWithTestData on the three affected tabs with a code-level SetActiveTab guard as backup, and make HandleNextAsync skip past disabled tabs; checking the box clears the three in-session queues.",
+  "decisions": [
+    {
+      "decision": "Use BlazorBootstrap Tab.Disabled + a SetActiveTab code guard to bypass the three tabs",
+      "why": "Tab.Disabled already exists on the installed 3.5.0 package (confirmed via reflection) and matches prefer-existing-patterns guidance; the code guard makes FR-003 hold regardless of library click-suppression internals",
+      "rejected": "CSS-only disabling with no functional guard; conditionally removing <Tab> elements from the DOM (breaks positional indexing)"
+    },
+    {
+      "decision": "New SampleDataTab.razor/.razor.cs component reusing ReviewTabs existing checkbox markup unchanged (plain form-check, not RadzenSwitch)",
+      "why": "matches the Organisation Settings tabs existing one-sub-component-per-concern decomposition; restyling was never asked for by issue #313",
+      "rejected": "inlining the markup into SetupWizard.razor; converting to RadzenSwitch while relocating"
+    },
+    {
+      "decision": "FR-008 requires no DebugDataSeeder.cs changes",
+      "why": "source inspection confirms the seeder already creates chart-of-accounts entries, a full opening-balance position, and elects a full committee across two AGMs",
+      "rejected": "n/a - verification, not a design choice; tasks.md still carries a verification task per the specs own instruction"
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Plan complete: SampleDataTab component, Tab.Disabled-driven bypass with a code guard, Next-skip, queue-clear-on-check; FR-008 verified needing no seeder changes.",
+      "key_finding": "BlazorBootstrap 3.5.0 Tab already exposes a Disabled bool parameter (confirmed via assembly reflection), avoiding any custom CSS/JS for tab unavailability."
+    }
+  }
 }
