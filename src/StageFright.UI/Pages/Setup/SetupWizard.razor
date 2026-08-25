@@ -33,6 +33,9 @@
                                         <ThemeSelectionTab />
                                         <SalesTaxTab Model="_model" />
                                     </div>
+                                    <SampleDataTab DebugSeederAvailable="_debugSeeder is not null"
+                                                   SeedWithTestData="_seedWithTestData"
+                                                   SeedWithTestDataChanged="HandleSeedWithTestDataChanged" />
                                 </ChildContent>
                                 <ErrorContent Context="tabError"><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
                             </ErrorBoundary>
@@ -40,7 +43,7 @@
                     </div>
                 </Content>
             </Tab>
-            <Tab Title="Chart of Accounts" OnClick="@(() => SetActiveTab(1))">
+            <Tab Title="Chart of Accounts" Disabled="@_seedWithTestData" OnClick="@(() => SetActiveTab(1))">
                 <Content>
                     <div class="pt-3">
                         @if (_tabShown[1])
@@ -57,7 +60,7 @@
                     </div>
                 </Content>
             </Tab>
-            <Tab Title="Opening Balances" OnClick="@(() => SetActiveTab(2))">
+            <Tab Title="Opening Balances" Disabled="@_seedWithTestData" OnClick="@(() => SetActiveTab(2))">
                 <Content>
                     <div class="pt-3">
                         @if (_tabShown[2])
@@ -73,7 +76,7 @@
                     </div>
                 </Content>
             </Tab>
-            <Tab Title="Committee" OnClick="@(() => SetActiveTab(3))">
+            <Tab Title="Committee" Disabled="@_seedWithTestData" OnClick="@(() => SetActiveTab(3))">
                 <Content>
                     <div class="pt-3">
                         @if (_tabShown[3])
@@ -102,8 +105,7 @@
                                                QueuedCommitteeTitles="_queuedCommitteeTitles"
                                                QueuedAccounts="_queuedAccounts"
                                                DebugSeederAvailable="_debugSeeder is not null"
-                                               SeedWithTestData="_seedWithTestData"
-                                               SeedWithTestDataChanged="@(v => _seedWithTestData = v)" />
+                                               SeedWithTestData="_seedWithTestData" />
                                 </ChildContent>
                                 <ErrorContent Context="tabError"><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
                             </ErrorBoundary>

@@ -50,10 +50,28 @@ public class SetupWizardNoSeederTests : BunitContext
     public void SeedDataCheckbox_IsAbsent_WhenSeederNotRegistered()
     {
         var cut = Render<SetupWizard>();
+
+        // Absent on the Organisation Settings tab (its new home, spec 022 FR-001) ...
+        Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#seedData"));
+
         AdvanceToReview(cut);
 
+        // ... and still absent once Review is reached, same as before relocation.
         Assert.Contains("Review", cut.Markup);
         Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#seedData"));
+    }
+
+    [Fact]
+    public void Tabs_AreNeverDisabled_WhenSeederNotRegistered()
+    {
+        var cut = Render<SetupWizard>();
+
+        // No sample-data checkbox exists to trigger the tab-bypass (spec 022 FR-009) —
+        // every tab's Disabled parameter stays false, exactly as before this feature.
+        foreach (var tab in cut.FindComponents<BlazorBootstrap.Tab>())
+        {
+            Assert.False(tab.Instance.Disabled);
+        }
     }
 
     [Fact]
