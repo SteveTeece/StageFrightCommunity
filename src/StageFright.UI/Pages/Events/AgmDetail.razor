@@ -9,41 +9,72 @@
 else if (_notFound)
 {
     <div class="alert alert-warning py-1 mb-2 small">AGM not found.</div>
-    <a href="/events/agm" class="btn btn-outline-secondary btn-sm">Back to Past AGMs</a>
+    <a href="/events/agm" class="btn btn-outline-secondary btn-sm">Back to AGMs</a>
 }
 else
 {
     <div class="page-header d-flex align-items-center justify-content-between mb-2">
-        <h1 class="h3 mb-0">AGM — @_agm!.Date.ToString("d MMMM yyyy")</h1>
-        <button class="btn btn-outline-danger btn-sm" @onclick="ArchiveAsync" disabled="@_archiving">
-            @(_archiving ? "Archiving…" : "Archive")
-        </button>
+        <h1 class="h3 mb-0">
+            AGM — @_agm!.Date.ToString("d MMMM yyyy")
+            @if (_agm.IsRecorded)
+            {
+                <span class="badge bg-success">Recorded</span>
+            }
+            else
+            {
+                <span class="badge bg-warning text-dark">Scheduled</span>
+            }
+        </h1>
+        <div class="d-flex gap-1">
+            <button class="btn btn-outline-secondary btn-sm"
+                    @onclick="PrintAttendanceReport"
+                    aria-label="Print attendance report">
+                Print Attendance Report
+            </button>
+            <button class="btn btn-outline-danger btn-sm" @onclick="ArchiveAsync" disabled="@_archiving">
+                @(_archiving ? "Archiving…" : "Archive")
+            </button>
+        </div>
     </div>
+
+    @if (!string.IsNullOrEmpty(_printMessage))
+    {
+        <div class="alert alert-warning py-1 mb-2 small" role="alert">@_printMessage</div>
+    }
 
     @if (!string.IsNullOrWhiteSpace(_agm.Notes))
     {
         <p class="text-muted">@_agm.Notes</p>
     }
 
-    <h2 class="h6 mb-1">Attendance</h2>
-    <p class="small">@AttendedCount of @_attendance.Count members attended.</p>
-
-    <h2 class="h6 mb-1 mt-3">Elected Positions</h2>
-    @if (PositionLines.Count == 0)
+    @if (!_agm.IsRecorded)
     {
-        <p class="small text-muted">No positions recorded.</p>
+        <a href="@($"/events/agm/{_agm.Id}/record")" class="btn btn-primary btn-sm mt-1 mb-2">
+            Record Attendance &amp; Elections
+        </a>
     }
     else
     {
-        <ul class="list-unstyled small">
-            @foreach (var line in PositionLines)
-            {
-                <li class="mb-1">
-                    <strong>@line.Label</strong> — @line.MemberText
-                </li>
-            }
-        </ul>
+        <h2 class="h6 mb-1">Attendance</h2>
+        <p class="small">@AttendedCount of @_attendance.Count members attended.</p>
+
+        <h2 class="h6 mb-1 mt-3">Elected Positions</h2>
+        @if (PositionLines.Count == 0)
+        {
+            <p class="small text-muted">No positions recorded.</p>
+        }
+        else
+        {
+            <ul class="list-unstyled small">
+                @foreach (var line in PositionLines)
+                {
+                    <li class="mb-1">
+                        <strong>@line.Label</strong> — @line.MemberText
+                    </li>
+                }
+            </ul>
+        }
     }
 
-    <a href="/events/agm" class="btn btn-outline-secondary btn-sm mt-2">Back to Past AGMs</a>
+    <a href="/events/agm" class="btn btn-outline-secondary btn-sm mt-2">Back to AGMs</a>
 }

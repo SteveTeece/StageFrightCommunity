@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Reports.Rendering;
 
 namespace StageFright.UI.Pages.Events;
 
@@ -15,7 +17,11 @@ public partial class AgmDetail : ComponentBase
     [Inject] private IAgmService AgmService { get; set; } = null!;
     [Inject] private ICommitteeService CommitteeService { get; set; } = null!;
     [Inject] private IAgmAttendanceRepository AttendanceRepository { get; set; } = null!;
+    [Inject] private IAgmAttendanceSheetService AgmAttendanceSheetService { get; set; } = null!;
+    [Inject] private IAgmAttendanceSheetPdfRenderer AgmAttendanceSheetPdfRenderer { get; set; } = null!;
+    [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private ILogger<AgmDetail> Logger { get; set; } = null!;
 
     private AnnualGeneralMeeting? _agm;
     private List<AgmAttendanceRecord> _attendance = [];
@@ -23,6 +29,7 @@ public partial class AgmDetail : ComponentBase
     private bool _loading = true;
     private bool _notFound;
     private bool _archiving;
+    private string? _printMessage;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -106,6 +113,36 @@ public partial class AgmDetail : ComponentBase
         finally
         {
             _archiving = false;
+        }
+    }
+
+    private async Task PrintAttendanceReport()
+    {
+        _printMessage = null;
+
+        try
+        {
+            var sheetData = await AgmAttendanceSheetService.GenerateAsync(Id);
+
+            if (sheetData.Members.Count == 0)
+            {
+                _printMessage = "No attendance records found — nothing to print.";
+                return;
+            }
+
+            var settings = await SettingsService.GetAsync();
+            var orgName = settings?.OrganizationName ?? string.Empty;
+            var bytes = AgmAttendanceSheetPdfRenderer.Render(sheetData, orgName);
+            var tempPath = Path.Combine(Path.GetTempPath(), $"agm-attendance-report_{Guid.NewGuid():N}.pdf");
+            File.WriteAllBytes(tempPath, bytes);
+#pragma warning disable CA1416
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(tempPath) { UseShellExecute = true });
+#pragma warning restore CA1416
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to print attendance report for AGM {AgmId}", Id);
+            _printMessage = "Unable to print attendance report. Please try again.";
         }
     }
 }

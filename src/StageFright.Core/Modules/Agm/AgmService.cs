@@ -6,8 +6,9 @@ using StageFright.Core.Exceptions;
 namespace StageFright.Core.Modules.Agm;
 
 /// <summary>
-/// Records and reviews Annual General Meetings: attendance, elections, and the committee-term
-/// chain each AGM starts (closing whatever term was previously open).
+/// Schedules, records, and reviews Annual General Meetings: an AGM is first scheduled (date +
+/// notes only) and later recorded (attendance, elections, and the committee-term chain each AGM
+/// starts, closing whatever term was previously open).
 /// </summary>
 public class AgmService : IAgmService
 {
@@ -37,8 +38,49 @@ public class AgmService : IAgmService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<AnnualGeneralMeeting> RecordAsync(RecordAgmRequest request, CancellationToken ct = default)
+    public async Task<AnnualGeneralMeeting> ScheduleAsync(ScheduleAgmRequest request, CancellationToken ct = default)
     {
+        if (await _agmRepo.ExistsForYearAsync(request.Date.Year, ct))
+            throw new ValidationException(
+                $"An AGM already exists for {request.Date.Year}. Archive it before scheduling a replacement.",
+                nameof(AnnualGeneralMeeting), nameof(ScheduleAsync));
+
+        var now = DateTime.UtcNow;
+        var agm = new AnnualGeneralMeeting
+        {
+            Id = Guid.NewGuid(),
+            Date = request.Date,
+            Notes = request.Notes,
+            IsRecorded = false,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        AnnualGeneralMeeting saved = null!;
+        await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
+        {
+            saved = await _agmRepo.AddAsync(agm, innerCt);
+            await _audit.LogAsync(nameof(AnnualGeneralMeeting), saved.Id, AuditAction.Create, ct: innerCt);
+        }, ct);
+
+        return saved;
+    }
+
+    public async Task<AnnualGeneralMeeting> RecordAsync(Guid agmId, RecordAgmRequest request, CancellationToken ct = default)
+    {
+        var agm = await _agmRepo.GetByIdAsync(agmId, ct)
+            ?? throw new EntityNotFoundException(nameof(AnnualGeneralMeeting), agmId, nameof(RecordAsync));
+
+        if (agm.IsRecorded)
+            throw new ValidationException(
+                "This AGM has already been recorded.",
+                nameof(AnnualGeneralMeeting), nameof(RecordAsync), agmId);
+
+        if (agm.Date.Date > DateTime.Today)
+            throw new ValidationException(
+                "Attendance and elections cannot be recorded before the AGM's meeting date.",
+                nameof(AnnualGeneralMeeting), nameof(RecordAsync), agmId);
+
         var assignedMemberIds = new List<Guid>();
         assignedMemberIds.AddRange(request.OfficeHolderAssignments.Values);
         assignedMemberIds.AddRange(request.GeneralCommitteeMemberIds);
@@ -49,29 +91,21 @@ public class AgmService : IAgmService
                 "A member cannot hold more than one committee assignment from the same AGM.",
                 nameof(AnnualGeneralMeeting), nameof(RecordAsync));
 
-        AnnualGeneralMeeting savedAgm = null!;
-
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
             var now = DateTime.UtcNow;
             var settings = await _settingsService.GetAsync(innerCt);
 
-            var agm = new AnnualGeneralMeeting
-            {
-                Id = Guid.NewGuid(),
-                Date = request.Date,
-                Notes = request.Notes,
-                GeneralCommitteeSeatCountTarget = settings?.GeneralCommitteeSeatCountTarget,
-                CreatedAt = now,
-                UpdatedAt = now
-            };
-            savedAgm = await _agmRepo.AddAsync(agm, innerCt);
+            agm.GeneralCommitteeSeatCountTarget = settings?.GeneralCommitteeSeatCountTarget;
+            agm.IsRecorded = true;
+            agm.UpdatedAt = now;
+            await _agmRepo.UpdateAsync(agm, innerCt);
 
             var attendedSet = request.AttendedMemberIds.ToHashSet();
             var attendanceRecords = request.AllActiveMemberIds.Select(memberId => new AgmAttendanceRecord
             {
                 Id = Guid.NewGuid(),
-                AnnualGeneralMeetingId = savedAgm.Id,
+                AnnualGeneralMeetingId = agm.Id,
                 MemberId = memberId,
                 Attended = attendedSet.Contains(memberId),
                 CreatedAt = now
@@ -81,7 +115,7 @@ public class AgmService : IAgmService
             var openTerm = await _termRepo.GetOpenAsync(innerCt);
             if (openTerm is not null)
             {
-                openTerm.EndDate = request.Date;
+                openTerm.EndDate = agm.Date;
                 openTerm.UpdatedAt = now;
                 await _termRepo.UpdateAsync(openTerm, innerCt);
             }
@@ -89,10 +123,10 @@ public class AgmService : IAgmService
             var newTerm = new CommitteeTerm
             {
                 Id = Guid.NewGuid(),
-                StartedByAgmId = savedAgm.Id,
-                StartDate = request.Date,
+                StartedByAgmId = agm.Id,
+                StartDate = agm.Date,
                 EndDate = null,
-                LabelYear = request.Date.Month >= 7 ? request.Date.Year + 1 : request.Date.Year,
+                LabelYear = agm.Date.Month >= 7 ? agm.Date.Year + 1 : agm.Date.Year,
                 CreatedAt = now,
                 UpdatedAt = now
             };
@@ -106,7 +140,7 @@ public class AgmService : IAgmService
                     MemberId = memberId,
                     CommitteeTermId = savedTerm.Id,
                     OfficeHolderTypeId = officeHolderTypeId,
-                    StartDate = request.Date,
+                    StartDate = agm.Date,
                     EndDate = null,
                     CreatedAt = now,
                     UpdatedAt = now
@@ -122,7 +156,7 @@ public class AgmService : IAgmService
                     MemberId = memberId,
                     CommitteeTermId = savedTerm.Id,
                     OfficeHolderTypeId = null,
-                    StartDate = request.Date,
+                    StartDate = agm.Date,
                     EndDate = null,
                     CreatedAt = now,
                     UpdatedAt = now
@@ -130,10 +164,10 @@ public class AgmService : IAgmService
                 await _positionRepo.AddAsync(record, innerCt);
             }
 
-            await _audit.LogAsync(nameof(AnnualGeneralMeeting), savedAgm.Id, AuditAction.Create, ct: innerCt);
+            await _audit.LogAsync(nameof(AnnualGeneralMeeting), agm.Id, AuditAction.Update, ct: innerCt);
         }, ct);
 
-        return savedAgm;
+        return agm;
     }
 
     public Task<AnnualGeneralMeeting?> GetByIdAsync(Guid id, CancellationToken ct = default) =>

@@ -33,7 +33,7 @@
         </div>
 
         <!-- Type filter -->
-        <div class="d-flex align-items-center gap-2 mb-2">
+        <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
             <label for="type-filter" class="form-label small mb-0">Show:</label>
             <select id="type-filter" class="form-select form-select-sm w-auto"
                     value="@_typeFilter" @onchange="OnTypeFilterChanged" aria-label="Filter by account type">
@@ -44,6 +44,11 @@
                 <option value="@AccountType.Income">Income</option>
                 <option value="@AccountType.Expense">Expenses</option>
             </select>
+            <div class="d-flex align-items-center gap-2 ms-auto">
+                <label for="includeBalancesSwitch" class="form-label mb-0 small">Include Current Balances</label>
+                <RadzenSwitch Name="includeBalancesSwitch" @bind-Value="_includeBalances" Change="@((bool _) => StateHasChanged())" />
+                <button class="btn btn-outline-secondary btn-sm" @onclick="PrintAsync">Print Chart of Accounts</button>
+            </div>
         </div>
 
         <!-- Active accounts -->

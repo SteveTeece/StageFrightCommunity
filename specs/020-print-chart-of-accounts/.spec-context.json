@@ -1,0 +1,532 @@
+{
+  "workflow": "speckit",
+  "specName": "print chart of accounts",
+  "branch": "020-print-chart-of-accounts",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-23T05:56:46.456Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T06:01:27.082Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-23T06:26:33.102Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T06:34:42.442Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T06:34:49.839Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T06:35:31.037Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-23T08:55:42.011Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T08:56:25.442Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T08:56:49.916Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-23T09:05:32.700Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T09:07:17.677Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T09:10:03.054Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T09:10:03.230Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T09:10:32.751Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T09:12:51.348Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T09:14:33.235Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T09:16:01.463Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T09:16:01.614Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T09:16:48.255Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T09:18:43.687Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T09:19:46.131Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T09:21:48.661Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-23T09:36:58.637Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T09:36:58.875Z"
+    }
+  ],
+  "coverage": {
+    "FR-001": {
+      "title": "Chart of Accounts screen provides a Print Chart of Accounts button",
+      "tasks": [
+        "T005",
+        "T006"
+      ],
+      "tests": [
+        "ChartOfAccountsPageTests.cs::PrintButton_Renders_WithVerbatimLabel"
+      ]
+    },
+    "FR-002": {
+      "title": "Screen provides an off-by-default option to include current balances",
+      "tasks": [
+        "T008",
+        "T010"
+      ],
+      "tests": [
+        "ChartOfAccountsPageTests.cs::IncludeBalancesSwitch_Renders_DefaultingToUnchecked"
+      ]
+    },
+    "FR-003": {
+      "title": "Print produces a document listing every active account",
+      "tasks": [
+        "T002",
+        "T003"
+      ],
+      "tests": [
+        "ChartOfAccountsReportProviderTests.cs::GenerateAsync_ReturnsExactlyFiveSections_InFixedOrder"
+      ]
+    },
+    "FR-004": {
+      "title": "Document groups accounts by type in fixed order",
+      "tasks": [
+        "T002",
+        "T003"
+      ],
+      "tests": [
+        "ChartOfAccountsReportProviderTests.cs::GenerateAsync_ReturnsExactlyFiveSections_InFixedOrder",
+        "GenerateAsync_TypeWithNoAccounts_StillAppearsWithZeroRows"
+      ]
+    },
+    "FR-005": {
+      "title": "Accounts within a type section ordered by account number ascending",
+      "tasks": [
+        "T002",
+        "T003"
+      ],
+      "tests": [
+        "ChartOfAccountsReportProviderTests.cs::GenerateAsync_RowsWithinSection_OrderedByAccountNumberAscending"
+      ]
+    },
+    "FR-006": {
+      "title": "Each row shows number, name, and system/bank indicator",
+      "tasks": [
+        "T002",
+        "T003"
+      ],
+      "tests": [
+        "ChartOfAccountsReportProviderTests.cs::GenerateAsync_SystemAccount_NameHasSystemSuffix",
+        "GenerateAsync_BankAccount_NameHasBankSuffix",
+        "GenerateAsync_SystemAndBankAccount_NameHasCombinedSuffix",
+        "GenerateAsync_PlainAccount_NameHasNoSuffix"
+      ]
+    },
+    "FR-007": {
+      "title": "Balance shown per account when include-balances is on",
+      "tasks": [
+        "T007",
+        "T009"
+      ],
+      "tests": [
+        "ChartOfAccountsReportProviderTests.cs::GenerateAsync_IncludeBalancesTrue_AddsBalanceColumn",
+        "GenerateAsync_IncludeBalancesTrue_NoError_ShowsFormattedBalance"
+      ]
+    },
+    "FR-008": {
+      "title": "Printed balance matches the Chart of Accounts screen's figure",
+      "tasks": [
+        "T007",
+        "T009"
+      ],
+      "tests": [
+        "Same IAccountBalanceService.GetActiveAccountBalancesAsync as ChartOfAccountsPage - matches by construction"
+      ]
+    },
+    "FR-009": {
+      "title": "No balance column when include-balances is off",
+      "tasks": [
+        "T007",
+        "T009"
+      ],
+      "tests": [
+        "ChartOfAccountsReportProviderTests.cs::GenerateAsync_IncludeBalancesUnset_TwoColumnShapeUnchanged",
+        "GenerateAsync_IncludeBalancesFalse_TwoColumnShapeUnchanged"
+      ]
+    },
+    "FR-010": {
+      "title": "Per-account balance error shows an indicator without blocking the rest",
+      "tasks": [
+        "T007",
+        "T009"
+      ],
+      "tests": [
+        "ChartOfAccountsReportProviderTests.cs::GenerateAsync_IncludeBalancesTrue_HasError_ShowsErrorText"
+      ]
+    },
+    "FR-011": {
+      "title": "Archived accounts excluded from the document",
+      "tasks": [
+        "T002",
+        "T003"
+      ],
+      "tests": [
+        "ChartOfAccountsReportProviderTests.cs::GenerateAsync_NeverCallsGetArchivedAccountBalancesAsync"
+      ]
+    },
+    "FR-012": {
+      "title": "No combined grand-total balance figure",
+      "tasks": [
+        "T002",
+        "T003"
+      ],
+      "tests": [
+        "ChartOfAccountsReportProviderTests.cs::GenerateAsync_GrandTotal_IsAlwaysNull"
+      ]
+    },
+    "FR-013": {
+      "title": "Generated document opens automatically",
+      "tasks": [
+        "T005",
+        "T006"
+      ],
+      "tests": [
+        "ChartOfAccountsPageTests.cs::ClickPrint_ProviderNotFound_ShowsErrorAlert_AndDoesNotRenderPdf",
+        "ClickPrint_ProviderThrows_ShowsErrorAlert_AndDoesNotRenderPdf; happy path verified live via CDP",
+        "no bUnit seam"
+      ]
+    },
+    "FR-014": {
+      "title": "Report also available from the central Reports menu with CSV export",
+      "tasks": [
+        "T002",
+        "T003",
+        "T004",
+        "T011"
+      ],
+      "tests": [
+        "ChartOfAccountsReportProviderTests.cs::ModuleName_IsFinance",
+        "GenerateAsync_ExportedViaCsv_IncludeBalancesFalse_HeaderAndDataMatchOutput",
+        "GenerateAsync_ExportedViaCsv_IncludeBalancesTrue_HeaderAndDataMatchOutput"
+      ]
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 7,
+    "projectedTasks": 12,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "context": [
+    "living spec: finance",
+    "living spec: reports-pipeline",
+    "living spec: app-host",
+    "area: src/StageFright.UI/Pages/Finance/ChartOfAccountsPage.razor(.cs)",
+    "area: src/StageFright.Reports/Providers/*.cs (existing IReportProvider pattern, e.g. TrialBalanceReportProvider)",
+    "constraint: per-account balance failures isolated (HasError indicator), never break the rest of the report",
+    "constraint: reports contributed only through IReportProvider, auto-discovered via DI — no menu code needed",
+    "constraint: Print/CSV hand off to the OS default app via a temp file, never an in-app viewer"
+  ],
+  "intent": "Let a user print the chart of accounts, grouped by account type/number, with an optional current-balance column",
+  "expectations": [
+    "Archived accounts are not included in the printed report",
+    "No combined grand-total balance figure is shown",
+    "No new persisted entity or migration — reuses the existing Account entity and balance calculation"
+  ],
+  "livingSpecs": {
+    "loaded": [
+      "finance",
+      "reports-pipeline",
+      "app-host"
+    ],
+    "synced": [
+      "finance"
+    ]
+  },
+  "approach": "Add a Print button plus an off-by-default include-balances RadzenSwitch to ChartOfAccountsPage, backed by one new ChartOfAccountsReportProvider that reuses IAccountBalanceService for grouped, ordered, error-isolated balances. The page prints directly via IReportProviderRegistry, IPdfReportRenderer, and Process.Start (no preview modal); registering the provider in DI alone satisfies the Reports-menu and CSV story.",
+  "decisions": [
+    {
+      "decision": "Reuse IAccountBalanceService as the sole balance source for the report",
+      "why": "Guarantees FR-008 (matches screen figure) by construction and reuses its existing per-account HasError isolation (FR-010) instead of re-deriving GL sums",
+      "rejected": "Querying IGLRepository directly in the new provider, duplicating the normal-side sign-flip and try/catch logic"
+    },
+    {
+      "decision": "Print button hands off directly to a temp PDF via IReportProviderRegistry, IPdfReportRenderer, and Process.Start, bypassing ReportViewer",
+      "why": "FR-013 requires the document to open automatically, matching the existing quick-print pattern used by the RehearsalList attendance roll button and other screen-level print buttons",
+      "rejected": "Navigating to /reports?reportId=chart-of-accounts and triggering print from the preview modal"
+    },
+    {
+      "decision": "Balance column is structurally omitted, not blank, when includeBalances is off",
+      "why": "FR-009 requires no balance column at all; PdfReportRenderer and CSV export already tolerate a shorter Cells list per row so no renderer change is needed",
+      "rejected": "Always including a Balance column with empty-string cells when the option is off"
+    },
+    {
+      "decision": "System and bank indicator is a plain-text suffix on the Name cell",
+      "why": "The spec edge case calls for plain text suitable for print rather than the on-screen badge widgets, for two rarely-set booleans",
+      "rejected": "A dedicated Flags column"
+    },
+    {
+      "decision": "DisplayOrder is set to 15, between Income Statement (10) and Trial Balance (20)",
+      "why": "Keeps the existing Finance DisplayOrder sequence meaningful without renumbering any existing provider",
+      "rejected": "Appending at DisplayOrder 70, the end of the Finance list"
+    },
+    {
+      "decision": "Screen print button renders straight to a temp PDF plus Process.Start, no ReportViewer preview modal",
+      "why": "spec calls for a single-click print action from the screen itself; RehearsalList.PrintRoll already established this exact quick-print pattern for a screen-embedded button",
+      "rejected": "Routing the screen button through ReportViewer own preview modal"
+    },
+    {
+      "decision": "US3 Reports menu needed no new production code beyond DI registration",
+      "why": "ReportMenuItemProvider, ReportsPage, ReportViewer, and CsvReportExporter already build the Finance menu section, on-screen filter control, and CSV export generically from any registered IReportProvider",
+      "rejected": "A separate report id or bespoke Reports-menu wiring for the balances variant"
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Plan complete: one new ChartOfAccountsReportProvider plus a Print button and switch on ChartOfAccountsPage, reusing IAccountBalanceService and the existing quick-print temp-file pattern; no new entity or migration",
+      "key_finding": "AccountBalanceService already provides matching-figure, per-account-error-isolated balances the report can reuse verbatim, and the RehearsalList attendance-roll button is the exact precedent for a screen-level auto-opening print action outside ReportViewer"
+    },
+    "tasks": {
+      "summary": "13 tasks across Setup/Foundational/US1/US2/US3/Polish: one new ChartOfAccountsReportProvider (base structure Foundational, balance column US2), a Print button + include-balances RadzenSwitch on ChartOfAccountsPage (US1/US2), and a test-only Reports-menu/CSV verification phase (US3, no new production code)."
+    },
+    "implement": {
+      "summary": "Added Print Chart of Accounts button and Include Current Balances switch to the Chart of Accounts screen, backed by a new ChartOfAccountsReportProvider registered in the Reports pipeline that also surfaces it in the Reports menu with CSV export; 66 new/updated tests, 1650 total passing, live-app verified via WebView2 CDP"
+    }
+  },
+  "currentTask": "T013",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Confirmed baseline dotnet build + full dotnet test are green (1620 tests, 0 failures) before any change"
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "New ChartOfAccountsReportProviderTests covering identity, five fixed sections, empty-section, ordering, name-suffix formatting, column/cell shape, null GrandTotal/SummaryColumns, and archived-never-read",
+      "files": [
+        "tests/StageFright.Reports.Tests/ChartOfAccountsReportProviderTests.cs"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "New ChartOfAccountsReportProvider : IReportProvider implementing the five-section grouping/ordering/name-suffix/no-grand-total structure; all 16 T002 tests pass",
+      "files": [
+        "src/StageFright.Reports/Providers/ChartOfAccountsReportProvider.cs"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Registered ChartOfAccountsReportProvider in DI, inserted between IncomeStatementReportProvider and TrialBalanceReportProvider per DisplayOrder 15",
+      "files": [
+        "src/StageFright.App/MauiProgram.cs"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Extended ChartOfAccountsPageTests with IReportProviderRegistry/IPdfReportRenderer/ISettingsService fixtures and 3 new Print Chart of Accounts tests (button renders, null-provider error path, throwing-provider error path); compiles clean, fails at runtime until T006",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Finance/ChartOfAccountsPageTests.cs"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Added Print Chart of Accounts button + PrintAsync handler (registry lookup -> GenerateAsync -> PdfRenderer -> temp file -> Process.Start, try/catch with friendly error) to ChartOfAccountsPage; all 24 UI tests pass, US1 checkpoint reached",
+      "files": [
+        "src/StageFright.UI/Pages/Finance/ChartOfAccountsPage.razor",
+        "src/StageFright.UI/Pages/Finance/ChartOfAccountsPage.razor.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Extended ChartOfAccountsReportProviderTests with Filters/includeBalances tests (definition shape, on/off column shape, formatted balance, HasError->Error text); compiles clean, fails at runtime until T009",
+      "files": [
+        "tests/StageFright.Reports.Tests/ChartOfAccountsReportProviderTests.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Extended ChartOfAccountsPageTests with Include Current Balances switch render/default test and two GenerateAsync filter-passing tests (on/off); compiles clean, fails at runtime until T009/T010",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Finance/ChartOfAccountsPageTests.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Extended ChartOfAccountsReportProvider with includeBalances filter definition and Balance column/FormatBalance logic (F2 formatted, Error text on HasError); all 22 provider tests pass",
+      "files": [
+        "src/StageFright.Reports/Providers/ChartOfAccountsReportProvider.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Added off-by-default RadzenSwitch (Include Current Balances) to ChartOfAccountsPage bound to _includeBalances; PrintAsync now sets includeBalances filter before GenerateAsync; fixed 2 NSubstitute nullable warnings; all 27 UI tests pass, US2 checkpoint reached",
+      "files": [
+        "src/StageFright.UI/Pages/Finance/ChartOfAccountsPage.razor",
+        "src/StageFright.UI/Pages/Finance/ChartOfAccountsPage.razor.cs",
+        "tests/StageFright.UI.Tests/Pages/Finance/ChartOfAccountsPageTests.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Added CSV round-trip tests (CsvReportExporter.Export against real GenerateAsync output) for both includeBalances states, proving SC-006; no new production code needed (ReportMenuItemProvider/ReportsPage/ReportViewer already generic). All 24 provider tests pass. US3 checkpoint reached",
+      "files": [
+        "tests/StageFright.Reports.Tests/ChartOfAccountsReportProviderTests.cs"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Full rebuild (dotnet build -t:Rebuild) + full dotnet test across all 5 projects: 0 warnings, 0 errors, 1650 tests total (590+174+152+185+549), 0 failures"
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Live-app walkthrough via WebView2 CDP (dotnet run + remote-debugging-port=9222): navigated to Chart of Accounts, confirmed Print button and Include Current Balances switch render/default correctly (false), clicked Print with balances off then on, read both generated PDFs directly -- confirmed fixed section order (Assets/Liabilities/Equity/Income/Expenses), ascending account-number ordering, System/Bank plain-text suffixes, Balance column correctly present/absent per toggle state (incl. a negative balance formatted correctly), and no grand-total row in either document; no error alert on either print"
+    }
+  },
+  "verified": [
+    {
+      "what": "Full rebuild + full test suite, all 5 projects",
+      "command": "dotnet build -t:Rebuild && dotnet test",
+      "result": "0 warnings, 0 errors, 1650 tests passed, 0 failures",
+      "warnings": []
+    },
+    {
+      "what": "Live-app walkthrough via WebView2 CDP against dotnet run instance",
+      "command": "manual click-through + PDF content read (both includeBalances states)",
+      "result": "Print button/switch render correctly, default off; both generated PDFs show correct fixed section order, ascending account-number sort, System/Bank suffixes, correct Balance column presence/absence, no grand-total row, no error alerts",
+      "warnings": [
+        "initial diagnostic script queried the wrong [role=switch] (theme toggle, not includeBalancesSwitch) causing a false alarm - resolved by scoping to #includeBalancesSwitch"
+      ]
+    }
+  ],
+  "last_action": "All 13 tasks done - 1650 tests pass, live-app walkthrough confirmed both print states"
+}

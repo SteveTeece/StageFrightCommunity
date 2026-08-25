@@ -1,4 +1,4 @@
-@page "/events/agm/new"
+@page "/events/agm/{Id:guid}/record"
 
 <PageTitle>Record AGM — StageFright Community</PageTitle>
 
@@ -10,6 +10,11 @@
 {
     <p role="status" aria-live="polite">Loading…</p>
 }
+else if (!string.IsNullOrEmpty(_guardMessage))
+{
+    <div class="alert alert-warning py-1 mb-2 small" role="alert">@_guardMessage</div>
+    <a href="/events/agm" class="btn btn-outline-secondary btn-sm">Back to AGMs</a>
+}
 else
 {
     @if (!string.IsNullOrEmpty(_errorMessage))
@@ -17,17 +22,7 @@ else
         <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
     }
 
-    <div class="row g-2 mb-2">
-        <div class="col-md-4">
-            <label for="agmDate" class="form-label">Meeting Date</label>
-            <input type="date" id="agmDate" class="form-control form-control-sm"
-                   @bind="_date" @bind:format="yyyy-MM-dd" />
-        </div>
-        <div class="col-md-8">
-            <label for="agmNotes" class="form-label">Notes</label>
-            <input type="text" id="agmNotes" class="form-control form-control-sm" @bind="_notes" />
-        </div>
-    </div>
+    <p class="text-muted">Meeting date: @_agm!.Date.ToString("d MMMM yyyy")</p>
 
     <h2 class="h6 mb-1">Attendance</h2>
     <div style="display:flex; flex-direction:column; height:360px;">
@@ -77,6 +72,6 @@ else
         <button class="btn btn-primary btn-sm" @onclick="SaveAsync" disabled="@_saving">
             @(_saving ? "Saving…" : "Save AGM")
         </button>
-        <a href="/events" class="btn btn-outline-secondary btn-sm">Cancel</a>
+        <a href="/events/agm" class="btn btn-outline-secondary btn-sm">Cancel</a>
     </div>
 }

@@ -62,20 +62,27 @@ else
                 </Template>
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="Event" Property="Notes" Title="Notes" />
-            <RadzenDataGridColumn TItem="Event" Title="Actions" Width="160px" Sortable="false">
+            <RadzenDataGridColumn TItem="Event" Title="Actions" Width="240px" Sortable="false">
                 <Template Context="e">
-                    @if (!e.StoredParticipationRate.HasValue)
-                    {
-                        <button class="btn btn-primary btn-sm"
-                                @onclick="() => RecordParticipation(e.Id)"
-                                aria-label="Record participation for @e.Date.ToString("d MMM yyyy")">
-                            Record Participation
+                    <div class="d-flex flex-nowrap align-items-center gap-1">
+                        @if (!e.StoredParticipationRate.HasValue)
+                        {
+                            <button class="btn btn-primary btn-sm text-nowrap"
+                                    @onclick="() => RecordParticipation(e.Id)"
+                                    aria-label="Record participation for @e.Date.ToString("d MMM yyyy")">
+                                Record Participation
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">Recorded</span>
+                        }
+                        <button class="btn btn-outline-secondary btn-sm text-nowrap"
+                                @onclick="() => PrintAttendanceSheet(e.Id)"
+                                aria-label="Print attendance sheet for @e.Date.ToString("d MMM yyyy")">
+                            Print
                         </button>
-                    }
-                    else
-                    {
-                        <span class="text-muted small">Recorded</span>
-                    }
+                    </div>
                 </Template>
             </RadzenDataGridColumn>
         </Columns>
@@ -85,4 +92,9 @@ else
 @if (!string.IsNullOrEmpty(_errorMessage))
 {
     <div class="alert alert-danger py-1 mb-2 small mt-2" role="alert">@_errorMessage</div>
+}
+
+@if (!string.IsNullOrEmpty(_printMessage))
+{
+    <div class="alert alert-warning py-1 mb-2 small mt-2" role="alert">@_printMessage</div>
 }

@@ -58,11 +58,10 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
         var agmSvc = BuildAgmService();
         var presidentTypeId = await GetBuiltInOfficeHolderTypeIdAsync("President");
 
-        // --- Record the AGM: attendance + President + one general committee member ---
+        // --- Schedule then record the AGM: attendance + President + one general committee member ---
         var agmDate = new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc);
-        var agm = await agmSvc.RecordAsync(new RecordAgmRequest(
-            Date: agmDate,
-            Notes: "Annual sitting",
+        var scheduled = await agmSvc.ScheduleAsync(new ScheduleAgmRequest(agmDate, "Annual sitting"), TestContext.Current.CancellationToken);
+        var agm = await agmSvc.RecordAsync(scheduled.Id, new RecordAgmRequest(
             AttendedMemberIds: [PresidentMemberId, GeneralMemberId],
             AllActiveMemberIds: [PresidentMemberId, GeneralMemberId, ReplacementPresidentMemberId],
             OfficeHolderAssignments: new Dictionary<Guid, Guid> { [presidentTypeId] = PresidentMemberId },
@@ -131,7 +130,65 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
         Assert.All(archivedAttendance, a => Assert.True(a.IsDeleted));
     }
 
+    // --- AGM Attendance Sheet (spec 018) ---
+
+    [Fact]
+    public async Task AgmAttendanceSheet_GenerateAsync_Throws_ForUnknownAgm()
+    {
+        var svc = BuildAgmAttendanceSheetService();
+
+        await Assert.ThrowsAsync<StageFright.Core.Exceptions.EntityNotFoundException>(
+            () => svc.GenerateAsync(Guid.NewGuid(), TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task AgmAttendanceSheet_GenerateAsync_Returns_PersistedRoster_SortedBySurname_WithAttendedStatus()
+    {
+        var agmSvc = BuildAgmService();
+        var presidentTypeId = await GetBuiltInOfficeHolderTypeIdAsync("President");
+
+        var scheduled = await agmSvc.ScheduleAsync(new ScheduleAgmRequest(
+            new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), "Annual sitting"), TestContext.Current.CancellationToken);
+        var agm = await agmSvc.RecordAsync(scheduled.Id, new RecordAgmRequest(
+            AttendedMemberIds: [PresidentMemberId],
+            AllActiveMemberIds: [PresidentMemberId, GeneralMemberId, ReplacementPresidentMemberId],
+            OfficeHolderAssignments: new Dictionary<Guid, Guid> { [presidentTypeId] = PresidentMemberId },
+            GeneralCommitteeMemberIds: [GeneralMemberId]), TestContext.Current.CancellationToken);
+
+        var svc = BuildAgmAttendanceSheetService();
+        var result = await svc.GenerateAsync(agm.Id, TestContext.Current.CancellationToken);
+
+        Assert.Equal(3, result.Members.Count);
+        Assert.Equal(agm.Date, result.AgmDate);
+        Assert.True(string.CompareOrdinal(result.Members[0].LastName, result.Members[1].LastName) <= 0);
+        Assert.True(string.CompareOrdinal(result.Members[1].LastName, result.Members[2].LastName) <= 0);
+        Assert.Contains(result.Members, m => m.FirstName == "Alice" && m.Attended);
+        Assert.Contains(result.Members, m => m.FirstName == "Bob" && !m.Attended);
+    }
+
+    [Fact]
+    public async Task AgmAttendanceSheet_GenerateAsync_ReturnsEmptyList_ForAgmWithZeroAttendanceRecords()
+    {
+        var agmSvc = BuildAgmService();
+
+        var scheduled = await agmSvc.ScheduleAsync(new ScheduleAgmRequest(
+            new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), "Empty sitting"), TestContext.Current.CancellationToken);
+        var agm = await agmSvc.RecordAsync(scheduled.Id, new RecordAgmRequest(
+            AttendedMemberIds: [],
+            AllActiveMemberIds: [],
+            OfficeHolderAssignments: new Dictionary<Guid, Guid>(),
+            GeneralCommitteeMemberIds: []), TestContext.Current.CancellationToken);
+
+        var svc = BuildAgmAttendanceSheetService();
+        var result = await svc.GenerateAsync(agm.Id, TestContext.Current.CancellationToken);
+
+        Assert.Empty(result.Members);
+    }
+
     // --- Helpers ---
+
+    private StageFright.Core.Modules.Agm.AgmAttendanceSheetService BuildAgmAttendanceSheetService() =>
+        new(new AgmRepository(_db), new AgmAttendanceRepository(_db), new MemberRepository(_db));
 
     private AgmService BuildAgmService()
     {
