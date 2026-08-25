@@ -153,27 +153,30 @@ html, body {
 /* Shrink every RadzenSwitch toggle app-wide (from Radzen's default 3rem x
    1.8rem track, a 5:3 ratio, so the shape is unchanged, just smaller) to
    the exact size validated on the sidebar's own theme toggle, so every
-   switch in the app reads at the same size-to-label-text ratio as that
-   reference control rather than a size derived from the page's own base
-   font (most switches sit beside ".form-label" text at .72rem, not the
-   1rem body default, so a switch sized off the body font read oversized
-   next to it). One rule now covers the sidebar theme toggle too — it no
-   longer needs its own more-specific override. */
-.rz-switch {
+   switch in the app reads at the same text-height-to-switch-height ratio
+   as that reference control. Prefixed with "#app" (the Blazor root div in
+   index.html, an ancestor of every rendered switch) purely to WIN
+   specificity: ThemeProvider.razor injects Radzen's dark-base.css into
+   <head> after app.css whenever the theme is Dark (the app's default
+   theme), and dark-base.css redeclares these same class-only selectors
+   at 3rem x 1.8rem — without the extra ID specificity here, that later
+   dark-base.css rule wins the tie and silently resets every switch back
+   to full size in dark mode, which is what actually happened before. */
+#app .rz-switch {
     width: 1.5rem;
     min-width: 1.5rem;
     height: .9rem;
     margin-inline-end: 0;
 }
 
-.rz-switch .rz-switch-circle:before {
+#app .rz-switch .rz-switch-circle:before {
     width: .63rem;
     height: .63rem;
     inset-inline-start: .135rem;
     margin-block-start: -.315rem;
 }
 
-.rz-switch.rz-switch-checked .rz-switch-circle:before {
+#app .rz-switch.rz-switch-checked .rz-switch-circle:before {
     transform: translateX(.6rem);
 }
 
