@@ -1,0 +1,84 @@
+{
+  "workflow": "speckit",
+  "specName": "merge agms events",
+  "branch": "023-merge-agms-events",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-25T10:14:32.080Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-25T10:18:36.434Z"
+    }
+  ],
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "Combined list shows every non-archived AGM alongside every non-archived Event"
+    },
+    "FR-002": {
+      "title": "Combined list sorted by date, most recent first"
+    },
+    "FR-003": {
+      "title": "AGM row shows date and notes in the existing columns"
+    },
+    "FR-004": {
+      "title": "AGM row displays 'Annual General Meeting' as its type"
+    },
+    "FR-005": {
+      "title": "AGM row shows recorded/scheduled status instead of participation rate"
+    },
+    "FR-006": {
+      "title": "Selecting an AGM row navigates to the AGM detail screen, not generic event detail"
+    },
+    "FR-007": {
+      "title": "AGM row actions match the dedicated AGMs screen (Record/Print)"
+    },
+    "FR-008": {
+      "title": "Search box matches AGM rows on date, type, and notes"
+    },
+    "FR-009": {
+      "title": "Empty-state and no-results messages reflect the combined Event+AGM set"
+    },
+    "FR-010": {
+      "title": "Soft-deleted AGMs are excluded from the combined list"
+    },
+    "FR-011": {
+      "title": "No change to Event/AGM scheduling, recording, archiving, or elections behavior"
+    },
+    "FR-012": {
+      "title": "Dedicated AGMs screens remain unchanged and reachable"
+    },
+    "FR-013": {
+      "title": "Schedule Event button continues to create only generic Events"
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 6,
+    "projectedTasks": 9,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "context": [
+    "living spec: events (capabilities/events/spec.md), read manually to ground the spec — the living-specs registry isn't configured in this repo",
+    "area: src/StageFright.UI/Pages/Events/{EventList,AgmList}.razor(.cs) and src/StageFright.Core/Modules/{Events,Agm}",
+    "constraint: spec 013 deliberately split AGM recording out of the generic Event entity into AnnualGeneralMeeting — this change must not re-merge the data model, only the All Events screen's read/search layer"
+  ],
+  "intent": "Show AGMs as rows on the All Events screen, alongside ordinary events, without changing how AGMs are stored or how their own dedicated screens work",
+  "expectations": [
+    "Merging the Event and AnnualGeneralMeeting data models into one table/entity",
+    "Changing the Dashboard Events tile, Committee report, or other screens that read Event/AGM data outside the All Events list",
+    "Changing how AGMs are scheduled, recorded, archived, or how their attendance/committee elections work",
+    "Letting the All Events screen's 'Schedule Event' action create an AGM"
+  ]
+}
