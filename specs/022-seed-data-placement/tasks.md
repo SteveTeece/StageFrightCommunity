@@ -12,20 +12,20 @@
 ### Tests
 
 **Wave 1 — independent (different files):**
-- [ ] **T001** [P] [US1] Write `SampleDataTabTests.cs`: renders nothing when `DebugSeederAvailable=false`; renders `#seedData` when `true`; checking it invokes `SeedWithTestDataChanged(true)` · `tests/StageFright.UI.Tests/Pages/Setup/Tabs/SampleDataTabTests.cs`
-- [ ] **T002** [P] [US1] Update `ReviewTabTests.cs`: remove `SeedDataCheckbox_OnlyShown_WhenDebugSeederAvailable` and `CheckingSeedData_InvokesSeedWithTestDataChanged`; add a test asserting a read-only "Load sample data: Yes/No" row renders when `DebugSeederAvailable` is true, and one asserting no `#seedData` input renders at all · `tests/StageFright.UI.Tests/Pages/Setup/Tabs/ReviewTabTests.cs`
+- [x] **T001** [P] [US1] Write `SampleDataTabTests.cs`: renders nothing when `DebugSeederAvailable=false`; renders `#seedData` when `true`; checking it invokes `SeedWithTestDataChanged(true)` · `tests/StageFright.UI.Tests/Pages/Setup/Tabs/SampleDataTabTests.cs`
+- [x] **T002** [P] [US1] Update `ReviewTabTests.cs`: remove `SeedDataCheckbox_OnlyShown_WhenDebugSeederAvailable` and `CheckingSeedData_InvokesSeedWithTestDataChanged`; add a test asserting a read-only "Load sample data: Yes/No" row renders when `DebugSeederAvailable` is true, and one asserting no `#seedData` input renders at all · `tests/StageFright.UI.Tests/Pages/Setup/Tabs/ReviewTabTests.cs`
 
 ### Implementation
 
 **Wave 2 — independent (different files):**
-- [ ] **T003** [P] [US1] Create `SampleDataTab.razor` + `SampleDataTab.razor.cs` — move the existing `@if (DebugSeederAvailable) { ... }` checkbox block from `ReviewTab.razor` unchanged, with `DebugSeederAvailable`/`SeedWithTestData`/`SeedWithTestDataChanged` parameters · `src/StageFright.UI/Pages/Setup/Tabs/SampleDataTab.razor` + `.razor.cs`
-- [ ] **T004** [P] [US1] Remove the interactive checkbox block and `OnSeedWithTestDataChangedAsync` from `ReviewTab`; add a read-only `<dt>Load sample data</dt><dd>Yes|No</dd>` row to the existing `<dl>` summary (guarded by `DebugSeederAvailable`); drop the `SeedWithTestDataChanged` parameter · `src/StageFright.UI/Pages/Setup/Tabs/ReviewTab.razor` + `.razor.cs`
+- [x] **T003** [P] [US1] Create `SampleDataTab.razor` + `SampleDataTab.razor.cs` — move the existing `@if (DebugSeederAvailable) { ... }` checkbox block from `ReviewTab.razor` unchanged, with `DebugSeederAvailable`/`SeedWithTestData`/`SeedWithTestDataChanged` parameters · `src/StageFright.UI/Pages/Setup/Tabs/SampleDataTab.razor` + `.razor.cs`
+- [x] **T004** [P] [US1] Remove the interactive checkbox block and `OnSeedWithTestDataChangedAsync` from `ReviewTab`; add a read-only `<dt>Load sample data</dt><dd>Yes|No</dd>` row to the existing `<dl>` summary (guarded by `DebugSeederAvailable`); drop the `SeedWithTestDataChanged` parameter · `src/StageFright.UI/Pages/Setup/Tabs/ReviewTab.razor` + `.razor.cs`
 
 **⟶ Wait for Wave 2 to finish, then:**
 
 **Wave 3 — independent (different files):**
-- [ ] **T005** [P] [US1] Wire `<SampleDataTab>` into `SetupWizard.razor`'s Organisation Settings tab content (after `SalesTaxTab`), passing `DebugSeederAvailable="_debugSeeder is not null"`, `SeedWithTestData="_seedWithTestData"`, `SeedWithTestDataChanged="HandleSeedWithTestDataChanged"`; remove `SeedWithTestDataChanged` from the Review `<Tab>`'s markup · `src/StageFright.UI/Pages/Setup/SetupWizard.razor`
-- [ ] **T006** [P] [US1] Add `private void HandleSeedWithTestDataChanged(bool value)` to `SetupWizard.razor.cs`, setting `_seedWithTestData = value` (queue-clearing logic added in Phase 3/T013) · `src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs`
+- [x] **T005** [P] [US1] Wire `<SampleDataTab>` into `SetupWizard.razor`'s Organisation Settings tab content (after `SalesTaxTab`), passing `DebugSeederAvailable="_debugSeeder is not null"`, `SeedWithTestData="_seedWithTestData"`, `SeedWithTestDataChanged="HandleSeedWithTestDataChanged"`; remove `SeedWithTestDataChanged` from the Review `<Tab>`'s markup · `src/StageFright.UI/Pages/Setup/SetupWizard.razor`
+- [x] **T006** [P] [US1] Add `private void HandleSeedWithTestDataChanged(bool value)` to `SetupWizard.razor.cs`, setting `_seedWithTestData = value` (queue-clearing logic added in Phase 3/T013) · `src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs`
 
 **Checkpoint**: User Story 1 is independently functional and testable — the checkbox is on Organisation Settings, Review is read-only, nothing else in the wizard behaves differently yet.
 
@@ -40,19 +40,19 @@
 ### Tests
 
 **Wave 1 — independent (different files):**
-- [ ] **T007** [P] [US2] Add `SetupWizardTests.cs` coverage: the three `<Tab>`s render disabled once `#seedData` is checked; clicking a disabled tab header does not change the visible content; clicking Next from Organisation Settings with the box checked shows the Review tab next, not Chart of Accounts · `tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs`
-- [ ] **T008** [P] [US2] Add `SetupWizardNoSeederTests.cs` coverage: with no debug seeder registered, the three tabs are never disabled and every tab behaves exactly as today (FR-009) · `tests/StageFright.UI.Tests/Pages/Setup/SetupWizardNoSeederTests.cs`
+- [x] **T007** [P] [US2] Add `SetupWizardTests.cs` coverage: the three `<Tab>`s render disabled once `#seedData` is checked; clicking a disabled tab header does not change the visible content; clicking Next from Organisation Settings with the box checked shows the Review tab next, not Chart of Accounts · `tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs`
+- [x] **T008** [P] [US2] Add `SetupWizardNoSeederTests.cs` coverage: with no debug seeder registered, the three tabs are never disabled and every tab behaves exactly as today (FR-009) · `tests/StageFright.UI.Tests/Pages/Setup/SetupWizardNoSeederTests.cs`
 
 ### Implementation
 
 **Wave 2 — independent (different files):**
-- [ ] **T009** [P] [US2] Add `Disabled="@_seedWithTestData"` to the Chart of Accounts, Opening Balances, and Committee `<Tab>` elements · `src/StageFright.UI/Pages/Setup/SetupWizard.razor`
-- [ ] **T010** [P] [US2] Add `private bool IsTabBypassed(int index) => _seedWithTestData && index is >= 1 and <= 3`; guard `SetActiveTab` to no-op when `IsTabBypassed(index)`; make `HandleNextAsync` advance `nextIndex` past every bypassed index · `src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs`
+- [x] **T009** [P] [US2] Add `Disabled="@_seedWithTestData"` to the Chart of Accounts, Opening Balances, and Committee `<Tab>` elements · `src/StageFright.UI/Pages/Setup/SetupWizard.razor`
+- [x] **T010** [P] [US2] Add `private bool IsTabBypassed(int index) => _seedWithTestData && index is >= 1 and <= 3`; guard `SetActiveTab` to no-op when `IsTabBypassed(index)`; make `HandleNextAsync` advance `nextIndex` past every bypassed index · `src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs`
 
 **⟶ Wait for Wave 2 to finish, then:**
 
 **Wave 3 — single task:**
-- [ ] **T011** [US2] Verify FR-008 against the running seeder (targeted check or integration test): confirm `DebugDataSeeder` creates non-system chart-of-accounts entries, posts a full opening-balance position, and elects a full committee across its seeded AGMs; extend the seeder only if a genuine gap is found (none expected per research.md) · `src/StageFright.App/Seeding/DebugDataSeeder.cs`
+- [x] **T011** [US2] Verify FR-008 against the running seeder (targeted check or integration test): confirm `DebugDataSeeder` creates non-system chart-of-accounts entries, posts a full opening-balance position, and elects a full committee across its seeded AGMs; extend the seeder only if a genuine gap is found (none expected per research.md) · `src/StageFright.App/Seeding/DebugDataSeeder.cs`
 
 **Checkpoint**: User Story 2 is independently functional and testable — selecting sample data makes the three tabs unusable and Next reaches Review directly, with Finish producing a complete sample setup.
 
@@ -67,12 +67,12 @@
 ### Tests
 
 **Wave 1 — single task:**
-- [ ] **T012** [US3] Add `SetupWizardTests.cs` coverage: a queued account/balance/committee title is discarded the moment the checkbox is checked; the three tabs become enabled (not `Disabled`) again after unchecking, each starting empty; Finish is rejected without a posted balance after unchecking (same as today) · `tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs`
+- [x] **T012** [US3] Add `SetupWizardTests.cs` coverage: a queued account/balance/committee title is discarded the moment the checkbox is checked; the three tabs become enabled (not `Disabled`) again after unchecking, each starting empty; Finish is rejected without a posted balance after unchecking (same as today) · `tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs`
 
 ### Implementation
 
 **Wave 2 — single task:**
-- [ ] **T013** [US3] Extend `HandleSeedWithTestDataChanged(bool value)`: when `value` is `true`, clear `_queuedAccounts`, `_queuedOpeningBalances`, and `_queuedCommitteeTitles` · `src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs`
+- [x] **T013** [US3] Extend `HandleSeedWithTestDataChanged(bool value)`: when `value` is `true`, clear `_queuedAccounts`, `_queuedOpeningBalances`, and `_queuedCommitteeTitles` · `src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs`
 
 **Checkpoint**: User Story 3 is independently functional and testable — toggling the checkbox in either direction never leaves stale queued data or an unreachable tab.
 
@@ -81,18 +81,18 @@
 ## Final Phase: Polish
 
 **Wave 1 — independent (different files):**
-- [ ] **T014** [P] Update `specs/017-setup-wizard-tabs/spec.md` — tab descriptions, FR-025, and the "ADDED Requirements" tab-strip description, to reflect the checkbox's new home on Organisation Settings and its new bypass effect · `specs/017-setup-wizard-tabs/spec.md`
-- [ ] **T015** [P] Update `capabilities/app-host/spec.md`'s "Optional sample-data seeding" section — relocate the checkbox reference and add scenario(s) for the three-tab bypass · `capabilities/app-host/spec.md`
+- [x] **T014** [P] Update `specs/017-setup-wizard-tabs/spec.md` — tab descriptions, FR-025, and the "ADDED Requirements" tab-strip description, to reflect the checkbox's new home on Organisation Settings and its new bypass effect · `specs/017-setup-wizard-tabs/spec.md`
+- [x] **T015** [P] Update `capabilities/app-host/spec.md`'s "Optional sample-data seeding" section — relocate the checkbox reference and add scenario(s) for the three-tab bypass · `capabilities/app-host/spec.md`
 
 **⟶ Wait for Wave 1 to finish, then:**
 
 **Wave 2 — single task:**
-- [ ] **T016** Full rebuild and full test suite run (`dotnet build -t:Rebuild`, then `dotnet test` without `--no-build`) per CLAUDE.md's Build & Test Verification rule; confirm no new warnings and every test green (treat the two documented "fee"-substring flaky tests per the known-flake note, not as regressions unless the diff actually touches Events/ParticipationGrid/EventForm) · repo-wide
+- [x] **T016** Full rebuild and full test suite run (`dotnet build -t:Rebuild`, then `dotnet test` without `--no-build`) per CLAUDE.md's Build & Test Verification rule; confirm no new warnings and every test green (treat the two documented "fee"-substring flaky tests per the known-flake note, not as regressions unless the diff actually touches Events/ParticipationGrid/EventForm) · repo-wide
 
 **⟶ Wait for Wave 2 to finish, then:**
 
 **Wave 3 — single task:**
-- [ ] **T017** Cross-check the green Phase 1–3 test suite against spec.md's SC-001–SC-004 (checkbox location, tab-open prevention, complete sample setup with zero manual entry, clean toggle-back-and-forth) and record the result · `specs/022-seed-data-placement/spec.md`
+- [x] **T017** Cross-check the green Phase 1–3 test suite against spec.md's SC-001–SC-004 (checkbox location, tab-open prevention, complete sample setup with zero manual entry, clean toggle-back-and-forth) and record the result · `specs/022-seed-data-placement/spec.md`
 
 ## Dependencies & Execution Order
 

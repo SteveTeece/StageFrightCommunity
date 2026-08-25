@@ -81,30 +81,34 @@ public class ReviewTabTests : BunitContext
     }
 
     [Fact]
-    public void SeedDataCheckbox_OnlyShown_WhenDebugSeederAvailable()
+    public void SeedDataChoice_RendersReadOnlyRow_WhenDebugSeederAvailable()
     {
-        var cutHidden = Render<ReviewTab>(p => p
-            .Add(x => x.Model, new SetupFormModel())
-            .Add(x => x.DebugSeederAvailable, false));
-        Assert.Empty(cutHidden.FindAll("#seedData"));
-
-        var cutShown = Render<ReviewTab>(p => p
-            .Add(x => x.Model, new SetupFormModel())
-            .Add(x => x.DebugSeederAvailable, true));
-        cutShown.Find("#seedData");
-    }
-
-    [Fact]
-    public async Task CheckingSeedData_InvokesSeedWithTestDataChanged()
-    {
-        var changedTo = default(bool?);
         var cut = Render<ReviewTab>(p => p
             .Add(x => x.Model, new SetupFormModel())
             .Add(x => x.DebugSeederAvailable, true)
-            .Add(x => x.SeedWithTestDataChanged, v => changedTo = v));
+            .Add(x => x.SeedWithTestData, true));
 
-        await cut.Find("#seedData").ChangeAsync(true);
+        Assert.Contains("Load sample data", cut.Markup);
+        Assert.Contains("Yes", cut.Markup);
+    }
 
-        Assert.True(changedTo);
+    [Fact]
+    public void SeedDataChoice_RendersNothing_WhenDebugSeederUnavailable()
+    {
+        var cut = Render<ReviewTab>(p => p
+            .Add(x => x.Model, new SetupFormModel())
+            .Add(x => x.DebugSeederAvailable, false));
+
+        Assert.DoesNotContain("Load sample data", cut.Markup);
+    }
+
+    [Fact]
+    public void SeedDataChoice_IsReadOnly_NoCheckboxRendered()
+    {
+        var cut = Render<ReviewTab>(p => p
+            .Add(x => x.Model, new SetupFormModel())
+            .Add(x => x.DebugSeederAvailable, true));
+
+        Assert.Empty(cut.FindAll("#seedData"));
     }
 }
