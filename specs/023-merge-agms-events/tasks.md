@@ -64,13 +64,13 @@
 
 **Wave 1 — single task:**
 
-- [ ] **T008** [US1] Rewrite `EventListTests`: replace the `IEventService` substitute/DI registration with an `ICombinedEventListService` substitute seeded with `CombinedEventListItem` rows of both `Kind.Event` and `Kind.Agm`; update every existing test's setup call to the new seam; add cases asserting an AGM row and an Event row on different dates both render in the same grid ordered by `Date` descending (Acceptance Scenario 1), a scheduled-but-unrecorded AGM still appears (Acceptance Scenario 2), and the existing "No events scheduled yet" message still shows when the combined list is empty (Acceptance Scenario 3) · `tests/StageFright.UI.Tests/Pages/Events/EventListTests.cs`
+- [x] **T008** [US1] Rewrite `EventListTests`: replace the `IEventService` substitute/DI registration with an `ICombinedEventListService` substitute seeded with `CombinedEventListItem` rows of both `Kind.Event` and `Kind.Agm`; update every existing test's setup call to the new seam; add cases asserting an AGM row and an Event row on different dates both render in the same grid ordered by `Date` descending (Acceptance Scenario 1), a scheduled-but-unrecorded AGM still appears (Acceptance Scenario 2), and the existing "No events scheduled yet" message still shows when the combined list is empty (Acceptance Scenario 3) · `tests/StageFright.UI.Tests/Pages/Events/EventListTests.cs`
 
 ### Implementation
 
 **Wave 1 — single task:**
 
-- [ ] **T009** [US1] Rewrite `EventList.razor` + `EventList.razor.cs`: inject `ICombinedEventListService` in place of `IEventService`; change the grid's backing list/property from `List<Event>`/`DisplayEvents` to `List<CombinedEventListItem>`/`DisplayItems` (dropping the component's own `.OrderByDescending` — the service already returns sorted); `RadzenDataGrid TItem` becomes `CombinedEventListItem`; Date column's link href becomes `@item.DetailUrl` (drops the hardcoded `/events/@e.Id`); Event Type column reads `@item.TypeName` directly (drops the `EventType?.Name ?? "—"` null-coalesce, since `TypeName` is always populated) · `src/StageFright.UI/Pages/Events/EventList.razor` + `.razor.cs`. Depends on T003–T007.
+- [x] **T009** [US1] Rewrite `EventList.razor` + `EventList.razor.cs`: inject `ICombinedEventListService` in place of `IEventService`; change the grid's backing list/property from `List<Event>`/`DisplayEvents` to `List<CombinedEventListItem>`/`DisplayItems` (dropping the component's own `.OrderByDescending` — the service already returns sorted); `RadzenDataGrid TItem` becomes `CombinedEventListItem`; Date column's link href becomes `@item.DetailUrl` (drops the hardcoded `/events/@e.Id`); Event Type column reads `@item.TypeName` directly (drops the `EventType?.Name ?? "—"` null-coalesce, since `TypeName` is always populated) · `src/StageFright.UI/Pages/Events/EventList.razor` + `.razor.cs`. Depends on T003–T007.
 
 **Checkpoint**: User Story 1 is independently functional and testable — AGM and Event rows both render in the combined, date-sorted grid with the correct empty state, and each row's Date link already routes correctly (FR-006 comes for free from `DetailUrl`). The Status/Actions columns still show Event-style content for AGM rows (fixed in Story 2) but nothing crashes or misroutes.
 
@@ -86,13 +86,13 @@
 
 **Wave 1 — single task:**
 
-- [ ] **T010** [US2] Extend `EventListTests`: an AGM row with `IsAgmRecorded = true` renders a `"Recorded"` badge (`bg-success`), never a participation percentage (Acceptance Scenario 2); `IsAgmRecorded = false` renders a `"Scheduled"` badge (`bg-warning text-dark`) and a `"Record"` action linking to `/events/agm/{id}/record` (Acceptance Scenario 3); clicking an AGM row's Print button calls `IAgmAttendanceSheetService.GenerateAsync` + `IAgmAttendanceSheetPdfRenderer.Render` (not the Event pipeline); an explicit regression guard asserting an Event row's Date link href is `/events/{id}` and an AGM row's is `/events/agm/{id}` — never `/events/{id}` (FR-006, Acceptance Scenario 1) · `tests/StageFright.UI.Tests/Pages/Events/EventListTests.cs`
+- [x] **T010** [US2] Extend `EventListTests`: an AGM row with `IsAgmRecorded = true` renders a `"Recorded"` badge (`bg-success`), never a participation percentage (Acceptance Scenario 2); `IsAgmRecorded = false` renders a `"Scheduled"` badge (`bg-warning text-dark`) and a `"Record"` action linking to `/events/agm/{id}/record` (Acceptance Scenario 3); clicking an AGM row's Print button calls `IAgmAttendanceSheetService.GenerateAsync` + `IAgmAttendanceSheetPdfRenderer.Render` (not the Event pipeline); an explicit regression guard asserting an Event row's Date link href is `/events/{id}` and an AGM row's is `/events/agm/{id}` — never `/events/{id}` (FR-006, Acceptance Scenario 1) · `tests/StageFright.UI.Tests/Pages/Events/EventListTests.cs`
 
 ### Implementation
 
 **Wave 1 — single task:**
 
-- [ ] **T011** [US2] Extend `EventList.razor.cs`: inject `IAgmAttendanceSheetService` + `IAgmAttendanceSheetPdfRenderer`; add `PrintAgmAttendanceReport(Guid agmId)` mirroring `AgmList.razor.cs`'s `PrintAttendanceReport` (temp-file render + `Process.Start`), keeping the existing `PrintAttendanceSheet(eventId)` for Event rows. Extend `EventList.razor`'s Status and Actions columns with `@if (item.Kind == CombinedEventListItemKind.Agm) { ... } else { ... }` branches: Status renders the Recorded/Scheduled badge markup carried over from `AgmList.razor` for AGM rows, the existing `%`/"Not recorded" markup for Event rows; Actions renders `"Record"` → `/events/agm/{id}/record` + Print (via `PrintAgmAttendanceReport`) for AGM rows, the existing `"Record Participation"`/`"Recorded"` + Print (via `PrintAttendanceSheet`) for Event rows · `src/StageFright.UI/Pages/Events/EventList.razor` + `.razor.cs`. Depends on T009.
+- [x] **T011** [US2] Extend `EventList.razor.cs`: inject `IAgmAttendanceSheetService` + `IAgmAttendanceSheetPdfRenderer`; add `PrintAgmAttendanceReport(Guid agmId)` mirroring `AgmList.razor.cs`'s `PrintAttendanceReport` (temp-file render + `Process.Start`), keeping the existing `PrintAttendanceSheet(eventId)` for Event rows. Extend `EventList.razor`'s Status and Actions columns with `@if (item.Kind == CombinedEventListItemKind.Agm) { ... } else { ... }` branches: Status renders the Recorded/Scheduled badge markup carried over from `AgmList.razor` for AGM rows, the existing `%`/"Not recorded" markup for Event rows; Actions renders `"Record"` → `/events/agm/{id}/record` + Print (via `PrintAgmAttendanceReport`) for AGM rows, the existing `"Record Participation"`/`"Recorded"` + Print (via `PrintAttendanceSheet`) for Event rows · `src/StageFright.UI/Pages/Events/EventList.razor` + `.razor.cs`. Depends on T009.
 
 **Checkpoint**: User Story 2 is independently functional and testable — an AGM row's status and actions read distinctly from an event row's, its Print button uses the AGM attendance pipeline, and selecting it opens the AGM's own detail screen, never the generic event detail screen.
 
@@ -108,13 +108,13 @@
 
 **Wave 1 — single task:**
 
-- [ ] **T012** [US3] Extend `EventListTests`: typing a term matching only the AGM's formatted date leaves only the AGM row (Acceptance Scenario 1); typing `"annual general meeting"` or a partial match leaves AGM rows and filters out non-matching Event rows (Acceptance Scenario 2); typing a term matching only the AGM's notes leaves only that row (Acceptance Scenario 3); typing a term matching neither an AGM nor an Event shows the existing `No events match "<term>"` message applied to the combined set (Edge Case, FR-009) · `tests/StageFright.UI.Tests/Pages/Events/EventListTests.cs`
+- [x] **T012** [US3] Extend `EventListTests`: typing a term matching only the AGM's formatted date leaves only the AGM row (Acceptance Scenario 1); typing `"annual general meeting"` or a partial match leaves AGM rows and filters out non-matching Event rows (Acceptance Scenario 2); typing a term matching only the AGM's notes leaves only that row (Acceptance Scenario 3); typing a term matching neither an AGM nor an Event shows the existing `No events match "<term>"` message applied to the combined set (Edge Case, FR-009) · `tests/StageFright.UI.Tests/Pages/Events/EventListTests.cs`
 
 ### Implementation
 
 **Wave 1 — single task:**
 
-- [ ] **T013** [US3] Verify `DisplayItems`' search predicate — already generalized to `item.Date`/`item.TypeName`/`item.Notes` by T009's type swap — satisfies every T012 case with no further production change; extend only if T012 finds a genuine gap (none expected, since `TypeName` already carries the literal `"Annual General Meeting"` for AGM rows) · `src/StageFright.UI/Pages/Events/EventList.razor.cs`. Depends on T009, T012.
+- [x] **T013** [US3] Verify `DisplayItems`' search predicate — already generalized to `item.Date`/`item.TypeName`/`item.Notes` by T009's type swap — satisfies every T012 case with no further production change; extend only if T012 finds a genuine gap (none expected, since `TypeName` already carries the literal `"Annual General Meeting"` for AGM rows) · `src/StageFright.UI/Pages/Events/EventList.razor.cs`. Depends on T009, T012.
 
 **Checkpoint**: User Story 3 is independently functional and testable — the search box finds AGM rows by date, type, or notes exactly as it already does for events, and the "no matches" message covers the combined set.
 
@@ -124,19 +124,19 @@
 
 **Wave 1 — single task:**
 
-- [ ] **T014** New `V20_CombinedEventsListTests` integration test against a real SQLite in-memory database with full EF migrations (next free `Vn` slot after `V19_AgmSchedulingTests`): seed one `Event` and one `AnnualGeneralMeeting`, confirm `ICombinedEventListService.GetAllAsync()` returns both; assert the AGM row's `DetailUrl` is `/events/agm/{id}`, not `/events/{id}` (FR-006); archive the AGM (soft-delete) and confirm it disappears from the combined result (FR-010) · `tests/StageFright.Integration.Tests/Scenarios/V20_CombinedEventsListTests.cs` (NEW)
+- [x] **T014** New `V20_CombinedEventsListTests` integration test against a real SQLite in-memory database with full EF migrations (next free `Vn` slot after `V19_AgmSchedulingTests`): seed one `Event` and one `AnnualGeneralMeeting`, confirm `ICombinedEventListService.GetAllAsync()` returns both; assert the AGM row's `DetailUrl` is `/events/agm/{id}`, not `/events/{id}` (FR-006); archive the AGM (soft-delete) and confirm it disappears from the combined result (FR-010) · `tests/StageFright.Integration.Tests/Scenarios/V20_CombinedEventsListTests.cs` (NEW)
 
 **⟶ Wait for Wave 1 to finish, then:**
 
 **Wave 2 — single task:**
 
-- [ ] **T015** Full rebuild and full test suite run (`dotnet build -t:Rebuild`, then `dotnet test` without `--no-build`) per CLAUDE.md's Build & Test Verification rule; confirm no new warnings and every test green (treat the two documented "fee"-substring flaky tests — `ParticipationGridTests`/`EventFormTests`, unrelated files — per the known-flake note, not as regressions).
+- [x] **T015** Full rebuild and full test suite run (`dotnet build -t:Rebuild`, then `dotnet test` without `--no-build`) per CLAUDE.md's Build & Test Verification rule; confirm no new warnings and every test green (treat the two documented "fee"-substring flaky tests — `ParticipationGridTests`/`EventFormTests`, unrelated files — per the known-flake note, not as regressions).
 
 **⟶ Wait for Wave 2 to finish, then:**
 
 **Wave 3 — single task:**
 
-- [ ] **T016** Walk every Acceptance Scenario in spec.md (US1's 3, US2's 3, US3's 3) plus the Edge Cases against a running `dotnet run --project src/StageFright.App/` instance; confirm SC-001–SC-004; confirm FR-011 (AGM/Event scheduling, recording, archiving, and committee elections behave exactly as before), FR-012 (`/events/agm`, `/events/agm/new`, AGM detail/record screens remain reachable and unchanged), and FR-013 (the All Events screen's "Schedule Event" button still creates only a generic `Event`, never an AGM).
+- [x] **T016** Walk every Acceptance Scenario in spec.md (US1's 3, US2's 3, US3's 3) plus the Edge Cases against a running `dotnet run --project src/StageFright.App/` instance; confirm SC-001–SC-004; confirm FR-011 (AGM/Event scheduling, recording, archiving, and committee elections behave exactly as before), FR-012 (`/events/agm`, `/events/agm/new`, AGM detail/record screens remain reachable and unchanged), and FR-013 (the All Events screen's "Schedule Event" button still creates only a generic `Event`, never an AGM).
 
 ---
 
