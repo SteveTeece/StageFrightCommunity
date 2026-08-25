@@ -1,9 +1,9 @@
 @page "/events/agm"
 
-<PageTitle>Past AGMs — StageFright Community</PageTitle>
+<PageTitle>AGMs — StageFright Community</PageTitle>
 
 <div class="page-header mb-2">
-    <h1 class="h3">Past AGMs</h1>
+    <h1 class="h3">AGMs</h1>
 </div>
 
 @if (_loading)
@@ -13,7 +13,7 @@
 else if (_agms.Count == 0)
 {
     <div class="alert alert-info py-1 mb-2 small">No AGMs have been recorded yet.</div>
-    <a href="/events/agm/new" class="btn btn-primary btn-sm">Record AGM</a>
+    <a href="/events/agm/new" class="btn btn-primary btn-sm">Schedule AGM</a>
 }
 else
 {
@@ -29,11 +29,45 @@ else
                     </a>
                 </Template>
             </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="AnnualGeneralMeeting" Title="Status" Width="120px" Sortable="false">
+                <Template Context="agm">
+                    @if (agm.IsRecorded)
+                    {
+                        <span class="badge bg-success">Recorded</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Scheduled</span>
+                    }
+                </Template>
+            </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="AnnualGeneralMeeting" Title="Attendance" Width="140px" Sortable="false">
                 <Template Context="agm">
-                    @AttendedCount(agm) of @agm.AttendanceRecords.Count
+                    @(agm.IsRecorded ? $"{AttendedCount(agm)} of {agm.AttendanceRecords.Count}" : "—")
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="AnnualGeneralMeeting" Title="Actions" Width="200px" Sortable="false">
+                <Template Context="agm">
+                    <div class="d-flex gap-1">
+                        @if (!agm.IsRecorded)
+                        {
+                            <a href="@($"/events/agm/{agm.Id}/record")" class="btn btn-primary btn-sm text-nowrap">
+                                Record
+                            </a>
+                        }
+                        <button class="btn btn-outline-secondary btn-sm text-nowrap"
+                                @onclick="() => PrintAttendanceReport(agm.Id)"
+                                aria-label="Print attendance report for @agm.Date.ToString("d MMMM yyyy")">
+                            Print
+                        </button>
+                    </div>
                 </Template>
             </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
+}
+
+@if (!string.IsNullOrEmpty(_printMessage))
+{
+    <div class="alert alert-warning py-1 mb-2 small mt-2" role="alert">@_printMessage</div>
 }

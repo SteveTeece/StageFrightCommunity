@@ -22,8 +22,8 @@ public class EventsMenuItemProvider : IMenuItemProvider
             SubItems =
             [
                 new MenuItem { Title = "All Events", Route = "/events", DisplayOrder = 0 },
-                new MenuItem { Title = "Record AGM", Route = "/events/agm/new", DisplayOrder = 1 },
-                new MenuItem { Title = "Past AGMs", Route = "/events/agm", DisplayOrder = 2 }
+                new MenuItem { Title = "Schedule AGM", Route = "/events/agm/new", DisplayOrder = 1 },
+                new MenuItem { Title = "AGMs", Route = "/events/agm", DisplayOrder = 2 }
             ]
         }
     ];

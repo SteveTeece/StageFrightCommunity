@@ -98,3 +98,18 @@ The Events dashboard tile SHALL show a count of upcoming events, the next event'
 ## Uncovered
 
 _None — every file in the area was read._
+
+### Users can print a read-only attendance sheet for any event
+The events list and event detail page SHALL each offer a "Print" action that generates a two-column, checkbox-style PDF listing every member active as of the event's date, with a "Participated" checkbox that prints blank until participation has been recorded for that event and matches the real recorded value afterward. Printing MUST NOT create, modify, or delete any Event, ParticipationRecord, or Member record.
+
+#### Scenario: printing before participation is recorded
+- **WHEN** a user clicks Print for an event whose participation has not yet been recorded
+- **THEN** every member active as of the event's date appears on the generated PDF with a blank "Participated" checkbox
+
+#### Scenario: printing after participation is recorded
+- **WHEN** a user clicks Print for an event whose participation has already been recorded
+- **THEN** each listed member's checkbox on the generated PDF matches their actual recorded participation
+
+#### Scenario: no active members to list
+- **WHEN** a user clicks Print for an event with nobody active as of its date
+- **THEN** the system shows an inline empty-state message instead of generating a blank PDF
