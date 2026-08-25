@@ -84,21 +84,22 @@
                     }
                 }
             </ul>
-        </nav>
 
-        <!-- Top bar: shared light/dark toggle (hidden on the Setup Wizard, which has its own) -->
-        <header class="shell-topbar" role="banner">
+            <!-- Theme toggle: pinned to the bottom of the sidebar (hidden on the Setup Wizard, which has its own) -->
             @if (CurrentPath != "/setup")
             {
                 <div class="btn-theme-toggle"
                      aria-label="@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? "Switch to dark mode" : "Switch to light mode")">
-                    <span>@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? "Light" : "Dark")</span>
-                    <RadzenSwitch Name="themeToggleSwitch"
-                                  Value="@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Dark)"
-                                  Change="@(async (bool _) => await ToggleThemeAsync())" />
+                    <label for="themeToggleSwitch" class="btn-theme-toggle-label">Theme Selection</label>
+                    <span class="btn-theme-toggle-switch-group">
+                        <span>@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? "Light" : "Dark")</span>
+                        <RadzenSwitch Name="themeToggleSwitch"
+                                      Value="@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Dark)"
+                                      Change="@(async (bool _) => await ToggleThemeAsync())" />
+                    </span>
                 </div>
             }
-        </header>
+        </nav>
 
         <!-- Main content area -->
         <main class="shell-content" role="main">
