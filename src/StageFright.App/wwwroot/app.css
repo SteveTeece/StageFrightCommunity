@@ -150,28 +150,31 @@ html, body {
     padding: 1rem 1.25rem 1rem calc(var(--sf-sidebar-w) + 1.25rem);
 }
 
-/* Shrink every RadzenSwitch toggle app-wide so its rendered height matches
-   the page's base font size (body's default 1rem), scaled proportionally
-   down from Radzen's default 3rem x 1.8rem track (a 5:3 ratio) so the
-   shape is unchanged, just smaller. This intentionally does NOT affect
-   the sidebar's own theme toggle: the more specific ".btn-theme-toggle
-   .rz-switch" rule below already sets its own (smaller, spec-mandated)
-   size and wins on CSS specificity regardless of rule order. */
+/* Shrink every RadzenSwitch toggle app-wide (from Radzen's default 3rem x
+   1.8rem track, a 5:3 ratio, so the shape is unchanged, just smaller) to
+   the exact size validated on the sidebar's own theme toggle, so every
+   switch in the app reads at the same size-to-label-text ratio as that
+   reference control rather than a size derived from the page's own base
+   font (most switches sit beside ".form-label" text at .72rem, not the
+   1rem body default, so a switch sized off the body font read oversized
+   next to it). One rule now covers the sidebar theme toggle too — it no
+   longer needs its own more-specific override. */
 .rz-switch {
-    width: 1.667rem;
-    min-width: 1.667rem;
-    height: 1rem;
+    width: 1.5rem;
+    min-width: 1.5rem;
+    height: .9rem;
+    margin-inline-end: 0;
 }
 
 .rz-switch .rz-switch-circle:before {
-    width: .7rem;
-    height: .7rem;
-    inset-inline-start: .15rem;
-    margin-block-start: -.35rem;
+    width: .63rem;
+    height: .63rem;
+    inset-inline-start: .135rem;
+    margin-block-start: -.315rem;
 }
 
 .rz-switch.rz-switch-checked .rz-switch-circle:before {
-    transform: translateX(.667rem);
+    transform: translateX(.6rem);
 }
 
 /* Theme toggle (current theme name + RadzenSwitch) — pinned to the
@@ -203,26 +206,6 @@ html, body {
     display: flex;
     align-items: center;
     gap: 5px;
-}
-
-/* Shrink the embedded RadzenSwitch itself (default 3rem x 1.8rem) to half
-   its track size, scaling the thumb and its checked-state offset to match. */
-.btn-theme-toggle .rz-switch {
-    width: 1.5rem;
-    min-width: 1.5rem;
-    height: .9rem;
-    margin-inline-end: 0;
-}
-
-.btn-theme-toggle .rz-switch .rz-switch-circle:before {
-    width: .63rem;
-    height: .63rem;
-    inset-inline-start: .135rem;
-    margin-block-start: -.315rem;
-}
-
-.btn-theme-toggle .rz-switch.rz-switch-checked .rz-switch-circle:before {
-    transform: translateX(.6rem);
 }
 
 /* --- Fixed vertical sidebar --- */
