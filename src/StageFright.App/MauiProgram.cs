@@ -207,6 +207,7 @@ public static class MauiProgram
         services.AddScoped<IEventService, EventService>();
         services.AddScoped<IEventAttendanceSheetService, EventAttendanceSheetService>();
         services.AddScoped<IEventAttendanceSheetPdfRenderer, EventAttendanceSheetPdfRenderer>();
+        services.AddScoped<ICombinedEventListService, CombinedEventListService>();
 
         // Finance module (Phase 6 + 9)
         services.AddScoped<IFeeService, FeeService>();
