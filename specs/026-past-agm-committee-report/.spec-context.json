@@ -1,0 +1,17 @@
+{
+  "workflow": "speckit",
+  "specName": "Past AGM Committee List & Print Report",
+  "branch": "026-past-agm-committee-report",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-26T09:33:44.149Z"
+    }
+  ],
+  "telemetryInstanceId": "967b9b14-8bdd-46de-8796-46ff2ee58e98"
+}
