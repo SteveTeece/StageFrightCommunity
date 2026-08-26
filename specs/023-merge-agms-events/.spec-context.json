@@ -555,5 +555,6 @@
       "note": "Only Phase 1 (Setup) and Phase 2 (Foundational) were built, per explicit user scope (\"implement phases 1 and 2 only\"). ICombinedEventListService exists, is unit-tested, and is DI-registered, but EventList.razor/.razor.cs still reads IEventService directly -- no UI change yet, so the All Events screen does not yet show merged AGM rows. This matches tasks.md's own Phase 2 checkpoint note and is expected, not a defect. Phases 3-6 (US1-US3 UI wiring + Polish) remain to implement a future session.",
       "step": "implement"
     }
-  ]
+  ],
+  "telemetryInstanceId": "d68b9981-0866-4d5a-88f5-06de76e56a6e"
 }

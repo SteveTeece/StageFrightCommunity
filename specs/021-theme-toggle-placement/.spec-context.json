@@ -249,5 +249,6 @@
     "implement": {
       "summary": "Relocated the theme toggle from the top-bar strip to the pinned bottom of the sidebar and shrank it; build clean, 1651/1651 tests pass; T006 manual visual check still open"
     }
-  }
+  },
+  "telemetryInstanceId": "0b30d9b7-76ee-44e9-b99e-357d48ea3417"
 }
