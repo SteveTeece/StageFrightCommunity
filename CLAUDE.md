@@ -113,7 +113,7 @@ Every fee or payment write wraps fee creation + paired GL debit/credit + balance
 
 ### Data grid standards
 
-All tabular data uses `RadzenDataGrid<TItem>`, never plain `<table>` markup or a `table-responsive` wrapper div. Every grid instance follows the Members grid (`src/StageFright.UI/Pages/Members/MemberList.razor`) as the reference: `AllowSorting="true" AllowPaging="true" PageSize="15" class="rz-shadow-0"`. Grids needing a "select all" checkbox in a column header use a `HeaderTemplate` rather than a separate control outside the grid. `ReportViewer.razor` is the one exception — its dynamic columns, section headers, and subtotal/grand-total rows don't fit RadzenDataGrid's typed-column model, so it keeps hand-rolled paging (also fixed at a page size of 15) instead.
+All tabular data uses `RadzenDataGrid<TItem>`, never plain `<table>` markup or a `table-responsive` wrapper div. Every grid instance follows the Members grid (`src/StageFright.UI/Pages/Members/MemberList.razor`) as the reference: `AllowSorting="true" AllowPaging="true" PageSize="15" class="rz-shadow-0"`. Grids needing a "select all" checkbox in a column header use a `HeaderTemplate` rather than a separate control outside the grid. `ReportViewer.razor` is the one exception — its dynamic columns, section headers, and subtotal/grand-total rows don't fit RadzenDataGrid's typed-column model, so it keeps hand-rolled paging (also fixed at a page size of 15) instead. A handful of grids use a smaller `PageSize` than 15 when the surrounding layout is space-constrained — `CommitteeSettingsTab`, one grid in `EventTypesTab`, and `MemberDetail.razor`'s Fee Payment History grid (spec 025, issue #305) — this is a deliberate, per-screen exception, not a new default.
 
 ### List box standards
 
