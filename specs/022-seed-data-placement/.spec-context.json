@@ -518,5 +518,6 @@
       "warnings": []
     }
   ],
-  "last_action": "all 17 tasks done - 1662/1662 tests pass, 0 build warnings"
+  "last_action": "all 17 tasks done - 1662/1662 tests pass, 0 build warnings",
+  "telemetryInstanceId": "90a1ad62-8a9c-408d-8e06-d9eaaec0bf8a"
 }

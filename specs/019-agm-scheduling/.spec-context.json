@@ -800,5 +800,6 @@
         "Did not click Print live to avoid spawning an external PDF viewer process in the session — FR-014 read-only guarantee instead verified via V19 integration test asserting unchanged row counts before/after GenerateAsync calls"
       ]
     }
-  ]
+  ],
+  "telemetryInstanceId": "04d8ea87-df84-4764-9969-db0e8ef91bdb"
 }
