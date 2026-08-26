@@ -1,0 +1,91 @@
+{
+  "workflow": "speckit",
+  "specName": "report action pills",
+  "branch": "dev",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-26T07:36:18.495Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-26T07:39:35.703Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-26T07:39:36.061Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-26T07:39:36.432Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-26T07:39:36.781Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-26T07:39:37.143Z"
+    }
+  ],
+  "telemetryInstanceId": "c84e5596-c4b2-4c79-a3cd-983e412e41b3",
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "Report action bar buttons MUST render with visible spacing between neighbors"
+    },
+    "FR-002": {
+      "title": "Report action bar buttons MUST NOT show a border in their default state"
+    },
+    "FR-003": {
+      "title": "Report action bar visual style MUST match the Finance screen's tab selector"
+    },
+    "FR-004": {
+      "title": "Restyled action bar MUST apply uniformly to every report screen"
+    },
+    "FR-005": {
+      "title": "Restyle MUST be purely cosmetic — click behavior unchanged"
+    },
+    "FR-006": {
+      "title": "Restyled buttons MUST remain legible/usable in light and dark theme"
+    }
+  },
+  "size": "simple",
+  "classification": {
+    "projectedFiles": 2,
+    "projectedTasks": 5,
+    "scopeSignal": "none",
+    "verdict": "simple"
+  },
+  "context": [
+    "area: src/StageFright.UI/Shared/ReportViewer.razor (shared report action bar for all ten reports)",
+    "area: src/StageFright.App/wwwroot/app.css (existing .btn-group and .nav-tabs/.nav-pills pill styling)",
+    "constraint: presentation-only — no click handler/route/report-generation logic changes"
+  ],
+  "intent": "Restyle the Reports screens' Print/Export/Refresh buttons as separated, unbordered pill buttons matching the Finance screen's tab selector.",
+  "expectations": [
+    "No change to report generation, export, print, or refresh behavior",
+    "No change to other screens' segmented pill groups (e.g. any future Active/Inactive filter using .btn-group)"
+  ],
+  "approach": "Add a report-scoped .report-actions CSS class modeled on the existing .nav-tabs/.nav-pills tab-bar style, and swap ReportViewer.razor's action-bar container from .btn-group to it."
+}
