@@ -1,42 +1,42 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
-using StageFright.Core.Entities;
+using StageFright.Core.Modules.Events;
 using StageFright.Reports.Rendering;
 
 namespace StageFright.UI.Pages.Events;
 
 public partial class EventList
 {
-    [Inject] private IEventService EventService { get; set; } = null!;
+    [Inject] private ICombinedEventListService CombinedEventListService { get; set; } = null!;
     [Inject] private IEventAttendanceSheetService EventAttendanceSheetService { get; set; } = null!;
     [Inject] private IEventAttendanceSheetPdfRenderer EventAttendanceSheetPdfRenderer { get; set; } = null!;
+    [Inject] private IAgmAttendanceSheetService AgmAttendanceSheetService { get; set; } = null!;
+    [Inject] private IAgmAttendanceSheetPdfRenderer AgmAttendanceSheetPdfRenderer { get; set; } = null!;
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
     [Inject] private ILogger<EventList> Logger { get; set; } = null!;
 
     private bool _loading = true;
-    private List<Event> _events = new();
+    private List<CombinedEventListItem> _events = new();
     private string _searchTerm = string.Empty;
     private string? _errorMessage;
     private string? _printMessage;
 
-    private IEnumerable<Event> DisplayEvents =>
+    private IEnumerable<CombinedEventListItem> DisplayItems =>
         string.IsNullOrWhiteSpace(_searchTerm)
             ? _events
-            : _events.Where(e =>
-                e.Date.ToString("d MMM yyyy").Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                (e.EventType?.Name?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                (e.Notes?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false));
+            : _events.Where(item =>
+                item.Date.ToString("d MMM yyyy").Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                item.TypeName.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                (item.Notes?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false));
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var result = await EventService.GetAllAsync();
-            _events = result
-                .OrderByDescending(e => e.Date)
-                .ToList();
+            // The service already returns Date-descending order (FR-002) — no re-sort needed here.
+            _events = (await CombinedEventListService.GetAllAsync()).ToList();
         }
         catch (Exception ex)
         {
@@ -82,4 +82,8 @@ public partial class EventList
             _printMessage = "Unable to print attendance sheet. Please try again.";
         }
     }
+
+    private async Task PrintAgmAttendanceReport(Guid agmId) =>
+        _printMessage = await AgmAttendanceReportPrinter.PrintAsync(
+            agmId, AgmAttendanceSheetService, AgmAttendanceSheetPdfRenderer, SettingsService, Logger);
 }
