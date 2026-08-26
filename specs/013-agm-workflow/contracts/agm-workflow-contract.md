@@ -55,7 +55,7 @@ new MenuItem
 ```csharp
 Task<AnnualGeneralMeeting> RecordAsync(RecordAgmRequest request, CancellationToken ct = default);
 Task<AnnualGeneralMeeting?> GetByIdAsync(Guid id, CancellationToken ct = default);
-Task<IReadOnlyList<AnnualGeneralMeeting>> GetPastAsync(CancellationToken ct = default); // most-recent-first
+Task<IReadOnlyList<AnnualGeneralMeeting>> GetAllAsync(CancellationToken ct = default); // most-recent-first; renamed from GetPastAsync, spec 023 / issue #324
 Task ArchiveAsync(Guid id, string deletedBy, CancellationToken ct = default);
 Task<CommitteePositionRecord> RecordSpecialElectionAsync(RecordSpecialElectionRequest request, CancellationToken ct = default);
 ```

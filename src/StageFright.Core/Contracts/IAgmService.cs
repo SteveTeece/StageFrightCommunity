@@ -24,8 +24,13 @@ public interface IAgmService
     /// <summary>Returns the AGM with the given id, or null if not found.</summary>
     Task<AnnualGeneralMeeting?> GetByIdAsync(Guid id, CancellationToken ct = default);
 
-    /// <summary>Returns all non-deleted past AGMs, most-recent-first.</summary>
-    Task<IReadOnlyList<AnnualGeneralMeeting>> GetPastAsync(CancellationToken ct = default);
+    /// <summary>
+    /// Returns every non-deleted AGM, most-recent-first — including scheduled-but-not-yet-recorded
+    /// AGMs (any Date, past or future); it applies no date filter beyond ordering (delegates to
+    /// <c>IAgmRepository.GetPastOrderedAsync</c>, which carries the same caveat despite its own
+    /// name). Callers needing only genuinely past AGMs must filter by Date themselves.
+    /// </summary>
+    Task<IReadOnlyList<AnnualGeneralMeeting>> GetAllAsync(CancellationToken ct = default);
 
     /// <summary>Archives a past AGM. Cascades to its attendance records; the committee term it started is left intact.</summary>
     Task ArchiveAsync(Guid id, string deletedBy, CancellationToken ct = default);

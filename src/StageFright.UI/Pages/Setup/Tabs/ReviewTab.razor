@@ -19,6 +19,10 @@
         <dt class="col-5">AGM Month</dt><dd class="col-7">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Model.CommitteeRenewalMonth)</dd>
         <dt class="col-5">Audit Trail Retention</dt><dd class="col-7">@Model.AuditRetentionYears year@(Model.AuditRetentionYears == 1 ? "" : "s")</dd>
         <dt class="col-5">Seat Count Target</dt><dd class="col-7">@(Model.GeneralCommitteeSeatCountTarget?.ToString() ?? "Not set")</dd>
+        @if (DebugSeederAvailable)
+        {
+            <dt class="col-5">Load sample data</dt><dd class="col-7">@(SeedWithTestData ? "Yes" : "No")</dd>
+        }
     </dl>
 
     <div class="row g-3 mb-2">
@@ -42,13 +46,3 @@
         </div>
     </div>
 </div>
-
-@if (DebugSeederAvailable)
-{
-    <div class="mb-3">
-        <div class="form-check form-check-sm">
-            <input type="checkbox" id="seedData" class="form-check-input" checked="@SeedWithTestData" @onchange="OnSeedWithTestDataChangedAsync" />
-            <label for="seedData" class="form-check-label">Load sample data (members, rehearsals, events &amp; finances)</label>
-        </div>
-    </div>
-}

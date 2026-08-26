@@ -73,19 +73,27 @@ The wizard MUST require organisation identity and tax details, fee/renewal confi
 
 ### Optional sample-data seeding is a debug-only, opt-in, non-blocking capability
 
-Sample-data seeding MUST NOT be offered or reachable in release builds, MUST require explicit user opt-in even when available, and MUST run without freezing the setup UI, reporting incremental progress back to it. It MUST also be safe to invoke against a database that already has data.
+Sample-data seeding MUST NOT be offered or reachable in release builds, MUST require explicit user opt-in even when available, and MUST run without freezing the setup UI, reporting incremental progress back to it. It MUST also be safe to invoke against a database that already has data. The opt-in control lives on the Organisation Settings tab (the wizard's first tab), and selecting it disables the Chart of Accounts, Opening Balances, and Committee tabs — sample data supplies that information itself, so manual entry on those tabs is bypassed rather than merely optional.
 
-#### Scenario: release build reaches the final setup step
+#### Scenario: release build reaches the setup wizard
 - **WHEN** no debug seeder is registered in the container
-- **THEN** the sample-data checkbox is not shown at all
+- **THEN** the sample-data checkbox is not shown at all, on any tab, and no tab is ever disabled
 
 #### Scenario: user opts into sample data in a debug build
-- **WHEN** the checkbox is checked and setup is submitted
+- **WHEN** the checkbox is checked on the Organisation Settings tab and setup is submitted
 - **THEN** seeding runs off the UI thread while progress messages update the wizard in place, and normal navigation to `/dashboard` still follows once seeding finishes
 
 #### Scenario: seeding runs against a database that already has member data
 - **WHEN** the seeder is invoked and active members already exist
 - **THEN** it exits without creating duplicate data
+
+#### Scenario: coordinator selects sample data before reaching the manual-entry tabs
+- **WHEN** the checkbox is checked on the Organisation Settings tab
+- **THEN** the Chart of Accounts, Opening Balances, and Committee tab headers become unavailable and Next advances directly from Organisation Settings to Review
+
+#### Scenario: coordinator had already queued manual entries before selecting sample data
+- **WHEN** the checkbox is checked after an account, opening balance, or committee title was already queued
+- **THEN** every queued entry is discarded so it is never submitted alongside the seeded sample data
 
 ### Plugin assemblies are discovered and loaded in isolation from each other and from the host
 

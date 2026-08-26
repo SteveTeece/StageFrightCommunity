@@ -173,7 +173,7 @@ public class AgmService : IAgmService
     public Task<AnnualGeneralMeeting?> GetByIdAsync(Guid id, CancellationToken ct = default) =>
         _agmRepo.GetByIdAsync(id, ct);
 
-    public Task<IReadOnlyList<AnnualGeneralMeeting>> GetPastAsync(CancellationToken ct = default) =>
+    public Task<IReadOnlyList<AnnualGeneralMeeting>> GetAllAsync(CancellationToken ct = default) =>
         _agmRepo.GetPastOrderedAsync(ct);
 
     public async Task ArchiveAsync(Guid id, string deletedBy, CancellationToken ct = default)

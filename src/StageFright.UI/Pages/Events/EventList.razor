@@ -24,7 +24,7 @@
 {
     <p role="status" aria-live="polite">Loading events…</p>
 }
-else if (!DisplayEvents.Any())
+else if (!DisplayItems.Any())
 {
     @if (_events.Count == 0)
     {
@@ -37,51 +37,80 @@ else if (!DisplayEvents.Any())
 }
 else
 {
-    <RadzenDataGrid Data="@DisplayEvents" TItem="Event"
+    <RadzenDataGrid Data="@DisplayItems" TItem="CombinedEventListItem"
                     AllowSorting="true" AllowPaging="true" PageSize="15"
                     class="rz-shadow-0">
         <Columns>
-            <RadzenDataGridColumn TItem="Event" Property="Date" Title="Date" Width="130px">
-                <Template Context="e">
-                    <a href="/events/@e.Id" class="text-decoration-none">@e.Date.ToString("d MMM yyyy")</a>
+            <RadzenDataGridColumn TItem="CombinedEventListItem" Property="Date" Title="Date" Width="130px">
+                <Template Context="item">
+                    <a href="@item.DetailUrl" class="text-decoration-none">@item.Date.ToString("d MMM yyyy")</a>
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Event" Title="Event Type" Width="150px">
-                <Template Context="e">@(e.EventType?.Name ?? "—")</Template>
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Event" Title="Participation" Width="120px">
-                <Template Context="e">
-                    @if (e.StoredParticipationRate.HasValue)
+            <RadzenDataGridColumn TItem="CombinedEventListItem" Property="TypeName" Title="Event Type" Width="150px" />
+            <RadzenDataGridColumn TItem="CombinedEventListItem" Title="Status" Width="120px" Sortable="false">
+                <Template Context="item">
+                    @if (item.Kind == CombinedEventListItemKind.Agm)
                     {
-                        <span>@($"{e.StoredParticipationRate:F1}%")</span>
+                        @if (item.IsAgmRecorded == true)
+                        {
+                            <span class="badge bg-success">Recorded</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">Scheduled</span>
+                        }
                     }
                     else
                     {
-                        <span class="text-muted small">Not recorded</span>
+                        @if (item.ParticipationRate.HasValue)
+                        {
+                            <span>@($"{item.ParticipationRate:F1}%")</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">Not recorded</span>
+                        }
                     }
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Event" Property="Notes" Title="Notes" />
-            <RadzenDataGridColumn TItem="Event" Title="Actions" Width="240px" Sortable="false">
-                <Template Context="e">
+            <RadzenDataGridColumn TItem="CombinedEventListItem" Property="Notes" Title="Notes" />
+            <RadzenDataGridColumn TItem="CombinedEventListItem" Title="Actions" Width="240px" Sortable="false">
+                <Template Context="item">
                     <div class="d-flex flex-nowrap align-items-center gap-1">
-                        @if (!e.StoredParticipationRate.HasValue)
+                        @if (item.Kind == CombinedEventListItemKind.Agm)
                         {
-                            <button class="btn btn-primary btn-sm text-nowrap"
-                                    @onclick="() => RecordParticipation(e.Id)"
-                                    aria-label="Record participation for @e.Date.ToString("d MMM yyyy")">
-                                Record Participation
+                            @if (item.IsAgmRecorded != true)
+                            {
+                                <a href="@($"/events/agm/{item.Id}/record")" class="btn btn-primary btn-sm text-nowrap">
+                                    Record
+                                </a>
+                            }
+                            <button class="btn btn-outline-secondary btn-sm text-nowrap"
+                                    @onclick="() => PrintAgmAttendanceReport(item.Id)"
+                                    aria-label="Print attendance report for @item.Date.ToString("d MMM yyyy")">
+                                Print
                             </button>
                         }
                         else
                         {
-                            <span class="text-muted small">Recorded</span>
+                            @if (!item.ParticipationRate.HasValue)
+                            {
+                                <button class="btn btn-primary btn-sm text-nowrap"
+                                        @onclick="() => RecordParticipation(item.Id)"
+                                        aria-label="Record participation for @item.Date.ToString("d MMM yyyy")">
+                                    Record Participation
+                                </button>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">Recorded</span>
+                            }
+                            <button class="btn btn-outline-secondary btn-sm text-nowrap"
+                                    @onclick="() => PrintAttendanceSheet(item.Id)"
+                                    aria-label="Print attendance sheet for @item.Date.ToString("d MMM yyyy")">
+                                Print
+                            </button>
                         }
-                        <button class="btn btn-outline-secondary btn-sm text-nowrap"
-                                @onclick="() => PrintAttendanceSheet(e.Id)"
-                                aria-label="Print attendance sheet for @e.Date.ToString("d MMM yyyy")">
-                            Print
-                        </button>
                     </div>
                 </Template>
             </RadzenDataGridColumn>
