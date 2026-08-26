@@ -135,4 +135,19 @@ public class CombinedEventListServiceTests : TestBase
 
         Assert.Empty(result);
     }
+
+    [Fact]
+    public async Task GetAllAsync_Includes_FutureScheduledAgm_FromAgmService()
+    {
+        // Regression guard for spec 023 Acceptance Scenario 2: a scheduled-but-unrecorded AGM
+        // dated in the future must still appear. This only holds because IAgmService.GetPastAsync
+        // applies no date filter despite its name (see its doc comment) — if that ever changes to
+        // match a literal "past AGMs only" reading, this test should catch the regression.
+        var futureAgm = AnAgm(DateTime.UtcNow.AddYears(1), isRecorded: false);
+        SetUpSources(agms: [futureAgm]);
+
+        var result = await CreateService().GetAllAsync(Ct);
+
+        Assert.Contains(result, i => i.Id == futureAgm.Id && i.Kind == CombinedEventListItemKind.Agm);
+    }
 }

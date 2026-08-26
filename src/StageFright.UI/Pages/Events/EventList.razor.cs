@@ -83,33 +83,7 @@ public partial class EventList
         }
     }
 
-    private async Task PrintAgmAttendanceReport(Guid agmId)
-    {
-        _printMessage = null;
-
-        try
-        {
-            var sheetData = await AgmAttendanceSheetService.GenerateAsync(agmId);
-
-            if (sheetData.Members.Count == 0)
-            {
-                _printMessage = "No attendance records found — nothing to print.";
-                return;
-            }
-
-            var settings = await SettingsService.GetAsync();
-            var orgName = settings?.OrganizationName ?? string.Empty;
-            var bytes = AgmAttendanceSheetPdfRenderer.Render(sheetData, orgName);
-            var tempPath = Path.Combine(Path.GetTempPath(), $"agm-attendance-report_{Guid.NewGuid():N}.pdf");
-            File.WriteAllBytes(tempPath, bytes);
-#pragma warning disable CA1416
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(tempPath) { UseShellExecute = true });
-#pragma warning restore CA1416
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to print attendance report for AGM {AgmId}", agmId);
-            _printMessage = "Unable to print attendance report. Please try again.";
-        }
-    }
+    private async Task PrintAgmAttendanceReport(Guid agmId) =>
+        _printMessage = await AgmAttendanceReportPrinter.PrintAsync(
+            agmId, AgmAttendanceSheetService, AgmAttendanceSheetPdfRenderer, SettingsService, Logger);
 }

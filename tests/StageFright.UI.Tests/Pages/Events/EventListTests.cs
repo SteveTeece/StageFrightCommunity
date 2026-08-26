@@ -196,6 +196,22 @@ public class EventListTests : RadzenGridTestContext
     }
 
     [Fact]
+    public async Task ClickPrint_OnAgmRow_ServiceThrows_ShowsErrorMessage_AndDoesNotRenderPdf()
+    {
+        var item = AnAgmItem(isRecorded: true);
+        SetUpItems(item);
+        _agmAttendanceSheetService.GenerateAsync(item.Id, Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<AgmAttendanceSheetData>(new EntityNotFoundException("Agm", item.Id, "GenerateAsync")));
+
+        var cut = Render<EventList>();
+        await cut.Find($"button[aria-label='Print attendance report for {item.Date:d MMM yyyy}']")
+            .ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        Assert.Contains("Unable to print", cut.Markup);
+        _agmAttendanceSheetPdfRenderer.DidNotReceive().Render(Arg.Any<AgmAttendanceSheetData>(), Arg.Any<string>());
+    }
+
+    [Fact]
     public void EventRow_DateLinkHref_IsGenericEventRoute_NeverAgmRoute()
     {
         var item = AnEventItem("Concert");
