@@ -31,6 +31,11 @@ else
                     aria-label="Print attendance report">
                 Print Attendance Report
             </button>
+            <button class="btn btn-outline-secondary btn-sm"
+                    @onclick="PrintAgmResults"
+                    aria-label="Print AGM results report">
+                Print AGM Results
+            </button>
             <button class="btn btn-outline-danger btn-sm" @onclick="ArchiveAsync" disabled="@_archiving">
                 @(_archiving ? "Archiving…" : "Archive")
             </button>
@@ -59,20 +64,32 @@ else
         <p class="small">@AttendedCount of @_attendance.Count members attended.</p>
 
         <h2 class="h6 mb-1 mt-3">Elected Positions</h2>
-        @if (PositionLines.Count == 0)
+        @if (PositionLines.Count == 0 && GeneralCommitteeMemberNames.Count == 0)
         {
             <p class="small text-muted">No positions recorded.</p>
         }
         else
         {
-            <ul class="list-unstyled small">
-                @foreach (var line in PositionLines)
-                {
-                    <li class="mb-1">
-                        <strong>@line.Label</strong> — @line.MemberText
-                    </li>
-                }
-            </ul>
+            @if (PositionLines.Count > 0)
+            {
+                <ul class="list-unstyled small">
+                    @foreach (var line in PositionLines)
+                    {
+                        <li class="mb-1">
+                            <strong>@line.Label</strong> — @line.MemberText
+                        </li>
+                    }
+                </ul>
+            }
+            @if (GeneralCommitteeMemberNames.Count > 0)
+            {
+                <div class="mb-1">
+                    <strong class="small d-block mb-1">General Committee Member</strong>
+                    <BorderedListBox TItem="string" Items="GeneralCommitteeMemberNames">
+                        <RowTemplate Context="name"><span class="small">@name</span></RowTemplate>
+                    </BorderedListBox>
+                </div>
+            }
         }
     }
 
