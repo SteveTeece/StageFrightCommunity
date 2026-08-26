@@ -768,6 +768,36 @@ a {
     border: 0;
 }
 
+/* Report actions: separated pill buttons (Print/Export/Refresh),
+   modeled on the .nav-tabs/.nav-pills glass tab bar — spaced apart,
+   no border around the group or the individual buttons. */
+.report-actions {
+    display: flex;
+    flex-wrap: wrap;
+    background: var(--sf-glass);
+    border-radius: 14px;
+    padding: 5px;
+    gap: 6px;
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    width: fit-content;
+    max-width: 100%;
+}
+
+.report-actions > .btn {
+    background: transparent;
+    border: 0;
+    border-radius: 10px !important;
+    color: var(--sf-sub);
+    padding: 7px 16px;
+    font-size: .8rem;
+}
+
+.report-actions > .btn:hover {
+    background: transparent;
+    color: var(--sf-text);
+}
+
 /* --- Forms --- */
 .form-control, .form-select, .form-check-input {
     background-color: var(--sf-glass2);
