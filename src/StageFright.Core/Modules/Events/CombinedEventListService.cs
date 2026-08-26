@@ -23,14 +23,18 @@ public class CombinedEventListService : ICombinedEventListService
     public async Task<IReadOnlyList<CombinedEventListItem>> GetAllAsync(CancellationToken ct = default)
     {
         var events = await _eventService.GetAllAsync(ct);
-        var agms = await _agmService.GetPastAsync(ct);
+        var agms = await _agmService.GetAllAsync(ct);
 
         var items = new List<CombinedEventListItem>(events.Count + agms.Count);
         items.AddRange(events.Select(MapEvent));
         items.AddRange(agms.Select(MapAgm));
 
+        // Secondary sort key (Kind) makes same-date ordering deterministic — e.g. an Event and an
+        // AGM scheduled on the same day — rather than relying on OrderByDescending's stability
+        // across the two concatenated source orderings.
         return items
             .OrderByDescending(item => item.Date)
+            .ThenBy(item => item.Kind)
             .ToList();
     }
 

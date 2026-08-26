@@ -375,10 +375,10 @@ public class AgmServiceTests : TestBase
         Assert.Null(result);
     }
 
-    // --- GetPastAsync ---
+    // --- GetAllAsync ---
 
     [Fact]
-    public async Task GetPastAsync_ReturnsMostRecentFirst_FromRepository()
+    public async Task GetAllAsync_ReturnsMostRecentFirst_FromRepository()
     {
         var agms = new List<AnnualGeneralMeeting>
         {
@@ -388,7 +388,7 @@ public class AgmServiceTests : TestBase
         _agmRepo.GetPastOrderedAsync(Arg.Any<CancellationToken>()).Returns(agms);
 
         var svc = CreateService();
-        var result = await svc.GetPastAsync(Ct);
+        var result = await svc.GetAllAsync(Ct);
 
         Assert.Same(agms, result);
     }

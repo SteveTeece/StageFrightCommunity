@@ -53,4 +53,4 @@ public interface ICombinedEventListService
 }
 ```
 
-Implementation composes `IEventService.GetAllAsync(ct)` and `IAgmService.GetPastAsync(ct)` (both already excluding archived records via their existing EF Core query filters — see [research.md](./research.md)), maps each source record to a `CombinedEventListItem`, concatenates, and orders the result by `Date` descending. No tie-break beyond a stable sort is required (per the spec's Assumptions).
+Implementation composes `IEventService.GetAllAsync(ct)` and `IAgmService.GetAllAsync(ct)` (both already excluding archived records via their existing EF Core query filters — see [research.md](./research.md)), maps each source record to a `CombinedEventListItem`, concatenates, and orders the result by `Date` descending, then by `Kind` ascending (Event before Agm) as an explicit, deterministic tie-break for same-date rows (per the spec's Assumptions; issue #325).

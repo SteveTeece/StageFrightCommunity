@@ -98,6 +98,6 @@ The All Events screen already lets a user filter the list by typing a date, type
 
 - "All Events screen" refers to the existing `/events` ("All Events") page, distinct from the dedicated `/events/agm` AGMs page.
 - The underlying `Event` and `AnnualGeneralMeeting` data models stay separate, per spec 013's deliberate decision to split AGM recording out of the generic Event entity — this feature only changes the read/list-display layer, not storage.
-- No specific tie-break rule is required when an Event and an AGM share the same date beyond a stable secondary sort; the issue only asks that AGMs appear in the list, not that same-day ordering be pinned down.
+- When an Event and an AGM share the same date, the combined list sorts Event rows before AGM rows as an explicit, deterministic secondary sort key (by `Kind`) — not a human-meaningful ordering requirement, just determinism (issue #325); the original issue only asked that AGMs appear in the list, not that same-day ordering carry any particular meaning.
 - The Dashboard Events tile, Committee report, and other screens that read Event or AGM data outside the All Events list are unaffected by this change and out of scope.
 - The "Schedule Event" button on the All Events screen continues to create only generic Events; AGM scheduling stays on its existing dedicated entry point.

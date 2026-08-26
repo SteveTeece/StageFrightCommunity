@@ -147,6 +147,12 @@ list-row control — one guard implementation, not two places that must agree.
 
 ## Decision 6 — Leave `IAgmRepository.GetPastOrderedAsync`/`IAgmService.GetPastAsync` method names as-is; fix only the stale doc comment and UI copy
 
+> **Superseded (spec 023 / issue #324)**: `IAgmService.GetPastAsync` was later renamed to `GetAllAsync`
+> once `CombinedEventListService` took on a second caller depending on its "returns everything"
+> contract — the diff-vs-benefit tradeoff below tipped once code, not just documentation, was
+> relying on the misleading name. `IAgmRepository.GetPastOrderedAsync` was left as-is; the rename
+> was scoped to the `IAgmService` public contract only.
+
 **Decision**: No rename. `GetPastOrderedAsync`'s actual query (`OrderByDescending(a => a.Date)`,
 no date filter) already returns every non-deleted AGM today, scheduled-in-the-future ones
 included once this feature ships — its *name* has always slightly overstated what it filters, but

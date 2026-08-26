@@ -64,7 +64,7 @@ public class AgmListTests : RadzenGridTestContext
         var older = MakeAgm(OlderAgmId, new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc), 3, 1);
         var newer = MakeAgm(NewerAgmId, new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), 4, 0);
         // Service already returns most-recent-first (GetPastOrderedAsync); the list renders exactly what it's given.
-        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { newer, older });
+        _agmService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { newer, older });
 
         var cut = Render<AgmList>();
 
@@ -78,7 +78,7 @@ public class AgmListTests : RadzenGridTestContext
     public void Renders_DateAndAttendanceCount_Columns()
     {
         var agm = MakeAgm(NewerAgmId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), 3, 1);
-        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
+        _agmService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
 
         var cut = Render<AgmList>();
 
@@ -90,7 +90,7 @@ public class AgmListTests : RadzenGridTestContext
     public void ClickingAgmDate_NavigatesToAgmDetail()
     {
         var agm = MakeAgm(NewerAgmId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), 1, 0);
-        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
+        _agmService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
 
         var cut = Render<AgmList>();
         cut.Find("a").Click();
@@ -102,7 +102,7 @@ public class AgmListTests : RadzenGridTestContext
     [Fact]
     public void NoAgms_ShowsEmptyState_WithScheduleAgmLink()
     {
-        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting>());
+        _agmService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting>());
 
         var cut = Render<AgmList>();
 
@@ -117,7 +117,7 @@ public class AgmListTests : RadzenGridTestContext
     public void StatusColumn_ShowsRecorded_ForRecordedAgm()
     {
         var agm = MakeAgm(NewerAgmId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), 1, 0, isRecorded: true);
-        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
+        _agmService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
 
         var cut = Render<AgmList>();
 
@@ -128,7 +128,7 @@ public class AgmListTests : RadzenGridTestContext
     public void StatusColumn_ShowsScheduled_ForScheduledAgm()
     {
         var agm = MakeAgm(NewerAgmId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), 0, 0, isRecorded: false);
-        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
+        _agmService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
 
         var cut = Render<AgmList>();
 
@@ -139,7 +139,7 @@ public class AgmListTests : RadzenGridTestContext
     public void AttendanceColumn_ShowsEmDash_ForScheduledAgm()
     {
         var agm = MakeAgm(NewerAgmId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), 0, 0, isRecorded: false);
-        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
+        _agmService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
 
         var cut = Render<AgmList>();
 
@@ -152,7 +152,7 @@ public class AgmListTests : RadzenGridTestContext
     public void RecordAction_Renders_ForScheduledAgm_AndNavigatesToRecordRoute()
     {
         var agm = MakeAgm(NewerAgmId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), 0, 0, isRecorded: false);
-        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
+        _agmService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
 
         var cut = Render<AgmList>();
 
@@ -164,7 +164,7 @@ public class AgmListTests : RadzenGridTestContext
     public void RecordAction_DoesNotRender_ForRecordedAgm()
     {
         var agm = MakeAgm(NewerAgmId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), 1, 0, isRecorded: true);
-        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
+        _agmService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
 
         var cut = Render<AgmList>();
 
@@ -177,7 +177,7 @@ public class AgmListTests : RadzenGridTestContext
     public void PrintButton_Renders_ForEveryRow()
     {
         var agm = MakeAgm(NewerAgmId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), 1, 0);
-        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
+        _agmService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
 
         var cut = Render<AgmList>();
 
@@ -188,7 +188,7 @@ public class AgmListTests : RadzenGridTestContext
     public async Task ClickPrint_EmptyMembers_ShowsMessage_AndDoesNotRenderPdf()
     {
         var agm = MakeAgm(NewerAgmId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), 0, 0);
-        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
+        _agmService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
         _agmAttendanceSheetService.GenerateAsync(agm.Id, Arg.Any<CancellationToken>())
             .Returns(new AgmAttendanceSheetData { AgmDate = agm.Date, Members = Array.Empty<AgmAttendanceSheetMember>() });
 
@@ -204,7 +204,7 @@ public class AgmListTests : RadzenGridTestContext
     public async Task ClickPrint_ServiceThrows_ShowsErrorMessage_AndDoesNotRenderPdf()
     {
         var agm = MakeAgm(NewerAgmId, new DateTime(2026, 3, 15, 0, 0, 0, DateTimeKind.Utc), 1, 0);
-        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
+        _agmService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<AnnualGeneralMeeting> { agm });
         _agmAttendanceSheetService.GenerateAsync(agm.Id, Arg.Any<CancellationToken>())
             .Returns(Task.FromException<AgmAttendanceSheetData>(new EntityNotFoundException("AnnualGeneralMeeting", agm.Id, "GenerateAsync")));
 

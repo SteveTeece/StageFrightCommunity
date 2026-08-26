@@ -8,9 +8,9 @@ All decisions below were resolved by reading the existing `Events`/`Agm` module 
 
 **Rationale**: This mirrors the existing `IEventAttendanceSheetService` pattern — a read-only application service in the module folder that composes data from repositories/other services into a display DTO. It keeps the merge, type-label, status, and (safety-critical) routing rules unit-testable in `StageFright.Core.Tests`, and satisfies constitution §4.1 ("No Cross-Module Dependencies") by depending on interfaces, never on the sibling `Agm` module's concrete `AgmService`.
 
-**Alternatives considered**: Merging `IEventService.GetAllAsync()` and `IAgmService.GetPastAsync()` directly inside `EventList.razor.cs` and zipping the two lists in the component. Rejected — it would duplicate FR-004/FR-006 mapping logic (AGM type label, detail-route selection) in presentation code with no Core-level test seam, and FR-006's "must never route an AGM row to the generic event detail screen" requirement deserves a direct unit-test assertion rather than relying solely on bUnit's rendered-markup inspection.
+**Alternatives considered**: Merging `IEventService.GetAllAsync()` and `IAgmService.GetAllAsync()` directly inside `EventList.razor.cs` and zipping the two lists in the component. Rejected — it would duplicate FR-004/FR-006 mapping logic (AGM type label, detail-route selection) in presentation code with no Core-level test seam, and FR-006's "must never route an AGM row to the generic event detail screen" requirement deserves a direct unit-test assertion rather than relying solely on bUnit's rendered-markup inspection.
 
-## Decision: Reuse `IAgmService.GetPastAsync()` and `IEventService.GetAllAsync()` as-is; no new repository methods
+## Decision: Reuse `IAgmService.GetAllAsync()` and `IEventService.GetAllAsync()` as-is; no new repository methods
 
 **Decision**: The merge service calls the two existing methods unchanged. No new `IAgmRepository`/`IEventRepository` methods are needed.
 
