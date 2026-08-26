@@ -25,7 +25,7 @@ public partial class AgmList : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        _agms = (await AgmService.GetPastAsync()).ToList();
+        _agms = (await AgmService.GetAllAsync()).ToList();
         _loading = false;
     }
 

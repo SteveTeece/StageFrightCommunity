@@ -53,7 +53,7 @@ public class CombinedEventListServiceTests : TestBase
     private void SetUpSources(IReadOnlyList<Event>? events = null, IReadOnlyList<AnnualGeneralMeeting>? agms = null)
     {
         _eventService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(events ?? []);
-        _agmService.GetPastAsync(Arg.Any<CancellationToken>()).Returns(agms ?? []);
+        _agmService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(agms ?? []);
     }
 
     [Fact]
@@ -83,6 +83,25 @@ public class CombinedEventListServiceTests : TestBase
         Assert.Equal(newest.Id, result[0].Id);
         Assert.Equal(middle.Id, result[1].Id);
         Assert.Equal(oldest.Id, result[2].Id);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_OnDateTie_SortsEventBeforeAgm_Deterministically()
+    {
+        // Regression guard for issue #325: an Event and an AGM sharing the exact same date (the
+        // AGM per-year uniqueness rule doesn't prevent this against an Event) must sort in a
+        // fixed, deterministic order rather than relying only on OrderByDescending's stability
+        // across the two concatenated source orderings.
+        var tieDate = new DateTime(2026, 6, 15, 0, 0, 0, DateTimeKind.Utc);
+        var evt = AnEvent(tieDate);
+        var agm = AnAgm(tieDate);
+        SetUpSources(events: [evt], agms: [agm]);
+
+        var result = await CreateService().GetAllAsync(Ct);
+
+        Assert.Equal(2, result.Count);
+        Assert.Equal(CombinedEventListItemKind.Event, result[0].Kind);
+        Assert.Equal(CombinedEventListItemKind.Agm, result[1].Kind);
     }
 
     [Fact]
@@ -140,7 +159,7 @@ public class CombinedEventListServiceTests : TestBase
     public async Task GetAllAsync_Includes_FutureScheduledAgm_FromAgmService()
     {
         // Regression guard for spec 023 Acceptance Scenario 2: a scheduled-but-unrecorded AGM
-        // dated in the future must still appear. This only holds because IAgmService.GetPastAsync
+        // dated in the future must still appear. This only holds because IAgmService.GetAllAsync
         // applies no date filter despite its name (see its doc comment) — if that ever changes to
         // match a literal "past AGMs only" reading, this test should catch the regression.
         var futureAgm = AnAgm(DateTime.UtcNow.AddYears(1), isRecorded: false);

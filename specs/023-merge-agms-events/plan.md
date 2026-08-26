@@ -6,7 +6,7 @@
 
 ## Summary
 
-The All Events screen (`/events`) currently lists only `Event` rows; Annual General Meetings live solely on the separate `/events/agm` screen, so there is no single chronological record of everything the group has held. This plan adds a read-only merge layer: a new Core service combines the existing `IEventService.GetAllAsync()` and `IAgmService.GetPastAsync()` results into one date-sorted list of row view-models, and `EventList.razor`/`EventList.razor.cs` render that merged list in the existing `RadzenDataGrid`, branching per row kind so an AGM row shows AGM-appropriate status/actions and routes to the AGM's own detail screen instead of the generic event detail screen. No data model, storage, or existing dedicated-screen behavior changes — this is purely a new read/search projection over two already-existing, already-filtered data sources.
+The All Events screen (`/events`) currently lists only `Event` rows; Annual General Meetings live solely on the separate `/events/agm` screen, so there is no single chronological record of everything the group has held. This plan adds a read-only merge layer: a new Core service combines the existing `IEventService.GetAllAsync()` and `IAgmService.GetAllAsync()` results into one date-sorted list of row view-models, and `EventList.razor`/`EventList.razor.cs` render that merged list in the existing `RadzenDataGrid`, branching per row kind so an AGM row shows AGM-appropriate status/actions and routes to the AGM's own detail screen instead of the generic event detail screen. No data model, storage, or existing dedicated-screen behavior changes — this is purely a new read/search projection over two already-existing, already-filtered data sources.
 
 ## Project Structure
 
@@ -69,7 +69,7 @@ tests/StageFright.Integration.Tests/Scenarios/
 | §4.1 Repositories Centralized, Not Module-Owned | PASS — no new repository; the merge reuses `IEventRepository`/`IAgmRepository` transitively via their existing services. |
 | §4.5/§4.7 Blazor code-behind pattern | PASS — all new C# logic lives in `EventList.razor.cs`; `EventList.razor` gains only markup and `@if` branches, no `@code` block. |
 | CLAUDE.md Data grid standards | PASS — the merged grid keeps `AllowSorting="true" AllowPaging="true" PageSize="15" class="rz-shadow-0"`, matching the Members reference grid and today's `EventList`. |
-| §3.4 Soft-Delete / Query Filtering | PASS — reuses `IEventService.GetAllAsync()` and `IAgmService.GetPastAsync()`, both already scoped by the existing EF Core `!IsDeleted` query filters (`EventConfiguration`, `AnnualGeneralMeetingConfiguration`); no new filtering logic needed for FR-010. |
+| §3.4 Soft-Delete / Query Filtering | PASS — reuses `IEventService.GetAllAsync()` and `IAgmService.GetAllAsync()`, both already scoped by the existing EF Core `!IsDeleted` query filters (`EventConfiguration`, `AnnualGeneralMeetingConfiguration`); no new filtering logic needed for FR-010. |
 | §5 Custom Exceptions at Boundaries | PASS — `CombinedEventListService` is read-only and composes two already exception-safe service calls; it introduces no new DAL access and therefore no new exception-translation surface. |
 | §11 Testing Standards | PLANNED — Phase 2 tasks add Core unit tests (merge/sort/route mapping), bUnit tests (per-kind rendering, search, actions), and a new integration scenario test; see Project Structure above. |
 
