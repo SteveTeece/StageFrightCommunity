@@ -399,7 +399,7 @@ public class AgmDetailTests : BunitContext
         _attendanceRepository.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<AgmAttendanceRecord>());
         _committeeService.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<CommitteePositionRecord>());
         _settingsService.GetAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromException<SettingsEntity>(new InvalidOperationException("boom")));
+            .Returns(Task.FromException<SettingsEntity?>(new InvalidOperationException("boom")));
 
         var cut = Render<AgmDetail>(p => p.Add(x => x.Id, AgmId));
         await cut.Find("button[aria-label='Print AGM results report']")
@@ -416,7 +416,7 @@ public class AgmDetailTests : BunitContext
         _attendanceRepository.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<AgmAttendanceRecord>());
         _committeeService.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<CommitteePositionRecord>());
         _settingsService.GetAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromException<SettingsEntity>(new InvalidOperationException("boom")));
+            .Returns(Task.FromException<SettingsEntity?>(new InvalidOperationException("boom")));
 
         var cut = Render<AgmDetail>(p => p.Add(x => x.Id, AgmId));
         await cut.Find("button[aria-label='Print AGM results report']")
