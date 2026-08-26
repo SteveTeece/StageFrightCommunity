@@ -45,7 +45,10 @@ else
                     <dt class="col-sm-5">Email</dt>
                     <dd class="col-sm-7">@_member.Email</dd>
                 }
-
+            </dl>
+        </div>
+        <div class="col-md-6">
+            <dl class="row mb-0 small">
                 <dt class="col-sm-5">Join Date</dt>
                 <dd class="col-sm-7">@_member.JoinDate.ToString("d MMM yyyy")</dd>
 
@@ -99,7 +102,7 @@ else
         <section aria-label="Fee Payment History" class="mt-2">
             <h2 class="h6 mb-1">Fee Payment History</h2>
             <RadzenDataGrid Data="@_feeHistory" TItem="FeeHistoryItem"
-                            AllowPaging="true" PageSize="15"
+                            AllowPaging="true" PageSize="8"
                             AllowSorting="true"
                             class="rz-shadow-0">
                 <Columns>

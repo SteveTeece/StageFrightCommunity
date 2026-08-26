@@ -134,7 +134,7 @@ public interface IAgmService
 
     // Unchanged:
     Task<AnnualGeneralMeeting?> GetByIdAsync(Guid id, CancellationToken ct = default);
-    Task<IReadOnlyList<AnnualGeneralMeeting>> GetPastAsync(CancellationToken ct = default);
+    Task<IReadOnlyList<AnnualGeneralMeeting>> GetAllAsync(CancellationToken ct = default); // renamed from GetPastAsync, spec 023 / issue #324
     Task ArchiveAsync(Guid id, string deletedBy, CancellationToken ct = default);
     Task<CommitteePositionRecord> RecordSpecialElectionAsync(RecordSpecialElectionRequest request, CancellationToken ct = default);
 }

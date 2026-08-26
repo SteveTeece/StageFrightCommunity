@@ -107,9 +107,9 @@ unchanged) remains the single place this is enforced: it checks `Members.Count =
 
 ## Out of scope for this contract
 
-- `IAgmService.GetByIdAsync`, `GetPastAsync`, `ArchiveAsync`, `RecordSpecialElectionAsync` — no
-  signature change (research.md Decision 6 for why `GetPastAsync`'s name is kept despite now
-  covering scheduled AGMs too).
+- `IAgmService.GetByIdAsync`, `GetAllAsync` (renamed from `GetPastAsync` by spec 023 / issue #324;
+  see research.md Decision 6's superseded note), `ArchiveAsync`, `RecordSpecialElectionAsync` — no
+  other signature changes.
 - `IAgmAttendanceSheetPdfRenderer` — unchanged; the existing renderer already handles an
   all-unchecked `Members` list correctly with no code change (research.md's Decision 4 rationale).
 - `IAgmRepository`'s existing members (`GetByIdAsync`, `AddAsync`, `UpdateAsync`, `ArchiveAsync`,

@@ -143,35 +143,72 @@ html, body {
     transition: background .3s;
 }
 
-.shell-topbar {
-    flex: none;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: .5rem;
-    padding: .9rem 1.25rem 0 calc(var(--sf-sidebar-w) + 1.25rem);
-}
-
 .shell-content {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    padding: .5rem 1.25rem 1rem calc(var(--sf-sidebar-w) + 1.25rem);
+    padding: 1rem 1.25rem 1rem calc(var(--sf-sidebar-w) + 1.25rem);
 }
 
-/* Theme toggle pill (current theme name + RadzenSwitch) */
+/* Shrink every RadzenSwitch toggle app-wide (from Radzen's default 3rem x
+   1.8rem track, a 5:3 ratio, so the shape is unchanged, just smaller) to
+   the exact size validated on the sidebar's own theme toggle, so every
+   switch in the app reads at the same text-height-to-switch-height ratio
+   as that reference control. Prefixed with "#app" (the Blazor root div in
+   index.html, an ancestor of every rendered switch) purely to WIN
+   specificity: ThemeProvider.razor injects Radzen's dark-base.css into
+   <head> after app.css whenever the theme is Dark (the app's default
+   theme), and dark-base.css redeclares these same class-only selectors
+   at 3rem x 1.8rem — without the extra ID specificity here, that later
+   dark-base.css rule wins the tie and silently resets every switch back
+   to full size in dark mode, which is what actually happened before. */
+#app .rz-switch {
+    width: 1.5rem;
+    min-width: 1.5rem;
+    height: .9rem;
+    margin-inline-end: 0;
+}
+
+#app .rz-switch .rz-switch-circle:before {
+    width: .63rem;
+    height: .63rem;
+    inset-inline-start: .135rem;
+    margin-block-start: -.315rem;
+}
+
+#app .rz-switch.rz-switch-checked .rz-switch-circle:before {
+    transform: translateX(.6rem);
+}
+
+/* Theme toggle (current theme name + RadzenSwitch) — pinned to the
+   bottom of the sidebar as the last flex child, below the scrollable nav
+   list; shrunk to roughly a third of its former footprint. The outer pill
+   chrome (border/glass background) is intentionally transparent in both
+   themes so only the label text and switch itself are visible. Stretches
+   to the sidebar's full width so the "Theme" label pins to the left edge
+   and the switch pins to the right edge. */
 .btn-theme-toggle {
     display: flex;
     align-items: center;
-    gap: 7px;
-    padding: 6px 13px;
+    justify-content: space-between;
+    flex: none;
+    margin-top: 10px;
+    padding: 3px 8px;
     border-radius: 999px;
-    border: 1px solid var(--sf-brd);
-    background: var(--sf-glass2);
+    border: 1px solid transparent;
+    background: transparent;
     color: var(--sf-text);
-    font: 500 .75rem 'Saira Semi Condensed', sans-serif;
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
+    font: 500 .7rem 'Saira Semi Condensed', sans-serif;
+}
+
+.btn-theme-toggle-label {
+    cursor: pointer;
+}
+
+.btn-theme-toggle-switch-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 /* --- Fixed vertical sidebar --- */
@@ -729,6 +766,36 @@ a {
     background: var(--sf-glass2);
     color: var(--sf-accent2);
     border: 0;
+}
+
+/* Report actions: separated pill buttons (Print/Export/Refresh),
+   modeled on the .nav-tabs/.nav-pills glass tab bar — spaced apart,
+   no border around the group or the individual buttons. */
+.report-actions {
+    display: flex;
+    flex-wrap: wrap;
+    background: var(--sf-glass);
+    border-radius: 14px;
+    padding: 5px;
+    gap: 6px;
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    width: fit-content;
+    max-width: 100%;
+}
+
+.report-actions > .btn {
+    background: transparent;
+    border: 0;
+    border-radius: 10px !important;
+    color: var(--sf-sub);
+    padding: 7px 16px;
+    font-size: .8rem;
+}
+
+.report-actions > .btn:hover {
+    background: transparent;
+    color: var(--sf-text);
 }
 
 /* --- Forms --- */

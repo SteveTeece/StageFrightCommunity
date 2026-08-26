@@ -28,6 +28,15 @@
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
     </PropertyGroup>
 
+    <!-- Works around WindowsAppSDK issue #3337 (https://github.com/microsoft/WindowsAppSDK/issues/3337) when
+         publishing a packaged (MSIX) Windows build from the CLI. Inert for every normal build — it only takes
+         effect when a caller explicitly passes -p:RuntimeIdentifierOverride=win-x64 (or win-x86), which is what
+         the CI debug-MSIX release workflow (.github/workflows/debug-msix-release.yml) does. See
+         https://learn.microsoft.com/dotnet/maui/windows/deployment/publish-cli for the documented pattern. -->
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' and '$(RuntimeIdentifierOverride)' != ''">
+        <RuntimeIdentifier>$(RuntimeIdentifierOverride)</RuntimeIdentifier>
+    </PropertyGroup>
+
     <ItemGroup>
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
         <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />

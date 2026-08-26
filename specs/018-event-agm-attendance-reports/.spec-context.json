@@ -879,5 +879,6 @@
       "step": "implement"
     }
   ],
-  "last_action": "All 37 tasks complete -- full rebuild 0 warnings/errors, 1586 tests pass across all 5 projects; SC-001-006 ticked in spec.md"
+  "last_action": "All 37 tasks complete -- full rebuild 0 warnings/errors, 1586 tests pass across all 5 projects; SC-001-006 ticked in spec.md",
+  "telemetryInstanceId": "0e23eeb5-6fbf-4d69-a236-672530f4cdb5"
 }

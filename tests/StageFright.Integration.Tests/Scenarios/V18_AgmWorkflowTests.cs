@@ -110,7 +110,7 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
         Assert.Contains("present", presidentRow.Cells[2]);
 
         // --- Review the past AGM ---
-        var pastAgms = await agmSvc.GetPastAsync(TestContext.Current.CancellationToken);
+        var pastAgms = await agmSvc.GetAllAsync(TestContext.Current.CancellationToken);
         Assert.Contains(pastAgms, a => a.Id == agm.Id);
 
         var reviewedAgm = await agmSvc.GetByIdAsync(agm.Id, TestContext.Current.CancellationToken);
@@ -120,7 +120,7 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
         // --- Archive it ---
         await agmSvc.ArchiveAsync(agm.Id, "coordinator", TestContext.Current.CancellationToken);
 
-        var pastAgmsAfterArchive = await agmSvc.GetPastAsync(TestContext.Current.CancellationToken);
+        var pastAgmsAfterArchive = await agmSvc.GetAllAsync(TestContext.Current.CancellationToken);
         Assert.DoesNotContain(pastAgmsAfterArchive, a => a.Id == agm.Id);
 
         var archivedAttendance = await _db.AgmAttendanceRecords

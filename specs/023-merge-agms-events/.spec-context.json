@@ -1,0 +1,560 @@
+{
+  "workflow": "speckit",
+  "specName": "merge agms events",
+  "branch": "023-merge-agms-events",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-25T10:14:32.080Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-25T10:18:36.434Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-25T10:47:05.328Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T10:51:20.309Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T10:51:20.572Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-25T10:51:55.396Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-25T11:05:56.473Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T11:12:25.653Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-25T11:12:42.268Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-25T11:17:01.751Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T11:22:14.297Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T11:22:35.106Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T11:22:35.931Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T11:22:36.764Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T11:24:34.726Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T11:24:35.551Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T11:25:16.821Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T22:33:29.657Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T22:33:42.511Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T22:36:28.509Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T22:36:38.351Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T22:37:54.322Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T22:38:03.548Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T22:40:31.591Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T22:42:48.133Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-25T22:44:54.619Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-25T22:44:55.183Z"
+    }
+  ],
+  "last_action": "all 16 tasks done — full rebuild 0 warnings, dotnet test 1680/1680 pass",
+  "coverage": {
+    "FR-001": {
+      "title": "Combined list shows every non-archived AGM alongside every non-archived Event",
+      "tasks": [
+        "T002",
+        "T006",
+        "T008",
+        "T009"
+      ],
+      "tests": [
+        "CombinedEventListServiceTests.cs::GetAllAsync_Merges_EventAndAgmResults",
+        "EventListTests.cs::Renders_AgmAndEventRows_InSameGrid_OrderedByDateDescending"
+      ]
+    },
+    "FR-002": {
+      "title": "Combined list sorted by date, most recent first",
+      "tasks": [
+        "T002",
+        "T006",
+        "T009"
+      ],
+      "tests": [
+        "CombinedEventListServiceTests.cs::GetAllAsync_Sorts_MergedListByDateDescending"
+      ]
+    },
+    "FR-003": {
+      "title": "AGM row shows date and notes in the existing columns",
+      "tasks": [
+        "T008",
+        "T009"
+      ]
+    },
+    "FR-004": {
+      "title": "AGM row displays 'Annual General Meeting' as its type",
+      "tasks": [
+        "T002",
+        "T004",
+        "T006",
+        "T008",
+        "T009"
+      ],
+      "tests": [
+        "CombinedEventListServiceTests.cs::GetAllAsync_Maps_AgmRow_WithFixedTypeNameRecordedFlagAndDetailUrl"
+      ]
+    },
+    "FR-005": {
+      "title": "AGM row shows recorded/scheduled status instead of participation rate",
+      "tasks": [
+        "T010",
+        "T011"
+      ],
+      "tests": [
+        "EventListTests.cs::RecordedAgmRow_Renders_RecordedBadge_NeverParticipationPercentage",
+        "EventListTests.cs::ScheduledAgmRow_Renders_ScheduledBadge_AndRecordAction"
+      ]
+    },
+    "FR-006": {
+      "title": "Selecting an AGM row navigates to the AGM detail screen, not generic event detail",
+      "tasks": [
+        "T002",
+        "T004",
+        "T006",
+        "T009",
+        "T010",
+        "T011",
+        "T014"
+      ],
+      "tests": [
+        "CombinedEventListServiceTests.cs::GetAllAsync_Maps_AgmRow_WithFixedTypeNameRecordedFlagAndDetailUrl",
+        "EventListTests.cs::AgmRow_DateLinkHref_IsAgmDetailRoute_NeverGenericEventRoute",
+        "V20_CombinedEventsListTests.cs::GetAllAsync_ReturnsBothRows_WithCorrectRouting_AndArchivedAgmDisappears"
+      ]
+    },
+    "FR-007": {
+      "title": "AGM row actions match the dedicated AGMs screen (Record/Print)",
+      "tasks": [
+        "T010",
+        "T011"
+      ],
+      "tests": [
+        "EventListTests.cs::ClickPrint_OnAgmRow_UsesAgmAttendancePipeline_NotEventPipeline"
+      ]
+    },
+    "FR-008": {
+      "title": "Search box matches AGM rows on date, type, and notes",
+      "tasks": [
+        "T009",
+        "T012",
+        "T013"
+      ],
+      "tests": [
+        "EventListTests.cs::Search_ByAgmDate_LeavesOnlyTheAgmRow",
+        "EventListTests.cs::Search_ByAnnualGeneralMeetingTypeName_LeavesAgmRows_FiltersOutEventRows",
+        "EventListTests.cs::Search_ByAgmNotes_LeavesOnlyThatAgmRow"
+      ]
+    },
+    "FR-009": {
+      "title": "Empty-state and no-results messages reflect the combined Event+AGM set",
+      "tasks": [
+        "T008",
+        "T009",
+        "T012"
+      ],
+      "tests": [
+        "EventListTests.cs::Search_MatchingNeitherAgmNorEvent_ShowsNoMatchesMessage",
+        "EventListTests.cs::Renders_EmptyState_WhenNoEventsAndNoAgms"
+      ]
+    },
+    "FR-010": {
+      "title": "Soft-deleted AGMs are excluded from the combined list",
+      "tasks": [
+        "T006",
+        "T014"
+      ],
+      "tests": [
+        "V20_CombinedEventsListTests.cs::GetAllAsync_ReturnsBothRows_WithCorrectRouting_AndArchivedAgmDisappears"
+      ]
+    },
+    "FR-011": {
+      "title": "No change to Event/AGM scheduling, recording, archiving, or elections behavior",
+      "tasks": [
+        "T016"
+      ]
+    },
+    "FR-012": {
+      "title": "Dedicated AGMs screens remain unchanged and reachable",
+      "tasks": [
+        "T016"
+      ]
+    },
+    "FR-013": {
+      "title": "Schedule Event button continues to create only generic Events",
+      "tasks": [
+        "T016"
+      ]
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 6,
+    "projectedTasks": 9,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "context": [
+    "living spec: events (capabilities/events/spec.md), read manually to ground the spec — the living-specs registry isn't configured in this repo",
+    "area: src/StageFright.UI/Pages/Events/{EventList,AgmList}.razor(.cs) and src/StageFright.Core/Modules/{Events,Agm}",
+    "constraint: spec 013 deliberately split AGM recording out of the generic Event entity into AnnualGeneralMeeting — this change must not re-merge the data model, only the All Events screen's read/search layer"
+  ],
+  "intent": "Show AGMs as rows on the All Events screen, alongside ordinary events, without changing how AGMs are stored or how their own dedicated screens work",
+  "expectations": [
+    "Merging the Event and AnnualGeneralMeeting data models into one table/entity",
+    "Changing the Dashboard Events tile, Committee report, or other screens that read Event/AGM data outside the All Events list",
+    "Changing how AGMs are scheduled, recorded, archived, or how their attendance/committee elections work",
+    "Letting the All Events screen's 'Schedule Event' action create an AGM"
+  ],
+  "approach": "Add a new read-only ICombinedEventListService (Events module) that merges IEventService.GetAllAsync() and IAgmService.GetPastAsync() into CombinedEventListItem rows, sorted by date descending; EventList.razor/.razor.cs render the merged list in the existing RadzenDataGrid with per-kind Status/Actions branches, routing AGM rows to /events/agm/{id} instead of the generic event detail screen.",
+  "decisions": [
+    {
+      "decision": "Merge logic lives in a new Core service (ICombinedEventListService), not inline in EventList.razor.cs",
+      "why": "matches the existing IEventAttendanceSheetService read-model pattern, keeps FR-006 route mapping unit-testable, and respects the no-cross-module-concrete-dependency rule (depends on IEventService/IAgmService only)",
+      "rejected": "zipping the two service results directly inside the component"
+    },
+    {
+      "decision": "Reuse IAgmService.GetPastAsync() and IEventService.GetAllAsync() unchanged; no new repository methods",
+      "why": "GetPastOrderedAsync has no date predicate and already returns future-scheduled AGMs; both sources already carry EF Core !IsDeleted query filters, satisfying FR-010 for free",
+      "rejected": "adding a new GetAllIncludingUpcomingAsync method"
+    },
+    {
+      "decision": "CombinedEventListItem carries raw values (Date, TypeName, ParticipationRate, IsAgmRecorded, DetailUrl) not pre-formatted display strings",
+      "why": "keeps date/percent/badge formatting in Razor where EventList/AgmList already have it correct, minimizing the diff",
+      "rejected": "a fully pre-formatted display-row DTO"
+    },
+    {
+      "decision": "DetailUrl is precomputed per-kind in the Core service, not branched in Razor",
+      "why": "FR-006 is safety-critical (AGM rows must never open the generic event detail screen); a Core unit test can assert the literal route string directly",
+      "rejected": "building the href inline in the Razor template via a Kind conditional"
+    },
+    {
+      "decision": "Event row TypeName falls back to the em-dash literal (e.g. e.EventType?.Name ?? \"—\") rather than the task text's literal EventType.Name",
+      "why": "EventRepository.GetAllAsync() does not Include(e => e.EventType), so EventType is null after a plain GetAllAsync() call today; EventList.razor's current template already defensively renders e.EventType?.Name ?? \"—\" for exactly this reason -- the fallback preserves existing production behavior (FR-011: no behavior change) rather than assuming an Include that was never actually there",
+      "rejected": "Adding .Include(e => e.EventType) to EventRepository.GetAllAsync() to make EventType.Name always non-null -- out of scope: not requested by spec 023, and changes shared repository behavior other callers depend on"
+    },
+    {
+      "decision": "EventList status/actions branch on item.Kind (CombinedEventListItemKind) rather than adding a second grid or a separate AGM sub-component",
+      "why": "keeps one RadzenDataGrid/one page per CLAUDE.md data-grid standards, matches AgmList.razor's existing badge/action markup verbatim so behavior stays identical to the dedicated AGM screen",
+      "rejected": "rendering two separate grids or extracting a shared row-template component, both of which would fragment the single combined list the spec asks for"
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Full plan + research.md + data-model.md + contracts/combined-event-list.md written for the AGM/Event merge on the All Events screen; no tasks.md, no commit, per explicit user instruction.",
+      "key_finding": "IAgmService.GetPastAsync() already returns all non-archived AGMs including future-scheduled ones (no date filter despite the name), and both Event/AGM query filters already exclude soft-deleted rows -- so FR-010 needs zero new filtering code."
+    },
+    "tasks": {
+      "summary": "16 tasks across Setup, Foundational (new ICombinedEventListService: enum+DTO+interface+service+DI), and 3 story phases (US1 grid rewire, US2 status/actions branching, US3 search verification) plus Polish (V20 integration test, full build/test, spec walkthrough)."
+    },
+    "implement": {
+      "summary": "EventList now renders a merged, date-sorted Event+AGM grid with per-kind status/actions/print/routing and combined search; all 16 tasks complete, 1680/1680 tests pass"
+    }
+  },
+  "currentTask": "T016",
+  "task_summaries": {
+    "T003": {
+      "status": "DONE",
+      "did": "Created CombinedEventListItemKind enum (Event, Agm)",
+      "files": [
+        "src/StageFright.Core/Modules/Events/CombinedEventListItemKind.cs"
+      ]
+    },
+    "T001": {
+      "status": "DONE",
+      "did": "Confirmed baseline dotnet build (0 warnings/0 errors) and full dotnet test suite green (1662 passed, 0 failed) on branch 023-merge-agms-events before any change"
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Created CombinedEventListItem DTO (Id, Date, Notes, TypeName, Kind, ParticipationRate, IsAgmRecorded, DetailUrl)",
+      "files": [
+        "src/StageFright.Core/Modules/Events/CombinedEventListItem.cs"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Created ICombinedEventListService interface (GetAllAsync)",
+      "files": [
+        "src/StageFright.Core/Contracts/ICombinedEventListService.cs"
+      ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "New CombinedEventListServiceTests: merge, date-descending sort, Event/AGM field mapping, FR-006 routing safety assertion, empty-list case",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Events/CombinedEventListServiceTests.cs"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Implemented CombinedEventListService: merges IEventService.GetAllAsync + IAgmService.GetPastAsync, maps per-kind fields, sorts by Date descending",
+      "files": [
+        "src/StageFright.Core/Modules/Events/CombinedEventListService.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Registered ICombinedEventListService/CombinedEventListService as AddScoped in MauiProgram.cs's Events module DI section",
+      "files": [
+        "src/StageFright.App/MauiProgram.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Rewrote EventListTests to the ICombinedEventListService seam with Event+Agm CombinedEventListItem fixtures and US1 acceptance-scenario cases",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Events/EventListTests.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Rewired EventList.razor/.razor.cs to ICombinedEventListService, CombinedEventListItem grid TItem, DetailUrl-based Date link, and TypeName column; added Events module using to _Imports.razor",
+      "files": [
+        "src/StageFright.UI/Pages/Events/EventList.razor",
+        "src/StageFright.UI/Pages/Events/EventList.razor.cs",
+        "src/StageFright.UI/_Imports.razor"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Extended EventListTests with AGM Recorded/Scheduled badge, Record action link, AGM Print pipeline, and Event-vs-AGM DetailUrl regression guard tests",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Events/EventListTests.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Added per-kind Status/Actions branches to EventList.razor + PrintAgmAttendanceReport to EventList.razor.cs, wiring AGM rows to the AGM attendance pipeline and Record link",
+      "files": [
+        "src/StageFright.UI/Pages/Events/EventList.razor",
+        "src/StageFright.UI/Pages/Events/EventList.razor.cs"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Added search tests for AGM date, type name, notes, and no-match cases across the combined list",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Events/EventListTests.cs"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Verified DisplayItems' predicate (Date/TypeName/Notes) already satisfies all T012 cases with no production change needed",
+      "files": [
+        "src/StageFright.UI/Pages/Events/EventList.razor.cs"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Added V20_CombinedEventsListTests: real SQLite integration test confirming merged Event+AGM rows, correct DetailUrl routing (FR-006), and archived-AGM exclusion (FR-010)",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V20_CombinedEventsListTests.cs"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Full rebuild (0 warnings) and full dotnet test run: 1680/1680 tests pass across all 5 test projects"
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Smoke-launched StageFright.App (DB migrates, DI resolves, no crash); verified every US1-3 Acceptance Scenario via the 1680-test full suite's literal markup assertions; confirmed FR-011/012/013 via diff (AGM screens, MauiProgram.cs DI, and Schedule Event's /events/new navigation untouched)"
+    }
+  },
+  "verified": [
+    {
+      "what": "Baseline build+test before any change (T001)",
+      "command": "dotnet build; dotnet test",
+      "result": "0 warnings/0 errors; 1662 tests passed, 0 failed across all 5 projects",
+      "warnings": []
+    },
+    {
+      "what": "Full rebuild+test after Phase 2 (Foundational) implementation",
+      "command": "dotnet build; dotnet test",
+      "result": "0 warnings/0 errors; 1667 tests passed, 0 failed (595 Core.Tests, up from 590 -- the 5 new CombinedEventListServiceTests; all other projects unchanged)",
+      "warnings": []
+    },
+    {
+      "what": "full rebuild + full test suite",
+      "command": "dotnet build -t:Rebuild && dotnet test",
+      "result": "0 warnings, 0 errors; 1680/1680 tests pass across all 5 test projects",
+      "warnings": []
+    },
+    {
+      "what": "app smoke launch",
+      "command": "dotnet run --project src/StageFright.App/ --no-build",
+      "result": "DB migrates, ICombinedEventListService resolves via DI, no crash",
+      "warnings": [
+        "pre-existing EF Core global-query-filter and migration-transaction warnings unrelated to this feature"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "note": "Only Phase 1 (Setup) and Phase 2 (Foundational) were built, per explicit user scope (\"implement phases 1 and 2 only\"). ICombinedEventListService exists, is unit-tested, and is DI-registered, but EventList.razor/.razor.cs still reads IEventService directly -- no UI change yet, so the All Events screen does not yet show merged AGM rows. This matches tasks.md's own Phase 2 checkpoint note and is expected, not a defect. Phases 3-6 (US1-US3 UI wiring + Polish) remain to implement a future session.",
+      "step": "implement"
+    }
+  ],
+  "telemetryInstanceId": "d68b9981-0866-4d5a-88f5-06de76e56a6e"
+}

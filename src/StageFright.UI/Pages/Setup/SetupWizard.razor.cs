@@ -66,11 +66,39 @@ public partial class SetupWizard : ComponentBase
 
     // Called both by a direct tab-header click and by Next (which already knows the target
     // index) — a single place that keeps _currentTabIndex and the lazy-render flag in sync
-    // regardless of which triggered the move (FR-003).
+    // regardless of which triggered the move (FR-003). Also the single choke point every
+    // tab-activation path funnels through, so guarding it against a bypassed index here
+    // makes that guarantee hold regardless of how a click reaches it.
     private void SetActiveTab(int index)
     {
+        if (IsTabBypassed(index))
+            return;
+
         _tabShown[index] = true;
         _currentTabIndex = index;
+    }
+
+    // Chart of Accounts (1), Opening Balances (2), and Committee (3) become unreachable
+    // once sample data is selected — the sample data supplies this information itself
+    // (spec 022 FR-003). Backs both the SetActiveTab guard above and HandleNextAsync's
+    // skip below, so the two can never drift out of sync on which tabs are bypassed.
+    private bool IsTabBypassed(int index) => _seedWithTestData && index is >= 1 and <= 3;
+
+    // Organisation Settings tab's "Load sample data" checkbox (spec 022 FR-001, moved
+    // here from the old Review-tab checkbox). Checking it discards whatever the
+    // coordinator has already queued on the three now-bypassed tabs (FR-006) — nothing
+    // to discard on uncheck, since those tabs can only be repopulated once they're
+    // reachable again (FR-007).
+    private void HandleSeedWithTestDataChanged(bool value)
+    {
+        _seedWithTestData = value;
+
+        if (value)
+        {
+            _queuedAccounts.Clear();
+            _queuedOpeningBalances.Clear();
+            _queuedCommitteeTitles.Clear();
+        }
     }
 
     private async Task HandleNextAsync()
@@ -82,6 +110,8 @@ public partial class SetupWizard : ComponentBase
             return;
 
         var nextIndex = _currentTabIndex + 1;
+        while (nextIndex < _tabShown.Count && IsTabBypassed(nextIndex))
+            nextIndex++;
         if (nextIndex >= _tabShown.Count)
             return;
 

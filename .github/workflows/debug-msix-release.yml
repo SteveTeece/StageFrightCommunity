@@ -1,0 +1,127 @@
+name: Publish Dev Debug MSIX
+
+# Manually triggered only. Builds a DEBUG-configuration, Windows-only MSIX package of the
+# `dev` branch and publishes it as the single rolling "debug-dev" pre-release asset.
+# This is an internal-testing artifact, not a production release.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  TFM: net10.0-windows10.0.19041.0
+  RID: win-x64
+  APP_PROJECT: src/StageFright.App/StageFright.App.csproj
+  APP_BIN_DIR: src/StageFright.App/bin/Debug
+  DEBUG_MSIX_NAME: StageFrightCommunity-dev-DEBUG.msix
+  RELEASE_TAG: debug-dev
+
+jobs:
+  build-and-release-debug-msix:
+    name: Build & release debug MSIX (dev)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout dev branch
+        uses: actions/checkout@v5
+        with:
+          ref: dev
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
+      - name: Restore (Windows target only)
+        run: dotnet restore ${{ env.APP_PROJECT }} -r ${{ env.RID }}
+
+      - name: Resolve dev commit for labeling
+        id: rev
+        shell: pwsh
+        run: |
+          $sha = (git rev-parse --short HEAD).Trim()
+          echo "sha=$sha" >> $env:GITHUB_OUTPUT
+
+      - name: Decode signing certificate
+        shell: pwsh
+        env:
+          MSIX_CERT_BASE64: ${{ secrets.MSIX_CERT_BASE64 }}
+        run: |
+          if ([string]::IsNullOrEmpty($env:MSIX_CERT_BASE64)) {
+            throw "Repo secret MSIX_CERT_BASE64 is not set. See .github/workflows/debug-msix-release.yml for setup instructions."
+          }
+          $certPath = Join-Path $env:RUNNER_TEMP "debug-signing.pfx"
+          [IO.File]::WriteAllBytes($certPath, [Convert]::FromBase64String($env:MSIX_CERT_BASE64))
+          echo "CERT_PATH=$certPath" >> $env:GITHUB_ENV
+
+      # Publishing (not building) with WindowsPackageType=Package produces a signed .msix under
+      # <APP_BIN_DIR>/<TFM>/<RID>/AppPackages/. This mirrors the CLI steps documented at
+      # https://learn.microsoft.com/dotnet/maui/windows/deployment/publish-cli, but scoped to the
+      # Debug configuration for an internal test build, and with signing supplied via a PFX file
+      # (PackageCertificateKeyFile/PackageCertificatePassword) instead of a machine-installed
+      # certificate store entry, since CI runners have no such store. WindowsPackageType/signing
+      # are passed only here on the command line — the .csproj itself is untouched for Debug/local
+      # builds, which stay unpackaged (WindowsPackageType=None) exactly as before.
+      - name: Publish debug MSIX
+        shell: pwsh
+        env:
+          MSIX_CERT_PASSWORD: ${{ secrets.MSIX_CERT_PASSWORD }}
+        run: |
+          dotnet publish ${{ env.APP_PROJECT }} `
+            -f ${{ env.TFM }} `
+            -c Debug `
+            -p:RuntimeIdentifierOverride=${{ env.RID }} `
+            -p:WindowsPackageType=Package `
+            -p:AppxPackageSigningEnabled=true `
+            -p:PackageCertificateKeyFile="$env:CERT_PATH" `
+            -p:PackageCertificatePassword="$env:MSIX_CERT_PASSWORD" `
+            -p:GenerateAppInstallerFile=false
+
+      - name: Remove signing certificate from disk
+        if: always()
+        shell: pwsh
+        run: Remove-Item -Path $env:CERT_PATH -ErrorAction SilentlyContinue
+
+      - name: Locate and rename debug package
+        id: package
+        shell: pwsh
+        run: |
+          # Exclude AppPackages\...\Dependencies\ — that's where Windows App SDK runtime
+          # redistributable .msix files live for a framework-dependent package, and it would be
+          # picked up by a plain "*.msix" search alongside the actual app package.
+          $msix = Get-ChildItem -Path "${{ env.APP_BIN_DIR }}" -Recurse -Filter *.msix |
+            Where-Object { $_.FullName -notmatch '\\Dependencies\\' } |
+            Select-Object -First 1
+          if (-not $msix) { throw "No .msix file was produced by the publish step." }
+          $destPath = Join-Path $msix.DirectoryName "${{ env.DEBUG_MSIX_NAME }}"
+          Copy-Item -Path $msix.FullName -Destination $destPath -Force
+          echo "path=$destPath" >> $env:GITHUB_OUTPUT
+
+      - name: Publish / update rolling debug release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MSIX_PATH: ${{ steps.package.outputs.path }}
+          DEV_SHA: ${{ steps.rev.outputs.sha }}
+        run: |
+          $notes = @"
+          Automatically built **DEBUG** configuration MSIX from the ``dev`` branch (commit $env:DEV_SHA), built $(Get-Date -Format u) UTC by run #${{ github.run_number }}.
+
+          This is an internal testing build, not a production release. The asset is replaced on every run of this workflow.
+          "@
+
+          gh release view $env:RELEASE_TAG 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $env:RELEASE_TAG "$env:MSIX_PATH" `
+              --title "Dev Debug Build (rolling)" `
+              --notes $notes `
+              --prerelease `
+              --target dev
+          } else {
+            gh release upload $env:RELEASE_TAG "$env:MSIX_PATH" --clobber
+            gh release edit $env:RELEASE_TAG --notes $notes
+          }
