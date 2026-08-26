@@ -75,7 +75,7 @@ jobs:
             -f ${{ env.TFM }} `
             -c Debug `
             -p:RuntimeIdentifierOverride=${{ env.RID }} `
-            -p:WindowsPackageType=Package `
+            -p:WindowsPackageType=MSIX `
             -p:AppxPackageSigningEnabled=true `
             -p:PackageCertificateKeyFile="$env:CERT_PATH" `
             -p:PackageCertificatePassword="$env:MSIX_CERT_PASSWORD" `
