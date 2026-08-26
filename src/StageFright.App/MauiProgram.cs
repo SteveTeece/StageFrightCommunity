@@ -195,6 +195,7 @@ public static class MauiProgram
         services.AddScoped<IAgmService, AgmService>();
         services.AddScoped<IAgmAttendanceSheetService, AgmAttendanceSheetService>();
         services.AddScoped<IAgmAttendanceSheetPdfRenderer, AgmAttendanceSheetPdfRenderer>();
+        services.AddScoped<IAgmResultsPdfRenderer, AgmResultsPdfRenderer>();
 
         // Rehearsals module (Phase 5)
         services.AddScoped<IRehearsalService, RehearsalService>();
