@@ -1,0 +1,17 @@
+{
+  "workflow": "speckit",
+  "specName": "Member Details View — Compact Two-Column Layout",
+  "branch": "025-member-details-layout",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-26T09:08:24.587Z"
+    }
+  ],
+  "telemetryInstanceId": "89ab4908-821d-4759-9d04-8ec61ac02015"
+}
