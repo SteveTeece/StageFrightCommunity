@@ -15,7 +15,8 @@ namespace StageFright.UI.Tests.Pages.Events;
 /// <summary>
 /// bUnit tests for AgmDetail — the scheduled-vs-recorded branch (FR-008), read-only
 /// attendance/position rendering once recorded (FR-011, FR-016), the archive action (FR-017,
-/// US5), and the Print Attendance Report action (issue #302).
+/// US5), the Print Attendance Report action (issue #302), the general-committee list box, and
+/// the Print AGM Results action (issue #307).
 /// </summary>
 public class AgmDetailTests : BunitContext
 {
@@ -24,6 +25,7 @@ public class AgmDetailTests : BunitContext
     private readonly IAgmAttendanceRepository _attendanceRepository = Substitute.For<IAgmAttendanceRepository>();
     private readonly IAgmAttendanceSheetService _agmAttendanceSheetService = Substitute.For<IAgmAttendanceSheetService>();
     private readonly IAgmAttendanceSheetPdfRenderer _agmAttendanceSheetPdfRenderer = Substitute.For<IAgmAttendanceSheetPdfRenderer>();
+    private readonly IAgmResultsPdfRenderer _agmResultsPdfRenderer = Substitute.For<IAgmResultsPdfRenderer>();
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
 
     private static readonly Guid AgmId = Guid.NewGuid();
@@ -35,6 +37,7 @@ public class AgmDetailTests : BunitContext
         Services.AddSingleton(_attendanceRepository);
         Services.AddSingleton(_agmAttendanceSheetService);
         Services.AddSingleton(_agmAttendanceSheetPdfRenderer);
+        Services.AddSingleton(_agmResultsPdfRenderer);
         Services.AddSingleton(_settingsService);
 
         _settingsService.GetAsync(Arg.Any<CancellationToken>())
@@ -180,6 +183,95 @@ public class AgmDetailTests : BunitContext
         Assert.DoesNotContain("Alice, Carol", presidentItem.TextContent);
     }
 
+    // --- General committee members — list box, one row per name (issue #307) ---
+
+    private static CommitteePositionRecord GeneralCommitteeMember(string firstName, string lastName)
+    {
+        var member = new Member
+        {
+            Id = Guid.NewGuid(), FirstName = firstName, LastName = lastName, StreetAddress = "1 St",
+            JoinDate = DateTime.UtcNow, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        return new CommitteePositionRecord
+        {
+            Id = Guid.NewGuid(), MemberId = member.Id, Member = member,
+            OfficeHolderTypeId = null, OfficeHolderType = null,
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+    }
+
+    [Fact]
+    public void Renders_GeneralCommitteeMembers_AsSeparateListBoxRows_NotCommaJoined()
+    {
+        var positions = new List<CommitteePositionRecord>
+        {
+            GeneralCommitteeMember("Alice", "Anderson"),
+            GeneralCommitteeMember("Bob", "Baker"),
+            GeneralCommitteeMember("Carol", "Cooper")
+        };
+
+        _agmService.GetByIdAsync(AgmId, Arg.Any<CancellationToken>()).Returns(MakeAgm());
+        _attendanceRepository.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<AgmAttendanceRecord>());
+        _committeeService.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(positions);
+
+        var cut = Render<AgmDetail>(p => p.Add(x => x.Id, AgmId));
+
+        var rows = cut.FindAll(".bordered-list-box-row");
+        Assert.Equal(3, rows.Count);
+        // SortableFullName is "Last, First" per-name, so a comma alone doesn't prove joining —
+        // assert instead that no row's text spans more than one member (i.e. two names in one row).
+        Assert.DoesNotContain(rows, r => r.TextContent.Contains("Anderson") && r.TextContent.Contains("Baker"));
+        Assert.DoesNotContain(rows, r => r.TextContent.Contains("Baker") && r.TextContent.Contains("Cooper"));
+        Assert.Contains(rows, r => r.TextContent.Contains("Anderson, Alice"));
+        Assert.Contains(rows, r => r.TextContent.Contains("Baker, Bob"));
+        Assert.Contains(rows, r => r.TextContent.Contains("Cooper, Carol"));
+        Assert.Contains("General Committee Member", cut.Markup);
+    }
+
+    [Fact]
+    public void Renders_SingleGeneralCommitteeMember_AsOneListBoxRow()
+    {
+        _agmService.GetByIdAsync(AgmId, Arg.Any<CancellationToken>()).Returns(MakeAgm());
+        _attendanceRepository.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<AgmAttendanceRecord>());
+        _committeeService.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>())
+            .Returns(new List<CommitteePositionRecord> { GeneralCommitteeMember("Alice", "Anderson") });
+
+        var cut = Render<AgmDetail>(p => p.Add(x => x.Id, AgmId));
+
+        Assert.Single(cut.FindAll(".bordered-list-box-row"));
+    }
+
+    [Fact]
+    public void NoGeneralCommitteeMembers_OmitsListBox()
+    {
+        var officeHolderType = new CommitteeOfficeHolderType
+        {
+            Id = Guid.NewGuid(), Name = "President", DisplayOrder = 0, IsBuiltIn = true,
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        var member = new Member
+        {
+            Id = Guid.NewGuid(), FirstName = "Alice", LastName = "Test", StreetAddress = "1 St",
+            JoinDate = DateTime.UtcNow, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        var position = new CommitteePositionRecord
+        {
+            Id = Guid.NewGuid(), MemberId = member.Id, Member = member,
+            OfficeHolderTypeId = officeHolderType.Id, OfficeHolderType = officeHolderType,
+            StartDate = DateTime.UtcNow, EndDate = null, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+
+        _agmService.GetByIdAsync(AgmId, Arg.Any<CancellationToken>()).Returns(MakeAgm());
+        _attendanceRepository.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<AgmAttendanceRecord>());
+        _committeeService.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<CommitteePositionRecord> { position });
+
+        var cut = Render<AgmDetail>(p => p.Add(x => x.Id, AgmId));
+
+        Assert.Empty(cut.FindAll(".bordered-list-box"));
+        Assert.DoesNotContain("General Committee Member", cut.Markup);
+        Assert.Contains("President", cut.Markup);
+    }
+
     [Fact]
     public void AgmNotFound_ShowsWarning_NotDetail()
     {
@@ -283,6 +375,53 @@ public class AgmDetailTests : BunitContext
             .ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
 
         Assert.Contains("Unable to print", cut.Markup);
+        _agmAttendanceSheetPdfRenderer.DidNotReceive().Render(Arg.Any<AgmAttendanceSheetData>(), Arg.Any<string>());
+    }
+
+    // --- Print AGM Results (issue #307) ---
+
+    [Fact]
+    public void ResultsPrintButton_Renders_OnceAgmLoads()
+    {
+        _agmService.GetByIdAsync(AgmId, Arg.Any<CancellationToken>()).Returns(MakeAgm());
+        _attendanceRepository.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<AgmAttendanceRecord>());
+        _committeeService.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<CommitteePositionRecord>());
+
+        var cut = Render<AgmDetail>(p => p.Add(x => x.Id, AgmId));
+
+        cut.Find("button[aria-label='Print AGM results report']");
+    }
+
+    [Fact]
+    public async Task ClickPrintResults_SettingsServiceThrows_ShowsErrorMessage_AndDoesNotRenderPdf()
+    {
+        _agmService.GetByIdAsync(AgmId, Arg.Any<CancellationToken>()).Returns(MakeAgm());
+        _attendanceRepository.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<AgmAttendanceRecord>());
+        _committeeService.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<CommitteePositionRecord>());
+        _settingsService.GetAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<SettingsEntity>(new InvalidOperationException("boom")));
+
+        var cut = Render<AgmDetail>(p => p.Add(x => x.Id, AgmId));
+        await cut.Find("button[aria-label='Print AGM results report']")
+            .ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        Assert.Contains("Unable to print AGM results report", cut.Markup);
+        _agmResultsPdfRenderer.DidNotReceive().Render(Arg.Any<AgmResultsData>(), Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task ClickPrintResults_DoesNotTriggerAttendanceReportRenderer()
+    {
+        _agmService.GetByIdAsync(AgmId, Arg.Any<CancellationToken>()).Returns(MakeAgm());
+        _attendanceRepository.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<AgmAttendanceRecord>());
+        _committeeService.GetByAgmAsync(AgmId, Arg.Any<CancellationToken>()).Returns(new List<CommitteePositionRecord>());
+        _settingsService.GetAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<SettingsEntity>(new InvalidOperationException("boom")));
+
+        var cut = Render<AgmDetail>(p => p.Add(x => x.Id, AgmId));
+        await cut.Find("button[aria-label='Print AGM results report']")
+            .ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
         _agmAttendanceSheetPdfRenderer.DidNotReceive().Render(Arg.Any<AgmAttendanceSheetData>(), Arg.Any<string>());
     }
 

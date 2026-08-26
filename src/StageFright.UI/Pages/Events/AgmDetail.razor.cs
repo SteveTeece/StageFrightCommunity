@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Modules.Agm;
 using StageFright.Reports.Rendering;
 
 namespace StageFright.UI.Pages.Events;
@@ -19,6 +20,7 @@ public partial class AgmDetail : ComponentBase
     [Inject] private IAgmAttendanceRepository AttendanceRepository { get; set; } = null!;
     [Inject] private IAgmAttendanceSheetService AgmAttendanceSheetService { get; set; } = null!;
     [Inject] private IAgmAttendanceSheetPdfRenderer AgmAttendanceSheetPdfRenderer { get; set; } = null!;
+    [Inject] private IAgmResultsPdfRenderer AgmResultsPdfRenderer { get; set; } = null!;
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
     [Inject] private ILogger<AgmDetail> Logger { get; set; } = null!;
@@ -52,12 +54,23 @@ public partial class AgmDetail : ComponentBase
     private int AttendedCount => _attendance.Count(a => a.Attended);
 
     /// <summary>
-    /// One line per office-holder title (dated multi-holder list per FR-029 when a special
-    /// election replaced someone in this term) plus one combined "General Committee Member"
-    /// line — general committee is a multi-occupant category, never dated even with several
-    /// members, matching CommitteeReportProvider's equivalent split.
+    /// One line per office-holder title, dated multi-holder list per FR-029 when a special
+    /// election replaced someone in this term. General committee members (no office-holder
+    /// title) are handled separately by <see cref="GeneralCommitteeMemberNames"/> — issue #307
+    /// moved that group from a comma-joined line here to a one-name-per-row list box.
     /// </summary>
     private List<(string Label, string MemberText)> PositionLines => BuildPositionLines(_positions);
+
+    /// <summary>
+    /// General committee members (positions with no named office-holder title), sorted
+    /// alphabetically, one name per entry — rendered as individual list-box rows instead of the
+    /// single comma-separated line used before issue #307. Empty when none are recorded.
+    /// </summary>
+    private List<string> GeneralCommitteeMemberNames => _positions
+        .Where(p => p.OfficeHolderTypeId is null)
+        .Select(m => m.Member.SortableFullName)
+        .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
+        .ToList();
 
     private static List<(string Label, string MemberText)> BuildPositionLines(List<CommitteePositionRecord> positions)
     {
@@ -73,15 +86,6 @@ public partial class AgmDetail : ComponentBase
             var holders = group.ToList();
             var label = holders[0].OfficeHolderType?.Name ?? "Unknown Position";
             lines.Add((label, DescribeHolders(holders)));
-        }
-
-        var generalMembers = positions.Where(p => p.OfficeHolderTypeId is null).ToList();
-        if (generalMembers.Count > 0)
-        {
-            var names = string.Join(", ", generalMembers
-                .Select(m => m.Member.SortableFullName)
-                .OrderBy(n => n, StringComparer.OrdinalIgnoreCase));
-            lines.Add(("General Committee Member", names));
         }
 
         return lines;
@@ -143,6 +147,39 @@ public partial class AgmDetail : ComponentBase
         {
             Logger.LogError(ex, "Failed to print attendance report for AGM {AgmId}", Id);
             _printMessage = "Unable to print attendance report. Please try again.";
+        }
+    }
+
+    private async Task PrintAgmResults()
+    {
+        _printMessage = null;
+
+        try
+        {
+            var data = new AgmResultsData
+            {
+                AgmDate = _agm!.Date,
+                AttendedCount = AttendedCount,
+                TotalCount = _attendance.Count,
+                PositionLines = PositionLines
+                    .Select(l => new AgmResultsPositionLine { Label = l.Label, MemberText = l.MemberText })
+                    .ToList(),
+                GeneralCommitteeMemberNames = GeneralCommitteeMemberNames
+            };
+
+            var settings = await SettingsService.GetAsync();
+            var orgName = settings?.OrganizationName ?? string.Empty;
+            var bytes = AgmResultsPdfRenderer.Render(data, orgName);
+            var tempPath = Path.Combine(Path.GetTempPath(), $"agm-results-report_{Guid.NewGuid():N}.pdf");
+            File.WriteAllBytes(tempPath, bytes);
+#pragma warning disable CA1416
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(tempPath) { UseShellExecute = true });
+#pragma warning restore CA1416
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to print AGM results report for AGM {AgmId}", Id);
+            _printMessage = "Unable to print AGM results report. Please try again.";
         }
     }
 }
