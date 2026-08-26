@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "report action pills",
   "branch": "dev",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implemented",
   "history": [
     {
       "step": "specify",
@@ -46,6 +46,61 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-26T07:39:37.143Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-26T07:59:53.550Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-26T07:59:53.550Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-26T07:59:53.550Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-26T07:59:53.550Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-26T07:59:53.550Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-26T07:59:53.550Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-26T07:59:53.550Z"
     }
   ],
   "telemetryInstanceId": "c84e5596-c4b2-4c79-a3cd-983e412e41b3",
@@ -87,5 +142,6 @@
     "No change to report generation, export, print, or refresh behavior",
     "No change to other screens' segmented pill groups (e.g. any future Active/Inactive filter using .btn-group)"
   ],
-  "approach": "Add a report-scoped .report-actions CSS class modeled on the existing .nav-tabs/.nav-pills tab-bar style, and swap ReportViewer.razor's action-bar container from .btn-group to it."
+  "approach": "Add a report-scoped .report-actions CSS class modeled on the existing .nav-tabs/.nav-pills tab-bar style, and swap ReportViewer.razor's action-bar container from .btn-group to it.",
+  "currentTask": "T006"
 }
