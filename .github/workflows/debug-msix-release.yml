@@ -81,6 +81,35 @@ jobs:
             -p:PackageCertificatePassword="$env:MSIX_CERT_PASSWORD" `
             -p:GenerateAppInstallerFile=false
 
+      # TEMPORARY DIAGNOSTIC — remove once the "cannot import key file" / "not valid for
+      # signing" root cause is confirmed. Surfaces the real, unwrapped .NET exception from
+      # importing the PFX on this exact runner with the exact secret values, instead of
+      # MSBuild's generic wrapped APPX0105/APPX0107 warning text.
+      - name: Diagnose PFX import
+        if: always()
+        shell: pwsh
+        env:
+          MSIX_CERT_PASSWORD: ${{ secrets.MSIX_CERT_PASSWORD }}
+        run: |
+          Write-Output "CERT_PATH exists: $(Test-Path $env:CERT_PATH)"
+          if (Test-Path $env:CERT_PATH) {
+            Write-Output "CERT_PATH size (bytes): $((Get-Item $env:CERT_PATH).Length)"
+          }
+          try {
+            $pw = ConvertTo-SecureString -String $env:MSIX_CERT_PASSWORD -AsPlainText -Force
+            $cert = Get-PfxCertificate -FilePath $env:CERT_PATH -Password $pw -ErrorAction Stop
+            Write-Output "PFX imported fine via Get-PfxCertificate."
+            Write-Output "Subject: $($cert.Subject)"
+            Write-Output "HasPrivateKey: $($cert.HasPrivateKey)"
+          } catch {
+            Write-Output "Get-PfxCertificate FAILED:"
+            Write-Output "Type: $($_.Exception.GetType().FullName)"
+            Write-Output "Message: $($_.Exception.Message)"
+            if ($_.Exception.InnerException) {
+              Write-Output "Inner: $($_.Exception.InnerException.GetType().FullName): $($_.Exception.InnerException.Message)"
+            }
+          }
+
       - name: Remove signing certificate from disk
         if: always()
         shell: pwsh
