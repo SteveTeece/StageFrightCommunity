@@ -40,7 +40,7 @@ Target framework: `net10.0-windows10.0.19041.0` (Windows) / `net10.0-maccatalyst
 
 `MauiProgram.CreateMauiApp()` does all wiring, in this order:
 
-1. Compute `TestData/stagefright.db` (walking up from the executable directory to find the repo root by locating `*.slnx` or `.git`) and the log path under `FileSystem.AppDataDirectory/logs/`.
+1. Compute `FileSystem.AppDataDirectory/stagefright.db` and the log path under `FileSystem.AppDataDirectory/logs/`.
 2. Configure Serilog (console + rolling daily file, 7-day retention) and OpenTelemetry (tracing + runtime metrics, console exporter).
 3. Register `StageFrightDbContext` against SQLite, `IStartupDiagnosticService` (singleton, must exist before the startup sequence runs), then all repositories and core services via explicit `services.AddScoped<TInterface, TImpl>()` calls — **there is no assembly-scanning/auto-registration** (no Scrutor `.Scan()`, no MediatR). Every service is registered by hand in `RegisterRepositories`/`RegisterCoreServices`.
 4. Discover and register plugin providers (`DiscoverAndRegisterPlugins` → `PluginLoader.DiscoverAndRegister`) — this must happen **before** `builder.Build()`, because the built `ServiceProvider` doesn't implement `IServiceCollection` and late registrations would never resolve (see the comment in `MauiProgram.cs`, issue #273).

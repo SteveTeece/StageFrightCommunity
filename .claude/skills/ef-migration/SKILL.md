@@ -17,7 +17,7 @@ configuration.
 `OnModelCreating` configuration.
 
 `/ef-migration update` — apply pending migrations to the local SQLite database at
-`<repo-root>/TestData/stagefright.db`.
+`FileSystem.AppDataDirectory/stagefright.db` (the MAUI app-data directory).
 
 `/ef-migration remove` — remove the most recent, not-yet-applied migration (e.g. to fix a mistake
 before re-adding it).

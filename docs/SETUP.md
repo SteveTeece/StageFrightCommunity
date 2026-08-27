@@ -55,7 +55,6 @@ StageFrightCommunity/
 ├── docs/                              # This documentation set
 ├── specs/                             # Spec Kit feature specs, one folder per feature (spec.md, plan.md, tasks.md, ...)
 ├── .specify/                          # Spec Kit tooling + constitution.md
-├── TestData/                          # Auto-created; holds the dev SQLite database
 └── StageFrightCommunity.slnx          # Solution file
 ```
 
@@ -137,8 +136,8 @@ The database auto-migrates on first run, and first-run detection redirects the U
 
 There is no `appsettings.json` connection-string configuration — the database path and log path are computed in code at startup (`MauiProgram.cs`):
 
-- **Database file**: `<repo-root>/TestData/stagefright.db`, auto-created on first run. The repo root is found by walking up from the executable directory until a `*.slnx` file or a `.git` folder is found.
-- **Logs**: rolling daily files (`stagefright-YYYYMMDD.log`, 7-day retention) under `FileSystem.AppDataDirectory/logs/` — the MAUI app-data directory, **not** the repo.
+- **Database file**: `FileSystem.AppDataDirectory/stagefright.db`, auto-created on first run — the MAUI app-data directory, not the repo.
+- **Logs**: rolling daily files (`stagefright-YYYYMMDD.log`, 7-day retention) under `FileSystem.AppDataDirectory/logs/`.
 - **Plugins**: loaded from `FileSystem.AppDataDirectory/Plugins/`, auto-created if missing.
 
 ### Apply / Create / Remove Migrations
@@ -161,7 +160,7 @@ The application also applies pending migrations automatically on startup — see
 ### Reset the Database
 
 1. Close the application.
-2. Delete `TestData/stagefright.db`.
+2. Delete `stagefright.db` from the MAUI app-data directory (`FileSystem.AppDataDirectory`).
 3. Run the app again (or `dotnet ef database update`) — the schema and first-run `/setup` wizard both come back clean.
 
 ## Central Package Management
@@ -266,7 +265,7 @@ dotnet ef database update --project src/StageFright.Data/ --startup-project src/
 ### MAUI Application Won't Start
 
 1. Check logs under `FileSystem.AppDataDirectory/logs/` (on Windows, typically under `%LOCALAPPDATA%\Packages\...` or the unpackaged app's local data folder, since `WindowsPackageType` is `None`).
-2. Confirm `TestData/` is writable — the database is created there relative to the repo root.
+2. Confirm `FileSystem.AppDataDirectory` is writable — the database is created there.
 3. Try: `dotnet clean && dotnet build && dotnet run --project src/StageFright.App/`.
 4. If the database file itself is corrupted, the app should show the `StartupError` recovery page rather than crash — check that page's message before assuming a build problem.
 
