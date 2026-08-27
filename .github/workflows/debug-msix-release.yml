@@ -46,10 +46,22 @@ jobs:
           $sha = (git rev-parse --short HEAD).Trim()
           echo "sha=$sha" >> $env:GITHUB_OUTPUT
 
-      - name: Decode signing certificate
+      # Decodes the PFX and imports it into the runner's CurrentUser\My certificate store,
+      # then signs via PackageCertificateThumbprint rather than PackageCertificateKeyFile/
+      # PackageCertificatePassword (a raw PFX file reference). The latter was confirmed
+      # unreliable against this SDK/packaging-target version: a temporary diagnostic step
+      # proved the PFX imports perfectly via .NET's own Get-PfxCertificate (correct Subject,
+      # HasPrivateKey=True) with the exact same file/password that
+      # Microsoft.Windows.SDK.BuildTools.MSIX.Packaging.targets rejected as
+      # "cannot import key file" / "not valid for signing" (APPX0105/APPX0107) — i.e. the
+      # bug is in that target's own PFX-file import path, not the certificate or password.
+      # Importing into the store first and referencing by thumbprint sidesteps it, and
+      # matches the remedy the APPX0105 warning text itself suggests.
+      - name: Decode and import signing certificate
         shell: pwsh
         env:
           MSIX_CERT_BASE64: ${{ secrets.MSIX_CERT_BASE64 }}
+          MSIX_CERT_PASSWORD: ${{ secrets.MSIX_CERT_PASSWORD }}
         run: |
           if ([string]::IsNullOrEmpty($env:MSIX_CERT_BASE64)) {
             throw "Repo secret MSIX_CERT_BASE64 is not set. See .github/workflows/debug-msix-release.yml for setup instructions."
@@ -58,18 +70,18 @@ jobs:
           [IO.File]::WriteAllBytes($certPath, [Convert]::FromBase64String($env:MSIX_CERT_BASE64))
           echo "CERT_PATH=$certPath" >> $env:GITHUB_ENV
 
+          $securePw = ConvertTo-SecureString -String $env:MSIX_CERT_PASSWORD -AsPlainText -Force
+          $cert = Import-PfxCertificate -CertStoreLocation "Cert:\CurrentUser\My" -FilePath $certPath -Password $securePw
+          echo "CERT_THUMBPRINT=$($cert.Thumbprint)" >> $env:GITHUB_ENV
+
       # Publishing (not building) with WindowsPackageType=Package produces a signed .msix under
       # <APP_BIN_DIR>/<TFM>/<RID>/AppPackages/. This mirrors the CLI steps documented at
-      # https://learn.microsoft.com/dotnet/maui/windows/deployment/publish-cli, but scoped to the
-      # Debug configuration for an internal test build, and with signing supplied via a PFX file
-      # (PackageCertificateKeyFile/PackageCertificatePassword) instead of a machine-installed
-      # certificate store entry, since CI runners have no such store. WindowsPackageType/signing
-      # are passed only here on the command line — the .csproj itself is untouched for Debug/local
+      # https://learn.microsoft.com/dotnet/maui/windows/deployment/publish-cli, but scoped to
+      # the Debug configuration for an internal test build. WindowsPackageType/signing are
+      # passed only here on the command line — the .csproj itself is untouched for Debug/local
       # builds, which stay unpackaged (WindowsPackageType=None) exactly as before.
       - name: Publish debug MSIX
         shell: pwsh
-        env:
-          MSIX_CERT_PASSWORD: ${{ secrets.MSIX_CERT_PASSWORD }}
         run: |
           dotnet publish ${{ env.APP_PROJECT }} `
             -f ${{ env.TFM }} `
@@ -77,43 +89,17 @@ jobs:
             -p:RuntimeIdentifierOverride=${{ env.RID }} `
             -p:WindowsPackageType=MSIX `
             -p:AppxPackageSigningEnabled=true `
-            -p:PackageCertificateKeyFile="$env:CERT_PATH" `
-            -p:PackageCertificatePassword="$env:MSIX_CERT_PASSWORD" `
+            -p:PackageCertificateThumbprint="$env:CERT_THUMBPRINT" `
             -p:GenerateAppInstallerFile=false
 
-      # TEMPORARY DIAGNOSTIC — remove once the "cannot import key file" / "not valid for
-      # signing" root cause is confirmed. Surfaces the real, unwrapped .NET exception from
-      # importing the PFX on this exact runner with the exact secret values, instead of
-      # MSBuild's generic wrapped APPX0105/APPX0107 warning text.
-      - name: Diagnose PFX import
+      - name: Remove signing certificate from disk and store
         if: always()
         shell: pwsh
-        env:
-          MSIX_CERT_PASSWORD: ${{ secrets.MSIX_CERT_PASSWORD }}
         run: |
-          Write-Output "CERT_PATH exists: $(Test-Path $env:CERT_PATH)"
-          if (Test-Path $env:CERT_PATH) {
-            Write-Output "CERT_PATH size (bytes): $((Get-Item $env:CERT_PATH).Length)"
+          Remove-Item -Path $env:CERT_PATH -ErrorAction SilentlyContinue
+          if ($env:CERT_THUMBPRINT) {
+            Remove-Item -Path "Cert:\CurrentUser\My\$env:CERT_THUMBPRINT" -DeleteKey -Force -ErrorAction SilentlyContinue
           }
-          try {
-            $pw = ConvertTo-SecureString -String $env:MSIX_CERT_PASSWORD -AsPlainText -Force
-            $cert = Get-PfxCertificate -FilePath $env:CERT_PATH -Password $pw -ErrorAction Stop
-            Write-Output "PFX imported fine via Get-PfxCertificate."
-            Write-Output "Subject: $($cert.Subject)"
-            Write-Output "HasPrivateKey: $($cert.HasPrivateKey)"
-          } catch {
-            Write-Output "Get-PfxCertificate FAILED:"
-            Write-Output "Type: $($_.Exception.GetType().FullName)"
-            Write-Output "Message: $($_.Exception.Message)"
-            if ($_.Exception.InnerException) {
-              Write-Output "Inner: $($_.Exception.InnerException.GetType().FullName): $($_.Exception.InnerException.Message)"
-            }
-          }
-
-      - name: Remove signing certificate from disk
-        if: always()
-        shell: pwsh
-        run: Remove-Item -Path $env:CERT_PATH -ErrorAction SilentlyContinue
 
       - name: Locate and rename debug package
         id: package
