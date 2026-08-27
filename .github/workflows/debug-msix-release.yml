@@ -1,7 +1,7 @@
 name: Publish Dev Debug MSIX
 
 # Manually triggered only. Builds a DEBUG-configuration, Windows-only MSIX package of the
-# `dev` branch and publishes it as the single rolling "debug-dev" pre-release asset.
+# `dev` branch and publishes it as the single rolling "dev-debug-build" pre-release asset.
 # This is an internal-testing artifact, not a production release.
 on:
   workflow_dispatch:
@@ -127,19 +127,22 @@ jobs:
           $notes = @"
           Automatically built **DEBUG** configuration MSIX from the ``dev`` branch (commit $env:DEV_SHA), built $(Get-Date -Format u) UTC by run #${{ github.run_number }}.
 
-          This is an internal testing build, not a production release. The asset is replaced on every run of this workflow.
+          This is an internal testing build, not a production release. The entire release is deleted and recreated on every run of this workflow.
           "@
 
-          gh release view $env:RELEASE_TAG 2>$null
-          if ($LASTEXITCODE -ne 0) {
-            gh release create $env:RELEASE_TAG "$env:MSIX_PATH" `
-              --title "Dev Debug Build (rolling)" `
-              --notes $notes `
-              --prerelease `
-              --target dev
-          } else {
-            gh release upload $env:RELEASE_TAG "$env:MSIX_PATH" --clobber
-            gh release edit $env:RELEASE_TAG --notes $notes
-          }
+          # Delete the whole release + tag and recreate it from scratch every run, rather than
+          # replacing the asset in place. GitHub "immutable releases" (GA Oct 2025) permanently
+          # block modifying or deleting an asset once a release is published (`gh release upload
+          # --clobber` fails with HTTP 422), but deleting an entire release is still allowed. A
+          # full delete + recreate keeps the rolling "dev-debug-build" tag and constant asset filename
+          # working whether or not repo-level release immutability is enabled. `--cleanup-tag`
+          # removes the git tag too so `gh release create` re-points it at the current dev HEAD.
+          gh release delete $env:RELEASE_TAG --yes --cleanup-tag 2>$null
+
+          gh release create $env:RELEASE_TAG "$env:MSIX_PATH" `
+            --title "Dev Debug Build (rolling)" `
+            --notes $notes `
+            --prerelease `
+            --target dev
 
 
