@@ -13,7 +13,7 @@ env:
   TFM: net10.0-windows10.0.19041.0
   RID: win-x64
   APP_PROJECT: src/StageFright.App/StageFright.App.csproj
-  APP_BIN_DIR: src/StageFright.App/bin/Debug
+  APP_PROJECT_DIR: src/StageFright.App
   DEBUG_MSIX_NAME: StageFrightCommunity-dev-DEBUG.msix
   RELEASE_TAG: debug-dev
 
@@ -74,8 +74,9 @@ jobs:
           $cert = Import-PfxCertificate -CertStoreLocation "Cert:\CurrentUser\My" -FilePath $certPath -Password $securePw
           echo "CERT_THUMBPRINT=$($cert.Thumbprint)" >> $env:GITHUB_ENV
 
-      # Publishing (not building) with WindowsPackageType=Package produces a signed .msix under
-      # <APP_BIN_DIR>/<TFM>/<RID>/AppPackages/. This mirrors the CLI steps documented at
+      # Publishing (not building) with WindowsPackageType=MSIX produces a signed .msix under
+      # <APP_PROJECT_DIR>/AppPackages/ (a sibling of bin/, not nested inside it — confirmed
+      # from an actual run's output path). This mirrors the CLI steps documented at
       # https://learn.microsoft.com/dotnet/maui/windows/deployment/publish-cli, but scoped to
       # the Debug configuration for an internal test build. WindowsPackageType/signing are
       # passed only here on the command line — the .csproj itself is untouched for Debug/local
@@ -108,7 +109,7 @@ jobs:
           # Exclude AppPackages\...\Dependencies\ — that's where Windows App SDK runtime
           # redistributable .msix files live for a framework-dependent package, and it would be
           # picked up by a plain "*.msix" search alongside the actual app package.
-          $msix = Get-ChildItem -Path "${{ env.APP_BIN_DIR }}" -Recurse -Filter *.msix |
+          $msix = Get-ChildItem -Path "${{ env.APP_PROJECT_DIR }}/AppPackages" -Recurse -Filter *.msix |
             Where-Object { $_.FullName -notmatch '\\Dependencies\\' } |
             Select-Object -First 1
           if (-not $msix) { throw "No .msix file was produced by the publish step." }
