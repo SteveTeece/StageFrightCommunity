@@ -15,7 +15,7 @@ env:
   APP_PROJECT: src/StageFright.App/StageFright.App.csproj
   APP_PROJECT_DIR: src/StageFright.App
   DEBUG_MSIX_NAME: StageFrightCommunity-dev-DEBUG.msix
-  RELEASE_TAG: debug-dev
+  RELEASE_TAG: dev-debug-build
 
 jobs:
   build-and-release-debug-msix:
