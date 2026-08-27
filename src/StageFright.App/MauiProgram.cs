@@ -36,12 +36,8 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
-        var repoRoot = FindRepoRoot(AppContext.BaseDirectory);
-        var testDataDir = Path.Combine(repoRoot, "TestData");
-        Directory.CreateDirectory(testDataDir);
-
         var appDataDir = FileSystem.AppDataDirectory;
-        var dbPath = Path.Combine(testDataDir, "stagefright.db");
+        var dbPath = Path.Combine(appDataDir, "stagefright.db");
         var logPath = Path.Combine(appDataDir, "logs", "stagefright-.log");
         var pluginsPath = Path.Combine(appDataDir, "Plugins");
 
@@ -114,19 +110,6 @@ public static class MauiProgram
         using var loggerFactory = LoggerFactory.Create(b => b.AddSerilog());
         var logger = loggerFactory.CreateLogger("PluginLoader");
         PluginLoader.DiscoverAndRegister(services, pluginsPath, logger);
-    }
-
-    private static string FindRepoRoot(string startDir)
-    {
-        var dir = new DirectoryInfo(startDir);
-        while (dir != null)
-        {
-            if (dir.GetFiles("*.slnx").Length > 0 || dir.GetDirectories(".git").Length > 0)
-                return dir.FullName;
-            dir = dir.Parent;
-        }
-        // Fallback: use the executable's directory itself
-        return startDir;
     }
 
     private static void ConfigureSerilog(string logPath)

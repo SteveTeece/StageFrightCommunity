@@ -58,7 +58,7 @@ The solution file is `StageFrightCommunity.slnx` in the repo root.
 
 NuGet package versions are centrally managed via the root `Directory.Packages.props` (`ManagePackageVersionsCentrally`). When adding a new package reference, add `<PackageReference Include="..." />` (no `Version` attribute) to the `.csproj` and add the matching `<PackageVersion Include="..." Version="..." />` entry to `Directory.Packages.props` — never pin a version directly in a `.csproj`.
 
-During development the SQLite database is written to `<repo-root>/TestData/stagefright.db` (auto-created). Logs are written to rolling daily files under the MAUI app-data directory.
+During development the SQLite database is written to `FileSystem.AppDataDirectory/stagefright.db` (the MAUI app-data directory, auto-created). Logs are written to rolling daily files under the same app-data directory.
 
 ---
 
