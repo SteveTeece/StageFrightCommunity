@@ -17,12 +17,12 @@ Shared tooling prerequisites: the localization package, the new guard-test proje
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T001** [P] Add `<PackageVersion Include="Microsoft.Extensions.Localization" Version="10.0.x" />` (align the patch with the existing `Microsoft.Extensions.*` 10.0.x entries) · `Directory.Packages.props`
-- [ ] **T002** [P] Scaffold the new guard-test project `StageFright.Localization.Tests` (xUnit; project refs → `StageFright.Core`, `StageFright.UI`, `StageFright.Reports`) and add it to the solution · `tests/StageFright.Localization.Tests/StageFright.Localization.Tests.csproj`, `StageFrightCommunity.slnx`
+- [x] **T001** [P] Add `<PackageVersion Include="Microsoft.Extensions.Localization" Version="10.0.x" />` (align the patch with the existing `Microsoft.Extensions.*` 10.0.x entries) · `Directory.Packages.props`
+- [x] **T002** [P] Scaffold the new guard-test project `StageFright.Localization.Tests` (xUnit; project refs → `StageFright.Core`, `StageFright.UI`, `StageFright.Reports`) and add it to the solution · `tests/StageFright.Localization.Tests/StageFright.Localization.Tests.csproj`, `StageFrightCommunity.slnx`
 
 **⟶ Wait for Wave 1 to finish, then:**
 
-- [ ] **T003** Add the version-less `<PackageReference Include="Microsoft.Extensions.Localization" />` and `<NeutralLanguage>en-AU</NeutralLanguage>` to each resource-owning project · `src/StageFright.Core/StageFright.Core.csproj`, `src/StageFright.Reports/StageFright.Reports.csproj`, `src/StageFright.UI/StageFright.UI.csproj`
+- [x] **T003** Add the version-less `<PackageReference Include="Microsoft.Extensions.Localization" />` and `<NeutralLanguage>en-AU</NeutralLanguage>` to each resource-owning project · `src/StageFright.Core/StageFright.Core.csproj`, `src/StageFright.Reports/StageFright.Reports.csproj`, `src/StageFright.UI/StageFright.UI.csproj`
 
 ---
 
@@ -32,25 +32,25 @@ The one shared localization mechanism every story builds on: area resource marke
 
 **Wave 1 — independent (different projects), create empty marker + neutral `.resx` per area:**
 
-- [ ] **T004** [P] Core area markers `NavigationResource`, `ValidationResource`, `EnumsResource` — one `.cs` file each + an empty neutral `.resx` each · `src/StageFright.Core/Modules/Localization/Resources/`
-- [ ] **T005** [P] Reports area marker `ReportsResource` — `.cs` + empty neutral `.resx` · `src/StageFright.Reports/Resources/ReportsResource.cs` (+ `.resx`)
-- [ ] **T006** [P] UI area markers `SharedResource`, `DashboardResource`, `MembersResource`, `RehearsalsResource`, `EventsResource`, `FinanceResource`, `SettingsResource`, `SetupResource` — one `.cs` file each + an empty neutral `.resx` each · `src/StageFright.UI/Resources/Strings/`
+- [x] **T004** [P] Core area markers `NavigationResource`, `ValidationResource`, `EnumsResource` — one `.cs` file each + an empty neutral `.resx` each · `src/StageFright.Core/Modules/Localization/Resources/`
+- [x] **T005** [P] Reports area marker `ReportsResource` — `.cs` + empty neutral `.resx` · `src/StageFright.Reports/Resources/ReportsResource.cs` (+ `.resx`)
+- [x] **T006** [P] UI area markers `SharedResource`, `DashboardResource`, `MembersResource`, `RehearsalsResource`, `EventsResource`, `FinanceResource`, `SettingsResource`, `SetupResource` — one `.cs` file each + an empty neutral `.resx` each · `src/StageFright.UI/Resources/Strings/`
 
 **⟶ Wait for Wave 1 (markers must exist for `IStringLocalizer<T>` to bind), then:**
 
 **Wave 2 — independent (different files):**
 
-- [ ] **T007** [P] `ILocalizer` facade + `Localizer` implementation (`Get<T>`, `Get<T>(args)`, `Plural<T>`, `Enum`) · `src/StageFright.Core/Localization/ILocalizer.cs`, `src/StageFright.Core/Localization/Localizer.cs`
-- [ ] **T008** [P] `MissingKeyLoggingLocalizerFactory : IStringLocalizerFactory` — decorator over the default factory; on `LocalizedString.ResourceNotFound` logs a Serilog `Warning` and returns the neutral (en-AU) value (FR-008/FR-009) · `src/StageFright.Core/Localization/MissingKeyLoggingLocalizerFactory.cs`
-- [ ] **T009** [P] `EnumLocalizationExtensions.LocalizeEnum(this Enum)` → `EnumsResource["Enum_<Type>_<Member>"]` routed through the logging decorator (FR-024) · `src/StageFright.Core/Localization/EnumLocalizationExtensions.cs`
-- [ ] **T010** [P] `MoneyFormatter` — `Format` / `FormatWithCode`; clones `CultureInfo.CurrentCulture.NumberFormat`, forces `CurrencySymbol` to `"$"` / `"AUD "`, keeps culture separators/grouping/placement (FR-015) · `src/StageFright.Core/Localization/MoneyFormatter.cs`
-- [ ] **T011** [P] Add `@using Microsoft.Extensions.Localization` and `@using StageFright.Core.Localization` · `src/StageFright.UI/_Imports.razor`
-- [ ] **T012** [P] Guard-test scan helpers (Roslyn/regex): localizer-key-usage extraction, `.resx` `<data name>` parsing, user-facing-enum member enumeration — infrastructure only, no assertions yet · `tests/StageFright.Localization.Tests/Scanning/`
-- [ ] **T013** [P] bUnit test base: `Services.AddLocalization()` + register the real `.resx`-backed `IStringLocalizer<T>` (or a key-echo fake) so component tests assert via keys/localizer, not English (FR-018) · `tests/StageFright.UI.Tests/` (shared `TestContext` base)
+- [x] **T007** [P] `ILocalizer` facade + `Localizer` implementation (`Get<T>`, `Get<T>(args)`, `Plural<T>`, `Enum`) · `src/StageFright.Core/Localization/ILocalizer.cs`, `src/StageFright.Core/Localization/Localizer.cs`
+- [x] **T008** [P] `MissingKeyLoggingLocalizerFactory : IStringLocalizerFactory` — decorator over the default factory; on `LocalizedString.ResourceNotFound` logs a Serilog `Warning` and returns the neutral (en-AU) value (FR-008/FR-009) · `src/StageFright.Core/Localization/MissingKeyLoggingLocalizerFactory.cs`
+- [x] **T009** [P] `EnumLocalizationExtensions.LocalizeEnum(this Enum)` → `EnumsResource["Enum_<Type>_<Member>"]` routed through the logging decorator (FR-024) · `src/StageFright.Core/Localization/EnumLocalizationExtensions.cs`
+- [x] **T010** [P] `MoneyFormatter` — `Format` / `FormatWithCode`; clones `CultureInfo.CurrentCulture.NumberFormat`, forces `CurrencySymbol` to `"$"` / `"AUD "`, keeps culture separators/grouping/placement (FR-015) · `src/StageFright.Core/Localization/MoneyFormatter.cs`
+- [x] **T011** [P] Add `@using Microsoft.Extensions.Localization` and `@using StageFright.Core.Localization` · `src/StageFright.UI/_Imports.razor`
+- [x] **T012** [P] Guard-test scan helpers (Roslyn/regex): localizer-key-usage extraction, `.resx` `<data name>` parsing, user-facing-enum member enumeration — infrastructure only, no assertions yet · `tests/StageFright.Localization.Tests/Scanning/`
+- [x] **T013** [P] bUnit test base: `Services.AddLocalization()` + register the real `.resx`-backed `IStringLocalizer<T>` (or a key-echo fake) so component tests assert via keys/localizer, not English (FR-018) · `tests/StageFright.UI.Tests/` (shared `TestContext` base)
 
 **⟶ Wait for T007 + T008, then:**
 
-- [ ] **T014** DI wiring in the composition root: `services.AddLocalization()`, decorate `IStringLocalizerFactory` with `MissingKeyLoggingLocalizerFactory`, `services.AddScoped<ILocalizer, Localizer>()` · `src/StageFright.App/MauiProgram.cs` (`RegisterCoreServices`)
+- [x] **T014** DI wiring in the composition root: `services.AddLocalization()`, decorate `IStringLocalizerFactory` with `MissingKeyLoggingLocalizerFactory`, `services.AddScoped<ILocalizer, Localizer>()` · `src/StageFright.App/MauiProgram.cs` (`RegisterCoreServices`)
 
 ---
 

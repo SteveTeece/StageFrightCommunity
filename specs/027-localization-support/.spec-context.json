@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "localization support",
   "branch": "027-localization-support",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implementing",
   "history": [
     {
       "step": "specify",
@@ -67,10 +67,129 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-27T11:37:54.840Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-27T22:43:46.585Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:43:48.543Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:43:50.138Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:45:54.599Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:51:46.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:51:46.731Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:51:47.572Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:15.725Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:15.935Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:16.155Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:16.375Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:16.585Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:16.807Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:17.042Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:17.306Z"
     }
   ],
   "telemetryInstanceId": "bd71e5f2-b0ce-45df-9da3-06f68fa7a241",
-  "last_action": "spec amended (post-plan): FR-024 enum-value localisation; plan/research/data-model/contracts reconciled (EnumsResource + LocalizeEnum + guards)",
+  "last_action": "Phases 1-2 done (T001-T014, 14/64 tasks) — build clean, 1693 tests green; Phases 3-6 (US1-US3 + Polish) not started",
   "coverage": {
     "FR-001": {
       "title": "Store app-authored user-facing text (incl. aria-label/alt/title) in resource files, not literals",
@@ -339,6 +458,21 @@
       "decision": "Localise user-facing enum values via Enum_<EnumTypeName>_<MemberName> keys in one shared EnumsResource (StageFright.Core) resolved by a LocalizeEnum(this Enum) helper; replace every enum.ToString()/switch at a display site; report-filter option VALUE stays the invariant token, only the LABEL is localised",
       "why": "FR-024; same enums (MemberStatus, FeeType, PaymentMethod/Type, AccountType, TaxCode, ReconciliationStatus, JournalEntryType, Theme) render in both UI and Reports and must match; predictable key shape the completeness guard enforces; keeps enum identity out of storage/GL/filter tokens (FR-016)",
       "rejected": "[Display(Name=)]/[Description] attributes (compile-time literal, no per-culture resource, bypasses missing-key logging); per-enum Dictionary<Enum,string> (no fallback/logging, drifts); per-area enum keys (same enum gets two divergent labels on screen vs report)"
+    },
+    {
+      "decision": "IStringLocalizerFactory decorator registered via a second explicit AddSingleton after AddLocalization() (last registration wins) instead of a third-party Scrutor-style Decorate() helper",
+      "why": "Microsoft.Extensions.DependencyInjection has no built-in Decorate(); AddLocalization() uses TryAdd for IStringLocalizerFactory, so an explicit AddSingleton registered afterward becomes the one every IStringLocalizer<T> resolves, with no new package",
+      "rejected": "Adding a third-party DI decoration package (e.g. Scrutor) purely for this one decorator"
+    },
+    {
+      "decision": "LocalizeEnum() resolves its IStringLocalizerFactory from a static holder (EnumLocalizationExtensions.UseFactory, set once in MauiProgram.RunStartupSequence and in LocalizedTestContext) rather than taking an injected parameter",
+      "why": "The contract consumption pattern shows a bare @value.Status.LocalizeEnum() call with no injected localizer; the factory is a process-wide singleton set exactly once before first use, consistent with this feature own process-wide culture model (plan.md Decision 5) for this single-user desktop app",
+      "rejected": "Requiring every enum-display call site to also inject IStringLocalizer<EnumsResource> alongside its module localizer"
+    },
+    {
+      "decision": "Named placeholders ({OrganisationName}, {Count}) are substituted by order of first appearance in the resolved string rather than true name-to-value binding",
+      "why": "ILocalizer.Get<TResource>(key, args) only takes positional object[] args (per the contract signature); order-of-appearance substitution is the simplest implementation that still lets .resx values use self-documenting named tokens instead of bare {0}/{1} for translators, consistent with simple-over-clever",
+      "rejected": "A full name-to-value dictionary API requiring every call site to pass named arguments"
     }
   ],
   "step_summaries": {
@@ -348,6 +482,147 @@
     },
     "tasks": {
       "summary": "64 tasks (T001-T064) across 6 phases: Setup(3) -> Foundational(11, blocks all) -> US1 shell+Members(14) -> US2 all remaining surfaces/reports/exceptions/enums(17) -> US3 Settings.LanguageCode + OS-aware startup ladder + pickers + qps-ploc(14) -> Polish(5); wave-grouped, widest parallel wave is US2 T031-T044 (one per module)."
+    },
+    "implement": {
+      "summary": "Phases 1 (Setup) and 2 (Foundational) complete: Microsoft.Extensions.Localization wired in; StageFright.Localization.Tests project scaffolded; 12 area resource marker classes + empty neutral .resx created across Core/Reports/UI; ILocalizer/Localizer, MissingKeyLoggingLocalizerFactory, LocalizeEnum, MoneyFormatter, guard-test scanning helpers, and a bUnit LocalizedTestContext all built and wired into MauiProgram DI; full solution build and 1693 existing tests all green. User stories 1-3 (Phases 3-5) and Polish (Phase 6) remain undone."
     }
-  }
+  },
+  "currentTask": "T014",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Added Microsoft.Extensions.Localization 10.0.10 central PackageVersion entry",
+      "files": [
+        "Directory.Packages.props"
+      ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Scaffolded StageFright.Localization.Tests xUnit project (refs Core/UI/Reports) and added it to the .slnx",
+      "files": [
+        "tests/StageFright.Localization.Tests/StageFright.Localization.Tests.csproj",
+        "StageFrightCommunity.slnx"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "Added version-less Microsoft.Extensions.Localization PackageReference and NeutralLanguage=en-AU to Core/Reports/UI csproj files",
+      "files": [
+        "src/StageFright.Core/StageFright.Core.csproj",
+        "src/StageFright.Reports/StageFright.Reports.csproj",
+        "src/StageFright.UI/StageFright.UI.csproj"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Created Core area markers NavigationResource/ValidationResource/EnumsResource + empty neutral .resx each",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.cs",
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.cs",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/EnumsResource.cs",
+        "src/StageFright.Core/Modules/Localization/Resources/EnumsResource.resx"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Created Reports area marker ReportsResource + empty neutral .resx",
+      "files": [
+        "src/StageFright.Reports/Resources/ReportsResource.cs",
+        "src/StageFright.Reports/Resources/ReportsResource.resx"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Created 8 UI area markers (Shared/Dashboard/Members/Rehearsals/Events/Finance/Settings/Setup) + empty neutral .resx each",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SharedResource.cs",
+        "src/StageFright.UI/Resources/Strings/DashboardResource.cs",
+        "src/StageFright.UI/Resources/Strings/MembersResource.cs",
+        "src/StageFright.UI/Resources/Strings/RehearsalsResource.cs",
+        "src/StageFright.UI/Resources/Strings/EventsResource.cs",
+        "src/StageFright.UI/Resources/Strings/FinanceResource.cs",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.cs",
+        "src/StageFright.UI/Resources/Strings/SetupResource.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Created ILocalizer facade + Localizer impl (Get/Get-args/Plural/Enum) with named-placeholder substitution",
+      "files": [
+        "src/StageFright.Core/Localization/ILocalizer.cs",
+        "src/StageFright.Core/Localization/Localizer.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Created MissingKeyLoggingLocalizerFactory decorator over IStringLocalizerFactory logging ResourceNotFound as a Warning",
+      "files": [
+        "src/StageFright.Core/Localization/MissingKeyLoggingLocalizerFactory.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Created EnumLocalizationExtensions.LocalizeEnum resolving Enum_<Type>_<Member> via a static factory holder set at startup",
+      "files": [
+        "src/StageFright.Core/Localization/EnumLocalizationExtensions.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Created MoneyFormatter.Format/FormatWithCode with fixed AUD symbol and culture-driven separators",
+      "files": [
+        "src/StageFright.Core/Localization/MoneyFormatter.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Added @using Microsoft.Extensions.Localization and StageFright.Core.Localization to _Imports.razor",
+      "files": [
+        "src/StageFright.UI/_Imports.razor"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Created guard-test scanning infrastructure: LocalizerKeyUsageScanner, ResxKeyScanner, PlaceholderTokenScanner, UserFacingEnumScanner (no assertions yet)",
+      "files": [
+        "tests/StageFright.Localization.Tests/Scanning/LocalizerKeyUsage.cs",
+        "tests/StageFright.Localization.Tests/Scanning/LocalizerKeyUsageScanner.cs",
+        "tests/StageFright.Localization.Tests/Scanning/ResxKeyScanner.cs",
+        "tests/StageFright.Localization.Tests/Scanning/PlaceholderTokenScanner.cs",
+        "tests/StageFright.Localization.Tests/Scanning/UserFacingEnumScanner.cs"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Created LocalizedTestContext bUnit base registering AddLocalization() and wiring EnumLocalizationExtensions for tests",
+      "files": [
+        "tests/StageFright.UI.Tests/LocalizedTestContext.cs"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Wired AddLocalization/decorated IStringLocalizerFactory/ILocalizer in RegisterCoreServices and EnumLocalizationExtensions.UseFactory in RunStartupSequence",
+      "files": [
+        "src/StageFright.App/MauiProgram.cs"
+      ]
+    }
+  },
+  "verified": [
+    {
+      "what": "Full solution build after Phase 1+2 changes",
+      "command": "dotnet build StageFrightCommunity.slnx",
+      "result": "Build succeeded, 0 Warning(s), 0 Error(s)",
+      "warnings": [
+        "Transient CS1574 cref-not-resolved on EnumsResource.cs before EnumLocalizationExtensions.LocalizeEnum existed; resolved once T009 landed"
+      ]
+    },
+    {
+      "what": "Full test suite after Phase 1+2 changes (no --no-build)",
+      "command": "dotnet test StageFrightCommunity.slnx",
+      "result": "1693 existing tests passed (597 Core.Tests, 178 Reports.Tests, 580 UI.Tests, 152 Data.Tests, 186 Integration.Tests), 0 failed; StageFright.Localization.Tests has no tests yet (T012 is scanning infrastructure only, no assertions until Phase 3 T015)",
+      "warnings": []
+    }
+  ]
 }

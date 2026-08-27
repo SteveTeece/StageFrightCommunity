@@ -1,6 +1,8 @@
 ﻿using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -8,6 +10,7 @@ using Serilog;
 using Serilog.Events;
 using StageFright.App.Seeding;
 using StageFright.Core.Contracts;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Agm;
 using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Dashboard;
@@ -161,6 +164,21 @@ public static class MauiProgram
 
     private static void RegisterCoreServices(IServiceCollection services)
     {
+        // Localization (spec 027): AddLocalization() registers the default
+        // ResourceManagerStringLocalizerFactory via TryAdd; the explicit AddSingleton below is a
+        // manual decorator registration — it is the LAST IStringLocalizerFactory registration, so
+        // it is what every IStringLocalizer<T> (including the AddLocalization()-registered
+        // StringLocalizer<T>) resolves, giving every lookup the missing-key logging behaviour
+        // (FR-008/FR-009) without needing a third-party DI "Decorate" helper.
+        services.AddLocalization();
+        services.AddSingleton<IStringLocalizerFactory>(sp =>
+            new MissingKeyLoggingLocalizerFactory(
+                new ResourceManagerStringLocalizerFactory(
+                    sp.GetRequiredService<IOptions<LocalizationOptions>>(),
+                    sp.GetRequiredService<ILoggerFactory>()),
+                sp.GetRequiredService<ILogger<MissingKeyLoggingLocalizerFactory>>()));
+        services.AddScoped<ILocalizer, Localizer>();
+
         services.AddScoped<IAuditTrailService, AuditTrailService>();
         services.AddScoped<ISetupService, SetupService>();
         services.AddSingleton<IDeviceThemePreferenceProvider, MauiDeviceThemePreferenceProvider>();
@@ -256,6 +274,11 @@ public static class MauiProgram
 
     private static void RunStartupSequence(IServiceProvider services, string dbPath, string connectionString, StartupDiagnosticService diagnosticService)
     {
+        // Wire the static enum-display resolver to the composition root's decorated factory so
+        // LocalizeEnum() (FR-024) can render an enum without every call site injecting a
+        // localizer just to display one (spec 027).
+        EnumLocalizationExtensions.UseFactory(services.GetRequiredService<IStringLocalizerFactory>());
+
         // Run core EF Core migration + startup tasks
         using var scope = services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<StageFrightDbContext>();
