@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.UI.Resources.Strings;
 using CoreValidationException = StageFright.Core.Exceptions.ValidationException;
 
 namespace StageFright.UI.Pages.Finance;
@@ -13,6 +16,8 @@ public partial class ReconciliationWorkspace : ComponentBase
 
     [Inject] private IBankReconciliationService ReconciliationService { get; set; } = null!;
     [Inject] private NavigationManager Navigation { get; set; } = null!;
+    [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private bool _loading = true;
     private bool _busy;
@@ -23,6 +28,11 @@ public partial class ReconciliationWorkspace : ComponentBase
     private bool IsFinalised => _workspace?.Reconciliation.Status == ReconciliationStatus.Finalised;
 
     private bool IsBalanced => _workspace is not null && Math.Abs(_workspace.Difference) <= 0.005m;
+
+    /// <summary>"to {date}" heading suffix.</summary>
+    private string ToDateText() =>
+        Loc.Get<FinanceResource>("Finance_Reconciliation_ToDate",
+            _workspace?.Reconciliation.StatementDate.ToString("d MMM yyyy") ?? string.Empty);
 
     protected override async Task OnParametersSetAsync()
     {
@@ -42,7 +52,7 @@ public partial class ReconciliationWorkspace : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load reconciliation: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_WorkspaceLoadError", ex.Message);
         }
         finally
         {
@@ -66,7 +76,7 @@ public partial class ReconciliationWorkspace : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to update cleared state: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_ToggleError", ex.Message);
         }
         finally
         {
@@ -90,7 +100,7 @@ public partial class ReconciliationWorkspace : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to finalise: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_FinaliseError", ex.Message);
         }
         finally
         {
@@ -115,7 +125,7 @@ public partial class ReconciliationWorkspace : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to delete draft: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_DeleteError", ex.Message);
             _busy = false;
         }
     }

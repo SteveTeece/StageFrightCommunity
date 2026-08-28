@@ -1,14 +1,14 @@
 @page "/finance/opening-balances"
 @using StageFright.UI.Shared
 
-<PageTitle>Opening Balances</PageTitle>
+<PageTitle>@L["Finance_OpeningBalances_PageTitle"]</PageTitle>
 
 <div class="opening-balances-page container-fluid py-2">
-    <h4 class="mb-2">Opening Balances</h4>
+    <h4 class="mb-2">@L["Finance_OpeningBalances_Heading"]</h4>
 
     @if (_loading)
     {
-        <p role="status" aria-live="polite">Loading…</p>
+        <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
     }
     else
     {
@@ -25,37 +25,34 @@
         {
             <div class="card mb-2">
                 <div class="card-body py-2">
-                    <p class="small text-muted mb-2">Step @_step of 2</p>
+                    <p class="small text-muted mb-2">@StepText()</p>
 
                     @if (_step == 1)
                     {
-                        <h6 class="card-title mb-2">Step 1 — As-at date</h6>
-                        <p class="small">
-                            Choose the date the opening balances apply from — usually the first day
-                            of your financial year.
-                        </p>
+                        <h6 class="card-title mb-2">@L["Finance_OpeningBalances_Step1Heading"]</h6>
+                        <p class="small">@L["Finance_OpeningBalances_Step1Intro"]</p>
                         <div class="row g-2">
                             <div class="col-md-4">
-                                <label class="form-label" for="asAtDate">As at <span aria-hidden="true">*</span></label>
+                                <label class="form-label" for="asAtDate">@L["Finance_OpeningBalances_AsAtLabel"] <span aria-hidden="true">*</span></label>
                                 <input id="asAtDate" type="date" class="form-control form-control-sm"
                                        value="@_asAtDate.ToString("yyyy-MM-dd")"
                                        @onchange="e => _asAtDate = DateTime.TryParse(e.Value?.ToString(), out var d) ? d : _asAtDate" />
                             </div>
                         </div>
                         <div class="d-flex gap-2 mt-3">
-                            <button type="button" class="btn btn-primary btn-sm wizard-next" @onclick="() => GoToStep(2)">Next</button>
+                            <button type="button" class="btn btn-primary btn-sm wizard-next" @onclick="() => GoToStep(2)">@L["Finance_OpeningBalances_NextButton"]</button>
                         </div>
                     }
                     else
                     {
-                        <h6 class="card-title mb-2">Step 2 — Enter balances</h6>
+                        <h6 class="card-title mb-2">@L["Finance_OpeningBalances_Step2Heading"]</h6>
                         <OpeningBalanceEntryForm Accounts="_accounts"
                                                   AsAtDate="_asAtDate"
                                                   OnSubmit="PostAsync"
                                                   ShowAlreadyPostedWarning="true"
                                                   HasExistingOpeningBalances="_hasExistingOpeningBalances" />
                         <div class="d-flex gap-2 mt-2">
-                            <button type="button" class="btn btn-outline-secondary btn-sm wizard-back" @onclick="() => GoToStep(1)">Back</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm wizard-back" @onclick="() => GoToStep(1)">@L["Finance_OpeningBalances_BackButton"]</button>
                         </div>
                     }
                 </div>

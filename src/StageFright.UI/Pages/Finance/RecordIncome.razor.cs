@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -12,6 +15,9 @@ public partial class RecordIncome : ComponentBase
     [Inject] private IAccountService AccountService { get; set; } = null!;
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private readonly RecordIncomeModel _form = new();
     private readonly Dictionary<string, string> _errors = new();
@@ -26,7 +32,8 @@ public partial class RecordIncome : ComponentBase
 
     private string? TaxInclusiveHint =>
         _isTaxApplicable && _form.TaxCode == TaxCode.Taxable && _form.Amount > 0m
-            ? $"Includes tax of {TaxCalculator.SplitInclusive(_form.Amount, _taxRate).Tax:C}"
+            ? Loc.Get<FinanceResource>("Finance_Common_TaxInclusiveHint",
+                MoneyFormatter.Format(TaxCalculator.SplitInclusive(_form.Amount, _taxRate).Tax))
             : null;
 
     protected override async Task OnInitializedAsync()
@@ -46,7 +53,7 @@ public partial class RecordIncome : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load accounts: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_RecordIncome_LoadAccountsError", ex.Message);
         }
         finally
         {
@@ -61,13 +68,13 @@ public partial class RecordIncome : ComponentBase
 
         if (_form.Amount <= 0m)
         {
-            _errors["Amount"] = "Amount must be greater than zero.";
+            _errors["Amount"] = L["Finance_Common_AmountPositiveError"];
             return;
         }
 
         if (_form.AccountId == Guid.Empty)
         {
-            _errors["AccountId"] = "Please select a account.";
+            _errors["AccountId"] = L["Finance_RecordIncome_AccountRequiredError"];
             return;
         }
 
@@ -85,11 +92,12 @@ public partial class RecordIncome : ComponentBase
             };
 
             await IncomeEntryService.RecordIncomeAsync(request);
-            _successMessage = $"Income of {request.Amount:C} recorded successfully.";
+            _successMessage = Loc.Get<FinanceResource>("Finance_RecordIncome_SuccessMessage",
+                MoneyFormatter.Format(request.Amount));
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to record income: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_RecordIncome_RecordError", ex.Message);
         }
         finally
         {

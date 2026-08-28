@@ -14,7 +14,7 @@ namespace StageFright.UI.Tests.Pages.Finance;
 /// bUnit tests for JournalEntryPage — dynamic line list, debit-clears-credit per row,
 /// running totals with balance badge, save gating, and posting via IGeneralJournalService.
 /// </summary>
-public class JournalEntryPageTests : BunitContext
+public class JournalEntryPageTests : LocalizedTestContext
 {
     private readonly IGeneralJournalService _journalService = Substitute.For<IGeneralJournalService>();
 

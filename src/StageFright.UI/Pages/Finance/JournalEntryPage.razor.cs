@@ -1,14 +1,20 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Finance;
 
 public partial class JournalEntryPage : ComponentBase
 {
     [Inject] private IGeneralJournalService JournalService { get; set; } = null!;
+    [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private readonly List<JournalLineModel> _lines = new();
     private IReadOnlyList<Account> _accounts = [];
@@ -31,6 +37,10 @@ public partial class JournalEntryPage : ComponentBase
         && !string.IsNullOrWhiteSpace(_description)
         && _lines.All(l => l.AccountId != Guid.Empty && (l.Debit != 0m) != (l.Credit != 0m));
 
+    /// <summary>"Out of balance by {amount}" badge — fixed-AUD formatted difference.</summary>
+    private string OutOfBalanceText() =>
+        Loc.Get<FinanceResource>("Finance_Journal_OutOfBalanceBadge", MoneyFormatter.Format(Math.Abs(OutOfBalance)));
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -40,7 +50,7 @@ public partial class JournalEntryPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load accounts: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Journal_LoadError", ex.Message);
         }
         finally
         {
@@ -95,11 +105,12 @@ public partial class JournalEntryPage : ComponentBase
             };
 
             await JournalService.RecordJournalAsync(request);
-            _successMessage = $"Journal of {TotalDebits:C} posted successfully.";
+            _successMessage = Loc.Get<FinanceResource>("Finance_Journal_SuccessMessage",
+                MoneyFormatter.Format(TotalDebits));
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to post journal: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Journal_PostError", ex.Message);
         }
         finally
         {

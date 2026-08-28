@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -9,6 +12,9 @@ public partial class BankDepositPage : ComponentBase
 {
     [Inject] private IBankDepositService BankDepositService { get; set; } = null!;
     [Inject] private IAccountService AccountService { get; set; } = null!;
+    [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private readonly BankDepositModel _form = new();
     private readonly Dictionary<string, string> _errors = new();
@@ -27,7 +33,7 @@ public partial class BankDepositPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load accounts: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_BankDeposit_LoadError", ex.Message);
         }
         finally
         {
@@ -41,10 +47,10 @@ public partial class BankDepositPage : ComponentBase
         _errorMessage = null;
 
         if (_form.Amount <= 0m)
-            _errors["Amount"] = "Amount must be greater than zero.";
+            _errors["Amount"] = L["Finance_Common_AmountPositiveError"];
 
         if (_form.ToAccountId == Guid.Empty)
-            _errors["ToAccountId"] = "Please select the destination account.";
+            _errors["ToAccountId"] = L["Finance_BankDeposit_ToAccountRequiredError"];
 
         if (_errors.Count > 0)
             return;
@@ -61,11 +67,12 @@ public partial class BankDepositPage : ComponentBase
             };
 
             await BankDepositService.RecordDepositAsync(request);
-            _successMessage = $"Deposit of {request.Amount:C} recorded successfully.";
+            _successMessage = Loc.Get<FinanceResource>("Finance_BankDeposit_SuccessMessage",
+                MoneyFormatter.Format(request.Amount));
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to record deposit: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_BankDeposit_RecordError", ex.Message);
         }
         finally
         {

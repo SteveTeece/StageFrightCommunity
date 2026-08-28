@@ -2,12 +2,12 @@
 
 @if (_memberName is not null)
 {
-    <p class="text-muted mb-1 small">Member: <strong>@_memberName</strong></p>
+    <p class="text-muted mb-1 small">@L["Finance_Payment_MemberLabel"] <strong>@_memberName</strong></p>
 }
 
 @if (_loading)
 {
-    <p role="status" aria-live="polite">Loading…</p>
+    <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
 }
 else
 {
@@ -27,13 +27,13 @@ else
                 <div class="row g-2">
 
                     <div class="col-md-6">
-                        <label class="form-label" for="payDate">Date <span aria-hidden="true">*</span></label>
+                        <label class="form-label" for="payDate">@L["Finance_Common_DateLabel"] <span aria-hidden="true">*</span></label>
                         <InputDate id="payDate" class="form-control form-control-sm" @bind-Value="_form.Date"
                                    disabled="@_saved" />
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label" for="amount">Amount <span aria-hidden="true">*</span></label>
+                        <label class="form-label" for="amount">@L["Finance_Common_AmountLabel"] <span aria-hidden="true">*</span></label>
                         <div class="input-group input-group-sm @(_errors.ContainsKey("Amount") ? "has-validation" : "")">
                             <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
                             <InputNumber id="amount" class="@(_errors.ContainsKey("Amount") ? "form-control is-invalid" : "form-control")"
@@ -47,23 +47,23 @@ else
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label" for="method">Payment Method <span aria-hidden="true">*</span></label>
+                        <label class="form-label" for="method">@L["Finance_Payment_MethodLabel"] <span aria-hidden="true">*</span></label>
                         <InputSelect id="method" class="form-select form-select-sm" @bind-Value="_form.PaymentMethod"
                                      disabled="@_saved">
                             @foreach (var method in Enum.GetValues<PaymentMethod>())
                             {
-                                <option value="@method">@method</option>
+                                <option value="@method">@method.LocalizeEnum()</option>
                             }
                         </InputSelect>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label" for="type">Payment Type <span aria-hidden="true">*</span></label>
+                        <label class="form-label" for="type">@L["Finance_Payment_TypeLabel"] <span aria-hidden="true">*</span></label>
                         <InputSelect id="type" class="form-select form-select-sm" @bind-Value="_form.PaymentType"
                                      disabled="@_saved">
                             @foreach (var type in Enum.GetValues<PaymentType>())
                             {
-                                <option value="@type">@type</option>
+                                <option value="@type">@type.LocalizeEnum()</option>
                             }
                         </InputSelect>
                     </div>
@@ -74,7 +74,7 @@ else
                     </div>
 
                     <div class="col-12">
-                        <label class="form-label" for="notes">Notes</label>
+                        <label class="form-label" for="notes">@L["Finance_Payment_NotesLabel"]</label>
                         <InputTextArea id="notes" class="form-control form-control-sm" rows="2"
                                        @bind-Value="_form.Notes" />
                     </div>
@@ -85,20 +85,20 @@ else
                 {
                     <div class="d-flex gap-2 mt-2">
                         <button type="submit" class="btn btn-primary btn-sm" disabled="@(_saving || _outstandingFees.Count == 0)">
-                            @(_saving ? "Saving…" : "Record Member Payment")
+                            @(_saving ? Shared["Shared_Action_Saving"] : L["Finance_Payment_SubmitButton"])
                         </button>
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                                @onclick="Cancel">Cancel</button>
+                                @onclick="Cancel">@Shared["Shared_Action_Cancel"]</button>
                     </div>
                 }
                 else
                 {
                     <div class="d-flex gap-2 mt-2">
                         <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
-                            @(_saving ? "Saving…" : "Update Notes")
+                            @(_saving ? Shared["Shared_Action_Saving"] : L["Finance_Payment_UpdateNotesButton"])
                         </button>
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                                @onclick="Cancel">Back to Balances</button>
+                                @onclick="Cancel">@L["Finance_Payment_BackToBalancesButton"]</button>
                     </div>
                 }
             </EditForm>

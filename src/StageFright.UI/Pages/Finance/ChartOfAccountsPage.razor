@@ -3,10 +3,10 @@
 @using StageFright.Core.Modules.Finance
 @using StageFright.UI.Shared
 
-<PageTitle>Chart of Accounts</PageTitle>
+<PageTitle>@L["Finance_Coa_PageTitle"]</PageTitle>
 
 <div class="chart-of-accounts-page container-fluid py-2">
-    <h4 class="mb-2">Chart of Accounts</h4>
+    <h4 class="mb-2">@L["Finance_Coa_Heading"]</h4>
 
     @if (!string.IsNullOrEmpty(_errorMessage))
     {
@@ -20,43 +20,43 @@
 
     @if (_loading)
     {
-        <p role="status" aria-live="polite">Loading accounts…</p>
+        <p role="status" aria-live="polite">@L["Finance_Coa_LoadingText"]</p>
     }
     else
     {
         <!-- Add Account Form -->
         <div class="card mb-2">
             <div class="card-body py-2">
-                <h6 class="card-title mb-2">Add Account</h6>
+                <h6 class="card-title mb-2">@L["Finance_Coa_AddAccountHeading"]</h6>
                 <AddAccountForm OnSubmit="HandleCreateAsync" ExistingNames="ExistingAccountNames" />
             </div>
         </div>
 
         <!-- Type filter -->
         <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-            <label for="type-filter" class="form-label small mb-0">Show:</label>
+            <label for="type-filter" class="form-label small mb-0">@L["Finance_Coa_ShowLabel"]</label>
             <select id="type-filter" class="form-select form-select-sm w-auto"
-                    value="@_typeFilter" @onchange="OnTypeFilterChanged" aria-label="Filter by account type">
-                <option value="">All types</option>
-                <option value="@AccountType.Asset">Assets</option>
-                <option value="@AccountType.Liability">Liabilities</option>
-                <option value="@AccountType.Equity">Equity</option>
-                <option value="@AccountType.Income">Income</option>
-                <option value="@AccountType.Expense">Expenses</option>
+                    value="@_typeFilter" @onchange="OnTypeFilterChanged" aria-label="@L["Finance_Coa_FilterAriaLabel"]">
+                <option value="">@L["Finance_Coa_AllTypesOption"]</option>
+                <option value="@AccountType.Asset">@L["Finance_Coa_FilterAssets"]</option>
+                <option value="@AccountType.Liability">@L["Finance_Coa_FilterLiabilities"]</option>
+                <option value="@AccountType.Equity">@L["Finance_Coa_FilterEquity"]</option>
+                <option value="@AccountType.Income">@L["Finance_Coa_FilterIncome"]</option>
+                <option value="@AccountType.Expense">@L["Finance_Coa_FilterExpenses"]</option>
             </select>
             <div class="d-flex align-items-center gap-2 ms-auto">
-                <label for="includeBalancesSwitch" class="form-label mb-0 small">Include Current Balances</label>
+                <label for="includeBalancesSwitch" class="form-label mb-0 small">@L["Finance_Coa_IncludeBalancesLabel"]</label>
                 <RadzenSwitch Name="includeBalancesSwitch" @bind-Value="_includeBalances" Change="@((bool _) => StateHasChanged())" />
-                <button class="btn btn-outline-secondary btn-sm" @onclick="PrintAsync">Print Chart of Accounts</button>
+                <button class="btn btn-outline-secondary btn-sm" @onclick="PrintAsync">@L["Finance_Coa_PrintButton"]</button>
             </div>
         </div>
 
         <!-- Active accounts -->
         <section aria-labelledby="accounts-heading" class="mb-2">
-            <h6 id="accounts-heading" class="mb-1">Active Accounts</h6>
+            <h6 id="accounts-heading" class="mb-1">@L["Finance_Coa_ActiveAccountsHeading"]</h6>
             @if (!FilteredAccounts.Any())
             {
-                <p class="text-muted small mb-0">No accounts match the current filter.</p>
+                <p class="text-muted small mb-0">@L["Finance_Coa_NoMatch"]</p>
             }
             else
             {
@@ -64,48 +64,48 @@
                                 AllowSorting="true" AllowPaging="true" PageSize="15"
                                 class="rz-shadow-0">
                     <Columns>
-                        <RadzenDataGridColumn TItem="AccountBalance" Title="No." Width="70px">
+                        <RadzenDataGridColumn TItem="AccountBalance" Title="@L["Finance_Coa_NumberColumn"]" Width="70px">
                             <Template Context="account">
                                 <code>@account.AccountNumber</code>
                             </Template>
                         </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="AccountBalance" Title="Name">
+                        <RadzenDataGridColumn TItem="AccountBalance" Title="@L["Finance_Coa_NameColumn"]">
                             <Template Context="account">
                                 @if (_editingId == account.AccountId)
                                 {
                                     <input class="form-control form-control-sm d-inline-block w-auto me-1"
-                                           @bind="_editName" aria-label="New name for @account.Name" />
-                                    <button class="btn btn-primary btn-sm me-1" @onclick="() => SaveRenameAsync(account.AccountId)">Save</button>
-                                    <button class="btn btn-outline-secondary btn-sm" @onclick="CancelRename">Cancel</button>
+                                           @bind="_editName" aria-label="@RenameAriaLabel(account.Name)" />
+                                    <button class="btn btn-primary btn-sm me-1" @onclick="() => SaveRenameAsync(account.AccountId)">@Shared["Shared_Action_Save"]</button>
+                                    <button class="btn btn-outline-secondary btn-sm" @onclick="CancelRename">@Shared["Shared_Action_Cancel"]</button>
                                 }
                                 else
                                 {
                                     @account.Name
                                     @if (account.IsSystem)
                                     {
-                                        <span class="badge bg-secondary ms-1" title="System account">System</span>
+                                        <span class="badge bg-secondary ms-1" title="@L["Finance_Coa_SystemBadgeTitle"]">@L["Finance_Coa_SystemBadge"]</span>
                                     }
                                     @if (account.IsBankAccount)
                                     {
-                                        <span class="badge bg-info ms-1" title="Bank / cash account">Bank</span>
+                                        <span class="badge bg-info ms-1" title="@L["Finance_Coa_BankBadgeTitle"]">@L["Finance_Coa_BankBadge"]</span>
                                     }
                                 }
                             </Template>
                         </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="AccountBalance" Title="Type" Width="110px">
+                        <RadzenDataGridColumn TItem="AccountBalance" Title="@L["Finance_Coa_TypeColumn"]" Width="110px">
                             <Template Context="account">
-                                @account.Type
+                                @account.Type.LocalizeEnum()
                             </Template>
                         </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="AccountBalance" Property="Balance" Title="Balance" Width="120px">
+                        <RadzenDataGridColumn TItem="AccountBalance" Property="Balance" Title="@L["Finance_Coa_BalanceColumn"]" Width="120px">
                             <Template Context="account">
                                 @if (account.HasError)
                                 {
-                                    <span class="text-danger" title="Balance could not be calculated for this account">—</span>
+                                    <span class="text-danger" title="@L["Finance_Coa_BalanceErrorTitle"]">—</span>
                                 }
                                 else
                                 {
-                                    @account.Balance?.ToString("C")
+                                    @(account.Balance is { } b ? MoneyFormatter.Format(b) : null)
                                 }
                             </Template>
                         </RadzenDataGridColumn>
@@ -115,16 +115,16 @@
                                 {
                                     <button class="btn btn-outline-secondary btn-sm me-1"
                                             @onclick="() => StartRename(account)">
-                                        Rename
+                                        @L["Finance_Coa_RenameButton"]
                                     </button>
                                     <button class="btn btn-outline-danger btn-sm"
                                             @onclick="() => ArchiveAsync(account.AccountId)">
-                                        Archive
+                                        @L["Finance_Coa_ArchiveButton"]
                                     </button>
                                 }
                                 else if (account.IsSystem)
                                 {
-                                    <span class="text-muted small">Read-only</span>
+                                    <span class="text-muted small">@L["Finance_Coa_ReadOnlyText"]</span>
                                 }
                             </Template>
                         </RadzenDataGridColumn>
@@ -137,35 +137,39 @@
         @if (_archivedAccounts.Any())
         {
             <section aria-labelledby="archived-heading" class="mb-2">
-                <h6 id="archived-heading" class="mb-1">Archived Accounts</h6>
+                <h6 id="archived-heading" class="mb-1">@L["Finance_Coa_ArchivedAccountsHeading"]</h6>
                 <RadzenDataGrid Data="@_archivedAccounts" TItem="AccountBalance"
                                 AllowSorting="true" AllowPaging="true" PageSize="15"
                                 class="rz-shadow-0">
                     <Columns>
-                        <RadzenDataGridColumn TItem="AccountBalance" Title="No." Width="90px">
+                        <RadzenDataGridColumn TItem="AccountBalance" Title="@L["Finance_Coa_NumberColumn"]" Width="90px">
                             <Template Context="account">
                                 <code>@account.AccountNumber</code>
                             </Template>
                         </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="AccountBalance" Property="Name" Title="Name" />
-                        <RadzenDataGridColumn TItem="AccountBalance" Property="Type" Title="Type" Width="120px" />
-                        <RadzenDataGridColumn TItem="AccountBalance" Property="Balance" Title="Balance" Width="120px">
+                        <RadzenDataGridColumn TItem="AccountBalance" Property="Name" Title="@L["Finance_Coa_NameColumn"]" />
+                        <RadzenDataGridColumn TItem="AccountBalance" Property="Type" Title="@L["Finance_Coa_TypeColumn"]" Width="120px">
+                            <Template Context="account">
+                                @account.Type.LocalizeEnum()
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="AccountBalance" Property="Balance" Title="@L["Finance_Coa_BalanceColumn"]" Width="120px">
                             <Template Context="account">
                                 @if (account.HasError)
                                 {
-                                    <span class="text-danger" title="Balance could not be calculated for this account">—</span>
+                                    <span class="text-danger" title="@L["Finance_Coa_BalanceErrorTitle"]">—</span>
                                 }
                                 else
                                 {
-                                    @account.Balance?.ToString("C")
+                                    @(account.Balance is { } b ? MoneyFormatter.Format(b) : null)
                                 }
                             </Template>
                         </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="AccountBalance" Title="Actions" Width="120px" Sortable="false">
+                        <RadzenDataGridColumn TItem="AccountBalance" Title="@Shared["Shared_Table_ActionsColumn"]" Width="120px" Sortable="false">
                             <Template Context="account">
                                 <button class="btn btn-outline-secondary btn-sm"
                                         @onclick="() => RestoreAsync(account.AccountId)">
-                                    Restore
+                                    @L["Finance_Coa_RestoreButton"]
                                 </button>
                             </Template>
                         </RadzenDataGridColumn>

@@ -15,7 +15,7 @@ namespace StageFright.UI.Tests.Pages.Finance;
 /// finalise gating, persistent checkbox ticks, finalised read-only state,
 /// draft deletion navigation, and error surfacing.
 /// </summary>
-public class ReconciliationWorkspaceTests : RadzenGridTestContext
+public class ReconciliationWorkspaceTests : LocalizedTestContext
 {
     private readonly IBankReconciliationService _service = Substitute.For<IBankReconciliationService>();
 

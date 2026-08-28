@@ -1,13 +1,13 @@
 @page "/finance/journal"
 
-<PageTitle>Journal Entry</PageTitle>
+<PageTitle>@L["Finance_Journal_PageTitle"]</PageTitle>
 
 <div class="journal-entry-page container-fluid py-2">
-    <h4 class="mb-2">Journal Entry</h4>
+    <h4 class="mb-2">@L["Finance_Journal_Heading"]</h4>
 
     @if (_loading)
     {
-        <p role="status" aria-live="polite">Loading…</p>
+        <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
     }
     else
     {
@@ -21,7 +21,7 @@
             <div class="alert alert-success py-1 mb-2 small" role="status">
                 @_successMessage
                 <div class="mt-1">
-                    <button class="btn btn-sm btn-outline-success" @onclick="RecordAnother">Record Another</button>
+                    <button class="btn btn-sm btn-outline-success" @onclick="RecordAnother">@L["Finance_Common_RecordAnotherButton"]</button>
                 </div>
             </div>
         }
@@ -32,17 +32,17 @@
                 <div class="card-body py-2">
                     <div class="row g-2 mb-2">
                         <div class="col-md-4">
-                            <label class="form-label" for="journalDate">Date <span aria-hidden="true">*</span></label>
+                            <label class="form-label" for="journalDate">@L["Finance_Common_DateLabel"] <span aria-hidden="true">*</span></label>
                             <input id="journalDate" type="date" class="form-control form-control-sm"
                                    value="@_date.ToString("yyyy-MM-dd")"
                                    @onchange="e => _date = DateTime.TryParse(e.Value?.ToString(), out var d) ? d : _date" />
                         </div>
                         <div class="col-md-8">
-                            <label class="form-label" for="journalDescription">Description <span aria-hidden="true">*</span></label>
+                            <label class="form-label" for="journalDescription">@L["Finance_Common_DescriptionLabel"] <span aria-hidden="true">*</span></label>
                             <input id="journalDescription" type="text" class="form-control form-control-sm"
                                    value="@_description"
                                    @onchange="e => _description = e.Value?.ToString()"
-                                   placeholder="Why this journal is being posted" />
+                                   placeholder="@L["Finance_Journal_DescriptionPlaceholder"]" />
                         </div>
                     </div>
 
@@ -50,10 +50,10 @@
                         <table class="table table-sm align-middle journal-lines-table">
                             <thead>
                                 <tr>
-                                    <th style="min-width: 16rem;">Account</th>
-                                    <th class="text-end" style="width: 10rem;">Debit</th>
-                                    <th class="text-end" style="width: 10rem;">Credit</th>
-                                    <th style="width: 3rem;"><span class="visually-hidden">Remove</span></th>
+                                    <th style="min-width: 16rem;">@L["Finance_Journal_AccountColumn"]</th>
+                                    <th class="text-end" style="width: 10rem;">@L["Finance_Journal_DebitColumn"]</th>
+                                    <th class="text-end" style="width: 10rem;">@L["Finance_Journal_CreditColumn"]</th>
+                                    <th style="width: 3rem;"><span class="visually-hidden">@Shared["Shared_Action_Remove"]</span></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -64,8 +64,8 @@
                                             <select class="form-select form-select-sm journal-account"
                                                     value="@line.AccountId"
                                                     @onchange="e => SetAccount(line, e)"
-                                                    aria-label="Account">
-                                                <option value="@Guid.Empty">— select —</option>
+                                                    aria-label="@L["Finance_Journal_AccountAriaLabel"]">
+                                                <option value="@Guid.Empty">@L["Finance_Common_SelectOption"]</option>
                                                 @foreach (var acc in _accounts)
                                                 {
                                                     <option value="@acc.Id">@acc.AccountNumber @acc.Name</option>
@@ -77,27 +77,27 @@
                                                    class="form-control form-control-sm text-end journal-debit"
                                                    value="@(line.Debit == 0m ? null : line.Debit)"
                                                    @onchange="e => SetDebit(line, e)"
-                                                   aria-label="Debit amount" />
+                                                   aria-label="@L["Finance_Journal_DebitAriaLabel"]" />
                                         </td>
                                         <td>
                                             <input type="number" step="0.01" min="0"
                                                    class="form-control form-control-sm text-end journal-credit"
                                                    value="@(line.Credit == 0m ? null : line.Credit)"
                                                    @onchange="e => SetCredit(line, e)"
-                                                   aria-label="Credit amount" />
+                                                   aria-label="@L["Finance_Journal_CreditAriaLabel"]" />
                                         </td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-sm btn-outline-danger journal-remove-line"
                                                     @onclick="() => RemoveLine(line)"
                                                     disabled="@(_lines.Count <= 2)"
-                                                    aria-label="Remove line">&times;</button>
+                                                    aria-label="@L["Finance_Journal_RemoveLineAriaLabel"]">&times;</button>
                                         </td>
                                     </tr>
                                 }
                             </tbody>
                             <tfoot>
                                 <tr class="fw-semibold">
-                                    <td>Totals</td>
+                                    <td>@L["Finance_Journal_TotalsLabel"]</td>
                                     <td class="text-end journal-total-debits">@TotalDebits.ToString("N2")</td>
                                     <td class="text-end journal-total-credits">@TotalCredits.ToString("N2")</td>
                                     <td></td>
@@ -107,19 +107,19 @@
                     </div>
 
                     <div class="d-flex align-items-center gap-2 mt-2">
-                        <button type="button" class="btn btn-outline-secondary btn-sm journal-add-line" @onclick="AddLine">Add Line</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm journal-add-line" @onclick="AddLine">@L["Finance_Journal_AddLineButton"]</button>
 
                         @if (IsBalanced)
                         {
-                            <span class="badge text-bg-success journal-balance-badge">Balanced</span>
+                            <span class="badge text-bg-success journal-balance-badge">@L["Finance_Journal_BalancedBadge"]</span>
                         }
                         else
                         {
-                            <span class="badge text-bg-warning journal-balance-badge">Out of balance by @Math.Abs(OutOfBalance).ToString("C")</span>
+                            <span class="badge text-bg-warning journal-balance-badge">@OutOfBalanceText()</span>
                         }
 
                         <button type="button" class="btn btn-primary btn-sm ms-auto journal-save" @onclick="SaveAsync" disabled="@(!CanSave)">
-                            @(_saving ? "Posting…" : "Post Journal")
+                            @(_saving ? L["Finance_Journal_PostingText"] : L["Finance_Journal_PostButton"])
                         </button>
                     </div>
                 </div>

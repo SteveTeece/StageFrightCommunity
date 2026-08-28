@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -11,6 +14,9 @@ public partial class ExpensePaymentPage : ComponentBase
     [Inject] private IExpensePaymentService ExpensePaymentService { get; set; } = null!;
     [Inject] private IAccountService AccountService { get; set; } = null!;
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
+    [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private readonly ExpensePaymentModel _form = new();
     private readonly Dictionary<string, string> _errors = new();
@@ -25,7 +31,8 @@ public partial class ExpensePaymentPage : ComponentBase
 
     private string? TaxInclusiveHint =>
         _isTaxApplicable && _form.TaxCode == TaxCode.Taxable && _form.Amount > 0m
-            ? $"Includes tax of {TaxCalculator.SplitInclusive(_form.Amount, _taxRate).Tax:C}"
+            ? Loc.Get<FinanceResource>("Finance_Common_TaxInclusiveHint",
+                MoneyFormatter.Format(TaxCalculator.SplitInclusive(_form.Amount, _taxRate).Tax))
             : null;
 
     protected override async Task OnInitializedAsync()
@@ -46,7 +53,7 @@ public partial class ExpensePaymentPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load accounts: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Expense_LoadError", ex.Message);
         }
         finally
         {
@@ -60,13 +67,13 @@ public partial class ExpensePaymentPage : ComponentBase
         _errorMessage = null;
 
         if (_form.Amount <= 0m)
-            _errors["Amount"] = "Amount must be greater than zero.";
+            _errors["Amount"] = L["Finance_Common_AmountPositiveError"];
 
         if (_form.BankAccountId == Guid.Empty)
-            _errors["BankAccountId"] = "Please select the account the expense was paid from.";
+            _errors["BankAccountId"] = L["Finance_Expense_BankAccountRequiredError"];
 
         if (_form.ExpenseAccountId == Guid.Empty)
-            _errors["ExpenseAccountId"] = "Please select an expense account.";
+            _errors["ExpenseAccountId"] = L["Finance_Expense_ExpenseAccountRequiredError"];
 
         if (_errors.Count > 0)
             return;
@@ -86,11 +93,12 @@ public partial class ExpensePaymentPage : ComponentBase
             };
 
             await ExpensePaymentService.RecordExpenseAsync(request);
-            _successMessage = $"Expense of {request.Amount:C} recorded successfully.";
+            _successMessage = Loc.Get<FinanceResource>("Finance_Expense_SuccessMessage",
+                MoneyFormatter.Format(request.Amount));
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to record expense: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Expense_RecordError", ex.Message);
         }
         finally
         {

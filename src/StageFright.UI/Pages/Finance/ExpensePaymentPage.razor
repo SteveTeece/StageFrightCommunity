@@ -1,13 +1,13 @@
 @page "/finance/expenses"
 
-<PageTitle>Record Expense</PageTitle>
+<PageTitle>@L["Finance_Expense_PageTitle"]</PageTitle>
 
 <div class="expense-payment-page container-fluid py-2">
-    <h4 class="mb-2">Record Expense</h4>
+    <h4 class="mb-2">@L["Finance_Expense_Heading"]</h4>
 
     @if (_loading)
     {
-        <p role="status" aria-live="polite">Loading…</p>
+        <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
     }
     else
     {
@@ -21,7 +21,7 @@
             <div class="alert alert-success py-1 mb-2 small" role="status">
                 @_successMessage
                 <div class="mt-1">
-                    <button class="btn btn-sm btn-outline-success" @onclick="RecordAnother">Record Another</button>
+                    <button class="btn btn-sm btn-outline-success" @onclick="RecordAnother">@L["Finance_Common_RecordAnotherButton"]</button>
                 </div>
             </div>
         }
@@ -31,8 +31,7 @@
             @if (_expenseAccounts.Count == 0)
             {
                 <div class="alert alert-warning py-1 mb-2 small" role="alert">
-                    No expense accounts are configured. Please add an expense account in the
-                    <a href="/finance/accounts">Chart of Accounts</a> before recording an expense.
+                    @((MarkupString)L["Finance_Expense_NoAccountsHtml"].Value)
                 </div>
             }
             else
@@ -43,12 +42,12 @@
                             <div class="row g-2">
 
                                 <div class="col-md-4">
-                                    <label class="form-label" for="expenseDate">Date <span aria-hidden="true">*</span></label>
+                                    <label class="form-label" for="expenseDate">@L["Finance_Common_DateLabel"] <span aria-hidden="true">*</span></label>
                                     <InputDate id="expenseDate" class="form-control form-control-sm" @bind-Value="_form.Date" />
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label class="form-label" for="expenseAmount">Amount <span aria-hidden="true">*</span></label>
+                                    <label class="form-label" for="expenseAmount">@L["Finance_Common_AmountLabel"] <span aria-hidden="true">*</span></label>
                                     <div class="input-group input-group-sm @(_errors.ContainsKey("Amount") ? "has-validation" : "")">
                                         <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
                                         <InputNumber id="expenseAmount"
@@ -63,11 +62,11 @@
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label class="form-label" for="bankAccount">Paid from <span aria-hidden="true">*</span></label>
+                                    <label class="form-label" for="bankAccount">@L["Finance_Expense_PaidFromLabel"] <span aria-hidden="true">*</span></label>
                                     <InputSelect id="bankAccount"
                                                  class="@(_errors.ContainsKey("BankAccountId") ? "form-select form-select-sm is-invalid" : "form-select form-select-sm")"
                                                  @bind-Value="_form.BankAccountId">
-                                        <option value="@Guid.Empty">— select —</option>
+                                        <option value="@Guid.Empty">@L["Finance_Common_SelectOption"]</option>
                                         @foreach (var bank in _bankAccounts)
                                         {
                                             <option value="@bank.Id">@bank.AccountNumber @bank.Name</option>
@@ -80,11 +79,11 @@
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label class="form-label" for="expenseAccount">Expense account <span aria-hidden="true">*</span></label>
+                                    <label class="form-label" for="expenseAccount">@L["Finance_Expense_ExpenseAccountLabel"] <span aria-hidden="true">*</span></label>
                                     <InputSelect id="expenseAccount"
                                                  class="@(_errors.ContainsKey("ExpenseAccountId") ? "form-select form-select-sm is-invalid" : "form-select form-select-sm")"
                                                  @bind-Value="_form.ExpenseAccountId">
-                                        <option value="@Guid.Empty">— select —</option>
+                                        <option value="@Guid.Empty">@L["Finance_Common_SelectOption"]</option>
                                         @foreach (var acc in _expenseAccounts)
                                         {
                                             <option value="@acc.Id">@acc.Name</option>
@@ -99,11 +98,11 @@
                                 @if (_isTaxApplicable)
                                 {
                                     <div class="col-md-4">
-                                        <label class="form-label" for="expenseTaxCode">Tax Treatment</label>
+                                        <label class="form-label" for="expenseTaxCode">@L["Finance_Common_TaxTreatmentLabel"]</label>
                                         <InputSelect id="expenseTaxCode" class="form-select form-select-sm" @bind-Value="_form.TaxCode">
-                                            <option value="">Tax-exempt (default)</option>
-                                            <option value="@StageFright.Core.Enums.TaxCode.Taxable">Taxable</option>
-                                            <option value="@StageFright.Core.Enums.TaxCode.TaxExempt">Tax-exempt</option>
+                                            <option value="">@L["Finance_Common_TaxExemptDefaultOption"]</option>
+                                            <option value="@StageFright.Core.Enums.TaxCode.Taxable">@StageFright.Core.Enums.TaxCode.Taxable.LocalizeEnum()</option>
+                                            <option value="@StageFright.Core.Enums.TaxCode.TaxExempt">@StageFright.Core.Enums.TaxCode.TaxExempt.LocalizeEnum()</option>
                                         </InputSelect>
                                         @if (TaxInclusiveHint is not null)
                                         {
@@ -113,26 +112,26 @@
                                 }
 
                                 <div class="col-md-8">
-                                    <label class="form-label" for="payee">Payee</label>
+                                    <label class="form-label" for="payee">@L["Finance_Expense_PayeeLabel"]</label>
                                     <InputText id="payee" class="form-control form-control-sm"
                                                @bind-Value="_form.Payee"
-                                               placeholder="Who was paid, e.g. Scout Hall Trust" />
+                                               placeholder="@L["Finance_Expense_PayeePlaceholder"]" />
                                 </div>
 
                                 <div class="col-12">
-                                    <label class="form-label" for="expenseDescription">Description</label>
+                                    <label class="form-label" for="expenseDescription">@L["Finance_Common_DescriptionLabel"]</label>
                                     <InputTextArea id="expenseDescription" class="form-control form-control-sm" rows="2"
                                                    @bind-Value="_form.Description"
-                                                   placeholder="e.g. Hall hire for March rehearsals…" />
+                                                   placeholder="@L["Finance_Expense_DescriptionPlaceholder"]" />
                                 </div>
 
                             </div>
 
                             <div class="d-flex gap-2 mt-2">
                                 <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
-                                    @(_saving ? "Saving…" : "Record Expense")
+                                    @(_saving ? Shared["Shared_Action_Saving"] : L["Finance_Expense_SubmitButton"])
                                 </button>
-                                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="RecordAnother">Clear</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="RecordAnother">@L["Finance_Common_ClearButton"]</button>
                             </div>
                         </EditForm>
                     </div>

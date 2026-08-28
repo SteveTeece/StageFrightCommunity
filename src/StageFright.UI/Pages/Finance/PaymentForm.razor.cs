@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -12,6 +15,9 @@ public partial class PaymentForm : ComponentBase
     [Inject] private IMemberService MemberService { get; set; } = null!;
     [Inject] private IMemberBalanceService MemberBalanceService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private readonly PaymentFormModel _form = new();
     private readonly Dictionary<string, string> _errors = new();
@@ -35,7 +41,7 @@ public partial class PaymentForm : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load member: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Payment_LoadError", ex.Message);
         }
         finally
         {
@@ -61,7 +67,7 @@ public partial class PaymentForm : ComponentBase
 
         if (_form.Amount <= 0m)
         {
-            _errors["Amount"] = "Amount must be greater than zero.";
+            _errors["Amount"] = L["Finance_Common_AmountPositiveError"];
             return;
         }
 
@@ -69,7 +75,7 @@ public partial class PaymentForm : ComponentBase
 
         if (selectedFeeIds.Count == 0)
         {
-            _errors["Amount"] = "At least one outstanding fee must be selected.";
+            _errors["Amount"] = L["Finance_Payment_NoFeeSelectedError"];
             return;
         }
 
@@ -79,7 +85,7 @@ public partial class PaymentForm : ComponentBase
 
         if (_form.Amount > selectedTotal)
         {
-            _errors["Amount"] = "Amount exceeds the selected fees' remaining total.";
+            _errors["Amount"] = L["Finance_Payment_AmountExceedsError"];
             return;
         }
 
@@ -100,11 +106,12 @@ public partial class PaymentForm : ComponentBase
             var payment = await PaymentService.RecordAsync(request);
             _savedPaymentId = payment.Id;
             _saved = true;
-            _successMessage = $"Payment of {request.Amount:C} recorded successfully.";
+            _successMessage = Loc.Get<FinanceResource>("Finance_Payment_SuccessMessage",
+                MoneyFormatter.Format(request.Amount));
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to record payment: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Payment_RecordError", ex.Message);
         }
         finally
         {
@@ -121,11 +128,11 @@ public partial class PaymentForm : ComponentBase
         {
             var notes = string.IsNullOrWhiteSpace(_form.Notes) ? null : _form.Notes.Trim();
             await PaymentService.UpdateNotesAsync(_savedPaymentId.Value, notes);
-            _successMessage = "Notes updated.";
+            _successMessage = L["Finance_Payment_NotesUpdated"];
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to update notes: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Payment_UpdateNotesError", ex.Message);
         }
         finally
         {
