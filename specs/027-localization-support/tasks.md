@@ -103,7 +103,7 @@ The one shared localization mechanism every story builds on: area resource marke
 ### Tests (write to fail first)
 
 - [ ] **T029** [US2] Extend the guard suite to the full app: residual-literal scan over the US2 file list, enum-coverage for `FeeType`/`PaymentMethod`/`PaymentType`/`AccountType`/`TaxCode`/`ReconciliationStatus`/`JournalEntryType` + no-raw-enum-display, no-orphan-satellite-keys, placeholder-parity, plural-pairing, no-`"C"`-currency repo-wide (FR-024/FR-010/FR-015, SC-001/SC-008) · `tests/StageFright.Localization.Tests/`
-- [ ] **T030** [US2] Report-label tests (`ReportsResource` resolves report names/headers/section+total labels — FR-006) and a plugin-under-non-`en` test asserting `StageFright.TestPlugin` English strings render without error or blanking (FR-020) · `tests/StageFright.Reports.Tests/`, `tests/StageFright.Integration.Tests/`
+- [x] **T030** [US2] Report-label tests (`ReportsResource` resolves report names/headers/section+total labels — FR-006) and a plugin-under-non-`en` test asserting `StageFright.TestPlugin` English strings render without error or blanking (FR-020) · `tests/StageFright.Reports.Tests/`, `tests/StageFright.Integration.Tests/`
 
 ### Implementation
 
@@ -117,7 +117,7 @@ The one shared localization mechanism every story builds on: area resource marke
 - [x] **T036** [P] [US2] Setup Wizard steps (excluding the language step — US3) · `src/StageFright.UI/Resources/Strings/SetupResource.resx`, `src/StageFright.UI/Pages/Setup/**`
 - [x] **T037** [P] [US2] Shared components + remaining cross-cutting text · `src/StageFright.UI/Resources/Strings/SharedResource.resx`, `src/StageFright.UI/Shared/*.razor(.cs)`
 - [x] **T038** [P] [US2] Remaining `*MenuItemProvider` `Title`/`ShortLabel` · `src/StageFright.Core/Modules/Localization/Resources/NavigationResource.resx`, `src/StageFright.Core/Modules/*/*MenuItemProvider.cs`
-- [ ] **T039** [P] [US2] Report providers — `ReportName`, filter labels, section labels; filter **option values** stay invariant tokens, **labels** via `EnumsResource` / `Reports_Filter_OptionAll` · `src/StageFright.Reports/Resources/ReportsResource.resx`, `src/StageFright.Reports/Providers/*ReportProvider.cs`
+- [x] **T039** [P] [US2] Report providers — `ReportName`, filter labels, section labels; filter **option values** stay invariant tokens, **labels** via `EnumsResource` / `Reports_Filter_OptionAll` · `src/StageFright.Reports/Resources/ReportsResource.resx`, `src/StageFright.Reports/Providers/*ReportProvider.cs`
 - [ ] **T040** [P] [US2] Report renderers — column headers, subtotal/total labels, fixed annotations via `IStringLocalizer<ReportsResource>`; enum cells via `LocalizeEnum`; amounts via `MoneyFormatter.FormatWithCode` · `src/StageFright.Reports/Rendering/*PdfRenderer.cs`, `src/StageFright.Reports/Rendering/CsvReportExporter.cs`
 - [ ] **T041** [P] [US2] User-facing exception `Message` text + remaining validation services → `ValidationResource` (types / `CorrelationId` / boundary-wrapping rules unchanged) · `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx`, `src/StageFright.Core/Exceptions/*.cs`, remaining `*ValidationService`
 - [ ] **T042** [P] [US2] Remaining user-facing enum keys `Enum_FeeType_*`, `Enum_PaymentMethod_*`, `Enum_PaymentType_*`, `Enum_AccountType_*`, `Enum_TaxCode_*`, `Enum_ReconciliationStatus_*`, `Enum_JournalEntryType_*` (verbatim) + swap their display sites to `LocalizeEnum` (FR-024) · `src/StageFright.Core/Modules/Localization/Resources/EnumsResource.resx`, display call sites across UI + Reports

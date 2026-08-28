@@ -37,7 +37,7 @@ public class TaxSummaryReportProviderTests
         _accounts.GetArchivedAsync(Arg.Any<CancellationToken>())
             .Returns(new List<Account>());
 
-        _sut = new TaxSummaryReportProvider(_gl, _accounts, _settings);
+        _sut = new TaxSummaryReportProvider(_gl, _accounts, _settings, RealLocalizer.Instance);
     }
 
     // --- Metadata ---

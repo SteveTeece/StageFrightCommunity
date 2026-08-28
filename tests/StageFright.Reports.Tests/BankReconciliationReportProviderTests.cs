@@ -41,7 +41,7 @@ public class BankReconciliationReportProviderTests
         _gl.GetUnreconciledByAccountAsync(Arg.Any<Guid>(), Arg.Any<DateTime?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<Transaction>>(new List<Transaction>()));
 
-        _sut = new BankReconciliationReportProvider(_recRepo, _accounts, _gl);
+        _sut = new BankReconciliationReportProvider(_recRepo, _accounts, _gl, RealLocalizer.Instance);
     }
 
     // --- Metadata ---

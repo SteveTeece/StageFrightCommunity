@@ -26,7 +26,7 @@ public class BalanceSheetReportProviderTests
 
     public BalanceSheetReportProviderTests()
     {
-        _sut = new BalanceSheetReportProvider(_gl, _accounts, _settings);
+        _sut = new BalanceSheetReportProvider(_gl, _accounts, _settings, RealLocalizer.Instance);
         _settings.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
     }
 

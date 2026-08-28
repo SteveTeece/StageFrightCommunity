@@ -19,7 +19,7 @@ public class MemberListReportProviderTests
 
     public MemberListReportProviderTests()
     {
-        _sut = new MemberListReportProvider(_members, new AgeCalculationService(RealLocalizer.Instance));
+        _sut = new MemberListReportProvider(_members, new AgeCalculationService(RealLocalizer.Instance), RealLocalizer.Instance);
     }
 
     [Fact]

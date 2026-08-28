@@ -25,7 +25,7 @@ public class IncomeStatementReportProviderTests
 
     public IncomeStatementReportProviderTests()
     {
-        _sut = new IncomeStatementReportProvider(_gl, _accounts, _settings);
+        _sut = new IncomeStatementReportProvider(_gl, _accounts, _settings, RealLocalizer.Instance);
         _settings.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         SetupAccounts();
         SetupMovements();

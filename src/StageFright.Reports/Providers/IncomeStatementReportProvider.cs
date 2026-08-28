@@ -1,9 +1,11 @@
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Providers;
 
@@ -20,16 +22,18 @@ public class IncomeStatementReportProvider : IReportProvider
     private readonly IGLRepository _gl;
     private readonly IAccountRepository _accounts;
     private readonly ISettingsRepository _settings;
+    private readonly ILocalizer _localizer;
 
-    public IncomeStatementReportProvider(IGLRepository gl, IAccountRepository accounts, ISettingsRepository settings)
+    public IncomeStatementReportProvider(IGLRepository gl, IAccountRepository accounts, ISettingsRepository settings, ILocalizer localizer)
     {
         _gl = gl;
         _accounts = accounts;
         _settings = settings;
+        _localizer = localizer;
     }
 
     public string ReportId => "income-statement";
-    public string ReportName => "Statement of Income & Expenditure";
+    public string ReportName => _localizer.Get<ReportsResource>("Reports_IncomeStatement_Name");
     public string ModuleName => "Finance";
     public int DisplayOrder => 10;
 
@@ -40,10 +44,23 @@ public class IncomeStatementReportProvider : IReportProvider
             var (from, to) = FinancialYearCalculator.GetRange(DateTime.UtcNow, FinancialYearCalculator.DefaultStartMonth);
             return
             [
-                new ReportFilterDefinition { Key = "period", Type = ReportFilterType.Select, Label = "Period", Options = ["This FY", "Last FY", "Custom"], DefaultValue = "This FY" },
-                new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = "From (custom period)", DefaultValue = $"{from:yyyy-MM-dd}" },
-                new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = "To (custom period)", DefaultValue = $"{to:yyyy-MM-dd}" },
-                new ReportFilterDefinition { Key = "compare", Type = ReportFilterType.Boolean, Label = "Show prior-year comparison", DefaultValue = "false" }
+                new ReportFilterDefinition
+                {
+                    Key = "period",
+                    Type = ReportFilterType.Select,
+                    Label = _localizer.Get<ReportsResource>("Reports_IncomeStatement_PeriodFilterLabel"),
+                    Options = ["This FY", "Last FY", "Custom"],
+                    OptionLabels =
+                    [
+                        _localizer.Get<ReportsResource>("Reports_Filter_OptionThisFy"),
+                        _localizer.Get<ReportsResource>("Reports_Filter_OptionLastFy"),
+                        _localizer.Get<ReportsResource>("Reports_Filter_OptionCustom")
+                    ],
+                    DefaultValue = "This FY"
+                },
+                new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_IncomeStatement_DateFromFilterLabel"), DefaultValue = $"{from:yyyy-MM-dd}" },
+                new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_IncomeStatement_DateToFilterLabel"), DefaultValue = $"{to:yyyy-MM-dd}" },
+                new ReportFilterDefinition { Key = "compare", Type = ReportFilterType.Boolean, Label = _localizer.Get<ReportsResource>("Reports_IncomeStatement_CompareFilterLabel"), DefaultValue = "false" }
             ];
         }
     }
@@ -82,14 +99,14 @@ public class IncomeStatementReportProvider : IReportProvider
         List<ReportColumn> columns = compare
             ?
             [
-                new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Current Period", Alignment = ReportColumnAlignment.Right },
-                new ReportColumn { Header = "Prior Period", Alignment = ReportColumnAlignment.Right }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Account"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_IncomeStatement_CurrentPeriodColumn"), Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_IncomeStatement_PriorPeriodColumn"), Alignment = ReportColumnAlignment.Right }
             ]
             :
             [
-                new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Account"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Amount"), Alignment = ReportColumnAlignment.Right }
             ];
 
         ReportRow TotalRow(string label, decimal amount, decimal priorAmount) => new()
@@ -102,18 +119,20 @@ public class IncomeStatementReportProvider : IReportProvider
 
         return new ReportData
         {
-            Title = "Statement of Income & Expenditure",
+            Title = _localizer.Get<ReportsResource>("Reports_IncomeStatement_Name"),
             SubTitle = compare
-                ? $"{from:d MMMM yyyy} – {to:d MMMM yyyy} (compared to {priorFrom:d MMMM yyyy} – {priorTo:d MMMM yyyy})"
-                : $"{from:d MMMM yyyy} – {to:d MMMM yyyy}",
+                ? _localizer.Get<ReportsResource>("Reports_IncomeStatement_SubTitleCompare",
+                    from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy"),
+                    priorFrom.ToString("d MMMM yyyy"), priorTo.ToString("d MMMM yyyy"))
+                : _localizer.Get<ReportsResource>("Reports_Common_DateRangeSubtitle", from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy")),
             GeneratedAt = DateTime.UtcNow,
             Columns = columns,
             Sections =
             [
-                new ReportSection { Heading = "Income", Rows = incomeRows, Subtotal = TotalRow("Total Income", totalIncome, priorTotalIncome) },
-                new ReportSection { Heading = "Expenses", Rows = expenseRows, Subtotal = TotalRow("Total Expenses", totalExpenses, priorTotalExpenses) }
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Income"), Rows = incomeRows, Subtotal = TotalRow(_localizer.Get<ReportsResource>("Reports_IncomeStatement_TotalIncome"), totalIncome, priorTotalIncome) },
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Expenses"), Rows = expenseRows, Subtotal = TotalRow(_localizer.Get<ReportsResource>("Reports_IncomeStatement_TotalExpenses"), totalExpenses, priorTotalExpenses) }
             ],
-            GrandTotal = TotalRow(surplus >= 0 ? "Surplus" : "(Deficit)", surplus, priorSurplus)
+            GrandTotal = TotalRow(surplus >= 0 ? _localizer.Get<ReportsResource>("Reports_IncomeStatement_Surplus") : _localizer.Get<ReportsResource>("Reports_IncomeStatement_Deficit"), surplus, priorSurplus)
         };
     }
 

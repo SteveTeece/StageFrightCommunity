@@ -22,7 +22,7 @@ public class GeneralLedgerReportProviderTests
 
     public GeneralLedgerReportProviderTests()
     {
-        _sut = new GeneralLedgerReportProvider(_gl, _accounts);
+        _sut = new GeneralLedgerReportProvider(_gl, _accounts, RealLocalizer.Instance);
         SetupAccounts();
         SetupTransactions();
     }

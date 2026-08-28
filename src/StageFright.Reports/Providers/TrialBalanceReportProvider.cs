@@ -2,9 +2,11 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Providers;
 
@@ -20,16 +22,18 @@ public class TrialBalanceReportProvider : IReportProvider
     private readonly IGLRepository _gl;
     private readonly IAccountRepository _accounts;
     private readonly ISettingsRepository _settings;
+    private readonly ILocalizer _localizer;
 
-    public TrialBalanceReportProvider(IGLRepository gl, IAccountRepository accounts, ISettingsRepository settings)
+    public TrialBalanceReportProvider(IGLRepository gl, IAccountRepository accounts, ISettingsRepository settings, ILocalizer localizer)
     {
         _gl = gl;
         _accounts = accounts;
         _settings = settings;
+        _localizer = localizer;
     }
 
     public string ReportId => "trial-balance";
-    public string ReportName => "Trial Balance";
+    public string ReportName => _localizer.Get<ReportsResource>("Reports_TrialBalance_Name");
     public string ModuleName => "Finance";
     public int DisplayOrder => 20;
 
@@ -40,8 +44,8 @@ public class TrialBalanceReportProvider : IReportProvider
             var (from, to) = FinancialYearCalculator.GetRange(DateTime.UtcNow, FinancialYearCalculator.DefaultStartMonth);
             return
             [
-                new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = "From", DefaultValue = $"{from:yyyy-MM-dd}" },
-                new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = "To", DefaultValue = $"{to:yyyy-MM-dd}" }
+                new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_Filter_From"), DefaultValue = $"{from:yyyy-MM-dd}" },
+                new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_Filter_To"), DefaultValue = $"{to:yyyy-MM-dd}" }
             ];
         }
     }
@@ -54,8 +58,8 @@ public class TrialBalanceReportProvider : IReportProvider
         if (Math.Abs(totalDebits - totalCredits) > 0.01m)
         {
             throw new GLBalanceException(
-                $"GL Balance Verification Failed: Total Debits (${totalDebits:F2}) ≠ Total Credits (${totalCredits:F2}). " +
-                "The Trial Balance cannot be generated while the ledger is out of balance.",
+                _localizer.Get<ReportsResource>("Reports_TrialBalance_GLImbalanceError",
+                    totalDebits.ToString("F2"), totalCredits.ToString("F2")),
                 "Transaction",
                 "TrialBalance");
         }
@@ -88,26 +92,26 @@ public class TrialBalanceReportProvider : IReportProvider
 
         return new ReportData
         {
-            Title = "Trial Balance",
-            SubTitle = $"{from:d MMMM yyyy} – {to:d MMMM yyyy}",
+            Title = _localizer.Get<ReportsResource>("Reports_TrialBalance_Name"),
+            SubTitle = _localizer.Get<ReportsResource>("Reports_Common_DateRangeSubtitle", from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy")),
             GeneratedAt = DateTime.UtcNow,
             Columns =
             [
-                new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right },
-                new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Account"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Debit"), Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Credit"), Alignment = ReportColumnAlignment.Right }
             ],
             Sections =
             [
-                new ReportSection { Heading = "Assets", Rows = RowsFor(AccountType.Asset) },
-                new ReportSection { Heading = "Liabilities", Rows = RowsFor(AccountType.Liability) },
-                new ReportSection { Heading = "Equity", Rows = RowsFor(AccountType.Equity) },
-                new ReportSection { Heading = "Income", Rows = RowsFor(AccountType.Income) },
-                new ReportSection { Heading = "Expenses", Rows = RowsFor(AccountType.Expense) }
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Assets"), Rows = RowsFor(AccountType.Asset) },
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Liabilities"), Rows = RowsFor(AccountType.Liability) },
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Equity"), Rows = RowsFor(AccountType.Equity) },
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Income"), Rows = RowsFor(AccountType.Income) },
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Expenses"), Rows = RowsFor(AccountType.Expense) }
             ],
             GrandTotal = new ReportRow
             {
-                Cells = ["Totals", FormatCurrency(totalDebits), FormatCurrency(totalCredits)],
+                Cells = [_localizer.Get<ReportsResource>("Reports_TrialBalance_TotalsRow"), FormatCurrency(totalDebits), FormatCurrency(totalCredits)],
                 IsEmphasized = true
             }
         };

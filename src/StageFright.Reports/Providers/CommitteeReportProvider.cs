@@ -1,7 +1,9 @@
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Providers;
 
@@ -17,15 +19,17 @@ public class CommitteeReportProvider : IReportProvider
 {
     private readonly ICommitteePositionRecordRepository _committeePositionRecords;
     private readonly IMemberRepository _members;
+    private readonly ILocalizer _localizer;
 
-    public CommitteeReportProvider(ICommitteePositionRecordRepository committeePositionRecords, IMemberRepository members)
+    public CommitteeReportProvider(ICommitteePositionRecordRepository committeePositionRecords, IMemberRepository members, ILocalizer localizer)
     {
         _committeePositionRecords = committeePositionRecords;
         _members = members;
+        _localizer = localizer;
     }
 
     public string ReportId => "committee-report";
-    public string ReportName => "Committee Report";
+    public string ReportName => _localizer.Get<ReportsResource>("Reports_Committee_Name");
     public string ModuleName => "Members";
     public int DisplayOrder => 20;
 
@@ -35,8 +39,14 @@ public class CommitteeReportProvider : IReportProvider
         {
             Key = "memberFilter",
             Type = ReportFilterType.Select,
-            Label = "Member Status",
+            Label = _localizer.Get<ReportsResource>("Reports_Committee_MemberStatusFilterLabel"),
             Options = ["Active Only", "Archived Only", "All"],
+            OptionLabels =
+            [
+                _localizer.Get<ReportsResource>("Reports_Filter_OptionActiveOnly"),
+                _localizer.Get<ReportsResource>("Reports_Filter_OptionArchivedOnly"),
+                _localizer.Get<ReportsResource>("Reports_Filter_OptionAll")
+            ],
             DefaultValue = "Active Only"
         }
     ];
@@ -88,19 +98,19 @@ public class CommitteeReportProvider : IReportProvider
 
         return new ReportData
         {
-            Title = "Committee Report",
-            SubTitle = $"Filter: {memberFilter} — {DateTime.UtcNow:d MMMM yyyy}",
+            Title = _localizer.Get<ReportsResource>("Reports_Committee_Name"),
+            SubTitle = _localizer.Get<ReportsResource>("Reports_Committee_SubTitle", memberFilter, DateTime.UtcNow.ToString("d MMMM yyyy")),
             GeneratedAt = DateTime.UtcNow,
             Columns =
             [
-                new ReportColumn { Header = "Year", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Position", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Member(s)", Alignment = ReportColumnAlignment.Left }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Committee_YearColumn"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Committee_PositionColumn"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Committee_MembersColumn"), Alignment = ReportColumnAlignment.Left }
             ],
             SummaryColumns =
             [
-                new ReportColumn { Header = "Year", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Positions Recorded", Alignment = ReportColumnAlignment.Right }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Committee_YearColumn"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Committee_PositionsRecordedColumn"), Alignment = ReportColumnAlignment.Right }
             ],
             Sections = sections
         };
@@ -108,11 +118,16 @@ public class CommitteeReportProvider : IReportProvider
 
     private static readonly string[] NamedRoleKeys = ["president", "secretary", "treasurer"];
 
-    private static readonly Dictionary<string, string> NamedRoleLabels = new()
+    /// <summary>
+    /// The localised display label for a canonical office-holder role. The lookup key
+    /// (<paramref name="roleKey"/>) stays the culture-invariant lowercase token used for matching.
+    /// </summary>
+    private string NamedRoleLabel(string roleKey) => roleKey switch
     {
-        ["president"] = "President",
-        ["secretary"] = "Secretary",
-        ["treasurer"] = "Treasurer"
+        "president" => _localizer.Get<ReportsResource>("Reports_Committee_RolePresident"),
+        "secretary" => _localizer.Get<ReportsResource>("Reports_Committee_RoleSecretary"),
+        "treasurer" => _localizer.Get<ReportsResource>("Reports_Committee_RoleTreasurer"),
+        _ => roleKey
     };
 
     /// <summary>
@@ -121,7 +136,7 @@ public class CommitteeReportProvider : IReportProvider
     /// then "General Committee Members" last for blank/whitespace-only positions. Matching is
     /// case-insensitive and trimmed (FR-007); members within a line are listed alphabetically (FR-006/FR-006a/FR-010).
     /// </summary>
-    private static List<ReportRow> BuildPositionLines(
+    private List<ReportRow> BuildPositionLines(
         int year,
         List<(Core.Entities.Member Member, Core.Entities.CommitteePositionRecord PositionRecord)> yearRecords)
     {
@@ -142,7 +157,7 @@ public class CommitteeReportProvider : IReportProvider
             var key = trimmed.ToLowerInvariant();
             if (!positionGroups.TryGetValue(key, out var group))
             {
-                var displayLabel = NamedRoleLabels.TryGetValue(key, out var canonicalLabel) ? canonicalLabel : trimmed;
+                var displayLabel = NamedRoleKeys.Contains(key) ? NamedRoleLabel(key) : trimmed;
                 group = (displayLabel, []);
                 positionGroups[key] = group;
             }
@@ -153,10 +168,10 @@ public class CommitteeReportProvider : IReportProvider
 
         foreach (var roleKey in NamedRoleKeys)
         {
-            var label = NamedRoleLabels[roleKey];
+            var label = NamedRoleLabel(roleKey);
             var memberText = positionGroups.TryGetValue(roleKey, out var group)
                 ? FormatHolders(group.Holders)
-                : "Vacant";
+                : _localizer.Get<ReportsResource>("Reports_Committee_Vacant");
             rows.Add(new ReportRow { Cells = [year.ToString(), label, memberText] });
         }
 
@@ -171,7 +186,7 @@ public class CommitteeReportProvider : IReportProvider
 
         if (generalMembers.Count > 0)
         {
-            rows.Add(new ReportRow { Cells = [year.ToString(), "General Committee Members", JoinAlphabetically(generalMembers)] });
+            rows.Add(new ReportRow { Cells = [year.ToString(), _localizer.Get<ReportsResource>("Reports_Committee_GeneralCommitteeMembers"), JoinAlphabetically(generalMembers)] });
         }
 
         return rows;
@@ -183,19 +198,20 @@ public class CommitteeReportProvider : IReportProvider
     /// 'present')" per holder, ordered by StartDate. Multiple legacy holders (no StartDate to
     /// order by) keep the pre-existing plain alphabetical comma-join.
     /// </summary>
-    private static string FormatHolders(List<(Core.Entities.Member Member, Core.Entities.CommitteePositionRecord PositionRecord)> holders)
+    private string FormatHolders(List<(Core.Entities.Member Member, Core.Entities.CommitteePositionRecord PositionRecord)> holders)
     {
         if (holders.Count == 1)
             return holders[0].Member.SortableFullName;
 
         if (holders.All(h => h.PositionRecord.StartDate.HasValue))
         {
+            var presentLabel = _localizer.Get<ReportsResource>("Reports_Committee_Present");
             return string.Join(", ", holders
                 .OrderBy(h => h.PositionRecord.StartDate)
                 .Select(h =>
                 {
                     var start = h.PositionRecord.StartDate!.Value.ToString("d MMM yyyy");
-                    var end = h.PositionRecord.EndDate.HasValue ? h.PositionRecord.EndDate.Value.ToString("d MMM yyyy") : "present";
+                    var end = h.PositionRecord.EndDate.HasValue ? h.PositionRecord.EndDate.Value.ToString("d MMM yyyy") : presentLabel;
                     return $"{h.Member.SortableFullName} ({start}–{end})";
                 }));
         }

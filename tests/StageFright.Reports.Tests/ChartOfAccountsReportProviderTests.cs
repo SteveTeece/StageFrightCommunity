@@ -24,7 +24,7 @@ public class ChartOfAccountsReportProviderTests
 
     public ChartOfAccountsReportProviderTests()
     {
-        _sut = new ChartOfAccountsReportProvider(_balanceService);
+        _sut = new ChartOfAccountsReportProvider(_balanceService, RealLocalizer.Instance);
     }
 
     [Fact]

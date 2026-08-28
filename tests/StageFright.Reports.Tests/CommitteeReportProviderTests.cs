@@ -26,7 +26,7 @@ public class CommitteeReportProviderTests
 
     public CommitteeReportProviderTests()
     {
-        _sut = new CommitteeReportProvider(_committeePositionRecords, _members);
+        _sut = new CommitteeReportProvider(_committeePositionRecords, _members, RealLocalizer.Instance);
     }
 
     // --- User Story 1: Year-grouped committee overview ---

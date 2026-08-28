@@ -169,6 +169,6 @@ public sealed class V16_ChartOfAccountsBalanceTests : IAsyncLifetime
         var gl = new GLRepository(_db);
         var accounts = new AccountRepository(_db);
         var settings = new SettingsRepository(_db);
-        return new BalanceSheetReportProvider(gl, accounts, settings);
+        return new BalanceSheetReportProvider(gl, accounts, settings, RealLocalizer.Instance);
     }
 }

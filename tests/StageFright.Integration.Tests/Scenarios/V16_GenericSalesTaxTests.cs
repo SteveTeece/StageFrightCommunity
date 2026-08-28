@@ -145,7 +145,7 @@ public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
             TaxCode = TaxCode.Taxable
         }, TestContext.Current.CancellationToken);
 
-        var provider = new TaxSummaryReportProvider(new GLRepository(_db), new AccountRepository(_db), new SettingsRepository(_db));
+        var provider = new TaxSummaryReportProvider(new GLRepository(_db), new AccountRepository(_db), new SettingsRepository(_db), RealLocalizer.Instance);
         var filters = new StageFright.Reports.Models.ReportFilterValues();
         filters.Set("dateFrom", $"{Today.AddDays(-1):yyyy-MM-dd}");
         filters.Set("dateTo", $"{Today.AddDays(1):yyyy-MM-dd}");
@@ -164,7 +164,7 @@ public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
     {
         await SeedSettingsAsync(isTaxApplicable: false);
 
-        var provider = new TaxSummaryReportProvider(new GLRepository(_db), new AccountRepository(_db), new SettingsRepository(_db));
+        var provider = new TaxSummaryReportProvider(new GLRepository(_db), new AccountRepository(_db), new SettingsRepository(_db), RealLocalizer.Instance);
         var result = await provider.GenerateAsync(new StageFright.Reports.Models.ReportFilterValues(), TestContext.Current.CancellationToken);
 
         Assert.Empty(result.Sections);

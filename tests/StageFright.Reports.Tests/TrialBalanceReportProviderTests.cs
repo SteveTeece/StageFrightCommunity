@@ -24,7 +24,7 @@ public class TrialBalanceReportProviderTests
 
     public TrialBalanceReportProviderTests()
     {
-        _sut = new TrialBalanceReportProvider(_gl, _accounts, _settings);
+        _sut = new TrialBalanceReportProvider(_gl, _accounts, _settings, RealLocalizer.Instance);
     }
 
     [Fact]

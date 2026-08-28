@@ -27,7 +27,7 @@ public class MemberAccountSummaryReportProviderTests
 
     public MemberAccountSummaryReportProviderTests()
     {
-        _sut = new MemberAccountSummaryReportProvider(_gl, _members, _balances);
+        _sut = new MemberAccountSummaryReportProvider(_gl, _members, _balances, RealLocalizer.Instance);
     }
 
     [Fact]

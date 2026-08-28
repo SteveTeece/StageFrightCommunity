@@ -1,7 +1,9 @@
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Providers;
 
@@ -18,24 +20,26 @@ public class MemberAccountSummaryReportProvider : IReportProvider
     private readonly IGLRepository _gl;
     private readonly IMemberRepository _members;
     private readonly IMemberBalanceService _balances;
+    private readonly ILocalizer _localizer;
 
-    public MemberAccountSummaryReportProvider(IGLRepository gl, IMemberRepository members, IMemberBalanceService balances)
+    public MemberAccountSummaryReportProvider(IGLRepository gl, IMemberRepository members, IMemberBalanceService balances, ILocalizer localizer)
     {
         _gl = gl;
         _members = members;
         _balances = balances;
+        _localizer = localizer;
     }
 
     public string ReportId => "member-account-summary";
-    public string ReportName => "Member Account Summary";
+    public string ReportName => _localizer.Get<ReportsResource>("Reports_MemberAccountSummary_Name");
     public string ModuleName => "Finance";
     public int DisplayOrder => 40;
 
     public IReadOnlyList<ReportFilterDefinition> Filters =>
     [
-        new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = "From", DefaultValue = $"{DateTime.UtcNow.Year}-01-01" },
-        new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = "To", DefaultValue = $"{DateTime.UtcNow.Year}-12-31" },
-        new ReportFilterDefinition { Key = "includeArchived", Type = ReportFilterType.Boolean, Label = "Show Archived Members", DefaultValue = "false" }
+        new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_Filter_From"), DefaultValue = $"{DateTime.UtcNow.Year}-01-01" },
+        new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_Filter_To"), DefaultValue = $"{DateTime.UtcNow.Year}-12-31" },
+        new ReportFilterDefinition { Key = "includeArchived", Type = ReportFilterType.Boolean, Label = _localizer.Get<ReportsResource>("Reports_MemberAccountSummary_IncludeArchivedFilterLabel"), DefaultValue = "false" }
     ];
 
     public async Task<ReportData> GenerateAsync(ReportFilterValues filters, CancellationToken ct = default)
@@ -93,7 +97,7 @@ public class MemberAccountSummaryReportProvider : IReportProvider
 
             var rows = new List<ReportRow>
             {
-                new() { Cells = ["Opening Balance", string.Empty, string.Empty, string.Empty, FormatCurrency(openingBalance)] }
+                new() { Cells = [_localizer.Get<ReportsResource>("Reports_Common_OpeningBalance"), string.Empty, string.Empty, string.Empty, FormatCurrency(openingBalance)] }
             };
 
             // Only show line items still relevant to what's owed: transactions tied to a fee
@@ -118,22 +122,24 @@ public class MemberAccountSummaryReportProvider : IReportProvider
 
             rows.Add(new ReportRow
             {
-                Cells = ["Closing Balance", string.Empty, string.Empty, string.Empty, FormatCurrency(closingBalance)],
+                Cells = [_localizer.Get<ReportsResource>("Reports_Common_ClosingBalance"), string.Empty, string.Empty, string.Empty, FormatCurrency(closingBalance)],
                 IsEmphasized = true
             });
 
             // Aging is not repeated here — it's already shown per-bucket on the collapsed
             // member summary row (SummaryRow below).
-            var label = member.IsDeleted ? $"{member.SortableFullName} (Archived)" : member.SortableFullName;
+            var label = member.IsDeleted
+                ? _localizer.Get<ReportsResource>("Reports_MemberAccountSummary_ArchivedSuffix", member.SortableFullName)
+                : member.SortableFullName;
             var summaryRow = new ReportRow
             {
                 Cells =
                 [
                     label,
-                    $"Current: {FormatCurrency(aging0)}",
-                    $"30 days: {FormatCurrency(aging30)}",
-                    $"60 days: {FormatCurrency(aging60)}",
-                    $"90+ days: {FormatCurrency(aging90Plus)}",
+                    _localizer.Get<ReportsResource>("Reports_MemberAccountSummary_AgingCurrent", FormatCurrency(aging0)),
+                    _localizer.Get<ReportsResource>("Reports_MemberAccountSummary_Aging30", FormatCurrency(aging30)),
+                    _localizer.Get<ReportsResource>("Reports_MemberAccountSummary_Aging60", FormatCurrency(aging60)),
+                    _localizer.Get<ReportsResource>("Reports_MemberAccountSummary_Aging90Plus", FormatCurrency(aging90Plus)),
                     FormatCurrency(closingBalance)
                 ]
             };
@@ -142,25 +148,25 @@ public class MemberAccountSummaryReportProvider : IReportProvider
 
         return new ReportData
         {
-            Title = "Member Account Summary",
-            SubTitle = $"{from:d MMMM yyyy} – {to:d MMMM yyyy}",
+            Title = _localizer.Get<ReportsResource>("Reports_MemberAccountSummary_Name"),
+            SubTitle = _localizer.Get<ReportsResource>("Reports_Common_DateRangeSubtitle", from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy")),
             GeneratedAt = DateTime.UtcNow,
             Columns =
             [
-                new ReportColumn { Header = "Date / Item", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right },
-                new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right },
-                new ReportColumn { Header = "Balance", Alignment = ReportColumnAlignment.Right }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_MemberAccountSummary_DateItemColumn"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Description"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Debit"), Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Credit"), Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Balance"), Alignment = ReportColumnAlignment.Right }
             ],
             SummaryColumns =
             [
-                new ReportColumn { Header = "Member", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Current", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "30 Days", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "60 Days", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "90+ Days", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Balance", Alignment = ReportColumnAlignment.Right }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_MemberAccountSummary_MemberColumn"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_MemberAccountSummary_CurrentColumn"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_MemberAccountSummary_ThirtyDaysColumn"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_MemberAccountSummary_SixtyDaysColumn"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_MemberAccountSummary_NinetyPlusDaysColumn"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Balance"), Alignment = ReportColumnAlignment.Right }
             ],
             Sections = sections
         };

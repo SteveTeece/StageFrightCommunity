@@ -1,9 +1,11 @@
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Providers;
 
@@ -20,16 +22,18 @@ public class BalanceSheetReportProvider : IReportProvider
     private readonly IGLRepository _gl;
     private readonly IAccountRepository _accounts;
     private readonly ISettingsRepository _settings;
+    private readonly ILocalizer _localizer;
 
-    public BalanceSheetReportProvider(IGLRepository gl, IAccountRepository accounts, ISettingsRepository settings)
+    public BalanceSheetReportProvider(IGLRepository gl, IAccountRepository accounts, ISettingsRepository settings, ILocalizer localizer)
     {
         _gl = gl;
         _accounts = accounts;
         _settings = settings;
+        _localizer = localizer;
     }
 
     public string ReportId => "balance-sheet";
-    public string ReportName => "Statement of Financial Position";
+    public string ReportName => _localizer.Get<ReportsResource>("Reports_BalanceSheet_Name");
     public string ModuleName => "Finance";
     public int DisplayOrder => 25;
 
@@ -40,7 +44,7 @@ public class BalanceSheetReportProvider : IReportProvider
             var (_, fyEnd) = FinancialYearCalculator.GetRange(DateTime.UtcNow, FinancialYearCalculator.DefaultStartMonth);
             return
             [
-                new ReportFilterDefinition { Key = "asAt", Type = ReportFilterType.Date, Label = "As at", DefaultValue = $"{fyEnd:yyyy-MM-dd}" }
+                new ReportFilterDefinition { Key = "asAt", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_BalanceSheet_AsAtFilterLabel"), DefaultValue = $"{fyEnd:yyyy-MM-dd}" }
             ];
         }
     }
@@ -58,43 +62,43 @@ public class BalanceSheetReportProvider : IReportProvider
         var (equityRows, totalEquity) = await SectionAsync(allAccounts, AccountType.Equity, creditNormal: true, asAt, ct);
 
         var accumulatedSurplus = await ComputeAccumulatedSurplusAsync(allAccounts, asAt, ct);
-        equityRows.Add(new ReportRow { Cells = ["Accumulated Surplus", FormatCurrency(accumulatedSurplus)] });
+        equityRows.Add(new ReportRow { Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_AccumulatedSurplus"), FormatCurrency(accumulatedSurplus)] });
         totalEquity += accumulatedSurplus;
 
         return new ReportData
         {
-            Title = "Statement of Financial Position",
-            SubTitle = $"As at {asAt:d MMMM yyyy}",
+            Title = _localizer.Get<ReportsResource>("Reports_BalanceSheet_Name"),
+            SubTitle = _localizer.Get<ReportsResource>("Reports_BalanceSheet_SubTitle", asAt.ToString("d MMMM yyyy")),
             GeneratedAt = DateTime.UtcNow,
             Columns =
             [
-                new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Account"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Amount"), Alignment = ReportColumnAlignment.Right }
             ],
             Sections =
             [
                 new ReportSection
                 {
-                    Heading = "Assets",
+                    Heading = _localizer.Get<ReportsResource>("Reports_Section_Assets"),
                     Rows = assetRows,
-                    Subtotal = new ReportRow { Cells = ["Total Assets", FormatCurrency(totalAssets)], IsEmphasized = true }
+                    Subtotal = new ReportRow { Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_TotalAssets"), FormatCurrency(totalAssets)], IsEmphasized = true }
                 },
                 new ReportSection
                 {
-                    Heading = "Liabilities",
+                    Heading = _localizer.Get<ReportsResource>("Reports_Section_Liabilities"),
                     Rows = liabilityRows,
-                    Subtotal = new ReportRow { Cells = ["Total Liabilities", FormatCurrency(totalLiabilities)], IsEmphasized = true }
+                    Subtotal = new ReportRow { Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_TotalLiabilities"), FormatCurrency(totalLiabilities)], IsEmphasized = true }
                 },
                 new ReportSection
                 {
-                    Heading = "Equity",
+                    Heading = _localizer.Get<ReportsResource>("Reports_Section_Equity"),
                     Rows = equityRows,
-                    Subtotal = new ReportRow { Cells = ["Total Equity", FormatCurrency(totalEquity)], IsEmphasized = true }
+                    Subtotal = new ReportRow { Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_TotalEquity"), FormatCurrency(totalEquity)], IsEmphasized = true }
                 }
             ],
             GrandTotal = new ReportRow
             {
-                Cells = ["Total Liabilities + Equity", FormatCurrency(totalLiabilities + totalEquity)],
+                Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_TotalLiabilitiesPlusEquity"), FormatCurrency(totalLiabilities + totalEquity)],
                 IsEmphasized = true
             }
         };

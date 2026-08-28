@@ -1,8 +1,10 @@
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Providers;
 
@@ -17,19 +19,22 @@ public class BankReconciliationReportProvider : IReportProvider
     private readonly IBankReconciliationRepository _reconciliations;
     private readonly IAccountRepository _accounts;
     private readonly IGLRepository _gl;
+    private readonly ILocalizer _localizer;
 
     public BankReconciliationReportProvider(
         IBankReconciliationRepository reconciliations,
         IAccountRepository accounts,
-        IGLRepository gl)
+        IGLRepository gl,
+        ILocalizer localizer)
     {
         _reconciliations = reconciliations;
         _accounts = accounts;
         _gl = gl;
+        _localizer = localizer;
     }
 
     public string ReportId => "bank-reconciliation";
-    public string ReportName => "Bank Reconciliation";
+    public string ReportName => _localizer.Get<ReportsResource>("Reports_BankReconciliation_Name");
     public string ModuleName => "Finance";
     public int DisplayOrder => 50;
 
@@ -39,7 +44,7 @@ public class BankReconciliationReportProvider : IReportProvider
         {
             Key = "account",
             Type = ReportFilterType.Text,
-            Label = "Account (number or name, blank = all)",
+            Label = _localizer.Get<ReportsResource>("Reports_Filter_AccountNumberOrName"),
             DefaultValue = ""
         }
     ];
@@ -69,17 +74,17 @@ public class BankReconciliationReportProvider : IReportProvider
 
         return new ReportData
         {
-            Title = "Bank Reconciliation",
+            Title = _localizer.Get<ReportsResource>("Reports_BankReconciliation_Name"),
             SubTitle = sections.Count == 0
-                ? "No reconciliations have been recorded."
-                : $"Most recent reconciliation per account, generated {DateTime.UtcNow:d MMMM yyyy}",
+                ? _localizer.Get<ReportsResource>("Reports_BankReconciliation_SubTitleNone")
+                : _localizer.Get<ReportsResource>("Reports_BankReconciliation_SubTitle", DateTime.UtcNow.ToString("d MMMM yyyy")),
             GeneratedAt = DateTime.UtcNow,
             Columns =
             [
-                new ReportColumn { Header = "Date", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Deposit", Alignment = ReportColumnAlignment.Right },
-                new ReportColumn { Header = "Payment", Alignment = ReportColumnAlignment.Right }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Date"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Description"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_BankReconciliation_DepositColumn"), Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_BankReconciliation_PaymentColumn"), Alignment = ReportColumnAlignment.Right }
             ],
             Sections = sections
         };
@@ -93,7 +98,12 @@ public class BankReconciliationReportProvider : IReportProvider
         if (reconciliation is null)
             return Array.Empty<ReportSection>();
 
-        var header = $"{account.Name} ({account.AccountNumber}) — statement to {reconciliation.StatementDate:d MMMM yyyy} [{reconciliation.Status}]";
+        var header = _localizer.Get<ReportsResource>(
+            "Reports_BankReconciliation_AccountHeader",
+            account.Name,
+            account.AccountNumber,
+            reconciliation.StatementDate.ToString("d MMMM yyyy"),
+            _localizer.Enum(reconciliation.Status));
 
         var cleared = reconciliation.Lines
             .Where(l => l.Transaction is not null)
@@ -113,30 +123,30 @@ public class BankReconciliationReportProvider : IReportProvider
         [
             new ReportSection
             {
-                Heading = $"{header} — Cleared Deposits",
+                Heading = _localizer.Get<ReportsResource>("Reports_BankReconciliation_SubHeaderClearedDeposits", header),
                 Rows = deposits.Select(t => TransactionRow(t)).ToList(),
-                Subtotal = SummaryRow("Total cleared deposits", deposits.Sum(t => t.DebitAmount), depositColumn: true)
+                Subtotal = SummaryRow(_localizer.Get<ReportsResource>("Reports_BankReconciliation_TotalClearedDeposits"), deposits.Sum(t => t.DebitAmount), depositColumn: true)
             },
             new ReportSection
             {
-                Heading = $"{header} — Cleared Payments",
+                Heading = _localizer.Get<ReportsResource>("Reports_BankReconciliation_SubHeaderClearedPayments", header),
                 Rows = payments.Select(t => TransactionRow(t)).ToList(),
-                Subtotal = SummaryRow("Total cleared payments", payments.Sum(t => t.CreditAmount), depositColumn: false)
+                Subtotal = SummaryRow(_localizer.Get<ReportsResource>("Reports_BankReconciliation_TotalClearedPayments"), payments.Sum(t => t.CreditAmount), depositColumn: false)
             },
             new ReportSection
             {
-                Heading = $"{header} — Unpresented Items",
+                Heading = _localizer.Get<ReportsResource>("Reports_BankReconciliation_SubHeaderUnpresentedItems", header),
                 Rows = unpresented.Select(t => TransactionRow(t)).ToList()
             },
             new ReportSection
             {
-                Heading = $"{header} — Summary",
+                Heading = _localizer.Get<ReportsResource>("Reports_BankReconciliation_SubHeaderSummary", header),
                 Rows =
                 [
-                    LabelAmountRow("Statement closing balance", reconciliation.StatementClosingBalance),
-                    LabelAmountRow("Opening balance", reconciliation.OpeningBalance),
-                    LabelAmountRow("Cleared movement", clearedTotal),
-                    LabelAmountRow("Difference", difference)
+                    LabelAmountRow(_localizer.Get<ReportsResource>("Reports_BankReconciliation_StatementClosingBalance"), reconciliation.StatementClosingBalance),
+                    LabelAmountRow(_localizer.Get<ReportsResource>("Reports_BankReconciliation_OpeningBalance"), reconciliation.OpeningBalance),
+                    LabelAmountRow(_localizer.Get<ReportsResource>("Reports_BankReconciliation_ClearedMovement"), clearedTotal),
+                    LabelAmountRow(_localizer.Get<ReportsResource>("Reports_BankReconciliation_Difference"), difference)
                 ]
             }
         ];

@@ -179,7 +179,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
             MakeMember("Charlie", MemberStatus.Active, isDeleted: true));
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var provider = new MemberListReportProvider(new MemberRepository(_db), new AgeCalculationService(RealLocalizer.Instance));
+        var provider = new MemberListReportProvider(new MemberRepository(_db), new AgeCalculationService(RealLocalizer.Instance), RealLocalizer.Instance);
         var filters = new ReportFilterValues();
         filters.Set("memberStatus", "Active");
 
@@ -206,7 +206,8 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
 
         var provider = new CommitteeReportProvider(
             new CommitteePositionRecordRepository(_db),
-            new MemberRepository(_db));
+            new MemberRepository(_db),
+            RealLocalizer.Instance);
 
         var filters = new ReportFilterValues();
         filters.Set("memberFilter", "Active Only");
@@ -231,12 +232,12 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
         return new ReportProviderRegistry(
             new IReportProvider[]
             {
-                new IncomeStatementReportProvider(glRepo, catRepo, new SettingsRepository(_db)),
-                new TrialBalanceReportProvider(glRepo, catRepo, new SettingsRepository(_db)),
-                new AccountRegisterReportProvider(glRepo, catRepo),
-                new MemberAccountSummaryReportProvider(glRepo, memberRepo, new MemberBalanceService(memberRepo, feeRepo, glRepo)),
-                new MemberListReportProvider(memberRepo, new AgeCalculationService(RealLocalizer.Instance)),
-                new CommitteeReportProvider(committeeRepo, memberRepo)
+                new IncomeStatementReportProvider(glRepo, catRepo, new SettingsRepository(_db), RealLocalizer.Instance),
+                new TrialBalanceReportProvider(glRepo, catRepo, new SettingsRepository(_db), RealLocalizer.Instance),
+                new AccountRegisterReportProvider(glRepo, catRepo, RealLocalizer.Instance),
+                new MemberAccountSummaryReportProvider(glRepo, memberRepo, new MemberBalanceService(memberRepo, feeRepo, glRepo), RealLocalizer.Instance),
+                new MemberListReportProvider(memberRepo, new AgeCalculationService(RealLocalizer.Instance), RealLocalizer.Instance),
+                new CommitteeReportProvider(committeeRepo, memberRepo, RealLocalizer.Instance)
             },
             NullLogger<ReportProviderRegistry>.Instance);
     }

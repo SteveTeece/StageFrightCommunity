@@ -1,8 +1,10 @@
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Members;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Providers;
 
@@ -15,15 +17,17 @@ public class MemberListReportProvider : IReportProvider
 {
     private readonly IMemberRepository _members;
     private readonly AgeCalculationService _ageCalc;
+    private readonly ILocalizer _localizer;
 
-    public MemberListReportProvider(IMemberRepository members, AgeCalculationService ageCalc)
+    public MemberListReportProvider(IMemberRepository members, AgeCalculationService ageCalc, ILocalizer localizer)
     {
         _members = members;
         _ageCalc = ageCalc;
+        _localizer = localizer;
     }
 
     public string ReportId => "member-list";
-    public string ReportName => "Member List";
+    public string ReportName => _localizer.Get<ReportsResource>("Reports_MemberList_Name");
     public string ModuleName => "Members";
     public int DisplayOrder => 10;
 
@@ -33,8 +37,15 @@ public class MemberListReportProvider : IReportProvider
         {
             Key = "memberStatus",
             Type = ReportFilterType.Select,
-            Label = "Status",
+            Label = _localizer.Get<ReportsResource>("Reports_MemberList_StatusFilterLabel"),
             Options = ["Active", "Inactive", "Archived", "All"],
+            OptionLabels =
+            [
+                _localizer.Enum(MemberStatus.Active),
+                _localizer.Enum(MemberStatus.Inactive),
+                _localizer.Get<ReportsResource>("Reports_Filter_OptionArchived"),
+                _localizer.Get<ReportsResource>("Reports_Filter_OptionAll")
+            ],
             DefaultValue = "Active"
         }
     ];
@@ -68,25 +79,27 @@ public class MemberListReportProvider : IReportProvider
                         m.Email ?? string.Empty,
                         m.JoinDate.ToString("yyyy-MM-dd"),
                         ageStr ?? string.Empty,
-                        m.IsDeleted ? "Archived" : m.Status.ToString()
+                        m.IsDeleted
+                            ? _localizer.Get<ReportsResource>("Reports_Filter_OptionArchived")
+                            : _localizer.Enum(m.Status)
                     ]
                 };
             }).ToList();
 
         return new ReportData
         {
-            Title = "Member List",
-            SubTitle = $"Status: {statusFilter} — {today:d MMMM yyyy}",
+            Title = _localizer.Get<ReportsResource>("Reports_MemberList_Name"),
+            SubTitle = _localizer.Get<ReportsResource>("Reports_MemberList_SubTitle", statusFilter, today.ToString("d MMMM yyyy")),
             GeneratedAt = today,
             Columns =
             [
-                new ReportColumn { Header = "Name", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Address", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Phone", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Email", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Join Date", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Age", Alignment = ReportColumnAlignment.Right },
-                new ReportColumn { Header = "Status", Alignment = ReportColumnAlignment.Left }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_MemberList_NameColumn"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_MemberList_AddressColumn"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_MemberList_PhoneColumn"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_MemberList_EmailColumn"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_MemberList_JoinDateColumn"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_MemberList_AgeColumn"), Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_MemberList_StatusColumn"), Alignment = ReportColumnAlignment.Left }
             ],
             Sections = [new ReportSection { Rows = rows }]
         };

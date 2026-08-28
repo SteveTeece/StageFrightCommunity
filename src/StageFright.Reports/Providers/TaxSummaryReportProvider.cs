@@ -1,8 +1,10 @@
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Providers;
 
@@ -17,16 +19,18 @@ public class TaxSummaryReportProvider : IReportProvider
     private readonly IGLRepository _gl;
     private readonly IAccountRepository _accounts;
     private readonly ISettingsRepository _settings;
+    private readonly ILocalizer _localizer;
 
-    public TaxSummaryReportProvider(IGLRepository gl, IAccountRepository accounts, ISettingsRepository settings)
+    public TaxSummaryReportProvider(IGLRepository gl, IAccountRepository accounts, ISettingsRepository settings, ILocalizer localizer)
     {
         _gl = gl;
         _accounts = accounts;
         _settings = settings;
+        _localizer = localizer;
     }
 
     public string ReportId => "tax-summary";
-    public string ReportName => "Tax Summary";
+    public string ReportName => _localizer.Get<ReportsResource>("Reports_TaxSummary_Name");
     public string ModuleName => "Finance";
     public int DisplayOrder => 60;
 
@@ -37,8 +41,8 @@ public class TaxSummaryReportProvider : IReportProvider
             var (from, to) = GetCurrentQuarterRange(DateTime.UtcNow, FinancialYearCalculator.DefaultStartMonth);
             return
             [
-                new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = "From", DefaultValue = $"{from:yyyy-MM-dd}" },
-                new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = "To", DefaultValue = $"{to:yyyy-MM-dd}" }
+                new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_Filter_From"), DefaultValue = $"{from:yyyy-MM-dd}" },
+                new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_Filter_To"), DefaultValue = $"{to:yyyy-MM-dd}" }
             ];
         }
     }
@@ -51,13 +55,13 @@ public class TaxSummaryReportProvider : IReportProvider
         {
             return new ReportData
             {
-                Title = "Tax Summary",
-                SubTitle = "Sales tax does not apply to this organisation. Enable sales tax in Settings to generate a Tax Summary.",
+                Title = _localizer.Get<ReportsResource>("Reports_TaxSummary_Name"),
+                SubTitle = _localizer.Get<ReportsResource>("Reports_TaxSummary_SubTitleNotApplicable"),
                 GeneratedAt = DateTime.UtcNow,
                 Columns =
                 [
-                    new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
-                    new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right }
+                    new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Description"), Alignment = ReportColumnAlignment.Left },
+                    new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Amount"), Alignment = ReportColumnAlignment.Right }
                 ],
                 Sections = []
             };
@@ -98,26 +102,32 @@ public class TaxSummaryReportProvider : IReportProvider
 
         var rows = new List<ReportRow>
         {
-            DescriptionRow("Total taxable sales", totalSales),
-            DescriptionRow("Total tax-exempt sales", totalTaxExemptSales),
-            DescriptionRow("Tax collected on sales", taxOnSales),
-            DescriptionRow("Tax paid on purchases", taxOnPurchases)
+            DescriptionRow(_localizer.Get<ReportsResource>("Reports_TaxSummary_TotalTaxableSales"), totalSales),
+            DescriptionRow(_localizer.Get<ReportsResource>("Reports_TaxSummary_TotalTaxExemptSales"), totalTaxExemptSales),
+            DescriptionRow(_localizer.Get<ReportsResource>("Reports_TaxSummary_TaxCollectedOnSales"), taxOnSales),
+            DescriptionRow(_localizer.Get<ReportsResource>("Reports_TaxSummary_TaxPaidOnPurchases"), taxOnPurchases)
         };
 
         return new ReportData
         {
-            Title = "Tax Summary",
-            SubTitle = $"Accruals basis — {from:d MMMM yyyy} – {to:d MMMM yyyy}",
+            Title = _localizer.Get<ReportsResource>("Reports_TaxSummary_Name"),
+            SubTitle = _localizer.Get<ReportsResource>("Reports_TaxSummary_SubTitle", from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy")),
             GeneratedAt = DateTime.UtcNow,
             Columns =
             [
-                new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Description"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Amount"), Alignment = ReportColumnAlignment.Right }
             ],
-            Sections = [new ReportSection { Heading = "Tax Summary", Rows = rows }],
+            Sections = [new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_TaxSummary_Name"), Rows = rows }],
             GrandTotal = new ReportRow
             {
-                Cells = [$"Net tax {(net >= 0 ? "payable" : "refundable")}", Math.Abs(net).ToString("F2")],
+                Cells =
+                [
+                    net >= 0
+                        ? _localizer.Get<ReportsResource>("Reports_TaxSummary_NetTaxPayable")
+                        : _localizer.Get<ReportsResource>("Reports_TaxSummary_NetTaxRefundable"),
+                    Math.Abs(net).ToString("F2")
+                ],
                 IsEmphasized = true
             }
         };
