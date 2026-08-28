@@ -771,7 +771,7 @@
       "summary": "US2 T039 + T030: all 11 report providers localised to ReportsResource.resx (~120 en-AU keys verbatim) via the ILocalizer facade - report names, filter labels, titles/subtitles (named placeholders), section headings, column headers, subtotal/total + inline row labels, the GL-imbalance exception message; enum cells (MemberStatus, ReconciliationStatus) via ILocalizer.Enum; new ReportFilterDefinition.OptionLabels carries localised filter option labels while Options stays the invariant token (ReportViewer renders it). Report-label tests + a plugin-under-fr-FR test added. 1733 tests green (Reports 178->195, Integration 186->188). Report RENDERERS (T040) and service exception text (T041) still pending."
     }
   },
-  "currentTask": "T030",
+  "currentTask": "T029",
   "task_summaries": {
     "T001": {
       "status": "DONE",
