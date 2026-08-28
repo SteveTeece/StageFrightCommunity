@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Shared_Action_Save" xml:space="preserve"><value>Enregistrer</value><comment>Generic Save button label.</comment></data>
+  <data name="Shared_Action_Saving" xml:space="preserve"><value>Enregistrement…</value><comment>Generic Save button label while a save is in progress.</comment></data>
+  <data name="Shared_Action_Cancel" xml:space="preserve"><value>Annuler</value><comment>Generic Cancel button label.</comment></data>
+  <data name="Shared_Action_Edit" xml:space="preserve"><value>Modifier</value><comment>Generic Edit button label.</comment></data>
+  <data name="Shared_Common_Loading" xml:space="preserve"><value>Chargement…</value><comment>Generic loading indicator text.</comment></data>
+  <data name="Shared_Table_ActionsColumn" xml:space="preserve"><value>Actions</value><comment>Generic grid column header for a row's action buttons.</comment></data>
+  <data name="Shared_Table_StatusColumn" xml:space="preserve"><value>Statut</value><comment>Generic grid column / field label for a status value.</comment></data>
+  <data name="Shared_Error_Unexpected" xml:space="preserve"><value>Une erreur inattendue s'est produite. Veuillez réessayer.</value><comment>Generic fallback message shown when an operation fails unexpectedly.</comment></data>
+  <data name="Shared_Tile_LoadError" xml:space="preserve"><value>Chargement impossible</value><comment>Generic dashboard-tile message shown when the tile's data fails to load.</comment></data>
+  <data name="Shared_Tile_LoadErrorFor" xml:space="preserve"><value>Impossible de charger {TileTitle}</value><comment>Tile renderer error text. {TileTitle} = the failing tile's title.</comment></data>
+  <data name="Shared_Action_Close" xml:space="preserve"><value>Fermer</value><comment>Generic Close button / dialog-dismiss aria-label.</comment></data>
+  <data name="Shared_Action_Remove" xml:space="preserve"><value>Supprimer</value><comment>Generic Remove button label / aria-label (e.g. remove a row from a bordered list box).</comment></data>
+  <data name="Shared_Action_TryAgain" xml:space="preserve"><value>Réessayer</value><comment>Generic retry button label.</comment></data>
+  <data name="Shared_Action_Apply" xml:space="preserve"><value>Appliquer</value><comment>Generic Apply button label (e.g. apply report filters).</comment></data>
+  <data name="Shared_ListBox_DefaultEmpty" xml:space="preserve"><value>Rien n'a encore été ajouté.</value><comment>Default empty-state text for a bordered list box.</comment></data>
+  <data name="Shared_AddAccount_NamePlaceholder" xml:space="preserve"><value>Nom du compte</value><comment>Placeholder and aria-label for the account-name field in the shared add-account form.</comment></data>
+  <data name="Shared_AddAccount_TypeAriaLabel" xml:space="preserve"><value>Type de compte</value><comment>aria-label for the account-type select in the shared add-account form.</comment></data>
+  <data name="Shared_AddAccount_BankAccountLabel" xml:space="preserve"><value>Compte bancaire / de caisse</value><comment>Checkbox label marking an asset account as a bank/cash account.</comment></data>
+  <data name="Shared_AddAccount_AddingText" xml:space="preserve"><value>Ajout…</value><comment>Add-account submit button text while a create is in progress.</comment></data>
+  <data name="Shared_AddAccount_SubmitButton" xml:space="preserve"><value>Ajouter un compte</value><comment>Default submit button text for the shared add-account form.</comment></data>
+  <data name="Shared_AddAccount_DuplicateError" xml:space="preserve"><value>Un compte nommé « {AccountName} » existe déjà.</value><comment>Shown when the entered account name matches an existing one. {AccountName} = the entered name.</comment></data>
+  <data name="Shared_OpeningBalances_AlreadyPostedWarning" xml:space="preserve"><value>Les soldes d'ouverture ont déjà été comptabilisés. Une nouvelle comptabilisation s'ajoutera aux soldes existants au lieu de les remplacer.</value><comment>Warning shown above the opening-balances entry table when balances already exist.</comment></data>
+  <data name="Shared_OpeningBalances_Instruction" xml:space="preserve"><value>Saisissez le solde de chaque compte à la date du {AsAtDate}. Laissez à zéro les comptes dont vous n'avez pas besoin. Toute différence est automatiquement comptabilisée au compte de capitaux propres d'ouverture.</value><comment>Instruction above the opening-balances entry table. {AsAtDate} = the as-at date, long form.</comment></data>
+  <data name="Shared_OpeningBalances_NumberColumn" xml:space="preserve"><value>Numéro</value><comment>Opening-balances table column header — account number.</comment></data>
+  <data name="Shared_OpeningBalances_AccountColumn" xml:space="preserve"><value>Compte</value><comment>Opening-balances table column header — account name.</comment></data>
+  <data name="Shared_OpeningBalances_TypeColumn" xml:space="preserve"><value>Type</value><comment>Opening-balances table column header — account type.</comment></data>
+  <data name="Shared_OpeningBalances_BalanceColumn" xml:space="preserve"><value>Solde</value><comment>Opening-balances table column header — the entered balance.</comment></data>
+  <data name="Shared_OpeningBalances_BalanceForAriaLabel" xml:space="preserve"><value>Solde pour {AccountName}</value><comment>aria-label on an opening-balance amount input. {AccountName} = the account name.</comment></data>
+  <data name="Shared_OpeningBalances_PlugRow" xml:space="preserve"><value>Ajustement des capitaux propres d'ouverture</value><comment>Opening-balances table footer row label for the balancing equity plug.</comment></data>
+  <data name="Shared_OpeningBalances_PostingText" xml:space="preserve"><value>Comptabilisation…</value><comment>Opening-balances submit button text while a post is in progress.</comment></data>
+  <data name="Shared_OpeningBalances_SubmitButton" xml:space="preserve"><value>Comptabiliser les soldes d'ouverture</value><comment>Default submit button text for the shared opening-balances form.</comment></data>
+  <data name="Shared_Forgiveness_Title" xml:space="preserve"><value>Remise des cotisations à la réactivation</value><comment>Heading of the reactivation fee-forgiveness dialog.</comment></data>
+  <data name="Shared_Forgiveness_LoadingText" xml:space="preserve"><value>Chargement des cotisations…</value><comment>Status text while the forgiveness dialog loads outstanding fees.</comment></data>
+  <data name="Shared_Forgiveness_NoFees" xml:space="preserve"><value>Aucune cotisation impayée à remettre pour ce membre.</value><comment>Shown when the member has no outstanding fees.</comment></data>
+  <data name="Shared_Forgiveness_Instruction" xml:space="preserve"><value>Les cotisations des années antérieures sont présélectionnées pour la remise. Décochez celles que vous souhaitez conserver.</value><comment>Instruction text in the forgiveness dialog.</comment></data>
+  <data name="Shared_Forgiveness_PriorYearBadge" xml:space="preserve"><value>Année antérieure</value><comment>Badge marking a fee as being from a prior year.</comment></data>
+  <data name="Shared_Forgiveness_FeeRow" xml:space="preserve"><value>{FeeDate} — {Amount}</value><comment>A selectable fee row in the forgiveness dialog. {FeeDate} = fee date, {Amount} = fee amount as AUD.</comment></data>
+  <data name="Shared_Forgiveness_ApplyingText" xml:space="preserve"><value>Application…</value><comment>Forgiveness submit button text while applying.</comment></data>
+  <data name="Shared_Forgiveness_ForgiveButton_One" xml:space="preserve"><value>Remettre {Count} cotisation</value><comment>Forgiveness submit button label, singular. {Count} = number of selected fees.</comment></data>
+  <data name="Shared_Forgiveness_ForgiveButton_Other" xml:space="preserve"><value>Remettre {Count} cotisations</value><comment>Forgiveness submit button label, plural. {Count} = number of selected fees.</comment></data>
+  <data name="Shared_Forgiveness_LoadError" xml:space="preserve"><value>Échec du chargement des cotisations : {Detail}</value><comment>Shown when loading fees for forgiveness fails. {Detail} = the error detail.</comment></data>
+  <data name="Shared_Forgiveness_ApplyError" xml:space="preserve"><value>Échec de l'application de la remise : {Detail}</value><comment>Shown when applying forgiveness fails. {Detail} = the error detail.</comment></data>
+  <data name="Shared_Report_GeneratingText" xml:space="preserve"><value>Génération du rapport…</value><comment>Status text while a report is being generated.</comment></data>
+  <data name="Shared_Report_GenerateFailedHeading" xml:space="preserve"><value>Impossible de générer le rapport.</value><comment>Bold lead-in of the report-generation error alert.</comment></data>
+  <data name="Shared_Report_GeneratedAt" xml:space="preserve"><value>Généré : {Timestamp} UTC</value><comment>Report viewer — when the report was generated. {Timestamp} = date and time.</comment></data>
+  <data name="Shared_Report_ActionsAriaLabel" xml:space="preserve"><value>Actions du rapport</value><comment>aria-label on the report action button group.</comment></data>
+  <data name="Shared_Report_PrintButton" xml:space="preserve"><value>Imprimer / PDF</value><comment>Report viewer button — print / save as PDF.</comment></data>
+  <data name="Shared_Report_ExportCsvButton" xml:space="preserve"><value>Exporter en CSV</value><comment>Report viewer button — export as CSV.</comment></data>
+  <data name="Shared_Report_RefreshButton" xml:space="preserve"><value>Actualiser</value><comment>Report viewer button — regenerate the report.</comment></data>
+  <data name="Shared_Report_RowsRange" xml:space="preserve"><value>Lignes {From}–{To} sur {Total}</value><comment>Report viewer paging summary. {From}/{To} = visible row range, {Total} = total rows.</comment></data>
+  <data name="Shared_Report_PrevPage" xml:space="preserve"><value>‹ Préc.</value><comment>Report viewer — previous page button.</comment></data>
+  <data name="Shared_Report_NextPage" xml:space="preserve"><value>Suiv. ›</value><comment>Report viewer — next page button.</comment></data>
+  <data name="Shared_Report_PrevPageAriaLabel" xml:space="preserve"><value>Page précédente</value><comment>aria-label on the report viewer previous-page button.</comment></data>
+  <data name="Shared_Report_NextPageAriaLabel" xml:space="preserve"><value>Page suivante</value><comment>aria-label on the report viewer next-page button.</comment></data>
+  <data name="Shared_Report_PageOf" xml:space="preserve"><value>Page {Current} sur {Total}</value><comment>Report viewer paging indicator. {Current} = current page, {Total} = total pages.</comment></data>
+  <data name="Shared_Report_PageNavAriaLabel" xml:space="preserve"><value>Navigation dans les pages du rapport</value><comment>aria-label on the report viewer pagination nav.</comment></data>
+  <data name="Shared_Report_CancelledError" xml:space="preserve"><value>La génération du rapport a été annulée.</value><comment>Shown when report generation is cancelled by the user.</comment></data>
+  <data name="Shared_Report_GenerateError" xml:space="preserve"><value>Une erreur s'est produite lors de la génération du rapport. Veuillez réessayer. ({ErrorType})</value><comment>Shown when report generation throws. {ErrorType} = the exception type name.</comment></data>
+  <data name="Shared_Report_PdfError" xml:space="preserve"><value>Impossible de générer le PDF. Veuillez réessayer.</value><comment>Shown when rendering the report PDF fails.</comment></data>
+  <data name="Shared_Report_CsvError" xml:space="preserve"><value>Impossible d'exporter le CSV. Veuillez réessayer.</value><comment>Shown when exporting the report CSV fails.</comment></data>
+  <data name="Shared_StartupError_Heading" xml:space="preserve"><value>Erreur de base de données</value><comment>Heading on the startup database-error page.</comment></data>
+  <data name="Shared_StartupError_Body" xml:space="preserve"><value>StageFright Community n'a pas pu ouvrir sa base de données. Le fichier est peut-être corrompu ou inaccessible.</value><comment>Body text on the startup database-error page.</comment></data>
+  <data name="Shared_StartupError_DbLocationLabel" xml:space="preserve"><value>Emplacement de la base de données :</value><comment>Label preceding the database file path on the startup error page.</comment></data>
+  <data name="Shared_StartupError_OpenFolderButton" xml:space="preserve"><value>Ouvrir l'emplacement du fichier</value><comment>Button — open the folder containing the database file.</comment></data>
+  <data name="Shared_StartupError_RecreateButton" xml:space="preserve"><value>Créer une nouvelle base de données</value><comment>Button — delete the corrupt database and start fresh.</comment></data>
+  <data name="Shared_StartupError_RecreatingText" xml:space="preserve"><value>Création de la nouvelle base de données…</value><comment>Recreate button text while the new database is being created.</comment></data>
+  <data name="Shared_StartupError_OpenFolderError" xml:space="preserve"><value>Impossible d'ouvrir le dossier : {Detail}</value><comment>Shown when opening the database folder fails. {Detail} = error detail.</comment></data>
+  <data name="Shared_StartupError_DeleteError" xml:space="preserve"><value>Impossible de supprimer le fichier de base de données : {Detail}</value><comment>Shown when deleting the corrupt database fails. {Detail} = error detail.</comment></data>
+  <data name="Shared_ReportsPage_Title" xml:space="preserve"><value>Rapports — StageFright Community</value><comment>Browser tab title — Reports page.</comment></data>
+  <data name="Shared_ReportsPage_Heading" xml:space="preserve"><value>Rapports</value><comment>Reports page heading.</comment></data>
+  <data name="Shared_ReportsPage_NotFound" xml:space="preserve"><value>Rapport « {ReportId} » introuvable.</value><comment>Shown when a report id in the URL has no provider. {ReportId} = the id.</comment></data>
+  <data name="Shared_ReportsPage_SelectPrompt" xml:space="preserve"><value>Sélectionnez un rapport dans le menu de navigation pour le générer.</value><comment>Shown on the Reports page when no report is selected.</comment></data>
+  <data name="Shared_App_ErrorHeading" xml:space="preserve"><value>Une erreur s'est produite</value><comment>Heading of the router error-boundary panel shown when a page throws.</comment></data>
+  <data name="Shared_App_ErrorDismissButton" xml:space="preserve"><value>Ignorer et réessayer</value><comment>Button on the router error-boundary panel — clears the error and re-renders the page.</comment></data>
+  <data name="Shared_App_NotFoundTitle" xml:space="preserve"><value>Introuvable — StageFright Community</value><comment>Browser tab title for an unrouted URL.</comment></data>
+  <data name="Shared_App_NotFoundHeading" xml:space="preserve"><value>Page introuvable</value><comment>Heading shown when a URL matches no page.</comment></data>
+  <data name="Shared_App_NotFoundBody" xml:space="preserve"><value>La page demandée est introuvable.</value><comment>Body text on the "page not found" screen; followed by the return-to-dashboard link.</comment></data>
+  <data name="Shared_App_NotFoundReturnLink" xml:space="preserve"><value>Retour au tableau de bord</value><comment>Hyperlink caption on the "page not found" screen — navigates to the dashboard.</comment></data>
+</root>

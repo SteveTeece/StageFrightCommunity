@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Events_Tile_Title" xml:space="preserve"><value>Événements</value><comment>Dashboard tile heading for the Events module.</comment></data>
+  <data name="Events_Tile_ActionText" xml:space="preserve"><value>Voir les événements</value><comment>Action link on the Events dashboard tile.</comment></data>
+  <data name="Events_Tile_UpcomingLabel" xml:space="preserve"><value>À venir</value><comment>Events tile stat label — count of upcoming events.</comment></data>
+  <data name="Events_Tile_NextLabel" xml:space="preserve"><value>Prochain</value><comment>Events tile stat label — date of the next event.</comment></data>
+  <data name="Events_Tile_LastParticipationLabel" xml:space="preserve"><value>Dernière participation</value><comment>Events tile note label preceding the most recent recorded participation rate.</comment></data>
+  <data name="Events_Tile_ParticipationDetail" xml:space="preserve"><value>{Participated} sur {Total} ({Rate} %)</value><comment>Events tile — recorded participation. {Participated} = members who participated, {Total} = participation records, {Rate} = rate to whole number.</comment></data>
+  <data name="Events_Tile_ParticipationRate" xml:space="preserve"><value>{Rate} %</value><comment>Events tile — recorded participation rate only. {Rate} = rate to whole number.</comment></data>
+  <data name="Events_Tile_NoParticipation" xml:space="preserve"><value>Aucune participation saisie pour le moment</value><comment>Events tile note shown when no participation has been recorded.</comment></data>
+  <data name="Events_Status_Recorded" xml:space="preserve"><value>Saisi</value><comment>Badge — an event/AGM whose outcome has been recorded.</comment></data>
+  <data name="Events_Status_Scheduled" xml:space="preserve"><value>Planifié</value><comment>Badge — an event/AGM that is scheduled but not yet recorded.</comment></data>
+  <data name="Events_Status_NotRecorded" xml:space="preserve"><value>Non saisi</value><comment>Shown when participation has not been recorded.</comment></data>
+  <data name="Events_Status_RecordedText" xml:space="preserve"><value>Saisi</value><comment>Plain-text 'Recorded' shown in an Actions column once recording is done.</comment></data>
+  <data name="Events_List_PageTitle" xml:space="preserve"><value>Événements — StageFright Community</value><comment>Browser tab title — Events list.</comment></data>
+  <data name="Events_List_Heading" xml:space="preserve"><value>Événements</value><comment>Events list page heading.</comment></data>
+  <data name="Events_List_ScheduleButton" xml:space="preserve"><value>Planifier un événement</value><comment>Button opening the schedule-event form.</comment></data>
+  <data name="Events_List_SearchPlaceholder" xml:space="preserve"><value>Rechercher par date, type ou notes…</value><comment>Events search box placeholder.</comment></data>
+  <data name="Events_List_SearchAriaLabel" xml:space="preserve"><value>Rechercher des événements</value><comment>aria-label on the Events search input.</comment></data>
+  <data name="Events_List_LoadingText" xml:space="preserve"><value>Chargement des événements…</value><comment>Status text while the Events list loads.</comment></data>
+  <data name="Events_List_EmptyNone" xml:space="preserve"><value>Aucun événement planifié pour le moment.</value><comment>Shown when there are no events.</comment></data>
+  <data name="Events_List_NoMatch" xml:space="preserve"><value>Aucun événement ne correspond à « {SearchTerm} ».</value><comment>Shown when a search returns nothing. {SearchTerm} = typed text.</comment></data>
+  <data name="Events_List_DateColumn" xml:space="preserve"><value>Date</value><comment>Events grid column — date.</comment></data>
+  <data name="Events_List_EventTypeColumn" xml:space="preserve"><value>Type d'événement</value><comment>Events grid column — event type.</comment></data>
+  <data name="Events_List_NotesColumn" xml:space="preserve"><value>Notes</value><comment>Events grid column — notes.</comment></data>
+  <data name="Events_List_RecordButton" xml:space="preserve"><value>Saisir</value><comment>Button — record an AGM outcome.</comment></data>
+  <data name="Events_List_PrintButton" xml:space="preserve"><value>Imprimer</value><comment>Button — print an attendance sheet/report.</comment></data>
+  <data name="Events_List_PrintAgmReportAriaLabel" xml:space="preserve"><value>Imprimer le rapport de présence du {Date}</value><comment>aria-label. {Date} = AGM date.</comment></data>
+  <data name="Events_List_RecordParticipationButton" xml:space="preserve"><value>Saisir la participation</value><comment>Button — record event participation.</comment></data>
+  <data name="Events_List_RecordParticipationAriaLabel" xml:space="preserve"><value>Saisir la participation du {Date}</value><comment>aria-label. {Date} = event date.</comment></data>
+  <data name="Events_List_PrintSheetAriaLabel" xml:space="preserve"><value>Imprimer la feuille de présence du {Date}</value><comment>aria-label. {Date} = event date.</comment></data>
+  <data name="Events_List_LoadError" xml:space="preserve"><value>Échec du chargement des événements : {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_List_PrintNoMembers" xml:space="preserve"><value>Aucun membre actif trouvé — rien à imprimer.</value><comment>Shown when there are no active members to print.</comment></data>
+  <data name="Events_List_PrintSheetError" xml:space="preserve"><value>Impossible d'imprimer la feuille de présence. Veuillez réessayer.</value><comment>Shown when printing the sheet fails.</comment></data>
+  <data name="Events_Form_PageTitle" xml:space="preserve"><value>Planifier un événement — StageFright Community</value><comment>Browser tab title — schedule event.</comment></data>
+  <data name="Events_Form_Heading" xml:space="preserve"><value>Planifier un événement</value><comment>Schedule-event form heading.</comment></data>
+  <data name="Events_Form_DateLabel" xml:space="preserve"><value>Date</value><comment>Schedule-event form — date label.</comment></data>
+  <data name="Events_Form_EventTypeLabel" xml:space="preserve"><value>Type d'événement</value><comment>Schedule-event form — event type label.</comment></data>
+  <data name="Events_Form_LoadingTypesText" xml:space="preserve"><value>Chargement des types d'événement…</value><comment>Shown while event types load.</comment></data>
+  <data name="Events_Form_SelectTypeOption" xml:space="preserve"><value>— Sélectionner un type d'événement —</value><comment>Placeholder option in the event-type select.</comment></data>
+  <data name="Events_Form_NotesLabel" xml:space="preserve"><value>Notes</value><comment>Schedule-event form — notes label.</comment></data>
+  <data name="Events_Form_SubmitButton" xml:space="preserve"><value>Planifier</value><comment>Schedule-event form submit button.</comment></data>
+  <data name="Events_Form_LoadTypesError" xml:space="preserve"><value>Échec du chargement des types d'événement : {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_Form_SaveError" xml:space="preserve"><value>Une erreur inattendue s'est produite : {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_Detail_PageTitleFallback" xml:space="preserve"><value>Événement</value><comment>Browser tab title fallback before the event loads.</comment></data>
+  <data name="Events_Detail_BackButton" xml:space="preserve"><value>Retour aux événements</value><comment>Link back to the Events list.</comment></data>
+  <data name="Events_Detail_PrintSheetButton" xml:space="preserve"><value>Imprimer la feuille de présence</value><comment>Button — print the attendance sheet.</comment></data>
+  <data name="Events_Detail_PrintSheetAriaLabel" xml:space="preserve"><value>Imprimer la feuille de présence</value><comment>aria-label on the print-attendance-sheet button.</comment></data>
+  <data name="Events_Detail_EventTypeLabel" xml:space="preserve"><value>Type d'événement</value><comment>Event detail — event type term.</comment></data>
+  <data name="Events_Detail_NotesLabel" xml:space="preserve"><value>Notes</value><comment>Event detail — notes term.</comment></data>
+  <data name="Events_Detail_ParticipationRateLabel" xml:space="preserve"><value>Taux de participation</value><comment>Event detail — participation rate term.</comment></data>
+  <data name="Events_Detail_AttendanceSection" xml:space="preserve"><value>Présence</value><comment>Event detail — attendance section heading / aria-label.</comment></data>
+  <data name="Events_Detail_MemberColumn" xml:space="preserve"><value>Membre</value><comment>Event detail attendance grid — member column.</comment></data>
+  <data name="Events_Detail_ParticipatedColumn" xml:space="preserve"><value>A participé</value><comment>Event detail attendance grid — participated column.</comment></data>
+  <data name="Events_Detail_ParticipatedYes" xml:space="preserve"><value>Oui</value><comment>Badge — the member participated.</comment></data>
+  <data name="Events_Detail_ParticipatedYesAriaLabel" xml:space="preserve"><value>A participé</value><comment>aria-label — the member participated.</comment></data>
+  <data name="Events_Detail_ParticipatedNo" xml:space="preserve"><value>Non</value><comment>Badge — the member did not participate.</comment></data>
+  <data name="Events_Detail_ParticipatedNoAriaLabel" xml:space="preserve"><value>N'a pas participé</value><comment>aria-label — the member did not participate.</comment></data>
+  <data name="Events_Detail_NoAttendanceRecords" xml:space="preserve"><value>Aucun enregistrement de présence trouvé.</value><comment>Shown when a recorded event has no attendance rows.</comment></data>
+  <data name="Events_Detail_ParticipationNotRecorded" xml:space="preserve"><value>La participation n'a pas encore été saisie pour cet événement.</value><comment>Shown when participation is not recorded.</comment></data>
+  <data name="Events_Detail_RecordParticipationButton" xml:space="preserve"><value>Saisir la participation</value><comment>Button — record participation.</comment></data>
+  <data name="Events_Detail_NotFoundError" xml:space="preserve"><value>Événement introuvable.</value><comment>Shown when the event id does not exist.</comment></data>
+  <data name="Events_Detail_LoadError" xml:space="preserve"><value>Échec du chargement des détails de l'événement : {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_Detail_PrintNoMembers" xml:space="preserve"><value>Aucun membre actif trouvé — rien à imprimer.</value><comment>Shown when there are no active members to print.</comment></data>
+  <data name="Events_Detail_PrintSheetError" xml:space="preserve"><value>Impossible d'imprimer la feuille de présence. Veuillez réessayer.</value><comment>Shown when printing the sheet fails.</comment></data>
+  <data name="Events_Participation_PageTitle" xml:space="preserve"><value>Saisir la participation — StageFright Community</value><comment>Browser tab title — record participation.</comment></data>
+  <data name="Events_Participation_Heading" xml:space="preserve"><value>Saisir la participation</value><comment>Record-participation page heading.</comment></data>
+  <data name="Events_Participation_Subtitle" xml:space="preserve"><value>{Date} — {TypeName}</value><comment>Sub-heading. {Date} = event date, {TypeName} = event type.</comment></data>
+  <data name="Events_Participation_AlreadyRecordedNotice" xml:space="preserve"><value>La participation a déjà été saisie pour cet événement. Les enregistrements sont immuables une fois enregistrés.</value><comment>Shown when participation is already recorded.</comment></data>
+  <data name="Events_Participation_BackButton" xml:space="preserve"><value>Retour aux événements</value><comment>Link back to Events.</comment></data>
+  <data name="Events_Participation_FutureNotice" xml:space="preserve"><value>La participation pourra être saisie à partir du {Date}.</value><comment>Shown for a future event. {Date} = event date, long form.</comment></data>
+  <data name="Events_Participation_LoadingMembersText" xml:space="preserve"><value>Chargement des membres…</value><comment>Status text while members load.</comment></data>
+  <data name="Events_Participation_NoActiveMembers" xml:space="preserve"><value>Aucun membre actif trouvé. Ajoutez des membres avant de saisir la participation.</value><comment>Shown when there are no active members.</comment></data>
+  <data name="Events_Participation_MemberColumn" xml:space="preserve"><value>Membre</value><comment>Grid column — member.</comment></data>
+  <data name="Events_Participation_ParticipatedColumn" xml:space="preserve"><value>A participé</value><comment>Grid column — participated.</comment></data>
+  <data name="Events_Participation_SelectAllAriaLabel" xml:space="preserve"><value>Sélectionner tous les participants</value><comment>aria-label on the select-all checkbox.</comment></data>
+  <data name="Events_Participation_SelectAllLabel" xml:space="preserve"><value>Tout sélectionner</value><comment>Label beside the select-all checkbox.</comment></data>
+  <data name="Events_Participation_RowAriaLabel" xml:space="preserve"><value>{MemberName} a participé</value><comment>aria-label on a row checkbox. {MemberName} = member name.</comment></data>
+  <data name="Events_Participation_SaveButton" xml:space="preserve"><value>Enregistrer la participation</value><comment>Button — save participation.</comment></data>
+  <data name="Events_Participation_NotFoundError" xml:space="preserve"><value>Événement introuvable.</value><comment>Shown when the event id does not exist.</comment></data>
+  <data name="Events_Participation_LoadError" xml:space="preserve"><value>Échec du chargement de la grille de participation : {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_Participation_SaveError" xml:space="preserve"><value>Échec de l'enregistrement de la participation : {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_Agm_ListPageTitle" xml:space="preserve"><value>AGA — StageFright Community</value><comment>Browser tab title — AGM list.</comment></data>
+  <data name="Events_Agm_ListHeading" xml:space="preserve"><value>AGA</value><comment>AGM list heading.</comment></data>
+  <data name="Events_Agm_ListEmptyNotice" xml:space="preserve"><value>Aucune AGA n'a encore été enregistrée.</value><comment>Shown when there are no AGMs.</comment></data>
+  <data name="Events_Agm_ScheduleButton" xml:space="preserve"><value>Planifier une AGA</value><comment>Button opening the schedule-AGM form.</comment></data>
+  <data name="Events_Agm_DateColumn" xml:space="preserve"><value>Date</value><comment>AGM grid column — date.</comment></data>
+  <data name="Events_Agm_AttendanceColumn" xml:space="preserve"><value>Présence</value><comment>AGM grid column — attendance count.</comment></data>
+  <data name="Events_Agm_AttendanceValue" xml:space="preserve"><value>{Attended} sur {Total}</value><comment>AGM attendance summary. {Attended}/{Total} = counts.</comment></data>
+  <data name="Events_Agm_RecordButton" xml:space="preserve"><value>Saisir</value><comment>Button — record an AGM.</comment></data>
+  <data name="Events_Agm_PrintButton" xml:space="preserve"><value>Imprimer</value><comment>Button — print AGM attendance report.</comment></data>
+  <data name="Events_Agm_PrintReportAriaLabel" xml:space="preserve"><value>Imprimer le rapport de présence du {Date}</value><comment>aria-label. {Date} = AGM date.</comment></data>
+  <data name="Events_Agm_PrintError" xml:space="preserve"><value>Impossible d'imprimer le rapport de présence. Veuillez réessayer.</value><comment>Shown when printing the AGM report fails.</comment></data>
+  <data name="Events_Agm_DetailPageTitle" xml:space="preserve"><value>AGA — StageFright Community</value><comment>Browser tab title — AGM detail.</comment></data>
+  <data name="Events_Agm_NotFoundNotice" xml:space="preserve"><value>AGA introuvable.</value><comment>Shown when the AGM id does not exist.</comment></data>
+  <data name="Events_Agm_BackButton" xml:space="preserve"><value>Retour aux AGA</value><comment>Link back to the AGM list.</comment></data>
+  <data name="Events_Agm_DetailHeading" xml:space="preserve"><value>AGA — {Date}</value><comment>AGM detail heading. {Date} = AGM date.</comment></data>
+  <data name="Events_Agm_PrintReportButton" xml:space="preserve"><value>Imprimer le rapport de présence</value><comment>Button — print the AGM attendance report.</comment></data>
+  <data name="Events_Agm_PrintReportButtonAriaLabel" xml:space="preserve"><value>Imprimer le rapport de présence</value><comment>aria-label on the print-attendance-report button.</comment></data>
+  <data name="Events_Agm_PrintResultsButton" xml:space="preserve"><value>Imprimer les résultats de l'AGA</value><comment>Button — print the AGM results report.</comment></data>
+  <data name="Events_Agm_PrintResultsButtonAriaLabel" xml:space="preserve"><value>Imprimer le rapport des résultats de l'AGA</value><comment>aria-label on the print-AGM-results button.</comment></data>
+  <data name="Events_Agm_ArchiveButton" xml:space="preserve"><value>Archiver</value><comment>Button — archive the AGM.</comment></data>
+  <data name="Events_Agm_ArchivingText" xml:space="preserve"><value>Archivage…</value><comment>Archive button text while archiving.</comment></data>
+  <data name="Events_Agm_RecordAttendanceLink" xml:space="preserve"><value>Saisir les présences et les élections</value><comment>Link — record the AGM's attendance and elections.</comment></data>
+  <data name="Events_Agm_AttendanceHeading" xml:space="preserve"><value>Présence</value><comment>AGM detail — attendance section heading.</comment></data>
+  <data name="Events_Agm_AttendanceSummary" xml:space="preserve"><value>{Attended} membres présents sur {Total}.</value><comment>{Attended}/{Total} = counts.</comment></data>
+  <data name="Events_Agm_ElectedPositionsHeading" xml:space="preserve"><value>Postes élus</value><comment>AGM detail — elected positions heading.</comment></data>
+  <data name="Events_Agm_NoPositionsRecorded" xml:space="preserve"><value>Aucun poste enregistré.</value><comment>Shown when no positions were recorded for an AGM.</comment></data>
+  <data name="Events_Agm_GeneralCommitteeHeading" xml:space="preserve"><value>Membre du comité général</value><comment>AGM detail — general committee members heading.</comment></data>
+  <data name="Events_Agm_UnknownPosition" xml:space="preserve"><value>Poste inconnu</value><comment>Fallback label for a committee position with no name.</comment></data>
+  <data name="Events_Agm_HolderPresent" xml:space="preserve"><value>en cours</value><comment>Used as the end of a still-open committee term ("1 Jan 2024–present").</comment></data>
+  <data name="Events_Agm_HolderTerm" xml:space="preserve"><value>{Name} ({Start}–{End})</value><comment>One dated holder of a multi-holder position. {Name} = member, {Start}/{End} = term dates.</comment></data>
+  <data name="Events_Agm_PrintNoRecords" xml:space="preserve"><value>Aucun enregistrement de présence trouvé — rien à imprimer.</value><comment>Shown when there are no attendance records to print.</comment></data>
+  <data name="Events_Agm_PrintResultsError" xml:space="preserve"><value>Impossible d'imprimer le rapport des résultats de l'AGA. Veuillez réessayer.</value><comment>Shown when printing the AGM results fails.</comment></data>
+  <data name="Events_Agm_SchedulePageTitle" xml:space="preserve"><value>Planifier une AGA — StageFright Community</value><comment>Browser tab title — schedule AGM.</comment></data>
+  <data name="Events_Agm_ScheduleHeading" xml:space="preserve"><value>Planifier une AGA</value><comment>Schedule-AGM form heading.</comment></data>
+  <data name="Events_Agm_MeetingDateLabel" xml:space="preserve"><value>Date de la réunion</value><comment>Schedule-AGM form — meeting date label.</comment></data>
+  <data name="Events_Agm_NotesLabel" xml:space="preserve"><value>Notes</value><comment>Schedule-AGM form — notes label.</comment></data>
+  <data name="Events_Agm_ScheduleSubmitButton" xml:space="preserve"><value>Planifier</value><comment>Schedule-AGM form submit button.</comment></data>
+  <data name="Events_Agm_ScheduleError" xml:space="preserve"><value>Échec de la planification de l'AGA : {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_Agm_RecordPageTitle" xml:space="preserve"><value>Saisir l'AGA — StageFright Community</value><comment>Browser tab title — record AGM.</comment></data>
+  <data name="Events_Agm_RecordHeading" xml:space="preserve"><value>Saisir l'AGA</value><comment>Record-AGM page heading.</comment></data>
+  <data name="Events_Agm_GuardNotFound" xml:space="preserve"><value>AGA introuvable.</value><comment>Guard — the AGM id does not exist.</comment></data>
+  <data name="Events_Agm_GuardAlreadyRecorded" xml:space="preserve"><value>Cette AGA a déjà été saisie.</value><comment>Guard — the AGM is already recorded.</comment></data>
+  <data name="Events_Agm_GuardFutureDate" xml:space="preserve"><value>La date de cette AGA n'est pas encore arrivée.</value><comment>Guard — the AGM date is in the future.</comment></data>
+  <data name="Events_Agm_MeetingDateText" xml:space="preserve"><value>Date de la réunion : {Date}</value><comment>Record-AGM — the meeting date. {Date} = AGM date.</comment></data>
+  <data name="Events_Agm_CommitteeElectionsHeading" xml:space="preserve"><value>Élections du comité</value><comment>Record-AGM — committee elections heading.</comment></data>
+  <data name="Events_Agm_VacantOption" xml:space="preserve"><value>Vacant</value><comment>Committee-election select — the vacant option.</comment></data>
+  <data name="Events_Agm_GeneralCommitteeMembersHeading" xml:space="preserve"><value>Membres du comité général</value><comment>Record-AGM — general committee members heading.</comment></data>
+  <data name="Events_Agm_SelectedCount" xml:space="preserve"><value>Sélectionnés : {Count}</value><comment>Record-AGM — count of selected general committee members. {Count} = number.</comment></data>
+  <data name="Events_Agm_SelectedOfTarget" xml:space="preserve"><value>sur {Count} sièges visés</value><comment>Record-AGM — target seats suffix. {Count} = target.</comment></data>
+  <data name="Events_Agm_RecordSubmitButton" xml:space="preserve"><value>Enregistrer l'AGA</value><comment>Record-AGM form submit button.</comment></data>
+  <data name="Events_Agm_DuplicateAssignmentError" xml:space="preserve"><value>Un membre ne peut pas occuper plus d'une fonction au comité issue de la même AGA.</value><comment>Validation — a member was assigned two positions.</comment></data>
+  <data name="Events_Agm_RecordSaveError" xml:space="preserve"><value>Échec de l'enregistrement de l'AGA : {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_SpecialElection_PageTitle" xml:space="preserve"><value>Saisir une élection partielle — StageFright Community</value><comment>Browser tab title — special election.</comment></data>
+  <data name="Events_SpecialElection_Heading" xml:space="preserve"><value>Saisir une élection partielle</value><comment>Special election page heading.</comment></data>
+  <data name="Events_SpecialElection_NoPositionsNotice" xml:space="preserve"><value>Aucun poste actuel au comité trouvé. Saisissez d'abord une AGA.</value><comment>Shown when there are no current positions.</comment></data>
+  <data name="Events_SpecialElection_PositionLabel" xml:space="preserve"><value>Poste à remplacer</value><comment>Special election — outgoing position label.</comment></data>
+  <data name="Events_SpecialElection_SelectPositionOption" xml:space="preserve"><value>Sélectionner un poste</value><comment>Placeholder option — outgoing position select.</comment></data>
+  <data name="Events_SpecialElection_IncomingMemberLabel" xml:space="preserve"><value>Membre entrant</value><comment>Special election — incoming member label.</comment></data>
+  <data name="Events_SpecialElection_SelectMemberOption" xml:space="preserve"><value>Sélectionner un membre</value><comment>Placeholder option — incoming member select.</comment></data>
+  <data name="Events_SpecialElection_ReplacementDateLabel" xml:space="preserve"><value>Date de remplacement</value><comment>Special election — replacement date label.</comment></data>
+  <data name="Events_SpecialElection_SubmitButton" xml:space="preserve"><value>Enregistrer l'élection partielle</value><comment>Special election form submit button.</comment></data>
+  <data name="Events_SpecialElection_PositionFallback" xml:space="preserve"><value>Membre du comité général</value><comment>Fallback label when a position has no office-holder-type name.</comment></data>
+  <data name="Events_SpecialElection_PositionDescription" xml:space="preserve"><value>{Position} — {Member}</value><comment>Outgoing position option text. {Position} = position name, {Member} = current holder.</comment></data>
+  <data name="Events_SpecialElection_ValidationSelectBoth" xml:space="preserve"><value>Sélectionnez le poste à remplacer et le membre entrant.</value><comment>Validation — both selects required.</comment></data>
+  <data name="Events_SpecialElection_SaveError" xml:space="preserve"><value>Échec de la saisie de l'élection partielle : {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_AgmAttendance_NoActiveMembers" xml:space="preserve"><value>Aucun membre actif trouvé.</value><comment>AGM attendance grid — shown when there are no active members.</comment></data>
+  <data name="Events_AgmAttendance_AttendedColumn" xml:space="preserve"><value>Présent</value><comment>AGM attendance grid — attended column.</comment></data>
+  <data name="Events_AgmAttendance_SelectAllAriaLabel" xml:space="preserve"><value>Marquer tous les membres comme présents</value><comment>aria-label on the select-all checkbox.</comment></data>
+  <data name="Events_AgmAttendance_SelectAllLabel" xml:space="preserve"><value>Tout sélectionner</value><comment>Label beside the select-all checkbox.</comment></data>
+  <data name="Events_AgmAttendance_MemberColumn" xml:space="preserve"><value>Membre</value><comment>AGM attendance grid — member column.</comment></data>
+  <data name="Events_AgmAttendance_RowAriaLabel" xml:space="preserve"><value>{MemberName} présent</value><comment>aria-label on a row checkbox. {MemberName} = member name.</comment></data>
+</root>

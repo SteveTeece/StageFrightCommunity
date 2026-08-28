@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Reports_Column_Account" xml:space="preserve"><value>Compte</value></data>
+  <data name="Reports_Column_Amount" xml:space="preserve"><value>Montant</value></data>
+  <data name="Reports_Column_Debit" xml:space="preserve"><value>Débit</value></data>
+  <data name="Reports_Column_Credit" xml:space="preserve"><value>Crédit</value></data>
+  <data name="Reports_Column_Date" xml:space="preserve"><value>Date</value></data>
+  <data name="Reports_Column_Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Reports_Column_Balance" xml:space="preserve"><value>Solde</value></data>
+  <data name="Reports_Section_Assets" xml:space="preserve"><value>Actif</value></data>
+  <data name="Reports_Section_Liabilities" xml:space="preserve"><value>Passif</value></data>
+  <data name="Reports_Section_Equity" xml:space="preserve"><value>Capitaux propres</value></data>
+  <data name="Reports_Section_Income" xml:space="preserve"><value>Produits</value></data>
+  <data name="Reports_Section_Expenses" xml:space="preserve"><value>Charges</value></data>
+  <data name="Reports_Filter_From" xml:space="preserve"><value>Du</value></data>
+  <data name="Reports_Filter_To" xml:space="preserve"><value>Au</value></data>
+  <data name="Reports_Filter_AccountNumberOrName" xml:space="preserve"><value>Compte (numéro ou nom, vide = tous)</value></data>
+  <data name="Reports_Filter_OptionAll" xml:space="preserve"><value>Tous</value><comment>Synthetic report-filter option label; the option value stays the invariant token "All".</comment></data>
+  <data name="Reports_Filter_OptionArchived" xml:space="preserve"><value>Archivés</value><comment>Report-filter option label for archived members; option value stays the invariant token "Archived".</comment></data>
+  <data name="Reports_Filter_OptionActiveOnly" xml:space="preserve"><value>Actifs uniquement</value><comment>Committee-report filter option label; option value stays the invariant token "Active Only".</comment></data>
+  <data name="Reports_Filter_OptionArchivedOnly" xml:space="preserve"><value>Archivés uniquement</value><comment>Committee-report filter option label; option value stays the invariant token "Archived Only".</comment></data>
+  <data name="Reports_Filter_OptionThisFy" xml:space="preserve"><value>Exercice en cours</value><comment>Income-statement period filter option label; option value stays the invariant token "This FY".</comment></data>
+  <data name="Reports_Filter_OptionLastFy" xml:space="preserve"><value>Exercice précédent</value><comment>Income-statement period filter option label; option value stays the invariant token "Last FY".</comment></data>
+  <data name="Reports_Filter_OptionCustom" xml:space="preserve"><value>Personnalisé</value><comment>Income-statement period filter option label; option value stays the invariant token "Custom".</comment></data>
+  <data name="Reports_Common_DateRangeSubtitle" xml:space="preserve"><value>{DateFrom} – {DateTo}</value><comment>{DateFrom} range start, {DateTo} range end — both already formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_Common_OpeningBalance" xml:space="preserve"><value>Solde d'ouverture</value></data>
+  <data name="Reports_Common_ClosingBalance" xml:space="preserve"><value>Solde de clôture</value></data>
+  <data name="Reports_MemberList_Name" xml:space="preserve"><value>Liste des membres</value></data>
+  <data name="Reports_MemberList_StatusFilterLabel" xml:space="preserve"><value>Statut</value></data>
+  <data name="Reports_MemberList_SubTitle" xml:space="preserve"><value>Statut : {Status} — {Date}</value><comment>{Status} selected status-filter value, {Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_MemberList_NameColumn" xml:space="preserve"><value>Nom</value></data>
+  <data name="Reports_MemberList_AddressColumn" xml:space="preserve"><value>Adresse</value></data>
+  <data name="Reports_MemberList_PhoneColumn" xml:space="preserve"><value>Téléphone</value></data>
+  <data name="Reports_MemberList_EmailColumn" xml:space="preserve"><value>E-mail</value></data>
+  <data name="Reports_MemberList_JoinDateColumn" xml:space="preserve"><value>Date d'adhésion</value></data>
+  <data name="Reports_MemberList_AgeColumn" xml:space="preserve"><value>Âge</value></data>
+  <data name="Reports_MemberList_StatusColumn" xml:space="preserve"><value>Statut</value></data>
+  <data name="Reports_Committee_Name" xml:space="preserve"><value>Rapport du comité</value></data>
+  <data name="Reports_Committee_MemberStatusFilterLabel" xml:space="preserve"><value>Statut du membre</value></data>
+  <data name="Reports_Committee_SubTitle" xml:space="preserve"><value>Filtre : {Filter} — {Date}</value><comment>{Filter} selected member-status filter value, {Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_Committee_YearColumn" xml:space="preserve"><value>Année</value></data>
+  <data name="Reports_Committee_PositionColumn" xml:space="preserve"><value>Poste</value></data>
+  <data name="Reports_Committee_MembersColumn" xml:space="preserve"><value>Membre(s)</value></data>
+  <data name="Reports_Committee_PositionsRecordedColumn" xml:space="preserve"><value>Postes enregistrés</value></data>
+  <data name="Reports_Committee_RolePresident" xml:space="preserve"><value>Président</value></data>
+  <data name="Reports_Committee_RoleSecretary" xml:space="preserve"><value>Secrétaire</value></data>
+  <data name="Reports_Committee_RoleTreasurer" xml:space="preserve"><value>Trésorier</value></data>
+  <data name="Reports_Committee_Vacant" xml:space="preserve"><value>Vacant</value></data>
+  <data name="Reports_Committee_GeneralCommitteeMembers" xml:space="preserve"><value>Membres du comité général</value></data>
+  <data name="Reports_Committee_Present" xml:space="preserve"><value>en cours</value><comment>Shown as the end date for a currently-serving committee member in a dated holder list.</comment></data>
+  <data name="Reports_IncomeStatement_Name" xml:space="preserve"><value>Compte de résultat</value></data>
+  <data name="Reports_IncomeStatement_PeriodFilterLabel" xml:space="preserve"><value>Période</value></data>
+  <data name="Reports_IncomeStatement_DateFromFilterLabel" xml:space="preserve"><value>Du (période personnalisée)</value></data>
+  <data name="Reports_IncomeStatement_DateToFilterLabel" xml:space="preserve"><value>Au (période personnalisée)</value></data>
+  <data name="Reports_IncomeStatement_CompareFilterLabel" xml:space="preserve"><value>Afficher la comparaison avec l'année précédente</value></data>
+  <data name="Reports_IncomeStatement_SubTitleCompare" xml:space="preserve"><value>{DateFrom} – {DateTo} (comparé à {PriorFrom} – {PriorTo})</value><comment>All four tokens are dates already formatted 'd MMMM yyyy': current range start/end, then prior range start/end.</comment></data>
+  <data name="Reports_IncomeStatement_CurrentPeriodColumn" xml:space="preserve"><value>Période en cours</value></data>
+  <data name="Reports_IncomeStatement_PriorPeriodColumn" xml:space="preserve"><value>Période précédente</value></data>
+  <data name="Reports_IncomeStatement_TotalIncome" xml:space="preserve"><value>Total des produits</value></data>
+  <data name="Reports_IncomeStatement_TotalExpenses" xml:space="preserve"><value>Total des charges</value></data>
+  <data name="Reports_IncomeStatement_Surplus" xml:space="preserve"><value>Excédent</value></data>
+  <data name="Reports_IncomeStatement_Deficit" xml:space="preserve"><value>(Déficit)</value></data>
+  <data name="Reports_TrialBalance_Name" xml:space="preserve"><value>Balance générale</value></data>
+  <data name="Reports_TrialBalance_TotalsRow" xml:space="preserve"><value>Totaux</value></data>
+  <data name="Reports_TrialBalance_GLImbalanceError" xml:space="preserve"><value>Échec de la vérification de l'équilibre du grand livre : total des débits (${Debits}) ≠ total des crédits (${Credits}). La balance générale ne peut pas être générée tant que le grand livre est déséquilibré.</value><comment>{Debits}/{Credits} are the GL totals formatted 'F2'; each leading $ is a literal currency sign, not a placeholder.</comment></data>
+  <data name="Reports_AccountRegister_Name" xml:space="preserve"><value>Registre de compte</value></data>
+  <data name="Reports_AccountRegister_RunningBalanceColumn" xml:space="preserve"><value>Solde cumulé</value></data>
+  <data name="Reports_BalanceSheet_Name" xml:space="preserve"><value>Bilan</value></data>
+  <data name="Reports_BalanceSheet_AsAtFilterLabel" xml:space="preserve"><value>À la date du</value></data>
+  <data name="Reports_BalanceSheet_SubTitle" xml:space="preserve"><value>À la date du {Date}</value><comment>{Date} report date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_BalanceSheet_TotalAssets" xml:space="preserve"><value>Total de l'actif</value></data>
+  <data name="Reports_BalanceSheet_TotalLiabilities" xml:space="preserve"><value>Total du passif</value></data>
+  <data name="Reports_BalanceSheet_TotalEquity" xml:space="preserve"><value>Total des capitaux propres</value></data>
+  <data name="Reports_BalanceSheet_AccumulatedSurplus" xml:space="preserve"><value>Excédent accumulé</value></data>
+  <data name="Reports_BalanceSheet_TotalLiabilitiesPlusEquity" xml:space="preserve"><value>Total passif + capitaux propres</value></data>
+  <data name="Reports_BankReconciliation_Name" xml:space="preserve"><value>Rapprochement bancaire</value></data>
+  <data name="Reports_BankReconciliation_SubTitle" xml:space="preserve"><value>Rapprochement le plus récent par compte, généré le {Date}</value><comment>{Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_BankReconciliation_SubTitleNone" xml:space="preserve"><value>Aucun rapprochement n'a été enregistré.</value></data>
+  <data name="Reports_BankReconciliation_DepositColumn" xml:space="preserve"><value>Dépôt</value></data>
+  <data name="Reports_BankReconciliation_PaymentColumn" xml:space="preserve"><value>Paiement</value></data>
+  <data name="Reports_BankReconciliation_AccountHeader" xml:space="preserve"><value>{Account} ({Number}) — relevé au {StatementDate} [{Status}]</value><comment>{Account} account name, {Number} account number, {StatementDate} formatted 'd MMMM yyyy', {Status} localised reconciliation status.</comment></data>
+  <data name="Reports_BankReconciliation_SubHeaderClearedDeposits" xml:space="preserve"><value>{Header} — Dépôts pointés</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
+  <data name="Reports_BankReconciliation_SubHeaderClearedPayments" xml:space="preserve"><value>{Header} — Paiements pointés</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
+  <data name="Reports_BankReconciliation_SubHeaderUnpresentedItems" xml:space="preserve"><value>{Header} — Éléments non présentés</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
+  <data name="Reports_BankReconciliation_SubHeaderSummary" xml:space="preserve"><value>{Header} — Résumé</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
+  <data name="Reports_BankReconciliation_TotalClearedDeposits" xml:space="preserve"><value>Total des dépôts pointés</value></data>
+  <data name="Reports_BankReconciliation_TotalClearedPayments" xml:space="preserve"><value>Total des paiements pointés</value></data>
+  <data name="Reports_BankReconciliation_StatementClosingBalance" xml:space="preserve"><value>Solde de clôture du relevé</value></data>
+  <data name="Reports_BankReconciliation_OpeningBalance" xml:space="preserve"><value>Solde d'ouverture</value></data>
+  <data name="Reports_BankReconciliation_ClearedMovement" xml:space="preserve"><value>Mouvement pointé</value></data>
+  <data name="Reports_BankReconciliation_Difference" xml:space="preserve"><value>Différence</value></data>
+  <data name="Reports_ChartOfAccounts_Name" xml:space="preserve"><value>Plan comptable</value></data>
+  <data name="Reports_ChartOfAccounts_IncludeBalancesFilterLabel" xml:space="preserve"><value>Inclure les soldes actuels</value></data>
+  <data name="Reports_ChartOfAccounts_NumberColumn" xml:space="preserve"><value>N°</value></data>
+  <data name="Reports_ChartOfAccounts_NameColumn" xml:space="preserve"><value>Nom</value></data>
+  <data name="Reports_ChartOfAccounts_NameSystemBank" xml:space="preserve"><value>{Name} (Système, Banque)</value><comment>{Name} account name; the parenthetical marks a system bank account.</comment></data>
+  <data name="Reports_ChartOfAccounts_NameSystem" xml:space="preserve"><value>{Name} (Système)</value><comment>{Name} account name; the parenthetical marks a system account.</comment></data>
+  <data name="Reports_ChartOfAccounts_NameBank" xml:space="preserve"><value>{Name} (Banque)</value><comment>{Name} account name; the parenthetical marks a bank account.</comment></data>
+  <data name="Reports_ChartOfAccounts_BalanceError" xml:space="preserve"><value>Erreur</value><comment>Shown in the Balance column when an account balance could not be computed.</comment></data>
+  <data name="Reports_GeneralLedger_Name" xml:space="preserve"><value>Grand livre</value></data>
+  <data name="Reports_MemberAccountSummary_Name" xml:space="preserve"><value>Relevé de compte des membres</value></data>
+  <data name="Reports_MemberAccountSummary_IncludeArchivedFilterLabel" xml:space="preserve"><value>Afficher les membres archivés</value></data>
+  <data name="Reports_MemberAccountSummary_DateItemColumn" xml:space="preserve"><value>Date / Élément</value></data>
+  <data name="Reports_MemberAccountSummary_MemberColumn" xml:space="preserve"><value>Membre</value></data>
+  <data name="Reports_MemberAccountSummary_CurrentColumn" xml:space="preserve"><value>Courant</value></data>
+  <data name="Reports_MemberAccountSummary_ThirtyDaysColumn" xml:space="preserve"><value>30 jours</value></data>
+  <data name="Reports_MemberAccountSummary_SixtyDaysColumn" xml:space="preserve"><value>60 jours</value></data>
+  <data name="Reports_MemberAccountSummary_NinetyPlusDaysColumn" xml:space="preserve"><value>90+ jours</value></data>
+  <data name="Reports_MemberAccountSummary_AgingCurrent" xml:space="preserve"><value>Courant : {Amount}</value><comment>{Amount} aging bucket total formatted 'F2'.</comment></data>
+  <data name="Reports_MemberAccountSummary_Aging30" xml:space="preserve"><value>30 jours : {Amount}</value><comment>{Amount} aging bucket total formatted 'F2'.</comment></data>
+  <data name="Reports_MemberAccountSummary_Aging60" xml:space="preserve"><value>60 jours : {Amount}</value><comment>{Amount} aging bucket total formatted 'F2'.</comment></data>
+  <data name="Reports_MemberAccountSummary_Aging90Plus" xml:space="preserve"><value>90+ jours : {Amount}</value><comment>{Amount} aging bucket total formatted 'F2'.</comment></data>
+  <data name="Reports_MemberAccountSummary_ArchivedSuffix" xml:space="preserve"><value>{Name} (Archivé)</value><comment>{Name} member's sortable full name; suffix marks an archived member.</comment></data>
+  <data name="Reports_TaxSummary_Name" xml:space="preserve"><value>Récapitulatif de taxe</value></data>
+  <data name="Reports_TaxSummary_SubTitle" xml:space="preserve"><value>Comptabilité d'engagement — {DateFrom} – {DateTo}</value><comment>{DateFrom}/{DateTo} range start/end formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_TaxSummary_SubTitleNotApplicable" xml:space="preserve"><value>La taxe sur les ventes ne s'applique pas à cette organisation. Activez la taxe sur les ventes dans les Paramètres pour générer un récapitulatif de taxe.</value></data>
+  <data name="Reports_TaxSummary_TotalTaxableSales" xml:space="preserve"><value>Total des ventes taxables</value></data>
+  <data name="Reports_TaxSummary_TotalTaxExemptSales" xml:space="preserve"><value>Total des ventes exonérées de taxe</value></data>
+  <data name="Reports_TaxSummary_TaxCollectedOnSales" xml:space="preserve"><value>Taxe perçue sur les ventes</value></data>
+  <data name="Reports_TaxSummary_TaxPaidOnPurchases" xml:space="preserve"><value>Taxe payée sur les achats</value></data>
+  <data name="Reports_TaxSummary_NetTaxPayable" xml:space="preserve"><value>Taxe nette à payer</value></data>
+  <data name="Reports_TaxSummary_NetTaxRefundable" xml:space="preserve"><value>Taxe nette à rembourser</value></data>
+  <data name="Reports_Render_GeneratedAt" xml:space="preserve"><value>Généré : {DateTime} UTC</value><comment>{DateTime} generation timestamp already formatted 'd MMMM yyyy HH:mm'.</comment></data>
+  <data name="Reports_Render_PagePrefix" xml:space="preserve"><value>Page </value><comment>PDF footer — precedes the current page number; the trailing space is significant.</comment></data>
+  <data name="Reports_Render_PageSeparator" xml:space="preserve"><value> sur </value><comment>PDF footer — sits between the current page number and the total page count; the surrounding spaces are significant.</comment></data>
+  <data name="Reports_AttendanceRoll_Title" xml:space="preserve"><value>Feuille de présence</value></data>
+  <data name="Reports_AttendanceRoll_DateLine" xml:space="preserve"><value>Répétition : {Date} à {Time}</value><comment>{Date} rehearsal date formatted 'd MMMM yyyy', {Time} rehearsal start time formatted 'hh\:mm'.</comment></data>
+  <data name="Reports_AttendanceRoll_NameColumn" xml:space="preserve"><value>Nom</value></data>
+  <data name="Reports_AttendanceRoll_PresentColumn" xml:space="preserve"><value>Présent</value></data>
+  <data name="Reports_AttendanceRoll_FeePaidColumn" xml:space="preserve"><value>Py</value><comment>Short column heading for the rehearsal-fee-paid checkbox — an abbreviation of "Paid", not a dollar amount.</comment></data>
+  <data name="Reports_AgmResults_Title" xml:space="preserve"><value>Résultats de l'AGA</value></data>
+  <data name="Reports_AgmResults_MeetingDateLine" xml:space="preserve"><value>Assemblée générale annuelle : {Date}</value><comment>{Date} AGM date formatted 'd MMMM yyyy'. Shared by the AGM Results sheet and the AGM Attendance Report sheet.</comment></data>
+  <data name="Reports_AgmResults_AttendanceLine" xml:space="preserve"><value>Présence : {Attended} membres présents sur {Total}</value><comment>{Attended} number of members who attended, {Total} total member count.</comment></data>
+  <data name="Reports_AgmResults_ElectedPositionsHeading" xml:space="preserve"><value>Postes élus</value></data>
+  <data name="Reports_AgmResults_NoPositions" xml:space="preserve"><value>Aucun poste enregistré.</value></data>
+  <data name="Reports_AgmResults_PositionLabel" xml:space="preserve"><value>{Label} : </value><comment>{Label} elected position title; this segment renders bold and is immediately followed by the elected member name(s). Trailing space is significant.</comment></data>
+  <data name="Reports_AgmResults_GeneralCommitteeMemberLabel" xml:space="preserve"><value>Membre du comité général :</value></data>
+  <data name="Reports_Sheet_NameColumn" xml:space="preserve"><value>Nom</value></data>
+  <data name="Reports_EventSheet_Title" xml:space="preserve"><value>Feuille de présence de l'événement</value></data>
+  <data name="Reports_EventSheet_DateLine" xml:space="preserve"><value>{EventType} : {Date}</value><comment>{EventType} event type name (user data), {Date} event date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_EventSheet_ParticipatedColumn" xml:space="preserve"><value>A participé</value></data>
+  <data name="Reports_AgmSheet_Title" xml:space="preserve"><value>Rapport de présence de l'AGA</value></data>
+  <data name="Reports_AgmSheet_AttendedColumn" xml:space="preserve"><value>Présent</value></data>
+</root>
