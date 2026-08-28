@@ -1,7 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Localization;
+using StageFright.UI.Resources.Strings;
 using CoreValidationException = StageFright.Core.Exceptions.ValidationException;
 
 namespace StageFright.UI.Pages.Settings;
@@ -9,6 +12,9 @@ namespace StageFright.UI.Pages.Settings;
 public partial class EventTypesTab : ComponentBase
 {
     [Inject] private IEventTypeService EventTypeService { get; set; } = null!;
+    [Inject] private IStringLocalizer<SettingsResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private bool _loading = true;
     private bool _creating;
@@ -19,6 +25,12 @@ public partial class EventTypesTab : ComponentBase
     private List<EventType> _archivedTypes = new();
 
     private NewEventTypeModel _newModel = new();
+
+    private string ArchiveAriaLabel(string name) =>
+        Loc.Get<SettingsResource>("Settings_EventTypes_ArchiveAriaLabel", name);
+
+    private string RestoreAriaLabel(string name) =>
+        Loc.Get<SettingsResource>("Settings_EventTypes_RestoreAriaLabel", name);
 
     protected override async Task OnInitializedAsync()
     {
@@ -37,7 +49,7 @@ public partial class EventTypesTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load event types: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_EventTypes_LoadError", ex.Message);
         }
         finally
         {
@@ -54,7 +66,7 @@ public partial class EventTypesTab : ComponentBase
         try
         {
             var created = await EventTypeService.CreateAsync(_newModel.Name!);
-            _successMessage = $"Event type '{created.Name}' created.";
+            _successMessage = Loc.Get<SettingsResource>("Settings_EventTypes_Created", created.Name);
             _newModel = new NewEventTypeModel();
             await LoadAsync();
         }
@@ -64,7 +76,7 @@ public partial class EventTypesTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to create event type: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_EventTypes_CreateError", ex.Message);
         }
         finally
         {
@@ -80,7 +92,7 @@ public partial class EventTypesTab : ComponentBase
         try
         {
             await EventTypeService.ArchiveAsync(id);
-            _successMessage = "Event type archived.";
+            _successMessage = L["Settings_EventTypes_Archived"];
             await LoadAsync();
         }
         catch (CoreValidationException ex)
@@ -89,7 +101,7 @@ public partial class EventTypesTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to archive event type: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_EventTypes_ArchiveError", ex.Message);
         }
     }
 
@@ -101,12 +113,12 @@ public partial class EventTypesTab : ComponentBase
         try
         {
             await EventTypeService.RestoreAsync(id);
-            _successMessage = "Event type restored.";
+            _successMessage = L["Settings_EventTypes_Restored"];
             await LoadAsync();
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to restore event type: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_EventTypes_RestoreError", ex.Message);
         }
     }
 

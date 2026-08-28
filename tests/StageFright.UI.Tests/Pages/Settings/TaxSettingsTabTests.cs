@@ -13,7 +13,7 @@ namespace StageFright.UI.Tests.Pages.Settings;
 /// tax-code dropdown visibility, and HandleSaveAsync's cross-tab merge of non-tax-owned
 /// fields (FR-117/FR-119) — moved here from what was GeneralSettingsTab's GST section.
 /// </summary>
-public class TaxSettingsTabTests : BunitContext
+public class TaxSettingsTabTests : LocalizedTestContext
 {
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
 

@@ -111,7 +111,7 @@ The one shared localization mechanism every story builds on: area resource marke
 
 - [x] **T031** [P] [US2] Dashboard page + tiles · `src/StageFright.UI/Resources/Strings/DashboardResource.resx`, `src/StageFright.UI/Pages/Dashboard/**`, `src/StageFright.UI/Modules/*/*Tile.razor(.cs)`
 - [x] **T032** [P] [US2] Rehearsals module · `src/StageFright.UI/Resources/Strings/RehearsalsResource.resx`, `src/StageFright.UI/Pages/Rehearsals/**`
-- [ ] **T033** [P] [US2] Events / AGM module · `src/StageFright.UI/Resources/Strings/EventsResource.resx`, `src/StageFright.UI/Pages/Events/**` (+ AGM pages)
+- [x] **T033** [P] [US2] Events / AGM module · `src/StageFright.UI/Resources/Strings/EventsResource.resx`, `src/StageFright.UI/Pages/Events/**` (+ AGM pages)
 - [ ] **T034** [P] [US2] Finance module (heavy `MoneyFormatter` migration + `LocalizeEnum` for fee/payment/account/tax/recon enums) · `src/StageFright.UI/Resources/Strings/FinanceResource.resx`, `src/StageFright.UI/Pages/Finance/**`
 - [ ] **T035** [P] [US2] Settings page + tabs (excluding the language picker — US3) · `src/StageFright.UI/Resources/Strings/SettingsResource.resx`, `src/StageFright.UI/Pages/Settings/**`
 - [ ] **T036** [P] [US2] Setup Wizard steps (excluding the language step — US3) · `src/StageFright.UI/Resources/Strings/SetupResource.resx`, `src/StageFright.UI/Pages/Setup/**`

@@ -14,46 +14,46 @@
 
     @if (_loading)
     {
-        <p role="status" aria-live="polite">Loading committee settings…</p>
+        <p role="status" aria-live="polite">@L["Settings_Committee_LoadingText"]</p>
     }
     else
     {
         <!-- General committee seat-count target -->
         <div class="card mb-2">
             <div class="card-body py-2">
-                <h6 class="card-title mb-2">General Committee Seat Count Target</h6>
+                <h6 class="card-title mb-2">@L["Settings_Committee_SeatTargetHeading"]</h6>
                 <div class="row g-2 align-items-end">
                     <div class="col-auto">
-                        <label for="seatCountTarget" class="form-label small mb-0">Target seats</label>
+                        <label for="seatCountTarget" class="form-label small mb-0">@L["Settings_Committee_TargetSeatsLabel"]</label>
                         <input type="number" id="seatCountTarget" class="form-control form-control-sm" min="0"
                                value="@_seatCountTarget"
                                @onchange="e => _seatCountTarget = string.IsNullOrEmpty(e.Value?.ToString()) ? (int?)null : int.Parse(e.Value.ToString()!)" />
                     </div>
                     <div class="col-auto">
                         <button class="btn btn-primary btn-sm" @onclick="HandleSaveSeatCountAsync" disabled="@_savingSeatCount">
-                            @(_savingSeatCount ? "Saving…" : "Save")
+                            @(_savingSeatCount ? Shared["Shared_Action_Saving"] : Shared["Shared_Action_Save"])
                         </button>
                     </div>
                 </div>
-                <p class="small text-muted mt-1 mb-0">Guidance only — no hard cap is enforced when recording an AGM.</p>
+                <p class="small text-muted mt-1 mb-0">@L["Settings_Committee_SeatTargetHelp"]</p>
             </div>
         </div>
 
         <!-- Add Office-Holder Title Form -->
         <div class="card mb-2">
             <div class="card-body py-2">
-                <h6 class="card-title mb-2">Add Office-Holder Title</h6>
+                <h6 class="card-title mb-2">@L["Settings_Committee_AddTitleHeading"]</h6>
                 <EditForm Model="_newModel" OnValidSubmit="HandleCreateAsync">
                     <div class="row g-2 align-items-start">
                         <div class="col">
                             <InputText id="oht-name" class="form-control form-control-sm"
                                        @bind-Value="_newModel.Name"
-                                       placeholder="Office-holder title name"
-                                       aria-label="Office-holder title name" />
+                                       placeholder="@L["Settings_Committee_TitleNamePlaceholder"]"
+                                       aria-label="@L["Settings_Committee_TitleNamePlaceholder"]" />
                         </div>
                         <div class="col-auto">
                             <button type="submit" class="btn btn-primary btn-sm" disabled="@_creating">
-                                @(_creating ? "Creating…" : "Add Title")
+                                @(_creating ? L["Settings_Committee_CreatingText"] : L["Settings_Committee_AddTitleButton"])
                             </button>
                         </div>
                     </div>
@@ -63,10 +63,10 @@
 
         <!-- Active Office-Holder Titles -->
         <section aria-labelledby="active-oht-heading" class="mb-2">
-            <h6 id="active-oht-heading" class="mb-1">Office-Holder Titles</h6>
+            <h6 id="active-oht-heading" class="mb-1">@L["Settings_Committee_TitlesHeading"]</h6>
             @if (!_activeTypes.Any())
             {
-                <p class="text-muted small mb-0">No office-holder titles defined yet.</p>
+                <p class="text-muted small mb-0">@L["Settings_Committee_NoTitles"]</p>
             }
             else
             {
@@ -74,28 +74,28 @@
                                 AllowSorting="true" AllowPaging="true" PageSize="10"
                                 class="rz-shadow-0">
                     <Columns>
-                        <RadzenDataGridColumn TItem="CommitteeOfficeHolderType" Property="Name" Title="Name" Width="300px">
+                        <RadzenDataGridColumn TItem="CommitteeOfficeHolderType" Property="Name" Title="@L["Settings_Committee_NameColumn"]" Width="300px">
                             <Template Context="t">
                                 @t.Name
                                 @if (t.IsBuiltIn)
                                 {
-                                    <span class="badge bg-secondary ms-1" title="Built-in">Built-in</span>
+                                    <span class="badge bg-secondary ms-1" title="@L["Settings_Committee_BuiltInBadge"]">@L["Settings_Committee_BuiltInBadge"]</span>
                                 }
                             </Template>
                         </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="CommitteeOfficeHolderType" Title="Actions" Width="140px" Sortable="false">
+                        <RadzenDataGridColumn TItem="CommitteeOfficeHolderType" Title="@Shared["Shared_Table_ActionsColumn"]" Width="140px" Sortable="false">
                             <Template Context="t">
                                 @if (!t.IsBuiltIn)
                                 {
                                     <button class="btn btn-outline-danger btn-sm"
                                             @onclick="() => ArchiveAsync(t.Id)"
-                                            aria-label="Archive @t.Name">
-                                        Archive
+                                            aria-label="@ArchiveAriaLabel(t.Name)">
+                                        @L["Settings_Committee_ArchiveButton"]
                                     </button>
                                 }
                                 else
                                 {
-                                    <span class="text-muted small">Read-only</span>
+                                    <span class="text-muted small">@L["Settings_Committee_ReadOnlyText"]</span>
                                 }
                             </Template>
                         </RadzenDataGridColumn>

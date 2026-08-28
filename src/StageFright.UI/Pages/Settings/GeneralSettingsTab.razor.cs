@@ -1,8 +1,12 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
+using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.UI.Layout;
+using StageFright.UI.Resources.Strings;
 using AppSettings = StageFright.Core.Entities.Settings;
 
 namespace StageFright.UI.Pages.Settings;
@@ -11,6 +15,9 @@ public partial class GeneralSettingsTab : ComponentBase
 {
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private ILogger<GeneralSettingsTab> Logger { get; set; } = null!;
+    [Inject] private IStringLocalizer<SettingsResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     [CascadingParameter] private ThemeProvider? ThemeProvider { get; set; }
 
@@ -19,6 +26,14 @@ public partial class GeneralSettingsTab : ComponentBase
     private bool _saving;
     private string? _errorMessage;
     private string? _successMessage;
+
+    /// <summary>"{n} year(s)" audit-retention select option, pluralised.</summary>
+    private string AuditRetentionOptionText(int years) =>
+        Loc.Plural<SettingsResource>("Settings_General_AuditRetentionYears", years);
+
+    /// <summary>"Current: {theme}" label beside the theme toggle.</summary>
+    private string ThemeCurrentText(Theme theme) =>
+        Loc.Get<SettingsResource>("Settings_General_ThemeCurrent", theme.LocalizeEnum());
 
     protected override async Task OnInitializedAsync()
     {
@@ -33,7 +48,7 @@ public partial class GeneralSettingsTab : ComponentBase
         catch (Exception ex)
         {
             Logger.LogError(ex, "GeneralSettingsTab: SettingsService.GetAsync failed");
-            _errorMessage = $"Failed to load settings: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Common_LoadError", ex.Message);
             return;
         }
 
@@ -63,7 +78,7 @@ public partial class GeneralSettingsTab : ComponentBase
             }
 
             await SettingsService.SaveAsync(_settings);
-            _successMessage = "Settings saved successfully.";
+            _successMessage = L["Settings_Common_SaveSuccess"];
         }
         catch (ValidationException ex)
         {
@@ -71,7 +86,7 @@ public partial class GeneralSettingsTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to save settings: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Common_SaveError", ex.Message);
         }
         finally
         {
