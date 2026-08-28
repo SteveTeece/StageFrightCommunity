@@ -136,6 +136,24 @@ else
             </div>
         </div>
 
+        <div class="row g-2 mb-2">
+            <div class="col-md-6">
+                <label for="languageCode" class="form-label">@L["Settings_General_LanguageLabel"]</label>
+                <InputSelect id="languageCode" class="form-select form-select-sm" @bind-Value="_selectedLanguageCode">
+                    @foreach (var language in Languages.All)
+                    {
+                        <option value="@language.CultureCode">@language.Endonym</option>
+                    }
+                </InputSelect>
+                <div class="form-text small">@L["Settings_General_LanguageHelp"]</div>
+            </div>
+        </div>
+
+        @if (LanguageChanged)
+        {
+            <div class="alert alert-info py-1 mb-2 small" role="status">@L["Settings_General_LanguageRestartNotice"]</div>
+        }
+
         <div class="d-flex gap-2 mt-3">
             <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
                 @(_saving ? Shared["Shared_Action_Saving"] : L["Settings_Common_SaveButton"])

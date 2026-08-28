@@ -201,7 +201,8 @@ public partial class SetupWizard : ComponentBase
                 AuditRetentionYears: _model.AuditRetentionYears,
                 QueuedAccounts: _queuedAccounts.Count > 0 ? _queuedAccounts : null,
                 QueuedOpeningBalances: _queuedOpeningBalances.Count > 0 ? _queuedOpeningBalances : null,
-                OpeningBalanceAsAtDate: _openingBalanceAsAtDate);
+                OpeningBalanceAsAtDate: _openingBalanceAsAtDate,
+                LanguageCode: _model.LanguageCode);
 
             await SetupService.InitializeAsync(request);
 

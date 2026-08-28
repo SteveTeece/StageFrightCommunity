@@ -14,6 +14,7 @@ public class SettingsConfiguration : IEntityTypeConfiguration<Settings>
         builder.Property(s => s.AnnualFee).HasPrecision(18, 2).IsRequired();
         builder.Property(s => s.AttendanceFee).HasPrecision(18, 2).IsRequired();
         builder.Property(s => s.Theme).HasConversion<string>();
+        builder.Property(s => s.LanguageCode).HasMaxLength(16);
         builder.Property(s => s.IsTaxApplicable).HasDefaultValue(false);
         builder.Property(s => s.TaxRate).HasPrecision(5, 2);
         builder.Property(s => s.AuditRetentionYears).HasDefaultValue(1);

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Nav_Members_Title" xml:space="preserve"><value>⟦Mémbérs—⟧</value><comment>Members top-level navigation item label.</comment></data>
+  <data name="Nav_Members_ShortLabel" xml:space="preserve"><value>⟦MÉMB—⟧</value><comment>Members navigation item short/collapsed label.</comment></data>
+  <data name="Nav_Sidebar_MainNavigationAriaLabel" xml:space="preserve"><value>⟦Máíñ ñávígátíóñ—⟧</value><comment>aria-label on the sidebar navigation landmark.</comment></data>
+  <data name="Nav_Sidebar_CollapseGroupAriaLabel" xml:space="preserve"><value>⟦Çóllápsé {GroupName}—⟧</value><comment>aria-label on an expanded nav group's chevron. {GroupName} = the group's title.</comment></data>
+  <data name="Nav_Sidebar_ExpandGroupAriaLabel" xml:space="preserve"><value>⟦Éxpáñd {GroupName}—⟧</value><comment>aria-label on a collapsed nav group's chevron. {GroupName} = the group's title.</comment></data>
+  <data name="Nav_Sidebar_BadgeItemsAriaLabel" xml:space="preserve"><value>⟦{BadgeText} ítéms—⟧</value><comment>aria-label on a nav item's count badge. {BadgeText} = the badge's displayed count.</comment></data>
+  <data name="Nav_ThemeToggle_Label" xml:space="preserve"><value>⟦Thémé Séléçtíóñ—⟧</value><comment>Visible label for the sidebar light/dark theme switch.</comment></data>
+  <data name="Nav_ThemeToggle_SwitchToDarkAriaLabel" xml:space="preserve"><value>⟦Swítçh tó dárk módé—⟧</value><comment>aria-label on the theme switch while the light theme is active.</comment></data>
+  <data name="Nav_ThemeToggle_SwitchToLightAriaLabel" xml:space="preserve"><value>⟦Swítçh tó líght módé—⟧</value><comment>aria-label on the theme switch while the dark theme is active.</comment></data>
+  <data name="Nav_Dashboard_Title" xml:space="preserve"><value>⟦Dáshbóárd—⟧</value><comment>Navigation label for the Dashboard.</comment></data>
+  <data name="Nav_Dashboard_ShortLabel" xml:space="preserve"><value>⟦HÓMÉ—⟧</value><comment>Collapsed nav-rail abbreviation for the Dashboard.</comment></data>
+  <data name="Nav_Rehearsals_Title" xml:space="preserve"><value>⟦Réhéársáls—⟧</value><comment>Navigation label for the Rehearsals section.</comment></data>
+  <data name="Nav_Rehearsals_ShortLabel" xml:space="preserve"><value>⟦RÉH—⟧</value><comment>Collapsed nav-rail abbreviation for Rehearsals.</comment></data>
+  <data name="Nav_Events_Title" xml:space="preserve"><value>⟦Évéñts—⟧</value><comment>Navigation label for the Events section.</comment></data>
+  <data name="Nav_Events_ShortLabel" xml:space="preserve"><value>⟦ÉVÑT—⟧</value><comment>Collapsed nav-rail abbreviation for Events.</comment></data>
+  <data name="Nav_Events_AllEvents" xml:space="preserve"><value>⟦Áll Évéñts—⟧</value><comment>Events sub-menu item — the full events list.</comment></data>
+  <data name="Nav_Events_ScheduleAgm" xml:space="preserve"><value>⟦Sçhédúlé ÁGM—⟧</value><comment>Events sub-menu item — schedule an Annual General Meeting.</comment></data>
+  <data name="Nav_Events_Agms" xml:space="preserve"><value>⟦ÁGMs—⟧</value><comment>Events sub-menu item — list of Annual General Meetings.</comment></data>
+  <data name="Nav_Finance_Title" xml:space="preserve"><value>⟦Fíñáñçé—⟧</value><comment>Navigation label for the Finance section.</comment></data>
+  <data name="Nav_Finance_ShortLabel" xml:space="preserve"><value>⟦FÍÑ—⟧</value><comment>Collapsed nav-rail abbreviation for Finance.</comment></data>
+  <data name="Nav_Finance_Overview" xml:space="preserve"><value>⟦Óvérvíéw—⟧</value><comment>Finance sub-menu item — the Finance overview page.</comment></data>
+  <data name="Nav_Finance_ChartOfAccounts" xml:space="preserve"><value>⟦Çhárt óf Áççóúñts—⟧</value><comment>Finance sub-menu item — the chart of accounts.</comment></data>
+  <data name="Nav_Finance_RecordBankDeposit" xml:space="preserve"><value>⟦Réçórd Báñk Dépósít—⟧</value><comment>Finance sub-menu item — record a bank deposit.</comment></data>
+  <data name="Nav_Finance_JournalEntries" xml:space="preserve"><value>⟦Jóúrñál Éñtríés—⟧</value><comment>Finance sub-menu item — general journal entries.</comment></data>
+  <data name="Nav_Finance_Reconciliation" xml:space="preserve"><value>⟦Réçóñçílíátíóñ—⟧</value><comment>Finance sub-menu item — bank reconciliation.</comment></data>
+  <data name="Nav_Finance_OpeningBalances" xml:space="preserve"><value>⟦Ópéñíñg Báláñçés—⟧</value><comment>Finance sub-menu item — opening balances.</comment></data>
+  <data name="Nav_Reports_Title" xml:space="preserve"><value>⟦Répórts—⟧</value><comment>Navigation label for the Reports section.</comment></data>
+  <data name="Nav_Reports_ShortLabel" xml:space="preserve"><value>⟦RPT—⟧</value><comment>Collapsed nav-rail abbreviation for Reports.</comment></data>
+  <data name="Nav_Settings_Title" xml:space="preserve"><value>⟦Séttíñgs—⟧</value><comment>Navigation label for Settings.</comment></data>
+  <data name="Nav_Settings_ShortLabel" xml:space="preserve"><value>⟦SÉT—⟧</value><comment>Collapsed nav-rail abbreviation for Settings.</comment></data>
+</root>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Enum_MemberStatus_Active" xml:space="preserve"><value>⟦Áçtívé—⟧</value><comment>MemberStatus.Active display text.</comment></data>
+  <data name="Enum_MemberStatus_Inactive" xml:space="preserve"><value>⟦Íñáçtívé—⟧</value><comment>MemberStatus.Inactive display text.</comment></data>
+  <data name="Enum_Theme_Dark" xml:space="preserve"><value>⟦Dárk—⟧</value><comment>Theme.Dark display text.</comment></data>
+  <data name="Enum_FeeType_Annual" xml:space="preserve"><value>⟦Áññúál—⟧</value><comment>FeeType enum — Annual membership fee.</comment></data>
+  <data name="Enum_FeeType_Attendance" xml:space="preserve"><value>⟦Áttéñdáñçé—⟧</value><comment>FeeType enum — per-rehearsal attendance fee.</comment></data>
+  <data name="Enum_FeeType_Other" xml:space="preserve"><value>⟦Óthér—⟧</value><comment>FeeType enum — other / ad-hoc fee.</comment></data>
+  <data name="Enum_PaymentMethod_Cash" xml:space="preserve"><value>⟦Çásh—⟧</value><comment>PaymentMethod enum — cash.</comment></data>
+  <data name="Enum_PaymentMethod_Check" xml:space="preserve"><value>⟦Çhéqúé—⟧</value><comment>PaymentMethod enum — cheque payment (enum member name is "Check").</comment></data>
+  <data name="Enum_PaymentMethod_Card" xml:space="preserve"><value>⟦Çárd—⟧</value><comment>PaymentMethod enum — debit/credit card.</comment></data>
+  <data name="Enum_PaymentMethod_ElectronicTransfer" xml:space="preserve"><value>⟦Éléçtróñíç Tráñsfér—⟧</value><comment>PaymentMethod enum — electronic bank transfer.</comment></data>
+  <data name="Enum_PaymentMethod_Other" xml:space="preserve"><value>⟦Óthér—⟧</value><comment>PaymentMethod enum — other method.</comment></data>
+  <data name="Enum_PaymentType_Annual" xml:space="preserve"><value>⟦Áññúál—⟧</value><comment>PaymentType enum — payment against an annual fee.</comment></data>
+  <data name="Enum_PaymentType_Attendance" xml:space="preserve"><value>⟦Áttéñdáñçé—⟧</value><comment>PaymentType enum — payment against an attendance fee.</comment></data>
+  <data name="Enum_PaymentType_Other" xml:space="preserve"><value>⟦Óthér—⟧</value><comment>PaymentType enum — payment against an other/ad-hoc fee.</comment></data>
+  <data name="Enum_AccountType_Income" xml:space="preserve"><value>⟦Íñçómé—⟧</value><comment>AccountType enum — income account.</comment></data>
+  <data name="Enum_AccountType_Expense" xml:space="preserve"><value>⟦Éxpéñsé—⟧</value><comment>AccountType enum — expense account.</comment></data>
+  <data name="Enum_AccountType_Asset" xml:space="preserve"><value>⟦Ássét—⟧</value><comment>AccountType enum — asset account.</comment></data>
+  <data name="Enum_AccountType_Liability" xml:space="preserve"><value>⟦Líábílítý—⟧</value><comment>AccountType enum — liability account.</comment></data>
+  <data name="Enum_AccountType_Equity" xml:space="preserve"><value>⟦Éqúítý—⟧</value><comment>AccountType enum — equity account.</comment></data>
+  <data name="Enum_TaxCode_Taxable" xml:space="preserve"><value>⟦Táxáblé—⟧</value><comment>TaxCode enum — taxable supply.</comment></data>
+  <data name="Enum_TaxCode_TaxExempt" xml:space="preserve"><value>⟦Táx-éxémpt—⟧</value><comment>TaxCode enum — tax-exempt supply.</comment></data>
+  <data name="Enum_TaxCode_Excluded" xml:space="preserve"><value>⟦Éxçlúdéd—⟧</value><comment>TaxCode enum — excluded from tax reporting.</comment></data>
+  <data name="Enum_ReconciliationStatus_Draft" xml:space="preserve"><value>⟦Dráft—⟧</value><comment>ReconciliationStatus enum — draft (in progress).</comment></data>
+  <data name="Enum_ReconciliationStatus_Finalised" xml:space="preserve"><value>⟦Fíñálíséd—⟧</value><comment>ReconciliationStatus enum — finalised (locked).</comment></data>
+  <data name="Enum_JournalEntryType_Income" xml:space="preserve"><value>⟦Íñçómé—⟧</value><comment>JournalEntryType enum — income receipt.</comment></data>
+  <data name="Enum_JournalEntryType_ExpensePayment" xml:space="preserve"><value>⟦Éxpéñsé Páýméñt—⟧</value><comment>JournalEntryType enum — expense payment.</comment></data>
+  <data name="Enum_JournalEntryType_Transfer" xml:space="preserve"><value>⟦Tráñsfér—⟧</value><comment>JournalEntryType enum — inter-account transfer.</comment></data>
+  <data name="Enum_JournalEntryType_BankDeposit" xml:space="preserve"><value>⟦Báñk Dépósít—⟧</value><comment>JournalEntryType enum — bank deposit.</comment></data>
+  <data name="Enum_JournalEntryType_GeneralJournal" xml:space="preserve"><value>⟦Géñérál Jóúrñál—⟧</value><comment>JournalEntryType enum — general journal entry.</comment></data>
+  <data name="Enum_JournalEntryType_OpeningBalance" xml:space="preserve"><value>⟦Ópéñíñg Báláñçé—⟧</value><comment>JournalEntryType enum — opening balance entry.</comment></data>
+</root>

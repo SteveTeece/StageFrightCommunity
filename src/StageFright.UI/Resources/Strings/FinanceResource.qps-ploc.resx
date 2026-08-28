@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Finance_Tile_Title" xml:space="preserve"><value>⟦Fíñáñçé—⟧</value><comment>Dashboard tile heading for the Finance module.</comment></data>
+  <data name="Finance_Tile_ActionText" xml:space="preserve"><value>⟦Ópéñ Fíñáñçé—⟧</value><comment>Action link on the Finance dashboard tile.</comment></data>
+  <data name="Finance_Tile_CurrentBalanceLabel" xml:space="preserve"><value>⟦Çúrréñt Báláñçé—⟧</value><comment>Finance tile label under the current organisation balance.</comment></data>
+  <data name="Finance_Tile_MonthIncome" xml:space="preserve"><value>⟦{Month} íñçómé +{Amount}—⟧</value><comment>Finance tile month-to-date income. {Month} = current month name, {Amount} = income formatted as AUD.</comment></data>
+  <data name="Finance_Tile_MonthExpenses" xml:space="preserve"><value>⟦éxpéñsés −{Amount}—⟧</value><comment>Finance tile month-to-date expenses. {Amount} = expenses formatted as AUD. The leading "−" is a minus sign.</comment></data>
+  <data name="Finance_CashFlowTile_Title" xml:space="preserve"><value>⟦Çásh flów · 6 móñths—⟧</value><comment>Dashboard tile heading for the six-month cash-flow chart.</comment></data>
+  <data name="Finance_CashFlowTile_Empty" xml:space="preserve"><value>⟦Ñó tráñsáçtíóñs íñ thé lást 6 móñths—⟧</value><comment>Cash-flow tile message shown when there are no transactions to chart.</comment></data>
+  <data name="Finance_CashFlowTile_IncomeSeries" xml:space="preserve"><value>⟦Íñçómé—⟧</value><comment>Cash-flow chart legend label for the monthly income bars.</comment></data>
+  <data name="Finance_CashFlowTile_ExpensesSeries" xml:space="preserve"><value>⟦Éxpéñsés—⟧</value><comment>Cash-flow chart legend label for the monthly expense bars.</comment></data>
+  <data name="Finance_OutstandingTile_Title" xml:space="preserve"><value>⟦Óútstáñdíñg Báláñçés—⟧</value><comment>Dashboard tile heading for outstanding member fee balances.</comment></data>
+  <data name="Finance_OutstandingTile_ActionText" xml:space="preserve"><value>⟦Víéw Mémbérs—⟧</value><comment>Action link on the Outstanding Balances dashboard tile.</comment></data>
+  <data name="Finance_OutstandingTile_MembersOwingLabel" xml:space="preserve"><value>⟦Mémbérs Ówíñg—⟧</value><comment>Outstanding Balances tile stat label — count of members with a balance owing.</comment></data>
+  <data name="Finance_OutstandingTile_AttendanceLabel" xml:space="preserve"><value>⟦Áttéñdáñçé—⟧</value><comment>Outstanding Balances tile stat label — outstanding attendance fees total.</comment></data>
+  <data name="Finance_OutstandingTile_AnnualLabel" xml:space="preserve"><value>⟦Áññúál—⟧</value><comment>Outstanding Balances tile stat label — outstanding annual fees total.</comment></data>
+  <data name="Finance_OutstandingTile_Empty" xml:space="preserve"><value>⟦Ñó óútstáñdíñg báláñçés thís ýéár—⟧</value><comment>Outstanding Balances tile message shown when there is no trend data to chart.</comment></data>
+  <data name="Finance_OutstandingTile_TotalOwedSeries" xml:space="preserve"><value>⟦Tótál Ówéd—⟧</value><comment>Outstanding Balances chart legend label for the combined total owed line.</comment></data>
+  <data name="Finance_OutstandingTile_AttendanceSeries" xml:space="preserve"><value>⟦Áttéñdáñçé—⟧</value><comment>Outstanding Balances chart legend label for the outstanding attendance fees line.</comment></data>
+  <data name="Finance_OutstandingTile_AnnualSeries" xml:space="preserve"><value>⟦Áññúál—⟧</value><comment>Outstanding Balances chart legend label for the outstanding annual fees line.</comment></data>
+  <data name="Finance_Page_PageTitle" xml:space="preserve"><value>⟦Fíñáñçé — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title — Finance page.</comment></data>
+  <data name="Finance_Page_Heading" xml:space="preserve"><value>⟦Fíñáñçé—⟧</value><comment>Finance page heading.</comment></data>
+  <data name="Finance_Page_TabOutstanding" xml:space="preserve"><value>⟦Óútstáñdíñg—⟧</value><comment>Finance tab — outstanding member balances.</comment></data>
+  <data name="Finance_Page_TabRecordIncome" xml:space="preserve"><value>⟦Réçórd Íñçómé—⟧</value><comment>Finance tab — record income.</comment></data>
+  <data name="Finance_Page_TabRecordExpense" xml:space="preserve"><value>⟦Réçórd Éxpéñsé—⟧</value><comment>Finance tab — record expense.</comment></data>
+  <data name="Finance_Page_TabAnnualFees" xml:space="preserve"><value>⟦Ápplý Áññúál Féés—⟧</value><comment>Finance tab — apply annual fees.</comment></data>
+  <data name="Finance_Page_AnnualFeesLink" xml:space="preserve"><value>⟦Gó tó Áññúál Féé Ápplíçátíóñ—⟧</value><comment>Link inside the Apply Annual Fees tab.</comment></data>
+  <data name="Finance_Common_RecordAnotherButton" xml:space="preserve"><value>⟦Réçórd Áñóthér—⟧</value><comment>Button shown after a successful entry to start another.</comment></data>
+  <data name="Finance_Common_ClearButton" xml:space="preserve"><value>⟦Çléár—⟧</value><comment>Button that resets a Finance form in place.</comment></data>
+  <data name="Finance_Common_SelectOption" xml:space="preserve"><value>⟦— séléçt ——⟧</value><comment>Placeholder option in a Finance account/select dropdown.</comment></data>
+  <data name="Finance_Common_DateLabel" xml:space="preserve"><value>⟦Dáté—⟧</value><comment>Finance form field label — date.</comment></data>
+  <data name="Finance_Common_AmountLabel" xml:space="preserve"><value>⟦Ámóúñt—⟧</value><comment>Finance form field label — amount.</comment></data>
+  <data name="Finance_Common_DescriptionLabel" xml:space="preserve"><value>⟦Désçríptíóñ—⟧</value><comment>Finance form field label — description.</comment></data>
+  <data name="Finance_Common_TaxTreatmentLabel" xml:space="preserve"><value>⟦Táx Tréátméñt—⟧</value><comment>Finance form field label — tax treatment.</comment></data>
+  <data name="Finance_Common_TaxExemptDefaultOption" xml:space="preserve"><value>⟦Táx-éxémpt (défáúlt)—⟧</value><comment>Default option in a tax-treatment dropdown.</comment></data>
+  <data name="Finance_Common_TaxInclusiveHint" xml:space="preserve"><value>⟦Íñçlúdés táx óf {Amount}—⟧</value><comment>Hint under a taxable amount. {Amount} = tax portion formatted as AUD.</comment></data>
+  <data name="Finance_Common_AmountPositiveError" xml:space="preserve"><value>⟦Ámóúñt múst bé gréátér tháñ zéró.—⟧</value><comment>Validation error when a Finance amount is zero or negative.</comment></data>
+  <data name="Finance_RecordIncome_NoAccountsHtml" xml:space="preserve"><value>⟦Ñó íñçómé áççóúñts áré çóñfígúréd. Pléásé ádd áñ íñçómé áççóúñt íñ thé &lt;á hréf="/fíñáñçé/áççóúñts"&gt;Çhárt óf Áççóúñts&lt;/á&gt; béfóré réçórdíñg íñçómé.—⟧</value><comment>Warning (contains a link to the Chart of Accounts) shown when no income accounts exist.</comment></data>
+  <data name="Finance_RecordIncome_AccountLabel" xml:space="preserve"><value>⟦Áççóúñt—⟧</value><comment>Record Income — account field label.</comment></data>
+  <data name="Finance_RecordIncome_DepositToLabel" xml:space="preserve"><value>⟦Dépósít tó—⟧</value><comment>Record Income — deposit-account field label.</comment></data>
+  <data name="Finance_RecordIncome_DescriptionPlaceholder" xml:space="preserve"><value>⟦é.g. Çhrístmás ráfflé, Áññúál fúñdráísér…—⟧</value><comment>Record Income — description placeholder.</comment></data>
+  <data name="Finance_RecordIncome_SubmitButton" xml:space="preserve"><value>⟦Réçórd Íñçómé—⟧</value><comment>Record Income — submit button.</comment></data>
+  <data name="Finance_RecordIncome_AccountRequiredError" xml:space="preserve"><value>⟦Pléásé séléçt á áççóúñt.—⟧</value><comment>Record Income — validation error when no account is chosen.</comment></data>
+  <data name="Finance_RecordIncome_LoadAccountsError" xml:space="preserve"><value>⟦Fáíléd tó lóád áççóúñts: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_RecordIncome_SuccessMessage" xml:space="preserve"><value>⟦Íñçómé óf {Amount} réçórdéd súççéssfúllý.—⟧</value><comment>{Amount} = income amount formatted as AUD.</comment></data>
+  <data name="Finance_RecordIncome_RecordError" xml:space="preserve"><value>⟦Fáíléd tó réçórd íñçómé: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Balances_LoadingText" xml:space="preserve"><value>⟦Lóádíñg mémbér báláñçés…—⟧</value><comment>Status text while member balances load.</comment></data>
+  <data name="Finance_Balances_EmptyText" xml:space="preserve"><value>⟦Ñó óútstáñdíñg báláñçés fóúñd.—⟧</value><comment>Shown when no members have an outstanding balance.</comment></data>
+  <data name="Finance_Balances_MemberColumn" xml:space="preserve"><value>⟦Mémbér—⟧</value><comment>Balances grid column — member name.</comment></data>
+  <data name="Finance_Balances_OutstandingColumn" xml:space="preserve"><value>⟦Óútstáñdíñg—⟧</value><comment>Balances grid column — outstanding amount.</comment></data>
+  <data name="Finance_Balances_FeeBreakdownColumn" xml:space="preserve"><value>⟦Féé Bréákdówñ—⟧</value><comment>Balances grid column — per-fee breakdown.</comment></data>
+  <data name="Finance_Balances_FeeDue" xml:space="preserve"><value>⟦dúé {Date}—⟧</value><comment>Fee breakdown — due date prefix. {Date} = formatted due date.</comment></data>
+  <data name="Finance_Balances_HideFeesButton" xml:space="preserve"><value>⟦Hídé féés—⟧</value><comment>Button that collapses the per-fee breakdown.</comment></data>
+  <data name="Finance_Balances_ShowFeesButton_One" xml:space="preserve"><value>⟦Shów {Count} féé—⟧</value><comment>Button that expands one fee. {Count} = 1.</comment></data>
+  <data name="Finance_Balances_ShowFeesButton_Other" xml:space="preserve"><value>⟦Shów {Count} féés—⟧</value><comment>Button that expands the fee breakdown. {Count} = number of fees.</comment></data>
+  <data name="Finance_Balances_RecordPaymentButton" xml:space="preserve"><value>⟦Réçórd Mémbér Páýméñt—⟧</value><comment>Button opening the payment form for a member.</comment></data>
+  <data name="Finance_Balances_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád báláñçés: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Payment_MemberLabel" xml:space="preserve"><value>⟦Mémbér:—⟧</value><comment>Label preceding the member name on the payment form.</comment></data>
+  <data name="Finance_Payment_MethodLabel" xml:space="preserve"><value>⟦Páýméñt Méthód—⟧</value><comment>Payment form — payment method field label.</comment></data>
+  <data name="Finance_Payment_TypeLabel" xml:space="preserve"><value>⟦Páýméñt Týpé—⟧</value><comment>Payment form — payment type field label.</comment></data>
+  <data name="Finance_Payment_NotesLabel" xml:space="preserve"><value>⟦Ñótés—⟧</value><comment>Payment form — notes field label.</comment></data>
+  <data name="Finance_Payment_SubmitButton" xml:space="preserve"><value>⟦Réçórd Mémbér Páýméñt—⟧</value><comment>Payment form — submit button.</comment></data>
+  <data name="Finance_Payment_UpdateNotesButton" xml:space="preserve"><value>⟦Úpdáté Ñótés—⟧</value><comment>Payment form — button to save an edited note after the payment is recorded.</comment></data>
+  <data name="Finance_Payment_BackToBalancesButton" xml:space="preserve"><value>⟦Báçk tó Báláñçés—⟧</value><comment>Payment form — button returning to the balances list after recording.</comment></data>
+  <data name="Finance_Payment_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád mémbér: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Payment_NoFeeSelectedError" xml:space="preserve"><value>⟦Át léást óñé óútstáñdíñg féé múst bé séléçtéd.—⟧</value><comment>Payment form validation — no fee selected.</comment></data>
+  <data name="Finance_Payment_AmountExceedsError" xml:space="preserve"><value>⟦Ámóúñt éxçééds thé séléçtéd féés' rémáíñíñg tótál.—⟧</value><comment>Payment form validation — amount too large.</comment></data>
+  <data name="Finance_Payment_SuccessMessage" xml:space="preserve"><value>⟦Páýméñt óf {Amount} réçórdéd súççéssfúllý.—⟧</value><comment>{Amount} = payment amount formatted as AUD.</comment></data>
+  <data name="Finance_Payment_RecordError" xml:space="preserve"><value>⟦Fáíléd tó réçórd páýméñt: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Payment_NotesUpdated" xml:space="preserve"><value>⟦Ñótés úpdátéd.—⟧</value><comment>Confirmation after editing a recorded payment's note.</comment></data>
+  <data name="Finance_Payment_UpdateNotesError" xml:space="preserve"><value>⟦Fáíléd tó úpdáté ñótés: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_FeeSelection_EmptyText" xml:space="preserve"><value>⟦Thís mémbér hás ñó óútstáñdíñg féés.—⟧</value><comment>Shown when the member has no outstanding fees to pay.</comment></data>
+  <data name="Finance_FeeSelection_SelectColumn" xml:space="preserve"><value>⟦Séléçt—⟧</value><comment>Fee-selection grid column — row select checkbox.</comment></data>
+  <data name="Finance_FeeSelection_SelectAllLabel" xml:space="preserve"><value>⟦Áll—⟧</value><comment>Label beside the select-all checkbox.</comment></data>
+  <data name="Finance_FeeSelection_SelectAllAriaLabel" xml:space="preserve"><value>⟦Séléçt áll óútstáñdíñg féés—⟧</value><comment>aria-label for the select-all checkbox.</comment></data>
+  <data name="Finance_FeeSelection_SelectRowAriaLabel" xml:space="preserve"><value>⟦Séléçt {FeeType} féé dátéd {Date}—⟧</value><comment>aria-label for a fee row checkbox. {FeeType} = localised fee type, {Date} = fee date.</comment></data>
+  <data name="Finance_FeeSelection_FeeTypeColumn" xml:space="preserve"><value>⟦Féé Týpé—⟧</value><comment>Fee-selection grid column — fee type.</comment></data>
+  <data name="Finance_FeeSelection_FeeDateColumn" xml:space="preserve"><value>⟦Féé Dáté—⟧</value><comment>Fee-selection grid column — fee date.</comment></data>
+  <data name="Finance_FeeSelection_DueDateColumn" xml:space="preserve"><value>⟦Dúé Dáté—⟧</value><comment>Fee-selection grid column — due date.</comment></data>
+  <data name="Finance_FeeSelection_RemainingColumn" xml:space="preserve"><value>⟦Rémáíñíñg Ámóúñt—⟧</value><comment>Fee-selection grid column — remaining amount owed.</comment></data>
+  <data name="Finance_AnnualFees_PageTitle" xml:space="preserve"><value>⟦Ápplý Áññúál Féés — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title — Apply Annual Fees page.</comment></data>
+  <data name="Finance_AnnualFees_Heading" xml:space="preserve"><value>⟦Ápplý Áññúál Mémbérshíp Féés—⟧</value><comment>Apply Annual Fees page heading.</comment></data>
+  <data name="Finance_AnnualFees_Intro" xml:space="preserve"><value>⟦Ápplý thé çúrréñt ýéár áññúál féé tó áll élígíblé áçtívé mémbérs.—⟧</value><comment>Intro text under the Apply Annual Fees heading.</comment></data>
+  <data name="Finance_AnnualFees_LoadingText" xml:space="preserve"><value>⟦Lóádíñg élígíblé mémbérs…—⟧</value><comment>Status text while eligible members load.</comment></data>
+  <data name="Finance_AnnualFees_BackToFinanceButton" xml:space="preserve"><value>⟦Báçk tó Fíñáñçé—⟧</value><comment>Link returning to the Finance page.</comment></data>
+  <data name="Finance_AnnualFees_ConfirmationHeading" xml:space="preserve"><value>⟦Çóñfírmátíóñ—⟧</value><comment>Card heading for the apply-annual-fees confirmation step.</comment></data>
+  <data name="Finance_AnnualFees_EligibleSummary_One" xml:space="preserve"><value>⟦{Count} áçtívé mémbér ís élígíblé fór áñ áññúál féé thís ýéár.—⟧</value><comment>{Count} = 1.</comment></data>
+  <data name="Finance_AnnualFees_EligibleSummary_Other" xml:space="preserve"><value>⟦{Count} áçtívé mémbérs áré élígíblé fór áñ áññúál féé thís ýéár.—⟧</value><comment>{Count} = number of eligible members.</comment></data>
+  <data name="Finance_AnnualFees_NoneEligible" xml:space="preserve"><value>⟦Ñó élígíblé mémbérs fóúñd. Éíthér áll áçtívé mémbérs álréádý hávé áñ áññúál féé fór thé çúrréñt ýéár, ór théré áré ñó áçtívé mémbérs.—⟧</value><comment>Shown when nobody is eligible.</comment></data>
+  <data name="Finance_AnnualFees_FeeAmountLabel" xml:space="preserve"><value>⟦Áññúál féé ámóúñt:—⟧</value><comment>Label preceding the configured annual fee amount.</comment></data>
+  <data name="Finance_AnnualFees_ApplyButton" xml:space="preserve"><value>⟦Ápplý Áññúál Féés—⟧</value><comment>Button that applies the annual fee to all eligible members.</comment></data>
+  <data name="Finance_AnnualFees_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád élígíblé mémbérs: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_AnnualFees_SuccessMessage_One" xml:space="preserve"><value>⟦Áññúál féés ápplíéd súççéssfúllý tó {Count} mémbér.—⟧</value><comment>{Count} = 1.</comment></data>
+  <data name="Finance_AnnualFees_SuccessMessage_Other" xml:space="preserve"><value>⟦Áññúál féés ápplíéd súççéssfúllý tó {Count} mémbérs.—⟧</value><comment>{Count} = number of members charged.</comment></data>
+  <data name="Finance_AnnualFees_ApplyError" xml:space="preserve"><value>⟦Fáíléd tó ápplý áññúál féés: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_BankDeposit_PageTitle" xml:space="preserve"><value>⟦Réçórd Báñk Dépósít—⟧</value><comment>Browser tab title — Record Bank Deposit page.</comment></data>
+  <data name="Finance_BankDeposit_Heading" xml:space="preserve"><value>⟦Réçórd Báñk Dépósít—⟧</value><comment>Record Bank Deposit page heading.</comment></data>
+  <data name="Finance_BankDeposit_NoAccountsHtml" xml:space="preserve"><value>⟦Báñk dépósíts ñééd át léást óñé báñk áççóúñt óthér tháñ Çásh óñ Háñd. Pléásé ádd á báñk áççóúñt íñ thé &lt;á hréf="/fíñáñçé/áççóúñts"&gt;Çhárt óf Áççóúñts&lt;/á&gt; fírst.—⟧</value><comment>Warning (contains a link to the Chart of Accounts) shown when no destination bank account exists.</comment></data>
+  <data name="Finance_BankDeposit_FromLabel" xml:space="preserve"><value>⟦Fróm—⟧</value><comment>Record Bank Deposit — source account label.</comment></data>
+  <data name="Finance_BankDeposit_FromValue" xml:space="preserve"><value>⟦Çásh óñ Háñd—⟧</value><comment>Record Bank Deposit — fixed source account shown as a disabled field.</comment></data>
+  <data name="Finance_BankDeposit_ToLabel" xml:space="preserve"><value>⟦Tó—⟧</value><comment>Record Bank Deposit — destination account label.</comment></data>
+  <data name="Finance_BankDeposit_DescriptionPlaceholder" xml:space="preserve"><value>⟦é.g. Báñkíñg óf réhéársál áttéñdáñçé féés…—⟧</value><comment>Record Bank Deposit — description placeholder.</comment></data>
+  <data name="Finance_BankDeposit_SubmitButton" xml:space="preserve"><value>⟦Réçórd Dépósít—⟧</value><comment>Record Bank Deposit — submit button.</comment></data>
+  <data name="Finance_BankDeposit_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád áççóúñts: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_BankDeposit_ToAccountRequiredError" xml:space="preserve"><value>⟦Pléásé séléçt thé déstíñátíóñ áççóúñt.—⟧</value><comment>Validation error when no destination account is chosen.</comment></data>
+  <data name="Finance_BankDeposit_SuccessMessage" xml:space="preserve"><value>⟦Dépósít óf {Amount} réçórdéd súççéssfúllý.—⟧</value><comment>{Amount} = deposit amount formatted as AUD.</comment></data>
+  <data name="Finance_BankDeposit_RecordError" xml:space="preserve"><value>⟦Fáíléd tó réçórd dépósít: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Coa_PageTitle" xml:space="preserve"><value>⟦Çhárt óf Áççóúñts—⟧</value><comment>Browser tab title — Chart of Accounts page.</comment></data>
+  <data name="Finance_Coa_Heading" xml:space="preserve"><value>⟦Çhárt óf Áççóúñts—⟧</value><comment>Chart of Accounts page heading.</comment></data>
+  <data name="Finance_Coa_LoadingText" xml:space="preserve"><value>⟦Lóádíñg áççóúñts…—⟧</value><comment>Status text while accounts load.</comment></data>
+  <data name="Finance_Coa_AddAccountHeading" xml:space="preserve"><value>⟦Ádd Áççóúñt—⟧</value><comment>Card heading for the add-account form.</comment></data>
+  <data name="Finance_Coa_ShowLabel" xml:space="preserve"><value>⟦Shów:—⟧</value><comment>Label before the account-type filter.</comment></data>
+  <data name="Finance_Coa_FilterAriaLabel" xml:space="preserve"><value>⟦Fíltér bý áççóúñt týpé—⟧</value><comment>aria-label on the account-type filter.</comment></data>
+  <data name="Finance_Coa_AllTypesOption" xml:space="preserve"><value>⟦Áll týpés—⟧</value><comment>Account-type filter — show all types.</comment></data>
+  <data name="Finance_Coa_FilterAssets" xml:space="preserve"><value>⟦Ásséts—⟧</value><comment>Account-type filter label — asset accounts.</comment></data>
+  <data name="Finance_Coa_FilterLiabilities" xml:space="preserve"><value>⟦Líábílítíés—⟧</value><comment>Account-type filter label — liability accounts.</comment></data>
+  <data name="Finance_Coa_FilterEquity" xml:space="preserve"><value>⟦Éqúítý—⟧</value><comment>Account-type filter label — equity accounts.</comment></data>
+  <data name="Finance_Coa_FilterIncome" xml:space="preserve"><value>⟦Íñçómé—⟧</value><comment>Account-type filter label — income accounts.</comment></data>
+  <data name="Finance_Coa_FilterExpenses" xml:space="preserve"><value>⟦Éxpéñsés—⟧</value><comment>Account-type filter label — expense accounts.</comment></data>
+  <data name="Finance_Coa_IncludeBalancesLabel" xml:space="preserve"><value>⟦Íñçlúdé Çúrréñt Báláñçés—⟧</value><comment>Toggle label — include balances when printing.</comment></data>
+  <data name="Finance_Coa_PrintButton" xml:space="preserve"><value>⟦Príñt Çhárt óf Áççóúñts—⟧</value><comment>Button that prints the chart of accounts.</comment></data>
+  <data name="Finance_Coa_ActiveAccountsHeading" xml:space="preserve"><value>⟦Áçtívé Áççóúñts—⟧</value><comment>Section heading — active accounts.</comment></data>
+  <data name="Finance_Coa_NoMatch" xml:space="preserve"><value>⟦Ñó áççóúñts mátçh thé çúrréñt fíltér.—⟧</value><comment>Shown when the filter excludes every account.</comment></data>
+  <data name="Finance_Coa_NumberColumn" xml:space="preserve"><value>⟦Ñó.—⟧</value><comment>Accounts grid column — account number.</comment></data>
+  <data name="Finance_Coa_NameColumn" xml:space="preserve"><value>⟦Ñámé—⟧</value><comment>Accounts grid column — account name.</comment></data>
+  <data name="Finance_Coa_RenameAriaLabel" xml:space="preserve"><value>⟦Ñéw ñámé fór {Name}—⟧</value><comment>aria-label on the inline rename field. {Name} = current account name.</comment></data>
+  <data name="Finance_Coa_SystemBadge" xml:space="preserve"><value>⟦Sýstém—⟧</value><comment>Badge marking a system account.</comment></data>
+  <data name="Finance_Coa_SystemBadgeTitle" xml:space="preserve"><value>⟦Sýstém áççóúñt—⟧</value><comment>Tooltip on the System badge.</comment></data>
+  <data name="Finance_Coa_BankBadge" xml:space="preserve"><value>⟦Báñk—⟧</value><comment>Badge marking a bank/cash account.</comment></data>
+  <data name="Finance_Coa_BankBadgeTitle" xml:space="preserve"><value>⟦Báñk / çásh áççóúñt—⟧</value><comment>Tooltip on the Bank badge.</comment></data>
+  <data name="Finance_Coa_TypeColumn" xml:space="preserve"><value>⟦Týpé—⟧</value><comment>Accounts grid column — account type.</comment></data>
+  <data name="Finance_Coa_BalanceColumn" xml:space="preserve"><value>⟦Báláñçé—⟧</value><comment>Accounts grid column — current balance.</comment></data>
+  <data name="Finance_Coa_BalanceErrorTitle" xml:space="preserve"><value>⟦Báláñçé çóúld ñót bé çálçúlátéd fór thís áççóúñt—⟧</value><comment>Tooltip shown when an account balance failed to compute.</comment></data>
+  <data name="Finance_Coa_RenameButton" xml:space="preserve"><value>⟦Réñámé—⟧</value><comment>Button that starts renaming an account.</comment></data>
+  <data name="Finance_Coa_ArchiveButton" xml:space="preserve"><value>⟦Árçhívé—⟧</value><comment>Button that archives an account.</comment></data>
+  <data name="Finance_Coa_ReadOnlyText" xml:space="preserve"><value>⟦Réád-óñlý—⟧</value><comment>Shown instead of actions for a system account.</comment></data>
+  <data name="Finance_Coa_ArchivedAccountsHeading" xml:space="preserve"><value>⟦Árçhívéd Áççóúñts—⟧</value><comment>Section heading — archived accounts.</comment></data>
+  <data name="Finance_Coa_RestoreButton" xml:space="preserve"><value>⟦Réstóré—⟧</value><comment>Button that restores an archived account.</comment></data>
+  <data name="Finance_Coa_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád áççóúñts: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Coa_CreatedMessage" xml:space="preserve"><value>⟦Áççóúñt '{Name}' çréátéd wíth ñúmbér {Number}.—⟧</value><comment>{Name} = new account name, {Number} = assigned account number.</comment></data>
+  <data name="Finance_Coa_CreateError" xml:space="preserve"><value>⟦Fáíléd tó çréáté áççóúñt: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Coa_RenamedMessage" xml:space="preserve"><value>⟦Áççóúñt réñáméd.—⟧</value><comment>Confirmation after renaming an account.</comment></data>
+  <data name="Finance_Coa_RenameError" xml:space="preserve"><value>⟦Fáíléd tó réñámé áççóúñt: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Coa_ArchivedMessage" xml:space="preserve"><value>⟦Áççóúñt árçhívéd.—⟧</value><comment>Confirmation after archiving an account.</comment></data>
+  <data name="Finance_Coa_ArchiveError" xml:space="preserve"><value>⟦Fáíléd tó árçhívé áççóúñt: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Coa_RestoredMessage" xml:space="preserve"><value>⟦Áççóúñt réstóréd.—⟧</value><comment>Confirmation after restoring an account.</comment></data>
+  <data name="Finance_Coa_RestoreError" xml:space="preserve"><value>⟦Fáíléd tó réstóré áççóúñt: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Coa_PrintError" xml:space="preserve"><value>⟦Úñáblé tó príñt. Pléásé trý ágáíñ.—⟧</value><comment>Shown when printing the chart of accounts fails.</comment></data>
+  <data name="Finance_Expense_PageTitle" xml:space="preserve"><value>⟦Réçórd Éxpéñsé—⟧</value><comment>Browser tab title — Record Expense page.</comment></data>
+  <data name="Finance_Expense_Heading" xml:space="preserve"><value>⟦Réçórd Éxpéñsé—⟧</value><comment>Record Expense page heading.</comment></data>
+  <data name="Finance_Expense_NoAccountsHtml" xml:space="preserve"><value>⟦Ñó éxpéñsé áççóúñts áré çóñfígúréd. Pléásé ádd áñ éxpéñsé áççóúñt íñ thé &lt;á hréf="/fíñáñçé/áççóúñts"&gt;Çhárt óf Áççóúñts&lt;/á&gt; béfóré réçórdíñg áñ éxpéñsé.—⟧</value><comment>Warning (contains a link to the Chart of Accounts) shown when no expense accounts exist.</comment></data>
+  <data name="Finance_Expense_PaidFromLabel" xml:space="preserve"><value>⟦Páíd fróm—⟧</value><comment>Record Expense — bank account field label.</comment></data>
+  <data name="Finance_Expense_ExpenseAccountLabel" xml:space="preserve"><value>⟦Éxpéñsé áççóúñt—⟧</value><comment>Record Expense — expense account field label.</comment></data>
+  <data name="Finance_Expense_PayeeLabel" xml:space="preserve"><value>⟦Páýéé—⟧</value><comment>Record Expense — payee field label.</comment></data>
+  <data name="Finance_Expense_PayeePlaceholder" xml:space="preserve"><value>⟦Whó wás páíd, é.g. Sçóút Háll Trúst—⟧</value><comment>Record Expense — payee placeholder.</comment></data>
+  <data name="Finance_Expense_DescriptionPlaceholder" xml:space="preserve"><value>⟦é.g. Háll híré fór Márçh réhéársáls…—⟧</value><comment>Record Expense — description placeholder.</comment></data>
+  <data name="Finance_Expense_SubmitButton" xml:space="preserve"><value>⟦Réçórd Éxpéñsé—⟧</value><comment>Record Expense — submit button.</comment></data>
+  <data name="Finance_Expense_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád áççóúñts: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Expense_BankAccountRequiredError" xml:space="preserve"><value>⟦Pléásé séléçt thé áççóúñt thé éxpéñsé wás páíd fróm.—⟧</value><comment>Validation error when no paying account is chosen.</comment></data>
+  <data name="Finance_Expense_ExpenseAccountRequiredError" xml:space="preserve"><value>⟦Pléásé séléçt áñ éxpéñsé áççóúñt.—⟧</value><comment>Validation error when no expense account is chosen.</comment></data>
+  <data name="Finance_Expense_SuccessMessage" xml:space="preserve"><value>⟦Éxpéñsé óf {Amount} réçórdéd súççéssfúllý.—⟧</value><comment>{Amount} = expense amount formatted as AUD.</comment></data>
+  <data name="Finance_Expense_RecordError" xml:space="preserve"><value>⟦Fáíléd tó réçórd éxpéñsé: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Journal_PageTitle" xml:space="preserve"><value>⟦Jóúrñál Éñtrý—⟧</value><comment>Browser tab title — Journal Entry page.</comment></data>
+  <data name="Finance_Journal_Heading" xml:space="preserve"><value>⟦Jóúrñál Éñtrý—⟧</value><comment>Journal Entry page heading.</comment></data>
+  <data name="Finance_Journal_DescriptionPlaceholder" xml:space="preserve"><value>⟦Whý thís jóúrñál ís béíñg póstéd—⟧</value><comment>Journal Entry — description placeholder.</comment></data>
+  <data name="Finance_Journal_AccountColumn" xml:space="preserve"><value>⟦Áççóúñt—⟧</value><comment>Journal lines table column — account.</comment></data>
+  <data name="Finance_Journal_DebitColumn" xml:space="preserve"><value>⟦Débít—⟧</value><comment>Journal lines table column — debit amount.</comment></data>
+  <data name="Finance_Journal_CreditColumn" xml:space="preserve"><value>⟦Çrédít—⟧</value><comment>Journal lines table column — credit amount.</comment></data>
+  <data name="Finance_Journal_AccountAriaLabel" xml:space="preserve"><value>⟦Áççóúñt—⟧</value><comment>aria-label on a journal line's account select.</comment></data>
+  <data name="Finance_Journal_DebitAriaLabel" xml:space="preserve"><value>⟦Débít ámóúñt—⟧</value><comment>aria-label on a journal line's debit input.</comment></data>
+  <data name="Finance_Journal_CreditAriaLabel" xml:space="preserve"><value>⟦Çrédít ámóúñt—⟧</value><comment>aria-label on a journal line's credit input.</comment></data>
+  <data name="Finance_Journal_RemoveLineAriaLabel" xml:space="preserve"><value>⟦Rémóvé líñé—⟧</value><comment>aria-label on a journal line's remove button.</comment></data>
+  <data name="Finance_Journal_TotalsLabel" xml:space="preserve"><value>⟦Tótáls—⟧</value><comment>Journal lines table footer — totals row label.</comment></data>
+  <data name="Finance_Journal_AddLineButton" xml:space="preserve"><value>⟦Ádd Líñé—⟧</value><comment>Button that adds a journal line.</comment></data>
+  <data name="Finance_Journal_BalancedBadge" xml:space="preserve"><value>⟦Báláñçéd—⟧</value><comment>Badge shown when debits equal credits.</comment></data>
+  <data name="Finance_Journal_OutOfBalanceBadge" xml:space="preserve"><value>⟦Óút óf báláñçé bý {Amount}—⟧</value><comment>Badge shown when the journal does not balance. {Amount} = difference formatted as AUD.</comment></data>
+  <data name="Finance_Journal_PostingText" xml:space="preserve"><value>⟦Póstíñg…—⟧</value><comment>Save button text while the journal posts.</comment></data>
+  <data name="Finance_Journal_PostButton" xml:space="preserve"><value>⟦Póst Jóúrñál—⟧</value><comment>Button that posts the journal.</comment></data>
+  <data name="Finance_Journal_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád áççóúñts: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Journal_SuccessMessage" xml:space="preserve"><value>⟦Jóúrñál óf {Amount} póstéd súççéssfúllý.—⟧</value><comment>{Amount} = journal total formatted as AUD.</comment></data>
+  <data name="Finance_Journal_PostError" xml:space="preserve"><value>⟦Fáíléd tó póst jóúrñál: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_OpeningBalances_PageTitle" xml:space="preserve"><value>⟦Ópéñíñg Báláñçés—⟧</value><comment>Browser tab title — Opening Balances wizard.</comment></data>
+  <data name="Finance_OpeningBalances_Heading" xml:space="preserve"><value>⟦Ópéñíñg Báláñçés—⟧</value><comment>Opening Balances wizard heading.</comment></data>
+  <data name="Finance_OpeningBalances_StepOf" xml:space="preserve"><value>⟦Stép {Step} óf 2—⟧</value><comment>Wizard progress. {Step} = current step number.</comment></data>
+  <data name="Finance_OpeningBalances_Step1Heading" xml:space="preserve"><value>⟦Stép 1 — Ás-át dáté—⟧</value><comment>Opening Balances wizard — step 1 heading.</comment></data>
+  <data name="Finance_OpeningBalances_Step1Intro" xml:space="preserve"><value>⟦Çhóósé thé dáté thé ópéñíñg báláñçés ápplý fróm — úsúállý thé fírst dáý óf ýóúr fíñáñçíál ýéár.—⟧</value><comment>Opening Balances wizard — step 1 explanation.</comment></data>
+  <data name="Finance_OpeningBalances_AsAtLabel" xml:space="preserve"><value>⟦Ás át—⟧</value><comment>Opening Balances wizard — as-at date field label.</comment></data>
+  <data name="Finance_OpeningBalances_NextButton" xml:space="preserve"><value>⟦Ñéxt—⟧</value><comment>Opening Balances wizard — advance to step 2.</comment></data>
+  <data name="Finance_OpeningBalances_Step2Heading" xml:space="preserve"><value>⟦Stép 2 — Éñtér báláñçés—⟧</value><comment>Opening Balances wizard — step 2 heading.</comment></data>
+  <data name="Finance_OpeningBalances_BackButton" xml:space="preserve"><value>⟦Báçk—⟧</value><comment>Opening Balances wizard — return to step 1.</comment></data>
+  <data name="Finance_OpeningBalances_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád áççóúñts: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_OpeningBalances_SuccessMessage" xml:space="preserve"><value>⟦Ópéñíñg báláñçés ás át {Date} póstéd súççéssfúllý.—⟧</value><comment>{Date} = as-at date, long format.</comment></data>
+  <data name="Finance_OpeningBalances_PostError" xml:space="preserve"><value>⟦Fáíléd tó póst ópéñíñg báláñçés: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Reconciliation_ListPageTitle" xml:space="preserve"><value>⟦Báñk Réçóñçílíátíóñ—⟧</value><comment>Browser tab title — Bank Reconciliation list.</comment></data>
+  <data name="Finance_Reconciliation_ListHeading" xml:space="preserve"><value>⟦Báñk Réçóñçílíátíóñ—⟧</value><comment>Bank Reconciliation list heading.</comment></data>
+  <data name="Finance_Reconciliation_NoAccountsHtml" xml:space="preserve"><value>⟦Ñó báñk ór çásh áççóúñts éxíst ýét. Çréáté óñé óñ thé &lt;á hréf="/fíñáñçé/áççóúñts"&gt;Çhárt óf Áççóúñts&lt;/á&gt; págé fírst.—⟧</value><comment>Warning (contains a link to the Chart of Accounts) shown when no bank/cash account exists.</comment></data>
+  <data name="Finance_Reconciliation_AccountLabel" xml:space="preserve"><value>⟦Áççóúñt:—⟧</value><comment>Label before the reconcile-account picker.</comment></data>
+  <data name="Finance_Reconciliation_AccountAriaLabel" xml:space="preserve"><value>⟦Báñk áççóúñt tó réçóñçílé—⟧</value><comment>aria-label on the reconcile-account picker.</comment></data>
+  <data name="Finance_Reconciliation_SelectAccountOption" xml:space="preserve"><value>⟦Séléçt áñ áççóúñt…—⟧</value><comment>Placeholder option in the reconcile-account picker.</comment></data>
+  <data name="Finance_Reconciliation_DraftInProgress" xml:space="preserve"><value>⟦Á dráft réçóñçílíátíóñ tó {Date} ís íñ prógréss.—⟧</value><comment>{Date} = draft statement date.</comment></data>
+  <data name="Finance_Reconciliation_ResumeDraftButton" xml:space="preserve"><value>⟦Résúmé Dráft—⟧</value><comment>Button that opens the in-progress draft reconciliation.</comment></data>
+  <data name="Finance_Reconciliation_NewHeading" xml:space="preserve"><value>⟦Ñéw Réçóñçílíátíóñ—⟧</value><comment>Card heading for starting a new reconciliation.</comment></data>
+  <data name="Finance_Reconciliation_StatementDateLabel" xml:space="preserve"><value>⟦Státéméñt dáté—⟧</value><comment>New reconciliation — statement date field label.</comment></data>
+  <data name="Finance_Reconciliation_ClosingBalanceLabel" xml:space="preserve"><value>⟦Státéméñt çlósíñg báláñçé—⟧</value><comment>Reconciliation — statement closing balance label.</comment></data>
+  <data name="Finance_Reconciliation_NotesLabel" xml:space="preserve"><value>⟦Ñótés (óptíóñál)—⟧</value><comment>New reconciliation — notes field label.</comment></data>
+  <data name="Finance_Reconciliation_StartingText" xml:space="preserve"><value>⟦Stártíñg…—⟧</value><comment>Start button text while the reconciliation is being created.</comment></data>
+  <data name="Finance_Reconciliation_StartButton" xml:space="preserve"><value>⟦Stárt Réçóñçílíátíóñ—⟧</value><comment>Button that starts a new reconciliation.</comment></data>
+  <data name="Finance_Reconciliation_HistoryHeading" xml:space="preserve"><value>⟦Hístórý—⟧</value><comment>Section heading — past reconciliations for the account.</comment></data>
+  <data name="Finance_Reconciliation_HistoryEmpty" xml:space="preserve"><value>⟦Ñó réçóñçílíátíóñs fór thís áççóúñt ýét.—⟧</value><comment>Shown when the account has no reconciliation history.</comment></data>
+  <data name="Finance_Reconciliation_StatementDateColumn" xml:space="preserve"><value>⟦Státéméñt Dáté—⟧</value><comment>History grid column — statement date.</comment></data>
+  <data name="Finance_Reconciliation_OpeningColumn" xml:space="preserve"><value>⟦Ópéñíñg—⟧</value><comment>History grid column — opening balance.</comment></data>
+  <data name="Finance_Reconciliation_ClosingColumn" xml:space="preserve"><value>⟦Çlósíñg—⟧</value><comment>History grid column — statement closing balance.</comment></data>
+  <data name="Finance_Reconciliation_ResumeButton" xml:space="preserve"><value>⟦Résúmé—⟧</value><comment>History grid — resume a draft reconciliation.</comment></data>
+  <data name="Finance_Reconciliation_ViewButton" xml:space="preserve"><value>⟦Víéw—⟧</value><comment>History grid — view a finalised reconciliation.</comment></data>
+  <data name="Finance_Reconciliation_LoadAccountsError" xml:space="preserve"><value>⟦Fáíléd tó lóád báñk áççóúñts: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Reconciliation_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád réçóñçílíátíóñs: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Reconciliation_StartError" xml:space="preserve"><value>⟦Fáíléd tó stárt réçóñçílíátíóñ: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Reconciliation_WorkspacePageTitle" xml:space="preserve"><value>⟦Réçóñçílé Áççóúñt—⟧</value><comment>Browser tab title — reconciliation workspace.</comment></data>
+  <data name="Finance_Reconciliation_WorkspaceLoadingText" xml:space="preserve"><value>⟦Lóádíñg réçóñçílíátíóñ…—⟧</value><comment>Status text while the reconciliation workspace loads.</comment></data>
+  <data name="Finance_Reconciliation_NotFoundHtml" xml:space="preserve"><value>⟦Réçóñçílíátíóñ ñót fóúñd. &lt;á hréf="/fíñáñçé/réçóñçílíátíóñ"&gt;Báçk tó réçóñçílíátíóñs&lt;/á&gt;.—⟧</value><comment>Shown (with a link back) when the reconciliation id is unknown.</comment></data>
+  <data name="Finance_Reconciliation_ReconcilePrefix" xml:space="preserve"><value>⟦Réçóñçílé — —⟧</value><comment>Heading prefix before the account name in the workspace.</comment></data>
+  <data name="Finance_Reconciliation_ToDate" xml:space="preserve"><value>⟦tó {Date}—⟧</value><comment>Workspace heading suffix. {Date} = statement date.</comment></data>
+  <data name="Finance_Reconciliation_OpeningBalanceLabel" xml:space="preserve"><value>⟦Ópéñíñg báláñçé—⟧</value><comment>Workspace summary card — opening balance.</comment></data>
+  <data name="Finance_Reconciliation_ClearedLabel" xml:space="preserve"><value>⟦Çléáréd—⟧</value><comment>Workspace summary card — cleared total.</comment></data>
+  <data name="Finance_Reconciliation_DifferenceLabel" xml:space="preserve"><value>⟦Dífféréñçé—⟧</value><comment>Workspace summary card — difference.</comment></data>
+  <data name="Finance_Reconciliation_ClearedColumn" xml:space="preserve"><value>⟦Çléáréd—⟧</value><comment>Workspace grid column — cleared checkbox.</comment></data>
+  <data name="Finance_Reconciliation_ClearedAriaLabel" xml:space="preserve"><value>⟦Çléáréd—⟧</value><comment>aria-label on a transaction's cleared checkbox.</comment></data>
+  <data name="Finance_Reconciliation_DateColumn" xml:space="preserve"><value>⟦Dáté—⟧</value><comment>Workspace grid column — transaction date.</comment></data>
+  <data name="Finance_Reconciliation_DepositColumn" xml:space="preserve"><value>⟦Dépósít—⟧</value><comment>Workspace grid column — deposit amount.</comment></data>
+  <data name="Finance_Reconciliation_PaymentColumn" xml:space="preserve"><value>⟦Páýméñt—⟧</value><comment>Workspace grid column — payment amount.</comment></data>
+  <data name="Finance_Reconciliation_NoTransactions" xml:space="preserve"><value>⟦Ñó tráñsáçtíóñs óñ thís áççóúñt úp tó thé státéméñt dáté.—⟧</value><comment>Shown when there are no transactions to reconcile.</comment></data>
+  <data name="Finance_Reconciliation_FinaliseButton" xml:space="preserve"><value>⟦Fíñálísé—⟧</value><comment>Button that finalises a balanced reconciliation.</comment></data>
+  <data name="Finance_Reconciliation_DeleteDraftButton" xml:space="preserve"><value>⟦Délété Dráft—⟧</value><comment>Button that deletes the draft reconciliation.</comment></data>
+  <data name="Finance_Reconciliation_BackButton" xml:space="preserve"><value>⟦Báçk—⟧</value><comment>Link back to the reconciliation list.</comment></data>
+  <data name="Finance_Reconciliation_WorkspaceLoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád réçóñçílíátíóñ: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Reconciliation_ToggleError" xml:space="preserve"><value>⟦Fáíléd tó úpdáté çléáréd státé: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Reconciliation_FinaliseError" xml:space="preserve"><value>⟦Fáíléd tó fíñálísé: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Reconciliation_DeleteError" xml:space="preserve"><value>⟦Fáíléd tó délété dráft: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+</root>

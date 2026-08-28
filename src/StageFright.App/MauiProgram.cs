@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -11,6 +12,7 @@ using Serilog.Events;
 using StageFright.App.Seeding;
 using StageFright.Core.Contracts;
 using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization;
 using StageFright.Core.Modules.Agm;
 using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Dashboard;
@@ -179,6 +181,14 @@ public static class MauiProgram
                 sp.GetRequiredService<ILogger<MissingKeyLoggingLocalizerFactory>>()));
         services.AddScoped<ILocalizer, Localizer>();
 
+        // Display-language resolution (spec 027, US3). The catalog discovers the shipped
+        // resource cultures at runtime (FR-011); SystemCultureProvider reads the OS UI culture;
+        // LanguageProvider resolves the startup culture — explicit Settings.LanguageCode → OS
+        // language → en-AU (FR-023) — and RunStartupSequence applies it before the first render.
+        services.AddSingleton<ISupportedLanguagesCatalog, SupportedLanguagesCatalog>();
+        services.AddSingleton<ISystemCultureProvider, SystemCultureProvider>();
+        services.AddScoped<ILanguageProvider, LanguageProvider>();
+
         services.AddScoped<IAuditTrailService, AuditTrailService>();
         services.AddScoped<ISetupService, SetupService>();
         services.AddSingleton<IDeviceThemePreferenceProvider, MauiDeviceThemePreferenceProvider>();
@@ -301,6 +311,24 @@ public static class MauiProgram
         {
             Log.Fatal(ex, "Database migration failed; application cannot start");
             throw;
+        }
+
+        // Apply the resolved display culture before the BlazorWebView first renders (spec 027,
+        // US3 / FR-023). LanguageProvider never throws; if anything here fails the process stays
+        // on its default culture and startup continues.
+        try
+        {
+            var languageProvider = scope.ServiceProvider.GetRequiredService<ILanguageProvider>();
+            var culture = languageProvider.ResolveStartupCultureAsync().GetAwaiter().GetResult();
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            CultureInfo.CurrentCulture = culture;
+            CultureInfo.CurrentUICulture = culture;
+            Log.Information("Display culture resolved to {Culture}", culture.Name);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to resolve/apply the display culture; continuing on the default culture");
         }
 
         // Run plugin migrations

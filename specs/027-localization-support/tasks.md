@@ -140,44 +140,44 @@ The one shared localization mechanism every story builds on: area resource marke
 
 ### Tests (write to fail first)
 
-- [ ] **T046** [US3] `LanguageProvider.ResolveStartupCultureAsync` ladder (explicit → OS exact → OS parent → en-AU, FR-023/SC-010), `SupportedLanguagesCatalog` runtime discovery + `qps-*` exclusion + endonym-from-`NativeName` (FR-011), `Find` null/blank/unknown; `AddLanguageCodeToSettings` migration round-trip; startup honours persisted `LanguageCode` (SC-005) and a switch leaves DB + GL byte-identical (SC-006) · `tests/StageFright.Core.Tests/Localization/`, `tests/StageFright.Data.Tests/`, `tests/StageFright.Integration.Tests/`
-- [ ] **T047** [US3] `qps-ploc` end-to-end: catalog never lists it; selecting it re-presents the app; deliberately-omitted keys fall back to en-AU and log a Warning (SC-003/SC-004); bUnit — the language picker lists endonyms, marks the active one, and shows the restart notice (FR-012/FR-021) · `tests/StageFright.Localization.Tests/`, `tests/StageFright.UI.Tests/`
+- [x] **T046** [US3] `LanguageProvider.ResolveStartupCultureAsync` ladder (explicit → OS exact → OS parent → en-AU, FR-023/SC-010), `SupportedLanguagesCatalog` runtime discovery + `qps-*` exclusion + endonym-from-`NativeName` (FR-011), `Find` null/blank/unknown; `AddLanguageCodeToSettings` migration round-trip; startup honours persisted `LanguageCode` (SC-005) and a switch leaves DB + GL byte-identical (SC-006) · `tests/StageFright.Core.Tests/Localization/`, `tests/StageFright.Data.Tests/`, `tests/StageFright.Integration.Tests/`
+- [x] **T047** [US3] `qps-ploc` end-to-end: catalog never lists it; selecting it re-presents the app; deliberately-omitted keys fall back to en-AU and log a Warning (SC-003/SC-004); bUnit — the language picker lists endonyms, marks the active one, and shows the restart notice (FR-012/FR-021) · `tests/StageFright.Localization.Tests/`, `tests/StageFright.UI.Tests/`
 
 ### Implementation
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T048** [P] [US3] Add `public string? LanguageCode { get; set; }` (+ optional `HasMaxLength(16)` in the EF config); bump `Settings.SchemaVersion` patch · `src/StageFright.Core/Entities/Settings.cs` (+ `StageFrightDbContext` config)
-- [ ] **T049** [P] [US3] Contracts `ILanguageProvider`, `ISupportedLanguagesCatalog`, `ISystemCultureProvider` · `src/StageFright.Core/Contracts/ILanguageProvider.cs`, `ISupportedLanguagesCatalog.cs`, `ISystemCultureProvider.cs`
-- [ ] **T050** [P] [US3] `SupportedLanguage` immutable value object (`CultureCode`, `Endonym` from `CultureInfo.NativeName`, `IsDefault`; equality by `CultureCode`) · `src/StageFright.Core/Modules/Localization/SupportedLanguage.cs`
+- [x] **T048** [P] [US3] Add `public string? LanguageCode { get; set; }` (+ optional `HasMaxLength(16)` in the EF config); bump `Settings.SchemaVersion` patch · `src/StageFright.Core/Entities/Settings.cs` (+ `StageFrightDbContext` config)
+- [x] **T049** [P] [US3] Contracts `ILanguageProvider`, `ISupportedLanguagesCatalog`, `ISystemCultureProvider` · `src/StageFright.Core/Contracts/ILanguageProvider.cs`, `ISupportedLanguagesCatalog.cs`, `ISystemCultureProvider.cs`
+- [x] **T050** [P] [US3] `SupportedLanguage` immutable value object (`CultureCode`, `Endonym` from `CultureInfo.NativeName`, `IsDefault`; equality by `CultureCode`) · `src/StageFright.Core/Modules/Localization/SupportedLanguage.cs`
 
 **⟶ Wait for T048, then:**
 
-- [ ] **T051** [US3] Generate EF migration `AddLanguageCodeToSettings` (`Up`: `AddColumn<string>("LanguageCode","Settings", nullable:true)`; `Down`: `DropColumn`) + regenerate `StageFrightDbContextModelSnapshot.cs` · `src/StageFright.Data/Migrations/`
+- [x] **T051** [US3] Generate EF migration `AddLanguageCodeToSettings` (`Up`: `AddColumn<string>("LanguageCode","Settings", nullable:true)`; `Down`: `DropColumn`) + regenerate `StageFrightDbContextModelSnapshot.cs` · `src/StageFright.Data/Migrations/`
 
 **⟶ Wait for T049 + T050, then:**
 
 **Wave 2 — independent (different files):**
 
-- [ ] **T052** [P] [US3] `SupportedLanguagesCatalog` — build `All` at runtime by enumerating shipped resource cultures (neutral en-AU + `<Marker>.<culture>.resx` satellites), endonyms from `CultureInfo.NativeName`, exclude `qps-*`; `Default` = the `IsDefault` entry; `Find` resolves null/blank/unknown to `null` (FR-011) · `src/StageFright.Core/Modules/Localization/SupportedLanguagesCatalog.cs`
-- [ ] **T053** [P] [US3] `LanguageProvider` — resolution ladder over `ISettingsService` + `ISupportedLanguagesCatalog` + `ISystemCultureProvider`; `DefaultCulture` = en-AU; never throws (FR-023/FR-017) · `src/StageFright.Core/Modules/Localization/LanguageProvider.cs`
-- [ ] **T054** [P] [US3] `SystemCultureProvider : ISystemCultureProvider` over the device/OS UI culture (`CultureInfo.InstalledUICulture` / MAUI device culture) · `src/StageFright.App/SystemCultureProvider.cs`
+- [x] **T052** [P] [US3] `SupportedLanguagesCatalog` — build `All` at runtime by enumerating shipped resource cultures (neutral en-AU + `<Marker>.<culture>.resx` satellites), endonyms from `CultureInfo.NativeName`, exclude `qps-*`; `Default` = the `IsDefault` entry; `Find` resolves null/blank/unknown to `null` (FR-011) · `src/StageFright.Core/Modules/Localization/SupportedLanguagesCatalog.cs`
+- [x] **T053** [P] [US3] `LanguageProvider` — resolution ladder over `ISettingsService` + `ISupportedLanguagesCatalog` + `ISystemCultureProvider`; `DefaultCulture` = en-AU; never throws (FR-023/FR-017) · `src/StageFright.Core/Modules/Localization/LanguageProvider.cs`
+- [x] **T054** [P] [US3] `SystemCultureProvider : ISystemCultureProvider` over the device/OS UI culture (`CultureInfo.InstalledUICulture` / MAUI device culture) · `src/StageFright.App/SystemCultureProvider.cs`
 
 **⟶ Wait for Wave 2, then:**
 
-- [ ] **T055** [US3] Startup culture wiring: register `ILanguageProvider` / `ISupportedLanguagesCatalog` / `ISystemCultureProvider`; in the startup scope call `ResolveStartupCultureAsync()` and set `CultureInfo.DefaultThreadCurrentCulture` / `DefaultThreadCurrentUICulture` **before** the `BlazorWebView` first renders · `src/StageFright.App/MauiProgram.cs`
+- [x] **T055** [US3] Startup culture wiring: register `ILanguageProvider` / `ISupportedLanguagesCatalog` / `ISystemCultureProvider`; in the startup scope call `ResolveStartupCultureAsync()` and set `CultureInfo.DefaultThreadCurrentCulture` / `DefaultThreadCurrentUICulture` **before** the `BlazorWebView` first renders · `src/StageFright.App/MauiProgram.cs`
 
 **⟶ Wait for T055, then:**
 
 **Wave 3 — independent (different files):**
 
-- [ ] **T056** [P] [US3] Language `<select>` bound to `ISupportedLanguagesCatalog.All` by endonym, marks the active one, persists `Settings.LanguageCode`, shows an inline restart notice (FR-012/FR-014/FR-021); keys → `SettingsResource.resx` · `src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor` + `.razor.cs`
-- [ ] **T057** [P] [US3] Setup Wizard first-run language step, pre-selecting the FR-023-resolved default (FR-013); keys → `SetupResource.resx` · `src/StageFright.UI/Pages/Setup/Tabs/*`
-- [ ] **T058** [P] [US3] `qps-ploc` pseudo-locale fixtures — `<Marker>.qps-ploc.resx` beside each neutral file (bracketed/accented values, ~3 keys deliberately omitted), wired as test-fixture `Content`, **not** a shipped satellite (Decision 9) · `src/**/Resources/**/*.qps-ploc.resx`, `tests/StageFright.Localization.Tests/`
+- [x] **T056** [P] [US3] Language `<select>` bound to `ISupportedLanguagesCatalog.All` by endonym, marks the active one, persists `Settings.LanguageCode`, shows an inline restart notice (FR-012/FR-014/FR-021); keys → `SettingsResource.resx` · `src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor` + `.razor.cs`
+- [x] **T057** [P] [US3] Setup Wizard first-run language step, pre-selecting the FR-023-resolved default (FR-013); keys → `SetupResource.resx` · `src/StageFright.UI/Pages/Setup/Tabs/*`
+- [x] **T058** [P] [US3] `qps-ploc` pseudo-locale fixtures — `<Marker>.qps-ploc.resx` beside each neutral file (bracketed/accented values, ~3 keys deliberately omitted), wired as test-fixture `Content`, **not** a shipped satellite (Decision 9) · `src/**/Resources/**/*.qps-ploc.resx`, `tests/StageFright.Localization.Tests/`
 
 **⟶ Wait for Wave 3, then:**
 
-- [ ] **T059** [US3] Add the `LanguageProvider` cascading-component seam (parallel to `ThemeProvider`) so a later story can add in-session live switching without touching call sites — no behaviour change in v1 (FR-021) · `src/StageFright.UI/Layout/` (new cascading provider + `ShellLayout` wrap)
+- [x] **T059** [US3] Add the `LanguageProvider` cascading-component seam (parallel to `ThemeProvider`) so a later story can add in-session live switching without touching call sites — no behaviour change in v1 (FR-021) · `src/StageFright.UI/Layout/` (new cascading provider + `ShellLayout` wrap)
 
 **Checkpoint US3**: A fresh install follows the OS display language when a matching set ships and en-AU otherwise (SC-010); an explicit pick persists, wins over the OS language, and applies on next launch with a restart notice (SC-005); `qps-ploc` demonstrates a language added with zero code changes plus per-key fallback and logging (SC-003/SC-004); a language switch changes zero stored data or GL balances (SC-006).
 

@@ -84,6 +84,7 @@ public class SetupService : ISetupService
             MaxAgeRangeYears = 150,
             MinimumMemberAge = 0,
             Theme = request.Theme,
+            LanguageCode = request.LanguageCode,
             SchemaVersion = "1.1.0",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow

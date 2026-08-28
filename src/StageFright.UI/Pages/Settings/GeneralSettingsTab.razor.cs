@@ -5,6 +5,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization;
 using StageFright.UI.Layout;
 using StageFright.UI.Resources.Strings;
 using AppSettings = StageFright.Core.Entities.Settings;
@@ -18,6 +19,7 @@ public partial class GeneralSettingsTab : ComponentBase
     [Inject] private IStringLocalizer<SettingsResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ISupportedLanguagesCatalog Languages { get; set; } = null!;
 
     [CascadingParameter] private ThemeProvider? ThemeProvider { get; set; }
 
@@ -26,6 +28,17 @@ public partial class GeneralSettingsTab : ComponentBase
     private bool _saving;
     private string? _errorMessage;
     private string? _successMessage;
+
+    // Display-language picker (spec 027, US3). The selection is applied on the next launch
+    // (FR-021) — persisted with the rest of the General tab on Save. `_initialLanguageCode`
+    // captures the loaded value so the restart notice shows the moment the selection differs.
+    // Clearing the explicit choice back to "follow the OS language" (null) is only observable
+    // with more than one shipped language and is out of scope while en-AU is the only set.
+    private string _selectedLanguageCode = SupportedLanguagesCatalog.DefaultCultureCode;
+    private string _initialLanguageCode = SupportedLanguagesCatalog.DefaultCultureCode;
+
+    private bool LanguageChanged =>
+        !string.Equals(_selectedLanguageCode, _initialLanguageCode, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>"{n} year(s)" audit-retention select option, pluralised.</summary>
     private string AuditRetentionOptionText(int years) =>
@@ -44,6 +57,9 @@ public partial class GeneralSettingsTab : ComponentBase
         {
             _settings = await SettingsService.GetAsync();
             Logger.LogInformation("GeneralSettingsTab: settings loaded. HasSettings={HasSettings}", _settings is not null);
+
+            _initialLanguageCode = _settings?.LanguageCode ?? Languages.Default.CultureCode;
+            _selectedLanguageCode = _initialLanguageCode;
         }
         catch (Exception ex)
         {
@@ -77,7 +93,10 @@ public partial class GeneralSettingsTab : ComponentBase
                 _settings.GeneralCommitteeSeatCountTarget = current.GeneralCommitteeSeatCountTarget;
             }
 
+            _settings.LanguageCode = _selectedLanguageCode;
+
             await SettingsService.SaveAsync(_settings);
+            _initialLanguageCode = _selectedLanguageCode;
             _successMessage = L["Settings_Common_SaveSuccess"];
         }
         catch (ValidationException ex)

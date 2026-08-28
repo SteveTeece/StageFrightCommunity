@@ -434,10 +434,122 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-28T10:07:11.788Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:25:42.309Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:25:42.464Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T050",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:25:42.621Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:28:12.757Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:31:16.235Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T053",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:31:16.405Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T054",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:31:16.590Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T055",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:33:02.189Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T056",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:42:41.921Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T057",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:42:42.092Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T058",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:42:42.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T059",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:44:41.721Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:54:35.776Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:54:35.970Z"
     }
   ],
   "telemetryInstanceId": "bd71e5f2-b0ce-45df-9da3-06f68fa7a241",
-  "last_action": "US2 (Phase 4) COMPLETE - T029/T041/T045 done, 45/64 tasks. Full rebuild 0 warn/0 err, full suite 1765 pass (Localization 19, Reports 217, Core 597, UI 592, Data 152, Integration 188). Remaining: US3 T046-T059, Polish T060-T064. Not yet committed.",
+  "last_action": "US3 (Phase 5) COMPLETE — T046-T059 done, 59/64 tasks. Full rebuild 0 warn/0 err; full suite 1805 pass (Localization 23, Core 620, Reports 217, UI 599, Data 154, Integration 192). Remaining: Polish T060-T064. Committing now.",
   "coverage": {
     "FR-001": {
       "title": "Store app-authored user-facing text (incl. aria-label/alt/title) in resource files, not literals",
@@ -564,6 +676,10 @@
         "T046",
         "T052",
         "T058"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Localization/SupportedLanguagesCatalogTests.cs",
+        "tests/StageFright.Localization.Tests/Us3PseudoLocaleGuardTests.cs::Should_NeverListPseudoLocale_When_CatalogBuiltAtRuntime"
       ]
     },
     "FR-012": {
@@ -571,12 +687,20 @@
       "tasks": [
         "T052",
         "T056"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Localization/LanguagePickerRenderTests.cs::GeneralSettingsTab_ListsEveryShippedLanguageByEndonym",
+        "GeneralSettingsTab_MarksThePersistedLanguageAsActive"
       ]
     },
     "FR-013": {
       "title": "Setup Wizard first-run language choice, defaulting per FR-023",
       "tasks": [
         "T057"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Localization/LanguagePickerRenderTests.cs::SetupLanguageStep_ListsEndonymsAndPreSelectsTheDefault",
+        "SetupLanguageStep_WritesTheChoiceOntoTheModel"
       ]
     },
     "FR-014": {
@@ -585,6 +709,10 @@
         "T048",
         "T055",
         "T056"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Localization/LanguagePickerRenderTests.cs::GeneralSettingsTab_PersistsTheSelectedLanguage_OnSave",
+        "tests/StageFright.Data.Tests/Migrations/AddLanguageCodeToSettingsMigrationTests.cs::LanguageCode_RoundTrips_WhenSetAndReloaded"
       ]
     },
     "FR-015": {
@@ -610,6 +738,10 @@
       "tasks": [
         "T053",
         "T055"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Localization/LanguageProviderTests.cs",
+        "tests/StageFright.Data.Tests/Migrations/AddLanguageCodeToSettingsMigrationTests.cs::ExistingSettingsRow_HasNullLanguageCode_AfterMigration"
       ]
     },
     "FR-018": {
@@ -647,6 +779,10 @@
         "T056",
         "T057",
         "T059"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Localization/LanguagePickerRenderTests.cs::GeneralSettingsTab_ShowsRestartNotice_AfterTheSelectionChanges",
+        "GeneralSettingsTab_ShowsNoRestartNotice_BeforeAnyChange"
       ]
     },
     "FR-022": {
@@ -663,6 +799,10 @@
         "T053",
         "T054",
         "T055"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Localization/LanguageProviderTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V21_LocalizationStartupTests.cs"
       ]
     },
     "FR-024": {
@@ -686,6 +826,22 @@
     "SC-008": {
       "tests": [
         "tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs::Should_HaveNeutralEntry_When_KeyReferencedAnywhereInApp"
+      ]
+    },
+    "SC-005": {
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/V21_LocalizationStartupTests.cs::Should_ResolveToThePersistedLanguage_When_SettingsHasAnExplicitChoice_Integration"
+      ]
+    },
+    "SC-006": {
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/V21_LocalizationStartupTests.cs::Should_LeaveEveryStoredValueAndGlBalanceUnchanged_When_TheLanguageIsChanged_Integration"
+      ]
+    },
+    "SC-010": {
+      "tests": [
+        "tests/StageFright.Core.Tests/Localization/LanguageProviderTests.cs::Should_MatchParentLanguage_When_OsCultureIsARegionalVariantOfAShippedLanguage",
+        "Should_FallBackToEnAu_When_TheOsCultureHasNoShippedMatch"
       ]
     }
   },
@@ -879,6 +1035,31 @@
       "decision": "DataAnnotations ErrorMessage and IValidatableObject ValidationResult message literals are an explicit T029 guard exclusion, deferred to T060",
       "why": "a DataAnnotations ErrorMessage must be a compile-time constant so it cannot go through ILocalizer with missing-key logging; the codebase already treats this as a known limitation (RehearsalFormModel/EventFormModel decisions); 3 files still carry them (SetupFormModel, NewAccountModel, NewEventTypeModel) - T060 hardens the guard and resolves them",
       "rejected": "ErrorMessageResourceType/Name (bypasses the missing-key logging decorator); dropping to bare attributes now (regresses wording vs FR-004)"
+    },
+    {
+      "decision": "Did NOT bump Settings.SchemaVersion from 1.1.0 for the AddLanguageCodeToSettings migration",
+      "why": "the codebase has not bumped it for the last ~6 settings-column migrations; ~11 test files + V9_BackupRestoreTests assert \"1.1.0\" exactly as a backup-format contract; LanguageCode is a nullable presentation-only column not in the backup DTO",
+      "rejected": "bump to 1.1.1 (churns 11+ files and changes the backup manifest version for a presentation-only column)"
+    },
+    {
+      "decision": "Hand-wrote the EF migration + .Designer.cs + model-snapshot edit for T051",
+      "why": "dotnet ef cannot build the MAUI startup project in this environment (ResolvePackageAssets target missing / multi-TFM resolution error)",
+      "rejected": "repairing the MAUI workload (out of scope, unreliable) — validated instead by the migration round-trip tests and every MigrateAsync-based integration test passing"
+    },
+    {
+      "decision": "Named the UI cascading seam CultureProvider (StageFright.UI.Layout), not LanguageProvider",
+      "why": "avoids a same-name collision with the Core StageFright.Core.Modules.Localization.LanguageProvider startup service",
+      "rejected": "LanguageProvider in both namespaces (readability hazard)"
+    },
+    {
+      "decision": "SupportedLanguagesCatalog discovers cultures by scanning AppContext.BaseDirectory for <culture>/<our-assembly>.resources.dll, filtered to the 3 StageFright resource assemblies",
+      "why": "third-party satellites (Radzen, test platform: cs/de/fr/...) must never register as app languages",
+      "rejected": "scanning for any *.resources.dll (false positives)"
+    },
+    {
+      "decision": "qps-ploc fixtures generated by a committed regenerable script (scripts/generate-pseudo-locale.py); embedded as real satellites, kept out of the picker by the catalog qps-* name filter",
+      "why": "hundreds of keys across 12 files must keep key/placeholder parity with the evolving neutral sets; for IStringLocalizer to actually resolve qps-ploc the satellites must be built",
+      "rejected": "hand-authoring the pseudo values; build-excluding the resx (then the localizer cannot resolve it for the switching proof)"
     }
   ],
   "step_summaries": {
@@ -890,10 +1071,10 @@
       "summary": "64 tasks (T001-T064) across 6 phases: Setup(3) -> Foundational(11, blocks all) -> US1 shell+Members(14) -> US2 all remaining surfaces/reports/exceptions/enums(17) -> US3 Settings.LanguageCode + OS-aware startup ladder + pickers + qps-ploc(14) -> Polish(5); wave-grouped, widest parallel wave is US2 T031-T044 (one per module)."
     },
     "implement": {
-      "summary": "{\"summary\":\"US2 complete: T041 localised user-facing exception Message text across all 9 Finance services via ILocalizer + 39 verbatim ValidationResource keys (BankReconciliation finalise {Difference:C}+\\$0.00 -> MoneyFormatter), T045 confirmed DI needs no MauiProgram change (all plain AddScoped<I,Impl>), T029 added the repo-wide Us2LocalizationGuardTests (8 facts). Full rebuild 0/0; full suite 1765 pass.\"}"
+      "summary": "US3 (Phase 5, T046-T059) complete: Settings.LanguageCode column + hand-written migration; ILanguageProvider FR-023 startup ladder (explicit -> OS exact/parent -> en-AU) wired in MauiProgram before first render; runtime-discovered SupportedLanguagesCatalog (qps-* excluded); Settings + Setup Wizard endonym language pickers with restart notice; CultureProvider cascade seam; qps-ploc test pseudo-locale (12 regenerable fixtures). Full rebuild 0/0; full suite 1805 pass (+40)."
     }
   },
-  "currentTask": "T029",
+  "currentTask": "T047",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -1345,6 +1526,137 @@
         "tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs",
         "tests/StageFright.Localization.Tests/Us2ExceptionMessageGuardTests.cs"
       ]
+    },
+    "T048": {
+      "status": "DONE",
+      "did": "Added nullable Settings.LanguageCode (presentation-only, FR-016) + defensive HasMaxLength(16) in SettingsConfiguration; SchemaVersion left at 1.1.0 (see decision)",
+      "files": [
+        "src/StageFright.Core/Entities/Settings.cs",
+        "src/StageFright.Data/Configurations/SettingsConfiguration.cs"
+      ]
+    },
+    "T049": {
+      "status": "DONE",
+      "did": "Added ILanguageProvider (FR-023 startup ladder), ISupportedLanguagesCatalog (runtime-discovered, FR-011), ISystemCultureProvider (OS UI-culture seam) contracts",
+      "files": [
+        "src/StageFright.Core/Contracts/ILanguageProvider.cs",
+        "src/StageFright.Core/Contracts/ISupportedLanguagesCatalog.cs",
+        "src/StageFright.Core/Contracts/ISystemCultureProvider.cs"
+      ]
+    },
+    "T050": {
+      "status": "DONE",
+      "did": "Added SupportedLanguage immutable value object (CultureCode, Endonym from CultureInfo.NativeName title-cased, IsDefault; equality by CultureCode)",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/SupportedLanguage.cs"
+      ]
+    },
+    "T051": {
+      "status": "DONE",
+      "did": "Hand-wrote EF migration 20260828120000_AddLanguageCodeToSettings (Up: AddColumn LanguageCode TEXT maxLength 16 nullable on Settings; Down: DropColumn) + .Designer.cs regenerated from the updated model snapshot; StageFrightDbContextModelSnapshot.cs updated. dotnet ef unavailable in this env (MAUI startup project ResolvePackageAssets)",
+      "files": [
+        "src/StageFright.Data/Migrations/20260828120000_AddLanguageCodeToSettings.cs",
+        "src/StageFright.Data/Migrations/20260828120000_AddLanguageCodeToSettings.Designer.cs",
+        "src/StageFright.Data/Migrations/StageFrightDbContextModelSnapshot.cs"
+      ]
+    },
+    "T052": {
+      "status": "DONE",
+      "did": "SupportedLanguagesCatalog: runtime discovery of shipped resource cultures by scanning AppContext.BaseDirectory for <culture>/<our-assembly>.resources.dll folders; always includes neutral en-AU (IsDefault); excludes qps-*; Find resolves null/blank/unknown to null; ordered default-first then by endonym",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/SupportedLanguagesCatalog.cs"
+      ]
+    },
+    "T053": {
+      "status": "DONE",
+      "did": "LanguageProvider: FR-023 ladder (explicit Settings.LanguageCode -> OS culture exact then parent-language match in catalog -> en-AU); every step wrapped, never throws; DefaultCulture = en-AU",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/LanguageProvider.cs"
+      ]
+    },
+    "T054": {
+      "status": "DONE",
+      "did": "SystemCultureProvider (App layer) over CultureInfo.InstalledUICulture; returns InvariantCulture on any failure",
+      "files": [
+        "src/StageFright.App/SystemCultureProvider.cs"
+      ]
+    },
+    "T055": {
+      "status": "DONE",
+      "did": "MauiProgram: registered ISupportedLanguagesCatalog/ISystemCultureProvider (singleton) + ILanguageProvider (scoped); RunStartupSequence now resolves ResolveStartupCultureAsync after migrations and sets CultureInfo.DefaultThreadCurrentCulture/UICulture + CurrentCulture/UICulture before first BlazorWebView render; wrapped so failure continues on default culture",
+      "files": [
+        "src/StageFright.App/MauiProgram.cs"
+      ]
+    },
+    "T056": {
+      "status": "DONE",
+      "did": "GeneralSettingsTab: language <select> bound to ISupportedLanguagesCatalog.All by endonym, marks active one, persists Settings.LanguageCode on Save, inline restart notice (alert-info role=status) shown while selection differs from loaded value (FR-012/FR-014/FR-021); 3 new SettingsResource keys",
+      "files": [
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor",
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor.cs",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.resx"
+      ]
+    },
+    "T057": {
+      "status": "DONE",
+      "did": "Setup Wizard first-run language step: new LanguageSelectionTab (endonym <select>, pre-selects FR-023-resolved default via ILanguageProvider); SetupFormModel.LanguageCode + SetupRequest.LanguageCode + SetupService writes Settings.LanguageCode; 2 new SetupResource keys",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/LanguageSelectionTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/LanguageSelectionTab.razor.cs",
+        "src/StageFright.UI/Pages/Setup/SetupFormModel.cs",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs",
+        "src/StageFright.Core/Modules/Settings/SetupRequest.cs",
+        "src/StageFright.Core/Modules/Settings/SetupService.cs",
+        "src/StageFright.UI/Resources/Strings/SetupResource.resx"
+      ]
+    },
+    "T058": {
+      "status": "DONE",
+      "did": "qps-ploc pseudo-locale: regenerable scripts/generate-pseudo-locale.py + 12 <Marker>.qps-ploc.resx fixtures (bracketed/accented values, {tokens} preserved, 3 keys omitted for fallback proof); embedded as satellites, filtered from catalog by qps-* name",
+      "files": [
+        "scripts/generate-pseudo-locale.py",
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.qps-ploc.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.qps-ploc.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/EnumsResource.qps-ploc.resx",
+        "src/StageFright.Reports/Resources/ReportsResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/SharedResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/DashboardResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/MembersResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/RehearsalsResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/EventsResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/FinanceResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.qps-ploc.resx"
+      ]
+    },
+    "T059": {
+      "status": "DONE",
+      "did": "Added CultureProvider cascading component (StageFright.UI.Layout) parallel to ThemeProvider; wraps ShellLayout tree, cascades the startup-resolved CurrentUICulture read-only; no v1 behaviour change (FR-021 seam). Named CultureProvider to avoid colliding with the Core LanguageProvider service",
+      "files": [
+        "src/StageFright.UI/Layout/CultureProvider.razor",
+        "src/StageFright.UI/Layout/CultureProvider.razor.cs",
+        "src/StageFright.UI/Layout/ShellLayout.razor"
+      ]
+    },
+    "T046": {
+      "status": "DONE",
+      "did": "US3 tests: LanguageProviderTests (FR-023 ladder, 10 cases), SupportedLanguagesCatalogTests (runtime discovery, qps-* exclusion, Find null/blank/unknown, endonym, case-insensitive), AddLanguageCodeToSettingsMigrationTests (pre-migration row -> null LanguageCode; round-trip), V21_LocalizationStartupTests (SC-005 persisted choice, SC-010 OS fallback, SC-006 no data/GL change on switch)",
+      "files": [
+        "tests/StageFright.Core.Tests/Localization/LanguageProviderTests.cs",
+        "tests/StageFright.Core.Tests/Localization/SupportedLanguagesCatalogTests.cs",
+        "tests/StageFright.Data.Tests/Migrations/AddLanguageCodeToSettingsMigrationTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V21_LocalizationStartupTests.cs"
+      ]
+    },
+    "T047": {
+      "status": "DONE",
+      "did": "US3 qps-ploc e2e + picker bUnit: Us3PseudoLocaleGuardTests (catalog never lists qps-ploc; pseudo value renders under qps-ploc; omitted key falls back to en-AU value; absent-everywhere key logs Warning) + LanguagePickerRenderTests (endonym list, active-marked, restart notice on change, persist on Save, Setup step pre-select); LocalizedTestContext registers the US3 language services",
+      "files": [
+        "tests/StageFright.Localization.Tests/Us3PseudoLocaleGuardTests.cs",
+        "tests/StageFright.UI.Tests/Localization/LanguagePickerRenderTests.cs",
+        "tests/StageFright.UI.Tests/LocalizedTestContext.cs"
+      ]
     }
   },
   "verified": [
@@ -1481,6 +1793,18 @@
       "what": "Repo-wide US2 localization guard suite (T029)",
       "command": "dotnet test tests/StageFright.Localization.Tests/",
       "result": "19/19 pass: baseline completeness, 9-enum coverage + no-raw-enum, residual-literal over US1+US2 UI surface, orphan-satellite, plural-pair + placeholder parity, cross-culture token parity, no-C-currency repo-wide"
+    },
+    {
+      "what": "full solution rebuild (dotnet build -t:Rebuild)",
+      "command": "dotnet build StageFrightCommunity.slnx -t:Rebuild",
+      "result": "Build succeeded — 0 Warning(s), 0 Error(s)",
+      "warnings": []
+    },
+    {
+      "what": "full test suite (no --no-build)",
+      "command": "dotnet test StageFrightCommunity.slnx",
+      "result": "1805 passed, 0 failed, 0 skipped (Localization 23, Core 620, Reports 217, UI 599, Data 154, Integration 192)",
+      "warnings": []
     }
   ],
   "concerns": [
@@ -1522,6 +1846,10 @@
     },
     {
       "note": "3 form-model classes still carry un-localized DataAnnotations ErrorMessage / ValidationResult text: src/StageFright.UI/Pages/Setup/SetupFormModel.cs (Organisation name / Annual fee / Attendance fee / Renewal month / AGM month / Audit retention / Tax rate), src/StageFright.UI/Shared/NewAccountModel.cs (Account name), src/StageFright.UI/Pages/Settings/EventTypesTab.razor.cs NewEventTypeModel (Event type name). Compile-time-constant limitation - excluded from the T029 residual-literal guard and flagged for T060 (guard hardening + strict zero-literal). Needs either a custom localized ValidationAttribute or code-behind validation via ILocalizer.",
+      "step": "implement"
+    },
+    {
+      "note": "MissingKeyLoggingLocalizerFactory logs only on LocalizedString.ResourceNotFound, which does not fire when a key is omitted from an active satellite but present in neutral (ResourceManager resolves it silently). Per-key satellite fallback to en-AU works (no blank/raw key), but is not logged — SC-004 every-fallback-recorded is only partially met. Candidate for T060/Polish.",
       "step": "implement"
     }
   ]

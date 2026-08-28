@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Reports_Column_Account" xml:space="preserve"><value>⟦Áççóúñt—⟧</value></data>
+  <data name="Reports_Column_Amount" xml:space="preserve"><value>⟦Ámóúñt—⟧</value></data>
+  <data name="Reports_Column_Debit" xml:space="preserve"><value>⟦Débít—⟧</value></data>
+  <data name="Reports_Column_Credit" xml:space="preserve"><value>⟦Çrédít—⟧</value></data>
+  <data name="Reports_Column_Date" xml:space="preserve"><value>⟦Dáté—⟧</value></data>
+  <data name="Reports_Column_Description" xml:space="preserve"><value>⟦Désçríptíóñ—⟧</value></data>
+  <data name="Reports_Column_Balance" xml:space="preserve"><value>⟦Báláñçé—⟧</value></data>
+  <data name="Reports_Section_Assets" xml:space="preserve"><value>⟦Ásséts—⟧</value></data>
+  <data name="Reports_Section_Liabilities" xml:space="preserve"><value>⟦Líábílítíés—⟧</value></data>
+  <data name="Reports_Section_Equity" xml:space="preserve"><value>⟦Éqúítý—⟧</value></data>
+  <data name="Reports_Section_Income" xml:space="preserve"><value>⟦Íñçómé—⟧</value></data>
+  <data name="Reports_Section_Expenses" xml:space="preserve"><value>⟦Éxpéñsés—⟧</value></data>
+  <data name="Reports_Filter_From" xml:space="preserve"><value>⟦Fróm—⟧</value></data>
+  <data name="Reports_Filter_To" xml:space="preserve"><value>⟦Tó—⟧</value></data>
+  <data name="Reports_Filter_AccountNumberOrName" xml:space="preserve"><value>⟦Áççóúñt (ñúmbér ór ñámé, bláñk = áll)—⟧</value></data>
+  <data name="Reports_Filter_OptionAll" xml:space="preserve"><value>⟦Áll—⟧</value><comment>Synthetic report-filter option label; the option value stays the invariant token "All".</comment></data>
+  <data name="Reports_Filter_OptionArchived" xml:space="preserve"><value>⟦Árçhívéd—⟧</value><comment>Report-filter option label for archived members; option value stays the invariant token "Archived".</comment></data>
+  <data name="Reports_Filter_OptionActiveOnly" xml:space="preserve"><value>⟦Áçtívé Óñlý—⟧</value><comment>Committee-report filter option label; option value stays the invariant token "Active Only".</comment></data>
+  <data name="Reports_Filter_OptionArchivedOnly" xml:space="preserve"><value>⟦Árçhívéd Óñlý—⟧</value><comment>Committee-report filter option label; option value stays the invariant token "Archived Only".</comment></data>
+  <data name="Reports_Filter_OptionThisFy" xml:space="preserve"><value>⟦Thís FÝ—⟧</value><comment>Income-statement period filter option label; option value stays the invariant token "This FY".</comment></data>
+  <data name="Reports_Filter_OptionLastFy" xml:space="preserve"><value>⟦Lást FÝ—⟧</value><comment>Income-statement period filter option label; option value stays the invariant token "Last FY".</comment></data>
+  <data name="Reports_Filter_OptionCustom" xml:space="preserve"><value>⟦Çústóm—⟧</value><comment>Income-statement period filter option label; option value stays the invariant token "Custom".</comment></data>
+  <data name="Reports_Common_DateRangeSubtitle" xml:space="preserve"><value>⟦{DateFrom} – {DateTo}—⟧</value><comment>{DateFrom} range start, {DateTo} range end — both already formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_Common_OpeningBalance" xml:space="preserve"><value>⟦Ópéñíñg Báláñçé—⟧</value></data>
+  <data name="Reports_Common_ClosingBalance" xml:space="preserve"><value>⟦Çlósíñg Báláñçé—⟧</value></data>
+  <data name="Reports_MemberList_Name" xml:space="preserve"><value>⟦Mémbér Líst—⟧</value></data>
+  <data name="Reports_MemberList_StatusFilterLabel" xml:space="preserve"><value>⟦Státús—⟧</value></data>
+  <data name="Reports_MemberList_SubTitle" xml:space="preserve"><value>⟦Státús: {Status} — {Date}—⟧</value><comment>{Status} selected status-filter value, {Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_MemberList_NameColumn" xml:space="preserve"><value>⟦Ñámé—⟧</value></data>
+  <data name="Reports_MemberList_AddressColumn" xml:space="preserve"><value>⟦Áddréss—⟧</value></data>
+  <data name="Reports_MemberList_PhoneColumn" xml:space="preserve"><value>⟦Phóñé—⟧</value></data>
+  <data name="Reports_MemberList_EmailColumn" xml:space="preserve"><value>⟦Émáíl—⟧</value></data>
+  <data name="Reports_MemberList_JoinDateColumn" xml:space="preserve"><value>⟦Jóíñ Dáté—⟧</value></data>
+  <data name="Reports_MemberList_AgeColumn" xml:space="preserve"><value>⟦Ágé—⟧</value></data>
+  <data name="Reports_MemberList_StatusColumn" xml:space="preserve"><value>⟦Státús—⟧</value></data>
+  <data name="Reports_Committee_Name" xml:space="preserve"><value>⟦Çómmíttéé Répórt—⟧</value></data>
+  <data name="Reports_Committee_MemberStatusFilterLabel" xml:space="preserve"><value>⟦Mémbér Státús—⟧</value></data>
+  <data name="Reports_Committee_SubTitle" xml:space="preserve"><value>⟦Fíltér: {Filter} — {Date}—⟧</value><comment>{Filter} selected member-status filter value, {Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_Committee_YearColumn" xml:space="preserve"><value>⟦Ýéár—⟧</value></data>
+  <data name="Reports_Committee_PositionColumn" xml:space="preserve"><value>⟦Pósítíóñ—⟧</value></data>
+  <data name="Reports_Committee_MembersColumn" xml:space="preserve"><value>⟦Mémbér(s)—⟧</value></data>
+  <data name="Reports_Committee_PositionsRecordedColumn" xml:space="preserve"><value>⟦Pósítíóñs Réçórdéd—⟧</value></data>
+  <data name="Reports_Committee_RolePresident" xml:space="preserve"><value>⟦Présídéñt—⟧</value></data>
+  <data name="Reports_Committee_RoleSecretary" xml:space="preserve"><value>⟦Séçrétárý—⟧</value></data>
+  <data name="Reports_Committee_RoleTreasurer" xml:space="preserve"><value>⟦Tréásúrér—⟧</value></data>
+  <data name="Reports_Committee_Vacant" xml:space="preserve"><value>⟦Váçáñt—⟧</value></data>
+  <data name="Reports_Committee_GeneralCommitteeMembers" xml:space="preserve"><value>⟦Géñérál Çómmíttéé Mémbérs—⟧</value></data>
+  <data name="Reports_Committee_Present" xml:space="preserve"><value>⟦préséñt—⟧</value><comment>Shown as the end date for a currently-serving committee member in a dated holder list.</comment></data>
+  <data name="Reports_IncomeStatement_Name" xml:space="preserve"><value>⟦Státéméñt óf Íñçómé &amp; Éxpéñdítúré—⟧</value></data>
+  <data name="Reports_IncomeStatement_PeriodFilterLabel" xml:space="preserve"><value>⟦Péríód—⟧</value></data>
+  <data name="Reports_IncomeStatement_DateFromFilterLabel" xml:space="preserve"><value>⟦Fróm (çústóm péríód)—⟧</value></data>
+  <data name="Reports_IncomeStatement_DateToFilterLabel" xml:space="preserve"><value>⟦Tó (çústóm péríód)—⟧</value></data>
+  <data name="Reports_IncomeStatement_CompareFilterLabel" xml:space="preserve"><value>⟦Shów príór-ýéár çómpárísóñ—⟧</value></data>
+  <data name="Reports_IncomeStatement_SubTitleCompare" xml:space="preserve"><value>⟦{DateFrom} – {DateTo} (çómpáréd tó {PriorFrom} – {PriorTo})—⟧</value><comment>All four tokens are dates already formatted 'd MMMM yyyy': current range start/end, then prior range start/end.</comment></data>
+  <data name="Reports_IncomeStatement_CurrentPeriodColumn" xml:space="preserve"><value>⟦Çúrréñt Péríód—⟧</value></data>
+  <data name="Reports_IncomeStatement_PriorPeriodColumn" xml:space="preserve"><value>⟦Príór Péríód—⟧</value></data>
+  <data name="Reports_IncomeStatement_TotalIncome" xml:space="preserve"><value>⟦Tótál Íñçómé—⟧</value></data>
+  <data name="Reports_IncomeStatement_TotalExpenses" xml:space="preserve"><value>⟦Tótál Éxpéñsés—⟧</value></data>
+  <data name="Reports_IncomeStatement_Surplus" xml:space="preserve"><value>⟦Súrplús—⟧</value></data>
+  <data name="Reports_IncomeStatement_Deficit" xml:space="preserve"><value>⟦(Défíçít)—⟧</value></data>
+  <data name="Reports_TrialBalance_Name" xml:space="preserve"><value>⟦Tríál Báláñçé—⟧</value></data>
+  <data name="Reports_TrialBalance_TotalsRow" xml:space="preserve"><value>⟦Tótáls—⟧</value></data>
+  <data name="Reports_TrialBalance_GLImbalanceError" xml:space="preserve"><value>⟦GL Báláñçé Vérífíçátíóñ Fáíléd: Tótál Débíts (${Debits}) ≠ Tótál Çrédíts (${Credits}). Thé Tríál Báláñçé çáññót bé géñérátéd whílé thé lédgér ís óút óf báláñçé.—⟧</value><comment>{Debits}/{Credits} are the GL totals formatted 'F2'; each leading $ is a literal currency sign, not a placeholder.</comment></data>
+  <data name="Reports_AccountRegister_Name" xml:space="preserve"><value>⟦Áççóúñt Régístér—⟧</value></data>
+  <data name="Reports_AccountRegister_RunningBalanceColumn" xml:space="preserve"><value>⟦Rúññíñg Báláñçé—⟧</value></data>
+  <data name="Reports_BalanceSheet_Name" xml:space="preserve"><value>⟦Státéméñt óf Fíñáñçíál Pósítíóñ—⟧</value></data>
+  <data name="Reports_BalanceSheet_AsAtFilterLabel" xml:space="preserve"><value>⟦Ás át—⟧</value></data>
+  <data name="Reports_BalanceSheet_SubTitle" xml:space="preserve"><value>⟦Ás át {Date}—⟧</value><comment>{Date} report date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_BalanceSheet_TotalAssets" xml:space="preserve"><value>⟦Tótál Ásséts—⟧</value></data>
+  <data name="Reports_BalanceSheet_TotalLiabilities" xml:space="preserve"><value>⟦Tótál Líábílítíés—⟧</value></data>
+  <data name="Reports_BalanceSheet_TotalEquity" xml:space="preserve"><value>⟦Tótál Éqúítý—⟧</value></data>
+  <data name="Reports_BalanceSheet_AccumulatedSurplus" xml:space="preserve"><value>⟦Áççúmúlátéd Súrplús—⟧</value></data>
+  <data name="Reports_BalanceSheet_TotalLiabilitiesPlusEquity" xml:space="preserve"><value>⟦Tótál Líábílítíés + Éqúítý—⟧</value></data>
+  <data name="Reports_BankReconciliation_Name" xml:space="preserve"><value>⟦Báñk Réçóñçílíátíóñ—⟧</value></data>
+  <data name="Reports_BankReconciliation_SubTitle" xml:space="preserve"><value>⟦Móst réçéñt réçóñçílíátíóñ pér áççóúñt, géñérátéd {Date}—⟧</value><comment>{Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_BankReconciliation_SubTitleNone" xml:space="preserve"><value>⟦Ñó réçóñçílíátíóñs hávé bééñ réçórdéd.—⟧</value></data>
+  <data name="Reports_BankReconciliation_DepositColumn" xml:space="preserve"><value>⟦Dépósít—⟧</value></data>
+  <data name="Reports_BankReconciliation_PaymentColumn" xml:space="preserve"><value>⟦Páýméñt—⟧</value></data>
+  <data name="Reports_BankReconciliation_AccountHeader" xml:space="preserve"><value>⟦{Account} ({Number}) — státéméñt tó {StatementDate} [{Status}]—⟧</value><comment>{Account} account name, {Number} account number, {StatementDate} formatted 'd MMMM yyyy', {Status} localised reconciliation status.</comment></data>
+  <data name="Reports_BankReconciliation_SubHeaderClearedDeposits" xml:space="preserve"><value>⟦{Header} — Çléáréd Dépósíts—⟧</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
+  <data name="Reports_BankReconciliation_SubHeaderClearedPayments" xml:space="preserve"><value>⟦{Header} — Çléáréd Páýméñts—⟧</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
+  <data name="Reports_BankReconciliation_SubHeaderUnpresentedItems" xml:space="preserve"><value>⟦{Header} — Úñpréséñtéd Ítéms—⟧</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
+  <data name="Reports_BankReconciliation_SubHeaderSummary" xml:space="preserve"><value>⟦{Header} — Súmmárý—⟧</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
+  <data name="Reports_BankReconciliation_TotalClearedDeposits" xml:space="preserve"><value>⟦Tótál çléáréd dépósíts—⟧</value></data>
+  <data name="Reports_BankReconciliation_TotalClearedPayments" xml:space="preserve"><value>⟦Tótál çléáréd páýméñts—⟧</value></data>
+  <data name="Reports_BankReconciliation_StatementClosingBalance" xml:space="preserve"><value>⟦Státéméñt çlósíñg báláñçé—⟧</value></data>
+  <data name="Reports_BankReconciliation_OpeningBalance" xml:space="preserve"><value>⟦Ópéñíñg báláñçé—⟧</value></data>
+  <data name="Reports_BankReconciliation_ClearedMovement" xml:space="preserve"><value>⟦Çléáréd móvéméñt—⟧</value></data>
+  <data name="Reports_BankReconciliation_Difference" xml:space="preserve"><value>⟦Dífféréñçé—⟧</value></data>
+  <data name="Reports_ChartOfAccounts_Name" xml:space="preserve"><value>⟦Çhárt óf Áççóúñts—⟧</value></data>
+  <data name="Reports_ChartOfAccounts_IncludeBalancesFilterLabel" xml:space="preserve"><value>⟦Íñçlúdé Çúrréñt Báláñçés—⟧</value></data>
+  <data name="Reports_ChartOfAccounts_NumberColumn" xml:space="preserve"><value>⟦Ñó.—⟧</value></data>
+  <data name="Reports_ChartOfAccounts_NameColumn" xml:space="preserve"><value>⟦Ñámé—⟧</value></data>
+  <data name="Reports_ChartOfAccounts_NameSystemBank" xml:space="preserve"><value>⟦{Name} (Sýstém, Báñk)—⟧</value><comment>{Name} account name; the parenthetical marks a system bank account.</comment></data>
+  <data name="Reports_ChartOfAccounts_NameSystem" xml:space="preserve"><value>⟦{Name} (Sýstém)—⟧</value><comment>{Name} account name; the parenthetical marks a system account.</comment></data>
+  <data name="Reports_ChartOfAccounts_NameBank" xml:space="preserve"><value>⟦{Name} (Báñk)—⟧</value><comment>{Name} account name; the parenthetical marks a bank account.</comment></data>
+  <data name="Reports_ChartOfAccounts_BalanceError" xml:space="preserve"><value>⟦Érrór—⟧</value><comment>Shown in the Balance column when an account balance could not be computed.</comment></data>
+  <data name="Reports_GeneralLedger_Name" xml:space="preserve"><value>⟦Géñérál Lédgér—⟧</value></data>
+  <data name="Reports_MemberAccountSummary_Name" xml:space="preserve"><value>⟦Mémbér Áççóúñt Súmmárý—⟧</value></data>
+  <data name="Reports_MemberAccountSummary_IncludeArchivedFilterLabel" xml:space="preserve"><value>⟦Shów Árçhívéd Mémbérs—⟧</value></data>
+  <data name="Reports_MemberAccountSummary_DateItemColumn" xml:space="preserve"><value>⟦Dáté / Ítém—⟧</value></data>
+  <data name="Reports_MemberAccountSummary_MemberColumn" xml:space="preserve"><value>⟦Mémbér—⟧</value></data>
+  <data name="Reports_MemberAccountSummary_CurrentColumn" xml:space="preserve"><value>⟦Çúrréñt—⟧</value></data>
+  <data name="Reports_MemberAccountSummary_ThirtyDaysColumn" xml:space="preserve"><value>⟦30 Dáýs—⟧</value></data>
+  <data name="Reports_MemberAccountSummary_SixtyDaysColumn" xml:space="preserve"><value>⟦60 Dáýs—⟧</value></data>
+  <data name="Reports_MemberAccountSummary_NinetyPlusDaysColumn" xml:space="preserve"><value>⟦90+ Dáýs—⟧</value></data>
+  <data name="Reports_MemberAccountSummary_AgingCurrent" xml:space="preserve"><value>⟦Çúrréñt: {Amount}—⟧</value><comment>{Amount} aging bucket total formatted 'F2'.</comment></data>
+  <data name="Reports_MemberAccountSummary_Aging30" xml:space="preserve"><value>⟦30 dáýs: {Amount}—⟧</value><comment>{Amount} aging bucket total formatted 'F2'.</comment></data>
+  <data name="Reports_MemberAccountSummary_Aging60" xml:space="preserve"><value>⟦60 dáýs: {Amount}—⟧</value><comment>{Amount} aging bucket total formatted 'F2'.</comment></data>
+  <data name="Reports_MemberAccountSummary_Aging90Plus" xml:space="preserve"><value>⟦90+ dáýs: {Amount}—⟧</value><comment>{Amount} aging bucket total formatted 'F2'.</comment></data>
+  <data name="Reports_MemberAccountSummary_ArchivedSuffix" xml:space="preserve"><value>⟦{Name} (Árçhívéd)—⟧</value><comment>{Name} member's sortable full name; suffix marks an archived member.</comment></data>
+  <data name="Reports_TaxSummary_Name" xml:space="preserve"><value>⟦Táx Súmmárý—⟧</value></data>
+  <data name="Reports_TaxSummary_SubTitle" xml:space="preserve"><value>⟦Áççrúáls básís — {DateFrom} – {DateTo}—⟧</value><comment>{DateFrom}/{DateTo} range start/end formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_TaxSummary_SubTitleNotApplicable" xml:space="preserve"><value>⟦Sálés táx dóés ñót ápplý tó thís órgáñísátíóñ. Éñáblé sálés táx íñ Séttíñgs tó géñéráté á Táx Súmmárý.—⟧</value></data>
+  <data name="Reports_TaxSummary_TotalTaxableSales" xml:space="preserve"><value>⟦Tótál táxáblé sálés—⟧</value></data>
+  <data name="Reports_TaxSummary_TotalTaxExemptSales" xml:space="preserve"><value>⟦Tótál táx-éxémpt sálés—⟧</value></data>
+  <data name="Reports_TaxSummary_TaxCollectedOnSales" xml:space="preserve"><value>⟦Táx çólléçtéd óñ sálés—⟧</value></data>
+  <data name="Reports_TaxSummary_TaxPaidOnPurchases" xml:space="preserve"><value>⟦Táx páíd óñ púrçhásés—⟧</value></data>
+  <data name="Reports_TaxSummary_NetTaxPayable" xml:space="preserve"><value>⟦Ñét táx páýáblé—⟧</value></data>
+  <data name="Reports_TaxSummary_NetTaxRefundable" xml:space="preserve"><value>⟦Ñét táx réfúñdáblé—⟧</value></data>
+  <data name="Reports_Render_GeneratedAt" xml:space="preserve"><value>⟦Géñérátéd: {DateTime} ÚTÇ—⟧</value><comment>{DateTime} generation timestamp already formatted 'd MMMM yyyy HH:mm'.</comment></data>
+  <data name="Reports_Render_PagePrefix" xml:space="preserve"><value>⟦Págé —⟧</value><comment>PDF footer — precedes the current page number; the trailing space is significant.</comment></data>
+  <data name="Reports_Render_PageSeparator" xml:space="preserve"><value>⟦ óf —⟧</value><comment>PDF footer — sits between the current page number and the total page count; the surrounding spaces are significant.</comment></data>
+  <data name="Reports_AttendanceRoll_Title" xml:space="preserve"><value>⟦Áttéñdáñçé Róll—⟧</value></data>
+  <data name="Reports_AttendanceRoll_DateLine" xml:space="preserve"><value>⟦Réhéársál: {Date} át {Time}—⟧</value><comment>{Date} rehearsal date formatted 'd MMMM yyyy', {Time} rehearsal start time formatted 'hh\:mm'.</comment></data>
+  <data name="Reports_AttendanceRoll_NameColumn" xml:space="preserve"><value>⟦Ñámé—⟧</value></data>
+  <data name="Reports_AttendanceRoll_PresentColumn" xml:space="preserve"><value>⟦Préséñt—⟧</value></data>
+  <data name="Reports_AttendanceRoll_FeePaidColumn" xml:space="preserve"><value>⟦Pd—⟧</value><comment>Short column heading for the rehearsal-fee-paid checkbox — an abbreviation of "Paid", not a dollar amount.</comment></data>
+  <data name="Reports_AgmResults_Title" xml:space="preserve"><value>⟦ÁGM Résúlts—⟧</value></data>
+  <data name="Reports_AgmResults_MeetingDateLine" xml:space="preserve"><value>⟦Áññúál Géñérál Méétíñg: {Date}—⟧</value><comment>{Date} AGM date formatted 'd MMMM yyyy'. Shared by the AGM Results sheet and the AGM Attendance Report sheet.</comment></data>
+  <data name="Reports_AgmResults_AttendanceLine" xml:space="preserve"><value>⟦Áttéñdáñçé: {Attended} óf {Total} mémbérs áttéñdéd—⟧</value><comment>{Attended} number of members who attended, {Total} total member count.</comment></data>
+  <data name="Reports_AgmResults_ElectedPositionsHeading" xml:space="preserve"><value>⟦Éléçtéd Pósítíóñs—⟧</value></data>
+  <data name="Reports_AgmResults_NoPositions" xml:space="preserve"><value>⟦Ñó pósítíóñs réçórdéd.—⟧</value></data>
+  <data name="Reports_AgmResults_PositionLabel" xml:space="preserve"><value>⟦{Label}: —⟧</value><comment>{Label} elected position title; this segment renders bold and is immediately followed by the elected member name(s). Trailing space is significant.</comment></data>
+  <data name="Reports_AgmResults_GeneralCommitteeMemberLabel" xml:space="preserve"><value>⟦Géñérál Çómmíttéé Mémbér:—⟧</value></data>
+  <data name="Reports_Sheet_NameColumn" xml:space="preserve"><value>⟦Ñámé—⟧</value></data>
+  <data name="Reports_EventSheet_Title" xml:space="preserve"><value>⟦Évéñt Áttéñdáñçé Shéét—⟧</value></data>
+  <data name="Reports_EventSheet_DateLine" xml:space="preserve"><value>⟦{EventType}: {Date}—⟧</value><comment>{EventType} event type name (user data), {Date} event date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_EventSheet_ParticipatedColumn" xml:space="preserve"><value>⟦Pártíçípátéd—⟧</value></data>
+  <data name="Reports_AgmSheet_Title" xml:space="preserve"><value>⟦ÁGM Áttéñdáñçé Répórt—⟧</value></data>
+  <data name="Reports_AgmSheet_AttendedColumn" xml:space="preserve"><value>⟦Áttéñdéd—⟧</value></data>
+</root>

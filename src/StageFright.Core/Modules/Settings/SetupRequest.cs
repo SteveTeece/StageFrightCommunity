@@ -27,4 +27,7 @@ public record SetupRequest(
     IReadOnlyList<OpeningBalanceEntry>? QueuedOpeningBalances = null,
     // OpeningBalanceAsAtDate: the date queued opening balances are recorded as at. Ignored
     // when QueuedOpeningBalances is empty.
-    DateTime OpeningBalanceAsAtDate = default);
+    DateTime OpeningBalanceAsAtDate = default,
+    // LanguageCode: chosen display language as a BCP-47 culture id (spec 027, US3 / FR-013).
+    // Null keeps Settings.LanguageCode null ("follow the OS display language").
+    string? LanguageCode = null);

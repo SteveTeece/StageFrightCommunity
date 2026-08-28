@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Members_List_PageTitle" xml:space="preserve"><value>⟦Mémbérs — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title for the Members list page.</comment></data>
+  <data name="Members_List_Heading" xml:space="preserve"><value>⟦Mémbérs—⟧</value><comment>Page heading on the Members list.</comment></data>
+  <data name="Members_List_AddButton" xml:space="preserve"><value>⟦Ádd Mémbér—⟧</value><comment>Button that opens the new-member form.</comment></data>
+  <data name="Members_List_SearchPlaceholder" xml:space="preserve"><value>⟦Séárçh bý ñámé, émáíl, phóñé ór áddréss…—⟧</value><comment>Placeholder text in the Members search box.</comment></data>
+  <data name="Members_List_SearchAriaLabel" xml:space="preserve"><value>⟦Séárçh mémbérs—⟧</value><comment>aria-label on the Members search input.</comment></data>
+  <data name="Members_List_ShowInactiveLabel" xml:space="preserve"><value>⟦Shów íñáçtívé mémbérs—⟧</value><comment>Label for the switch that includes inactive members in the list.</comment></data>
+  <data name="Members_List_LoadingText" xml:space="preserve"><value>⟦Lóádíñg mémbérs…—⟧</value><comment>Status text shown while the Members list loads.</comment></data>
+  <data name="Members_List_EmptyAll" xml:space="preserve"><value>⟦Ñó mémbérs fóúñd.—⟧</value><comment>Shown when there are no members at all.</comment></data>
+  <data name="Members_List_EmptyActive" xml:space="preserve"><value>⟦Ñó áçtívé mémbérs fóúñd.—⟧</value><comment>Shown when there are no active members and inactive ones are hidden.</comment></data>
+  <data name="Members_List_NoMatch" xml:space="preserve"><value>⟦Ñó mémbérs mátçh "{SearchTerm}".—⟧</value><comment>Shown when a search returns nothing. {SearchTerm} = the text the user typed.</comment></data>
+  <data name="Members_List_NameColumn" xml:space="preserve"><value>⟦Ñámé—⟧</value><comment>Members grid column header — member name.</comment></data>
+  <data name="Members_List_AddressColumn" xml:space="preserve"><value>⟦Áddréss—⟧</value><comment>Members grid column header — street address.</comment></data>
+  <data name="Members_List_PhoneColumn" xml:space="preserve"><value>⟦Phóñé—⟧</value><comment>Members grid column header — phone number.</comment></data>
+  <data name="Members_List_EmailColumn" xml:space="preserve"><value>⟦Émáíl—⟧</value><comment>Members grid column header — email address.</comment></data>
+  <data name="Members_List_AgeColumn" xml:space="preserve"><value>⟦Ágé—⟧</value><comment>Members grid column header — calculated age.</comment></data>
+  <data name="Members_List_EditMemberAriaLabel" xml:space="preserve"><value>⟦Édít {MemberName}—⟧</value><comment>aria-label on a row's Edit button. {MemberName} = the member's full name.</comment></data>
+  <data name="Members_Detail_PageTitle" xml:space="preserve"><value>⟦{MemberName} — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title for a member's detail page. {MemberName} = the member's full name, or the fallback below.</comment></data>
+  <data name="Members_Detail_PageTitleFallback" xml:space="preserve"><value>⟦Mémbér—⟧</value><comment>Used in the detail page title before the member has loaded.</comment></data>
+  <data name="Members_Detail_NotFound" xml:space="preserve"><value>⟦Mémbér ñót fóúñd.—⟧</value><comment>Shown when the requested member id does not exist.</comment></data>
+  <data name="Members_Detail_InactivateButton" xml:space="preserve"><value>⟦Íñáçtíváté—⟧</value><comment>Button that sets an active member to inactive.</comment></data>
+  <data name="Members_Detail_ActivateButton" xml:space="preserve"><value>⟦Áçtíváté—⟧</value><comment>Button that sets an inactive member back to active.</comment></data>
+  <data name="Members_Detail_ArchiveButton" xml:space="preserve"><value>⟦Árçhívé—⟧</value><comment>Button that archives (soft-deletes) a member.</comment></data>
+  <data name="Members_Detail_AddressLabel" xml:space="preserve"><value>⟦Áddréss—⟧</value><comment>Detail field label — street address.</comment></data>
+  <data name="Members_Detail_PhoneLabel" xml:space="preserve"><value>⟦Phóñé—⟧</value><comment>Detail field label — phone number.</comment></data>
+  <data name="Members_Detail_EmailLabel" xml:space="preserve"><value>⟦Émáíl—⟧</value><comment>Detail field label — email address.</comment></data>
+  <data name="Members_Detail_JoinDateLabel" xml:space="preserve"><value>⟦Jóíñ Dáté—⟧</value><comment>Detail field label — date the member joined.</comment></data>
+  <data name="Members_Detail_DateOfBirthLabel" xml:space="preserve"><value>⟦Dáté óf Bírth—⟧</value><comment>Detail field label — date of birth.</comment></data>
+  <data name="Members_Detail_AgeLabel" xml:space="preserve"><value>⟦Ágé—⟧</value><comment>Detail field label — calculated age.</comment></data>
+  <data name="Members_Detail_CommitteeHistoryHeading" xml:space="preserve"><value>⟦Çómmíttéé Hístórý—⟧</value><comment>Section heading / aria-label for the member's committee-position history.</comment></data>
+  <data name="Members_Detail_CurrentYearAriaLabel" xml:space="preserve"><value>⟦Çúrréñt ýéár—⟧</value><comment>aria-label on the badge marking the member's current committee year.</comment></data>
+  <data name="Members_Detail_CurrentBadge" xml:space="preserve"><value>⟦Çúrréñt—⟧</value><comment>Badge text marking the member's current committee position.</comment></data>
+  <data name="Members_Detail_GeneralCommitteeMember" xml:space="preserve"><value>⟦Géñérál Çómmíttéé Mémbér—⟧</value><comment>Fallback position label when a committee record names no specific office.</comment></data>
+  <data name="Members_Detail_FeeHistoryHeading" xml:space="preserve"><value>⟦Féé Páýméñt Hístórý—⟧</value><comment>Section heading / aria-label for the member's fee payment history.</comment></data>
+  <data name="Members_Detail_FeeDateColumn" xml:space="preserve"><value>⟦Dáté—⟧</value><comment>Fee history grid column header — fee date.</comment></data>
+  <data name="Members_Detail_FeeTypeColumn" xml:space="preserve"><value>⟦Týpé—⟧</value><comment>Fee history grid column header — fee type.</comment></data>
+  <data name="Members_Detail_FeeAmountColumn" xml:space="preserve"><value>⟦Ámóúñt—⟧</value><comment>Fee history grid column header — fee amount.</comment></data>
+  <data name="Members_Detail_FeePaidColumn" xml:space="preserve"><value>⟦Páíd—⟧</value><comment>Fee history grid column header — amount paid so far.</comment></data>
+  <data name="Members_Detail_FeePaidBadge" xml:space="preserve"><value>⟦Páíd—⟧</value><comment>Badge shown when a fee is fully paid.</comment></data>
+  <data name="Members_Detail_FeeUnpaidBadge" xml:space="preserve"><value>⟦Úñpáíd—⟧</value><comment>Badge shown when a fee is not fully paid.</comment></data>
+  <data name="Members_Form_AddPageTitle" xml:space="preserve"><value>⟦Ádd Mémbér — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title for the new-member form.</comment></data>
+  <data name="Members_Form_EditPageTitle" xml:space="preserve"><value>⟦Édít Mémbér — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title for the edit-member form.</comment></data>
+  <data name="Members_Form_AddHeading" xml:space="preserve"><value>⟦Ádd Mémbér—⟧</value><comment>Page heading on the new-member form.</comment></data>
+  <data name="Members_Form_EditHeading" xml:space="preserve"><value>⟦Édít Mémbér—⟧</value><comment>Page heading on the edit-member form.</comment></data>
+  <data name="Members_Form_FirstNameLabel" xml:space="preserve"><value>⟦Fírst Ñámé—⟧</value><comment>Member form field label.</comment></data>
+  <data name="Members_Form_LastNameLabel" xml:space="preserve"><value>⟦Lást Ñámé—⟧</value><comment>Member form field label.</comment></data>
+  <data name="Members_Form_StreetAddressLabel" xml:space="preserve"><value>⟦Stréét Áddréss—⟧</value><comment>Member form field label.</comment></data>
+  <data name="Members_Form_PhoneLabel" xml:space="preserve"><value>⟦Phóñé—⟧</value><comment>Member form field label.</comment></data>
+  <data name="Members_Form_EmailLabel" xml:space="preserve"><value>⟦Émáíl—⟧</value><comment>Member form field label.</comment></data>
+  <data name="Members_Form_JoinDateLabel" xml:space="preserve"><value>⟦Jóíñ Dáté—⟧</value><comment>Member form field label.</comment></data>
+  <data name="Members_Form_DateOfBirthLabel" xml:space="preserve"><value>⟦Dáté óf Bírth—⟧</value><comment>Member form field label.</comment></data>
+  <data name="Members_Tile_Title" xml:space="preserve"><value>⟦Mémbérs—⟧</value><comment>Dashboard tile header for the Members module.</comment></data>
+  <data name="Members_Tile_ActionText" xml:space="preserve"><value>⟦Víéw Mémbérs—⟧</value><comment>Dashboard tile action link for the Members module.</comment></data>
+  <data name="Members_Tile_ErrorText" xml:space="preserve"><value>⟦Úñáblé tó lóád—⟧</value><comment>Shown in the Members dashboard tile when its data fails to load.</comment></data>
+  <data name="Members_Tile_TotalLabel" xml:space="preserve"><value>⟦Tótál—⟧</value><comment>Members dashboard tile stat label — total member count.</comment></data>
+  <data name="Members_Tile_NoOutstandingFees" xml:space="preserve"><value>⟦Ñó óútstáñdíñg féés—⟧</value><comment>Members dashboard tile note when no member owes fees.</comment></data>
+  <data name="Members_Tile_OutstandingFees_One" xml:space="preserve"><value>⟦Óútstáñdíñg féés · {Count} mémbér—⟧</value><comment>Members dashboard tile alert, singular. {Count} = number of members with outstanding fees.</comment></data>
+  <data name="Members_Tile_OutstandingFees_Other" xml:space="preserve"><value>⟦Óútstáñdíñg féés · {Count} mémbérs—⟧</value><comment>Members dashboard tile alert, plural. {Count} = number of members with outstanding fees.</comment></data>
+</root>

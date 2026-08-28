@@ -141,6 +141,8 @@
   <data name="Setup_Fees_AuditRetentionYears_One" xml:space="preserve"><value>{Count} year</value><comment>Audit-retention select option, singular.</comment></data>
   <data name="Setup_Fees_AuditRetentionYears_Other" xml:space="preserve"><value>{Count} years</value><comment>Audit-retention select option, plural.</comment></data>
   <data name="Setup_Theme_Label" xml:space="preserve"><value>Theme:</value><comment>Setup Wizard theme dropdown label.</comment></data>
+  <data name="Setup_Language_Label" xml:space="preserve"><value>Language:</value><comment>Setup Wizard display-language dropdown label (spec 027, US3).</comment></data>
+  <data name="Setup_Language_HelpText" xml:space="preserve"><value>You can change this later in Settings.</value><comment>Help text under the Setup Wizard language dropdown.</comment></data>
   <data name="Setup_Tax_AppliesLabel" xml:space="preserve"><value>Sales tax applies to this organisation</value><comment>Sales Tax tab — applicability checkbox label.</comment></data>
   <data name="Setup_Tax_RateLabel" xml:space="preserve"><value>Tax Rate (%)</value><comment>Sales Tax tab — tax rate label.</comment></data>
   <data name="Setup_Tax_AnnualFeeTreatmentLabel" xml:space="preserve"><value>Annual Fee Tax Treatment</value><comment>Sales Tax tab — annual fee tax-code label.</comment></data>

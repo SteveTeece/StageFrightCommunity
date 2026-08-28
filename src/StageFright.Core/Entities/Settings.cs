@@ -78,6 +78,14 @@ public class Settings
     public Theme Theme { get; set; } = Theme.Dark;
 
     /// <summary>
+    /// Selected display language as a BCP-47 culture id (e.g. "en-AU", "en-US"). Null until the
+    /// user explicitly chooses one; null resolves at startup to the operating-system display
+    /// language when a matching resource set ships, otherwise Australian English (FR-023).
+    /// Presentation only — changing it never alters any other stored value or GL balance (FR-016).
+    /// </summary>
+    public string? LanguageCode { get; set; }
+
+    /// <summary>
     /// When true, the Rehearsals and Events dashboard tiles display a year-to-date
     /// participation bar chart in addition to the most-recent doughnut chart.
     /// Default: true.

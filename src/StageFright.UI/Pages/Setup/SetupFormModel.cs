@@ -37,6 +37,13 @@ public sealed class SetupFormModel : IValidatableObject
     public int AuditRetentionYears { get; set; } = 1;
 
     /// <summary>
+    /// Chosen display language as a BCP-47 culture id (spec 027, US3 / FR-013). Pre-set by the
+    /// language step to the FR-023-resolved default; persisted onto <c>Settings.LanguageCode</c>
+    /// at Finish.
+    /// </summary>
+    public string? LanguageCode { get; set; }
+
+    /// <summary>
     /// TaxRate is only required (and must be positive) while IsTaxApplicable is true — a
     /// plain [Range] on a nullable field never fires for a blank value, so the "required
     /// while applicable" rule needs this cross-field check instead.
