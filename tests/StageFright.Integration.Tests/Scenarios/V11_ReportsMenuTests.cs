@@ -179,7 +179,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
             MakeMember("Charlie", MemberStatus.Active, isDeleted: true));
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var provider = new MemberListReportProvider(new MemberRepository(_db), new AgeCalculationService());
+        var provider = new MemberListReportProvider(new MemberRepository(_db), new AgeCalculationService(RealLocalizer.Instance));
         var filters = new ReportFilterValues();
         filters.Set("memberStatus", "Active");
 
@@ -235,7 +235,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
                 new TrialBalanceReportProvider(glRepo, catRepo, new SettingsRepository(_db)),
                 new AccountRegisterReportProvider(glRepo, catRepo),
                 new MemberAccountSummaryReportProvider(glRepo, memberRepo, new MemberBalanceService(memberRepo, feeRepo, glRepo)),
-                new MemberListReportProvider(memberRepo, new AgeCalculationService()),
+                new MemberListReportProvider(memberRepo, new AgeCalculationService(RealLocalizer.Instance)),
                 new CommitteeReportProvider(committeeRepo, memberRepo)
             },
             NullLogger<ReportProviderRegistry>.Instance);

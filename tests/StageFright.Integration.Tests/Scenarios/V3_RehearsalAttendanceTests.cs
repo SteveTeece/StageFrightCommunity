@@ -413,7 +413,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         var settingsRepo = new SettingsRepository(_db);
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        var ageCalc = new AgeCalculationService();
+        var ageCalc = new AgeCalculationService(RealLocalizer.Instance);
         var validation = new MemberValidationService(
             ageCalc, new StubStringLocalizer<StageFright.Core.Modules.Localization.Resources.ValidationResource>());
         var unitOfWork = new UnitOfWork(_db);

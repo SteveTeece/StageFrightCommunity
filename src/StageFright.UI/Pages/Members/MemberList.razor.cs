@@ -16,8 +16,8 @@ public partial class MemberList : ComponentBase
     [Inject] private IStringLocalizer<MembersResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private AgeCalculationService AgeCalc { get; set; } = null!;
 
-    private readonly AgeCalculationService _ageCalc = new();
     private bool _showInactive;
     private List<Member> _members = new();
     private string _searchTerm = string.Empty;

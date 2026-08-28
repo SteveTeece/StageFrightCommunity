@@ -60,7 +60,7 @@ else
                 <Template Context="member">
                     @if (member.DateOfBirth.HasValue)
                     {
-                        @(_ageCalc.Calculate(member.DateOfBirth, DateTime.UtcNow.Date)?.ToString() ?? "—")
+                        @(AgeCalc.Calculate(member.DateOfBirth, DateTime.UtcNow.Date)?.ToString() ?? "—")
                     }
                     else
                     {

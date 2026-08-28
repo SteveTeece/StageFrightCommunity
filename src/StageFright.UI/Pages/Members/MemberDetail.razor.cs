@@ -21,8 +21,8 @@ public partial class MemberDetail : ComponentBase
     [Inject] private IStringLocalizer<MembersResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private AgeCalculationService AgeCalc { get; set; } = null!;
 
-    private readonly AgeCalculationService _ageCalc = new();
     private Member? _member;
     private List<CommitteePositionRecord> _committeeHistory = new();
     private List<FeeHistoryItem> _feeHistory = new();
@@ -36,7 +36,7 @@ public partial class MemberDetail : ComponentBase
         _member = await MemberService.GetByIdAsync(Id);
         if (_member is not null)
         {
-            _age = _ageCalc.Calculate(_member.DateOfBirth, DateTime.UtcNow.Date);
+            _age = AgeCalc.Calculate(_member.DateOfBirth, DateTime.UtcNow.Date);
             var history = await CommitteeService.GetHistoryAsync(Id);
             _committeeHistory = history.ToList();
 

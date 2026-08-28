@@ -22,7 +22,7 @@ public class MemberServiceTests : TestBase
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
 
     private readonly MemberValidationService _validation;
-    private readonly AgeCalculationService _ageCalc = new();
+    private readonly AgeCalculationService _ageCalc = new(RealLocalizer.Instance);
 
     public MemberServiceTests()
     {

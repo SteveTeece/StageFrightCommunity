@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using StageFright.Core.Localization;
+using StageFright.Core.Modules.Members;
 
 namespace StageFright.UI.Tests;
 
@@ -18,6 +19,7 @@ public abstract class LocalizedTestContext : RadzenGridTestContext
     {
         Services.AddLocalization();
         Services.AddScoped<ILocalizer, Localizer>();
+        Services.AddScoped<AgeCalculationService>();
         var factory = Services.BuildServiceProvider().GetRequiredService<IStringLocalizerFactory>();
         EnumLocalizationExtensions.UseFactory(factory);
     }

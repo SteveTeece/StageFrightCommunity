@@ -13,7 +13,7 @@ namespace StageFright.Core.Tests.Modules.Members;
 public class MemberValidationServiceTests : TestBase
 {
     private readonly MemberValidationService _svc =
-        new(new AgeCalculationService(), new StubStringLocalizer<ValidationResource>());
+        new(new AgeCalculationService(RealLocalizer.Instance), new StubStringLocalizer<ValidationResource>());
 
     private static SettingsEntity MakeSettings(int maxAgeRangeYears = 150, int minimumMemberAge = 0) => new()
     {
