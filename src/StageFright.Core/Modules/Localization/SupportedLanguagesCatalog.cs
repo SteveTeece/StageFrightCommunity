@@ -12,7 +12,8 @@ namespace StageFright.Core.Modules.Localization;
 /// whose name matches the pseudo-locale pattern <c>qps-*</c> so the test pseudo-locale never
 /// reaches the picker or FR-023 matching. There is no hand-maintained list — dropping in a new
 /// <c>&lt;Marker&gt;.&lt;culture&gt;.resx</c> set is all it takes for a language to be offered
-/// (SC-003). v1 yields exactly one entry (<c>en-AU</c>) because no satellite ships.
+/// (SC-003). The result is the always-present <c>en-AU</c> baseline plus one entry per shipped
+/// <c>&lt;Marker&gt;.&lt;culture&gt;.resx</c> satellite set (e.g. <c>en-US</c>).
 /// </summary>
 public sealed class SupportedLanguagesCatalog : ISupportedLanguagesCatalog
 {
