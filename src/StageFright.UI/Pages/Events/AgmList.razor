@@ -1,19 +1,19 @@
 @page "/events/agm"
 
-<PageTitle>AGMs — StageFright Community</PageTitle>
+<PageTitle>@L["Events_Agm_ListPageTitle"]</PageTitle>
 
 <div class="page-header mb-2">
-    <h1 class="h3">AGMs</h1>
+    <h1 class="h3">@L["Events_Agm_ListHeading"]</h1>
 </div>
 
 @if (_loading)
 {
-    <p role="status" aria-live="polite">Loading…</p>
+    <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
 }
 else if (_agms.Count == 0)
 {
-    <div class="alert alert-info py-1 mb-2 small">No AGMs have been recorded yet.</div>
-    <a href="/events/agm/new" class="btn btn-primary btn-sm">Schedule AGM</a>
+    <div class="alert alert-info py-1 mb-2 small">@L["Events_Agm_ListEmptyNotice"]</div>
+    <a href="/events/agm/new" class="btn btn-primary btn-sm">@L["Events_Agm_ScheduleButton"]</a>
 }
 else
 {
@@ -21,7 +21,7 @@ else
                     AllowSorting="true" AllowPaging="true" PageSize="15"
                     class="rz-shadow-0">
         <Columns>
-            <RadzenDataGridColumn TItem="AnnualGeneralMeeting" Property="Date" Title="Date" Width="200px">
+            <RadzenDataGridColumn TItem="AnnualGeneralMeeting" Property="Date" Title="@L["Events_Agm_DateColumn"]" Width="200px">
                 <Template Context="agm">
                     <a href="#" @onclick:preventDefault @onclick="() => OpenDetail(agm)"
                        class="text-decoration-none fw-semibold">
@@ -29,36 +29,36 @@ else
                     </a>
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="AnnualGeneralMeeting" Title="Status" Width="120px" Sortable="false">
+            <RadzenDataGridColumn TItem="AnnualGeneralMeeting" Title="@Shared["Shared_Table_StatusColumn"]" Width="120px" Sortable="false">
                 <Template Context="agm">
                     @if (agm.IsRecorded)
                     {
-                        <span class="badge bg-success">Recorded</span>
+                        <span class="badge bg-success">@L["Events_Status_Recorded"]</span>
                     }
                     else
                     {
-                        <span class="badge bg-warning text-dark">Scheduled</span>
+                        <span class="badge bg-warning text-dark">@L["Events_Status_Scheduled"]</span>
                     }
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="AnnualGeneralMeeting" Title="Attendance" Width="140px" Sortable="false">
+            <RadzenDataGridColumn TItem="AnnualGeneralMeeting" Title="@L["Events_Agm_AttendanceColumn"]" Width="140px" Sortable="false">
                 <Template Context="agm">
-                    @(agm.IsRecorded ? $"{AttendedCount(agm)} of {agm.AttendanceRecords.Count}" : "—")
+                    @AttendanceValue(agm)
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="AnnualGeneralMeeting" Title="Actions" Width="200px" Sortable="false">
+            <RadzenDataGridColumn TItem="AnnualGeneralMeeting" Title="@Shared["Shared_Table_ActionsColumn"]" Width="200px" Sortable="false">
                 <Template Context="agm">
                     <div class="d-flex gap-1">
                         @if (!agm.IsRecorded)
                         {
                             <a href="@($"/events/agm/{agm.Id}/record")" class="btn btn-primary btn-sm text-nowrap">
-                                Record
+                                @L["Events_Agm_RecordButton"]
                             </a>
                         }
                         <button class="btn btn-outline-secondary btn-sm text-nowrap"
                                 @onclick="() => PrintAttendanceReport(agm.Id)"
-                                aria-label="Print attendance report for @agm.Date.ToString("d MMMM yyyy")">
-                            Print
+                                aria-label="@PrintReportAriaLabel(agm.Date)">
+                            @L["Events_Agm_PrintButton"]
                         </button>
                     </div>
                 </Template>

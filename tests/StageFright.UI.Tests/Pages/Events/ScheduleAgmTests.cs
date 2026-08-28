@@ -15,7 +15,7 @@ namespace StageFright.UI.Tests.Pages.Events;
 /// ValidationException surfaced inline, and post-save redirect to the new AGM's detail page
 /// (research.md Decision 7, not back to the list).
 /// </summary>
-public class ScheduleAgmTests : BunitContext
+public class ScheduleAgmTests : LocalizedTestContext
 {
     private readonly IAgmService _agmService = Substitute.For<IAgmService>();
 

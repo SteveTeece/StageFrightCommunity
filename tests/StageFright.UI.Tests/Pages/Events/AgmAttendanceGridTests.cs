@@ -9,7 +9,7 @@ namespace StageFright.UI.Tests.Pages.Events;
 /// bUnit tests for AgmAttendanceGrid — member rendering, select-all, no pagination,
 /// independent scroll container (FR-004/FR-005).
 /// </summary>
-public class AgmAttendanceGridTests : RadzenGridTestContext
+public class AgmAttendanceGridTests : LocalizedTestContext
 {
     private static readonly List<Member> Members =
     [

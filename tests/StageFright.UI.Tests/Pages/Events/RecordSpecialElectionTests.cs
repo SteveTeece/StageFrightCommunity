@@ -14,7 +14,7 @@ namespace StageFright.UI.Tests.Pages.Events;
 /// bUnit tests for RecordSpecialElection — outgoing/incoming member selection, replacement-date
 /// input, and submit calling IAgmService.RecordSpecialElectionAsync (FR-026–FR-028).
 /// </summary>
-public class RecordSpecialElectionTests : BunitContext
+public class RecordSpecialElectionTests : LocalizedTestContext
 {
     private readonly IAgmService _agmService = Substitute.For<IAgmService>();
     private readonly ICommitteeService _committeeService = Substitute.For<ICommitteeService>();

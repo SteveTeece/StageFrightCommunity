@@ -1,43 +1,43 @@
 @page "/events/agm/{id:guid}"
 
-<PageTitle>AGM — StageFright Community</PageTitle>
+<PageTitle>@L["Events_Agm_DetailPageTitle"]</PageTitle>
 
 @if (_loading)
 {
-    <p role="status" aria-live="polite">Loading…</p>
+    <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
 }
 else if (_notFound)
 {
-    <div class="alert alert-warning py-1 mb-2 small">AGM not found.</div>
-    <a href="/events/agm" class="btn btn-outline-secondary btn-sm">Back to AGMs</a>
+    <div class="alert alert-warning py-1 mb-2 small">@L["Events_Agm_NotFoundNotice"]</div>
+    <a href="/events/agm" class="btn btn-outline-secondary btn-sm">@L["Events_Agm_BackButton"]</a>
 }
 else
 {
     <div class="page-header d-flex align-items-center justify-content-between mb-2">
         <h1 class="h3 mb-0">
-            AGM — @_agm!.Date.ToString("d MMMM yyyy")
-            @if (_agm.IsRecorded)
+            @DetailHeadingText()
+            @if (_agm!.IsRecorded)
             {
-                <span class="badge bg-success">Recorded</span>
+                <span class="badge bg-success">@L["Events_Status_Recorded"]</span>
             }
             else
             {
-                <span class="badge bg-warning text-dark">Scheduled</span>
+                <span class="badge bg-warning text-dark">@L["Events_Status_Scheduled"]</span>
             }
         </h1>
         <div class="d-flex gap-1">
             <button class="btn btn-outline-secondary btn-sm"
                     @onclick="PrintAttendanceReport"
-                    aria-label="Print attendance report">
-                Print Attendance Report
+                    aria-label="@L["Events_Agm_PrintReportButtonAriaLabel"]">
+                @L["Events_Agm_PrintReportButton"]
             </button>
             <button class="btn btn-outline-secondary btn-sm"
                     @onclick="PrintAgmResults"
-                    aria-label="Print AGM results report">
-                Print AGM Results
+                    aria-label="@L["Events_Agm_PrintResultsButtonAriaLabel"]">
+                @L["Events_Agm_PrintResultsButton"]
             </button>
             <button class="btn btn-outline-danger btn-sm" @onclick="ArchiveAsync" disabled="@_archiving">
-                @(_archiving ? "Archiving…" : "Archive")
+                @(_archiving ? L["Events_Agm_ArchivingText"] : L["Events_Agm_ArchiveButton"])
             </button>
         </div>
     </div>
@@ -55,18 +55,18 @@ else
     @if (!_agm.IsRecorded)
     {
         <a href="@($"/events/agm/{_agm.Id}/record")" class="btn btn-primary btn-sm mt-1 mb-2">
-            Record Attendance &amp; Elections
+            @L["Events_Agm_RecordAttendanceLink"]
         </a>
     }
     else
     {
-        <h2 class="h6 mb-1">Attendance</h2>
-        <p class="small">@AttendedCount of @_attendance.Count members attended.</p>
+        <h2 class="h6 mb-1">@L["Events_Agm_AttendanceHeading"]</h2>
+        <p class="small">@AttendanceSummaryText()</p>
 
-        <h2 class="h6 mb-1 mt-3">Elected Positions</h2>
+        <h2 class="h6 mb-1 mt-3">@L["Events_Agm_ElectedPositionsHeading"]</h2>
         @if (PositionLines.Count == 0 && GeneralCommitteeMemberNames.Count == 0)
         {
-            <p class="small text-muted">No positions recorded.</p>
+            <p class="small text-muted">@L["Events_Agm_NoPositionsRecorded"]</p>
         }
         else
         {
@@ -84,7 +84,7 @@ else
             @if (GeneralCommitteeMemberNames.Count > 0)
             {
                 <div class="mb-1">
-                    <strong class="small d-block mb-1">General Committee Member</strong>
+                    <strong class="small d-block mb-1">@L["Events_Agm_GeneralCommitteeHeading"]</strong>
                     <BorderedListBox TItem="string" Items="GeneralCommitteeMemberNames">
                         <RowTemplate Context="name"><span class="small">@name</span></RowTemplate>
                     </BorderedListBox>
@@ -93,5 +93,5 @@ else
         }
     }
 
-    <a href="/events/agm" class="btn btn-outline-secondary btn-sm mt-2">Back to AGMs</a>
+    <a href="/events/agm" class="btn btn-outline-secondary btn-sm mt-2">@L["Events_Agm_BackButton"]</a>
 }

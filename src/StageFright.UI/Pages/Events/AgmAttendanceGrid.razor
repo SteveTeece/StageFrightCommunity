@@ -1,6 +1,6 @@
 @if (_rows.Count == 0)
 {
-    <div class="alert alert-warning py-1 mb-2 small">No active members found.</div>
+    <div class="alert alert-warning py-1 mb-2 small">@L["Events_AgmAttendance_NoActiveMembers"]</div>
 }
 else
 {
@@ -9,16 +9,16 @@ else
                         AllowSorting="true" AllowPaging="false"
                         class="rz-shadow-0">
             <Columns>
-                <RadzenDataGridColumn TItem="AttendanceRow" Title="Attended" Width="120px" Sortable="false">
+                <RadzenDataGridColumn TItem="AttendanceRow" Title="@L["Events_AgmAttendance_AttendedColumn"]" Width="120px" Sortable="false">
                     <HeaderTemplate>
                         <div class="d-flex flex-column align-items-center gap-1">
-                            <span>Attended</span>
+                            <span>@L["Events_AgmAttendance_AttendedColumn"]</span>
                             <span class="select-all-inline small text-muted">
                                 (<input type="checkbox" class="form-check-input" id="select-all-agm-attended"
                                         checked="@AllAttended"
                                         @onchange="e => { ToggleSelectAll((bool)(e.Value ?? false)); StateHasChanged(); }"
-                                        aria-label="Select all members as attended" />
-                                <label class="form-check-label mb-0" for="select-all-agm-attended">Select All</label>)
+                                        aria-label="@L["Events_AgmAttendance_SelectAllAriaLabel"]" />
+                                <label class="form-check-label mb-0" for="select-all-agm-attended">@L["Events_AgmAttendance_SelectAllLabel"]</label>)
                             </span>
                         </div>
                     </HeaderTemplate>
@@ -27,11 +27,11 @@ else
                             <input type="checkbox" class="form-check-input" id="agm-attended-@row.MemberId"
                                    checked="@row.Attended"
                                    @onchange="e => { row.Attended = (bool)(e.Value ?? false); StateHasChanged(); }"
-                                   aria-label="@row.MemberName attended" />
+                                   aria-label="@RowAriaLabel(row.MemberName)" />
                         </div>
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="AttendanceRow" Property="MemberName" Title="Member" />
+                <RadzenDataGridColumn TItem="AttendanceRow" Property="MemberName" Title="@L["Events_AgmAttendance_MemberColumn"]" />
             </Columns>
         </RadzenDataGrid>
     </div>

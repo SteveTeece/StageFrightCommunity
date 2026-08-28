@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Agm;
 using StageFright.Reports.Rendering;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Events;
 
@@ -24,6 +27,9 @@ public partial class AgmDetail : ComponentBase
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
     [Inject] private ILogger<AgmDetail> Logger { get; set; } = null!;
+    [Inject] private IStringLocalizer<EventsResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private AnnualGeneralMeeting? _agm;
     private List<AgmAttendanceRecord> _attendance = [];
@@ -32,6 +38,12 @@ public partial class AgmDetail : ComponentBase
     private bool _notFound;
     private bool _archiving;
     private string? _printMessage;
+
+    private string DetailHeadingText() =>
+        Loc.Get<EventsResource>("Events_Agm_DetailHeading", _agm!.Date.ToString("d MMMM yyyy"));
+
+    private string AttendanceSummaryText() =>
+        Loc.Get<EventsResource>("Events_Agm_AttendanceSummary", AttendedCount, _attendance.Count);
 
     protected override async Task OnParametersSetAsync()
     {
@@ -72,7 +84,7 @@ public partial class AgmDetail : ComponentBase
         .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
         .ToList();
 
-    private static List<(string Label, string MemberText)> BuildPositionLines(List<CommitteePositionRecord> positions)
+    private List<(string Label, string MemberText)> BuildPositionLines(List<CommitteePositionRecord> positions)
     {
         var lines = new List<(string Label, string MemberText)>();
 
@@ -84,14 +96,14 @@ public partial class AgmDetail : ComponentBase
         foreach (var group in officeHolderGroups)
         {
             var holders = group.ToList();
-            var label = holders[0].OfficeHolderType?.Name ?? "Unknown Position";
+            var label = holders[0].OfficeHolderType?.Name ?? L["Events_Agm_UnknownPosition"].Value;
             lines.Add((label, DescribeHolders(holders)));
         }
 
         return lines;
     }
 
-    private static string DescribeHolders(List<CommitteePositionRecord> holders)
+    private string DescribeHolders(List<CommitteePositionRecord> holders)
     {
         if (holders.Count == 1)
             return holders[0].Member.SortableFullName;
@@ -101,8 +113,8 @@ public partial class AgmDetail : ComponentBase
             .Select(h =>
             {
                 var start = h.StartDate!.Value.ToString("d MMM yyyy");
-                var end = h.EndDate.HasValue ? h.EndDate.Value.ToString("d MMM yyyy") : "present";
-                return $"{h.Member.SortableFullName} ({start}–{end})";
+                var end = h.EndDate.HasValue ? h.EndDate.Value.ToString("d MMM yyyy") : L["Events_Agm_HolderPresent"].Value;
+                return Loc.Get<EventsResource>("Events_Agm_HolderTerm", h.Member.SortableFullName, start, end);
             }));
     }
 
@@ -130,7 +142,7 @@ public partial class AgmDetail : ComponentBase
 
             if (sheetData.Members.Count == 0)
             {
-                _printMessage = "No attendance records found — nothing to print.";
+                _printMessage = L["Events_Agm_PrintNoRecords"];
                 return;
             }
 
@@ -146,7 +158,7 @@ public partial class AgmDetail : ComponentBase
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to print attendance report for AGM {AgmId}", Id);
-            _printMessage = "Unable to print attendance report. Please try again.";
+            _printMessage = L["Events_Agm_PrintError"];
         }
     }
 
@@ -179,7 +191,7 @@ public partial class AgmDetail : ComponentBase
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to print AGM results report for AGM {AgmId}", Id);
-            _printMessage = "Unable to print AGM results report. Please try again.";
+            _printMessage = L["Events_Agm_PrintResultsError"];
         }
     }
 }
