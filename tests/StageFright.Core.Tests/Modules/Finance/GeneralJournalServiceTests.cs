@@ -44,7 +44,7 @@ public class GeneralJournalServiceTests : TestBase
                 MakeAccount(IncomeAccountId, "Raffle Income", AccountType.Income, "4000")
             });
 
-        _sut = new GeneralJournalService(_accountRepo, _glRepo, _journalRepo, _audit, _unitOfWork);
+        _sut = new GeneralJournalService(_accountRepo, _glRepo, _journalRepo, _audit, _unitOfWork, RealLocalizer.Instance);
     }
 
     // --- GetJournalAccountsAsync ---

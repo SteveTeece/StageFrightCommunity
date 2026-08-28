@@ -2,6 +2,8 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Finance;
 
@@ -20,6 +22,7 @@ public class FeeService : IFeeService
     private readonly ISettingsRepository _settingsRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILocalizer _localizer;
 
     public FeeService(
         IMemberRepository memberRepo,
@@ -28,7 +31,8 @@ public class FeeService : IFeeService
         IAccountRepository accountRepo,
         ISettingsRepository settingsRepo,
         IAuditTrailService audit,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILocalizer localizer)
     {
         _memberRepo = memberRepo;
         _feeRepo = feeRepo;
@@ -37,6 +41,7 @@ public class FeeService : IFeeService
         _settingsRepo = settingsRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
+        _localizer = localizer;
     }
 
     public async Task<IReadOnlyList<Member>> GetEligibleMembersAsync(CancellationToken ct = default)
@@ -61,12 +66,13 @@ public class FeeService : IFeeService
 
         var settings = await _settingsRepo.GetAsync(ct)
             ?? throw new ValidationException(
-                "Application settings are not configured.", "Settings", nameof(ApplyAnnualFeesAsync));
+                _localizer.Get<ValidationResource>("Validation_Settings_NotConfigured"),
+                "Settings", nameof(ApplyAnnualFeesAsync));
 
         var accounts = await _accountRepo.GetAllAsync(ct);
         var incomeAccount = accounts.FirstOrDefault(c => c.Type == AccountType.Income && !c.IsSystem)
             ?? throw new ValidationException(
-                "No income account configured. Please set up accounts in Settings before applying fees.",
+                _localizer.Get<ValidationResource>("Validation_Fee_NoIncomeAccount"),
                 "Account", nameof(ApplyAnnualFeesAsync));
 
         var currentYear = DateTime.UtcNow.Year;

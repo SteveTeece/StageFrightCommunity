@@ -150,7 +150,7 @@ public sealed class V17_BankDepositTests : IAsyncLifetime
 
     private BankDepositService BuildBankDepositService() =>
         new(new AccountRepository(_db), new GLRepository(_db), new JournalEntryRepository(_db),
-            BuildAuditService(), new UnitOfWork(_db));
+            BuildAuditService(), new UnitOfWork(_db), RealLocalizer.Instance);
 
     private static AuditTrailService BuildAuditService()
     {

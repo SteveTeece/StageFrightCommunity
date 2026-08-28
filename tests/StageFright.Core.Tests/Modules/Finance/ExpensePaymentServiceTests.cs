@@ -49,7 +49,7 @@ public class ExpensePaymentServiceTests : TestBase
                 MakeAccount(NonBankAssetAccountId, "Equipment", AccountType.Asset, "1300")
             });
 
-        _sut = new ExpensePaymentService(_accountRepo, _glRepo, _journalRepo, _settingsRepo, _audit, _unitOfWork);
+        _sut = new ExpensePaymentService(_accountRepo, _glRepo, _journalRepo, _settingsRepo, _audit, _unitOfWork, RealLocalizer.Instance);
     }
 
     // --- GetExpenseAccountsAsync ---

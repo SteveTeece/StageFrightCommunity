@@ -371,7 +371,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
         var memberRepo = new MemberRepository(_db);
         var audit = BuildAuditService();
         var unitOfWork = new UnitOfWork(_db);
-        return new PaymentService(feeRepo, paymentRepo, glRepo, memberRepo, audit, unitOfWork);
+        return new PaymentService(feeRepo, paymentRepo, glRepo, memberRepo, audit, unitOfWork, RealLocalizer.Instance);
     }
 
     private static AuditTrailService BuildAuditService()

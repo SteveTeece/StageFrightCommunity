@@ -174,11 +174,11 @@ public sealed class V14_ExpensesTransfersTests : IAsyncLifetime
 
     private ExpensePaymentService BuildExpenseService() =>
         new(new AccountRepository(_db), new GLRepository(_db), new JournalEntryRepository(_db),
-            new SettingsRepository(_db), BuildAuditService(), new UnitOfWork(_db));
+            new SettingsRepository(_db), BuildAuditService(), new UnitOfWork(_db), RealLocalizer.Instance);
 
     private BankDepositService BuildBankDepositService() =>
         new(new AccountRepository(_db), new GLRepository(_db), new JournalEntryRepository(_db),
-            BuildAuditService(), new UnitOfWork(_db));
+            BuildAuditService(), new UnitOfWork(_db), RealLocalizer.Instance);
 
     private static AuditTrailService BuildAuditService()
     {

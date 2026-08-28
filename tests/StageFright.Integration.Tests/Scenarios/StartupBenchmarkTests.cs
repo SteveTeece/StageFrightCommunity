@@ -59,11 +59,11 @@ public sealed class StartupBenchmarkTests : IAsyncLifetime
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditSvc, RealLocalizer.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(ctx);
-        var accountService = new AccountService(accountRepo, glAssignment, auditSvc, reconciliationRepo);
+        var accountService = new AccountService(accountRepo, glAssignment, auditSvc, reconciliationRepo, RealLocalizer.Instance);
         var glRepo = new GLRepository(ctx);
         var journalRepo = new JournalEntryRepository(ctx);
         var unitOfWork = new UnitOfWork(ctx);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditSvc, unitOfWork);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditSvc, unitOfWork, RealLocalizer.Instance);
         return new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditSvc, RealLocalizer.Instance);
     }
 

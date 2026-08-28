@@ -387,7 +387,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var unitOfWork = new UnitOfWork(_db);
-        return new FeeService(memberRepo, feeRepo, glRepo, accountRepo, settingsRepo, auditSvc, unitOfWork);
+        return new FeeService(memberRepo, feeRepo, glRepo, accountRepo, settingsRepo, auditSvc, unitOfWork, RealLocalizer.Instance);
     }
 
     private PaymentService BuildPaymentService()
@@ -397,7 +397,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         var glRepo = new GLRepository(_db);
         var memberRepo = new MemberRepository(_db);
         var unitOfWork = new UnitOfWork(_db);
-        return new PaymentService(feeRepo, paymentRepo, glRepo, memberRepo, BuildAuditService(), unitOfWork);
+        return new PaymentService(feeRepo, paymentRepo, glRepo, memberRepo, BuildAuditService(), unitOfWork, RealLocalizer.Instance);
     }
 
     private AuditTrailService BuildAuditService()

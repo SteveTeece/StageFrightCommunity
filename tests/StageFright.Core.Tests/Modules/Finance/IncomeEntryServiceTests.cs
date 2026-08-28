@@ -49,7 +49,7 @@ public class IncomeEntryServiceTests : TestBase
                 MakeAccount(BankAccountId, "Operating Account", AccountType.Asset, "1110", isBank: true)
             });
 
-        _sut = new IncomeEntryService(_accountRepo, _glRepo, _journalRepo, _settingsRepo, _audit, _unitOfWork);
+        _sut = new IncomeEntryService(_accountRepo, _glRepo, _journalRepo, _settingsRepo, _audit, _unitOfWork, RealLocalizer.Instance);
     }
 
     // --- GetIncomeAccountsAsync ---

@@ -2,6 +2,8 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Finance;
 
@@ -17,6 +19,7 @@ public class ExpensePaymentService : IExpensePaymentService
     private readonly ISettingsRepository _settingsRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILocalizer _localizer;
 
     public ExpensePaymentService(
         IAccountRepository accountRepo,
@@ -24,7 +27,8 @@ public class ExpensePaymentService : IExpensePaymentService
         IJournalEntryRepository journalRepo,
         ISettingsRepository settingsRepo,
         IAuditTrailService audit,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILocalizer localizer)
     {
         _accountRepo = accountRepo;
         _glRepo = glRepo;
@@ -32,6 +36,7 @@ public class ExpensePaymentService : IExpensePaymentService
         _settingsRepo = settingsRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
+        _localizer = localizer;
     }
 
     public async Task<IReadOnlyList<Account>> GetExpenseAccountsAsync(CancellationToken ct = default)
@@ -48,7 +53,8 @@ public class ExpensePaymentService : IExpensePaymentService
     {
         if (request.Amount <= 0m)
             throw new ValidationException(
-                "Expense amount must be greater than zero.", nameof(Transaction), nameof(RecordExpenseAsync));
+                _localizer.Get<ValidationResource>("Validation_Expense_AmountPositive"),
+                nameof(Transaction), nameof(RecordExpenseAsync));
 
         var all = await _accountRepo.GetAllAsync(ct);
 
@@ -57,18 +63,21 @@ public class ExpensePaymentService : IExpensePaymentService
 
         if (!bankAccount.IsBankAccount)
             throw new ValidationException(
-                "The payment account must be a bank/cash account.", nameof(Account), nameof(RecordExpenseAsync));
+                _localizer.Get<ValidationResource>("Validation_Expense_PaymentAccountMustBeBank"),
+                nameof(Account), nameof(RecordExpenseAsync));
 
         var expenseAccount = all.FirstOrDefault(a => a.Id == request.ExpenseAccountId)
             ?? throw new EntityNotFoundException(nameof(Account), request.ExpenseAccountId, nameof(RecordExpenseAsync));
 
         if (expenseAccount.Type != AccountType.Expense)
             throw new ValidationException(
-                "Selected account is not an Expense account.", nameof(Account), nameof(RecordExpenseAsync));
+                _localizer.Get<ValidationResource>("Validation_Expense_AccountNotExpense"),
+                nameof(Account), nameof(RecordExpenseAsync));
 
         if (expenseAccount.IsSystem)
             throw new ValidationException(
-                "System accounts cannot be used for manual expense payments.", nameof(Account), nameof(RecordExpenseAsync));
+                _localizer.Get<ValidationResource>("Validation_Expense_SystemAccountNotAllowed"),
+                nameof(Account), nameof(RecordExpenseAsync));
 
         var settings = await _settingsRepo.GetAsync(ct);
         var isTaxApplicable = settings?.IsTaxApplicable ?? false;

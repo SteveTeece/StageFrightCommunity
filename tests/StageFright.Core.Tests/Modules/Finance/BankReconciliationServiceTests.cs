@@ -50,7 +50,7 @@ public class BankReconciliationServiceTests : TestBase
         _glRepo.GetUnreconciledByAccountAsync(Arg.Any<Guid>(), Arg.Any<DateTime?>(), Arg.Any<CancellationToken>())
             .Returns(new List<Transaction>());
 
-        _sut = new BankReconciliationService(_recRepo, _accountRepo, _glRepo, _audit);
+        _sut = new BankReconciliationService(_recRepo, _accountRepo, _glRepo, _audit, RealLocalizer.Instance);
     }
 
     // --- StartDraftAsync ---

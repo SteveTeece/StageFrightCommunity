@@ -102,7 +102,7 @@ The one shared localization mechanism every story builds on: area resource marke
 
 ### Tests (write to fail first)
 
-- [ ] **T029** [US2] Extend the guard suite to the full app: residual-literal scan over the US2 file list, enum-coverage for `FeeType`/`PaymentMethod`/`PaymentType`/`AccountType`/`TaxCode`/`ReconciliationStatus`/`JournalEntryType` + no-raw-enum-display, no-orphan-satellite-keys, placeholder-parity, plural-pairing, no-`"C"`-currency repo-wide (FR-024/FR-010/FR-015, SC-001/SC-008) · `tests/StageFright.Localization.Tests/`
+- [x] **T029** [US2] Extend the guard suite to the full app: residual-literal scan over the US2 file list, enum-coverage for `FeeType`/`PaymentMethod`/`PaymentType`/`AccountType`/`TaxCode`/`ReconciliationStatus`/`JournalEntryType` + no-raw-enum-display, no-orphan-satellite-keys, placeholder-parity, plural-pairing, no-`"C"`-currency repo-wide (FR-024/FR-010/FR-015, SC-001/SC-008) · `tests/StageFright.Localization.Tests/`
 - [x] **T030** [US2] Report-label tests (`ReportsResource` resolves report names/headers/section+total labels — FR-006) and a plugin-under-non-`en` test asserting `StageFright.TestPlugin` English strings render without error or blanking (FR-020) · `tests/StageFright.Reports.Tests/`, `tests/StageFright.Integration.Tests/`
 
 ### Implementation
@@ -119,14 +119,14 @@ The one shared localization mechanism every story builds on: area resource marke
 - [x] **T038** [P] [US2] Remaining `*MenuItemProvider` `Title`/`ShortLabel` · `src/StageFright.Core/Modules/Localization/Resources/NavigationResource.resx`, `src/StageFright.Core/Modules/*/*MenuItemProvider.cs`
 - [x] **T039** [P] [US2] Report providers — `ReportName`, filter labels, section labels; filter **option values** stay invariant tokens, **labels** via `EnumsResource` / `Reports_Filter_OptionAll` · `src/StageFright.Reports/Resources/ReportsResource.resx`, `src/StageFright.Reports/Providers/*ReportProvider.cs`
 - [x] **T040** [P] [US2] Report renderers — column headers, subtotal/total labels, fixed annotations via `IStringLocalizer<ReportsResource>`; enum cells via `LocalizeEnum`; amounts via `MoneyFormatter.FormatWithCode` · `src/StageFright.Reports/Rendering/*PdfRenderer.cs`, `src/StageFright.Reports/Rendering/CsvReportExporter.cs`
-- [ ] **T041** [P] [US2] User-facing exception `Message` text + remaining validation services → `ValidationResource` (types / `CorrelationId` / boundary-wrapping rules unchanged) · `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx`, `src/StageFright.Core/Exceptions/*.cs`, remaining `*ValidationService`
+- [x] **T041** [P] [US2] User-facing exception `Message` text + remaining validation services → `ValidationResource` (types / `CorrelationId` / boundary-wrapping rules unchanged) · `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx`, `src/StageFright.Core/Exceptions/*.cs`, remaining `*ValidationService`
 - [x] **T042** [P] [US2] Remaining user-facing enum keys `Enum_FeeType_*`, `Enum_PaymentMethod_*`, `Enum_PaymentType_*`, `Enum_AccountType_*`, `Enum_TaxCode_*`, `Enum_ReconciliationStatus_*`, `Enum_JournalEntryType_*` (verbatim) + swap their display sites to `LocalizeEnum` (FR-024) · `src/StageFright.Core/Modules/Localization/Resources/EnumsResource.resx`, display call sites across UI + Reports
 - [x] **T043** [P] [US2] Remaining shell/app strings · `src/StageFright.UI/Pages/StartupError.razor`, `src/StageFright.App/MainPage.xaml`, `src/StageFright.App/App.xaml`, any remaining `src/StageFright.UI/Pages/**`
 - [x] **T044** [P] [US2] Sweep every remaining `decimal.ToString("C")` / `string.Format("{0:C}", …)` / `FormatString="{0:C}"` display site (~34 files, concentrated in Finance + reports) to `MoneyFormatter` (FR-015) · repo-wide display call sites
 
 **⟶ Wait for Wave 1, then:**
 
-- [ ] **T045** [US2] Confirm/adjust all provider + service registrations now taking `IStringLocalizer<T>` resolve from DI · `src/StageFright.App/MauiProgram.cs` (`RegisterCoreServices`)
+- [x] **T045** [US2] Confirm/adjust all provider + service registrations now taking `IStringLocalizer<T>` resolve from DI · `src/StageFright.App/MauiProgram.cs` (`RegisterCoreServices`)
 
 **Checkpoint US2**: Every screen, dialog, tile, menu, settings tab, setup step, report and user-facing message renders en-AU text from resources; the repo-wide residual-literal + enum + no-`"C"` guards pass; a translator has exactly one set of `.resx` files to work from.
 

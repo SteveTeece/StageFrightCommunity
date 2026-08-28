@@ -168,11 +168,11 @@ public sealed class V10_ThemeTests : IAsyncLifetime
         var officeHolderTypeService = new StageFright.Core.Modules.Members.CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService, RealLocalizer.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(_db);
-        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
+        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo, RealLocalizer.Instance);
         var glRepo = new GLRepository(_db);
         var journalRepo = new JournalEntryRepository(_db);
         var unitOfWork = new UnitOfWork(_db);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
         return new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
     }
 

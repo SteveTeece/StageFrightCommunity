@@ -4,16 +4,18 @@ using StageFright.Localization.Tests.Scanning;
 namespace StageFright.Localization.Tests;
 
 /// <summary>
-/// Interim localization guard scoped to the non-Finance Core services converted in US2, T041
-/// (Agm, Events, committee office-holder titles, Rehearsals attendance, Settings, Setup, Backup).
-/// Enforces the resource-key-catalog.md §3 contract for user-facing exception <c>Message</c>
-/// text on that slice: every <c>ValidationResource</c> key referenced has a neutral (en-AU)
-/// entry, and no bare English literal remains as the message argument of a user-facing
-/// exception. The Finance services and the repo-wide unscoping stay with T041 (Finance) / T029.
+/// Localization guard for the user-facing exception <c>Message</c> text of the US2 (T041)
+/// application-service slice — the non-Finance services (Agm, Events, committee office-holder
+/// titles, Rehearsals attendance, Settings, Setup, Backup) plus every Finance service
+/// (Account, BankReconciliation, ExpensePayment, Payment, Fee, GeneralJournal, IncomeEntry,
+/// BankDeposit, OpeningBalance). Enforces the resource-key-catalog.md §3 contract for that
+/// slice: every <c>ValidationResource</c> key referenced has a neutral (en-AU) entry, and no
+/// bare English literal remains as the message argument of a user-facing exception. The
+/// repo-wide residual-literal / enum / placeholder guards stay with T029.
 /// </summary>
 public class Us2ExceptionMessageGuardTests
 {
-    private static readonly string[] NonFinanceServiceFiles =
+    private static readonly string[] Us2ServiceFiles =
     [
         "src/StageFright.Core/Modules/Agm/AgmService.cs",
         "src/StageFright.Core/Modules/Events/EventService.cs",
@@ -23,6 +25,15 @@ public class Us2ExceptionMessageGuardTests
         "src/StageFright.Core/Modules/Settings/SettingsService.cs",
         "src/StageFright.Core/Modules/Settings/SetupService.cs",
         "src/StageFright.Core/Modules/Settings/BackupService.cs",
+        "src/StageFright.Core/Modules/Finance/AccountService.cs",
+        "src/StageFright.Core/Modules/Finance/BankReconciliationService.cs",
+        "src/StageFright.Core/Modules/Finance/ExpensePaymentService.cs",
+        "src/StageFright.Core/Modules/Finance/PaymentService.cs",
+        "src/StageFright.Core/Modules/Finance/FeeService.cs",
+        "src/StageFright.Core/Modules/Finance/GeneralJournalService.cs",
+        "src/StageFright.Core/Modules/Finance/IncomeEntryService.cs",
+        "src/StageFright.Core/Modules/Finance/BankDepositService.cs",
+        "src/StageFright.Core/Modules/Finance/OpeningBalanceService.cs",
     ];
 
     private const string ValidationResx =
@@ -37,12 +48,12 @@ public class Us2ExceptionMessageGuardTests
         RegexOptions.Compiled | RegexOptions.Singleline);
 
     [Fact]
-    public void Should_HaveNeutralEntry_When_ValidationKeyReferencedInNonFinanceService()
+    public void Should_HaveNeutralEntry_When_ValidationKeyReferencedInUs2Service()
     {
         var neutral = ResxKeyScanner.ScanFile(RepoPath(ValidationResx));
         var missing = new List<string>();
 
-        foreach (var relative in NonFinanceServiceFiles)
+        foreach (var relative in Us2ServiceFiles)
         {
             foreach (var usage in LocalizerKeyUsageScanner.ScanFile(RepoPath(relative)))
             {
@@ -60,11 +71,11 @@ public class Us2ExceptionMessageGuardTests
     }
 
     [Fact]
-    public void Should_HaveNoUserFacingLiteral_When_NonFinanceServiceExceptionScanned()
+    public void Should_HaveNoUserFacingLiteral_When_Us2ServiceExceptionScanned()
     {
         var findings = new List<string>();
 
-        foreach (var relative in NonFinanceServiceFiles)
+        foreach (var relative in Us2ServiceFiles)
         {
             var text = File.ReadAllText(RepoPath(relative));
             foreach (Match m in LiteralExceptionMessage.Matches(text))

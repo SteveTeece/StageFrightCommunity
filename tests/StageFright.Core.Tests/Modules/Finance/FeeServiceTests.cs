@@ -71,7 +71,7 @@ public class FeeServiceTests : TestBase
             .Returns(ci => ci.ArgAt<Fee>(0));
 
         _sut = new FeeService(
-            _memberRepo, _feeRepo, _glRepo, _accountRepo, _settingsRepo, _audit, _unitOfWork);
+            _memberRepo, _feeRepo, _glRepo, _accountRepo, _settingsRepo, _audit, _unitOfWork, RealLocalizer.Instance);
     }
 
     // --- GetEligibleMembersAsync ---

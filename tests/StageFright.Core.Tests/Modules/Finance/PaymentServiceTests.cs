@@ -45,7 +45,7 @@ public class PaymentServiceTests : TestBase
                 MakeFee(Fee2Id, new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc), 80m),
             });
 
-        _sut = new PaymentService(_feeRepo, _paymentRepo, _glRepo, _memberRepo, _audit, _unitOfWork);
+        _sut = new PaymentService(_feeRepo, _paymentRepo, _glRepo, _memberRepo, _audit, _unitOfWork, RealLocalizer.Instance);
     }
 
     // --- RecordAsync: creates Payment ---

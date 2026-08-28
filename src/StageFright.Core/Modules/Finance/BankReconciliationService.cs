@@ -2,6 +2,8 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Finance;
 
@@ -19,17 +21,20 @@ public class BankReconciliationService : IBankReconciliationService
     private readonly IAccountRepository _accountRepo;
     private readonly IGLRepository _glRepo;
     private readonly IAuditTrailService _audit;
+    private readonly ILocalizer _localizer;
 
     public BankReconciliationService(
         IBankReconciliationRepository reconciliationRepo,
         IAccountRepository accountRepo,
         IGLRepository glRepo,
-        IAuditTrailService audit)
+        IAuditTrailService audit,
+        ILocalizer localizer)
     {
         _reconciliationRepo = reconciliationRepo;
         _accountRepo = accountRepo;
         _glRepo = glRepo;
         _audit = audit;
+        _localizer = localizer;
     }
 
     public Task<IReadOnlyList<BankReconciliation>> GetHistoryAsync(Guid accountId, CancellationToken ct = default) =>
@@ -45,18 +50,20 @@ public class BankReconciliationService : IBankReconciliationService
 
         if (!account.IsBankAccount)
             throw new ValidationException(
-                "Only bank/cash accounts can be reconciled.",
+                _localizer.Get<ValidationResource>("Validation_BankReconciliation_BankAccountsOnly"),
                 nameof(Account), nameof(StartDraftAsync), request.AccountId);
 
         if (await _reconciliationRepo.GetDraftForAccountAsync(request.AccountId, ct) is not null)
             throw new ReconciliationException(
-                "This account already has a draft reconciliation. Finalise or delete it first.",
+                _localizer.Get<ValidationResource>("Validation_BankReconciliation_DraftAlreadyExists"),
                 nameof(BankReconciliation), nameof(StartDraftAsync));
 
         var lastFinalised = await _reconciliationRepo.GetLastFinalisedForAccountAsync(request.AccountId, ct);
         if (lastFinalised is not null && request.StatementDate <= lastFinalised.StatementDate)
             throw new ValidationException(
-                $"The statement date must be after the last finalised statement date ({lastFinalised.StatementDate:yyyy-MM-dd}).",
+                _localizer.Get<ValidationResource>(
+                    "Validation_BankReconciliation_StatementDateAfterLast",
+                    lastFinalised.StatementDate.ToString("yyyy-MM-dd")),
                 nameof(BankReconciliation), nameof(StartDraftAsync));
 
         var draft = await _reconciliationRepo.CreateDraftAsync(
@@ -114,7 +121,7 @@ public class BankReconciliationService : IBankReconciliationService
 
         if (reconciliation.Status == ReconciliationStatus.Finalised)
             throw new ReconciliationException(
-                "Finalised reconciliations are immutable and cannot be modified.",
+                _localizer.Get<ValidationResource>("Validation_BankReconciliation_FinalisedImmutable"),
                 nameof(BankReconciliation), nameof(ToggleClearAsync), reconciliationId);
 
         if (reconciliation.Lines.Any(l => l.TransactionId == transactionId))
@@ -125,7 +132,7 @@ public class BankReconciliationService : IBankReconciliationService
 
         if (await _reconciliationRepo.IsTransactionClearedElsewhereAsync(transactionId, reconciliationId, ct))
             throw new ReconciliationException(
-                "This transaction is already cleared by another reconciliation.",
+                _localizer.Get<ValidationResource>("Validation_BankReconciliation_TransactionClearedElsewhere"),
                 nameof(ReconciliationLine), nameof(ToggleClearAsync), transactionId);
 
         var candidates = await _glRepo.GetUnreconciledByAccountAsync(
@@ -133,7 +140,7 @@ public class BankReconciliationService : IBankReconciliationService
 
         if (candidates.All(t => t.Id != transactionId))
             throw new ValidationException(
-                "The transaction does not belong to this account or is dated after the statement date.",
+                _localizer.Get<ValidationResource>("Validation_BankReconciliation_TransactionNotEligible"),
                 nameof(Transaction), nameof(ToggleClearAsync), transactionId);
 
         await _reconciliationRepo.AddLineAsync(reconciliationId, transactionId, ct);
@@ -145,12 +152,15 @@ public class BankReconciliationService : IBankReconciliationService
 
         if (workspace.Reconciliation.Status == ReconciliationStatus.Finalised)
             throw new ReconciliationException(
-                "This reconciliation is already finalised.",
+                _localizer.Get<ValidationResource>("Validation_BankReconciliation_AlreadyFinalised"),
                 nameof(BankReconciliation), nameof(FinaliseAsync), reconciliationId);
 
         if (Math.Abs(workspace.Difference) > FinaliseTolerance)
             throw new ReconciliationException(
-                $"Cannot finalise: the difference is {workspace.Difference:C}, not $0.00.",
+                _localizer.Get<ValidationResource>(
+                    "Validation_BankReconciliation_DifferenceNotZero",
+                    MoneyFormatter.Format(workspace.Difference),
+                    MoneyFormatter.Format(0m)),
                 nameof(BankReconciliation), nameof(FinaliseAsync), reconciliationId);
 
         await _reconciliationRepo.FinaliseAsync(reconciliationId, ct);

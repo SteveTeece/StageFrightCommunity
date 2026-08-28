@@ -243,7 +243,7 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var unitOfWork = new UnitOfWork(_db);
 
-        return new FeeService(memberRepo, feeRepo, glRepo, accountRepo, settingsRepo, auditSvc, unitOfWork);
+        return new FeeService(memberRepo, feeRepo, glRepo, accountRepo, settingsRepo, auditSvc, unitOfWork, RealLocalizer.Instance);
     }
 
     private async Task<Member> AddActiveMember(string name)

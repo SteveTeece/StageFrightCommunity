@@ -49,7 +49,7 @@ public class OpeningBalanceServiceTests : TestBase
                 MakeAccount(IncomeAccountId, "Raffle Income", AccountType.Income, "4000")
             });
 
-        _sut = new OpeningBalanceService(_accountRepo, _glRepo, _journalRepo, _audit, _unitOfWork);
+        _sut = new OpeningBalanceService(_accountRepo, _glRepo, _journalRepo, _audit, _unitOfWork, RealLocalizer.Instance);
     }
 
     // --- GetOpeningBalanceAccountsAsync ---

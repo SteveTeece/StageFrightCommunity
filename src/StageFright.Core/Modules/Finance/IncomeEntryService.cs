@@ -2,6 +2,8 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Finance;
 
@@ -19,6 +21,7 @@ public class IncomeEntryService : IIncomeEntryService
     private readonly ISettingsRepository _settingsRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILocalizer _localizer;
 
     public IncomeEntryService(
         IAccountRepository accountRepo,
@@ -26,7 +29,8 @@ public class IncomeEntryService : IIncomeEntryService
         IJournalEntryRepository journalRepo,
         ISettingsRepository settingsRepo,
         IAuditTrailService audit,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILocalizer localizer)
     {
         _accountRepo = accountRepo;
         _glRepo = glRepo;
@@ -34,6 +38,7 @@ public class IncomeEntryService : IIncomeEntryService
         _settingsRepo = settingsRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
+        _localizer = localizer;
     }
 
     public async Task<IReadOnlyList<Account>> GetIncomeAccountsAsync(CancellationToken ct = default)
@@ -50,7 +55,8 @@ public class IncomeEntryService : IIncomeEntryService
     {
         if (request.Amount <= 0m)
             throw new ValidationException(
-                "Income amount must be greater than zero.", nameof(Transaction), nameof(RecordIncomeAsync));
+                _localizer.Get<ValidationResource>("Validation_Income_AmountPositive"),
+                nameof(Transaction), nameof(RecordIncomeAsync));
 
         var all = await _accountRepo.GetAllAsync(ct);
         var account = all.FirstOrDefault(c => c.Id == request.AccountId)
@@ -59,11 +65,13 @@ public class IncomeEntryService : IIncomeEntryService
 
         if (account.Type != AccountType.Income)
             throw new ValidationException(
-                "Selected account is not an Income account.", nameof(Account), nameof(RecordIncomeAsync));
+                _localizer.Get<ValidationResource>("Validation_Income_AccountNotIncome"),
+                nameof(Account), nameof(RecordIncomeAsync));
 
         if (account.IsSystem)
             throw new ValidationException(
-                "System accounts cannot be used for manual income entries.", nameof(Account), nameof(RecordIncomeAsync));
+                _localizer.Get<ValidationResource>("Validation_Income_SystemAccountNotAllowed"),
+                nameof(Account), nameof(RecordIncomeAsync));
 
         var depositAccountId = request.DepositAccountId ?? SystemAccounts.CashId;
         var depositAccount = all.FirstOrDefault(a => a.Id == depositAccountId)
@@ -72,7 +80,8 @@ public class IncomeEntryService : IIncomeEntryService
 
         if (!depositAccount.IsBankAccount)
             throw new ValidationException(
-                "The deposit account must be a bank/cash account.", nameof(Account), nameof(RecordIncomeAsync));
+                _localizer.Get<ValidationResource>("Validation_Income_DepositAccountMustBeBank"),
+                nameof(Account), nameof(RecordIncomeAsync));
 
         var settings = await _settingsRepo.GetAsync(ct);
         var isTaxApplicable = settings?.IsTaxApplicable ?? false;

@@ -33,11 +33,11 @@ public class SetupServiceIntegrationTests : IDisposable
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService, RealLocalizer.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
-        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
+        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo, RealLocalizer.Instance);
         var glRepo = new GLRepository(db);
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         var request = new SetupRequest("My Choir", 80m, 6m, 3, false, null, null, null, Theme.Dark);
@@ -64,11 +64,11 @@ public class SetupServiceIntegrationTests : IDisposable
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService, RealLocalizer.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
-        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
+        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo, RealLocalizer.Instance);
         var glRepo = new GLRepository(db);
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark), TestContext.Current.CancellationToken);
@@ -92,11 +92,11 @@ public class SetupServiceIntegrationTests : IDisposable
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService, RealLocalizer.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
-        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
+        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo, RealLocalizer.Instance);
         var glRepo = new GLRepository(db);
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark), TestContext.Current.CancellationToken);
@@ -118,11 +118,11 @@ public class SetupServiceIntegrationTests : IDisposable
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService, RealLocalizer.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
-        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
+        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo, RealLocalizer.Instance);
         var glRepo = new GLRepository(db);
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         Assert.False(await svc.IsSetupCompleteAsync(TestContext.Current.CancellationToken));
@@ -141,11 +141,11 @@ public class SetupServiceIntegrationTests : IDisposable
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService, RealLocalizer.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
-        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
+        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo, RealLocalizer.Instance);
         var glRepo = new GLRepository(db);
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark), TestContext.Current.CancellationToken);
@@ -167,11 +167,11 @@ public class SetupServiceIntegrationTests : IDisposable
         var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService, RealLocalizer.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
-        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
+        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo, RealLocalizer.Instance);
         var glRepo = new GLRepository(db);
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         var request = new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark)
