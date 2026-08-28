@@ -373,7 +373,7 @@
     }
   ],
   "telemetryInstanceId": "bd71e5f2-b0ce-45df-9da3-06f68fa7a241",
-  "last_action": "40/64 done. US2 UI modules ALL localized+committed+green: T031 Dashboard+tiles, T032 Rehearsals, T033 Events/AGM, T035 Settings, T036 Setup, T037 shared components, T038 menu providers, T043 StartupError+ReportsPage. EnumsResource.resx has every user-facing enum key. NEXT (all large/cross-cutting, need fresh context): T034 Finance (src/StageFright.UI/Pages/Finance/** = 13 .razor + 13 .razor.cs = 2611 lines; heavy MoneyFormatter migration + LocalizeEnum for FeeType/PaymentMethod/PaymentType/AccountType/TaxCode/ReconciliationStatus/JournalEntryType; author FinanceResource.resx which currently only has tile keys from T031) -> T039 report providers (ReportName/filter labels/section labels -> ReportsResource.resx in StageFright.Reports; filter option VALUES stay invariant tokens, LABELS via EnumsResource/Reports_Filter_OptionAll) -> T040 report renderers *PdfRenderer.cs + CsvReportExporter.cs (column headers/subtotal/total labels/fixed annotations via IStringLocalizer<ReportsResource>; enum cells via LocalizeEnum; amounts via MoneyFormatter.FormatWithCode) -> T041 remaining *ValidationService + service-thrown ValidationException message text -> ValidationResource.resx (exception CLASSES have no hardcoded msgs - it's the throwing services; AgeCalculationService deferred from US1 lives here, wide blast radius across Reports.Tests) -> T044 repo-wide sweep of decimal.ToString(\"C\")/\"{0:C}\"/FormatString=\"{0:C}\" display sites to MoneyFormatter (~34 files, concentrated Finance+reports, much already done incidentally) -> T029 extend guard suite repo-wide (residual-literal over full US2 file list + enum-coverage for the 7 enums + no-orphan-satellite + placeholder-parity + plural-pairing + no-C-currency repo-wide; allow-list MUST exempt DataAnnotations ErrorMessage= literals) -> T030 report-label tests + plugin-under-non-en test -> T045 DI check (confirm every provider/service now taking IStringLocalizer<T> resolves; menu+tile providers already verified via type registration). Then US3 T046-T059, Polish T060-T064, then write-context --mark-complete. GateGuard OFF via gitignored .claude/settings.local.json. dotnet-build-on-edit hook active (classifier-blocked from disabling; noisy not fatal). Suite 1714+ green at every commit.",
+  "last_action": "US2 progress this session: T034 Finance DONE+committed (6abdabd — 13 pages+code-behinds -> FinanceResource.resx, all enums via LocalizeEnum, all amounts via MoneyFormatter, 9 test classes flipped). T041 GROUNDWORK committed (e776237 — AgeCalculationService now ILocalizer-injected + all ~12 new() call sites fixed across Core/Integration/Reports/UI test projects via new RealLocalizer fixtures; MemberList/MemberDetail now [Inject] AgeCalculationService, registered in LocalizedTestContext). Suite 1714 green at both commits. US2 STILL REMAINING: T041 bulk (service exception-message text across ~18 Core services — high test blast radius), T039 (11 report providers -> ReportsResource.resx: ReportName/filter labels/section labels; filter option VALUES stay invariant, LABELS via EnumsResource/Reports_Filter_OptionAll), T040 (~8 PDF renderers + CsvReportExporter: column headers/subtotal-total labels/fixed annotations via IStringLocalizer<ReportsResource>; enum cells LocalizeEnum; amounts MoneyFormatter.FormatWithCode), T042 (verify enum display-site sweep repo-wide — keys already exist in EnumsResource.resx from T038; Finance sites done in T034), T044 (verify repo-wide decimal.ToString(\"C\")/{0:C}/FormatString=\"{0:C}\" sweep — Finance done, reports pending in T040), T029 (extend guard suite repo-wide: residual-literal over US2 file list + enum-coverage for the 7 finance enums + no-orphan-satellite + placeholder-parity + plural-pairing + no-C-currency; allow-list MUST exempt DataAnnotations ErrorMessage= literals + the qps-ploc culture), T030 (report-label tests + plugin-under-non-en test), T045 (DI check). Then US3 T046-T059, Polish T060-T064. dotnet-build-on-edit hook active+noisy (not fatal). GateGuard OFF.",
   "coverage": {
     "FR-001": {
       "title": "Store app-authored user-facing text (incl. aria-label/alt/title) in resource files, not literals",
@@ -709,6 +709,11 @@
       "decision": "RehearsalFormModel.Date: [Required(ErrorMessage=\"Date is required.\")] -> bare [Required]",
       "why": "RequiredAttribute never fails on a non-nullable DateTime value type, so the custom message is dead; removing the literal keeps the residual-literal guard honest without a copy-edit of live copy (FR-004)",
       "rejected": "keeping the literal (guard flags it) or routing it through a resource (DataAnnotations ErrorMessage needs a compile-time constant)"
+    },
+    {
+      "decision": "AgeCalculationService takes ILocalizer (not IStringLocalizer<ValidationResource>) via a required constructor param; MemberList/MemberDetail switch from new() to an injected AgeCalculationService registered in LocalizedTestContext; each test project gets a RealLocalizer fixture",
+      "why": "two of its three messages use named {Age}/{MaxYears}/{MinimumAge} placeholders which only ILocalizer.Get substitutes (the raw IStringLocalizer indexer does string.Format with {0} and would throw on {Age}); keeping a single required ctor matches the MemberValidationService (T025) precedent",
+      "rejected": "optional ILocalizer? param with hardcoded en-AU fallback (reintroduces literals the residual-literal guard flags); making Calculate static (wider public-API change touching MemberListReportProvider)"
     }
   ],
   "step_summaries": {
@@ -1139,6 +1144,16 @@
       "what": "Rehearsals-scoped localization guard suite (interim, precedes repo-wide T029)",
       "command": "dotnet test tests/StageFright.Localization.Tests/",
       "result": "9/9 pass: US1 six + Rehearsals three (baseline-completeness incl. Shared area, residual-literal scan incl. aria-label/placeholder, no-C-currency)"
+    },
+    {
+      "what": "Full solution build + full test suite after T034 (Finance) and T041 groundwork (AgeCalculationService)",
+      "command": "dotnet build StageFrightCommunity.slnx; dotnet test StageFrightCommunity.slnx --no-build",
+      "result": "Build 0 warnings / 0 errors. Tests 1714 passed / 0 failed (Localization 9, Reports 178, Core 597, UI 592, Data 152, Integration 186)",
+      "warnings": [
+        "dotnet-build-on-edit PostToolUse hook fails noisily on each intermediate edit until the module compiles - expected, edits still land",
+        "SCOPE WARNING hook fired repeatedly - expected for a localization extraction sweep",
+        "git LF->CRLF autocrlf warnings on commit - benign"
+      ]
     }
   ],
   "concerns": [
@@ -1152,6 +1167,10 @@
     },
     {
       "note": "Three catch blocks in RehearsalList/AttendanceGrid no longer surface raw ex.Message to the user (now Rehearsals_List_LoadError / Shared_Error_Unexpected), matching the US1 MemberForm precedent. PrintRoll still Logger.LogError-s the exception; the load/save failures were never logged before and still are not.",
+      "step": "implement"
+    },
+    {
+      "note": "T041 is only partly done: AgeCalculationService is localized, but the bulk - service-thrown ValidationException/DomainValidationException/ReconciliationException message text across ~18 Core services (AgmService, EventService, EventTypeService, AccountService x6 test-ctor files, BankReconciliationService, FeeService, GeneralJournalService, OpeningBalanceService x5, AttendanceService, BankDeposit/Expense/Income/Payment services, CommitteeOfficeHolderTypeService, SettingsService, SetupService) - remains. Each needs a ValidationResource key set + ctor localizer injection + test call-site fan-out. High blast radius; should be its own session(s).",
       "step": "implement"
     }
   ]
