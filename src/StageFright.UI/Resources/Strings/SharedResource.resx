@@ -368,4 +368,10 @@
   <data name="Shared_ReportsPage_Heading" xml:space="preserve"><value>Reports</value><comment>Reports page heading.</comment></data>
   <data name="Shared_ReportsPage_NotFound" xml:space="preserve"><value>Report "{ReportId}" not found.</value><comment>Shown when a report id in the URL has no provider. {ReportId} = the id.</comment></data>
   <data name="Shared_ReportsPage_SelectPrompt" xml:space="preserve"><value>Select a report from the navigation menu to generate it.</value><comment>Shown on the Reports page when no report is selected.</comment></data>
+  <data name="Shared_App_ErrorHeading" xml:space="preserve"><value>An error occurred</value><comment>Heading of the router error-boundary panel shown when a page throws.</comment></data>
+  <data name="Shared_App_ErrorDismissButton" xml:space="preserve"><value>Dismiss and retry</value><comment>Button on the router error-boundary panel — clears the error and re-renders the page.</comment></data>
+  <data name="Shared_App_NotFoundTitle" xml:space="preserve"><value>Not Found — StageFright Community</value><comment>Browser tab title for an unrouted URL.</comment></data>
+  <data name="Shared_App_NotFoundHeading" xml:space="preserve"><value>Page Not Found</value><comment>Heading shown when a URL matches no page.</comment></data>
+  <data name="Shared_App_NotFoundBody" xml:space="preserve"><value>The requested page could not be found.</value><comment>Body text on the "page not found" screen; followed by the return-to-dashboard link.</comment></data>
+  <data name="Shared_App_NotFoundReturnLink" xml:space="preserve"><value>Return to dashboard</value><comment>Hyperlink caption on the "page not found" screen — navigates to the dashboard.</comment></data>
 </root>

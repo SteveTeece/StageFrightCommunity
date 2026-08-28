@@ -9,19 +9,19 @@
                 @{ LogCircuitError(ex); }
                 <div class="container mt-4">
                     <div class="alert alert-danger">
-                        <h4>An error occurred</h4>
+                        <h4>@L["Shared_App_ErrorHeading"]</h4>
                         <p>@ex.Message</p>
-                        <button class="btn btn-outline-danger btn-sm" @onclick="RecoverFromError">Dismiss and retry</button>
+                        <button class="btn btn-outline-danger btn-sm" @onclick="RecoverFromError">@L["Shared_App_ErrorDismissButton"]</button>
                     </div>
                 </div>
             </ErrorContent>
         </ErrorBoundary>
     </Found>
     <NotFound>
-        <PageTitle>Not Found — StageFright Community</PageTitle>
+        <PageTitle>@L["Shared_App_NotFoundTitle"]</PageTitle>
         <div class="container mt-4">
-            <h1>Page Not Found</h1>
-            <p>The requested page could not be found. <a href="/dashboard">Return to dashboard</a>.</p>
+            <h1>@L["Shared_App_NotFoundHeading"]</h1>
+            <p>@L["Shared_App_NotFoundBody"] <a href="/dashboard">@L["Shared_App_NotFoundReturnLink"]</a>.</p>
         </div>
     </NotFound>
 </Router>

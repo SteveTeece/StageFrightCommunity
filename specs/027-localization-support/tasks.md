@@ -187,14 +187,14 @@ The one shared localization mechanism every story builds on: area resource marke
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T060** [P] Remove the per-phase scoping from the residual-literal guard so it asserts **zero** user-facing literals repo-wide (SC-001) · `tests/StageFright.Localization.Tests/`
-- [ ] **T061** [P] Add the "where resource files live / how to add a language" guide for translators and maintainers (FR-022, SC-009) · `docs/` (new localization/adding-a-language doc)
-- [ ] **T062** [P] Refresh project docs made stale by the extraction — `CLAUDE.md` (data-grid `FormatString="{0:C}"` guidance now via `MoneyFormatter`; new `Modules/Localization` slice; resource-file locations) and any `specs/**` doc that now reads wrong (FR-022) · `CLAUDE.md`, `specs/**`
-- [ ] **T063** [P] Run the [quickstart.md](./quickstart.md) validation scenarios — en-AU render parity (SC-002), pseudo-locale switch + per-key fallback logging (SC-004), monetary amount shows `$` with culture separators under a non-`en` culture (FR-015), DB/GL byte-identical after a switch (SC-006), OS-language default with no explicit choice (SC-010) · `specs/027-localization-support/quickstart.md`
+- [x] **T060** [P] Remove the per-phase scoping from the residual-literal guard so it asserts **zero** user-facing literals repo-wide (SC-001) · `tests/StageFright.Localization.Tests/`
+- [x] **T061** [P] Add the "where resource files live / how to add a language" guide for translators and maintainers (FR-022, SC-009) · `docs/` (new localization/adding-a-language doc)
+- [x] **T062** [P] Refresh project docs made stale by the extraction — `CLAUDE.md` (data-grid `FormatString="{0:C}"` guidance now via `MoneyFormatter`; new `Modules/Localization` slice; resource-file locations) and any `specs/**` doc that now reads wrong (FR-022) · `CLAUDE.md`, `specs/**`
+- [x] **T063** [P] Run the [quickstart.md](./quickstart.md) validation scenarios — en-AU render parity (SC-002), pseudo-locale switch + per-key fallback logging (SC-004), monetary amount shows `$` with culture separators under a non-`en` culture (FR-015), DB/GL byte-identical after a switch (SC-006), OS-language default with no explicit choice (SC-010) · `specs/027-localization-support/quickstart.md`
 
 **⟶ Wait for Wave 1, then:**
 
-- [ ] **T064** Full `dotnet build` and full `dotnet test` (no `--no-build`) across every project incl. `StageFright.Localization.Tests`; report build + test results · repo root
+- [x] **T064** Full `dotnet build` and full `dotnet test` (no `--no-build`) across every project incl. `StageFright.Localization.Tests`; report build + test results · repo root
 
 ---
 

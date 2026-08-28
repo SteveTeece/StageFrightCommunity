@@ -89,7 +89,7 @@ Blazor Router owns **all** navigation. Every screen has a `@page` directive. `Na
 
 Application logic lives in `StageFright.Core/Modules/<ModuleName>/`. Each module slice contains its services, request/response models, and menu/tile providers. Repositories are *not* module-owned; they live centrally in `StageFright.Data/Repositories/` (this is a spec-mandated deviation from pure vertical-slice, required by FR-042).
 
-Current modules: `Agm`, `AuditTrail`, `Dashboard`, `Events`, `Finance`, `Members`, `Rehearsals`, `Settings`.
+Current modules: `Agm`, `AuditTrail`, `Dashboard`, `Events`, `Finance`, `Localization`, `Members`, `Rehearsals`, `Settings`.
 
 ### Extension points (plugin contracts)
 
@@ -113,7 +113,7 @@ Every fee or payment write wraps fee creation + paired GL debit/credit + balance
 
 ### Data grid standards
 
-All tabular data uses `RadzenDataGrid<TItem>`, never plain `<table>` markup or a `table-responsive` wrapper div. Every grid instance follows the Members grid (`src/StageFright.UI/Pages/Members/MemberList.razor`) as the reference: `AllowSorting="true" AllowPaging="true" PageSize="15" class="rz-shadow-0"`. Grids needing a "select all" checkbox in a column header use a `HeaderTemplate` rather than a separate control outside the grid. `ReportViewer.razor` is the one exception — its dynamic columns, section headers, and subtotal/grand-total rows don't fit RadzenDataGrid's typed-column model, so it keeps hand-rolled paging (also fixed at a page size of 15) instead. A handful of grids use a smaller `PageSize` than 15 when the surrounding layout is space-constrained — `CommitteeSettingsTab`, one grid in `EventTypesTab`, and `MemberDetail.razor`'s Fee Payment History grid (spec 025, issue #305) — this is a deliberate, per-screen exception, not a new default.
+All tabular data uses `RadzenDataGrid<TItem>`, never plain `<table>` markup or a `table-responsive` wrapper div. Every grid instance follows the Members grid (`src/StageFright.UI/Pages/Members/MemberList.razor`) as the reference: `AllowSorting="true" AllowPaging="true" PageSize="15" class="rz-shadow-0"`. Grids needing a "select all" checkbox in a column header use a `HeaderTemplate` rather than a separate control outside the grid. `ReportViewer.razor` is the one exception — its dynamic columns, section headers, and subtotal/grand-total rows don't fit RadzenDataGrid's typed-column model, so it keeps hand-rolled paging (also fixed at a page size of 15) instead. A handful of grids use a smaller `PageSize` than 15 when the surrounding layout is space-constrained — `CommitteeSettingsTab`, one grid in `EventTypesTab`, and `MemberDetail.razor`'s Fee Payment History grid (spec 025, issue #305) — this is a deliberate, per-screen exception, not a new default. Money columns use a `<Template>` that calls `MoneyFormatter.Format(...)` / `FormatWithCode(...)`, never `FormatString="{0:C}"` (see Localization).
 
 ### List box standards
 
@@ -126,6 +126,20 @@ Every on/off toggle uses `<RadzenSwitch>` (`@bind-Value` + a `Change` callback, 
 ### Dashboard tile sizing
 
 Dashboard tiles opt into one of four sizes via `DashboardTileSize` (`StageFright.Plugins.Contracts`) — `OneByOne` (default), `OneByTwo`, `TwoByOne`, `TwoByTwo`, named RowsByColumns — by overriding `IDashboardTileProvider.TileSize`. `Dashboard.razor.cs` maps the enum to a `tile-size-*` CSS class already defined in `app.css`'s CSS-Grid layout; resizing a tile only needs the provider's `TileSize` override plus its own inner chart/layout sizing — no `Dashboard.razor` or grid CSS changes.
+
+### Localization
+
+All app-authored user-facing text is resolved through `Microsoft.Extensions.Localization` `IStringLocalizer<T>` at render time — never a hardcoded literal (enforced by `tests/StageFright.Localization.Tests`). Text lives in ~12 area-scoped `.resx` files; the neutral file (no culture suffix) **is** the Australian English `en-AU` baseline and the key-by-key fallback for every other language:
+
+- `src/StageFright.UI/Resources/Strings/` — `SharedResource`, `DashboardResource`, `MembersResource`, `RehearsalsResource`, `EventsResource`, `FinanceResource`, `SettingsResource`, `SetupResource` (a `<Name>Resource.cs` marker + `.resx` each).
+- `src/StageFright.Core/Modules/Localization/Resources/` — `NavigationResource` (menu titles + shell chrome), `ValidationResource` (user-facing exception/validation message text), `EnumsResource` (shared `Enum_<Type>_<Member>` display labels).
+- `src/StageFright.Reports/Resources/` — `ReportsResource` (report titles, column headers, section/total labels).
+
+Keys are `Area_Context_Meaning` (wording-independent); placeholders are named (`{Count}`); plurals are `…_One`/`…_Other` via `ILocalizer.Plural`. Code-behind injects `IStringLocalizer<TArea>`; `.razor` uses `@L["Key"]`. Enum display text is `value.LocalizeEnum()` (never `enum.ToString()` at a display site) — the enum name stays the culture-invariant identity for storage/GL/sorting/report-filter option values. The Core plumbing is in `src/StageFright.Core/Localization/` (`ILocalizer`/`Localizer`, `MissingKeyLoggingLocalizerFactory`, `EnumLocalizationExtensions`, `MoneyFormatter`).
+
+**Money is never `.ToString("C")` / `{0:C}` / `FormatString="{0:C}"`** — the `"C"` specifier substitutes the active culture's currency symbol (e.g. `€` under `fr-FR`), misrepresenting an AUD balance. Every display amount goes through `MoneyFormatter` (`Format` / `FormatWithCode`), which keeps `"$"` / `"AUD"` fixed while separators, grouping and placement follow `CultureInfo.CurrentCulture`.
+
+Display language resolves at startup via `LanguageProvider` (explicit `Settings.LanguageCode` → OS display language when a matching set ships → `en-AU`) and is set as the process culture before the `BlazorWebView` renders. The supported-language list is discovered at runtime from shipped `.resx` cultures (`qps-*` pseudo-locales excluded), so adding a language is a drop-in `<Marker>.<culture>.resx` set with **no code change**. A change applies on next launch with a restart notice (`src/StageFright.UI/Layout/CultureProvider.razor` is the seam for future in-session switching). Full contributor/translator guide: [`docs/localization/adding-a-language.md`](docs/localization/adding-a-language.md).
 
 ### Data model highlights
 

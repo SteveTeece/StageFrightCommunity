@@ -16,7 +16,13 @@ namespace StageFright.Localization.Tests;
 ///   <item>placeholder parity — a plural <c>_One</c>/<c>_Other</c> pair uses the same named tokens, and every plural half has its partner (FR-010);</item>
 ///   <item>no <c>"C"</c> currency format at any display site repo-wide — use <c>MoneyFormatter</c> (FR-015).</item>
 /// </list>
-/// The final removal of per-phase scoping for a strict zero-literal assertion is T060 (Polish).
+/// T060 (Polish) removed the per-phase scoping: <see cref="Should_HaveNoUserFacingLiteral_When_AppSurfaceScanned"/>
+/// now scans the whole <c>StageFright.UI</c> surface plus every user-facing exception <c>Message</c>
+/// literal in <c>StageFright.Core</c>, so a literal reintroduced in any converted file — in any
+/// module — fails the run (SC-001). The one deliberate, permanent carve-out is DataAnnotations
+/// <c>ErrorMessage</c> / <c>ValidationResult</c> attribute arguments (compile-time constants — a
+/// runtime <c>IStringLocalizer</c> lookup is impossible there and the strongly-typed designer was
+/// rejected in research Decision 1); see <c>docs/localization/adding-a-language.md</c>.
 /// </summary>
 public class Us2LocalizationGuardTests
 {
@@ -34,19 +40,38 @@ public class Us2LocalizationGuardTests
     ];
 
     /// <summary>
-    /// The subset of <see cref="Us2ScanDirectories"/> scanned for residual UI literals. Report
-    /// providers/renderers are excluded: their user-facing text is guarded by
-    /// <c>StageFright.Reports.Tests/ReportsResourceLabelTests</c> (T030), and what remains as
-    /// literals there is exclusively culture-invariant filter option-value tokens (T039 —
-    /// the localised label lives in the parallel <c>OptionLabels</c>).
+    /// The whole <c>StageFright.UI</c> surface — every <c>.razor</c> / <c>.razor.cs</c> in the
+    /// project, not a per-phase file list (T060). Report providers/renderers are still guarded
+    /// separately by <c>StageFright.Reports.Tests/ReportsResourceLabelTests</c> (T030): what
+    /// survives as literals there is exclusively culture-invariant filter option-value tokens
+    /// (T039 — the localised label lives in the parallel <c>OptionLabels</c>), which the
+    /// UI-literal heuristics here would mis-flag.
     /// </summary>
     private static readonly string[] ResidualLiteralDirectories =
     [
-        "src/StageFright.UI/Layout",
-        "src/StageFright.UI/Pages",
-        "src/StageFright.UI/Modules",
-        "src/StageFright.UI/Shared",
+        "src/StageFright.UI",
     ];
+
+    /// <summary>
+    /// Every <c>StageFright.Core</c> area whose <c>.cs</c> can throw a user-facing exception
+    /// (T060 — folds the interim <c>Us2ExceptionMessageGuardTests</c> file list into the
+    /// repo-wide sweep). A bare English literal as the message argument of a
+    /// <c>Validation</c>/<c>DataIntegrity</c>/<c>Reconciliation</c>/<c>Import</c> exception is a
+    /// residual user-facing literal — it must come from <c>ValidationResource</c> (FR-007).
+    /// </summary>
+    private static readonly string[] UserFacingMessageDirectories =
+    [
+        "src/StageFright.Core/Modules",
+        "src/StageFright.Core/Exceptions",
+    ];
+
+    /// <summary>
+    /// A string literal carrying letters as the first argument of a user-facing exception
+    /// constructor — a message that was not routed through <c>_localizer.Get&lt;ValidationResource&gt;</c>.
+    /// </summary>
+    private static readonly Regex LiteralExceptionMessage = new(
+        @"throw new (?:Validation|DataIntegrity|Reconciliation|Import)Exception\(\s*""(?:[^""\\]|\\.)*[A-Za-z](?:[^""\\]|\\.)*""",
+        RegexOptions.Compiled | RegexOptions.Singleline);
 
     /// <summary>The area key-prefix → owning neutral .resx map (resource-key-catalog.md §1).</summary>
     private static readonly Dictionary<string, string> AreaResx = new(StringComparer.Ordinal)
@@ -209,7 +234,7 @@ public class Us2LocalizationGuardTests
                     if (trimmed.StartsWith("//", StringComparison.Ordinal)) continue;      // line comment
                     if (line.Contains("Logger.Log", StringComparison.Ordinal)) continue;   // diagnostic log text (FR-007)
                     if (line.Contains("nameof(", StringComparison.Ordinal)) continue;      // symbol name, not display text
-                    if (line.Contains("ErrorMessage", StringComparison.Ordinal)) continue; // DataAnnotations attr arg — compile-time constant, hardened in T060
+                    if (line.Contains("ErrorMessage", StringComparison.Ordinal)) continue; // DataAnnotations attr arg — compile-time constant; runtime IStringLocalizer lookup impossible here (research Decision 1). Permanent documented carve-out — docs/localization/adding-a-language.md.
                     // IValidatableObject ctor message (may sit on the line after `new ValidationResult(`) — same category.
                     if (line.Contains("new ValidationResult(", StringComparison.Ordinal)
                         || (i > 0 && lines[i - 1].TrimEnd().EndsWith("new ValidationResult(", StringComparison.Ordinal))) continue;
@@ -224,8 +249,16 @@ public class Us2LocalizationGuardTests
             }
         }
 
+        // User-facing exception Message text, repo-wide (T060 — was Us2ExceptionMessageGuardTests' fixed file list).
+        foreach (var file in EnumerateSourceFiles(UserFacingMessageDirectories))
+        {
+            var text = File.ReadAllText(file);
+            foreach (Match m in LiteralExceptionMessage.Matches(text))
+                findings.Add($"{Rel(file)}  user-facing exception message literal: {m.Value.Trim()}");
+        }
+
         Assert.True(findings.Count == 0,
-            "The US1 + US2 surface still contains user-facing string literals (should come from resources):\n"
+            "The app surface still contains user-facing string literals (should come from resources):\n"
             + string.Join("\n", findings));
     }
 
