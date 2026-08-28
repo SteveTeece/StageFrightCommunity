@@ -17,7 +17,7 @@ namespace StageFright.UI.Tests.Pages.Setup;
 /// sample data" checkbox and its progress overlay must not render, and Finish must complete
 /// without attempting to resolve or invoke the seeder.
 /// </summary>
-public class SetupWizardNoSeederTests : BunitContext
+public class SetupWizardNoSeederTests : LocalizedTestContext
 {
     private readonly ISetupService _setupService = Substitute.For<ISetupService>();
     private readonly IAccountService _accountService = Substitute.For<IAccountService>();

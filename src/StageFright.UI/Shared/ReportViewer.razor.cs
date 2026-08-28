@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
 using StageFright.Reports.Rendering;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Shared;
 
@@ -16,6 +19,23 @@ public partial class ReportViewer : ComponentBase, IDisposable
     [Inject] private ICsvReportExporter CsvExporter { get; set; } = null!;
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private ILogger<ReportViewer> Logger { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
+
+    /// <summary>"Generated: {timestamp} UTC" line under the report title.</summary>
+    private string GeneratedAtText() =>
+        _report is null
+            ? string.Empty
+            : Loc.Get<SharedResource>("Shared_Report_GeneratedAt", _report.GeneratedAt.ToString("d MMM yyyy HH:mm"));
+
+    /// <summary>"Rows {from}–{to} of {total}" paging summary.</summary>
+    private string RowsRangeText() =>
+        Loc.Get<SharedResource>("Shared_Report_RowsRange",
+            PageStartIndex + 1, Math.Min(PageEndIndex, TotalDataRows), TotalDataRows);
+
+    /// <summary>"Page {current} of {total}" paging indicator.</summary>
+    private string PageOfText() =>
+        Loc.Get<SharedResource>("Shared_Report_PageOf", _currentPage, TotalPages);
 
     private ReportData? _report;
     private string? _error;
@@ -124,12 +144,12 @@ public partial class ReportViewer : ComponentBase, IDisposable
         }
         catch (OperationCanceledException)
         {
-            _error = "Report generation was cancelled.";
+            _error = Shared["Shared_Report_CancelledError"];
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to generate report '{ReportId}'", Provider.ReportId);
-            _error = $"An error occurred while generating the report. Please try again. ({ex.GetType().Name})";
+            _error = Loc.Get<SharedResource>("Shared_Report_GenerateError", ex.GetType().Name);
         }
         finally
         {
@@ -162,7 +182,7 @@ public partial class ReportViewer : ComponentBase, IDisposable
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to render PDF for report '{ReportId}'", Provider?.ReportId);
-            _error = "Unable to generate PDF. Please try again.";
+            _error = Shared["Shared_Report_PdfError"];
             StateHasChanged();
         }
     }
@@ -183,7 +203,7 @@ public partial class ReportViewer : ComponentBase, IDisposable
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to export CSV for report '{ReportId}'", Provider?.ReportId);
-            _error = "Unable to export CSV. Please try again.";
+            _error = Shared["Shared_Report_CsvError"];
             StateHasChanged();
         }
     }

@@ -11,11 +11,11 @@ else if (_generating)
     <div class="modal-backdrop-light d-flex align-items-center justify-content-center py-4" role="status" aria-live="polite">
         <div class="text-center">
             <div class="spinner-border text-primary mb-2" role="status" aria-hidden="true"></div>
-            <p class="mb-0 small">Generating report...</p>
+            <p class="mb-0 small">@Shared["Shared_Report_GeneratingText"]</p>
             @if (_showCancel)
             {
                 <button class="btn btn-sm btn-outline-secondary mt-2" @onclick="CancelGeneration">
-                    Cancel
+                    @Shared["Shared_Action_Cancel"]
                 </button>
             }
         </div>
@@ -24,9 +24,9 @@ else if (_generating)
 else if (_error != null)
 {
     <div class="alert alert-danger py-1 mb-2 small" role="alert">
-        <strong>Unable to generate report.</strong> @_error
+        <strong>@Shared["Shared_Report_GenerateFailedHeading"]</strong> @_error
         <div class="mt-1">
-            <button class="btn btn-sm btn-outline-danger" @onclick="Regenerate">Try Again</button>
+            <button class="btn btn-sm btn-outline-danger" @onclick="Regenerate">@Shared["Shared_Action_TryAgain"]</button>
         </div>
     </div>
 }
@@ -40,17 +40,17 @@ else if (_report != null)
                 {
                     <p class="text-muted mb-0 small">@_report.SubTitle</p>
                 }
-                <small class="text-muted">Generated: @_report.GeneratedAt.ToString("d MMM yyyy HH:mm") UTC</small>
+                <small class="text-muted">@GeneratedAtText()</small>
             </div>
-            <div class="report-actions" role="group" aria-label="Report actions">
+            <div class="report-actions" role="group" aria-label="@Shared["Shared_Report_ActionsAriaLabel"]">
                 <button class="btn btn-outline-primary btn-sm" @onclick="PrintReport">
-                    Print / PDF
+                    @Shared["Shared_Report_PrintButton"]
                 </button>
                 <button class="btn btn-outline-secondary btn-sm" @onclick="ExportCsv">
-                    Export CSV
+                    @Shared["Shared_Report_ExportCsvButton"]
                 </button>
                 <button class="btn btn-outline-secondary btn-sm" @onclick="Regenerate">
-                    Refresh
+                    @Shared["Shared_Report_RefreshButton"]
                 </button>
             </div>
         </div>
@@ -102,7 +102,7 @@ else if (_report != null)
                             </div>
                         }
                         <div class="col-auto">
-                            <button class="btn btn-primary btn-sm" @onclick="Regenerate">Apply</button>
+                            <button class="btn btn-primary btn-sm" @onclick="Regenerate">@Shared["Shared_Action_Apply"]</button>
                         </div>
                     </div>
                 </div>
@@ -233,21 +233,19 @@ else if (_report != null)
             @if (UsePaging)
             {
                 <div class="d-flex justify-content-between align-items-center mt-1">
-                    <small class="text-muted">
-                        Rows @(PageStartIndex + 1)–@(Math.Min(PageEndIndex, TotalDataRows)) of @TotalDataRows
-                    </small>
-                    <nav aria-label="Report page navigation">
+                    <small class="text-muted">@RowsRangeText()</small>
+                    <nav aria-label="@Shared["Shared_Report_PageNavAriaLabel"]">
                         <ul class="pagination pagination-sm mb-0">
                             <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
                                 <button class="page-link" @onclick="PrevPage" disabled="@(_currentPage == 1)"
-                                        aria-label="Previous page">‹ Prev</button>
+                                        aria-label="@Shared["Shared_Report_PrevPageAriaLabel"]">@Shared["Shared_Report_PrevPage"]</button>
                             </li>
                             <li class="page-item disabled">
-                                <span class="page-link">Page @_currentPage of @TotalPages</span>
+                                <span class="page-link">@PageOfText()</span>
                             </li>
                             <li class="page-item @(_currentPage == TotalPages ? "disabled" : "")">
                                 <button class="page-link" @onclick="NextPage" disabled="@(_currentPage == TotalPages)"
-                                        aria-label="Next page">Next ›</button>
+                                        aria-label="@Shared["Shared_Report_NextPageAriaLabel"]">@Shared["Shared_Report_NextPage"]</button>
                             </li>
                         </ul>
                     </nav>

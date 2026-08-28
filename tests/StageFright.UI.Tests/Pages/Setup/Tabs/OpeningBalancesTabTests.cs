@@ -17,7 +17,7 @@ namespace StageFright.UI.Tests.Pages.Setup.Tabs;
 /// entries (each a placeholder Account keyed by ClientId). Nothing here posts to the
 /// ledger; OnSubmit bubbles the built request up for SetupWizard to queue.
 /// </summary>
-public class OpeningBalancesTabTests : BunitContext
+public class OpeningBalancesTabTests : LocalizedTestContext
 {
     private readonly IOpeningBalanceService _openingBalanceService = Substitute.For<IOpeningBalanceService>();
 

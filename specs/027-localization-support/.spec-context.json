@@ -314,6 +314,14 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-28T03:58:39.198Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T04:07:00.877Z"
     }
   ],
   "telemetryInstanceId": "bd71e5f2-b0ce-45df-9da3-06f68fa7a241",
@@ -667,7 +675,7 @@
       "summary": "US1 (Phase 3) done: navigation shell + Members module fully localized to en-AU resources (5 .resx, ~15 code files), MemberStatus/Theme via LocalizeEnum, fee amounts via MoneyFormatter; guard suite + FR-018 bUnit tests added; 1706 tests green. Phases 4-6 (US2/US3/Polish) not started."
     }
   },
-  "currentTask": "T031",
+  "currentTask": "T038",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -926,6 +934,20 @@
         "src/StageFright.UI/Modules/Events/EventsTile.razor.cs",
         "src/StageFright.UI/Modules/Finance/FinanceTile.razor.cs",
         "src/StageFright.UI/Modules/Rehearsals/RehearsalsTile.razor.cs"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "All 6 nav menu providers ctor-inject IStringLocalizer<NavigationResource>; Title/ShortLabel/sub-item labels from NavigationResource.resx; EnumsResource.resx authored with all remaining user-facing enum keys (FeeType/PaymentMethod/PaymentType/AccountType/TaxCode/ReconciliationStatus/JournalEntryType)",
+      "files": [
+        "src/StageFright.Core/Modules/Dashboard/DashboardMenuItemProvider.cs",
+        "src/StageFright.Core/Modules/Events/EventsMenuItemProvider.cs",
+        "src/StageFright.Core/Modules/Finance/FinanceMenuItemProvider.cs",
+        "src/StageFright.Core/Modules/Rehearsals/RehearsalMenuItemProvider.cs",
+        "src/StageFright.Core/Modules/Settings/SettingsMenuItemProvider.cs",
+        "src/StageFright.UI/Modules/Reports/ReportMenuItemProvider.cs",
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/EnumsResource.resx"
       ]
     }
   },

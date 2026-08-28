@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Shared;
 
@@ -12,6 +15,19 @@ public partial class ReactivationForgivenessDialog : ComponentBase
     [Parameter] public EventCallback OnForgivenessApplied { get; set; }
 
     [Inject] private IReactivationForgivenessService ForgivenessService { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
+
+    private string ApplyingText => Shared["Shared_Forgiveness_ApplyingText"];
+
+    /// <summary>"{date} — {amount}" label for one selectable fee row.</summary>
+    private string FeeRowText(ForgivenessItem item) =>
+        Loc.Get<SharedResource>("Shared_Forgiveness_FeeRow",
+            item.FeeDate.ToString("d MMM yyyy"), MoneyFormatter.Format(item.Amount));
+
+    /// <summary>"Forgive N fee(s)" submit button label, pluralised on the selection count.</summary>
+    private string ForgiveButtonText() =>
+        Loc.Plural<SharedResource>("Shared_Forgiveness_ForgiveButton", _selected.Count);
 
     private List<ForgivenessItem> _items = new();
     private HashSet<Guid> _selected = new();
@@ -47,7 +63,7 @@ public partial class ReactivationForgivenessDialog : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load fees: {ex.Message}";
+            _errorMessage = Loc.Get<SharedResource>("Shared_Forgiveness_LoadError", ex.Message);
         }
         finally
         {
@@ -75,7 +91,7 @@ public partial class ReactivationForgivenessDialog : ComponentBase
         }
         catch (Exception ex)
         {
-            _applyError = $"Failed to apply forgiveness: {ex.Message}";
+            _applyError = Loc.Get<SharedResource>("Shared_Forgiveness_ApplyError", ex.Message);
         }
         finally
         {

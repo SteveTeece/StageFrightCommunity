@@ -17,7 +17,7 @@ namespace StageFright.UI.Tests.Pages.Setup;
 /// reflects and controls the cascaded ThemeProvider's current theme, and whatever theme
 /// is selected when the wizard is submitted flows into the SetupRequest.
 /// </summary>
-public class SetupWizardThemeTests : BunitContext
+public class SetupWizardThemeTests : LocalizedTestContext
 {
     private readonly ISetupService _setupService = Substitute.For<ISetupService>();
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();

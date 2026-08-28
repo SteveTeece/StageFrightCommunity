@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Shared;
 
@@ -17,7 +19,10 @@ public partial class BorderedListBox<TItem> : ComponentBase
     /// <summary>Unset (null) renders a read-only list; set, each row gets a remove button.</summary>
     [Parameter] public EventCallback<TItem>? OnRemove { get; set; }
 
-    [Parameter] public string EmptyText { get; set; } = "Nothing added yet.";
+    /// <summary>Empty-state text; when unset, falls back to the shared default (spec 027).</summary>
+    [Parameter] public string? EmptyText { get; set; }
+
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
 
     private async Task HandleRemoveAsync(TItem item)
     {

@@ -10,7 +10,7 @@ namespace StageFright.UI.Tests.Pages.Setup.Tabs;
 /// setting, two read-only BorderedListBox summaries (queued committee titles, queued
 /// Chart of Accounts entries — FR-006), plus the relocated debug-only seed-data
 /// checkbox.</summary>
-public class ReviewTabTests : BunitContext
+public class ReviewTabTests : LocalizedTestContext
 {
     [Fact]
     public void SummarisesOrganisationNameAndFees()

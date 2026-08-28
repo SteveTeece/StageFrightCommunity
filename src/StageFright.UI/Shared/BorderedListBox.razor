@@ -3,7 +3,7 @@
 <div class="bordered-list-box" role="@(OnRemove is null ? "list" : "listbox")">
     @if (Items.Count == 0)
     {
-        <p class="bordered-list-box-empty text-muted small mb-0">@EmptyText</p>
+        <p class="bordered-list-box-empty text-muted small mb-0">@(EmptyText ?? Shared["Shared_ListBox_DefaultEmpty"])</p>
     }
     else
     {
@@ -16,7 +16,7 @@
                 @if (OnRemove is not null)
                 {
                     <button type="button" class="btn btn-outline-danger btn-sm bordered-list-box-remove"
-                            aria-label="Remove"
+                            aria-label="@Shared["Shared_Action_Remove"]"
                             @onclick="() => HandleRemoveAsync(item)">
                         &times;
                     </button>

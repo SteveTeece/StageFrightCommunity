@@ -16,7 +16,7 @@ namespace StageFright.UI.Tests.Pages.Setup.Tabs;
 /// of what's queued so far. Nothing here calls CreateAsync (FR-013); IAccountService is
 /// only used to seed the duplicate-check name set from real accounts.
 /// </summary>
-public class ChartOfAccountsTabTests : BunitContext
+public class ChartOfAccountsTabTests : LocalizedTestContext
 {
     private readonly IAccountService _accountService = Substitute.For<IAccountService>();
 

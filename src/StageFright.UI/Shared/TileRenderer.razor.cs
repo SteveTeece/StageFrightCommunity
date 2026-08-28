@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Dashboard;
 using StageFright.Plugins.Contracts;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Shared;
 
@@ -14,10 +17,17 @@ public partial class TileRenderer : ComponentBase
     [Parameter, EditorRequired]
     public Task<TileLoadResult> LoadTask { get; set; } = null!;
 
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
+
     private TileLoadResult? _result;
     private bool _loading = true;
     private Task<TileLoadResult>? _activeTask;
     private Guid _renderKey = Guid.NewGuid();
+
+    /// <summary>"Unable to load {tile title}" — the failing tile's error text.</summary>
+    private string LoadErrorText() =>
+        Loc.Get<SharedResource>("Shared_Tile_LoadErrorFor", Provider.Title);
 
     /// <summary>
     /// Fires on first render and whenever parameters change (e.g. new LoadTask after dashboard refresh).

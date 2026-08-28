@@ -1,8 +1,11 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Shared;
 
@@ -23,9 +26,24 @@ public partial class OpeningBalanceEntryForm : ComponentBase
     [Parameter, EditorRequired] public DateTime AsAtDate { get; set; }
     [Parameter] public bool ShowAlreadyPostedWarning { get; set; } = true;
     [Parameter] public bool HasExistingOpeningBalances { get; set; }
-    [Parameter] public string SubmitButtonText { get; set; } = "Post Opening Balances";
+
+    /// <summary>Submit button text; when unset, falls back to the shared default (spec 027).</summary>
+    [Parameter] public string? SubmitButtonText { get; set; }
 
     [Inject] private IOpeningBalanceService OpeningBalanceService { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
+
+    private string PostingText => Shared["Shared_OpeningBalances_PostingText"];
+    private string DefaultSubmitText => Shared["Shared_OpeningBalances_SubmitButton"];
+
+    /// <summary>Instruction paragraph, localized with the as-at date.</summary>
+    private string InstructionText() =>
+        Loc.Get<SharedResource>("Shared_OpeningBalances_Instruction", AsAtDate.ToString("d MMMM yyyy"));
+
+    /// <summary>aria-label for a row's balance input.</summary>
+    private string BalanceAriaLabel(string accountName) =>
+        Loc.Get<SharedResource>("Shared_OpeningBalances_BalanceForAriaLabel", accountName);
 
     private List<OpeningBalanceRowModel> _rows = new();
     private bool _submitting;

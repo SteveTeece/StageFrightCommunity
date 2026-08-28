@@ -17,7 +17,7 @@ namespace StageFright.UI.Tests.Pages.Setup;
 /// the full SetupRequest, the sample-data seeding overlay, and — since spec 022 — the
 /// relocated "Load sample data" checkbox's tab-bypass/queue-discard behavior.
 /// </summary>
-public class SetupWizardTests : BunitContext
+public class SetupWizardTests : LocalizedTestContext
 {
     private readonly ISetupService _setupService = Substitute.For<ISetupService>();
     private readonly IDebugDataSeeder _debugSeeder = Substitute.For<IDebugDataSeeder>();
