@@ -4,6 +4,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Localization.Resources;
 using StageFright.Core.Modules.Members;
 using StageFright.Core.Tests.Fixtures;
 
@@ -25,7 +26,7 @@ public class MemberServiceTests : TestBase
 
     public MemberServiceTests()
     {
-        _validation = new MemberValidationService(_ageCalc);
+        _validation = new MemberValidationService(_ageCalc, new StubStringLocalizer<ValidationResource>());
 
         // UnitOfWork just executes the operation inline for unit tests
         _unitOfWork

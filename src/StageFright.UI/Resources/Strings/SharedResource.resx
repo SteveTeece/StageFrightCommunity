@@ -116,4 +116,36 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Shared_Action_Save" xml:space="preserve">
+    <value>Save</value>
+    <comment>Generic Save button label.</comment>
+  </data>
+  <data name="Shared_Action_Saving" xml:space="preserve">
+    <value>Saving…</value>
+    <comment>Generic Save button label while a save is in progress.</comment>
+  </data>
+  <data name="Shared_Action_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Generic Cancel button label.</comment>
+  </data>
+  <data name="Shared_Action_Edit" xml:space="preserve">
+    <value>Edit</value>
+    <comment>Generic Edit button label.</comment>
+  </data>
+  <data name="Shared_Common_Loading" xml:space="preserve">
+    <value>Loading…</value>
+    <comment>Generic loading indicator text.</comment>
+  </data>
+  <data name="Shared_Table_ActionsColumn" xml:space="preserve">
+    <value>Actions</value>
+    <comment>Generic grid column header for a row's action buttons.</comment>
+  </data>
+  <data name="Shared_Table_StatusColumn" xml:space="preserve">
+    <value>Status</value>
+    <comment>Generic grid column / field label for a status value.</comment>
+  </data>
+  <data name="Shared_Error_Unexpected" xml:space="preserve">
+    <value>An unexpected error occurred. Please try again.</value>
+    <comment>Generic fallback message shown when an operation fails unexpectedly.</comment>
+  </data>
 </root>

@@ -15,7 +15,7 @@ namespace StageFright.UI.Tests.Pages.Members;
 /// bUnit tests for MemberForm — validation and submit behavior. Committee assignment is no
 /// longer part of this form (spec 013) — it's recorded via the Record AGM screen instead.
 /// </summary>
-public class MemberFormTests : BunitContext
+public class MemberFormTests : LocalizedTestContext
 {
     private readonly IMemberService _memberService = Substitute.For<IMemberService>();
 

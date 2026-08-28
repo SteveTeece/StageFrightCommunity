@@ -1,10 +1,10 @@
 @page "/members"
 
-<PageTitle>Members — StageFright Community</PageTitle>
+<PageTitle>@L["Members_List_PageTitle"]</PageTitle>
 
 <div class="page-header d-flex align-items-center justify-content-between mb-2">
-    <h1 class="h3 mb-0">Members</h1>
-    <button class="btn btn-primary btn-sm" @onclick="AddMember">Add Member</button>
+    <h1 class="h3 mb-0">@L["Members_List_Heading"]</h1>
+    <button class="btn btn-primary btn-sm" @onclick="AddMember">@L["Members_List_AddButton"]</button>
 </div>
 
 <div class="mb-2 d-flex align-items-center gap-2 flex-wrap">
@@ -14,29 +14,29 @@
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
             </svg>
         </span>
-        <input type="search" class="form-control form-control-sm" placeholder="Search by name, email, phone or address…"
-               aria-label="Search members"
+        <input type="search" class="form-control form-control-sm" placeholder="@L["Members_List_SearchPlaceholder"]"
+               aria-label="@L["Members_List_SearchAriaLabel"]"
                @bind="_searchTerm" @bind:event="oninput" />
     </div>
     <div class="d-flex align-items-center gap-2 ms-auto">
-        <label for="showInactiveSwitch" class="form-label mb-0">Show inactive members</label>
+        <label for="showInactiveSwitch" class="form-label mb-0">@L["Members_List_ShowInactiveLabel"]</label>
         <RadzenSwitch Name="showInactiveSwitch" @bind-Value="_showInactive" Change="@(async (bool _) => await LoadAsync())" />
     </div>
 </div>
 
 @if (_loading)
 {
-    <p role="status" aria-live="polite">Loading members…</p>
+    <p role="status" aria-live="polite">@L["Members_List_LoadingText"]</p>
 }
 else if (!DisplayMembers.Any())
 {
     @if (_members.Count == 0)
     {
-        <p class="text-muted">No @(_showInactive ? "" : "active ")members found.</p>
+        <p class="text-muted">@(_showInactive ? L["Members_List_EmptyAll"] : L["Members_List_EmptyActive"])</p>
     }
     else
     {
-        <p class="text-muted">No members match "<strong>@_searchTerm</strong>".</p>
+        <p class="text-muted">@NoMatchText()</p>
     }
 }
 else
@@ -45,18 +45,18 @@ else
                     AllowSorting="true" AllowPaging="true" PageSize="15"
                     class="rz-shadow-0">
         <Columns>
-            <RadzenDataGridColumn TItem="Member" Property="SortableFullName" Title="Name" Width="200px">
+            <RadzenDataGridColumn TItem="Member" Property="SortableFullName" Title="@L["Members_List_NameColumn"]" Width="200px">
                 <Template Context="member">
                     <a href="#" @onclick:preventDefault @onclick="() => ViewMember(member.Id)"
                        class="text-decoration-none fw-semibold">
-                        @member.SortableFullName@(member.Status == MemberStatus.Inactive ? " (Inactive)" : "")
+                        @member.SortableFullName@(member.Status == MemberStatus.Inactive ? $" ({member.Status.LocalizeEnum()})" : "")
                     </a>
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Member" Property="StreetAddress" Title="Address" />
-            <RadzenDataGridColumn TItem="Member" Property="Phone" Title="Phone" Width="130px" />
-            <RadzenDataGridColumn TItem="Member" Property="Email" Title="Email" Width="200px" />
-            <RadzenDataGridColumn TItem="Member" Title="Age" Width="90px">
+            <RadzenDataGridColumn TItem="Member" Property="StreetAddress" Title="@L["Members_List_AddressColumn"]" />
+            <RadzenDataGridColumn TItem="Member" Property="Phone" Title="@L["Members_List_PhoneColumn"]" Width="130px" />
+            <RadzenDataGridColumn TItem="Member" Property="Email" Title="@L["Members_List_EmailColumn"]" Width="200px" />
+            <RadzenDataGridColumn TItem="Member" Title="@L["Members_List_AgeColumn"]" Width="90px">
                 <Template Context="member">
                     @if (member.DateOfBirth.HasValue)
                     {
@@ -68,12 +68,12 @@ else
                     }
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Member" Title="Actions" Width="110px" Sortable="false">
+            <RadzenDataGridColumn TItem="Member" Title="@Shared["Shared_Table_ActionsColumn"]" Width="110px" Sortable="false">
                 <Template Context="member">
                     <button class="btn btn-primary btn-sm"
                             @onclick="() => EditMember(member.Id)"
-                            aria-label="Edit @member.SortableFullName">
-                        Edit
+                            aria-label="@EditMemberAriaLabel(member.SortableFullName)">
+                        @Shared["Shared_Action_Edit"]
                     </button>
                 </Template>
             </RadzenDataGridColumn>

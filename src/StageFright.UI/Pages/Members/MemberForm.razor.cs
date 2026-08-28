@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.Members;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Members;
 
@@ -11,6 +13,8 @@ public partial class MemberForm : ComponentBase
 
     [Inject] private IMemberService MemberService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private IStringLocalizer<MembersResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
 
     private readonly MemberFormModel _form = new();
     private Dictionary<string, string> _errors = new();
@@ -94,7 +98,7 @@ public partial class MemberForm : ComponentBase
         }
         catch (Exception)
         {
-            _globalError = "An unexpected error occurred. Please try again.";
+            _globalError = Shared["Shared_Error_Unexpected"];
         }
         finally
         {

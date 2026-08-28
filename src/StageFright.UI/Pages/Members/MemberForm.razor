@@ -1,15 +1,15 @@
 @page "/members/new"
 @page "/members/edit/{Id:guid}"
 
-<PageTitle>@(_isNew ? "Add Member" : "Edit Member") — StageFright Community</PageTitle>
+<PageTitle>@(_isNew ? L["Members_Form_AddPageTitle"] : L["Members_Form_EditPageTitle"])</PageTitle>
 
 <div class="page-header mb-2">
-    <h1 class="h3">@(_isNew ? "Add Member" : "Edit Member")</h1>
+    <h1 class="h3">@(_isNew ? L["Members_Form_AddHeading"] : L["Members_Form_EditHeading"])</h1>
 </div>
 
 @if (_loading)
 {
-    <p role="status" aria-live="polite">Loading…</p>
+    <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
 }
 else
 {
@@ -17,7 +17,7 @@ else
         <div class="row g-2 mb-2">
 
             <div class="col-md-6">
-                <label class="form-label" for="firstName">First Name <span aria-hidden="true">*</span></label>
+                <label class="form-label" for="firstName">@L["Members_Form_FirstNameLabel"] <span aria-hidden="true">*</span></label>
                 <InputText id="firstName"
                            class="@(_errors.ContainsKey("FirstName") ? "form-control form-control-sm is-invalid" : "form-control form-control-sm")"
                            @bind-Value="_form.FirstName" />
@@ -28,7 +28,7 @@ else
             </div>
 
             <div class="col-md-6">
-                <label class="form-label" for="lastName">Last Name <span aria-hidden="true">*</span></label>
+                <label class="form-label" for="lastName">@L["Members_Form_LastNameLabel"] <span aria-hidden="true">*</span></label>
                 <InputText id="lastName"
                            class="@(_errors.ContainsKey("LastName") ? "form-control form-control-sm is-invalid" : "form-control form-control-sm")"
                            @bind-Value="_form.LastName" />
@@ -39,7 +39,7 @@ else
             </div>
 
             <div class="col-md-6">
-                <label class="form-label" for="address">Street Address <span aria-hidden="true">*</span></label>
+                <label class="form-label" for="address">@L["Members_Form_StreetAddressLabel"] <span aria-hidden="true">*</span></label>
                 <InputText id="address"
                            class="@(_errors.ContainsKey("StreetAddress") ? "form-control form-control-sm is-invalid" : "form-control form-control-sm")"
                            @bind-Value="_form.StreetAddress" />
@@ -50,7 +50,7 @@ else
             </div>
 
             <div class="col-md-6">
-                <label class="form-label" for="phone">Phone</label>
+                <label class="form-label" for="phone">@L["Members_Form_PhoneLabel"]</label>
                 <InputText id="phone"
                            class="@(_errors.ContainsKey("Phone") ? "form-control form-control-sm is-invalid" : "form-control form-control-sm")"
                            @bind-Value="_form.Phone" />
@@ -61,7 +61,7 @@ else
             </div>
 
             <div class="col-md-6">
-                <label class="form-label" for="email">Email</label>
+                <label class="form-label" for="email">@L["Members_Form_EmailLabel"]</label>
                 <InputText id="email"
                            class="@(_errors.ContainsKey("Email") ? "form-control form-control-sm is-invalid" : "form-control form-control-sm")"
                            @bind-Value="_form.Email" />
@@ -72,12 +72,12 @@ else
             </div>
 
             <div class="col-md-6">
-                <label class="form-label" for="joinDate">Join Date <span aria-hidden="true">*</span></label>
+                <label class="form-label" for="joinDate">@L["Members_Form_JoinDateLabel"] <span aria-hidden="true">*</span></label>
                 <InputDate id="joinDate" class="form-control form-control-sm" @bind-Value="_form.JoinDate" />
             </div>
 
             <div class="col-md-6">
-                <label class="form-label" for="dob">Date of Birth</label>
+                <label class="form-label" for="dob">@L["Members_Form_DateOfBirthLabel"]</label>
                 <InputDate id="dob"
                            class="@(_errors.ContainsKey("DateOfBirth") ? "form-control form-control-sm is-invalid" : "form-control form-control-sm")"
                            @bind-Value="_form.DateOfBirth" />
@@ -96,9 +96,9 @@ else
 
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
-                @(_saving ? "Saving…" : "Save")
+                @(_saving ? Shared["Shared_Action_Saving"] : Shared["Shared_Action_Save"])
             </button>
-            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="Cancel">Cancel</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="Cancel">@Shared["Shared_Action_Cancel"]</button>
         </div>
     </EditForm>
 }

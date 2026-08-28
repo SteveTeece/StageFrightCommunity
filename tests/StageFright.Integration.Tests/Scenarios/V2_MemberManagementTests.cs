@@ -370,7 +370,8 @@ public sealed class V2_MemberManagementTests : IAsyncLifetime
         var auditSvc = new AuditTrailService(
             auditRepo, NullLogger<AuditTrailService>.Instance);
         var ageCalc = new AgeCalculationService();
-        var validation = new MemberValidationService(ageCalc);
+        var validation = new MemberValidationService(
+            ageCalc, new StubStringLocalizer<StageFright.Core.Modules.Localization.Resources.ValidationResource>());
         var unitOfWork = new UnitOfWork(_db);
 
         return new MemberService(memberRepo, committeeRepo, validation, settingsRepo, auditSvc, unitOfWork);

@@ -17,6 +17,7 @@ public abstract class LocalizedTestContext : RadzenGridTestContext
     protected LocalizedTestContext()
     {
         Services.AddLocalization();
+        Services.AddScoped<ILocalizer, Localizer>();
         var factory = Services.BuildServiceProvider().GetRequiredService<IStringLocalizerFactory>();
         EnumLocalizationExtensions.UseFactory(factory);
     }

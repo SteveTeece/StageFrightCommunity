@@ -1,76 +1,76 @@
 @page "/members/{Id:guid}"
 
-<PageTitle>@(_member?.FullName ?? "Member") — StageFright Community</PageTitle>
+<PageTitle>@PageTitle()</PageTitle>
 
 @if (_loading)
 {
-    <p role="status" aria-live="polite">Loading…</p>
+    <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
 }
 else if (_member is null)
 {
-    <div class="alert alert-warning py-1 mb-2 small">Member not found.</div>
+    <div class="alert alert-warning py-1 mb-2 small">@L["Members_Detail_NotFound"]</div>
 }
 else
 {
     <div class="page-header d-flex align-items-center justify-content-between mb-2">
         <h1 class="h3 mb-0">@_member.FullName</h1>
         <div class="d-flex gap-2">
-            <button class="btn btn-outline-secondary btn-sm" @onclick="Edit">Edit</button>
+            <button class="btn btn-outline-secondary btn-sm" @onclick="Edit">@Shared["Shared_Action_Edit"]</button>
             @if (_member.Status == StageFright.Core.Enums.MemberStatus.Active)
             {
-                <button class="btn btn-outline-warning btn-sm" @onclick="InactivateAsync">Inactivate</button>
+                <button class="btn btn-outline-warning btn-sm" @onclick="InactivateAsync">@L["Members_Detail_InactivateButton"]</button>
             }
             else
             {
-                <button class="btn btn-outline-success btn-sm" @onclick="ActivateAsync">Activate</button>
+                <button class="btn btn-outline-success btn-sm" @onclick="ActivateAsync">@L["Members_Detail_ActivateButton"]</button>
             }
-            <button class="btn btn-outline-danger btn-sm" @onclick="ArchiveAsync">Archive</button>
+            <button class="btn btn-outline-danger btn-sm" @onclick="ArchiveAsync">@L["Members_Detail_ArchiveButton"]</button>
         </div>
     </div>
 
     <div class="row g-2 mb-2">
         <div class="col-md-6">
             <dl class="row mb-0 small">
-                <dt class="col-sm-5">Address</dt>
+                <dt class="col-sm-5">@L["Members_Detail_AddressLabel"]</dt>
                 <dd class="col-sm-7">@_member.StreetAddress</dd>
 
                 @if (!string.IsNullOrEmpty(_member.Phone))
                 {
-                    <dt class="col-sm-5">Phone</dt>
+                    <dt class="col-sm-5">@L["Members_Detail_PhoneLabel"]</dt>
                     <dd class="col-sm-7">@_member.Phone</dd>
                 }
 
                 @if (!string.IsNullOrEmpty(_member.Email))
                 {
-                    <dt class="col-sm-5">Email</dt>
+                    <dt class="col-sm-5">@L["Members_Detail_EmailLabel"]</dt>
                     <dd class="col-sm-7">@_member.Email</dd>
                 }
             </dl>
         </div>
         <div class="col-md-6">
             <dl class="row mb-0 small">
-                <dt class="col-sm-5">Join Date</dt>
+                <dt class="col-sm-5">@L["Members_Detail_JoinDateLabel"]</dt>
                 <dd class="col-sm-7">@_member.JoinDate.ToString("d MMM yyyy")</dd>
 
                 @if (_member.DateOfBirth.HasValue)
                 {
-                    <dt class="col-sm-5">Date of Birth</dt>
+                    <dt class="col-sm-5">@L["Members_Detail_DateOfBirthLabel"]</dt>
                     <dd class="col-sm-7">@_member.DateOfBirth.Value.ToString("d MMM yyyy")</dd>
 
-                    <dt class="col-sm-5">Age</dt>
+                    <dt class="col-sm-5">@L["Members_Detail_AgeLabel"]</dt>
                     <dd class="col-sm-7">@_age</dd>
                 }
 
-                <dt class="col-sm-5">Status</dt>
-                <dd class="col-sm-7">@_member.Status</dd>
+                <dt class="col-sm-5">@Shared["Shared_Table_StatusColumn"]</dt>
+                <dd class="col-sm-7">@_member.Status.LocalizeEnum()</dd>
             </dl>
         </div>
     </div>
 
     @if (_committeeHistory.Count > 0)
     {
-        <section aria-label="Committee History" class="mb-2">
-            <h2 class="h6 mb-1">Committee History</h2>
+        <section aria-label="@L["Members_Detail_CommitteeHistoryHeading"]" class="mb-2">
+            <h2 class="h6 mb-1">@L["Members_Detail_CommitteeHistoryHeading"]</h2>
             <ul class="list-unstyled small mb-0">
                 @foreach (var record in _committeeHistory.OrderByDescending(GetEffectiveYear))
                 {
@@ -80,9 +80,9 @@ else
                             <strong>
                                 @GetEffectiveYear(record)
                                 <span role="status"
-                                      aria-label="Current year"
+                                      aria-label="@L["Members_Detail_CurrentYearAriaLabel"]"
                                       style="background-color:hsl(120,40%,70%);padding:1px 6px;border-radius:4px;font-size:.8em;font-weight:normal">
-                                    Current
+                                    @L["Members_Detail_CurrentBadge"]
                                 </span>
                                 — @GetEffectiveLabel(record)
                             </strong>
@@ -99,32 +99,32 @@ else
 
     @if (_feeHistory.Count > 0)
     {
-        <section aria-label="Fee Payment History" class="mt-2">
-            <h2 class="h6 mb-1">Fee Payment History</h2>
+        <section aria-label="@L["Members_Detail_FeeHistoryHeading"]" class="mt-2">
+            <h2 class="h6 mb-1">@L["Members_Detail_FeeHistoryHeading"]</h2>
             <RadzenDataGrid Data="@_feeHistory" TItem="FeeHistoryItem"
                             AllowPaging="true" PageSize="8"
                             AllowSorting="true"
                             class="rz-shadow-0">
                 <Columns>
-                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="FeeDate" Title="Date" Width="120px">
+                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="FeeDate" Title="@L["Members_Detail_FeeDateColumn"]" Width="120px">
                         <Template Context="f">@f.FeeDate.ToString("d MMM yyyy")</Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="FeeType" Title="Type" Width="100px" />
-                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="Amount" Title="Amount" Width="85px">
-                        <Template Context="f"><span class="d-block text-end">@f.Amount.ToString("C")</span></Template>
+                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="FeeType" Title="@L["Members_Detail_FeeTypeColumn"]" Width="100px" />
+                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="Amount" Title="@L["Members_Detail_FeeAmountColumn"]" Width="85px">
+                        <Template Context="f"><span class="d-block text-end">@MoneyFormatter.Format(f.Amount)</span></Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="PaidAmount" Title="Paid" Width="85px">
-                        <Template Context="f"><span class="d-block text-end">@f.PaidAmount.ToString("C")</span></Template>
+                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="PaidAmount" Title="@L["Members_Detail_FeePaidColumn"]" Width="85px">
+                        <Template Context="f"><span class="d-block text-end">@MoneyFormatter.Format(f.PaidAmount)</span></Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="IsPaid" Title="Status" Width="80px" Sortable="false">
+                    <RadzenDataGridColumn TItem="FeeHistoryItem" Property="IsPaid" Title="@Shared["Shared_Table_StatusColumn"]" Width="80px" Sortable="false">
                         <Template Context="f">
                             @if (f.IsPaid)
                             {
-                                <span class="badge bg-success">Paid</span>
+                                <span class="badge bg-success">@L["Members_Detail_FeePaidBadge"]</span>
                             }
                             else
                             {
-                                <span class="badge bg-warning text-dark">Unpaid</span>
+                                <span class="badge bg-warning text-dark">@L["Members_Detail_FeeUnpaidBadge"]</span>
                             }
                         </Template>
                     </RadzenDataGridColumn>

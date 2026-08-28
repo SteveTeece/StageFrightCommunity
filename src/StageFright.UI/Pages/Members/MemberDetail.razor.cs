@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Members;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Members;
 
@@ -15,6 +18,9 @@ public partial class MemberDetail : ComponentBase
     [Inject] private IFeeRepository FeeRepository { get; set; } = null!;
     [Inject] private IGLRepository GLRepository { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private IStringLocalizer<MembersResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private readonly AgeCalculationService _ageCalc = new();
     private Member? _member;
@@ -81,14 +87,18 @@ public partial class MemberDetail : ComponentBase
     private static int GetEffectiveYear(CommitteePositionRecord record) =>
         record.CommitteeTermId is not null ? record.CommitteeTerm!.LabelYear : record.Year ?? 0;
 
-    private static string GetEffectiveLabel(CommitteePositionRecord record)
+    private string GetEffectiveLabel(CommitteePositionRecord record)
     {
         if (record.OfficeHolderTypeId is not null)
             return record.OfficeHolderType!.Name;
 
         var position = record.Position;
-        return !string.IsNullOrWhiteSpace(position) ? position : "General Committee Member";
+        return !string.IsNullOrWhiteSpace(position) ? position : L["Members_Detail_GeneralCommitteeMember"];
     }
+
+    /// <summary>Browser tab title — the member's name (or a fallback) plus the app suffix.</summary>
+    private string PageTitle() =>
+        Loc.Get<MembersResource>("Members_Detail_PageTitle", _member?.FullName ?? L["Members_Detail_PageTitleFallback"].Value);
 
     private bool IsCurrent(CommitteePositionRecord record) =>
         record.CommitteeTermId is not null

@@ -62,33 +62,33 @@ The one shared localization mechanism every story builds on: area resource marke
 
 ### Tests (write to fail first — FR-018, constitution §11.0)
 
-- [ ] **T015** [US1] US1 guard suite in `StageFright.Localization.Tests`: baseline-completeness (`Should_HaveNeutralEntry_When_KeyReferencedInCode`), residual-literal scan **scoped to the US1 slice file list** (incl. `aria-label`/`alt`/`title` — FR-001), enum-coverage for `MemberStatus` + `Theme` + no-raw-enum-display, no-`"C"`-currency scoped to US1 files (FR-015), missing-key logging/fallback (`Should_LogWarningAndFallBack_When_KeyMissingForActiveCulture`, FR-008/FR-009/SC-004) · `tests/StageFright.Localization.Tests/`
-- [ ] **T016** [US1] bUnit tests for `ShellLayout`, `ThemeProvider` and the Members pages/components asserting rendered text via `IStringLocalizer` keys, not hardcoded English (FR-018) · `tests/StageFright.UI.Tests/`
+- [x] **T015** [US1] US1 guard suite in `StageFright.Localization.Tests`: baseline-completeness (`Should_HaveNeutralEntry_When_KeyReferencedInCode`), residual-literal scan **scoped to the US1 slice file list** (incl. `aria-label`/`alt`/`title` — FR-001), enum-coverage for `MemberStatus` + `Theme` + no-raw-enum-display, no-`"C"`-currency scoped to US1 files (FR-015), missing-key logging/fallback (`Should_LogWarningAndFallBack_When_KeyMissingForActiveCulture`, FR-008/FR-009/SC-004) · `tests/StageFright.Localization.Tests/`
+- [x] **T016** [US1] bUnit tests for `ShellLayout`, `ThemeProvider` and the Members pages/components asserting rendered text via `IStringLocalizer` keys, not hardcoded English (FR-018) · `tests/StageFright.UI.Tests/`
 
 ### Implementation
 
 **Wave 1 — independent (different `.resx` files), author en-AU entries verbatim (FR-003/FR-004):**
 
-- [ ] **T017** [P] [US1] Shell chrome + `MemberMenuItemProvider` `Title`/`ShortLabel` keys · `src/StageFright.Core/Modules/Localization/Resources/NavigationResource.resx`
-- [ ] **T018** [P] [US1] Every Members screen/component string — labels, headings, buttons, placeholders, help text, `aria-label`/`alt`/`title` (FR-001), status/success/error · `src/StageFright.UI/Resources/Strings/MembersResource.resx`
-- [ ] **T019** [P] [US1] `MemberValidationService` + Members-related user-facing exception `Message` text · `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx`
-- [ ] **T020** [P] [US1] `Enum_MemberStatus_*` and `Enum_Theme_*` entries verbatim (FR-024) · `src/StageFright.Core/Modules/Localization/Resources/EnumsResource.resx`
-- [ ] **T021** [P] [US1] Cross-cutting actions used by the shell + Members (Save/Cancel/Close/Yes/No/"Loading…"/"Actions"/"Status") · `src/StageFright.UI/Resources/Strings/SharedResource.resx`
+- [x] **T017** [P] [US1] Shell chrome + `MemberMenuItemProvider` `Title`/`ShortLabel` keys · `src/StageFright.Core/Modules/Localization/Resources/NavigationResource.resx`
+- [x] **T018** [P] [US1] Every Members screen/component string — labels, headings, buttons, placeholders, help text, `aria-label`/`alt`/`title` (FR-001), status/success/error · `src/StageFright.UI/Resources/Strings/MembersResource.resx`
+- [x] **T019** [P] [US1] `MemberValidationService` + Members-related user-facing exception `Message` text · `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx`
+- [x] **T020** [P] [US1] `Enum_MemberStatus_*` and `Enum_Theme_*` entries verbatim (FR-024) · `src/StageFright.Core/Modules/Localization/Resources/EnumsResource.resx`
+- [x] **T021** [P] [US1] Cross-cutting actions used by the shell + Members (Save/Cancel/Close/Yes/No/"Loading…"/"Actions"/"Status") · `src/StageFright.UI/Resources/Strings/SharedResource.resx`
 
 **⟶ Wait for the resx entries to exist, then convert the call sites:**
 
 **Wave 2 — independent (different files):**
 
-- [ ] **T022** [P] [US1] Inject `IStringLocalizer<NavigationResource>` (+ `SharedResource`) in the code-behind; replace all literals incl. `aria-label`/`title` (FR-001); theme labels via `Theme.LocalizeEnum()` · `src/StageFright.UI/Layout/ShellLayout.razor` + `ShellLayout.razor.cs`
-- [ ] **T023** [P] [US1] Replace theme/enum display text via `LocalizeEnum` / injected localizer · `src/StageFright.UI/Layout/ThemeProvider.razor` + `ThemeProvider.razor.cs`
-- [ ] **T024** [P] [US1] Constructor-inject `IStringLocalizer<NavigationResource>`; set `MenuItem.Title`/`ShortLabel` from resources in `GetMenuItems()` · `src/StageFright.Core/Modules/Members/MemberMenuItemProvider.cs`
-- [ ] **T025** [P] [US1] Source user-facing validation/error messages from `IStringLocalizer<ValidationResource>` (exception types + boundary rules unchanged) · `src/StageFright.Core/Modules/Members/` (`MemberValidationService` + Members exception message text)
-- [ ] **T026** [P] [US1] Inject `IStringLocalizer<MembersResource>` in each code-behind; `@L["…"]` in markup; `member.Status.LocalizeEnum()` for status; `MoneyFormatter.Format(...)` for balances (FR-015); localize `aria-label`/`alt`/`title` (FR-001) · `src/StageFright.UI/Pages/Members/*.razor` + `*.razor.cs`
-- [ ] **T027** [P] [US1] Inject localizer; convert captions/tile text · `src/StageFright.UI/Modules/Members/**`
+- [x] **T022** [P] [US1] Inject `IStringLocalizer<NavigationResource>` (+ `SharedResource`) in the code-behind; replace all literals incl. `aria-label`/`title` (FR-001); theme labels via `Theme.LocalizeEnum()` · `src/StageFright.UI/Layout/ShellLayout.razor` + `ShellLayout.razor.cs`
+- [x] **T023** [P] [US1] Replace theme/enum display text via `LocalizeEnum` / injected localizer · `src/StageFright.UI/Layout/ThemeProvider.razor` + `ThemeProvider.razor.cs`
+- [x] **T024** [P] [US1] Constructor-inject `IStringLocalizer<NavigationResource>`; set `MenuItem.Title`/`ShortLabel` from resources in `GetMenuItems()` · `src/StageFright.Core/Modules/Members/MemberMenuItemProvider.cs`
+- [x] **T025** [P] [US1] Source user-facing validation/error messages from `IStringLocalizer<ValidationResource>` (exception types + boundary rules unchanged) · `src/StageFright.Core/Modules/Members/` (`MemberValidationService` + Members exception message text)
+- [x] **T026** [P] [US1] Inject `IStringLocalizer<MembersResource>` in each code-behind; `@L["…"]` in markup; `member.Status.LocalizeEnum()` for status; `MoneyFormatter.Format(...)` for balances (FR-015); localize `aria-label`/`alt`/`title` (FR-001) · `src/StageFright.UI/Pages/Members/*.razor` + `*.razor.cs`
+- [x] **T027** [P] [US1] Inject localizer; convert captions/tile text · `src/StageFright.UI/Modules/Members/**`
 
 **⟶ Wait for Wave 2, then:**
 
-- [ ] **T028** [US1] Confirm the Members provider/service registrations resolve `IStringLocalizer<T>` from DI; update any factory-lambda registration that now needs it · `src/StageFright.App/MauiProgram.cs` (`RegisterCoreServices`)
+- [x] **T028** [US1] Confirm the Members provider/service registrations resolve `IStringLocalizer<T>` from DI; update any factory-lambda registration that now needs it · `src/StageFright.App/MauiProgram.cs` (`RegisterCoreServices`)
 
 **Checkpoint US1**: The navigation shell and the Members module are fully localized — same en-AU wording, all from resources; the US1-scoped guard suite and Members/shell bUnit tests are green; the extraction pattern is settled and independently demoable. US2 can now repeat it mechanically.
 

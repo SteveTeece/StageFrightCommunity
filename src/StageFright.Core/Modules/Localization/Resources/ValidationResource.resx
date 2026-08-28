@@ -116,4 +116,40 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Validation_Member_FirstNameRequired" xml:space="preserve">
+    <value>First name is required.</value>
+    <comment>Validation error when a member's first name is blank.</comment>
+  </data>
+  <data name="Validation_Member_LastNameRequired" xml:space="preserve">
+    <value>Last name is required.</value>
+    <comment>Validation error when a member's last name is blank.</comment>
+  </data>
+  <data name="Validation_Member_FirstNameMaxLength" xml:space="preserve">
+    <value>First name must be 100 characters or fewer.</value>
+    <comment>Validation error when a member's first name is too long.</comment>
+  </data>
+  <data name="Validation_Member_LastNameMaxLength" xml:space="preserve">
+    <value>Last name must be 100 characters or fewer.</value>
+    <comment>Validation error when a member's last name is too long.</comment>
+  </data>
+  <data name="Validation_Member_StreetAddressRequired" xml:space="preserve">
+    <value>Street address is required.</value>
+    <comment>Validation error when a member's street address is blank.</comment>
+  </data>
+  <data name="Validation_Member_EmailInvalid" xml:space="preserve">
+    <value>Email format is invalid.</value>
+    <comment>Validation error when a member's email address is not a valid format.</comment>
+  </data>
+  <data name="Validation_Member_DateOfBirthInPast" xml:space="preserve">
+    <value>Date of birth must be in the past.</value>
+    <comment>Validation error when a member's date of birth is today or later.</comment>
+  </data>
+  <data name="Validation_Member_AgeExceedsMaxRange" xml:space="preserve">
+    <value>Date of birth implies an age of {Age} years, which exceeds the maximum allowed range of {MaxYears} years.</value>
+    <comment>Validation error when a member's implied age is above the configured maximum. {Age} = implied age; {MaxYears} = configured maximum age range.</comment>
+  </data>
+  <data name="Validation_Member_BelowMinimumAge" xml:space="preserve">
+    <value>Member must be at least {MinimumAge} years of age.</value>
+    <comment>Validation error when a member's implied age is below the configured minimum. {MinimumAge} = configured minimum member age.</comment>
+  </data>
 </root>

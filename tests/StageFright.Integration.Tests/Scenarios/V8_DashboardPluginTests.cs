@@ -258,7 +258,8 @@ public sealed class V8_DashboardPluginTests
     {
         var providers = new List<IDashboardTileProvider>
         {
-            new MembersDashboardTileProvider(),
+            new MembersDashboardTileProvider(
+                new StubStringLocalizer<StageFright.UI.Resources.Strings.MembersResource>()),
             new RehearsalsDashboardTileProvider(),
             new EventsDashboardTileProvider(),
             new FinanceDashboardTileProvider(),

@@ -116,4 +116,44 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Nav_Members_Title" xml:space="preserve">
+    <value>Members</value>
+    <comment>Members top-level navigation item label.</comment>
+  </data>
+  <data name="Nav_Members_ShortLabel" xml:space="preserve">
+    <value>MEMB</value>
+    <comment>Members navigation item short/collapsed label.</comment>
+  </data>
+  <data name="Nav_Sidebar_MainNavigationAriaLabel" xml:space="preserve">
+    <value>Main navigation</value>
+    <comment>aria-label on the sidebar navigation landmark.</comment>
+  </data>
+  <data name="Nav_Sidebar_BrandText" xml:space="preserve">
+    <value>StageFright</value>
+    <comment>Product name shown beside the sidebar logo.</comment>
+  </data>
+  <data name="Nav_Sidebar_CollapseGroupAriaLabel" xml:space="preserve">
+    <value>Collapse {GroupName}</value>
+    <comment>aria-label on an expanded nav group's chevron. {GroupName} = the group's title.</comment>
+  </data>
+  <data name="Nav_Sidebar_ExpandGroupAriaLabel" xml:space="preserve">
+    <value>Expand {GroupName}</value>
+    <comment>aria-label on a collapsed nav group's chevron. {GroupName} = the group's title.</comment>
+  </data>
+  <data name="Nav_Sidebar_BadgeItemsAriaLabel" xml:space="preserve">
+    <value>{BadgeText} items</value>
+    <comment>aria-label on a nav item's count badge. {BadgeText} = the badge's displayed count.</comment>
+  </data>
+  <data name="Nav_ThemeToggle_Label" xml:space="preserve">
+    <value>Theme Selection</value>
+    <comment>Visible label for the sidebar light/dark theme switch.</comment>
+  </data>
+  <data name="Nav_ThemeToggle_SwitchToDarkAriaLabel" xml:space="preserve">
+    <value>Switch to dark mode</value>
+    <comment>aria-label on the theme switch while the light theme is active.</comment>
+  </data>
+  <data name="Nav_ThemeToggle_SwitchToLightAriaLabel" xml:space="preserve">
+    <value>Switch to light mode</value>
+    <comment>aria-label on the theme switch while the dark theme is active.</comment>
+  </data>
 </root>
