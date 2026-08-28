@@ -413,7 +413,7 @@
     }
   ],
   "telemetryInstanceId": "bd71e5f2-b0ce-45df-9da3-06f68fa7a241",
-  "last_action": "US2 T040 DONE (6 PDF renderers -> ReportsResource.resx chrome keys, ILocalizer ctor inject, CheckboxSheetPdfBuilder gains localizer param, 8 test ctor sites -> RealLocalizer.Instance, ReportsResourceLabelTests +22 assertions) + T042 DONE (enum sweep verified; MemberDetail FeeType column -> LocalizeEnum) + T044 DONE (C-format display-site sweep verified clean). Full build 0/0; full suite 1755 pass / 0 fail. NOT yet committed. US2 REMAINING: T041 (user-facing exception Message text across ~18 Core services incl. BankReconciliationService.cs:153 :C - high blast radius, own session), T045 (DI recheck after T041 ctor changes), T029 (repo-wide guard suite - blocked until T041). Then US3 T046-T059, Polish T060-T064.",
+  "last_action": "US2 T041 PARTIAL (non-Finance half): 8 Core services (Agm/Event/EventType/CommitteeOfficeHolderType/Attendance/Settings/Setup/Backup) now source user-facing ValidationException/DataIntegrityException/ImportException Message text from ValidationResource.resx (34 new en-AU keys verbatim) via injected ILocalizer; BackupService 3 static validators to instance; 20 test call-sites updated to RealLocalizer.Instance (+ new Data.Tests RealLocalizer fixture); interim guard Us2ExceptionMessageGuardTests. Full build 0/0; full suite 1757 pass. NOT committed yet. REMAINING for US2: T041 Finance 9 services + BankReconciliationService.cs line 153 C-format, T045 DI recheck, T029 repo-wide guard.",
   "coverage": {
     "FR-001": {
       "title": "Store app-authored user-facing text (incl. aria-label/alt/title) in resource files, not literals",
@@ -496,6 +496,10 @@
         "T019",
         "T025",
         "T041"
+      ],
+      "tests": [
+        "tests/StageFright.Localization.Tests/Us2ExceptionMessageGuardTests.cs::Should_HaveNeutralEntry_When_ValidationKeyReferencedInNonFinanceService",
+        "tests/StageFright.Localization.Tests/Us2ExceptionMessageGuardTests.cs::Should_HaveNoUserFacingLiteral_When_NonFinanceServiceExceptionScanned"
       ]
     },
     "FR-008": {
@@ -796,6 +800,21 @@
       "decision": "Report renderers still do NOT format currency - amounts arrive pre-formatted (F2) in ReportData.Cells from the providers; T040 touched only page CHROME, not amounts, despite the task text mentioning MoneyFormatter.FormatWithCode",
       "why": "consistent with the T039 decision that report amount display stays F2 for SC-002 parity + ~30 existing exact-string assertions; the renderers have no decimal inputs to format - Cells are already strings",
       "rejected": "post-processing Cells through MoneyFormatter in the renderer (would add $ + separators, break SC-002 and provider tests; provider F2 is the deliberate report convention)"
+    },
+    {
+      "decision": "T041 split by user choice: this session localized the 8 NON-Finance services (Agm, Event, EventType, CommitteeOfficeHolderType, Attendance, Settings, Setup, Backup) + interim guard; the 9 Finance services + BankReconciliationService.cs:153 {Difference:C} + T045 DI recheck + T029 repo-wide guard remain for the next session",
+      "why": "T041 is ~85 throw sites across ~18 services with wide test blast radius; prior sessions flagged it as own-session work; user picked Non-Finance-first checkpoint with green build/test/commit",
+      "rejected": "whole T041 in one session (long, risk of leaving build red); Finance-first"
+    },
+    {
+      "decision": "All 8 non-Finance services take the ILocalizer facade via a required ctor param (not IStringLocalizer<ValidationResource>); every test constructs them with RealLocalizer.Instance (new fixture added to StageFright.Data.Tests, mirroring Core.Tests/Integration.Tests)",
+      "why": "ILocalizer.Get<ValidationResource>(key, args) is the only path that substitutes named {Year}/{SchemaVersion}/{EntityType} placeholders; matches the AgeCalculationService (T041 groundwork) precedent; a real .resx-backed localizer keeps every existing ex.Message substring assertion (missing Accounts / 99.0.0 / upgrade / system / referenced) green with verbatim en-AU values",
+      "rejected": "StubStringLocalizer key-echo (breaks message-substring assertions); IStringLocalizer<T> indexer (throws on named tokens)"
+    },
+    {
+      "decision": "EntityNotFoundException built-in message and DataAccessException wrapper messages left in English; BackupService DeserializeAndValidate/ValidateVersion/ValidateCompleteness changed from private static to instance so they can read _localizer",
+      "why": "UI catches EntityNotFoundException without using ex.Message (substitutes its own localized text) and wraps DataAccessException.Message inside a localized frame - both diagnostic per FR-007; only ImportException.Message is shown verbatim to the user (BackupRestoreTab.razor.cs) so those 4 messages are localized",
+      "rejected": "localizing EntityNotFoundException (needs a static ILocalizer holder or a change to every throw site - wide blast radius, no user benefit)"
     }
   ],
   "step_summaries": {
@@ -810,7 +829,7 @@
       "summary": "US2 T040 + T042 + T044: all 6 PDF report renderers page chrome localised to ReportsResource.resx (~21 en-AU keys verbatim, 5 renderers ctor-inject ILocalizer, CsvReportExporter untouched); MemberDetail Fee-history FeeType column swapped to LocalizeEnum (last deferred enum display site); repo-wide C-format display-site sweep verified clean (Finance done in T034, reports never used C). 1755 tests green (Reports 195->217). US2 remaining: T041 (service exception text, own session), T045 (DI recheck post-T041), T029 (repo-wide guard, blocked on T041)."
     }
   },
-  "currentTask": "T044",
+  "currentTask": "T029",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -1330,6 +1349,14 @@
       "warnings": [
         "T045 not closed - waits on T041"
       ]
+    },
+    {
+      "what": "dotnet build (full solution) + full dotnet test after localizing user-facing exception messages in the 8 non-Finance Core services",
+      "command": "dotnet build StageFrightCommunity.slnx ; dotnet test StageFrightCommunity.slnx",
+      "result": "Build 0 warnings / 0 errors. Tests: Core 597, Reports 217, UI 592, Localization 11 (+2 new interim guard), Data 152, Integration 188 = 1757 pass / 0 fail",
+      "warnings": [
+        "StageFright.UI.Tests DoesNotRender_FeeColumns/DoesNotRender_FeeOrPaidFields intermittently false-positive on random bUnit GUID substrings containing hex \"fee\" - documented flake, passed on isolated re-run, diff does not touch Events/ParticipationGrid/EventForm"
+      ]
     }
   ],
   "concerns": [
@@ -1363,6 +1390,10 @@
     },
     {
       "note": "T045 (DI check) verified only for the renderer ILocalizer ctor deps landed so far; it must be re-run once T041 adds IStringLocalizer<ValidationResource> to ~18 service ctors to confirm none needs a factory-lambda registration. T029 (repo-wide guard suite) is blocked until T041 lands - a residual-literal scan over Core/Exceptions + *ValidationService would hard-fail today.",
+      "step": "implement"
+    },
+    {
+      "note": "US2 T041 is HALF done: Finance services (AccountService, BankDepositService, BankReconciliationService incl. the {workspace.Difference:C} at line 153, ExpensePaymentService, FeeService, GeneralJournalService, IncomeEntryService, OpeningBalanceService, PaymentService) still throw hardcoded ValidationException/ReconciliationException/GLBalanceException messages. Then T045 (DI recheck - non-Finance needed NO MauiProgram change since all 8 are plain AddScoped<I,Impl>) and T029 (repo-wide guard suite) remain. T029 blocked until Finance done.",
       "step": "implement"
     }
   ]

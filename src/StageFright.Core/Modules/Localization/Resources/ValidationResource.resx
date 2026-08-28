@@ -152,4 +152,132 @@
     <value>Member must be at least {MinimumAge} years of age.</value>
     <comment>Validation error when a member's implied age is below the configured minimum. {MinimumAge} = configured minimum member age.</comment>
   </data>
+  <data name="Validation_Agm_AlreadyExistsForYear" xml:space="preserve">
+    <value>An AGM already exists for {Year}. Archive it before scheduling a replacement.</value>
+    <comment>Shown when scheduling an AGM for a year that already has one. {Year} = the calendar year that already has an AGM.</comment>
+  </data>
+  <data name="Validation_Agm_AlreadyRecorded" xml:space="preserve">
+    <value>This AGM has already been recorded.</value>
+    <comment>Shown when recording attendance/elections against an AGM that has already been recorded.</comment>
+  </data>
+  <data name="Validation_Agm_RecordBeforeMeetingDate" xml:space="preserve">
+    <value>Attendance and elections cannot be recorded before the AGM's meeting date.</value>
+    <comment>Shown when recording an AGM whose meeting date is in the future.</comment>
+  </data>
+  <data name="Validation_Agm_DuplicateCommitteeAssignment" xml:space="preserve">
+    <value>A member cannot hold more than one committee assignment from the same AGM.</value>
+    <comment>Shown when the same member is assigned to two committee slots from one AGM.</comment>
+  </data>
+  <data name="Validation_Agm_OutgoingPositionNoTerm" xml:space="preserve">
+    <value>The outgoing position record does not belong to a committee term.</value>
+    <comment>Data-integrity error when a special election's outgoing position record has no committee term.</comment>
+  </data>
+  <data name="Validation_Agm_TermAlreadyClosed" xml:space="preserve">
+    <value>This committee term has already been closed by a later AGM; a special election can no longer be recorded against it.</value>
+    <comment>Data-integrity error when a special election targets a committee term already closed by a later AGM.</comment>
+  </data>
+  <data name="Validation_Agm_IncomingMemberAlreadyOnCommittee" xml:space="preserve">
+    <value>The incoming member already holds an open committee slot in this term.</value>
+    <comment>Shown when a special-election incoming member already holds an open committee slot in the term.</comment>
+  </data>
+  <data name="Validation_Event_ParticipationBeforeEventDate" xml:space="preserve">
+    <value>Participation cannot be recorded before the event date.</value>
+    <comment>Shown when recording participation for an event whose date is in the future.</comment>
+  </data>
+  <data name="Validation_EventType_NameRequired" xml:space="preserve">
+    <value>Event type name is required.</value>
+    <comment>Shown when creating an event type with a blank name.</comment>
+  </data>
+  <data name="Validation_EventType_SystemDefaultCannotArchive" xml:space="preserve">
+    <value>System default event types cannot be archived.</value>
+    <comment>Shown when archiving a system-default event type.</comment>
+  </data>
+  <data name="Validation_EventType_ReferencedCannotArchive" xml:space="preserve">
+    <value>This event type cannot be archived because it is referenced by one or more events.</value>
+    <comment>Shown when archiving an event type still referenced by events.</comment>
+  </data>
+  <data name="Validation_OfficeHolderType_NameRequired" xml:space="preserve">
+    <value>Office-holder title name is required.</value>
+    <comment>Shown when adding or renaming a committee office-holder title with a blank name.</comment>
+  </data>
+  <data name="Validation_OfficeHolderType_BuiltInCannotRename" xml:space="preserve">
+    <value>Built-in office-holder titles cannot be renamed.</value>
+    <comment>Shown when renaming a built-in (President/Secretary/Treasurer) office-holder title.</comment>
+  </data>
+  <data name="Validation_OfficeHolderType_BuiltInCannotReorder" xml:space="preserve">
+    <value>Built-in office-holder titles cannot be reordered.</value>
+    <comment>Shown when reordering a built-in office-holder title.</comment>
+  </data>
+  <data name="Validation_OfficeHolderType_BuiltInCannotArchive" xml:space="preserve">
+    <value>Built-in office-holder titles cannot be archived.</value>
+    <comment>Shown when archiving a built-in office-holder title.</comment>
+  </data>
+  <data name="Validation_Attendance_BeforeRehearsalDate" xml:space="preserve">
+    <value>Attendance cannot be recorded before the rehearsal date.</value>
+    <comment>Shown when recording rehearsal attendance whose date is in the future.</comment>
+  </data>
+  <data name="Validation_Attendance_NoIncomeAccount" xml:space="preserve">
+    <value>No income account configured. Please set up accounts in Settings before recording attendance.</value>
+    <comment>Shown when recording rehearsal attendance before any non-system income account exists.</comment>
+  </data>
+  <data name="Validation_Settings_NotConfigured" xml:space="preserve">
+    <value>Application settings are not configured.</value>
+    <comment>Shown when a workflow needs the Settings singleton but first-run setup has not been completed.</comment>
+  </data>
+  <data name="Validation_Settings_TaxRateRequired" xml:space="preserve">
+    <value>A tax rate greater than zero is required when sales tax applies.</value>
+    <comment>Shown when sales tax is enabled but no positive tax rate is set (Settings save and first-run setup).</comment>
+  </data>
+  <data name="Validation_Settings_MinimumAgeNegative" xml:space="preserve">
+    <value>Minimum member age cannot be negative.</value>
+    <comment>Shown when saving Settings with a negative minimum member age.</comment>
+  </data>
+  <data name="Validation_Settings_MaxAgeRangeNegative" xml:space="preserve">
+    <value>Maximum age range cannot be negative.</value>
+    <comment>Shown when saving Settings with a negative maximum age range.</comment>
+  </data>
+  <data name="Validation_Settings_MinAgeExceedsMax" xml:space="preserve">
+    <value>Minimum member age cannot exceed the maximum age range.</value>
+    <comment>Shown when saving Settings with minimum member age above the maximum age range.</comment>
+  </data>
+  <data name="Validation_Settings_AuditRetentionRange" xml:space="preserve">
+    <value>Audit retention period must be between 1 and 7 years.</value>
+    <comment>Shown when the audit retention period is outside 1–7 years (Settings save and first-run setup).</comment>
+  </data>
+  <data name="Validation_Setup_AlreadyCompleted" xml:space="preserve">
+    <value>Setup has already been completed.</value>
+    <comment>Shown when first-run initialization is attempted after the Settings singleton already exists.</comment>
+  </data>
+  <data name="Validation_Setup_OrganisationNameRequired" xml:space="preserve">
+    <value>OrganizationName is required.</value>
+    <comment>Shown when first-run setup is submitted with a blank organisation name.</comment>
+  </data>
+  <data name="Validation_Setup_AnnualFeeNegative" xml:space="preserve">
+    <value>AnnualFee must be zero or greater.</value>
+    <comment>Shown when first-run setup is submitted with a negative annual fee.</comment>
+  </data>
+  <data name="Validation_Setup_AttendanceFeeNegative" xml:space="preserve">
+    <value>AttendanceFee must be zero or greater.</value>
+    <comment>Shown when first-run setup is submitted with a negative attendance fee.</comment>
+  </data>
+  <data name="Validation_Setup_MembershipRenewalMonthRange" xml:space="preserve">
+    <value>MembershipRenewalMonth must be between 1 and 12.</value>
+    <comment>Shown when first-run setup is submitted with a membership renewal month outside 1–12.</comment>
+  </data>
+  <data name="Validation_Backup_FileCorrupted" xml:space="preserve">
+    <value>Backup file is corrupted or not a StageFright backup.</value>
+    <comment>Shown when a selected backup file cannot be deserialised.</comment>
+  </data>
+  <data name="Validation_Backup_MissingSchemaVersion" xml:space="preserve">
+    <value>Backup file is missing a schema version.</value>
+    <comment>Shown when a backup file has no schema version recorded.</comment>
+  </data>
+  <data name="Validation_Backup_UnsupportedSchemaVersion" xml:space="preserve">
+    <value>This backup uses schema version {SchemaVersion}; this application supports major version {SupportedMajorVersion}. Please upgrade the application to restore this backup.</value>
+    <comment>Shown when a backup file's major schema version is not supported. {SchemaVersion} = the file's version; {SupportedMajorVersion} = the major version this build supports.</comment>
+  </data>
+  <data name="Validation_Backup_ImportIncomplete" xml:space="preserve">
+    <value>Import file incomplete: missing {EntityType}. Restore from complete backup.</value>
+    <comment>Shown when a backup file is missing an expected entity collection. {EntityType} = the missing collection name.</comment>
+  </data>
 </root>

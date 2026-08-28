@@ -314,7 +314,7 @@ public class BackupImportTests_Integration : IDisposable
         var uow = new UnitOfWork(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        return new BackupService(backupRepo, uow, auditService, NullLogger<BackupService>.Instance);
+        return new BackupService(backupRepo, uow, auditService, NullLogger<BackupService>.Instance, RealLocalizer.Instance);
     }
 
     private static string TempFile() =>

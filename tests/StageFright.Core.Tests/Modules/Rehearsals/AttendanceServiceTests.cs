@@ -99,7 +99,7 @@ public class AttendanceServiceTests : TestBase
 
     private AttendanceService CreateService() =>
         new(_rehearsalRepo, _attendanceRepo, _memberRepo, _feeRepo, _paymentRepo,
-            _glRepo, _accountRepo, _settingsRepo, _audit, _unitOfWork, _rehearsalService);
+            _glRepo, _accountRepo, _settingsRepo, _audit, _unitOfWork, _rehearsalService, RealLocalizer.Instance);
 
     // --- Attended + active + PaidAtCreation (default) ---
 

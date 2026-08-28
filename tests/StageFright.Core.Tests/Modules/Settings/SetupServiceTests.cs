@@ -31,7 +31,7 @@ public class SetupServiceTests : TestBase
 
     private SetupService CreateService() => new(
         _settingsRepo, _accountRepo, _eventTypeRepo, _officeHolderTypeService,
-        _accountService, _openingBalanceService, _audit);
+        _accountService, _openingBalanceService, _audit, RealLocalizer.Instance);
 
     // --- IsSetupCompleteAsync ---
 

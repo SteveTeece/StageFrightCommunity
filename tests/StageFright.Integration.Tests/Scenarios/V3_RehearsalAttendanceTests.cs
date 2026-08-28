@@ -445,7 +445,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         var unitOfWork = new UnitOfWork(_db);
         var rehearsalSvc = BuildRehearsalService();
         return new AttendanceService(rehearsalRepo, attendanceRepo, memberRepo, feeRepo, paymentRepo,
-            glRepo, accountRepo, settingsRepo, auditSvc, unitOfWork, rehearsalSvc);
+            glRepo, accountRepo, settingsRepo, auditSvc, unitOfWork, rehearsalSvc, RealLocalizer.Instance);
     }
 
     private async Task<Member> AddActiveMember(string name)

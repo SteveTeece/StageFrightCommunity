@@ -279,7 +279,7 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
         var uow = new UnitOfWork(_db);
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        return new BackupService(backupRepo, uow, auditSvc, NullLogger<BackupService>.Instance);
+        return new BackupService(backupRepo, uow, auditSvc, NullLogger<BackupService>.Instance, RealLocalizer.Instance);
     }
 
     private static Member SeedMember(string name, bool active, bool deleted = false)

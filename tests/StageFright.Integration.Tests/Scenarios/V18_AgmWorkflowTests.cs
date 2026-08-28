@@ -194,7 +194,7 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
     {
         var settingsRepo = new SettingsRepository(_db);
         var auditSvc = BuildAuditService();
-        var settingsSvc = new SettingsService(settingsRepo, auditSvc);
+        var settingsSvc = new SettingsService(settingsRepo, auditSvc, RealLocalizer.Instance);
 
         return new AgmService(
             new AgmRepository(_db),
@@ -203,7 +203,8 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
             new CommitteePositionRecordRepository(_db),
             settingsSvc,
             auditSvc,
-            new UnitOfWork(_db));
+            new UnitOfWork(_db),
+            RealLocalizer.Instance);
     }
 
     private async Task<Guid> GetBuiltInOfficeHolderTypeIdAsync(string name)

@@ -2,8 +2,10 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Events;
 using StageFright.Core.Modules.Finance;
+using StageFright.Core.Modules.Localization.Resources;
 using SettingsEntity = StageFright.Core.Entities.Settings;
 
 namespace StageFright.Core.Modules.Settings;
@@ -22,6 +24,7 @@ public class SetupService : ISetupService
     private readonly IAccountService _accountService;
     private readonly IOpeningBalanceService _openingBalanceService;
     private readonly IAuditTrailService _audit;
+    private readonly ILocalizer _localizer;
 
     public SetupService(
         ISettingsRepository settingsRepo,
@@ -30,7 +33,8 @@ public class SetupService : ISetupService
         ICommitteeOfficeHolderTypeService officeHolderTypeService,
         IAccountService accountService,
         IOpeningBalanceService openingBalanceService,
-        IAuditTrailService audit)
+        IAuditTrailService audit,
+        ILocalizer localizer)
     {
         _settingsRepo = settingsRepo;
         _accountRepo = accountRepo;
@@ -39,6 +43,7 @@ public class SetupService : ISetupService
         _accountService = accountService;
         _openingBalanceService = openingBalanceService;
         _audit = audit;
+        _localizer = localizer;
     }
 
     public async Task<bool> IsSetupCompleteAsync(CancellationToken ct = default)
@@ -51,7 +56,7 @@ public class SetupService : ISetupService
     {
         var existing = await _settingsRepo.GetAsync(ct);
         if (existing is not null)
-            throw new ValidationException("Setup has already been completed.", "Settings", nameof(InitializeAsync));
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Setup_AlreadyCompleted"), "Settings", nameof(InitializeAsync));
 
         Validate(request);
 
@@ -157,24 +162,24 @@ public class SetupService : ISetupService
         }
     }
 
-    private static void Validate(SetupRequest request)
+    private void Validate(SetupRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.OrganizationName))
-            throw new ValidationException("OrganizationName is required.", "Settings", nameof(InitializeAsync));
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Setup_OrganisationNameRequired"), "Settings", nameof(InitializeAsync));
 
         if (request.IsTaxApplicable && request.TaxRate is not (> 0))
-            throw new ValidationException("A tax rate greater than zero is required when sales tax applies.", "Settings", nameof(InitializeAsync));
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Settings_TaxRateRequired"), "Settings", nameof(InitializeAsync));
 
         if (request.AnnualFee < 0)
-            throw new ValidationException("AnnualFee must be zero or greater.", "Settings", nameof(InitializeAsync));
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Setup_AnnualFeeNegative"), "Settings", nameof(InitializeAsync));
 
         if (request.AttendanceFee < 0)
-            throw new ValidationException("AttendanceFee must be zero or greater.", "Settings", nameof(InitializeAsync));
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Setup_AttendanceFeeNegative"), "Settings", nameof(InitializeAsync));
 
         if (request.MembershipRenewalMonth < 1 || request.MembershipRenewalMonth > 12)
-            throw new ValidationException("MembershipRenewalMonth must be between 1 and 12.", "Settings", nameof(InitializeAsync));
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Setup_MembershipRenewalMonthRange"), "Settings", nameof(InitializeAsync));
 
         if (request.AuditRetentionYears < 1 || request.AuditRetentionYears > 7)
-            throw new ValidationException("Audit retention period must be between 1 and 7 years.", "Settings", nameof(InitializeAsync));
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Settings_AuditRetentionRange"), "Settings", nameof(InitializeAsync));
     }
 }

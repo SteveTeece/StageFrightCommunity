@@ -30,7 +30,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
-        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
+        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService, RealLocalizer.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
         var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
@@ -38,7 +38,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         var request = new SetupRequest("My Choir", 80m, 6m, 3, false, null, null, null, Theme.Dark);
         await svc.InitializeAsync(request, TestContext.Current.CancellationToken);
@@ -61,7 +61,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
-        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
+        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService, RealLocalizer.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
         var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
@@ -69,7 +69,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark), TestContext.Current.CancellationToken);
 
@@ -89,7 +89,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
-        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
+        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService, RealLocalizer.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
         var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
@@ -97,7 +97,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark), TestContext.Current.CancellationToken);
 
@@ -115,7 +115,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
-        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
+        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService, RealLocalizer.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
         var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
@@ -123,7 +123,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         Assert.False(await svc.IsSetupCompleteAsync(TestContext.Current.CancellationToken));
     }
@@ -138,7 +138,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
-        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
+        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService, RealLocalizer.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
         var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
@@ -146,7 +146,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark), TestContext.Current.CancellationToken);
 
@@ -164,7 +164,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(db);
-        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
+        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService, RealLocalizer.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
         var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
@@ -172,7 +172,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
-        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
+        var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         var request = new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark)
         {

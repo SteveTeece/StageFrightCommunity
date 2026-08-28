@@ -17,7 +17,7 @@ public class SettingsServiceTests : TestBase
     private readonly ISettingsRepository _settingsRepo = Substitute.For<ISettingsRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
 
-    private SettingsService CreateService() => new(_settingsRepo, _audit);
+    private SettingsService CreateService() => new(_settingsRepo, _audit, RealLocalizer.Instance);
 
     private static Settings ValidSettings() => new()
     {

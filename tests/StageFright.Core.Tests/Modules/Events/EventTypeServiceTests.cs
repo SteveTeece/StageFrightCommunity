@@ -15,7 +15,7 @@ public class EventTypeServiceTests : TestBase
     private readonly IEventTypeRepository _repo = Substitute.For<IEventTypeRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
 
-    private EventTypeService CreateService() => new(_repo, _audit);
+    private EventTypeService CreateService() => new(_repo, _audit, RealLocalizer.Instance);
 
     // --- GetAllAsync ---
 

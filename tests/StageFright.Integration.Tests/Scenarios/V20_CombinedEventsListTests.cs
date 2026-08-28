@@ -83,14 +83,14 @@ public sealed class V20_CombinedEventsListTests : IAsyncLifetime
         var memberRepo = new MemberRepository(_db);
         var auditSvc = BuildAuditService();
         var unitOfWork = new UnitOfWork(_db);
-        return new EventService(eventRepo, participationRepo, memberRepo, auditSvc, unitOfWork);
+        return new EventService(eventRepo, participationRepo, memberRepo, auditSvc, unitOfWork, RealLocalizer.Instance);
     }
 
     private AgmService BuildAgmService()
     {
         var settingsRepo = new SettingsRepository(_db);
         var auditSvc = BuildAuditService();
-        var settingsSvc = new SettingsService(settingsRepo, auditSvc);
+        var settingsSvc = new SettingsService(settingsRepo, auditSvc, RealLocalizer.Instance);
 
         return new AgmService(
             new AgmRepository(_db),
@@ -99,7 +99,8 @@ public sealed class V20_CombinedEventsListTests : IAsyncLifetime
             new CommitteePositionRecordRepository(_db),
             settingsSvc,
             auditSvc,
-            new UnitOfWork(_db));
+            new UnitOfWork(_db),
+            RealLocalizer.Instance);
     }
 
     private AuditTrailService BuildAuditService()

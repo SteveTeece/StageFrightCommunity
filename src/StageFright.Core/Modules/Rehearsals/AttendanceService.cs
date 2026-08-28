@@ -2,7 +2,9 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Rehearsals;
 
@@ -28,6 +30,7 @@ public class AttendanceService : IAttendanceService
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRehearsalService _rehearsalService;
+    private readonly ILocalizer _localizer;
 
     public AttendanceService(
         IRehearsalRepository rehearsalRepo,
@@ -40,7 +43,8 @@ public class AttendanceService : IAttendanceService
         ISettingsRepository settingsRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork,
-        IRehearsalService rehearsalService)
+        IRehearsalService rehearsalService,
+        ILocalizer localizer)
     {
         _rehearsalRepo = rehearsalRepo;
         _attendanceRepo = attendanceRepo;
@@ -53,6 +57,7 @@ public class AttendanceService : IAttendanceService
         _audit = audit;
         _unitOfWork = unitOfWork;
         _rehearsalService = rehearsalService;
+        _localizer = localizer;
     }
 
     public async Task<IReadOnlyList<AttendanceRecord>> GetByRehearsalAsync(Guid rehearsalId, CancellationToken ct = default)
@@ -75,17 +80,17 @@ public class AttendanceService : IAttendanceService
 
         if (rehearsal.Date.Date > DateTime.Today)
             throw new ValidationException(
-                "Attendance cannot be recorded before the rehearsal date.",
+                _localizer.Get<ValidationResource>("Validation_Attendance_BeforeRehearsalDate"),
                 "Rehearsal", nameof(RecordBatchAsync), rehearsalId);
 
         var settings = await _settingsRepo.GetAsync(ct)
-            ?? throw new ValidationException("Application settings are not configured.", "Settings", nameof(RecordBatchAsync));
+            ?? throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Settings_NotConfigured"), "Settings", nameof(RecordBatchAsync));
 
         // Resolve income account once for the whole batch
         var accounts = await _accountRepo.GetAllAsync(ct);
         var incomeAccount = accounts.FirstOrDefault(c => c.Type == AccountType.Income && !c.IsSystem)
             ?? throw new ValidationException(
-                "No income account configured. Please set up accounts in Settings before recording attendance.",
+                _localizer.Get<ValidationResource>("Validation_Attendance_NoIncomeAccount"),
                 "Account", nameof(RecordBatchAsync));
 
         // Per-fee-type tax treatment, stamped on each Fee at accrual. Tax is recognised
