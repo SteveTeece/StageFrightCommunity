@@ -659,7 +659,7 @@
       "summary": "US1 (Phase 3) done: navigation shell + Members module fully localized to en-AU resources (5 .resx, ~15 code files), MemberStatus/Theme via LocalizeEnum, fee amounts via MoneyFormatter; guard suite + FR-018 bUnit tests added; 1706 tests green. Phases 4-6 (US2/US3/Polish) not started."
     }
   },
-  "currentTask": "T032",
+  "currentTask": "T029",
   "task_summaries": {
     "T001": {
       "status": "DONE",
