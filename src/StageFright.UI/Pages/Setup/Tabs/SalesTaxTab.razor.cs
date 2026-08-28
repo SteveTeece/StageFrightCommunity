@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Setup.Tabs;
 
@@ -8,6 +10,8 @@ namespace StageFright.UI.Pages.Setup.Tabs;
 public partial class SalesTaxTab : ComponentBase
 {
     [Parameter, EditorRequired] public SetupFormModel Model { get; set; } = null!;
+
+    [Inject] private IStringLocalizer<SetupResource> L { get; set; } = null!;
 
     private void HandleTaxToggleChanged()
     {

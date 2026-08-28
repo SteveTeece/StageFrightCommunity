@@ -1,16 +1,19 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Settings;
 using StageFright.UI.Layout;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Setup;
 
 public partial class SetupWizard : ComponentBase
 {
     [Inject] private IServiceProvider ServiceProvider { get; set; } = null!;
+    [Inject] private IStringLocalizer<SetupResource> L { get; set; } = null!;
 
     [CascadingParameter] private ThemeProvider? ThemeProvider { get; set; }
 
@@ -162,7 +165,7 @@ public partial class SetupWizard : ComponentBase
     // coordinator must be able to tell something needs attention, even from the Review tab).
     private void HandleInvalidSubmit()
     {
-        _errorMessage = "Some required fields are incomplete — check every tab before finishing.";
+        _errorMessage = L["Setup_Error_InvalidSubmit"];
     }
 
     private async Task HandleValidSubmitAsync()
@@ -175,7 +178,7 @@ public partial class SetupWizard : ComponentBase
         // Finish leaves every queue untouched (Edge Cases), same as an EditContext failure.
         if (_queuedOpeningBalances.Count == 0 && !_seedWithTestData)
         {
-            _errorMessage = "Enter at least one opening balance, or select \"Load sample data\" on the Review tab, before finishing.";
+            _errorMessage = L["Setup_Error_NoOpeningBalance"];
             _submitting = false;
             return;
         }
@@ -228,7 +231,7 @@ public partial class SetupWizard : ComponentBase
         }
         catch
         {
-            _errorMessage = "An unexpected error occurred. Please try again.";
+            _errorMessage = L["Setup_Error_Unexpected"];
         }
         finally
         {

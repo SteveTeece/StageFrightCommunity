@@ -10,7 +10,7 @@ namespace StageFright.UI.Tests.Pages.Setup.Tabs;
 /// <summary>bUnit tests for ThemeSelectionTab (US6) — the Light/Dark theme dropdown,
 /// split out of GeneralAppearanceTab so it can be rendered lower in the Organisation
 /// Settings tab, directly above the Sales Tax section.</summary>
-public class ThemeSelectionTabTests : BunitContext
+public class ThemeSelectionTabTests : LocalizedTestContext
 {
     public ThemeSelectionTabTests()
     {

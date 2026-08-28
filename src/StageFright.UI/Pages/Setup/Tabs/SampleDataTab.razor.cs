@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Setup.Tabs;
 
@@ -12,6 +14,8 @@ public partial class SampleDataTab : ComponentBase
     [Parameter] public bool DebugSeederAvailable { get; set; }
     [Parameter] public bool SeedWithTestData { get; set; }
     [Parameter] public EventCallback<bool> SeedWithTestDataChanged { get; set; }
+
+    [Inject] private IStringLocalizer<SetupResource> L { get; set; } = null!;
 
     private async Task OnSeedWithTestDataChangedAsync(ChangeEventArgs e)
     {

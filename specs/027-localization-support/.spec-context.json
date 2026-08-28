@@ -338,6 +338,14 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-28T04:37:32.037Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T04:46:34.730Z"
     }
   ],
   "telemetryInstanceId": "bd71e5f2-b0ce-45df-9da3-06f68fa7a241",
@@ -691,7 +699,7 @@
       "summary": "US1 (Phase 3) done: navigation shell + Members module fully localized to en-AU resources (5 .resx, ~15 code files), MemberStatus/Theme via LocalizeEnum, fee amounts via MoneyFormatter; guard suite + FR-018 bUnit tests added; 1706 tests green. Phases 4-6 (US2/US3/Polish) not started."
     }
   },
-  "currentTask": "T033",
+  "currentTask": "T035",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -1001,6 +1009,19 @@
         "src/StageFright.UI/Pages/Events/RecordSpecialElection.razor",
         "src/StageFright.UI/Pages/Events/AgmAttendanceGrid.razor",
         "src/StageFright.UI/Pages/Events/AgmAttendanceReportPrinter.cs"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "Localized SettingsPage + General/SalesTax/Committee/EventTypes/BackupRestore tabs to SettingsResource.resx/SharedResource; Theme+TaxCode via LocalizeEnum, audit-retention plural, fee adornments fixed to $; language picker row left for US3; 5 Settings bUnit test classes to LocalizedTestContext; full suite green",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SettingsResource.resx",
+        "src/StageFright.UI/Pages/Settings/SettingsPage.razor",
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor",
+        "src/StageFright.UI/Pages/Settings/TaxSettingsTab.razor",
+        "src/StageFright.UI/Pages/Settings/CommitteeSettingsTab.razor",
+        "src/StageFright.UI/Pages/Settings/EventTypesTab.razor",
+        "src/StageFright.UI/Pages/Settings/BackupRestoreTab.razor"
       ]
     }
   },

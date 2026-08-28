@@ -1,5 +1,5 @@
 <div class="mb-3">
-    <label for="orgName" class="form-label">Organisation Name <span aria-hidden="true" class="text-danger">*</span></label>
-    <InputText id="orgName" class="form-control form-control-sm" @bind-Value="Model.OrganizationName" placeholder="e.g. Springfield Choral Society" />
+    <label for="orgName" class="form-label">@L["Setup_General_OrgNameLabel"] <span aria-hidden="true" class="text-danger">*</span></label>
+    <InputText id="orgName" class="form-control form-control-sm" @bind-Value="Model.OrganizationName" placeholder="@L["Setup_General_OrgNamePlaceholder"]" />
     <ValidationMessage For="() => Model.OrganizationName" class="text-danger small" />
 </div>
