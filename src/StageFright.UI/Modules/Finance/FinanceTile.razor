@@ -2,18 +2,18 @@
 
 @if (_loading)
 {
-    <span class="text-muted small">Loading...</span>
+    <span class="text-muted small">@Shared["Shared_Common_Loading"]</span>
 }
 else if (_error || _summary is null)
 {
-    <span class="text-danger small">Unable to load</span>
+    <span class="text-danger small">@Shared["Shared_Tile_LoadError"]</span>
 }
 else
 {
-    <div class="tile-balance">@_summary.CurrentBalance.ToString("C")</div>
-    <div class="tile-stat-label">Current Balance</div>
+    <div class="tile-balance">@MoneyFormatter.Format(_summary.CurrentBalance)</div>
+    <div class="tile-stat-label">@L["Finance_Tile_CurrentBalanceLabel"]</div>
     <div class="tile-note tile-month-flow">
-        <span class="text-success">@_monthName income +@_summary.MonthIncome.ToString("C")</span>
-        <span class="text-danger">expenses −@_summary.MonthExpenses.ToString("C")</span>
+        <span class="text-success">@MonthIncomeText()</span>
+        <span class="text-danger">@MonthExpensesText()</span>
     </div>
 }

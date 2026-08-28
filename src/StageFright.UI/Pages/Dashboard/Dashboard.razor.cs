@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Modules.Dashboard;
 using StageFright.Plugins.Contracts;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Dashboard;
 
@@ -9,6 +11,7 @@ public partial class Dashboard
 {
     [Inject] private IDashboardService DashboardService { get; set; } = null!;
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] private IStringLocalizer<DashboardResource> L { get; set; } = null!;
 
     private IReadOnlyList<IDashboardTileProvider> _coreTiles = [];
     private IReadOnlyList<IDashboardTileProvider> _extensionTiles = [];

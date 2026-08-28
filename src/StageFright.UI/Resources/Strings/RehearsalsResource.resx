@@ -316,4 +316,48 @@
     <value>Rehearsal not found.</value>
     <comment>Shown when the requested rehearsal id does not exist.</comment>
   </data>
+  <data name="Rehearsals_Tile_Title" xml:space="preserve">
+    <value>Rehearsals</value>
+    <comment>Dashboard tile heading for the Rehearsals module.</comment>
+  </data>
+  <data name="Rehearsals_Tile_ActionText" xml:space="preserve">
+    <value>View Rehearsals</value>
+    <comment>Action link on the Rehearsals dashboard tile.</comment>
+  </data>
+  <data name="Rehearsals_Tile_UpcomingLabel" xml:space="preserve">
+    <value>Upcoming</value>
+    <comment>Rehearsals tile stat label — count of upcoming rehearsals.</comment>
+  </data>
+  <data name="Rehearsals_Tile_NextLabel" xml:space="preserve">
+    <value>Next</value>
+    <comment>Rehearsals tile stat label — date of the next rehearsal.</comment>
+  </data>
+  <data name="Rehearsals_Tile_LastAttendanceLabel" xml:space="preserve">
+    <value>Last attendance</value>
+    <comment>Rehearsals tile note label preceding the most recent recorded attendance rate.</comment>
+  </data>
+  <data name="Rehearsals_Tile_AttendanceDetail" xml:space="preserve">
+    <value>{Attended} of {Total} ({Rate}%)</value>
+    <comment>Rehearsals tile — recorded attendance. {Attended} = members who attended, {Total} = attendance records, {Rate} = rate to whole number.</comment>
+  </data>
+  <data name="Rehearsals_Tile_AttendanceRate" xml:space="preserve">
+    <value>{Rate}%</value>
+    <comment>Rehearsals tile — recorded attendance rate only. {Rate} = rate to whole number.</comment>
+  </data>
+  <data name="Rehearsals_Tile_NoAttendance" xml:space="preserve">
+    <value>No attendance recorded yet</value>
+    <comment>Rehearsals tile note shown when no attendance has been recorded.</comment>
+  </data>
+  <data name="Rehearsals_TrendTile_Title" xml:space="preserve">
+    <value>Attendance trend</value>
+    <comment>Dashboard tile heading for the six-month attendance-trend chart.</comment>
+  </data>
+  <data name="Rehearsals_TrendTile_Empty" xml:space="preserve">
+    <value>No attendance recorded in the last 6 months</value>
+    <comment>Attendance-trend tile message shown when there is no data to chart.</comment>
+  </data>
+  <data name="Rehearsals_TrendTile_Series" xml:space="preserve">
+    <value>Attendance %</value>
+    <comment>Attendance-trend chart legend label for the monthly average attendance-rate line.</comment>
+  </data>
 </root>

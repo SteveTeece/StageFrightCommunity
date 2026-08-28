@@ -15,7 +15,7 @@ namespace StageFright.UI.Tests.Pages.Dashboard;
 /// loading state, error tile display, and Extensions section visibility.
 /// TileRenderer is stubbed to isolate Dashboard structure from async tile loading.
 /// </summary>
-public class DashboardTests : BunitContext
+public class DashboardTests : LocalizedTestContext
 {
     private readonly IDashboardService _dashboardService = Substitute.For<IDashboardService>();
 

@@ -2,26 +2,26 @@
 
 @if (_loading)
 {
-    <span class="text-muted small">Loading...</span>
+    <span class="text-muted small">@Shared["Shared_Common_Loading"]</span>
 }
 else if (_error)
 {
-    <span class="text-danger small">Unable to load</span>
+    <span class="text-danger small">@Shared["Shared_Tile_LoadError"]</span>
 }
 else
 {
     <div class="tile-stats tile-stats-lg">
         <div>
             <div class="tile-stat-value">@_memberCount</div>
-            <div class="tile-stat-label">Members Owing</div>
+            <div class="tile-stat-label">@L["Finance_OutstandingTile_MembersOwingLabel"]</div>
         </div>
         <div>
-            <div class="tile-stat-value dim">@_attendanceOutstanding.ToString("C")</div>
-            <div class="tile-stat-label">Attendance</div>
+            <div class="tile-stat-value dim">@MoneyFormatter.Format(_attendanceOutstanding)</div>
+            <div class="tile-stat-label">@L["Finance_OutstandingTile_AttendanceLabel"]</div>
         </div>
         <div>
-            <div class="tile-stat-value dim">@_annualOutstanding.ToString("C")</div>
-            <div class="tile-stat-label">Annual</div>
+            <div class="tile-stat-value dim">@MoneyFormatter.Format(_annualOutstanding)</div>
+            <div class="tile-stat-label">@L["Finance_OutstandingTile_AnnualLabel"]</div>
         </div>
     </div>
     @if (_hasChartData)
@@ -30,6 +30,6 @@ else
     }
     else
     {
-        <div class="tile-note">No outstanding balances this year</div>
+        <div class="tile-note">@L["Finance_OutstandingTile_Empty"]</div>
     }
 }

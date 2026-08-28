@@ -148,4 +148,8 @@
     <value>An unexpected error occurred. Please try again.</value>
     <comment>Generic fallback message shown when an operation fails unexpectedly.</comment>
   </data>
+  <data name="Shared_Tile_LoadError" xml:space="preserve">
+    <value>Unable to load</value>
+    <comment>Generic dashboard-tile message shown when the tile's data fails to load.</comment>
+  </data>
 </root>

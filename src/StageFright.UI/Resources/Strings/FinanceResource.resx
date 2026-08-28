@@ -116,4 +116,76 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Finance_Tile_Title" xml:space="preserve">
+    <value>Finance</value>
+    <comment>Dashboard tile heading for the Finance module.</comment>
+  </data>
+  <data name="Finance_Tile_ActionText" xml:space="preserve">
+    <value>Open Finance</value>
+    <comment>Action link on the Finance dashboard tile.</comment>
+  </data>
+  <data name="Finance_Tile_CurrentBalanceLabel" xml:space="preserve">
+    <value>Current Balance</value>
+    <comment>Finance tile label under the current organisation balance.</comment>
+  </data>
+  <data name="Finance_Tile_MonthIncome" xml:space="preserve">
+    <value>{Month} income +{Amount}</value>
+    <comment>Finance tile month-to-date income. {Month} = current month name, {Amount} = income formatted as AUD.</comment>
+  </data>
+  <data name="Finance_Tile_MonthExpenses" xml:space="preserve">
+    <value>expenses −{Amount}</value>
+    <comment>Finance tile month-to-date expenses. {Amount} = expenses formatted as AUD. The leading "−" is a minus sign.</comment>
+  </data>
+  <data name="Finance_CashFlowTile_Title" xml:space="preserve">
+    <value>Cash flow · 6 months</value>
+    <comment>Dashboard tile heading for the six-month cash-flow chart.</comment>
+  </data>
+  <data name="Finance_CashFlowTile_Empty" xml:space="preserve">
+    <value>No transactions in the last 6 months</value>
+    <comment>Cash-flow tile message shown when there are no transactions to chart.</comment>
+  </data>
+  <data name="Finance_CashFlowTile_IncomeSeries" xml:space="preserve">
+    <value>Income</value>
+    <comment>Cash-flow chart legend label for the monthly income bars.</comment>
+  </data>
+  <data name="Finance_CashFlowTile_ExpensesSeries" xml:space="preserve">
+    <value>Expenses</value>
+    <comment>Cash-flow chart legend label for the monthly expense bars.</comment>
+  </data>
+  <data name="Finance_OutstandingTile_Title" xml:space="preserve">
+    <value>Outstanding Balances</value>
+    <comment>Dashboard tile heading for outstanding member fee balances.</comment>
+  </data>
+  <data name="Finance_OutstandingTile_ActionText" xml:space="preserve">
+    <value>View Members</value>
+    <comment>Action link on the Outstanding Balances dashboard tile.</comment>
+  </data>
+  <data name="Finance_OutstandingTile_MembersOwingLabel" xml:space="preserve">
+    <value>Members Owing</value>
+    <comment>Outstanding Balances tile stat label — count of members with a balance owing.</comment>
+  </data>
+  <data name="Finance_OutstandingTile_AttendanceLabel" xml:space="preserve">
+    <value>Attendance</value>
+    <comment>Outstanding Balances tile stat label — outstanding attendance fees total.</comment>
+  </data>
+  <data name="Finance_OutstandingTile_AnnualLabel" xml:space="preserve">
+    <value>Annual</value>
+    <comment>Outstanding Balances tile stat label — outstanding annual fees total.</comment>
+  </data>
+  <data name="Finance_OutstandingTile_Empty" xml:space="preserve">
+    <value>No outstanding balances this year</value>
+    <comment>Outstanding Balances tile message shown when there is no trend data to chart.</comment>
+  </data>
+  <data name="Finance_OutstandingTile_TotalOwedSeries" xml:space="preserve">
+    <value>Total Owed</value>
+    <comment>Outstanding Balances chart legend label for the combined total owed line.</comment>
+  </data>
+  <data name="Finance_OutstandingTile_AttendanceSeries" xml:space="preserve">
+    <value>Attendance</value>
+    <comment>Outstanding Balances chart legend label for the outstanding attendance fees line.</comment>
+  </data>
+  <data name="Finance_OutstandingTile_AnnualSeries" xml:space="preserve">
+    <value>Annual</value>
+    <comment>Outstanding Balances chart legend label for the outstanding annual fees line.</comment>
+  </data>
 </root>

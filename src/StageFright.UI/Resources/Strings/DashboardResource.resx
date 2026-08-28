@@ -116,4 +116,24 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Dashboard_Page_Title" xml:space="preserve">
+    <value>Dashboard — StageFright Community</value>
+    <comment>Browser tab title for the Dashboard page.</comment>
+  </data>
+  <data name="Dashboard_LoadingText" xml:space="preserve">
+    <value>Loading dashboard…</value>
+    <comment>Status text shown while the dashboard tiles load.</comment>
+  </data>
+  <data name="Dashboard_Heading" xml:space="preserve">
+    <value>Dashboard</value>
+    <comment>Page heading on the Dashboard.</comment>
+  </data>
+  <data name="Dashboard_CoreMetricsHeading" xml:space="preserve">
+    <value>Core Metrics</value>
+    <comment>Heading (and matching aria-label) for the section holding the built-in dashboard tiles.</comment>
+  </data>
+  <data name="Dashboard_ExtensionsHeading" xml:space="preserve">
+    <value>Extensions</value>
+    <comment>Heading (and matching aria-label) for the section holding plugin-contributed dashboard tiles.</comment>
+  </data>
 </root>

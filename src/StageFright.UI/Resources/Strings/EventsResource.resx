@@ -116,4 +116,36 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Events_Tile_Title" xml:space="preserve">
+    <value>Events</value>
+    <comment>Dashboard tile heading for the Events module.</comment>
+  </data>
+  <data name="Events_Tile_ActionText" xml:space="preserve">
+    <value>View Events</value>
+    <comment>Action link on the Events dashboard tile.</comment>
+  </data>
+  <data name="Events_Tile_UpcomingLabel" xml:space="preserve">
+    <value>Upcoming</value>
+    <comment>Events tile stat label — count of upcoming events.</comment>
+  </data>
+  <data name="Events_Tile_NextLabel" xml:space="preserve">
+    <value>Next</value>
+    <comment>Events tile stat label — date of the next event.</comment>
+  </data>
+  <data name="Events_Tile_LastParticipationLabel" xml:space="preserve">
+    <value>Last participation</value>
+    <comment>Events tile note label preceding the most recent recorded participation rate.</comment>
+  </data>
+  <data name="Events_Tile_ParticipationDetail" xml:space="preserve">
+    <value>{Participated} of {Total} ({Rate}%)</value>
+    <comment>Events tile — recorded participation. {Participated} = members who participated, {Total} = participation records, {Rate} = rate to whole number.</comment>
+  </data>
+  <data name="Events_Tile_ParticipationRate" xml:space="preserve">
+    <value>{Rate}%</value>
+    <comment>Events tile — recorded participation rate only. {Rate} = rate to whole number.</comment>
+  </data>
+  <data name="Events_Tile_NoParticipation" xml:space="preserve">
+    <value>No participation recorded yet</value>
+    <comment>Events tile note shown when no participation has been recorded.</comment>
+  </data>
 </root>

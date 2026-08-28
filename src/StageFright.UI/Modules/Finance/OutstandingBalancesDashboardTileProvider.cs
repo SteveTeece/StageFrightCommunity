@@ -1,4 +1,6 @@
+using Microsoft.Extensions.Localization;
 using StageFright.Plugins.Contracts;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Modules.Finance;
 
@@ -15,12 +17,19 @@ namespace StageFright.UI.Modules.Finance;
 /// </summary>
 public class OutstandingBalancesDashboardTileProvider : IDashboardTileProvider
 {
+    private readonly IStringLocalizer<FinanceResource> _localizer;
+
+    public OutstandingBalancesDashboardTileProvider(IStringLocalizer<FinanceResource> localizer)
+    {
+        _localizer = localizer;
+    }
+
     public string TileId => "finance-outstanding-balances";
-    public string Title => "Outstanding Balances";
+    public string Title => _localizer["Finance_OutstandingTile_Title"];
     public string ModuleName => "Finance";
     public int DisplayOrder => 45;
     public string? NavigateRoute => "/finance?tab=outstanding";
-    public string? ActionText => "View Members";
+    public string? ActionText => _localizer["Finance_OutstandingTile_ActionText"];
     public Type TileComponentType => typeof(OutstandingBalancesTile);
     public DashboardTileSize TileSize => DashboardTileSize.TwoByTwo;
 

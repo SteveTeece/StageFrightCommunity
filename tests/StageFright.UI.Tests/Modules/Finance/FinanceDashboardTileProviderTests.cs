@@ -1,11 +1,12 @@
 using StageFright.UI.Modules.Finance;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Tests.Modules.Finance;
 
 /// <summary>Unit tests for FinanceDashboardTileProvider metadata and TileData.</summary>
 public class FinanceDashboardTileProviderTests
 {
-    private readonly FinanceDashboardTileProvider _provider = new();
+    private readonly FinanceDashboardTileProvider _provider = new(RealStringLocalizer.For<FinanceResource>());
 
     [Fact]
     public void Should_ExposeFinanceTileMetadata_When_Constructed()
