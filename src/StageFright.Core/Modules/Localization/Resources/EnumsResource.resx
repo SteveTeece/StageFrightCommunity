@@ -132,4 +132,112 @@
     <value>Dark</value>
     <comment>Theme.Dark display text.</comment>
   </data>
+  <data name="Enum_FeeType_Annual" xml:space="preserve">
+    <value>Annual</value>
+    <comment>FeeType enum — Annual membership fee.</comment>
+  </data>
+  <data name="Enum_FeeType_Attendance" xml:space="preserve">
+    <value>Attendance</value>
+    <comment>FeeType enum — per-rehearsal attendance fee.</comment>
+  </data>
+  <data name="Enum_FeeType_Other" xml:space="preserve">
+    <value>Other</value>
+    <comment>FeeType enum — other / ad-hoc fee.</comment>
+  </data>
+  <data name="Enum_PaymentMethod_Cash" xml:space="preserve">
+    <value>Cash</value>
+    <comment>PaymentMethod enum — cash.</comment>
+  </data>
+  <data name="Enum_PaymentMethod_Check" xml:space="preserve">
+    <value>Cheque</value>
+    <comment>PaymentMethod enum — cheque payment (enum member name is "Check").</comment>
+  </data>
+  <data name="Enum_PaymentMethod_Card" xml:space="preserve">
+    <value>Card</value>
+    <comment>PaymentMethod enum — debit/credit card.</comment>
+  </data>
+  <data name="Enum_PaymentMethod_ElectronicTransfer" xml:space="preserve">
+    <value>Electronic Transfer</value>
+    <comment>PaymentMethod enum — electronic bank transfer.</comment>
+  </data>
+  <data name="Enum_PaymentMethod_Other" xml:space="preserve">
+    <value>Other</value>
+    <comment>PaymentMethod enum — other method.</comment>
+  </data>
+  <data name="Enum_PaymentType_Annual" xml:space="preserve">
+    <value>Annual</value>
+    <comment>PaymentType enum — payment against an annual fee.</comment>
+  </data>
+  <data name="Enum_PaymentType_Attendance" xml:space="preserve">
+    <value>Attendance</value>
+    <comment>PaymentType enum — payment against an attendance fee.</comment>
+  </data>
+  <data name="Enum_PaymentType_Other" xml:space="preserve">
+    <value>Other</value>
+    <comment>PaymentType enum — payment against an other/ad-hoc fee.</comment>
+  </data>
+  <data name="Enum_AccountType_Income" xml:space="preserve">
+    <value>Income</value>
+    <comment>AccountType enum — income account.</comment>
+  </data>
+  <data name="Enum_AccountType_Expense" xml:space="preserve">
+    <value>Expense</value>
+    <comment>AccountType enum — expense account.</comment>
+  </data>
+  <data name="Enum_AccountType_Asset" xml:space="preserve">
+    <value>Asset</value>
+    <comment>AccountType enum — asset account.</comment>
+  </data>
+  <data name="Enum_AccountType_Liability" xml:space="preserve">
+    <value>Liability</value>
+    <comment>AccountType enum — liability account.</comment>
+  </data>
+  <data name="Enum_AccountType_Equity" xml:space="preserve">
+    <value>Equity</value>
+    <comment>AccountType enum — equity account.</comment>
+  </data>
+  <data name="Enum_TaxCode_Taxable" xml:space="preserve">
+    <value>Taxable</value>
+    <comment>TaxCode enum — taxable supply.</comment>
+  </data>
+  <data name="Enum_TaxCode_TaxExempt" xml:space="preserve">
+    <value>Tax-exempt</value>
+    <comment>TaxCode enum — tax-exempt supply.</comment>
+  </data>
+  <data name="Enum_TaxCode_Excluded" xml:space="preserve">
+    <value>Excluded</value>
+    <comment>TaxCode enum — excluded from tax reporting.</comment>
+  </data>
+  <data name="Enum_ReconciliationStatus_Draft" xml:space="preserve">
+    <value>Draft</value>
+    <comment>ReconciliationStatus enum — draft (in progress).</comment>
+  </data>
+  <data name="Enum_ReconciliationStatus_Finalised" xml:space="preserve">
+    <value>Finalised</value>
+    <comment>ReconciliationStatus enum — finalised (locked).</comment>
+  </data>
+  <data name="Enum_JournalEntryType_Income" xml:space="preserve">
+    <value>Income</value>
+    <comment>JournalEntryType enum — income receipt.</comment>
+  </data>
+  <data name="Enum_JournalEntryType_ExpensePayment" xml:space="preserve">
+    <value>Expense Payment</value>
+    <comment>JournalEntryType enum — expense payment.</comment>
+  </data>
+  <data name="Enum_JournalEntryType_Transfer" xml:space="preserve">
+    <value>Transfer</value>
+    <comment>JournalEntryType enum — inter-account transfer.</comment>
+  </data>
+  <data name="Enum_JournalEntryType_BankDeposit" xml:space="preserve">
+    <value>Bank Deposit</value>
+    <comment>JournalEntryType enum — bank deposit.</comment>
+  </data>
+  <data name="Enum_JournalEntryType_GeneralJournal" xml:space="preserve">
+    <value>General Journal</value>
+    <comment>JournalEntryType enum — general journal entry.</comment>
+  </data>
+  <data name="Enum_JournalEntryType_OpeningBalance" xml:space="preserve">
+    <value>Opening Balance</value>
+    <comment>JournalEntryType enum — opening balance entry.</comment>
+  </data>
 </root>

@@ -156,4 +156,88 @@
     <value>Switch to light mode</value>
     <comment>aria-label on the theme switch while the dark theme is active.</comment>
   </data>
+  <data name="Nav_Dashboard_Title" xml:space="preserve">
+    <value>Dashboard</value>
+    <comment>Navigation label for the Dashboard.</comment>
+  </data>
+  <data name="Nav_Dashboard_ShortLabel" xml:space="preserve">
+    <value>HOME</value>
+    <comment>Collapsed nav-rail abbreviation for the Dashboard.</comment>
+  </data>
+  <data name="Nav_Rehearsals_Title" xml:space="preserve">
+    <value>Rehearsals</value>
+    <comment>Navigation label for the Rehearsals section.</comment>
+  </data>
+  <data name="Nav_Rehearsals_ShortLabel" xml:space="preserve">
+    <value>REH</value>
+    <comment>Collapsed nav-rail abbreviation for Rehearsals.</comment>
+  </data>
+  <data name="Nav_Events_Title" xml:space="preserve">
+    <value>Events</value>
+    <comment>Navigation label for the Events section.</comment>
+  </data>
+  <data name="Nav_Events_ShortLabel" xml:space="preserve">
+    <value>EVNT</value>
+    <comment>Collapsed nav-rail abbreviation for Events.</comment>
+  </data>
+  <data name="Nav_Events_AllEvents" xml:space="preserve">
+    <value>All Events</value>
+    <comment>Events sub-menu item — the full events list.</comment>
+  </data>
+  <data name="Nav_Events_ScheduleAgm" xml:space="preserve">
+    <value>Schedule AGM</value>
+    <comment>Events sub-menu item — schedule an Annual General Meeting.</comment>
+  </data>
+  <data name="Nav_Events_Agms" xml:space="preserve">
+    <value>AGMs</value>
+    <comment>Events sub-menu item — list of Annual General Meetings.</comment>
+  </data>
+  <data name="Nav_Finance_Title" xml:space="preserve">
+    <value>Finance</value>
+    <comment>Navigation label for the Finance section.</comment>
+  </data>
+  <data name="Nav_Finance_ShortLabel" xml:space="preserve">
+    <value>FIN</value>
+    <comment>Collapsed nav-rail abbreviation for Finance.</comment>
+  </data>
+  <data name="Nav_Finance_Overview" xml:space="preserve">
+    <value>Overview</value>
+    <comment>Finance sub-menu item — the Finance overview page.</comment>
+  </data>
+  <data name="Nav_Finance_ChartOfAccounts" xml:space="preserve">
+    <value>Chart of Accounts</value>
+    <comment>Finance sub-menu item — the chart of accounts.</comment>
+  </data>
+  <data name="Nav_Finance_RecordBankDeposit" xml:space="preserve">
+    <value>Record Bank Deposit</value>
+    <comment>Finance sub-menu item — record a bank deposit.</comment>
+  </data>
+  <data name="Nav_Finance_JournalEntries" xml:space="preserve">
+    <value>Journal Entries</value>
+    <comment>Finance sub-menu item — general journal entries.</comment>
+  </data>
+  <data name="Nav_Finance_Reconciliation" xml:space="preserve">
+    <value>Reconciliation</value>
+    <comment>Finance sub-menu item — bank reconciliation.</comment>
+  </data>
+  <data name="Nav_Finance_OpeningBalances" xml:space="preserve">
+    <value>Opening Balances</value>
+    <comment>Finance sub-menu item — opening balances.</comment>
+  </data>
+  <data name="Nav_Reports_Title" xml:space="preserve">
+    <value>Reports</value>
+    <comment>Navigation label for the Reports section.</comment>
+  </data>
+  <data name="Nav_Reports_ShortLabel" xml:space="preserve">
+    <value>RPT</value>
+    <comment>Collapsed nav-rail abbreviation for Reports.</comment>
+  </data>
+  <data name="Nav_Settings_Title" xml:space="preserve">
+    <value>Settings</value>
+    <comment>Navigation label for Settings.</comment>
+  </data>
+  <data name="Nav_Settings_ShortLabel" xml:space="preserve">
+    <value>SET</value>
+    <comment>Collapsed nav-rail abbreviation for Settings.</comment>
+  </data>
 </root>

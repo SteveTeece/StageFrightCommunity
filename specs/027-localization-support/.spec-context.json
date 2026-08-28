@@ -306,6 +306,14 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-28T02:29:22.822Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T03:58:39.198Z"
     }
   ],
   "telemetryInstanceId": "bd71e5f2-b0ce-45df-9da3-06f68fa7a241",
@@ -659,7 +667,7 @@
       "summary": "US1 (Phase 3) done: navigation shell + Members module fully localized to en-AU resources (5 .resx, ~15 code files), MemberStatus/Theme via LocalizeEnum, fee amounts via MoneyFormatter; guard suite + FR-018 bUnit tests added; 1706 tests green. Phases 4-6 (US2/US3/Polish) not started."
     }
   },
-  "currentTask": "T029",
+  "currentTask": "T031",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -906,6 +914,18 @@
         "tests/StageFright.UI.Tests/Localization/RehearsalsLocalizedRenderTests.cs",
         "tests/StageFright.UI.Tests/Pages/Rehearsals/RehearsalListTests.cs",
         "tests/StageFright.UI.Tests/Pages/Rehearsals/AttendanceGridTests.cs"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "Localized Dashboard page + all 6 remaining dashboard tiles + tile providers to Dashboard/Events/Finance/Rehearsals/Shared resources; chart legend labels localized; tile amounts to MoneyFormatter; test classes flipped to LocalizedTestContext",
+      "files": [
+        "src/StageFright.UI/Pages/Dashboard/Dashboard.razor",
+        "src/StageFright.UI/Pages/Dashboard/Dashboard.razor.cs",
+        "src/StageFright.UI/Resources/Strings/DashboardResource.resx",
+        "src/StageFright.UI/Modules/Events/EventsTile.razor.cs",
+        "src/StageFright.UI/Modules/Finance/FinanceTile.razor.cs",
+        "src/StageFright.UI/Modules/Rehearsals/RehearsalsTile.razor.cs"
       ]
     }
   },
