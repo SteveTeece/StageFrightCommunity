@@ -398,7 +398,7 @@ public class CommitteeReportProviderTests
         SetupCommittee(carol.Id, MakeCommittee(carol.Id, 2026, ""));
 
         var report = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
-        var bytes = new PdfReportRenderer().Render(report);
+        var bytes = new PdfReportRenderer(RealLocalizer.Instance).Render(report);
 
         Assert.NotNull(bytes);
         Assert.NotEmpty(bytes);

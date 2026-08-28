@@ -530,4 +530,84 @@
   <data name="Reports_TaxSummary_NetTaxRefundable" xml:space="preserve">
     <value>Net tax refundable</value>
   </data>
+
+  <!-- ============ PDF renderer chrome (shared page furniture, T040) ============ -->
+  <data name="Reports_Render_GeneratedAt" xml:space="preserve">
+    <value>Generated: {DateTime} UTC</value>
+    <comment>{DateTime} generation timestamp already formatted 'd MMMM yyyy HH:mm'.</comment>
+  </data>
+  <data name="Reports_Render_PagePrefix" xml:space="preserve">
+    <value>Page </value>
+    <comment>PDF footer — precedes the current page number; the trailing space is significant.</comment>
+  </data>
+  <data name="Reports_Render_PageSeparator" xml:space="preserve">
+    <value> of </value>
+    <comment>PDF footer — sits between the current page number and the total page count; the surrounding spaces are significant.</comment>
+  </data>
+
+  <!-- ============ Attendance Roll (print-only sheet, T040) ============ -->
+  <data name="Reports_AttendanceRoll_Title" xml:space="preserve">
+    <value>Attendance Roll</value>
+  </data>
+  <data name="Reports_AttendanceRoll_DateLine" xml:space="preserve">
+    <value>Rehearsal: {Date} at {Time}</value>
+    <comment>{Date} rehearsal date formatted 'd MMMM yyyy', {Time} rehearsal start time formatted 'hh\:mm'.</comment>
+  </data>
+  <data name="Reports_AttendanceRoll_NameColumn" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Reports_AttendanceRoll_PresentColumn" xml:space="preserve">
+    <value>Present</value>
+  </data>
+  <data name="Reports_AttendanceRoll_FeePaidColumn" xml:space="preserve">
+    <value>Pd</value>
+    <comment>Short column heading for the rehearsal-fee-paid checkbox — an abbreviation of "Paid", not a dollar amount.</comment>
+  </data>
+
+  <!-- ============ AGM Results (print-only sheet, T040) ============ -->
+  <data name="Reports_AgmResults_Title" xml:space="preserve">
+    <value>AGM Results</value>
+  </data>
+  <data name="Reports_AgmResults_MeetingDateLine" xml:space="preserve">
+    <value>Annual General Meeting: {Date}</value>
+    <comment>{Date} AGM date formatted 'd MMMM yyyy'. Shared by the AGM Results sheet and the AGM Attendance Report sheet.</comment>
+  </data>
+  <data name="Reports_AgmResults_AttendanceLine" xml:space="preserve">
+    <value>Attendance: {Attended} of {Total} members attended</value>
+    <comment>{Attended} number of members who attended, {Total} total member count.</comment>
+  </data>
+  <data name="Reports_AgmResults_ElectedPositionsHeading" xml:space="preserve">
+    <value>Elected Positions</value>
+  </data>
+  <data name="Reports_AgmResults_NoPositions" xml:space="preserve">
+    <value>No positions recorded.</value>
+  </data>
+  <data name="Reports_AgmResults_PositionLabel" xml:space="preserve">
+    <value>{Label}: </value>
+    <comment>{Label} elected position title; this segment renders bold and is immediately followed by the elected member name(s). Trailing space is significant.</comment>
+  </data>
+  <data name="Reports_AgmResults_GeneralCommitteeMemberLabel" xml:space="preserve">
+    <value>General Committee Member:</value>
+  </data>
+
+  <!-- ============ Attendance sheets (shared checkbox layout, T040) ============ -->
+  <data name="Reports_Sheet_NameColumn" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Reports_EventSheet_Title" xml:space="preserve">
+    <value>Event Attendance Sheet</value>
+  </data>
+  <data name="Reports_EventSheet_DateLine" xml:space="preserve">
+    <value>{EventType}: {Date}</value>
+    <comment>{EventType} event type name (user data), {Date} event date formatted 'd MMMM yyyy'.</comment>
+  </data>
+  <data name="Reports_EventSheet_ParticipatedColumn" xml:space="preserve">
+    <value>Participated</value>
+  </data>
+  <data name="Reports_AgmSheet_Title" xml:space="preserve">
+    <value>AGM Attendance Report</value>
+  </data>
+  <data name="Reports_AgmSheet_AttendedColumn" xml:space="preserve">
+    <value>Attended</value>
+  </data>
 </root>

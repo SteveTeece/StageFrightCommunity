@@ -68,7 +68,7 @@ public partial class MemberDetail : ComponentBase
                 _feeHistory.Add(new FeeHistoryItem
                 {
                     Id = fee.Id,
-                    FeeType = fee.FeeType.ToString(),
+                    FeeType = fee.FeeType.LocalizeEnum(),
                     Amount = fee.Amount,
                     FeeDate = fee.FeeDate,
                     DueDate = fee.DueDate,

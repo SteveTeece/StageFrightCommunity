@@ -251,7 +251,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     {
         var sut = BuildIncomeStatementProvider();
         var report = await sut.GenerateAsync(CurrentYearCustomPeriodFilters(), TestContext.Current.CancellationToken);
-        var renderer = new PdfReportRenderer();
+        var renderer = new PdfReportRenderer(RealLocalizer.Instance);
 
         var bytes = renderer.Render(report);
 

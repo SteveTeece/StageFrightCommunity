@@ -18,7 +18,7 @@ public class PdfAndCsvRendererTests
 
     public PdfAndCsvRendererTests()
     {
-        _pdfRenderer = new PdfReportRenderer();
+        _pdfRenderer = new PdfReportRenderer(RealLocalizer.Instance);
         _csvExporter = new CsvReportExporter();
     }
 

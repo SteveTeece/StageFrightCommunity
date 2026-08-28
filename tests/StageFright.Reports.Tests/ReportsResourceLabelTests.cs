@@ -42,6 +42,51 @@ public class ReportsResourceLabelTests
         Assert.NotEqual(key, value); // a missing key echoes the key name back
     }
 
+    // --- T040 / FR-006: PDF renderer chrome (page furniture + print-only sheet headings) ---
+
+    [Theory]
+    [InlineData("Reports_Render_GeneratedAt")]
+    [InlineData("Reports_Render_PagePrefix")]
+    [InlineData("Reports_Render_PageSeparator")]
+    [InlineData("Reports_AttendanceRoll_Title")]
+    [InlineData("Reports_AttendanceRoll_DateLine")]
+    [InlineData("Reports_AttendanceRoll_NameColumn")]
+    [InlineData("Reports_AttendanceRoll_PresentColumn")]
+    [InlineData("Reports_AttendanceRoll_FeePaidColumn")]
+    [InlineData("Reports_AgmResults_Title")]
+    [InlineData("Reports_AgmResults_MeetingDateLine")]
+    [InlineData("Reports_AgmResults_AttendanceLine")]
+    [InlineData("Reports_AgmResults_ElectedPositionsHeading")]
+    [InlineData("Reports_AgmResults_NoPositions")]
+    [InlineData("Reports_AgmResults_PositionLabel")]
+    [InlineData("Reports_AgmResults_GeneralCommitteeMemberLabel")]
+    [InlineData("Reports_Sheet_NameColumn")]
+    [InlineData("Reports_EventSheet_Title")]
+    [InlineData("Reports_EventSheet_DateLine")]
+    [InlineData("Reports_EventSheet_ParticipatedColumn")]
+    [InlineData("Reports_AgmSheet_Title")]
+    [InlineData("Reports_AgmSheet_AttendedColumn")]
+    public void Should_ResolveToNeutralValue_When_RendererChromeKeyLookedUp(string key)
+    {
+        var value = L.Get<ReportsResource>(key);
+
+        Assert.False(string.IsNullOrWhiteSpace(value));
+        Assert.NotEqual(key, value); // a missing key echoes the key name back
+    }
+
+    [Fact]
+    public void Should_SubstituteNamedPlaceholders_When_RendererChromeFormatKeysResolved()
+    {
+        Assert.Equal("Generated: 5 August 2026 14:30 UTC",
+            L.Get<ReportsResource>("Reports_Render_GeneratedAt", "5 August 2026 14:30"));
+        Assert.Equal("Rehearsal: 5 August 2026 at 19:00",
+            L.Get<ReportsResource>("Reports_AttendanceRoll_DateLine", "5 August 2026", "19:00"));
+        Assert.Equal("Attendance: 3 of 5 members attended",
+            L.Get<ReportsResource>("Reports_AgmResults_AttendanceLine", 3, 5));
+        Assert.Equal("Performance: 20 August 2026",
+            L.Get<ReportsResource>("Reports_EventSheet_DateLine", "Performance", "20 August 2026"));
+    }
+
     [Fact]
     public async Task Should_SourceReportNameFromResources_When_MemberListProviderQueried()
     {

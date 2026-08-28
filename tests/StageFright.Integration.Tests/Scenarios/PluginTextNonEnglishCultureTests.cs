@@ -35,7 +35,7 @@ public sealed class PluginTextNonEnglishCultureTests
             Assert.Contains("Metric,Value", csv);
             Assert.Contains("Plugin Status,Active", csv);
 
-            var pdf = new PdfReportRenderer().Render(data, "Test Org");
+            var pdf = new PdfReportRenderer(RealLocalizer.Instance).Render(data, "Test Org");
             Assert.NotNull(pdf);
             Assert.NotEmpty(pdf);
         });

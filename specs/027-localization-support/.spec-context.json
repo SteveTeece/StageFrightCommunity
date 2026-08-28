@@ -386,10 +386,34 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-28T08:19:03.988Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T08:49:46.305Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T08:50:06.708Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T08:50:17.100Z"
     }
   ],
   "telemetryInstanceId": "bd71e5f2-b0ce-45df-9da3-06f68fa7a241",
-  "last_action": "US2 T039 DONE (11 report providers -> ReportsResource.resx, ILocalizer facade, OptionLabels for filter option labels, enum cells via ILocalizer.Enum, F2 amounts kept for SC-002 parity) + T030 DONE (ReportsResourceLabelTests + PluginTextNonEnglishCultureTests). Full solution build 0/0; full suite 1733 pass / 0 fail. NOT committed yet by script. US2 REMAINING: T040 (report renderers - PdfReportRenderer/AttendanceRoll/AgmResults/CheckboxSheetPdfBuilder + 2 sheet renderers English chrome), T041 (service exception message text, ~18 Core services, own session), T042 (verify enum sweep - keys exist), T044 (verify no-C sweep - reports never used C), T045 (DI check, likely no-op), T029 (repo-wide guard suite). Then US3 T046-T059, Polish T060-T064.",
+  "last_action": "US2 T040 DONE (6 PDF renderers -> ReportsResource.resx chrome keys, ILocalizer ctor inject, CheckboxSheetPdfBuilder gains localizer param, 8 test ctor sites -> RealLocalizer.Instance, ReportsResourceLabelTests +22 assertions) + T042 DONE (enum sweep verified; MemberDetail FeeType column -> LocalizeEnum) + T044 DONE (C-format display-site sweep verified clean). Full build 0/0; full suite 1755 pass / 0 fail. NOT yet committed. US2 REMAINING: T041 (user-facing exception Message text across ~18 Core services incl. BankReconciliationService.cs:153 :C - high blast radius, own session), T045 (DI recheck after T041 ctor changes), T029 (repo-wide guard suite - blocked until T041). Then US3 T046-T059, Polish T060-T064.",
   "coverage": {
     "FR-001": {
       "title": "Store app-authored user-facing text (incl. aria-label/alt/title) in resource files, not literals",
@@ -462,12 +486,8 @@
         "T040"
       ],
       "tests": [
-        "tests/StageFright.Reports.Tests/ReportsResourceLabelTests.cs::Should_ResolveToNeutralValue_When_ReportNameKeyLookedUp",
-        "Should_SourceColumnHeadersFromResources_When_TrialBalanceGenerated",
-        "Should_SourceSectionHeadingsFromResources_When_TrialBalanceGenerated",
-        "Should_SourceGrandTotalLabelFromResources_When_TrialBalanceGenerated",
-        "Should_SourceSectionAndSubtotalLabelsFromResources_When_IncomeStatementGenerated",
-        "Should_NotLeaveRawKeyOrBlankLabel_When_RepresentativeReportsGenerated"
+        "tests/StageFright.Reports.Tests/ReportsResourceLabelTests.cs::Should_ResolveToNeutralValue_When_RendererChromeKeyLookedUp",
+        "Should_SubstituteNamedPlaceholders_When_RendererChromeFormatKeysResolved"
       ]
     },
     "FR-007": {
@@ -622,8 +642,7 @@
         "T042"
       ],
       "tests": [
-        "tests/StageFright.Reports.Tests/MemberListReportProviderTests.cs::GenerateAsync_DefaultFilter_ReturnsActiveMembersOnly",
-        "tests/StageFright.Reports.Tests/BankReconciliationReportProviderTests.cs"
+        "tests/StageFright.UI.Tests/Pages/Members/MemberDetailTests.cs"
       ]
     }
   },
@@ -757,6 +776,26 @@
       "decision": "Report providers keep decimal.ToString(\"F2\") for amounts; NOT switched to MoneyFormatter",
       "why": "no report provider ever used .ToString(\"C\")/{0:C} so the no-C-currency guard does not flag them, and switching to MoneyFormatter would add a $ symbol + thousands separators to report output, breaking SC-002 render parity and ~30 existing exact-string assertions",
       "rejected": "MoneyFormatter.FormatWithCode in providers now (contract §8 only lists .ToString(\"C\") call sites as consumers; report amount display formatting, if changed at all, belongs in T040 renderers)"
+    },
+    {
+      "decision": "The 5 concrete PDF renderers ctor-inject the ILocalizer facade (not IStringLocalizer<ReportsResource>)",
+      "why": "matches the T039 report-provider precedent; renderer date lines use named-placeholder formatting ({Date} at {Time}, {Attended} of {Total}) which only ILocalizer.Get<T>(key,args) substitutes; RealLocalizer.Instance fixture already exists in Reports.Tests + Integration.Tests",
+      "rejected": "IStringLocalizer<ReportsResource> per contract proposal (indexer only does string.Format {0}, throws on named tokens)"
+    },
+    {
+      "decision": "CheckboxSheetPdfBuilder.Build gains an ILocalizer first param and resolves the SHARED chrome (Name column header, footer Page/of) itself; caller-specific text (title, dateLine, checkboxColumnHeader) still passed in already-localised by the two sheet renderers",
+      "why": "keeps the split clean - the internal static builder owns page furniture common to both sheets, each renderer owns its own title/heading; avoids threading 3 extra string params",
+      "rejected": "passing every chrome string as a Build() param (noisy); making the builder non-static with DI (it has no other state)"
+    },
+    {
+      "decision": "PDF footer localised as two xml:space=preserve keys Reports_Render_PagePrefix (\"Page \") + Reports_Render_PageSeparator (\" of \"); AGM position line as a bold Reports_AgmResults_PositionLabel (\"{Label}: \") prefix key",
+      "why": "QuestPDF builds the footer from dynamic CurrentPageNumber()/TotalPages() spans that cannot be one format string; the AGM position line renders label bold + member text regular in two spans, so a single {Label}: {Members} key would lose the bold-on-label-only styling. Both preserve exact en-AU visual output (SC-002)",
+      "rejected": "one composed Page {n} of {m} key (spans are runtime); one {Label}: {Members} key (drops bold split)"
+    },
+    {
+      "decision": "Report renderers still do NOT format currency - amounts arrive pre-formatted (F2) in ReportData.Cells from the providers; T040 touched only page CHROME, not amounts, despite the task text mentioning MoneyFormatter.FormatWithCode",
+      "why": "consistent with the T039 decision that report amount display stays F2 for SC-002 parity + ~30 existing exact-string assertions; the renderers have no decimal inputs to format - Cells are already strings",
+      "rejected": "post-processing Cells through MoneyFormatter in the renderer (would add $ + separators, break SC-002 and provider tests; provider F2 is the deliberate report convention)"
     }
   ],
   "step_summaries": {
@@ -768,10 +807,10 @@
       "summary": "64 tasks (T001-T064) across 6 phases: Setup(3) -> Foundational(11, blocks all) -> US1 shell+Members(14) -> US2 all remaining surfaces/reports/exceptions/enums(17) -> US3 Settings.LanguageCode + OS-aware startup ladder + pickers + qps-ploc(14) -> Polish(5); wave-grouped, widest parallel wave is US2 T031-T044 (one per module)."
     },
     "implement": {
-      "summary": "US2 T039 + T030: all 11 report providers localised to ReportsResource.resx (~120 en-AU keys verbatim) via the ILocalizer facade - report names, filter labels, titles/subtitles (named placeholders), section headings, column headers, subtotal/total + inline row labels, the GL-imbalance exception message; enum cells (MemberStatus, ReconciliationStatus) via ILocalizer.Enum; new ReportFilterDefinition.OptionLabels carries localised filter option labels while Options stays the invariant token (ReportViewer renders it). Report-label tests + a plugin-under-fr-FR test added. 1733 tests green (Reports 178->195, Integration 186->188). Report RENDERERS (T040) and service exception text (T041) still pending."
+      "summary": "US2 T040 + T042 + T044: all 6 PDF report renderers page chrome localised to ReportsResource.resx (~21 en-AU keys verbatim, 5 renderers ctor-inject ILocalizer, CsvReportExporter untouched); MemberDetail Fee-history FeeType column swapped to LocalizeEnum (last deferred enum display site); repo-wide C-format display-site sweep verified clean (Finance done in T034, reports never used C). 1755 tests green (Reports 195->217). US2 remaining: T041 (service exception text, own session), T045 (DI recheck post-T041), T029 (repo-wide guard, blocked on T041)."
     }
   },
-  "currentTask": "T029",
+  "currentTask": "T044",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -1152,6 +1191,42 @@
         "tests/StageFright.Reports.Tests/ReportsResourceLabelTests.cs",
         "tests/StageFright.Integration.Tests/Scenarios/PluginTextNonEnglishCultureTests.cs"
       ]
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "Localised all 6 PDF report renderers' page chrome to ReportsResource.resx (~21 en-AU keys verbatim): PdfReportRenderer 'Generated: {DateTime} UTC' + footer 'Page'/'of'; AttendanceRollPdfRenderer title/date-line/Name/Present/Pd headers; AgmResultsPdfRenderer title/meeting+attendance lines/Elected Positions/No positions/position label/General Committee Member; CheckboxSheetPdfBuilder Name col + footer + new nameColumnHeader param; Event/AgmAttendanceSheetPdfRenderer titles/date-lines/Participated+Attended headers. All 5 concrete renderers ctor-inject ILocalizer (resolves via existing AddScoped<ILocalizer>); CsvReportExporter untouched (no literals). 8 test-construction sites pass RealLocalizer.Instance; ReportsResourceLabelTests extended with 22 chrome-key + placeholder-substitution assertions.",
+      "files": [
+        "src/StageFright.Reports/Resources/ReportsResource.resx",
+        "src/StageFright.Reports/Rendering/PdfReportRenderer.cs",
+        "src/StageFright.Reports/Rendering/AttendanceRollPdfRenderer.cs",
+        "src/StageFright.Reports/Rendering/AgmResultsPdfRenderer.cs",
+        "src/StageFright.Reports/Rendering/CheckboxSheetPdfBuilder.cs",
+        "src/StageFright.Reports/Rendering/EventAttendanceSheetPdfRenderer.cs",
+        "src/StageFright.Reports/Rendering/AgmAttendanceSheetPdfRenderer.cs",
+        "tests/StageFright.Reports.Tests/PdfAndCsvRendererTests.cs",
+        "tests/StageFright.Reports.Tests/AttendanceRollPdfRendererTests.cs",
+        "tests/StageFright.Reports.Tests/AgmResultsPdfRendererTests.cs",
+        "tests/StageFright.Reports.Tests/EventAttendanceSheetPdfRendererTests.cs",
+        "tests/StageFright.Reports.Tests/AgmAttendanceSheetPdfRendererTests.cs",
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs",
+        "tests/StageFright.Reports.Tests/ReportsResourceLabelTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V6_AccountingReportsTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/PluginTextNonEnglishCultureTests.cs"
+      ]
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "Verified the user-facing enum sweep is complete: EnumsResource.resx holds every Enum_<Type>_<Member> key for all 9 user-facing enums (MemberStatus/FeeType/PaymentMethod/PaymentType/AccountType/TaxCode/ReconciliationStatus/JournalEntryType/Theme) verbatim (authored T038, cross-checked against Core/Enums members). Display sites converted across T034 (Finance UI), T038 (menu providers), T039 (report providers via ILocalizer.Enum). One residual raw-enum display site found + fixed: MemberDetail Fee Payment History grid FeeType column (fee.FeeType.ToString() -> fee.FeeType.LocalizeEnum()), the item the companion decisions explicitly deferred from US1 to T042. Repo-wide .ToString() enum-at-display-site scan of UI+Reports now clean.",
+      "files": [
+        "src/StageFright.UI/Pages/Members/MemberDetail.razor.cs"
+      ]
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "Verified the repo-wide C-format sweep is complete: zero decimal.ToString(\"C\")/{0:C}/FormatString=\"{0:C}\" display sites remain in UI (.razor/.razor.cs) or Reports (providers use F2; renderers never format currency - amounts arrive pre-formatted in Cells). Finance screen sweep was done in T034. Remaining ':C' occurrences in src are all non-display: audit-trail newValue: strings (audit records, FR-007 exempt) and MoneyFormatter's own sanctioned ToString(\"C\", clonedFormat) implementation. The single user-facing residual - BankReconciliationService.cs:153 ReconciliationException message 'the difference is {x:C}, not /usr/bin/bash.00.' - is exception-message text owned by T041, not a T044 display site.",
+      "files": [
+        "(verification only - no code change)"
+      ]
     }
   },
   "verified": [
@@ -1232,6 +1307,29 @@
       "what": "Reports.Tests verbatim-transcription parity (existing 178 string-assertion tests)",
       "command": "dotnet test tests/StageFright.Reports.Tests/",
       "result": "195/195 pass - every pre-existing assertion on report titles/headings/column headers/total labels stayed green because ReportsResource.resx neutral values are byte-identical to the prior hardcoded English (FR-004)"
+    },
+    {
+      "what": "Full solution build + full test suite after T040/T042/T044",
+      "command": "dotnet build StageFrightCommunity.slnx; dotnet test StageFrightCommunity.slnx",
+      "result": "Build 0 warnings / 0 errors. Tests 1755 passed / 0 failed (Reports 217 up from 195, Integration 188, Core 597, UI 592, Data 152, Localization 9)",
+      "warnings": [
+        "dotnet-build-on-edit PostToolUse hook fails noisily on each intermediate edit until the project compiles - expected, edits still land",
+        "StrategicCompact advisory at ~250k context - noted, not acted on"
+      ]
+    },
+    {
+      "what": "T044 repo-wide C-format display-site sweep",
+      "command": "grep -rn for ToString(\"C\")/{0:C}/FormatString across src/ UI + Reports + Core",
+      "result": "Zero display-site C-format remains in UI or Reports; Finance UI swept in T034; providers use F2; renderers never format currency. Remaining src :C = audit newValue: strings (FR-007 exempt) + MoneyFormatter impl + one T041-owned exception message",
+      "warnings": []
+    },
+    {
+      "what": "T045 DI check for renderer ILocalizer ctor deps (partial - pre-T041)",
+      "command": "grep MauiProgram.cs renderer + ILocalizer registrations; 188 Integration tests on real DI host",
+      "result": "All 5 PDF renderers use plain AddScoped<IX,X>() (no factory lambda) so the new ILocalizer ctor param resolves from AddScoped<ILocalizer,Localizer>(); Integration suite green end-to-end. Must re-verify after T041 adds IStringLocalizer to ~18 service ctors",
+      "warnings": [
+        "T045 not closed - waits on T041"
+      ]
     }
   ],
   "concerns": [
@@ -1257,6 +1355,14 @@
     },
     {
       "note": "US2 remaining after this session: T041 (service-thrown ValidationException/DomainValidationException message text across ~18 Core services - high test blast radius, own session), T040 (report renderers, above), T042 (verify enum display-site sweep repo-wide - EnumsResource keys already authored in T038, Finance done in T034, Reports done here), T044 (verify repo-wide decimal.ToString(\"C\")/{0:C}/FormatString sweep - Finance done, reports never used C), T045 (DI check for the new ILocalizer ctor deps - MauiProgram AddScoped<IReportProvider,X>() resolves ILocalizer automatically, likely a no-op), T029 (repo-wide guard suite). Then US3 T046-T059, Polish T060-T064.",
+      "step": "implement"
+    },
+    {
+      "note": "T041 is the last open US2 Wave-1 task and is high blast radius (~18 Core services: AgmService, EventService, EventTypeService, AccountService, BankReconciliationService, FeeService, GeneralJournalService, OpeningBalanceService, AttendanceService, BankDeposit/Expense/Income/Payment services, CommitteeOfficeHolderTypeService, SettingsService, SetupService - each needs a ValidationResource key set + ctor IStringLocalizer<ValidationResource> injection + test call-site fan-out). One concrete residual it owns: BankReconciliationService.cs:153 ReconciliationException message still has {Difference:C} + a literal $0.00 - route through MoneyFormatter when localising. Should be its own session(s).",
+      "step": "implement"
+    },
+    {
+      "note": "T045 (DI check) verified only for the renderer ILocalizer ctor deps landed so far; it must be re-run once T041 adds IStringLocalizer<ValidationResource> to ~18 service ctors to confirm none needs a factory-lambda registration. T029 (repo-wide guard suite) is blocked until T041 lands - a residual-literal scan over Core/Exceptions + *ValidationService would hard-fail today.",
       "step": "implement"
     }
   ]

@@ -1,16 +1,29 @@
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Rehearsals;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Rendering;
 
-/// <summary>Renders a printable attendance roll to PDF bytes using QuestPDF.</summary>
+/// <summary>
+/// Renders a printable attendance roll to PDF bytes using QuestPDF. All page chrome
+/// (title, date line, column headers, footer page numbers) is sourced from
+/// <see cref="ReportsResource"/>; only member names are rendered verbatim.
+/// </summary>
 public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
 {
+    private readonly ILocalizer _localizer;
+
     static AttendanceRollPdfRenderer()
     {
         QuestPDF.Settings.License = LicenseType.Community;
+    }
+
+    public AttendanceRollPdfRenderer(ILocalizer localizer)
+    {
+        _localizer = localizer;
     }
 
     /// <summary>
@@ -18,9 +31,6 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
     /// renderer's font size/padding. Tuned via manual visual check (research.md Outstanding Risks).
     /// </summary>
     private const int RowsPerColumn = 32;
-
-    /// <summary>Static column heading for the fee-paid checkbox column — a short "Pd" (Paid) label, not a dollar amount.</summary>
-    private const string FeeHeaderText = "Pd";
 
     public byte[] Render(AttendanceRollData data, string organizationName = "")
     {
@@ -58,11 +68,13 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
                             row.RelativeItem();
                     });
 
+                    var pagePrefix = _localizer.Get<ReportsResource>("Reports_Render_PagePrefix");
+                    var pageSeparator = _localizer.Get<ReportsResource>("Reports_Render_PageSeparator");
                     page.Footer().AlignRight().Text(text =>
                     {
-                        text.Span("Page ").FontSize(8);
+                        text.Span(pagePrefix).FontSize(8);
                         text.CurrentPageNumber().FontSize(8);
-                        text.Span(" of ").FontSize(8);
+                        text.Span(pageSeparator).FontSize(8);
                         text.TotalPages().FontSize(8);
                     });
                 });
@@ -72,18 +84,24 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
         return document.GeneratePdf();
     }
 
-    private static void BuildHeader(ColumnDescriptor col, AttendanceRollData data, string organizationName)
+    private void BuildHeader(ColumnDescriptor col, AttendanceRollData data, string organizationName)
     {
         if (!string.IsNullOrWhiteSpace(organizationName))
             col.Item().Text(organizationName).FontSize(22).Bold();
-        col.Item().Text("Attendance Roll").FontSize(16).Bold();
-        col.Item().Text($"Rehearsal: {data.RehearsalDate:d MMMM yyyy} at {data.RehearsalTime:hh\\:mm}")
+        col.Item().Text(_localizer.Get<ReportsResource>("Reports_AttendanceRoll_Title")).FontSize(16).Bold();
+        col.Item().Text(_localizer.Get<ReportsResource>(
+                "Reports_AttendanceRoll_DateLine",
+                data.RehearsalDate.ToString("d MMMM yyyy"),
+                data.RehearsalTime.ToString("hh\\:mm")))
             .FontSize(11).FontColor(Colors.Grey.Darken1);
         col.Item().PaddingTop(4).LineHorizontal(0.5f);
     }
 
-    private static void BuildMemberTable(IContainer container, IReadOnlyList<AttendanceRollMember> members)
+    private void BuildMemberTable(IContainer container, IReadOnlyList<AttendanceRollMember> members)
     {
+        var nameHeader = _localizer.Get<ReportsResource>("Reports_AttendanceRoll_NameColumn");
+        var presentHeader = _localizer.Get<ReportsResource>("Reports_AttendanceRoll_PresentColumn");
+        var feeHeader = _localizer.Get<ReportsResource>("Reports_AttendanceRoll_FeePaidColumn");
         container.Table(table =>
         {
             table.ColumnsDefinition(def =>
@@ -95,9 +113,9 @@ public class AttendanceRollPdfRenderer : IAttendanceRollPdfRenderer
 
             table.Header(header =>
             {
-                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text("Name").Bold().FontSize(9);
-                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).AlignCenter().Text("Present").Bold().FontSize(9);
-                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).AlignCenter().Text(FeeHeaderText).Bold().FontSize(9);
+                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text(nameHeader).Bold().FontSize(9);
+                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).AlignCenter().Text(presentHeader).Bold().FontSize(9);
+                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).AlignCenter().Text(feeHeader).Bold().FontSize(9);
             });
 
             foreach (var member in members)

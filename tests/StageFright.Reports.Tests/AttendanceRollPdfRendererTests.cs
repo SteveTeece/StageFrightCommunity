@@ -10,7 +10,7 @@ namespace StageFright.Reports.Tests;
 /// </summary>
 public class AttendanceRollPdfRendererTests
 {
-    private readonly IAttendanceRollPdfRenderer _renderer = new AttendanceRollPdfRenderer();
+    private readonly IAttendanceRollPdfRenderer _renderer = new AttendanceRollPdfRenderer(RealLocalizer.Instance);
 
     private static AttendanceRollData MakeRoll(params AttendanceRollMember[] members) => new()
     {
