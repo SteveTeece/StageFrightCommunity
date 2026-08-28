@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Rehearsals;
 using StageFright.Reports.Rendering;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Rehearsals;
 
@@ -15,6 +18,9 @@ public partial class RehearsalList
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
     [Inject] private ILogger<RehearsalList> Logger { get; set; } = null!;
+    [Inject] private IStringLocalizer<RehearsalsResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private bool _loading = true;
     private List<Rehearsal> _rehearsals = new();
@@ -53,9 +59,9 @@ public partial class RehearsalList
                 .ThenByDescending(r => r.Time)
                 .ToList();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _errorMessage = $"Failed to load rehearsals: {ex.Message}";
+            _errorMessage = L["Rehearsals_List_LoadError"];
         }
         finally
         {
@@ -78,7 +84,7 @@ public partial class RehearsalList
 
             if (rollData.Members.Count == 0)
             {
-                _rollMessage = "No active members found — nothing to print.";
+                _rollMessage = L["Rehearsals_List_RollNoMembers"];
                 return;
             }
 
@@ -94,7 +100,22 @@ public partial class RehearsalList
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to print attendance roll for rehearsal {RehearsalId}", rehearsalId);
-            _rollMessage = "Unable to print roll. Please try again.";
+            _rollMessage = L["Rehearsals_List_RollError"];
         }
     }
+
+    /// <summary>"No rehearsals match …" message, localized with the current search term.</summary>
+    private string NoMatchText() => Loc.Get<RehearsalsResource>("Rehearsals_List_NoMatch", _searchTerm);
+
+    /// <summary>aria-label for the date button that opens a rehearsal's recorded attendance.</summary>
+    private string ViewAttendanceAriaLabel(DateTime date) =>
+        Loc.Get<RehearsalsResource>("Rehearsals_List_ViewAttendanceAriaLabel", date.ToString("d MMM yyyy"));
+
+    /// <summary>aria-label for a row's Record Attendance button.</summary>
+    private string RecordAttendanceAriaLabel(DateTime date) =>
+        Loc.Get<RehearsalsResource>("Rehearsals_List_RecordAttendanceAriaLabel", date.ToString("d MMM yyyy"));
+
+    /// <summary>aria-label for a row's Print Roll button.</summary>
+    private string PrintRollAriaLabel(DateTime date) =>
+        Loc.Get<RehearsalsResource>("Rehearsals_List_PrintRollAriaLabel", date.ToString("d MMM yyyy"));
 }

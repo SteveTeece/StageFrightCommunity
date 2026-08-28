@@ -1,9 +1,9 @@
 @page "/rehearsals/{RehearsalId:guid}/attendance"
 
-<PageTitle>@(_alreadyRecorded ? "Attendance" : "Record Attendance") — StageFright Community</PageTitle>
+<PageTitle>@PageTitleText()</PageTitle>
 
 <div class="page-header mb-2">
-    <h1 class="h3">@(_alreadyRecorded ? "Attendance" : "Record Attendance")</h1>
+    <h1 class="h3">@HeadingText()</h1>
     @if (_rehearsal is not null)
     {
         <p class="text-muted mb-0">@_rehearsal.Date.ToString("dddd, d MMMM yyyy")</p>
@@ -12,25 +12,25 @@
 
 @if (_loading)
 {
-    <p role="status" aria-live="polite">Loading…</p>
+    <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
 }
 else if (!string.IsNullOrEmpty(_errorMessage) && _rehearsal is null)
 {
     <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
-    <a href="/rehearsals" class="btn btn-outline-secondary btn-sm">Back to Rehearsals</a>
+    <a href="/rehearsals" class="btn btn-outline-secondary btn-sm">@L["Rehearsals_Attendance_BackButton"]</a>
 }
 else if (_alreadyRecorded)
 {
     @if (_rehearsal is not null)
     {
         <div class="alert alert-info py-1 mb-2 small" role="alert">
-            Attendance recorded at @_rehearsal.StoredAttendanceRate?.ToString("F1")% attendance rate. Records are immutable.
+            @RecordedBannerText()
         </div>
     }
 
     @if (_recordedAttendance.Count == 0)
     {
-        <div class="alert alert-warning py-1 mb-2 small">No attendance records found for this rehearsal.</div>
+        <div class="alert alert-warning py-1 mb-2 small">@L["Rehearsals_Attendance_NoRecords"]</div>
     }
     else
     {
@@ -38,24 +38,24 @@ else if (_alreadyRecorded)
                         AllowSorting="true" AllowPaging="true" PageSize="15"
                         class="rz-shadow-0">
             <Columns>
-                <RadzenDataGridColumn TItem="AttendanceRecord" Title="Attended" Width="100px" Sortable="false">
+                <RadzenDataGridColumn TItem="AttendanceRecord" Title="@L["Rehearsals_Attendance_AttendedColumn"]" Width="100px" Sortable="false">
                     <Template Context="record">
                         <div class="text-center">
                             <input type="checkbox" class="form-check-input" checked="@record.Attended" disabled
-                                   aria-label="@record.Member.SortableFullName attended" />
+                                   aria-label="@AttendedAriaLabel(record.Member.SortableFullName)" />
                         </div>
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="AttendanceRecord" Title="Paid" Width="90px" Sortable="false">
+                <RadzenDataGridColumn TItem="AttendanceRecord" Title="@L["Rehearsals_Attendance_PaidColumn"]" Width="90px" Sortable="false">
                     <Template Context="record">
                         <div class="text-center">
                             <input type="checkbox" class="form-check-input"
                                    checked="@(_paidByMemberId.TryGetValue(record.MemberId, out var paid) && paid)" disabled
-                                   aria-label="@record.Member.SortableFullName paid" />
+                                   aria-label="@PaidAriaLabel(record.Member.SortableFullName)" />
                         </div>
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="AttendanceRecord" Title="Member">
+                <RadzenDataGridColumn TItem="AttendanceRecord" Title="@L["Rehearsals_Attendance_MemberColumn"]">
                     <Template Context="record">
                         @record.Member.SortableFullName
                     </Template>
@@ -64,14 +64,14 @@ else if (_alreadyRecorded)
         </RadzenDataGrid>
     }
 
-    <a href="/rehearsals" class="btn btn-outline-secondary btn-sm mt-2">Back to Rehearsals</a>
+    <a href="/rehearsals" class="btn btn-outline-secondary btn-sm mt-2">@L["Rehearsals_Attendance_BackButton"]</a>
 }
 else if (_isFutureDate)
 {
     <div class="alert alert-info py-1 mb-2 small" role="alert">
-        Attendance can be recorded starting @_rehearsal?.Date.ToString("dddd, d MMMM yyyy").
+        @FutureNoticeText()
     </div>
-    <a href="/rehearsals" class="btn btn-outline-secondary btn-sm">Back to Rehearsals</a>
+    <a href="/rehearsals" class="btn btn-outline-secondary btn-sm">@L["Rehearsals_Attendance_BackButton"]</a>
 }
 else
 {
@@ -82,7 +82,7 @@ else
 
     @if (_members.Count == 0)
     {
-        <div class="alert alert-warning py-1 mb-2 small">No active members found. Add members before recording attendance.</div>
+        <div class="alert alert-warning py-1 mb-2 small">@L["Rehearsals_Attendance_NoActiveMembers"]</div>
     }
     else
     {
@@ -90,16 +90,16 @@ else
                         AllowSorting="true" AllowPaging="true" PageSize="15"
                         class="rz-shadow-0">
             <Columns>
-                <RadzenDataGridColumn TItem="AttendanceRow" Title="Attended" Width="120px" Sortable="false">
+                <RadzenDataGridColumn TItem="AttendanceRow" Title="@L["Rehearsals_Attendance_AttendedColumn"]" Width="120px" Sortable="false">
                     <HeaderTemplate>
                         <div class="d-flex flex-column align-items-center gap-1">
-                            <span>Attended</span>
+                            <span>@L["Rehearsals_Attendance_AttendedColumn"]</span>
                             <span class="select-all-inline small text-muted">
                                 (<input type="checkbox" class="form-check-input" id="select-all-attended"
                                         checked="@AllAttended"
                                         @onchange="e => { ToggleSelectAll((bool)(e.Value ?? false)); StateHasChanged(); }"
-                                        aria-label="Select all members as attended" />
-                                <label class="form-check-label mb-0" for="select-all-attended">Select All</label>)
+                                        aria-label="@L["Rehearsals_Attendance_SelectAllAriaLabel"]" />
+                                <label class="form-check-label mb-0" for="select-all-attended">@L["Rehearsals_Attendance_SelectAllLabel"]</label>)
                             </span>
                         </div>
                     </HeaderTemplate>
@@ -108,33 +108,33 @@ else
                             <input type="checkbox" class="form-check-input" id="attended-@row.MemberId"
                                    checked="@row.Attended"
                                    @onchange="e => { row.Attended = (bool)(e.Value ?? false); StateHasChanged(); }"
-                                   aria-label="@row.MemberName attended" />
+                                   aria-label="@AttendedAriaLabel(row.MemberName)" />
                         </div>
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="AttendanceRow" Title="Paid" Width="90px" Sortable="false">
+                <RadzenDataGridColumn TItem="AttendanceRow" Title="@L["Rehearsals_Attendance_PaidColumn"]" Width="90px" Sortable="false">
                     <Template Context="row">
                         <div class="text-center">
                             <input type="checkbox" class="form-check-input" id="paid-@row.MemberId"
                                    checked="@row.Paid"
                                    disabled="@(!row.Attended)"
                                    @onchange="e => row.Paid = (bool)(e.Value ?? false)"
-                                   aria-label="Mark @row.MemberName as paid" />
+                                   aria-label="@MarkPaidAriaLabel(row.MemberName)" />
                         </div>
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="AttendanceRow" Property="MemberName" Title="Member" />
-                <RadzenDataGridColumn TItem="AttendanceRow" Title="Fee" Width="120px" Sortable="false">
+                <RadzenDataGridColumn TItem="AttendanceRow" Property="MemberName" Title="@L["Rehearsals_Attendance_MemberColumn"]" />
+                <RadzenDataGridColumn TItem="AttendanceRow" Title="@L["Rehearsals_Attendance_FeeColumn"]" Width="120px" Sortable="false">
                     <Template Context="row">
                         <div class="text-end">
                             @if (row.Attended && row.Paid)
                             {
-                                <span>@_attendanceFee.ToString("C")</span>
+                                <span>@MoneyFormatter.Format(_attendanceFee)</span>
                             }
                             else if (row.Attended && !row.Paid)
                             {
-                                <span class="text-warning fw-semibold">@_attendanceFee.ToString("C")</span>
-                                <span class="badge bg-warning text-dark ms-1">Owed</span>
+                                <span class="text-warning fw-semibold">@MoneyFormatter.Format(_attendanceFee)</span>
+                                <span class="badge bg-warning text-dark ms-1">@L["Rehearsals_Attendance_OwedBadge"]</span>
                             }
                             else
                             {
@@ -148,9 +148,9 @@ else
 
         <div class="d-flex gap-2 mt-2">
             <button class="btn btn-primary btn-sm" @onclick="SaveAttendance" disabled="@_saving">
-                @(_saving ? "Saving…" : "Save Attendance")
+                @(_saving ? Shared["Shared_Action_Saving"] : L["Rehearsals_Attendance_SaveButton"])
             </button>
-            <a href="/rehearsals" class="btn btn-outline-secondary btn-sm">Cancel</a>
+            <a href="/rehearsals" class="btn btn-outline-secondary btn-sm">@Shared["Shared_Action_Cancel"]</a>
         </div>
     }
 }
