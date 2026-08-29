@@ -471,16 +471,17 @@ forward.
   a start day, running twelve months.
 - **A short first financial year (FR-022) is desirable but optional for this feature.** It is **not
   built in this feature** (US7 delivered only the month + day FY-start choice). It is carried forward
-  as a dedicated follow-on GitHub issue — *"[FEATURE] Support a sub-twelve-month first financial year,
-  labelled as a part-year"* (parent #341, FY-start work #352) — rather than dropped (T076).
+  as a dedicated follow-on GitHub issue — **#353** *"[FEATURE] Support a sub-twelve-month first
+  financial year, labelled as a part-year"* (parent #341, FY-start work #352), filed 2026-08-30 —
+  rather than dropped (T076).
 - **The `capabilities/settings/spec.md` living spec still carries retired ABN / GST-registration
   wording** (`IsGstRegistered`, per-fee `GstCode`, the "GST / BAS" tab, the ATO ABN checksum), stale
   since spec 016 replaced that model with `Settings.IsTaxApplicable` / `TaxRate` / `TaxCode`. FR-028
   scopes only the *finance* living spec, so this feature de-drafts and corrects
   `capabilities/finance/spec.md` (T085) and fixes the retention figure in
   `capabilities/audit-trail/spec.md` (T086), but the settings living spec's tax wording is carried
-  forward as a separate follow-up (to be filed against parent #341, alongside the FR-022 issue)
-  rather than addressed here (T086a).
+  forward as a separate follow-up — **#356** *"[DOCS] Update `capabilities/settings/spec.md` to the
+  current tax model"* (parent #341), filed 2026-08-30 — rather than addressed here (T086a).
 - **"At least five years" (FR-023) is an informed default** for common record-keeping expectations;
   the exact figure (five versus seven) is a configuration default, not a hard rule, and the existing
   1–7 year adjustable range is retained.
@@ -490,13 +491,11 @@ forward.
   (T087): of its four required points, **rate history / effective-dating** (size L) and **multiple
   simultaneous rates / jurisdictions** (size XL) are **out of scope**; **tax-exclusive amount entry**
   (size M) and the **balance-sheet classification of recoverable input tax, accounts `2310` / `2320`**
-  (size S–M) are **in scope** and each needs a follow-on GitHub issue (T088). As with T076 / T086a,
-  `gh issue create` is blocked by this environment's action classifier, so the two issues are
-  specified in full in the assessment's *Follow-on issues* section — *"[FEATURE] Support tax-exclusive
-  amount entry (net + tax) alongside the current tax-inclusive entry"* (parent #341, spike #350) and
-  *"[FEATURE] Classify recoverable input tax (account `2320`) correctly on the Balance Sheet"* (parent
-  #341, spike #350) — for the maintainer to create rather than dropped (T088 stays unchecked until
-  they exist).
+  (size S–M) are **in scope** and each has a follow-on GitHub issue, filed 2026-08-30 against parent
+  #341 referencing spike #350 (T088): **#354** *"[FEATURE] Support tax-exclusive amount entry (net +
+  tax) alongside the current tax-inclusive entry"* and **#355** *"[FEATURE] Classify recoverable input
+  tax (account `2320`) correctly on the Balance Sheet"*. Both issue bodies are also reproduced in the
+  assessment's *Follow-on issues* section.
 - **FR-033 verification (T089).** A `git diff master...HEAD` review of every tax-adjacent file
   confirms the only tax-path change on this branch is the optional `minorUnitDigits` rounding-precision
   parameter on `TaxCalculator.SplitInclusive` (default `2`, so an AUD / 2-decimal dataset is

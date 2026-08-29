@@ -50,14 +50,11 @@ non-first-of-month organisation, including report PDF/CSV rendering.
 
 ## Residual / carried forward
 
-- **T076 / T088 — follow-on GitHub issues not filed from this environment.** `gh issue create`
-  is blocked by the action classifier. The full issue text for all three is written into
-  [spec.md](spec.md) *Assumptions* and the assessment's *Follow-on issues* section for the
-  maintainer to create:
-  - *"[FEATURE] Support a sub-twelve-month first financial year, labelled as a part-year"* (FR-022).
-  - *"[FEATURE] Support tax-exclusive amount entry (net + tax) alongside the current tax-inclusive entry"*.
-  - *"[FEATURE] Classify recoverable input tax (account `2320`) correctly on the Balance Sheet"*.
-  Also noted there: the pre-existing stale `capabilities/settings/spec.md` tax wording (T086a),
-  to be filed against parent #341.
+- **T076 / T088 — follow-on GitHub issues filed 2026-08-30** against parent #341:
+  - [#353](https://github.com/SteveTeece/StageFrightCommunity/issues/353) — *"[FEATURE] Support a sub-twelve-month first financial year, labelled as a part-year"* (FR-022, follows #352).
+  - [#354](https://github.com/SteveTeece/StageFrightCommunity/issues/354) — *"[FEATURE] Support tax-exclusive amount entry (net + tax) alongside the current tax-inclusive entry"* (follows spike #350).
+  - [#355](https://github.com/SteveTeece/StageFrightCommunity/issues/355) — *"[FEATURE] Classify recoverable input tax (account `2320`) correctly on the Balance Sheet"* (follows spike #350).
+  - [#356](https://github.com/SteveTeece/StageFrightCommunity/issues/356) — *"[DOCS] Update `capabilities/settings/spec.md` to the current tax model"* (T086a).
+- **Issues #341 and sub-issues #342–#352 closed 2026-08-30**, each with a comment pointing at the delivering user story / tasks (delivery is on branch `028-international-accounting-standards`, pending merge to `master`).
 - **FR-022 itself** (short first financial year) is intentionally **not implemented** in this
-  feature — US7 delivered only the month + day FY-start choice.
+  feature — US7 delivered only the month + day FY-start choice; it is now tracked by #353.

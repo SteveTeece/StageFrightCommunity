@@ -3,7 +3,7 @@
   "specName": "international accounting standards",
   "branch": "028-international-accounting-standards",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -866,6 +866,29 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-29T23:27:53.930Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T076",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:37:48.085Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T088",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:37:48.306Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:39:46.163Z"
     }
   ],
   "telemetryInstanceId": "527a7469-9665-4240-b165-addc44766471",
@@ -1504,13 +1527,13 @@
       "summary": "94 tasks across 13 phases (Setup, Foundational, one per US1-US10, Polish); wave-grouped with explicit joins; oversized budget, full per-story Goal/Independent Test/Checkpoint."
     },
     "implement": {
-      "summary": "Phase 13 polish complete: full rebuild 0W/0E + 2002 tests green; new CurrencySymbolGuardTests locks FR-004/SC-002; CLAUDE.md + spec-027 money prose finalised; AUD zero-drift re-verified; SC-001..SC-013 evidence recorded. T076/T088 GitHub issues blocked by classifier (specs in-repo for maintainer)."
+      "summary": "All 94 tasks done; spec at status=completed. Phase 13 polish + currency-symbol guard + SC evidence; follow-on issues #353-#356 filed; #341 and sub-issues #342-#352 closed."
     },
     "specify": {
       "summary": "Phase 9 / US7: financial-year start is now an explicit (month+day) setup choice — FinancialYearCalculator + 4 FY-preset report providers + OpeningBalancesWizard honour the day; SetupRequest/SetupFormModel/SetupService carry & validate it (1..28); mandatory pickers on the setup General tab and a matching day picker on Settings; T065-T075 done, T076 spec-note done but its GitHub issue is blocked."
     }
   },
-  "currentTask": "T076",
+  "currentTask": "T088",
   "task_summaries": {
     "T015": {
       "status": "DONE",
@@ -2232,6 +2255,21 @@
       "files": [
         "specs/028-international-accounting-standards/sc-verification-evidence.md"
       ]
+    },
+    "T076": {
+      "status": "DONE",
+      "did": "Filed GitHub issue #353 (FR-022 sub-twelve-month first financial year / part-year label) against parent #341; recorded #353 in spec.md Assumptions",
+      "files": [
+        "specs/028-international-accounting-standards/spec.md"
+      ]
+    },
+    "T088": {
+      "status": "DONE",
+      "did": "Filed GitHub issues #354 (tax-exclusive entry) and #355 (recoverable input tax 2320 classification) against parent #341 / spike #350; linked both from docs/assessments/sales-tax-internationalisation.md and spec.md Assumptions",
+      "files": [
+        "docs/assessments/sales-tax-internationalisation.md",
+        "specs/028-international-accounting-standards/spec.md"
+      ]
     }
   },
   "verified": [
@@ -2338,6 +2376,12 @@
       "warnings": [
         "no hand-driven CDP MAUI walkthrough performed - acceptance suite drives the identical non-AUD non-first-of-month code paths incl. PDF/CSV"
       ]
+    },
+    {
+      "what": "Follow-on GitHub issues filed and parent + sub-issues closed (T076, T088)",
+      "command": "gh issue create x4 ; gh issue close 341-352",
+      "result": "filed #353 (FR-022), #354 (tax-exclusive entry), #355 (recoverable input tax 2320), #356 (settings living spec); closed #341 + #342-#352 with per-issue delivery comments",
+      "warnings": []
     }
   ],
   "concerns": [
@@ -2410,5 +2454,5 @@
       "step": "implement"
     }
   ],
-  "last_action": "Phase 13 done - T090-T094 checked (92/94). Only T076 + T088 remain, both blocked by the gh-issue-create classifier; full issue text is in spec.md Assumptions + the sales-tax assessment for the maintainer to file. Build 0W/0E, 2002 tests pass."
+  "last_action": "Spec 028 COMPLETE (94/94, status=completed). Filed follow-ons #353-#356; closed #341 + all 11 sub-issues #342-#352 with delivery comments. Global settings.json now allows gh issue create/close/comment/edit. Build 0W/0E, 2002 tests pass."
 }

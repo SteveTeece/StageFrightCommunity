@@ -165,13 +165,12 @@ it is its own epic under a fresh parent issue. **Rough size if ever done: XL.**
 Two in-scope points require a follow-on GitHub issue each (FR-030). Both are filed against parent
 **#341** and reference sub-issue **#350**.
 
-> **Filing status.** `gh issue create` is blocked by this environment's action classifier (the same
-> block recorded for T076 / T086a in the spec 028 Assumptions). The two issues are specified in full
-> below, ready to paste, and are recorded in
-> [`spec.md`](../../specs/028-international-accounting-standards/spec.md) Assumptions. **The maintainer
-> creates them**; replace each `_pending_` link with the issue URL once filed.
+> **Filing status.** Filed 2026-08-30: [#354](https://github.com/SteveTeece/StageFrightCommunity/issues/354)
+> (tax-exclusive entry) and [#355](https://github.com/SteveTeece/StageFrightCommunity/issues/355)
+> (recoverable input tax classification), both against parent **#341**, referencing spike **#350**.
+> The specs below are the issue bodies as filed.
 
-### Issue A — Tax-exclusive amount entry — `_pending_`
+### Issue A — Tax-exclusive amount entry — [#354](https://github.com/SteveTeece/StageFrightCommunity/issues/354)
 
 **Title**: `[FEATURE] Support tax-exclusive amount entry (net + tax) alongside the current tax-inclusive entry`
 
@@ -203,7 +202,7 @@ Two in-scope points require a follow-on GitHub issue each (FR-030). Both are fil
 >
 > Rough size: **M**.
 
-### Issue B — Recoverable input tax as a balance-sheet asset — `_pending_`
+### Issue B — Recoverable input tax as a balance-sheet asset — [#355](https://github.com/SteveTeece/StageFrightCommunity/issues/355)
 
 **Title**: `[FEATURE] Classify recoverable input tax (account 2320) correctly on the Balance Sheet`
 

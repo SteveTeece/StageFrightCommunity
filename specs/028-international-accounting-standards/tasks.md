@@ -318,7 +318,7 @@ unchanged.
 - [x] **T073** [US7] `SetupService` — validate `FinancialYearStartDay ∈ 1..28` (`Validation_Setup_FinancialYearStartDayRange`); persist month + day · `src/StageFright.Core/Modules/Settings/SetupService.cs` *(needs T072)*
 - [x] **T074** [US7] `GeneralAppearanceTab` — mandatory FY-start month `<select id="setup-fy-start-month">` and day `<select id="setup-fy-start-day">` · `src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor` + `.razor.cs` *(needs T071)*
 - [x] **T075** [US7] `SetupResource` / `SettingsResource` — FY-start month/day labels · `src/StageFright.UI/Resources/Strings/SetupResource.resx` (+ `.en-US`, `.fr-FR`), `SettingsResource.resx` (+ `.en-US`, `.fr-FR`)
-- [ ] **T076** [US7] Create a follow-on GitHub issue for FR-022 (sub-twelve-month first financial year / part-year label) and note it in [spec.md](spec.md) Assumptions · GitHub issue + `specs/028-international-accounting-standards/spec.md`
+- [x] **T076** [US7] Create a follow-on GitHub issue for FR-022 (sub-twelve-month first financial year / part-year label) and note it in [spec.md](spec.md) Assumptions · GitHub issue + `specs/028-international-accounting-standards/spec.md`
 
 **Checkpoint**: setup requires an explicit FY start (month + day), non-first-of-month works, and an
 AU dataset's report ranges are unchanged (SC-001, US7 AC-3).
@@ -401,7 +401,7 @@ with rough sizing for each required point and that follow-on issues exist for in
 
 **⟶ then:**
 
-- [ ] **T088** [US10] Create a follow-on GitHub issue for every in-scope point; link each from the assessment · GitHub issues + `docs/assessments/sales-tax-internationalisation.md`
+- [x] **T088** [US10] Create a follow-on GitHub issue for every in-scope point; link each from the assessment · GitHub issues + `docs/assessments/sales-tax-internationalisation.md`
 - [x] **T089** [US10] Verify the branch changes no tax posting mechanic and no stored tax code value (`git diff` review of tax-adjacent code + a stored-value assertion in the AUD regression) · verification against T013
 
 **Checkpoint**: a scoped decision and follow-on issues are recorded for each of the four points
