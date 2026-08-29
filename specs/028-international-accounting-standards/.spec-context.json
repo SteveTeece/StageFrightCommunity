@@ -1290,7 +1290,7 @@
       "summary": "Phase 9 / US7: financial-year start is now an explicit (month+day) setup choice — FinancialYearCalculator + 4 FY-preset report providers + OpeningBalancesWizard honour the day; SetupRequest/SetupFormModel/SetupService carry & validate it (1..28); mandatory pickers on the setup General tab and a matching day picker on Settings; T065-T075 done, T076 spec-note done but its GitHub issue is blocked."
     }
   },
-  "currentTask": "T066",
+  "currentTask": "T076",
   "task_summaries": {
     "T015": {
       "status": "DONE",
