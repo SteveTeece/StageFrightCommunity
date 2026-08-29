@@ -1166,7 +1166,7 @@
       "summary": "Phase 8 / US6 closed-period lock: ClosedPeriodException + IClosedPeriodGuard/ClosedPeriodGuard, enforced at the GLRepository choke point, passed through UnitOfWork, surfaced by a confirmed close-period control on the General settings tab and caught by all 7 finance posting forms; 13 tasks (T052-T064), build clean, tests green"
     }
   },
-  "currentTask": "T055",
+  "currentTask": "T065",
   "task_summaries": {
     "T015": {
       "status": "DONE",
