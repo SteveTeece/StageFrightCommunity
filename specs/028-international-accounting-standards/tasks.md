@@ -16,7 +16,7 @@ Test-first: every `### Tests` block is written to **fail first**, then made gree
 
 ## Phase 1: Setup
 
-- [ ] **T001** Confirm a green baseline before any change — `dotnet build` and `dotnet test` (full run, no `--no-build`); record counts · `StageFrightCommunity.slnx`
+- [X] **T001** Confirm a green baseline before any change — `dotnet build` and `dotnet test` (full run, no `--no-build`); record counts · `StageFrightCommunity.slnx` — baseline: build 0W/0E; 1805 tests pass (Core 620, Reports 217, UI 599, Data 154, Localization 23, Integration 192)
 
 ---
 
@@ -27,22 +27,22 @@ migration. No user-story phase starts until this phase is done.
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T002** [P] `SupportedCurrency` record — `Code`, `Symbol`, `MinorUnitDigits` (0/2/3), `DisplayName` · `src/StageFright.Core/Localization/SupportedCurrency.cs`
-- [ ] **T003** [P] `Settings` entity — add `CurrencyCode` (`string`, default `"AUD"`), `FinancialYearStartDay` (`int`, default `1`), `ClosedThroughDate` (`DateTime?`, default `null`); change `AuditRetentionYears` default `1 → 5` (range 1–7 unchanged) · `src/StageFright.Core/Entities/Settings.cs`
+- [X] **T002** [P] `SupportedCurrency` record — `Code`, `Symbol`, `MinorUnitDigits` (0/2/3), `DisplayName` · `src/StageFright.Core/Localization/SupportedCurrency.cs`
+- [X] **T003** [P] `Settings` entity — add `CurrencyCode` (`string`, default `"AUD"`), `FinancialYearStartDay` (`int`, default `1`), `ClosedThroughDate` (`DateTime?`, default `null`); change `AuditRetentionYears` default `1 → 5` (range 1–7 unchanged) · `src/StageFright.Core/Entities/Settings.cs`
 
 **⟶ Wait for Wave 1 to finish, then:**
 
-- [ ] **T004** [P] `CurrencyCatalog` static — `All` seed set (`AUD`,`USD`,`EUR`,`GBP`,`NZD`,`CAD`,`JPY` 0-digit, `KWD`/`BHD` 3-digit); `bool TryGet(string, out SupportedCurrency)` case-insensitive, returns `false` + `Default` on a miss (no throw); `SupportedCurrency Get(string)` case-insensitive, throws `ValidationException` on an unknown code; `Default` (`AUD`/`$`/2) · `src/StageFright.Core/Localization/CurrencyCatalog.cs` *(needs T002)*
-- [ ] **T005** [P] `SettingsConfiguration` — map the 3 new columns; `AuditRetentionYears` `HasDefaultValue(5)` · `src/StageFright.Data/Configurations/SettingsConfiguration.cs` *(needs T003)*
+- [X] **T004** [P] `CurrencyCatalog` static — `All` seed set (`AUD`,`USD`,`EUR`,`GBP`,`NZD`,`CAD`,`JPY` 0-digit, `KWD`/`BHD` 3-digit); `bool TryGet(string, out SupportedCurrency)` case-insensitive, returns `false` + `Default` on a miss (no throw); `SupportedCurrency Get(string)` case-insensitive, throws `ValidationException` on an unknown code; `Default` (`AUD`/`$`/2) · `src/StageFright.Core/Localization/CurrencyCatalog.cs` *(needs T002)*
+- [X] **T005** [P] `SettingsConfiguration` — map the 3 new columns; `AuditRetentionYears` `HasDefaultValue(5)` · `src/StageFright.Data/Configurations/SettingsConfiguration.cs` *(needs T003)*
 
 **⟶ then:**
 
-- [ ] **T006** EF migration `AddInternationalAccountingSettings` — `CurrencyCode` `TEXT NOT NULL DEFAULT 'AUD'`, `FinancialYearStartDay` `INTEGER NOT NULL DEFAULT 1`, `ClosedThroughDate` `TEXT NULL`, `AuditRetentionYears` default constraint `→ 5` **only** (no `migrationBuilder.UpdateData`) · `src/StageFright.Data/Migrations/<ts>_AddInternationalAccountingSettings.cs` *(needs T005)*
-- [ ] **T007** `MoneyFormatter` — add `Configure(SupportedCurrency)`; `Format`/`FormatWithCode` use the configured symbol/code and `MinorUnitDigits`, grouping/placement still from `CultureInfo.CurrentCulture`; before `Configure`, fall back to `CurrencyCatalog.Default` · `src/StageFright.Core/Localization/MoneyFormatter.cs` *(needs T004)*
+- [X] **T006** EF migration `AddInternationalAccountingSettings` — `CurrencyCode` `TEXT NOT NULL DEFAULT 'AUD'`, `FinancialYearStartDay` `INTEGER NOT NULL DEFAULT 1`, `ClosedThroughDate` `TEXT NULL`, `AuditRetentionYears` default constraint `→ 5` **only** (no `migrationBuilder.UpdateData`) · `src/StageFright.Data/Migrations/20260829064637_AddInternationalAccountingSettings.cs` *(needs T005)*
+- [X] **T007** `MoneyFormatter` — add `Configure(SupportedCurrency)`; `Format`/`FormatWithCode` use the configured symbol/code and `MinorUnitDigits`, grouping/placement still from `CultureInfo.CurrentCulture`; before `Configure`, fall back to `CurrencyCatalog.Default` · `src/StageFright.Core/Localization/MoneyFormatter.cs` *(needs T004)*
 
 **⟶ then:**
 
-- [ ] **T008** `MauiProgram` — after the display culture is resolved and applied, call `MoneyFormatter.Configure(CurrencyCatalog.Get(settings?.CurrencyCode ?? "AUD"))` · `src/StageFright.App/MauiProgram.cs` *(needs T007)*
+- [X] **T008** `MauiProgram` — after the display culture is resolved and applied, call `MoneyFormatter.Configure(CurrencyCatalog.Get(settings?.CurrencyCode ?? "AUD"))` · `src/StageFright.App/MauiProgram.cs` *(needs T007)*
 
 **Checkpoint**: currency catalog + configurable formatter + `Settings` schema exist; an `AUD` dataset
 formats byte-identically (`$`, 2 decimals) — T001 tests still green.

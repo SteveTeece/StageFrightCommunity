@@ -331,6 +331,21 @@ public static class MauiProgram
             Log.Error(ex, "Failed to resolve/apply the display culture; continuing on the default culture");
         }
 
+        // Configure money formatting for the organisation's currency (spec 028, FR-003), mirroring
+        // the culture application above — set once here, before the BlazorWebView renders. Any
+        // failure leaves MoneyFormatter on its AUD default and startup continues.
+        try
+        {
+            var settingsService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
+            var settings = settingsService.GetAsync().GetAwaiter().GetResult();
+            MoneyFormatter.Configure(CurrencyCatalog.Get(settings?.CurrencyCode ?? "AUD"));
+            Log.Information("Money formatting configured for {Currency}", settings?.CurrencyCode ?? "AUD");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to configure money formatting; continuing with the default currency (AUD)");
+        }
+
         // Run plugin migrations
         var migrationRunner = scope.ServiceProvider.GetRequiredService<PluginMigrationRunner>();
         migrationRunner.RunAsync().GetAwaiter().GetResult();

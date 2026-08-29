@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "international accounting standards",
   "branch": "028-international-accounting-standards",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implementing",
   "history": [
     {
       "step": "specify",
@@ -67,6 +67,70 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-29T05:49:20.568Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
     }
   ],
   "telemetryInstanceId": "527a7469-9665-4240-b165-addc44766471",
@@ -447,5 +511,6 @@
     "tasks": {
       "summary": "94 tasks across 13 phases (Setup, Foundational, one per US1-US10, Polish); wave-grouped with explicit joins; oversized budget, full per-story Goal/Independent Test/Checkpoint."
     }
-  }
+  },
+  "currentTask": "T009"
 }

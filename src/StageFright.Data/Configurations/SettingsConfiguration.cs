@@ -15,9 +15,11 @@ public class SettingsConfiguration : IEntityTypeConfiguration<Settings>
         builder.Property(s => s.AttendanceFee).HasPrecision(18, 2).IsRequired();
         builder.Property(s => s.Theme).HasConversion<string>();
         builder.Property(s => s.LanguageCode).HasMaxLength(16);
+        builder.Property(s => s.CurrencyCode).IsRequired().HasMaxLength(3).HasDefaultValue("AUD");
+        builder.Property(s => s.FinancialYearStartDay).HasDefaultValue(1);
         builder.Property(s => s.IsTaxApplicable).HasDefaultValue(false);
         builder.Property(s => s.TaxRate).HasPrecision(5, 2);
-        builder.Property(s => s.AuditRetentionYears).HasDefaultValue(1);
+        builder.Property(s => s.AuditRetentionYears).HasDefaultValue(5);
         builder.Property(s => s.AnnualFeeTaxCode).HasConversion<string>();
         builder.Property(s => s.AttendanceFeeTaxCode).HasConversion<string>();
         builder.Property(s => s.SchemaVersion).IsRequired();

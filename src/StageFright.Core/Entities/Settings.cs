@@ -43,6 +43,28 @@ public class Settings
     public int FinancialYearStartMonth { get; set; } = 7;
 
     /// <summary>
+    /// Day of <see cref="FinancialYearStartMonth"/> (1–28) the financial year starts on. Combined
+    /// with the month to bound every financial year and FY-preset report. Default: 1. The 28 upper
+    /// bound avoids month-length edge cases (spec 028, FR-019 / FR-020).
+    /// </summary>
+    public int FinancialYearStartDay { get; set; } = 1;
+
+    /// <summary>
+    /// ISO 4217 code of the currency the organisation keeps its books in (e.g. "AUD", "USD",
+    /// "JPY"). Chosen once at first-run setup and immutable afterward — SettingsService.SaveAsync
+    /// rejects a change. Drives the display symbol and minor-unit precision everywhere money is
+    /// shown; no stored amount changes with it. Default: "AUD" (spec 028, FR-001 / FR-002).
+    /// </summary>
+    public string CurrencyCode { get; set; } = "AUD";
+
+    /// <summary>
+    /// Inclusive date through which all financial periods are closed. Null (the default) means
+    /// nothing is closed. When set, any GL posting line dated on or before this date is rejected so
+    /// a reported prior year cannot be altered by a back-dated entry (spec 028, FR-016 / FR-017).
+    /// </summary>
+    public DateTime? ClosedThroughDate { get; set; }
+
+    /// <summary>
     /// True when sales tax applies to the organisation. When false all tax UI is
     /// hidden, postings are 2-line, and tax codes/rate stay null. Default: false.
     /// </summary>
@@ -97,9 +119,9 @@ public class Settings
 
     /// <summary>
     /// Number of years audit trail entries are retained before the startup purge hard-deletes
-    /// them. Range: 1–7. Default: 1 year.
+    /// them. Range: 1–7, still user-configurable. Default: 5 years (spec 028, FR-023).
     /// </summary>
-    public int AuditRetentionYears { get; set; } = 1;
+    public int AuditRetentionYears { get; set; } = 5;
 
     // --- Soft-delete fields (never set; singleton row) ---
 
