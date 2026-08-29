@@ -296,28 +296,28 @@ unchanged.
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T065** [P] [US7] Unit — `FinancialYearCalculator.GetRange`/`GetPreviousRange` with a non-first-of-month `startDay` and a February start day · `tests/StageFright.Core.Tests/Modules/Finance/FinancialYearCalculatorTests.cs`
-- [ ] **T066** [P] [US7] Integration — setup with a non-first-of-month start; every FY-preset report honours month + day; an AU (7, 1) dataset's ranges are unchanged · `tests/StageFright.Integration.Tests/InternationalAccounting/FinancialYearStartTests.cs`
-- [ ] **T067** [P] [US7] bUnit — setup FY-start month + day pickers render, are mandatory, and bind the model · `tests/StageFright.UI.Tests/Pages/Setup/FinancialYearStartPickerTests.cs`
+- [x] **T065** [P] [US7] Unit — `FinancialYearCalculator.GetRange`/`GetPreviousRange` with a non-first-of-month `startDay` and a February start day · `tests/StageFright.Core.Tests/Modules/Finance/FinancialYearCalculatorTests.cs`
+- [x] **T066** [P] [US7] Integration — setup with a non-first-of-month start; every FY-preset report honours month + day; an AU (7, 1) dataset's ranges are unchanged · `tests/StageFright.Integration.Tests/InternationalAccounting/FinancialYearStartTests.cs`
+- [x] **T067** [P] [US7] bUnit — setup FY-start month + day pickers render, are mandatory, and bind the model · `tests/StageFright.UI.Tests/Pages/Setup/FinancialYearStartPickerTests.cs`
 
 ### Implementation
 
 **Wave 1 — the calculator (single file), then its callers:**
 
-- [ ] **T068** [US7] `FinancialYearCalculator` — add an optional `int startDay = 1` parameter to `GetRange`/`GetPreviousRange` (the default preserves every existing caller and test); pivot the year on `(month, day)`; range = `start … start.AddYears(1).AddDays(-1)` · `src/StageFright.Core/Modules/Finance/FinancialYearCalculator.cs`
-- [ ] **T069** [P] [US7] Providers pass `settings.FinancialYearStartDay`: `TrialBalanceReportProvider`, `BalanceSheetReportProvider`, `IncomeStatementReportProvider`, `TaxSummaryReportProvider` · `src/StageFright.Reports/Providers/*.cs` *(needs T068)*
-- [ ] **T070** [P] [US7] `OpeningBalancesWizard` passes `FinancialYearStartDay` to `FinancialYearCalculator` · `src/StageFright.UI/Pages/Finance/OpeningBalancesWizard.razor.cs` *(needs T068)*
+- [x] **T068** [US7] `FinancialYearCalculator` — add an optional `int startDay = 1` parameter to `GetRange`/`GetPreviousRange` (the default preserves every existing caller and test); pivot the year on `(month, day)`; range = `start … start.AddYears(1).AddDays(-1)` · `src/StageFright.Core/Modules/Finance/FinancialYearCalculator.cs`
+- [x] **T069** [P] [US7] Providers pass `settings.FinancialYearStartDay`: `TrialBalanceReportProvider`, `BalanceSheetReportProvider`, `IncomeStatementReportProvider`, `TaxSummaryReportProvider` · `src/StageFright.Reports/Providers/*.cs` *(needs T068)*
+- [x] **T070** [P] [US7] `OpeningBalancesWizard` passes `FinancialYearStartDay` to `FinancialYearCalculator` · `src/StageFright.UI/Pages/Finance/OpeningBalancesWizard.razor.cs` *(needs T068)*
 
 **⟶ then — setup plumbing (independent files):**
 
-- [ ] **T071** [P] [US7] `SetupFormModel` — add `int FinancialYearStartMonth` (`[Range(1,12)]`, default `7`) and `int FinancialYearStartDay` (`[Range(1,28)]`, default `1`) · `src/StageFright.UI/Pages/Setup/SetupFormModel.cs`
-- [ ] **T072** [P] [US7] `SetupRequest` — add `int FinancialYearStartMonth = 7`, `int FinancialYearStartDay = 1` · `src/StageFright.Core/Modules/Settings/SetupRequest.cs`
+- [x] **T071** [P] [US7] `SetupFormModel` — add `int FinancialYearStartMonth` (`[Range(1,12)]`, default `7`) and `int FinancialYearStartDay` (`[Range(1,28)]`, default `1`) · `src/StageFright.UI/Pages/Setup/SetupFormModel.cs`
+- [x] **T072** [P] [US7] `SetupRequest` — add `int FinancialYearStartMonth = 7`, `int FinancialYearStartDay = 1` · `src/StageFright.Core/Modules/Settings/SetupRequest.cs`
 
 **⟶ then:**
 
-- [ ] **T073** [US7] `SetupService` — validate `FinancialYearStartDay ∈ 1..28` (`Validation_Setup_FinancialYearStartDayRange`); persist month + day · `src/StageFright.Core/Modules/Settings/SetupService.cs` *(needs T072)*
-- [ ] **T074** [US7] `GeneralAppearanceTab` — mandatory FY-start month `<select id="setup-fy-start-month">` and day `<select id="setup-fy-start-day">` · `src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor` + `.razor.cs` *(needs T071)*
-- [ ] **T075** [US7] `SetupResource` / `SettingsResource` — FY-start month/day labels · `src/StageFright.UI/Resources/Strings/SetupResource.resx` (+ `.en-US`, `.fr-FR`), `SettingsResource.resx` (+ `.en-US`, `.fr-FR`)
+- [x] **T073** [US7] `SetupService` — validate `FinancialYearStartDay ∈ 1..28` (`Validation_Setup_FinancialYearStartDayRange`); persist month + day · `src/StageFright.Core/Modules/Settings/SetupService.cs` *(needs T072)*
+- [x] **T074** [US7] `GeneralAppearanceTab` — mandatory FY-start month `<select id="setup-fy-start-month">` and day `<select id="setup-fy-start-day">` · `src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor` + `.razor.cs` *(needs T071)*
+- [x] **T075** [US7] `SetupResource` / `SettingsResource` — FY-start month/day labels · `src/StageFright.UI/Resources/Strings/SetupResource.resx` (+ `.en-US`, `.fr-FR`), `SettingsResource.resx` (+ `.en-US`, `.fr-FR`)
 - [ ] **T076** [US7] Create a follow-on GitHub issue for FR-022 (sub-twelve-month first financial year / part-year label) and note it in [spec.md](spec.md) Assumptions · GitHub issue + `specs/028-international-accounting-standards/spec.md`
 
 **Checkpoint**: setup requires an explicit FY start (month + day), non-first-of-month works, and an
