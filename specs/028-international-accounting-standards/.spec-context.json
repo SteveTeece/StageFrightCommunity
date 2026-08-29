@@ -817,7 +817,7 @@
       "summary": "Phase 4 / US2 (T029-T035): locale-safe money entry. New MoneyInput.Parse invariant-parses the always-invariant <input type=number> value; JournalEntryPage.ParseAmount and OpeningBalanceEntryForm.SetAmount now use it instead of NumberStyles.Number + CultureInfo.CurrentCulture, so 1.50 no longer posts as 150 under fr-FR/de-DE. Guard test locks it in. 1895 tests pass (was 1868)."
     }
   },
-  "currentTask": "T035",
+  "currentTask": "T036",
   "task_summaries": {
     "T015": {
       "status": "DONE",
