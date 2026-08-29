@@ -485,7 +485,24 @@ forward.
   the exact figure (five versus seven) is a configuration default, not a hard rule, and the existing
   1–7 year adjustable range is retained.
 - **US10 / sub-issue #350 is a scoping spike.** Only the written assessment and the creation of
-  follow-on issues are in scope here; no multi-jurisdiction tax implementation.
+  follow-on issues are in scope here; no multi-jurisdiction tax implementation. The assessment is
+  published at [`docs/assessments/sales-tax-internationalisation.md`](../../docs/assessments/sales-tax-internationalisation.md)
+  (T087): of its four required points, **rate history / effective-dating** (size L) and **multiple
+  simultaneous rates / jurisdictions** (size XL) are **out of scope**; **tax-exclusive amount entry**
+  (size M) and the **balance-sheet classification of recoverable input tax, accounts `2310` / `2320`**
+  (size S–M) are **in scope** and each needs a follow-on GitHub issue (T088). As with T076 / T086a,
+  `gh issue create` is blocked by this environment's action classifier, so the two issues are
+  specified in full in the assessment's *Follow-on issues* section — *"[FEATURE] Support tax-exclusive
+  amount entry (net + tax) alongside the current tax-inclusive entry"* (parent #341, spike #350) and
+  *"[FEATURE] Classify recoverable input tax (account `2320`) correctly on the Balance Sheet"* (parent
+  #341, spike #350) — for the maintainer to create rather than dropped (T088 stays unchecked until
+  they exist).
+- **FR-033 verification (T089).** A `git diff master...HEAD` review of every tax-adjacent file
+  confirms the only tax-path change on this branch is the optional `minorUnitDigits` rounding-precision
+  parameter on `TaxCalculator.SplitInclusive` (default `2`, so an AUD / 2-decimal dataset is
+  byte-identical). The GL line structure, the `2310` / `2320` accounts, the `TaxCode` enum and its
+  stored values, the tax-inclusive entry model, and the Tax Summary net arithmetic are untouched; the
+  `AudZeroDriftTests` stored-value assertions (T013) hold against the final build.
 - Financial reports remain synchronous, unaudited management accounts.
 - The eleventh sub-issue count refers to #342–#352; two originally-deferred gaps (G9, G11) were
   promoted into #352 and #351 at the user's request and are in scope.

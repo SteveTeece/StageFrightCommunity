@@ -802,6 +802,22 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-29T22:52:58.383Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T087",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:02:39.273Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T089",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:04:25.175Z"
     }
   ],
   "telemetryInstanceId": "527a7469-9665-4240-b165-addc44766471",
@@ -1177,6 +1193,9 @@
       "title": "Produce a written sales-tax internationalisation assessment covering four required points",
       "tasks": [
         "T087"
+      ],
+      "tests": [
+        "docs/assessments/sales-tax-internationalisation.md (written assessment; spike - no automated tests)"
       ]
     },
     "FR-030": {
@@ -1184,6 +1203,9 @@
       "tasks": [
         "T087",
         "T088"
+      ],
+      "tests": [
+        "docs/assessments/sales-tax-internationalisation.md::Summary+Follow-on issues (in/out decision + rough size per point; issues deferred - T088 blocked)"
       ]
     },
     "FR-031": {
@@ -1206,6 +1228,11 @@
       "tasks": [
         "T089",
         "T093"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs::StoredTransactionValues_AreUntouched",
+        "tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs::TaxCalculator_AtTwoMinorDigits_IsUnchanged",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_CurrencyConfigurationTests.cs::SameDataset_UnderAud_IsByteIdenticalToTheLegacyDollarString"
       ]
     }
   },
@@ -1393,6 +1420,11 @@
       "decision": "T085 scope widened past the literal task text to also fix line-40 \"net of GST\" and line-118 \"GST clearing accounts\" so the finance living spec has zero retired-model references (FR-028); T086a recorded as a spec.md Assumptions bullet rather than a filed GitHub issue",
       "why": "FR-028 demands NO reference to the retired model, not just the named identifiers; the task explicitly permits \"Assumptions or a tracking issue\" and issue creation is blocked on this machine (same wall as T076)",
       "rejected": "Leaving the two stray GST phrases as out-of-scope; opening a GitHub issue for the settings-spec follow-up now"
+    },
+    {
+      "decision": "US10 assessment scopes 2 of 4 points IN (tax-exclusive entry M; recoverable-tax 2310/2320 balance-sheet classification S-M) and 2 OUT (rate history L; multi-jurisdiction XL)",
+      "why": "the two IN points are real, bounded gaps for tax-exclusive jurisdictions and net-refundable orgs; the two OUT points need a new model dimension disproportionate to community/amateur-theatre need and are the separate body of work the spec explicitly carves out",
+      "rejected": "scoping all four out to avoid the issue-creation blocker - dishonest; or all four in - overcommits to an XL multi-jurisdiction redesign"
     }
   ],
   "step_summaries": {
@@ -1404,13 +1436,13 @@
       "summary": "94 tasks across 13 phases (Setup, Foundational, one per US1-US10, Polish); wave-grouped with explicit joins; oversized budget, full per-story Goal/Independent Test/Checkpoint."
     },
     "implement": {
-      "summary": "Phase 11 / US9: published docs/accounting-policies.md and de-drafted + retax-modelled the finance living spec; corrected the audit-trail retention figure; noted the settings-spec follow-up"
+      "summary": "Phase 12 (US10 spike): published docs/assessments/sales-tax-internationalisation.md with in-scope/out-of-scope + rough size for all 4 FR-029 points; verified FR-033 (no tax posting mechanic or stored tax code value changed); T088 GitHub-issue creation blocked by classifier, deferred issue specs recorded"
     },
     "specify": {
       "summary": "Phase 9 / US7: financial-year start is now an explicit (month+day) setup choice — FinancialYearCalculator + 4 FY-preset report providers + OpeningBalancesWizard honour the day; SetupRequest/SetupFormModel/SetupService carry & validate it (1..28); mandatory pickers on the setup General tab and a matching day picker on Settings; T065-T075 done, T076 spec-note done but its GitHub issue is blocked."
     }
   },
-  "currentTask": "T076",
+  "currentTask": "T089",
   "task_summaries": {
     "T015": {
       "status": "DONE",
@@ -2075,6 +2107,20 @@
       "files": [
         "specs/028-international-accounting-standards/spec.md"
       ]
+    },
+    "T087": {
+      "status": "DONE",
+      "did": "New docs/assessments/sales-tax-internationalisation.md: in-scope/out-of-scope decision + rough size for all 4 FR-029 points (rate history OUT/L, tax-exclusive entry IN/M, 2310-2320 balance-sheet classification IN/S-M, multi-jurisdiction OUT/XL)",
+      "files": [
+        "docs/assessments/sales-tax-internationalisation.md"
+      ]
+    },
+    "T089": {
+      "status": "DONE",
+      "did": "FR-033 verification: git diff master...HEAD of all tax-adjacent files confirms the only tax-path change is TaxCalculator.SplitInclusive's optional minorUnitDigits param (default 2 = byte-identical for AUD); TaxCode enum, 2310/2320 accounts, GL line structure, tax-inclusive entry model and Tax Summary net arithmetic all unchanged. AUD regression stored-value assertions (AudZeroDriftTests.StoredTransactionValues_AreUntouched, V28 byte-identical) hold. Recorded in spec.md Assumptions.",
+      "files": [
+        "specs/028-international-accounting-standards/spec.md"
+      ]
     }
   },
   "verified": [
@@ -2155,6 +2201,12 @@
       "command": "grep -nE \"GST|Gst|DRAFT|12 months|fixed retention|÷ 11\" capabilities/finance/spec.md capabilities/audit-trail/spec.md",
       "result": "clean — no matches; Phase 11 is Markdown-only so no dotnet build/test (deferred to Phase 13 T090/T091)",
       "warnings": []
+    },
+    {
+      "what": "T089 FR-033 no-tax-change verification: git diff master...HEAD over every tax-adjacent file (TaxCalculator, FeeService, IncomeEntryService, ExpensePaymentService, ReactivationForgivenessService, TaxSummaryReportProvider, Settings, TaxSettingsTab, SalesTaxTab, TaxCode)",
+      "command": "git diff master...HEAD -- <tax-adjacent files>",
+      "result": "PASS - only tax-path change is the optional minorUnitDigits param on SplitInclusive (default 2 = AUD byte-identical); TaxCode enum unchanged; 2310/2320 accounts, GL line structure, TaxCode stamping, tax-inclusive entry model and Tax Summary net arithmetic all unchanged; rest is localization + MoneyFormatter routing",
+      "warnings": []
     }
   ],
   "concerns": [
@@ -2217,7 +2269,11 @@
     {
       "note": "Two follow-ups need GitHub issues that could not be filed from here: FR-022 short-first-FY (T076) and the capabilities/settings/spec.md retired-ABN/GST wording (T086a). Both are noted in spec.md Assumptions. Phase 12 T088 will hit the same constraint.",
       "step": "implement"
+    },
+    {
+      "note": "T088 left unchecked: gh issue create is blocked by the environment action classifier (same as T076). The two in-scope follow-on issues (tax-exclusive entry; recoverable input tax 2320 classification) are specified verbatim in docs/assessments/sales-tax-internationalisation.md Follow-on issues section and noted in spec.md Assumptions, for the maintainer to file against parent #341.",
+      "step": "implement"
     }
   ],
-  "last_action": "Phase 11 (US9) done — T084-T086a checked off (84/94); Phases 12-13 + deferred T076 remain"
+  "last_action": "Phase 12 done - T087 + T089 checked (88/94); T088 blocked (gh issue create denied), issue specs recorded in assessment + spec.md; T076 + Phase 13 (T090-T094) remain"
 }

@@ -397,12 +397,12 @@ with rough sizing for each required point and that follow-on issues exist for in
 
 **Wave 1 — the assessment (single file):**
 
-- [ ] **T087** [US10] `docs/assessments/sales-tax-internationalisation.md` — for rate changes over time, tax-exclusive entry, the balance-sheet classification of recoverable tax (accounts `2310` / `2320`), and whether multiple simultaneous rates or jurisdictions are needed: an in-scope / out-of-scope decision with a rough size each · `docs/assessments/sales-tax-internationalisation.md`
+- [x] **T087** [US10] `docs/assessments/sales-tax-internationalisation.md` — for rate changes over time, tax-exclusive entry, the balance-sheet classification of recoverable tax (accounts `2310` / `2320`), and whether multiple simultaneous rates or jurisdictions are needed: an in-scope / out-of-scope decision with a rough size each · `docs/assessments/sales-tax-internationalisation.md`
 
 **⟶ then:**
 
 - [ ] **T088** [US10] Create a follow-on GitHub issue for every in-scope point; link each from the assessment · GitHub issues + `docs/assessments/sales-tax-internationalisation.md`
-- [ ] **T089** [US10] Verify the branch changes no tax posting mechanic and no stored tax code value (`git diff` review of tax-adjacent code + a stored-value assertion in the AUD regression) · verification against T013
+- [x] **T089** [US10] Verify the branch changes no tax posting mechanic and no stored tax code value (`git diff` review of tax-adjacent code + a stored-value assertion in the AUD regression) · verification against T013
 
 **Checkpoint**: a scoped decision and follow-on issues are recorded for each of the four points
 (SC-013, FR-033).
