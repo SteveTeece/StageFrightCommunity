@@ -156,20 +156,20 @@ and from a deliberately corrupted ledger (both refuse or flag the discrepancy).
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T036** [P] [US3] Report test — Trial Balance with debits/credits differing by `0.01` fails to generate (`GLBalanceException`, no tolerance) · `tests/StageFright.Reports.Tests/Providers/TrialBalanceReportProviderTests.cs`
-- [ ] **T037** [P] [US3] Report test — Balance Sheet from an unbalanced ledger renders an explicit out-of-balance row and never a clean statement; a balanced ledger renders normally · `tests/StageFright.Reports.Tests/Providers/BalanceSheetReportProviderTests.cs`
-- [ ] **T037a** [P] [US3] **Acceptance** — `V28_StatementIntegrity` drives US3 AC-1…AC-3: Balance Sheet + Trial Balance from a balanced ledger (both tie, statements produced normally) and from a deliberately corrupted ledger (Balance Sheet shows an explicit out-of-balance line and never a clean statement; Trial Balance fails; a one-cent debit/credit difference still fails — no tolerance) · `tests/StageFright.Integration.Tests/Scenarios/V28_StatementIntegrityTests.cs`
+- [x] **T036** [P] [US3] Report test — Trial Balance with debits/credits differing by `0.01` fails to generate (`GLBalanceException`, no tolerance) · `tests/StageFright.Reports.Tests/Providers/TrialBalanceReportProviderTests.cs`
+- [x] **T037** [P] [US3] Report test — Balance Sheet from an unbalanced ledger renders an explicit out-of-balance row and never a clean statement; a balanced ledger renders normally · `tests/StageFright.Reports.Tests/Providers/BalanceSheetReportProviderTests.cs`
+- [x] **T037a** [P] [US3] **Acceptance** — `V28_StatementIntegrity` drives US3 AC-1…AC-3: Balance Sheet + Trial Balance from a balanced ledger (both tie, statements produced normally) and from a deliberately corrupted ledger (Balance Sheet shows an explicit out-of-balance line and never a clean statement; Trial Balance fails; a one-cent debit/credit difference still fails — no tolerance) · `tests/StageFright.Integration.Tests/Scenarios/V28_StatementIntegrityTests.cs`
 
 ### Implementation
 
 **Wave 1 — independent (different providers):**
 
-- [ ] **T038** [P] [US3] `TrialBalanceReportProvider` — `Math.Abs(totalDebits − totalCredits) > 0.01m` → `totalDebits != totalCredits`; reword the thrown message; fix the stale `FR-034` doc-comment reference · `src/StageFright.Reports/Providers/TrialBalanceReportProvider.cs`
-- [ ] **T039** [P] [US3] `BalanceSheetReportProvider` — after totals, if `totalAssets != totalLiabilities + totalEquity` append a bold `Reports_BalanceSheet_OutOfBalance` row (label + `MoneyFormatter.Format(difference)`) · `src/StageFright.Reports/Providers/BalanceSheetReportProvider.cs`
+- [x] **T038** [P] [US3] `TrialBalanceReportProvider` — `Math.Abs(totalDebits − totalCredits) > 0.01m` → `totalDebits != totalCredits`; reword the thrown message; fix the stale `FR-034` doc-comment reference · `src/StageFright.Reports/Providers/TrialBalanceReportProvider.cs`
+- [x] **T039** [P] [US3] `BalanceSheetReportProvider` — after totals, if `totalAssets != totalLiabilities + totalEquity` append a bold `Reports_BalanceSheet_OutOfBalance` row (label + `MoneyFormatter.Format(difference)`) · `src/StageFright.Reports/Providers/BalanceSheetReportProvider.cs`
 
 **⟶ then:**
 
-- [ ] **T040** [US3] `ReportsResource` — reword `Reports_TrialBalance_GLImbalanceError` (drop "tolerance"); add `Reports_BalanceSheet_OutOfBalance` · `src/StageFright.Reports/Resources/ReportsResource.resx`, `.en-US.resx`, `.fr-FR.resx`
+- [x] **T040** [US3] `ReportsResource` — reword `Reports_TrialBalance_GLImbalanceError` (drop "tolerance"); add `Reports_BalanceSheet_OutOfBalance` · `src/StageFright.Reports/Resources/ReportsResource.resx`, `.en-US.resx`, `.fr-FR.resx`
 
 **Checkpoint**: an unbalanced ledger cannot produce a clean Balance Sheet or Trial Balance (SC-005,
 SC-006).

@@ -66,7 +66,7 @@
   <data name="Reports_IncomeStatement_Deficit" xml:space="preserve"><value>(Déficit)</value></data>
   <data name="Reports_TrialBalance_Name" xml:space="preserve"><value>Balance générale</value></data>
   <data name="Reports_TrialBalance_TotalsRow" xml:space="preserve"><value>Totaux</value></data>
-  <data name="Reports_TrialBalance_GLImbalanceError" xml:space="preserve"><value>Échec de la vérification de l'équilibre du grand livre : total des débits (${Debits}) ≠ total des crédits (${Credits}). La balance générale ne peut pas être générée tant que le grand livre est déséquilibré.</value><comment>{Debits}/{Credits} are the GL totals formatted 'F2'; each leading $ is a literal currency sign, not a placeholder.</comment></data>
+  <data name="Reports_TrialBalance_GLImbalanceError" xml:space="preserve"><value>Échec de la vérification de l'équilibre du grand livre : le total des débits ({Debits}) est différent du total des crédits ({Credits}). Tout écart est une erreur — la balance générale ne peut pas être générée tant que le grand livre est déséquilibré.</value><comment>{Debits}/{Credits} are the GL totals pre-formatted through MoneyFormatter and already carry the configured currency symbol.</comment></data>
   <data name="Reports_AccountRegister_Name" xml:space="preserve"><value>Registre de compte</value></data>
   <data name="Reports_AccountRegister_RunningBalanceColumn" xml:space="preserve"><value>Solde cumulé</value></data>
   <data name="Reports_BalanceSheet_Name" xml:space="preserve"><value>Bilan</value></data>
@@ -77,6 +77,7 @@
   <data name="Reports_BalanceSheet_TotalEquity" xml:space="preserve"><value>Total des capitaux propres</value></data>
   <data name="Reports_BalanceSheet_AccumulatedSurplus" xml:space="preserve"><value>Excédent accumulé</value></data>
   <data name="Reports_BalanceSheet_TotalLiabilitiesPlusEquity" xml:space="preserve"><value>Total passif + capitaux propres</value></data>
+  <data name="Reports_BalanceSheet_OutOfBalance" xml:space="preserve"><value>Écart de balance de</value><comment>Label on the explicit out-of-balance line appended when total assets do not equal total liabilities plus equity (FR-010). The adjacent cell shows the signed difference.</comment></data>
   <data name="Reports_BankReconciliation_Name" xml:space="preserve"><value>Rapprochement bancaire</value></data>
   <data name="Reports_BankReconciliation_SubTitle" xml:space="preserve"><value>Rapprochement le plus récent par compte, généré le {Date}</value><comment>{Date} generation date formatted 'd MMMM yyyy'.</comment></data>
   <data name="Reports_BankReconciliation_SubTitleNone" xml:space="preserve"><value>Aucun rapprochement n'a été enregistré.</value></data>

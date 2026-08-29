@@ -325,8 +325,8 @@
     <value>Totals</value>
   </data>
   <data name="Reports_TrialBalance_GLImbalanceError" xml:space="preserve">
-    <value>GL Balance Verification Failed: Total Debits (${Debits}) ≠ Total Credits (${Credits}). The Trial Balance cannot be generated while the ledger is out of balance.</value>
-    <comment>{Debits}/{Credits} are the GL totals formatted 'F2'; each leading $ is a literal currency sign, not a placeholder.</comment>
+    <value>GL Balance Verification Failed: total debits ({Debits}) do not equal total credits ({Credits}). Any difference is an error — the Trial Balance cannot be generated while the ledger is out of balance.</value>
+    <comment>{Debits}/{Credits} are the GL totals pre-formatted through MoneyFormatter and already carry the configured currency symbol.</comment>
   </data>
 
   <!-- ============ Account Register ============ -->
@@ -362,6 +362,10 @@
   </data>
   <data name="Reports_BalanceSheet_TotalLiabilitiesPlusEquity" xml:space="preserve">
     <value>Total Liabilities + Equity</value>
+  </data>
+  <data name="Reports_BalanceSheet_OutOfBalance" xml:space="preserve">
+    <value>Out of balance by</value>
+    <comment>Label on the explicit out-of-balance line appended when total assets do not equal total liabilities plus equity (FR-010). The adjacent cell shows the signed difference.</comment>
   </data>
 
   <!-- ============ Bank Reconciliation ============ -->

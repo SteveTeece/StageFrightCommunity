@@ -15,7 +15,8 @@ namespace StageFright.Reports.Providers;
 /// Sections: Assets, Liabilities, Equity, Income, Expenses — grouped by AccountId
 /// (the denormalized Transaction.GLAccount string is a posting-time snapshot and is
 /// never used for aggregation). Default date range is the current financial year.
-/// Throws GLBalanceException if |TotalDebits − TotalCredits| > 0.01 per FR-034.
+/// Throws GLBalanceException on any non-zero difference between TotalDebits and
+/// TotalCredits — there is no tolerance band (FR-011).
 /// </summary>
 public class TrialBalanceReportProvider : IReportProvider
 {
@@ -55,7 +56,7 @@ public class TrialBalanceReportProvider : IReportProvider
         var (from, to) = await ParseDateRangeAsync(filters, ct);
         var (totalDebits, totalCredits) = await _gl.GetBalanceTotalsAsync(from, to, ct);
 
-        if (Math.Abs(totalDebits - totalCredits) > 0.01m)
+        if (totalDebits != totalCredits)
         {
             throw new GLBalanceException(
                 _localizer.Get<ReportsResource>("Reports_TrialBalance_GLImbalanceError",

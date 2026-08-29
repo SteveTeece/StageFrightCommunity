@@ -14,7 +14,7 @@ namespace StageFright.Reports.Tests;
 /// - Assets / Income / Expenses sections
 /// - Debit / Credit columns
 /// - Σdebits = Σcredits → report generated
-/// - Forced imbalance → GLBalanceException with FR-034 message
+/// - Forced imbalance (any non-zero difference — no tolerance band) → GLBalanceException
 /// </summary>
 public class TrialBalanceReportProviderTests
 {
@@ -110,7 +110,7 @@ public class TrialBalanceReportProviderTests
     }
 
     [Fact]
-    public async Task GenerateAsync_WhenImbalanced_ExceptionMessage_MatchesFR034()
+    public async Task GenerateAsync_WhenImbalanced_ExceptionMessage_NamesBothTotals()
     {
         SetupBalanceTotals(1000m, 950m);
         SetupAccounts();
@@ -118,22 +118,32 @@ public class TrialBalanceReportProviderTests
         var ex = await Assert.ThrowsAsync<GLBalanceException>(
             () => _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken));
 
-        // FR-034 exact message format
+        // Message names the failure and carries both GL totals as configured-currency amounts.
         Assert.Contains("GL Balance Verification Failed", ex.Message);
         Assert.Contains(MoneyFormatter.Format(1000m), ex.Message);
         Assert.Contains(MoneyFormatter.Format(950m), ex.Message);
     }
 
     [Fact]
-    public async Task GenerateAsync_WithinToleranceOf01_DoesNotThrow()
+    public async Task GenerateAsync_WhenExactlyBalanced_DoesNotThrow()
     {
-        // Exactly 0.01 difference should still pass (within tolerance)
         SetupBalanceTotals(100.00m, 100.00m);
         SetupAccounts();
 
         var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         Assert.NotNull(result);
+    }
+
+    [Fact]
+    public async Task GenerateAsync_WhenDebitsAndCreditsDifferByOneCent_ThrowsGLBalanceException()
+    {
+        // FR-011 / SC-006: any non-zero difference is an error — no tolerance band.
+        SetupBalanceTotals(100.00m, 100.01m);
+        SetupAccounts();
+
+        await Assert.ThrowsAsync<GLBalanceException>(
+            () => _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken));
     }
 
     [Fact]

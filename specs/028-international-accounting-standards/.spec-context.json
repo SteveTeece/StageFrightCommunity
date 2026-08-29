@@ -370,6 +370,54 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-29T08:00:14.943Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:15:48.734Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:16:26.788Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037a",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:18:24.111Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:19:35.827Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:20:47.008Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:22:00.949Z"
     }
   ],
   "telemetryInstanceId": "527a7469-9665-4240-b165-addc44766471",
@@ -518,6 +566,11 @@
         "T037",
         "T039",
         "T040"
+      ],
+      "tests": [
+        "tests/StageFright.Reports.Tests/BalanceSheetReportProviderTests.cs::GenerateAsync_WhenAssetsDoNotEqualLiabilitiesPlusEquity_AppendsExplicitOutOfBalanceRow",
+        "GenerateAsync_WhenLedgerBalances_AppendsNoOutOfBalanceRow;tests/StageFright.Integration.Tests/Scenarios/V28_StatementIntegrityTests.cs::CorruptedLedger_BalanceSheet_ShowsExplicitOutOfBalanceLine_AndNeverACleanStatement",
+        "BalancedLedger_BalanceSheet_ProducesACleanStatement"
       ]
     },
     "FR-011": {
@@ -526,6 +579,11 @@
         "T036",
         "T038",
         "T040"
+      ],
+      "tests": [
+        "tests/StageFright.Reports.Tests/TrialBalanceReportProviderTests.cs::GenerateAsync_WhenDebitsAndCreditsDifferByOneCent_ThrowsGLBalanceException",
+        "GenerateAsync_WhenExactlyBalanced_DoesNotThrow;tests/StageFright.Integration.Tests/Scenarios/V28_StatementIntegrityTests.cs::TrialBalance_WithAOneCentImbalance_StillFailsToGenerate",
+        "CorruptedLedger_TrialBalance_FailsToGenerate"
       ]
     },
     "FR-012": {
@@ -803,6 +861,16 @@
       "decision": "V28_LocaleSafeMoneyEntry drives the real GeneralJournalService/OpeningBalanceService feeding amounts through MoneyInput.Parse directly, rather than rendering the razor components",
       "why": "StageFright.Integration.Tests has no bUnit reference; calling MoneyInput.Parse under fr-FR/de-DE then posting through the real services over SQLite+migrations still proves known input -> exact stored ledger value end to end (US2 AC-1..AC-3)",
       "rejected": "reflectively invoking the private ParseAmount/SetAmount, or adding bUnit to Integration.Tests"
+    },
+    {
+      "decision": "Balance Sheet out-of-balance line is a trailing null-heading ReportSection with one emphasized [label, MoneyFormatter.Format(difference)] row",
+      "why": "ReportData has a single GrandTotal slot, so a second emphasized row must be a section; a null heading renders the row cleanly in PDF/CSV/viewer (verified). Difference = totalAssets - (totalLiabilities + totalEquity)",
+      "rejected": "Adding the row inside the Equity section (distorts the equity subtotal semantics) or a new ReportData field"
+    },
+    {
+      "decision": "T040 reword also drops the literal $ prefix from Reports_TrialBalance_GLImbalanceError ({Debits}/{Credits} now carry the MoneyFormatter symbol)",
+      "why": "Since T024 routed the args through MoneyFormatter the template produced a doubled $$1,000.00 under AUD; dropping the literal prefix is the correct fix and is the natural place to also drop the tolerance implication",
+      "rejected": "Leaving the literal $ (doubled symbol) or switching args back to bare F2"
     }
   ],
   "step_summaries": {
@@ -814,10 +882,10 @@
       "summary": "94 tasks across 13 phases (Setup, Foundational, one per US1-US10, Polish); wave-grouped with explicit joins; oversized budget, full per-story Goal/Independent Test/Checkpoint."
     },
     "implement": {
-      "summary": "Phase 4 / US2 (T029-T035): locale-safe money entry. New MoneyInput.Parse invariant-parses the always-invariant <input type=number> value; JournalEntryPage.ParseAmount and OpeningBalanceEntryForm.SetAmount now use it instead of NumberStyles.Number + CultureInfo.CurrentCulture, so 1.50 no longer posts as 150 under fr-FR/de-DE. Guard test locks it in. 1895 tests pass (was 1868)."
+      "summary": "Phase 5 / US3 (T036-T040): statement integrity. TrialBalanceReportProvider drops the 0.01 tolerance band (totalDebits != totalCredits, no tolerance, FR-011); BalanceSheetReportProvider appends an explicit emphasized out-of-balance line when totalAssets != totalLiabilities + totalEquity (FR-010). Reworded Reports_TrialBalance_GLImbalanceError (dropped tolerance implication + doubled $) and added Reports_BalanceSheet_OutOfBalance across neutral/en-US/fr-FR. 1903 tests pass (was ~1895)."
     }
   },
-  "currentTask": "T036",
+  "currentTask": "T040",
   "task_summaries": {
     "T015": {
       "status": "DONE",
@@ -1047,6 +1115,50 @@
       "files": [
         "src/StageFright.UI/Shared/OpeningBalanceEntryForm.razor.cs"
       ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "TrialBalanceReportProviderTests: added one-cent-difference throws GLBalanceException test; renamed the misnamed tolerance test to _WhenExactlyBalanced; dropped stale FR-034 refs",
+      "files": [
+        "tests/StageFright.Reports.Tests/TrialBalanceReportProviderTests.cs"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "BalanceSheetReportProviderTests: added unbalanced-ledger test asserting an explicit emphasized out-of-balance row + totals visibly disagree, and a balanced-ledger test asserting no such row",
+      "files": [
+        "tests/StageFright.Reports.Tests/BalanceSheetReportProviderTests.cs"
+      ]
+    },
+    "T037a": {
+      "status": "DONE",
+      "did": "V28_StatementIntegrityTests (integration acceptance): balanced ledger -> Trial Balance ties + Balance Sheet clean; corrupted ledger -> Trial Balance throws GLBalanceException + Balance Sheet shows an explicit emphasized out-of-balance row; one-cent imbalance still fails (no tolerance)",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V28_StatementIntegrityTests.cs"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "TrialBalanceReportProvider: imbalance check is now totalDebits != totalCredits (was Math.Abs(...) > 0.01m); class doc-comment reworded to 'no tolerance band (FR-011)', dropping the stale FR-034 reference",
+      "files": [
+        "src/StageFright.Reports/Providers/TrialBalanceReportProvider.cs"
+      ]
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "BalanceSheetReportProvider: after building the three sections, if totalAssets != totalLiabilities + totalEquity append a bold null-heading section with a Reports_BalanceSheet_OutOfBalance row (label + MoneyFormatter.Format(difference)); class doc-comment notes the FR-010 behaviour",
+      "files": [
+        "src/StageFright.Reports/Providers/BalanceSheetReportProvider.cs"
+      ]
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "ReportsResource (neutral + en-US + fr-FR): reworded Reports_TrialBalance_GLImbalanceError to drop the tolerance implication and the doubled literal $ (args now carry the MoneyFormatter symbol), kept {Debits}/{Credits}; added Reports_BalanceSheet_OutOfBalance",
+      "files": [
+        "src/StageFright.Reports/Resources/ReportsResource.resx",
+        "src/StageFright.Reports/Resources/ReportsResource.en-US.resx",
+        "src/StageFright.Reports/Resources/ReportsResource.fr-FR.resx"
+      ]
     }
   },
   "verified": [
@@ -1069,6 +1181,12 @@
       "command": "dotnet build StageFrightCommunity.slnx",
       "result": "Build succeeded, 0 warnings, 0 errors",
       "warnings": []
+    },
+    {
+      "what": "US3 tests fail-first then green",
+      "command": "dotnet test --filter DifferByOneCent|OutOfBalanceRow",
+      "result": "red before T038/T039 (no exception / null row), green after; V28_StatementIntegrity 5/5 pass",
+      "warnings": []
     }
   ],
   "concerns": [
@@ -1087,7 +1205,15 @@
     {
       "note": "OpeningBalanceEntryForm.razor plug row still renders @Plug.ToString(\"N2\") — a money DISPLAY site not routed through MoneyFormatter (would show 2 decimals under a 0-decimal org like JPY). Out of US2 scope (entry, not display); US1 T027 routed JournalEntryPage totals but not this sibling. Fold into Polish T091a or a US1 follow-up.",
       "step": "implement"
+    },
+    {
+      "note": "tasks.md paths for T036/T037 name a tests/StageFright.Reports.Tests/Providers/ subfolder that does not exist; the repo keeps provider tests flat in tests/StageFright.Reports.Tests/. Edited the existing flat files (TrialBalanceReportProviderTests.cs, BalanceSheetReportProviderTests.cs) instead of creating a Providers/ folder.",
+      "step": "implement"
+    },
+    {
+      "note": "The Balance Sheet out-of-balance line renders after the Equity section but before the GrandTotal row (sections render, then GrandTotal), not immediately under Total Liabilities + Equity. Still an explicit, emphasized, never-clean line; a strictly-after-grand-total position would need a ReportData model change.",
+      "step": "implement"
     }
   ],
-  "last_action": "Phase 4 (US2) complete — 8/8 tasks (T029-T035) checked off; build 0W/0E; 1895 tests pass (was 1868, +27). Phases 5-13 not started."
+  "last_action": "Phase 5 (US3) complete — 5/5 tasks (T036-T040) checked off; build 0W/0E; 1903 tests pass. Phases 6-13 not started."
 }

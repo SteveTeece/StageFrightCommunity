@@ -15,7 +15,9 @@ namespace StageFright.Reports.Providers;
 /// date. Accumulated Surplus (3200) is never posted to directly — there is no year-end
 /// closing process — so its value is computed as inception-to-date net income (Income
 /// minus Expenses) and substituted for the account's own (always-zero) GL balance.
-/// This is what makes Assets = Liabilities + Equity hold.
+/// This is what makes Assets = Liabilities + Equity hold. If a corrupted ledger breaks
+/// that identity, an explicit out-of-balance line is appended and no clean statement is
+/// produced (FR-010).
 /// </summary>
 public class BalanceSheetReportProvider : IReportProvider
 {
@@ -65,6 +67,47 @@ public class BalanceSheetReportProvider : IReportProvider
         equityRows.Add(new ReportRow { Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_AccumulatedSurplus"), FormatCurrency(accumulatedSurplus)] });
         totalEquity += accumulatedSurplus;
 
+        var sections = new List<ReportSection>
+        {
+            new ReportSection
+            {
+                Heading = _localizer.Get<ReportsResource>("Reports_Section_Assets"),
+                Rows = assetRows,
+                Subtotal = new ReportRow { Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_TotalAssets"), FormatCurrency(totalAssets)], IsEmphasized = true }
+            },
+            new ReportSection
+            {
+                Heading = _localizer.Get<ReportsResource>("Reports_Section_Liabilities"),
+                Rows = liabilityRows,
+                Subtotal = new ReportRow { Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_TotalLiabilities"), FormatCurrency(totalLiabilities)], IsEmphasized = true }
+            },
+            new ReportSection
+            {
+                Heading = _localizer.Get<ReportsResource>("Reports_Section_Equity"),
+                Rows = equityRows,
+                Subtotal = new ReportRow { Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_TotalEquity"), FormatCurrency(totalEquity)], IsEmphasized = true }
+            }
+        };
+
+        // FR-010: the Balance Sheet balances by construction (Accumulated Surplus is computed net
+        // income), so a non-zero difference here means the ledger itself is corrupt. Append an
+        // explicit out-of-balance line rather than presenting a clean statement.
+        var outOfBalance = totalAssets - (totalLiabilities + totalEquity);
+        if (outOfBalance != 0m)
+        {
+            sections.Add(new ReportSection
+            {
+                Rows =
+                [
+                    new ReportRow
+                    {
+                        Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_OutOfBalance"), FormatCurrency(outOfBalance)],
+                        IsEmphasized = true
+                    }
+                ]
+            });
+        }
+
         return new ReportData
         {
             Title = _localizer.Get<ReportsResource>("Reports_BalanceSheet_Name"),
@@ -75,27 +118,7 @@ public class BalanceSheetReportProvider : IReportProvider
                 new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Account"), Alignment = ReportColumnAlignment.Left },
                 new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Amount"), Alignment = ReportColumnAlignment.Right }
             ],
-            Sections =
-            [
-                new ReportSection
-                {
-                    Heading = _localizer.Get<ReportsResource>("Reports_Section_Assets"),
-                    Rows = assetRows,
-                    Subtotal = new ReportRow { Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_TotalAssets"), FormatCurrency(totalAssets)], IsEmphasized = true }
-                },
-                new ReportSection
-                {
-                    Heading = _localizer.Get<ReportsResource>("Reports_Section_Liabilities"),
-                    Rows = liabilityRows,
-                    Subtotal = new ReportRow { Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_TotalLiabilities"), FormatCurrency(totalLiabilities)], IsEmphasized = true }
-                },
-                new ReportSection
-                {
-                    Heading = _localizer.Get<ReportsResource>("Reports_Section_Equity"),
-                    Rows = equityRows,
-                    Subtotal = new ReportRow { Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_TotalEquity"), FormatCurrency(totalEquity)], IsEmphasized = true }
-                }
-            ],
+            Sections = sections,
             GrandTotal = new ReportRow
             {
                 Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_TotalLiabilitiesPlusEquity"), FormatCurrency(totalLiabilities + totalEquity)],
