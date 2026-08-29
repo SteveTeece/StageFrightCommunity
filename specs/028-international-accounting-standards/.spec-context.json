@@ -1083,6 +1083,10 @@
     {
       "note": "T032a (V28_LocaleSafeMoneyEntry) calls MoneyInput.Parse directly rather than rendering the razor code-behind (Integration.Tests has no bUnit), so it goes green on T033 rather than fail-first on T034/T035. The call-site regression guard is carried by T032 (repo scan) + T030/T031 (bUnit).",
       "step": "implement"
+    },
+    {
+      "note": "OpeningBalanceEntryForm.razor plug row still renders @Plug.ToString(\"N2\") — a money DISPLAY site not routed through MoneyFormatter (would show 2 decimals under a 0-decimal org like JPY). Out of US2 scope (entry, not display); US1 T027 routed JournalEntryPage totals but not this sibling. Fold into Polish T091a or a US1 follow-up.",
+      "step": "implement"
     }
   ],
   "last_action": "Phase 4 (US2) complete — 8/8 tasks (T029-T035) checked off; build 0W/0E; 1895 tests pass (was 1868, +27). Phases 5-13 not started."
