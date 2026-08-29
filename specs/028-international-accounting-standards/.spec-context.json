@@ -885,7 +885,7 @@
       "summary": "Phase 5 / US3 (T036-T040): statement integrity. TrialBalanceReportProvider drops the 0.01 tolerance band (totalDebits != totalCredits, no tolerance, FR-011); BalanceSheetReportProvider appends an explicit emphasized out-of-balance line when totalAssets != totalLiabilities + totalEquity (FR-010). Reworded Reports_TrialBalance_GLImbalanceError (dropped tolerance implication + doubled $) and added Reports_BalanceSheet_OutOfBalance across neutral/en-US/fr-FR. 1903 tests pass (was ~1895)."
     }
   },
-  "currentTask": "T040",
+  "currentTask": "T041",
   "task_summaries": {
     "T015": {
       "status": "DONE",
