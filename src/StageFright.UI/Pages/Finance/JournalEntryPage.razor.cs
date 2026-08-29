@@ -1,4 +1,3 @@
-using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
@@ -81,10 +80,10 @@ public partial class JournalEntryPage : ComponentBase
         line.AccountId = Guid.TryParse(args.Value?.ToString(), out var id) ? id : Guid.Empty;
     }
 
-    private static decimal ParseAmount(object? value) =>
-        decimal.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.CurrentCulture, out var amount)
-            ? amount
-            : 0m;
+    // The value of an <input type="number"> is always serialised invariant, so it is parsed
+    // invariant via the shared helper — never with CultureInfo.CurrentCulture, which reads the
+    // period as a thousands separator under fr-FR / de-DE (spec 028, FR-007…FR-009).
+    private static decimal ParseAmount(object? value) => MoneyInput.Parse(value?.ToString());
 
     private async Task SaveAsync()
     {

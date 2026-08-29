@@ -122,22 +122,22 @@ the manual journal and opening-balance forms and assert the stored ledger values
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T029** [P] [US2] Unit — `MoneyInput.Parse` for `"1.5"`, `"1.50"`, `"1000.5"`, `""`, `"abc"`, `"-3.2"` under `fr-FR` and `de-DE` → exact / `0m` fallback · `tests/StageFright.Core.Tests/Localization/MoneyInputTests.cs`
-- [ ] **T030** [P] [US2] bUnit — `JournalEntryPage` under `fr-FR`: entering `1.50` yields `line.Debit == 1.50m` · `tests/StageFright.UI.Tests/Pages/Finance/JournalEntryPageLocaleTests.cs`
-- [ ] **T031** [P] [US2] bUnit — `OpeningBalanceEntryForm` under `de-DE`: entered amount stored exactly · `tests/StageFright.UI.Tests/Shared/OpeningBalanceEntryFormLocaleTests.cs`
-- [ ] **T032** [P] [US2] Guard — no money field parses an `<input type="number">` value with `CultureInfo.CurrentCulture` · `tests/StageFright.Localization.Tests/MoneyInputGuardTests.cs`
-- [ ] **T032a** [P] [US2] **Acceptance** — `V28_LocaleSafeMoneyEntry` drives US2 AC-1…AC-3: device region `fr-FR` then `de-DE`, enter known amounts into the manual journal and the opening-balance form; asserts the stored ledger values are exact to the cent and identical to the same input under `en-AU`, and that no digit is read as a thousands separator · `tests/StageFright.Integration.Tests/Scenarios/V28_LocaleSafeMoneyEntryTests.cs`
+- [x] **T029** [P] [US2] Unit — `MoneyInput.Parse` for `"1.5"`, `"1.50"`, `"1000.5"`, `""`, `"abc"`, `"-3.2"` under `fr-FR` and `de-DE` → exact / `0m` fallback · `tests/StageFright.Core.Tests/Localization/MoneyInputTests.cs`
+- [x] **T030** [P] [US2] bUnit — `JournalEntryPage` under `fr-FR`: entering `1.50` yields `line.Debit == 1.50m` · `tests/StageFright.UI.Tests/Pages/Finance/JournalEntryPageLocaleTests.cs`
+- [x] **T031** [P] [US2] bUnit — `OpeningBalanceEntryForm` under `de-DE`: entered amount stored exactly · `tests/StageFright.UI.Tests/Shared/OpeningBalanceEntryFormLocaleTests.cs`
+- [x] **T032** [P] [US2] Guard — no money field parses an `<input type="number">` value with `CultureInfo.CurrentCulture` · `tests/StageFright.Localization.Tests/MoneyInputGuardTests.cs`
+- [x] **T032a** [P] [US2] **Acceptance** — `V28_LocaleSafeMoneyEntry` drives US2 AC-1…AC-3: device region `fr-FR` then `de-DE`, enter known amounts into the manual journal and the opening-balance form; asserts the stored ledger values are exact to the cent and identical to the same input under `en-AU`, and that no digit is read as a thousands separator · `tests/StageFright.Integration.Tests/Scenarios/V28_LocaleSafeMoneyEntryTests.cs`
 
 ### Implementation
 
 **Wave 1 — the helper (single file):**
 
-- [ ] **T033** [US2] `MoneyInput` — `static decimal Parse(string?)` using `CultureInfo.InvariantCulture` + `NumberStyles.AllowDecimalPoint | AllowLeadingSign`; `0m` for null/blank/unparseable · `src/StageFright.Core/Localization/MoneyInput.cs`
+- [x] **T033** [US2] `MoneyInput` — `static decimal Parse(string?)` using `CultureInfo.InvariantCulture` + `NumberStyles.AllowDecimalPoint | AllowLeadingSign`; `0m` for null/blank/unparseable · `src/StageFright.Core/Localization/MoneyInput.cs`
 
 **⟶ Wait for T033, then (independent call sites):**
 
-- [ ] **T034** [P] [US2] `JournalEntryPage.ParseAmount` → `MoneyInput.Parse` · `src/StageFright.UI/Pages/Finance/JournalEntryPage.razor.cs`
-- [ ] **T035** [P] [US2] `OpeningBalanceEntryForm.SetAmount` → `MoneyInput.Parse` · `src/StageFright.UI/Shared/OpeningBalanceEntryForm.razor.cs`
+- [x] **T034** [P] [US2] `JournalEntryPage.ParseAmount` → `MoneyInput.Parse` · `src/StageFright.UI/Pages/Finance/JournalEntryPage.razor.cs`
+- [x] **T035** [P] [US2] `OpeningBalanceEntryForm.SetAmount` → `MoneyInput.Parse` · `src/StageFright.UI/Shared/OpeningBalanceEntryForm.razor.cs`
 
 **Checkpoint**: French/German-locale entry into the manual journal and opening balances stores exact
 values; the guard test locks it in.

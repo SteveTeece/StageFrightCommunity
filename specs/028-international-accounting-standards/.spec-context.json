@@ -306,6 +306,70 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-29T07:32:42.367Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:05.266Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:05.425Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:05.583Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:05.735Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032a",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:05.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:14.542Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:14.737Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:14.943Z"
     }
   ],
   "telemetryInstanceId": "527a7469-9665-4240-b165-addc44766471",
@@ -411,6 +475,12 @@
         "T033",
         "T034",
         "T035"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Localization/MoneyInputTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Finance/JournalEntryPageLocaleTests.cs",
+        "tests/StageFright.UI.Tests/Shared/OpeningBalanceEntryFormLocaleTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_LocaleSafeMoneyEntryTests.cs"
       ]
     },
     "FR-008": {
@@ -420,6 +490,12 @@
         "T033",
         "T034",
         "T035"
+      ],
+      "tests": [
+        "tests/StageFright.Localization.Tests/MoneyInputGuardTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Finance/JournalEntryPageLocaleTests.cs",
+        "tests/StageFright.UI.Tests/Shared/OpeningBalanceEntryFormLocaleTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_LocaleSafeMoneyEntryTests.cs"
       ]
     },
     "FR-009": {
@@ -429,6 +505,11 @@
         "T030",
         "T031",
         "T033"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Localization/MoneyInputTests.cs::Should_NotReadThePeriodAsAGroupSeparator_UnderACommaDecimalCulture",
+        "tests/StageFright.UI.Tests/Pages/Finance/JournalEntryPageLocaleTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_LocaleSafeMoneyEntryTests.cs"
       ]
     },
     "FR-010": {
@@ -712,6 +793,16 @@
       "decision": "Serialise MoneyFormatter-sensitive integration tests via a DisableParallelization xUnit collection (V6, V16, V28, AudZeroDrift)",
       "why": "MoneyFormatter.Configure sets process-wide static state; a JPY config in V28 could race the AUD assertions now in V6/V16",
       "rejected": "Disabling parallelization for the whole Integration.Tests assembly"
+    },
+    {
+      "decision": "MoneyInput.Parse uses NumberStyles.AllowDecimalPoint | AllowLeadingSign only (no AllowThousands, no AllowWhite)",
+      "why": "an <input type=number> value is always browser-serialised invariant (period point, no grouping, optional leading -); rejecting grouped/whitespace input and falling back to 0m matches the pre-existing empty-field=0 behaviour and FR-009 (no digit read as a thousands separator)",
+      "rejected": "NumberStyles.Number|Currency with InvariantCulture (would silently accept 1,234.50 and mask a malformed value)"
+    },
+    {
+      "decision": "V28_LocaleSafeMoneyEntry drives the real GeneralJournalService/OpeningBalanceService feeding amounts through MoneyInput.Parse directly, rather than rendering the razor components",
+      "why": "StageFright.Integration.Tests has no bUnit reference; calling MoneyInput.Parse under fr-FR/de-DE then posting through the real services over SQLite+migrations still proves known input -> exact stored ledger value end to end (US2 AC-1..AC-3)",
+      "rejected": "reflectively invoking the private ParseAmount/SetAmount, or adding bUnit to Integration.Tests"
     }
   ],
   "step_summaries": {
@@ -723,10 +814,10 @@
       "summary": "94 tasks across 13 phases (Setup, Foundational, one per US1-US10, Polish); wave-grouped with explicit joins; oversized budget, full per-story Goal/Independent Test/Checkpoint."
     },
     "implement": {
-      "summary": "Phase 3 / US1 (T009-T028): MoneyFormatter now drives every screen/report/PDF/CSV amount from Settings.CurrencyCode (ISO 4217, default AUD); mandatory setup currency picker, currency immutable after setup, TaxCalculator rounds to the currency minor unit; AUD output byte-identical (1868 tests green)."
+      "summary": "Phase 4 / US2 (T029-T035): locale-safe money entry. New MoneyInput.Parse invariant-parses the always-invariant <input type=number> value; JournalEntryPage.ParseAmount and OpeningBalanceEntryForm.SetAmount now use it instead of NumberStyles.Number + CultureInfo.CurrentCulture, so 1.50 no longer posts as 150 under fr-FR/de-DE. Guard test locks it in. 1895 tests pass (was 1868)."
     }
   },
-  "currentTask": "T014a",
+  "currentTask": "T035",
   "task_summaries": {
     "T015": {
       "status": "DONE",
@@ -900,6 +991,62 @@
       "files": [
         "tests/StageFright.Integration.Tests/Scenarios/V28_CurrencyConfigurationTests.cs"
       ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "MoneyInputTests: Parse under fr-FR/de-DE/en-AU for 1.5/1.50/1000.5/-3.2 exact, period never a group separator, null/blank/garbage/1.2.3 -> 0m, same value every culture",
+      "files": [
+        "tests/StageFright.Core.Tests/Localization/MoneyInputTests.cs"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "JournalEntryPageLocaleTests (bUnit): fr-FR/de-DE debit+credit entry of 1.50/1234.50/1.5 -> running total equals the typed amount, never the x100 misread",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Finance/JournalEntryPageLocaleTests.cs"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "OpeningBalanceEntryFormLocaleTests (bUnit): de-DE/fr-FR entry -> OnSubmit request carries the exact typed amount (1234.50/1.50/-150.00), identical across en-AU/de-DE/fr-FR",
+      "files": [
+        "tests/StageFright.UI.Tests/Shared/OpeningBalanceEntryFormLocaleTests.cs"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "MoneyInputGuardTests: repo-wide scan asserts no src/StageFright.UI *.cs parses input with CultureInfo.CurrentCulture, and both hand-rolled money-entry handlers call MoneyInput.Parse",
+      "files": [
+        "tests/StageFright.Localization.Tests/MoneyInputGuardTests.cs"
+      ]
+    },
+    "T032a": {
+      "status": "DONE",
+      "did": "V28_LocaleSafeMoneyEntryTests (integration acceptance): real GeneralJournalService/OpeningBalanceService over SQLite+migrations; fr-FR/de-DE input stored exact to the cent, identical to en-AU, no thousands-separator misread",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V28_LocaleSafeMoneyEntryTests.cs"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "MoneyInput.Parse(string?): invariant decimal.TryParse with AllowDecimalPoint|AllowLeadingSign, 0m for null/blank/unparseable; the one shared money-entry parse helper",
+      "files": [
+        "src/StageFright.Core/Localization/MoneyInput.cs"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "JournalEntryPage.ParseAmount now delegates to MoneyInput.Parse(value?.ToString()); removed the NumberStyles.Number + CultureInfo.CurrentCulture parse and the now-unused System.Globalization using",
+      "files": [
+        "src/StageFright.UI/Pages/Finance/JournalEntryPage.razor.cs"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "OpeningBalanceEntryForm.SetAmount now delegates to MoneyInput.Parse(args.Value?.ToString()); removed the CurrentCulture parse and the now-unused System.Globalization using",
+      "files": [
+        "src/StageFright.UI/Shared/OpeningBalanceEntryForm.razor.cs"
+      ]
     }
   },
   "verified": [
@@ -916,13 +1063,27 @@
       "warnings": [
         "updated ~30 pre-existing report/UI/integration assertions from bare F2 strings to MoneyFormatter.Format(...) — expected consequence of routing report money through the configured formatter"
       ]
+    },
+    {
+      "what": "full solution build",
+      "command": "dotnet build StageFrightCommunity.slnx",
+      "result": "Build succeeded, 0 warnings, 0 errors",
+      "warnings": []
     }
   ],
   "concerns": [
     {
       "note": "T028 left specs/027-localization-support/research.md and plan.md decision-log lines still asserting a fixed $/AUD; the load-bearing current-reading docs (spec.md, data-model.md, both contracts) now carry a superseding note. T092 (Polish) is the designated final pass for the remaining 027 lines.",
       "step": "implement"
+    },
+    {
+      "note": "PostToolUse dotnet-build-on-edit hook blocks any edit that leaves a project non-compiling, so the strict test-first order (all ### Tests, then ### Implementation) was adapted: T033 MoneyInput.cs was created before the test files so the tree compiles. Fail-first still held — T030/T031/T032 assert the buggy CurrentCulture behaviour and were red until T034/T035 changed the call sites.",
+      "step": "implement"
+    },
+    {
+      "note": "T032a (V28_LocaleSafeMoneyEntry) calls MoneyInput.Parse directly rather than rendering the razor code-behind (Integration.Tests has no bUnit), so it goes green on T033 rather than fail-first on T034/T035. The call-site regression guard is carried by T032 (repo scan) + T030/T031 (bUnit).",
+      "step": "implement"
     }
   ],
-  "last_action": "Phase 3 (US1) complete — 21/21 tasks (T009-T028 + T014a) checked off; full rebuild 0W/0E; 1868 tests pass (was 1805). Phases 4-13 not started."
+  "last_action": "Phase 4 (US2) complete — 8/8 tasks (T029-T035) checked off; build 0W/0E; 1895 tests pass (was 1868, +27). Phases 5-13 not started."
 }

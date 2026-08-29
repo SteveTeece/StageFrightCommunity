@@ -1,4 +1,3 @@
-using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
@@ -68,12 +67,12 @@ public partial class OpeningBalanceEntryForm : ComponentBase
         _rows = reconciled;
     }
 
+    // The value of an <input type="number"> is always serialised invariant, so it is parsed
+    // invariant via the shared helper — never with CultureInfo.CurrentCulture, which reads the
+    // period as a thousands separator under fr-FR / de-DE (spec 028, FR-007…FR-009).
     private void SetAmount(OpeningBalanceRowModel row, ChangeEventArgs args)
     {
-        row.Amount = decimal.TryParse(
-            args.Value?.ToString(), NumberStyles.Number, CultureInfo.CurrentCulture, out var amount)
-            ? amount
-            : 0m;
+        row.Amount = MoneyInput.Parse(args.Value?.ToString());
     }
 
     private async Task HandleSubmitAsync()
