@@ -1,0 +1,451 @@
+{
+  "workflow": "speckit",
+  "specName": "international accounting standards",
+  "branch": "028-international-accounting-standards",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-29T05:10:34.360Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T05:16:13.733Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-29T05:25:42.021Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T05:35:09.841Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T05:38:36.084Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T05:39:35.474Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-29T05:45:20.271Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T05:47:55.192Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T05:49:20.568Z"
+    }
+  ],
+  "telemetryInstanceId": "527a7469-9665-4240-b165-addc44766471",
+  "livingSpecs": {
+    "loaded": [
+      "audit-trail",
+      "finance",
+      "settings",
+      "app-host",
+      "domain-model",
+      "reports-pipeline",
+      "data-access"
+    ]
+  },
+  "coverage": {
+    "FR-001": {
+      "title": "First-run setup must require selecting the organisation currency (ISO 4217); default AUD",
+      "tasks": [
+        "T012",
+        "T014",
+        "T017",
+        "T018",
+        "T019",
+        "T021"
+      ]
+    },
+    "FR-002": {
+      "title": "Selected currency is fixed for the dataset lifetime; no change, no multi-currency, no FX",
+      "tasks": [
+        "T012",
+        "T020",
+        "T021"
+      ]
+    },
+    "FR-003": {
+      "title": "All money display/print/export uses the configured currency symbol and minor-unit precision, grouping per region",
+      "tasks": [
+        "T007",
+        "T010",
+        "T022",
+        "T023",
+        "T024",
+        "T025",
+        "T026",
+        "T027"
+      ]
+    },
+    "FR-004": {
+      "title": "No screen/report/PDF/CSV may show a currency symbol or code other than the configured one",
+      "tasks": [
+        "T010",
+        "T022",
+        "T023",
+        "T024",
+        "T025",
+        "T026",
+        "T027"
+      ]
+    },
+    "FR-005": {
+      "title": "Apportioned amounts round to the currency minor unit and the parts re-sum to the total exactly",
+      "tasks": [
+        "T011",
+        "T015",
+        "T016"
+      ]
+    },
+    "FR-006": {
+      "title": "Existing AUD datasets show identical symbol, precision and stored values after the change",
+      "tasks": [
+        "T006",
+        "T007",
+        "T013"
+      ]
+    },
+    "FR-007": {
+      "title": "Entering an amount stores the exact intended value regardless of regional number format",
+      "tasks": [
+        "T029",
+        "T030",
+        "T031",
+        "T033",
+        "T034",
+        "T035"
+      ]
+    },
+    "FR-008": {
+      "title": "Manual journal and opening-balance entry interpret typed amounts like every other money field",
+      "tasks": [
+        "T032",
+        "T033",
+        "T034",
+        "T035"
+      ]
+    },
+    "FR-009": {
+      "title": "Comma-decimal / period-grouping regions must not scale or misread an entered amount",
+      "tasks": [
+        "T029",
+        "T030",
+        "T031",
+        "T033"
+      ]
+    },
+    "FR-010": {
+      "title": "Balance Sheet generation verifies assets equal liabilities plus equity or refuses a clean statement",
+      "tasks": [
+        "T037",
+        "T039",
+        "T040"
+      ]
+    },
+    "FR-011": {
+      "title": "Trial Balance treats any non-zero debit/credit difference as an error, with no tolerance",
+      "tasks": [
+        "T036",
+        "T038",
+        "T040"
+      ]
+    },
+    "FR-012": {
+      "title": "Each financial statement states its basis of accounting accurately on its face",
+      "tasks": [
+        "T041",
+        "T042",
+        "T043",
+        "T044",
+        "T045",
+        "T046",
+        "T047"
+      ]
+    },
+    "FR-013": {
+      "title": "Bank reconciliation report uses the conventional adjusted-balance form showing both balances",
+      "tasks": [
+        "T048",
+        "T050",
+        "T051"
+      ]
+    },
+    "FR-014": {
+      "title": "Outstanding items are carried into the reconciliation arithmetic, not just listed",
+      "tasks": [
+        "T048",
+        "T050"
+      ]
+    },
+    "FR-015": {
+      "title": "Finalising a reconciliation still requires it to balance; finalised recs stay immutable",
+      "tasks": [
+        "T049"
+      ]
+    },
+    "FR-016": {
+      "title": "Organisation can mark all financial periods up to a chosen date as closed",
+      "tasks": [
+        "T055",
+        "T062"
+      ]
+    },
+    "FR-017": {
+      "title": "Any transaction dated on/before the closed-through date is rejected with no partial record",
+      "tasks": [
+        "T052",
+        "T053",
+        "T056",
+        "T057",
+        "T058",
+        "T059",
+        "T060",
+        "T063",
+        "T064"
+      ]
+    },
+    "FR-018": {
+      "title": "Setup-time opening balances remain permitted regardless of a later closed-through date",
+      "tasks": [
+        "T054",
+        "T058"
+      ]
+    },
+    "FR-019": {
+      "title": "Financial-year start is an explicit first-run setup choice, not a silent default",
+      "tasks": [
+        "T067",
+        "T071",
+        "T072",
+        "T073",
+        "T074"
+      ]
+    },
+    "FR-020": {
+      "title": "System supports a financial year starting on a day other than the first of the month",
+      "tasks": [
+        "T065",
+        "T068",
+        "T071",
+        "T073"
+      ]
+    },
+    "FR-021": {
+      "title": "All FY-preset reports and dashboard figures honour the configured FY start (month and day)",
+      "tasks": [
+        "T066",
+        "T068",
+        "T069",
+        "T070"
+      ]
+    },
+    "FR-022": {
+      "title": "System should support a sub-twelve-month first financial year, labelled as a part-year",
+      "tasks": [
+        "T076"
+      ]
+    },
+    "FR-023": {
+      "title": "Default audit-trail retention on a new dataset is at least five years, still configurable",
+      "tasks": [
+        "T003",
+        "T005",
+        "T006",
+        "T077",
+        "T080"
+      ]
+    },
+    "FR-024": {
+      "title": "An existing dataset's configured retention value is preserved through this change",
+      "tasks": [
+        "T006",
+        "T077"
+      ]
+    },
+    "FR-025": {
+      "title": "A failed purge of expired audit entries is logged and surfaced, never silently discarded",
+      "tasks": [
+        "T079",
+        "T082",
+        "T083"
+      ]
+    },
+    "FR-026": {
+      "title": "Every financial posting path, incl. attendance-fee accruals, writes an audit-trail entry",
+      "tasks": [
+        "T078",
+        "T081"
+      ]
+    },
+    "FR-027": {
+      "title": "Publish an accounting-policy document (basis, recognition, rounding, currency, immutability, retention, unaudited)",
+      "tasks": [
+        "T084"
+      ]
+    },
+    "FR-028": {
+      "title": "Finance living spec updated to the current tax model, no retired references, not draft",
+      "tasks": [
+        "T085",
+        "T086"
+      ]
+    },
+    "FR-029": {
+      "title": "Produce a written sales-tax internationalisation assessment covering four required points",
+      "tasks": [
+        "T087"
+      ]
+    },
+    "FR-030": {
+      "title": "Assessment records an in/out-of-scope decision with sizing per point and spawns follow-on issues",
+      "tasks": [
+        "T087",
+        "T088"
+      ]
+    },
+    "FR-031": {
+      "title": "No stored monetary amount, tax amount, or GL balance is altered; presentation/validation/config only",
+      "tasks": [
+        "T013",
+        "T089",
+        "T093"
+      ]
+    },
+    "FR-032": {
+      "title": "Existing double-entry guarantees preserved (balanced atomic postings, GL truth, immutability, reversing corrections)",
+      "tasks": [
+        "T060",
+        "T093"
+      ]
+    },
+    "FR-033": {
+      "title": "No change to existing tax posting mechanics or stored tax code values",
+      "tasks": [
+        "T089",
+        "T093"
+      ]
+    }
+  },
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 45,
+    "projectedTasks": 48,
+    "scopeSignal": "larger",
+    "verdict": "oversized"
+  },
+  "context": [
+    "source: GitHub issue #341 and sub-issues #342-#352 (international accounting-practice readiness)",
+    "living spec: finance (primary), reports-pipeline, settings, domain-model, data-access, app-host, audit-trail",
+    "area: src/StageFright.Core/Modules/Finance (MoneyFormatter, TaxCalculator, FinancialYearCalculator), src/StageFright.Reports/Providers, src/StageFright.Core/Entities/Settings.cs, src/StageFright.Data/Repositories/GLRepository.cs, src/StageFright.UI setup wizard + finance forms",
+    "constraint: preserve the double-entry guarantees (balanced atomic postings, GL as sole source of truth, immutable Fee/Payment/Transaction/JournalEntry, reversing-entry corrections)",
+    "constraint: no change to any stored monetary amount, tax amount, GL balance, or existing tax posting mechanics — presentation/validation/config only",
+    "constraint: single currency per organisation; no multi-currency or FX"
+  ],
+  "intent": "Make the finance module's accounting practices safe and portable for organisations outside Australia (configurable ISO 4217 currency, locale-safe money entry, Balance Sheet / Trial Balance integrity guards, disclosed basis of accounting, conventional bank reconciliation, closed-period lock, first-class financial-year-start setup, longer audit retention, and a written accounting-policy document) without changing any stored amount or the double-entry engine.",
+  "expectations": [
+    "Multi-currency, changing the organisation currency after setup, and foreign-exchange translation",
+    "52/53-week ('4-4-5') fiscal calendars",
+    "Implementing multi-jurisdiction or multiple simultaneous sales-tax rates (only a scoping assessment is in scope)",
+    "Producing formal IFRS/GAAP statutory financial statements",
+    "Any change to existing tax posting mechanics or stored tax code values"
+  ],
+  "approach": "Reuse spec 027's localization seams: currency becomes a fixed-after-setup Settings.CurrencyCode (ISO 4217, default AUD) with MoneyFormatter converted from hard-coded $ to a process-wide-configured helper backed by an internal CurrencyCatalog (no new NuGet). The money-entry bug is fixed by parsing the always-invariant <input type=number> value with InvariantCulture via one shared MoneyInput helper. Statement integrity, the basis-of-accounting disclosure and the conventional bank-reconciliation layout are changes inside StageFright.Reports providers plus one optional ReportData field; period locking is enforced at the single GLRepository choke point via a new ClosedPeriodException.",
+  "decisions": [
+    {
+      "decision": "Convert MoneyFormatter to a process-wide configured static (Configure() at startup) rather than an injected IMoneyFormatter service",
+      "why": "Single currency per dataset makes process-wide state correct; mirrors the existing startup-culture pattern in MauiProgram; ~20 call sites stay unchanged",
+      "rejected": "Injecting IMoneyFormatter everywhere and refactoring the static report-provider helpers"
+    },
+    {
+      "decision": "Ship ISO 4217 symbol/minor-unit metadata as an internal curated CurrencyCatalog",
+      "why": ".NET has no currency-code-keyed lookup of symbol+minor-units; a curated list mirrors SupportedLanguagesCatalog and adds no dependency",
+      "rejected": "Adding a money library (NodaMoney) or embedding the full ~180-entry ISO 4217 table"
+    },
+    {
+      "decision": "Keep money inputs as <input type=number> and parse their value with InvariantCulture",
+      "why": "A number input always serialises its value invariant regardless of page locale; parsing invariant removes the thousands-separator ambiguity FR-009 forbids and matches how Blazor @bind already handles decimals",
+      "rejected": "Switching to type=text with CurrentCulture parsing, or a custom grouping-stripping parser"
+    },
+    {
+      "decision": "Enforce the closed-period lock at the GLRepository.AddBalancedSetAsync/AddPairAsync choke point via an IClosedPeriodGuard",
+      "why": "Every financial mutation funnels through these two methods inside the UoW transaction, so a rejection guarantees no partial record; the repo already enforces the GL-balance invariant pre-persistence",
+      "rejected": "Checking in each of the 7+ posting services (fragile, a future path could bypass it) or an EF SaveChanges interceptor"
+    },
+    {
+      "decision": "Balance Sheet appends an explicit out-of-balance line; Trial Balance throws with the 0.01 tolerance removed",
+      "why": "FR-010 allows either outcome; the Balance Sheet balances by construction so the out-of-balance amount is the useful diagnostic, while the Trial Balance already has a throw/retry path wired through the viewer",
+      "rejected": "Making the Balance Sheet also throw (hides the magnitude) or the Trial Balance render a line (diverges from tested viewer behaviour)"
+    },
+    {
+      "decision": "Deliver the basis-of-accounting disclosure as one optional ReportData.BasisOfAccounting field set by financial-statement providers from a single shared localized string",
+      "why": "Matches the pipeline design (one renderer-agnostic model, no provider-specific branching); one string keeps wording consistent and translatable and lets non-financial reports leave it null",
+      "rejected": "A per-provider section row (repeats text, pollutes the table) or renderer-hard-coded text (renderer must not know which reports are statements)"
+    },
+    {
+      "decision": "Raise the AuditRetentionYears default 1->5 with a column-default-only migration (no UpdateData)",
+      "why": "FR-024 requires an existing datasets configured value to be preserved; the single Settings row already has a value, so touching only the schema default changes behaviour for new datasets only",
+      "rejected": "UpdateData to set existing rows to 5, or making the field nullable with a computed default"
+    },
+    {
+      "decision": "Defer FR-022 (sub-twelve-month first financial year) to a follow-on issue",
+      "why": "Spec Assumptions explicitly permit this; a part-year needs its own storage and every-FY-report labelling decisions that would widen an already-large feature",
+      "rejected": "Building a minimal stub-year now"
+    },
+    {
+      "decision": "Surface a failed startup audit purge by recording it into the existing startup-diagnostic state, not a new mechanism",
+      "why": "The Settings capability already retains startup failures (e.g. DB init) for the UI to display; FR-025 needs logged AND surfaced, and reusing that holder adds no plumbing while startup still proceeds",
+      "rejected": "A dedicated purge-failure banner service, or blocking startup on purge failure"
+    },
+    {
+      "decision": "Source the bank reconciliation book balance from the existing IGLRepository.GetAccountBalanceAsync(accountId, statementDate)",
+      "why": "It already exists and is keyed on AccountId (not the denormalized GLAccount string), so the report inherits the aggregate-by-identity rule with no new repository method",
+      "rejected": "Recomputing the ledger balance in the provider from raw transactions"
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Planned issue #341 international accounting readiness (oversized): 10 user stories / 33 FRs delivered as presentation, input-validation and config changes with zero ledger-engine or stored-amount change.",
+      "key_finding": "The whole feature pivots on two seams: MoneyFormatter (hard-coded $/AUD, static) becomes process-wide-configured like the startup culture, and the GLRepository AddBalancedSetAsync/AddPairAsync choke point is where both the GL-balance invariant and the new closed-period lock are enforced pre-persistence."
+    },
+    "tasks": {
+      "summary": "94 tasks across 13 phases (Setup, Foundational, one per US1-US10, Polish); wave-grouped with explicit joins; oversized budget, full per-story Goal/Independent Test/Checkpoint."
+    }
+  }
+}
