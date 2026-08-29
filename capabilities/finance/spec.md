@@ -1,7 +1,5 @@
 # Finance — Living Spec
 
-> [DRAFT] Surface-first draft from existing code — every requirement is observed from the code surface unless tagged otherwise. Review before trusting.
-
 ## Purpose
 
 The Finance capability is the club's double-entry accounting system: it accrues member fees, records payments and expenses, and derives every balance shown anywhere in the app from a single append-only General Ledger. Without it, money movements would have no audit-proof source of truth, member balances could drift from what was actually collected, and financial corrections would silently rewrite history instead of leaving a trail.
@@ -37,15 +35,15 @@ Fee and Transaction/JournalEntry records MUST never be updated or deleted after 
 - **AND** a new GL write-off pair is posted to clear the receivable
 
 ### Annual fee batch application is scoped to once-per-member-per-year and posts a full accrual pair
-Applying annual fees MUST exclude any active member who already has an Annual fee (paid or unpaid) for the current calendar year, and for each remaining member it MUST post Debit Member Receivable (gross) / Credit an Income account (net of GST) with a GST Collected leg added only when the fee is taxable and the organisation is GST-registered.
+Applying annual fees MUST exclude any active member who already has an Annual fee (paid or unpaid) for the current calendar year, and for each remaining member it MUST post Debit Member Receivable (gross) / Credit an Income account (net of any sales tax) with a Tax Collected leg added only when the fee is taxable (`Fee.TaxCode = Taxable`) while sales tax applies to the organisation (`Settings.IsTaxApplicable`).
 
 #### Scenario: annual fees are applied twice in the same year
 - **WHEN** the batch is run a second time after members already received this year's fee
 - **THEN** those members no longer appear in the eligible list and are not charged again
 
-#### Scenario: the organisation is GST-registered and the annual fee is taxable
-- **WHEN** annual fees are applied with a taxable GST code configured in Settings
-- **THEN** each fee's GL accrual splits into a Member Receivable debit (gross), an Income credit (net), and a GST Collected credit, summing back to the gross fee amount [NEEDS CLARIFICATION: annual fee income always posts to the first non-system Income account by account-number order rather than a specifically configured account — is that the intended long-term behavior once multiple income accounts exist?]
+#### Scenario: sales tax applies and the annual fee is taxable
+- **WHEN** annual fees are applied with `Settings.IsTaxApplicable` true and `Settings.AnnualFeeTaxCode = Taxable`
+- **THEN** each fee's GL accrual splits into a Member Receivable debit (gross), an Income credit (net), and a Tax Collected (account 2310) credit, summing back to the gross fee amount [NEEDS CLARIFICATION: annual fee income always posts to the first non-system Income account by account-number order rather than a specifically configured account — is that the intended long-term behavior once multiple income accounts exist?]
 
 ### Member payments allocate against outstanding fees, defaulting to oldest-first
 Recording a payment MUST allocate the tendered amount across the member's outstanding fees — FIFO across all unpaid fees by default, or restricted to an explicitly selected subset of fees — and MUST reject an amount that exceeds what is actually owed on the fees being paid against. Any amount left over once no more fee IDs were explicitly selected becomes an overpayment credited to the member's receivable rather than being rejected.
@@ -80,16 +78,16 @@ Archiving an account MUST be refused if any GL transaction references it, and ar
 - **WHEN** the account has a draft reconciliation that has not been finalised or deleted
 - **THEN** the archive request is rejected
 
-### GST is only carried on a posting while the organisation is registered, and is fixed for that posting's lifetime
-A fee, income, or expense entry MUST only receive a GstCode when Settings.IsGstRegistered is true at the moment it is posted; the amount entered is always treated as GST-inclusive and split into net and GST components via a fixed statutory divisor (gross ÷ 11, rounded to the cent). Once posted, a transaction's GstCode MUST never be revisited even if the organisation's registration status later changes.
+### A tax treatment is only carried on a posting while sales tax applies, and is fixed for that posting's lifetime
+A fee, income, or expense entry MUST only receive a `TaxCode` of `Taxable` when `Settings.IsTaxApplicable` is true at the moment it is posted; the amount entered is always treated as tax-inclusive and split into net and tax components at the configured `Settings.TaxRate` percentage (tax = `round(gross × rate ÷ (100 + rate))` to the configured currency's minor unit, net = the remainder). The three treatments are `Taxable`, `TaxExempt`, and `Excluded` (transfers, journals, opening balances). Once posted, a row's `TaxCode` MUST never be revisited even if the organisation's tax settings later change.
 
-#### Scenario: the organisation is not GST-registered
-- **WHEN** an expense is recorded while Settings.IsGstRegistered is false
-- **THEN** the posted transaction carries no GstCode regardless of what code was requested on the form
+#### Scenario: sales tax does not apply to the organisation
+- **WHEN** an expense is recorded while `Settings.IsTaxApplicable` is false
+- **THEN** the posted transaction carries no tax component and its `TaxCode` is not `Taxable`, regardless of what was requested on the form
 
-#### Scenario: a taxable entry is posted while registered
-- **WHEN** an income entry is recorded with the Taxable GST code
-- **THEN** the net and GST components are computed by rounding gross/11 to the cent and the net component is the remainder, so the two always sum exactly back to the entered gross amount
+#### Scenario: a taxable entry is posted while sales tax applies
+- **WHEN** an income entry is recorded with the `Taxable` tax code while `Settings.IsTaxApplicable` is true
+- **THEN** the net and tax components are computed by rounding `gross × rate ÷ (100 + rate)` to the configured currency's minor unit and the net component is the remainder, so the two always sum exactly back to the entered gross amount
 
 ### Non-member income and expenses always move through a designated bank/cash account
 Recording income requires a bank/cash account as the deposit destination (Cash on Hand by default) and a non-system Income account to credit; recording an expense requires a bank/cash account to pay from and a non-system Expense account to debit. A selection that is a system account or the wrong account type MUST be rejected.
@@ -117,7 +115,7 @@ A manually entered general journal MUST contain at least two lines, exactly one 
 - **THEN** the journal is rejected with a validation error before any GL write is attempted
 
 ### Opening balances post once per account at its normal side, self-balanced by an equity plug
-The opening balances wizard MUST post each entered non-zero balance to its account's normal debit/credit side (debit for Asset/Expense, credit for Liability/Equity/Income, flipped for a negative entry) and MUST post any resulting residual to Opening Balance Equity so the entry always balances on its own. Member Receivable, the GST clearing accounts, and Opening Balance Equity itself are not eligible entry targets.
+The opening balances wizard MUST post each entered non-zero balance to its account's normal debit/credit side (debit for Asset/Expense, credit for Liability/Equity/Income, flipped for a negative entry) and MUST post any resulting residual to Opening Balance Equity so the entry always balances on its own. Member Receivable, the tax clearing accounts (Tax Collected 2310, Tax Paid 2320), and Opening Balance Equity itself are not eligible entry targets.
 
 #### Scenario: entered opening balances don't net to zero
 - **WHEN** the sum of entered debit-side and credit-side balances differ
@@ -146,11 +144,11 @@ Starting a new draft reconciliation for an account MUST be refused while that ac
 - **THEN** starting another draft for the same account is rejected
 
 ### Reactivation forgiveness writes off fees without ever mutating the Fee record
-Forgiving a member's outstanding fee MUST post Debit Bad Debt Expense / Credit Member Receivable for the fee's full amount, with a GST decreasing adjustment leg added when the fee was taxable, and MUST leave the underlying Fee row exactly as it was created.
+Forgiving a member's outstanding fee MUST post Debit Bad Debt Expense / Credit Member Receivable for the fee's full amount, with a tax decreasing-adjustment leg added when the fee was taxable (`Fee.TaxCode = Taxable`), and MUST leave the underlying Fee row exactly as it was created.
 
 #### Scenario: a taxable prior-year fee is forgiven
-- **WHEN** a fee with a Taxable GstCode is selected for forgiveness
-- **THEN** the write-off splits into a Bad Debt Expense debit and a GST Collected debit alongside the Member Receivable credit, so the entry still balances and reverses the GST originally accrued
+- **WHEN** a fee with a `Taxable` `TaxCode` is selected for forgiveness
+- **THEN** the write-off splits into a Bad Debt Expense debit and a Tax Collected (account 2310) debit alongside the Member Receivable credit, so the entry still balances and reverses the tax originally accrued
 
 ### Organisation-level financial summaries never double-count the receivable leg of a posting
 Dashboard and summary figures for income, expenses, and cash flow MUST be computed strictly from non-system Income/Expense account movements (credits minus debits for income, debits minus credits for expenses) rather than by summing every GL credit or debit indiscriminately, which would double count the Member Receivable leg of a fee or payment pair.

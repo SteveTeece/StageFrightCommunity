@@ -770,6 +770,38 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-29T22:35:19.583Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T084",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:49:20.760Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T085",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:51:37.973Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T086",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:52:25.387Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T086a",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:52:58.383Z"
     }
   ],
   "telemetryInstanceId": "527a7469-9665-4240-b165-addc44766471",
@@ -1356,6 +1388,11 @@
       "decision": "Surface the purge-failure warning as a dismissible banner on the Dashboard page, not the shell layout or App.razor",
       "why": "Dashboard is the post-startup landing page and an explicit T083 target; lowest blast radius (only DashboardTests needs the new DI registration); dismissal is session-local and never clears the underlying diagnostic state",
       "rejected": "ShellLayout/App.razor banner (touches every page and many test contexts); GeneralSettingsTab-only (less visible at startup)"
+    },
+    {
+      "decision": "T085 scope widened past the literal task text to also fix line-40 \"net of GST\" and line-118 \"GST clearing accounts\" so the finance living spec has zero retired-model references (FR-028); T086a recorded as a spec.md Assumptions bullet rather than a filed GitHub issue",
+      "why": "FR-028 demands NO reference to the retired model, not just the named identifiers; the task explicitly permits \"Assumptions or a tracking issue\" and issue creation is blocked on this machine (same wall as T076)",
+      "rejected": "Leaving the two stray GST phrases as out-of-scope; opening a GitHub issue for the settings-spec follow-up now"
     }
   ],
   "step_summaries": {
@@ -1367,13 +1404,13 @@
       "summary": "94 tasks across 13 phases (Setup, Foundational, one per US1-US10, Polish); wave-grouped with explicit joins; oversized budget, full per-story Goal/Independent Test/Checkpoint."
     },
     "implement": {
-      "summary": "Phase 10 / US8 shipped: audit-retention default raised 1->5 at the remaining declaration sites, attendance-fee accruals + auto-payments now write audit-trail entries, and a failed startup purge propagates and is surfaced as a dismissible Dashboard banner via a non-fatal IStartupDiagnosticService warning channel."
+      "summary": "Phase 11 / US9: published docs/accounting-policies.md and de-drafted + retax-modelled the finance living spec; corrected the audit-trail retention figure; noted the settings-spec follow-up"
     },
     "specify": {
       "summary": "Phase 9 / US7: financial-year start is now an explicit (month+day) setup choice — FinancialYearCalculator + 4 FY-preset report providers + OpeningBalancesWizard honour the day; SetupRequest/SetupFormModel/SetupService carry & validate it (1..28); mandatory pickers on the setup General tab and a matching day picker on Settings; T065-T075 done, T076 spec-note done but its GitHub issue is blocked."
     }
   },
-  "currentTask": "T083",
+  "currentTask": "T086a",
   "task_summaries": {
     "T015": {
       "status": "DONE",
@@ -2010,6 +2047,34 @@
         "tests/StageFright.UI.Tests/Pages/Dashboard/DashboardTests.cs",
         "specs/028-international-accounting-standards/data-model.md"
       ]
+    },
+    "T084": {
+      "status": "DONE",
+      "did": "New docs/accounting-policies.md — basis, revenue recognition, rounding, currency, immutability+reversing corrections, period lock, FY, audit retention; states reports are unaudited management accounts (FR-027)",
+      "files": [
+        "docs/accounting-policies.md"
+      ]
+    },
+    "T085": {
+      "status": "DONE",
+      "did": "Finance living spec de-drafted; retired IsGstRegistered/GstCode/gross÷11/GST-clearing wording rewritten to spec-016 IsTaxApplicable/TaxRate/TaxCode(Taxable,TaxExempt,Excluded) model, Tax Collected 2310 (FR-028)",
+      "files": [
+        "capabilities/finance/spec.md"
+      ]
+    },
+    "T086": {
+      "status": "DONE",
+      "did": "Audit-trail living spec: retention figure updated from fixed 12 months to configurable 1-7yr / default 5yr on new datasets, existing values preserved (spec 028 T003/T005/T006)",
+      "files": [
+        "capabilities/audit-trail/spec.md"
+      ]
+    },
+    "T086a": {
+      "status": "DONE",
+      "did": "spec.md Assumptions: noted capabilities/settings/spec.md retired ABN/GST wording (stale since spec 016) as a carried-forward follow-up outside FR-028's finance-only scope",
+      "files": [
+        "specs/028-international-accounting-standards/spec.md"
+      ]
     }
   },
   "verified": [
@@ -2084,6 +2149,12 @@
       "warnings": [
         "one full-run flake in StageFright.UI.Tests (documented fee-substring GUID false-positive; untouched area; green on isolated re-run)"
       ]
+    },
+    {
+      "what": "Finance + audit-trail living specs carry no retired GST/ABN/DRAFT wording after rewrite; accounting-policy doc statements cross-checked against source (TaxCalculator, Settings fields, SystemAccounts 2310/2320, Reports_Common_BasisOfAccounting, immutability rules)",
+      "command": "grep -nE \"GST|Gst|DRAFT|12 months|fixed retention|÷ 11\" capabilities/finance/spec.md capabilities/audit-trail/spec.md",
+      "result": "clean — no matches; Phase 11 is Markdown-only so no dotnet build/test (deferred to Phase 13 T090/T091)",
+      "warnings": []
     }
   ],
   "concerns": [
@@ -2142,7 +2213,11 @@
     {
       "note": "T076: gh issue create for the FR-022 (sub-twelve-month first financial year) follow-on was blocked by the environment action classifier. spec.md Assumptions now records the deferral by issue title, but the GitHub issue itself still needs to be created by the user.",
       "step": "implement"
+    },
+    {
+      "note": "Two follow-ups need GitHub issues that could not be filed from here: FR-022 short-first-FY (T076) and the capabilities/settings/spec.md retired-ABN/GST wording (T086a). Both are noted in spec.md Assumptions. Phase 12 T088 will hit the same constraint.",
+      "step": "implement"
     }
   ],
-  "last_action": "Phase 10 (US8) complete — T077-T083 done, 1999 tests pass; phases 11-13 + T076 remain"
+  "last_action": "Phase 11 (US9) done — T084-T086a checked off (84/94); Phases 12-13 + deferred T076 remain"
 }

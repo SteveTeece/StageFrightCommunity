@@ -371,13 +371,13 @@ behaviour; confirm the finance living spec drops retired tax concepts and the `[
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T084** [P] [US9] `docs/accounting-policies.md` — basis of accounting, revenue recognition, rounding, currency, record immutability + reversing-entry corrections, audit-trail retention; states the reports are unaudited management accounts · `docs/accounting-policies.md`
-- [ ] **T085** [P] [US9] `capabilities/finance/spec.md` — remove the `> [DRAFT]` line; rewrite the tax requirements and scenarios from the retired registration-based GST/ABN/BAS model (`IsGstRegistered`, `gross ÷ 11`) to the `Settings.IsTaxApplicable` / `TaxRate` / `TaxCode` model (spec 016) · `capabilities/finance/spec.md`
+- [x] **T084** [P] [US9] `docs/accounting-policies.md` — basis of accounting, revenue recognition, rounding, currency, record immutability + reversing-entry corrections, audit-trail retention; states the reports are unaudited management accounts · `docs/accounting-policies.md`
+- [x] **T085** [P] [US9] `capabilities/finance/spec.md` — remove the `> [DRAFT]` line; rewrite the tax requirements and scenarios from the retired registration-based GST/ABN/BAS model (`IsGstRegistered`, `gross ÷ 11`) to the `Settings.IsTaxApplicable` / `TaxRate` / `TaxCode` model (spec 016) · `capabilities/finance/spec.md`
 
 **⟶ then:**
 
-- [ ] **T086** [US9] `capabilities/audit-trail/spec.md` — update the retention figure this feature makes stale: the default is now 5 years (was 1 / "12 months"); the 1–7-year adjustable range and user-configurability are unchanged · `capabilities/audit-trail/spec.md`
-- [ ] **T086a** [US9] Note the pre-existing stale living spec `capabilities/settings/spec.md` (retired ABN/GST wording, stale since spec 016) as a follow-up in [spec.md](spec.md) Assumptions or a tracking issue · `specs/028-international-accounting-standards/spec.md`
+- [x] **T086** [US9] `capabilities/audit-trail/spec.md` — update the retention figure this feature makes stale: the default is now 5 years (was 1 / "12 months"); the 1–7-year adjustable range and user-configurability are unchanged · `capabilities/audit-trail/spec.md`
+- [x] **T086a** [US9] Note the pre-existing stale living spec `capabilities/settings/spec.md` (retired ABN/GST wording, stale since spec 016) as a follow-up in [spec.md](spec.md) Assumptions or a tracking issue · `specs/028-international-accounting-standards/spec.md`
 
 **Checkpoint**: accounting policies published; the finance living spec is current and non-draft
 (SC-012).

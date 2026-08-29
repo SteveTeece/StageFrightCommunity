@@ -473,6 +473,14 @@ forward.
   built in this feature** (US7 delivered only the month + day FY-start choice). It is carried forward
   as a dedicated follow-on GitHub issue — *"[FEATURE] Support a sub-twelve-month first financial year,
   labelled as a part-year"* (parent #341, FY-start work #352) — rather than dropped (T076).
+- **The `capabilities/settings/spec.md` living spec still carries retired ABN / GST-registration
+  wording** (`IsGstRegistered`, per-fee `GstCode`, the "GST / BAS" tab, the ATO ABN checksum), stale
+  since spec 016 replaced that model with `Settings.IsTaxApplicable` / `TaxRate` / `TaxCode`. FR-028
+  scopes only the *finance* living spec, so this feature de-drafts and corrects
+  `capabilities/finance/spec.md` (T085) and fixes the retention figure in
+  `capabilities/audit-trail/spec.md` (T086), but the settings living spec's tax wording is carried
+  forward as a separate follow-up (to be filed against parent #341, alongside the FR-022 issue)
+  rather than addressed here (T086a).
 - **"At least five years" (FR-023) is an informed default** for common record-keeping expectations;
   the exact figure (five versus seven) is a configuration default, not a hard rule, and the existing
   1–7 year adjustable range is retained.
