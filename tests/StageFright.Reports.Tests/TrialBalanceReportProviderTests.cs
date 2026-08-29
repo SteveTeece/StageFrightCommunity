@@ -3,6 +3,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Reports.Models;
 using StageFright.Reports.Providers;
 
@@ -119,8 +120,8 @@ public class TrialBalanceReportProviderTests
 
         // FR-034 exact message format
         Assert.Contains("GL Balance Verification Failed", ex.Message);
-        Assert.Contains("1000.00", ex.Message);
-        Assert.Contains("950.00", ex.Message);
+        Assert.Contains(MoneyFormatter.Format(1000m), ex.Message);
+        Assert.Contains(MoneyFormatter.Format(950m), ex.Message);
     }
 
     [Fact]

@@ -2,6 +2,7 @@ using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Reports.Models;
 using StageFright.Reports.Providers;
@@ -62,7 +63,7 @@ public class BalanceSheetReportProviderTests
         var result = await _sut.GenerateAsync(AsAtFilters(), TestContext.Current.CancellationToken);
 
         var assets = result.Sections.First(s => s.Heading == "Assets");
-        Assert.Contains(assets.Rows, r => r.Cells[0].Contains("Cash on Hand") && r.Cells[1] == "1000.00");
+        Assert.Contains(assets.Rows, r => r.Cells[0].Contains("Cash on Hand") && r.Cells[1] == MoneyFormatter.Format(1000m));
     }
 
     [Fact]
@@ -75,8 +76,8 @@ public class BalanceSheetReportProviderTests
         var result = await _sut.GenerateAsync(AsAtFilters(), TestContext.Current.CancellationToken);
 
         var liabilities = result.Sections.First(s => s.Heading == "Liabilities");
-        Assert.Contains(liabilities.Rows, r => r.Cells[1] == "200.00");
-        Assert.Equal("200.00", liabilities.Subtotal!.Cells[1]);
+        Assert.Contains(liabilities.Rows, r => r.Cells[1] == MoneyFormatter.Format(200m));
+        Assert.Equal(MoneyFormatter.Format(200m), liabilities.Subtotal!.Cells[1]);
     }
 
     [Fact]
@@ -93,7 +94,7 @@ public class BalanceSheetReportProviderTests
         var result = await _sut.GenerateAsync(AsAtFilters(), TestContext.Current.CancellationToken);
 
         var equity = result.Sections.First(s => s.Heading == "Equity");
-        Assert.Contains(equity.Rows, r => r.Cells[0] == "Accumulated Surplus" && r.Cells[1] == "200.00");
+        Assert.Contains(equity.Rows, r => r.Cells[0] == "Accumulated Surplus" && r.Cells[1] == MoneyFormatter.Format(200m));
     }
 
     [Fact]
@@ -151,8 +152,8 @@ public class BalanceSheetReportProviderTests
         var totalAssets = result.Sections.First(s => s.Heading == "Assets").Subtotal!.Cells[1];
         var totalLiabPlusEquity = result.GrandTotal!.Cells[1];
 
-        Assert.Equal("1000.00", totalAssets);
-        Assert.Equal("1000.00", totalLiabPlusEquity);
+        Assert.Equal(MoneyFormatter.Format(1000m), totalAssets);
+        Assert.Equal(MoneyFormatter.Format(1000m), totalLiabPlusEquity);
     }
 
     [Fact]

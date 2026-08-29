@@ -20,6 +20,14 @@ public sealed class SetupFormModel : IValidatableObject
     [Range(1, 12, ErrorMessage = "Renewal month must be between 1 and 12.")]
     public int MembershipRenewalMonth { get; set; } = 1;
 
+    /// <summary>
+    /// ISO 4217 code of the currency the organisation will keep its books in (spec 028, FR-001).
+    /// Mandatory, always-visible picker; defaults to <c>"AUD"</c>. Fixed for the life of the
+    /// dataset once setup completes (FR-002).
+    /// </summary>
+    [Required(ErrorMessage = "Currency is required.")]
+    public string CurrencyCode { get; set; } = "AUD";
+
     public bool IsTaxApplicable { get; set; }
 
     public decimal? TaxRate { get; set; }

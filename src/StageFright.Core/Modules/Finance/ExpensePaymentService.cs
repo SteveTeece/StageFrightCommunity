@@ -104,7 +104,8 @@ public class ExpensePaymentService : IExpensePaymentService
             // Taxable while tax applies: DR Expense net / DR Tax Paid / CR Bank gross.
             // Otherwise a 2-line pair; postings while tax doesn't apply carry no tax code at all.
             var (expenseAmount, taxAmount) = taxCode == TaxCode.Taxable
-                ? TaxCalculator.SplitInclusive(request.Amount, settings?.TaxRate ?? 0m)
+                ? TaxCalculator.SplitInclusive(request.Amount, settings?.TaxRate ?? 0m,
+                    CurrencyCatalog.Get(settings?.CurrencyCode ?? CurrencyCatalog.Default.Code).MinorUnitDigits)
                 : (request.Amount, 0m);
 
             var lines = new List<Transaction>

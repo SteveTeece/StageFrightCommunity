@@ -133,6 +133,8 @@
   <data name="Setup_Error_Unexpected" xml:space="preserve"><value>An unexpected error occurred. Please try again.</value><comment>Generic setup failure message.</comment></data>
   <data name="Setup_General_OrgNameLabel" xml:space="preserve"><value>Organization Name</value><comment>General tab — organisation name label.</comment></data>
   <data name="Setup_General_OrgNamePlaceholder" xml:space="preserve"><value>e.g. Springfield Choral Society</value><comment>Placeholder for the organisation name field.</comment></data>
+  <data name="Setup_General_CurrencyLabel" xml:space="preserve"><value>Currency</value><comment>General tab — organisation currency picker label (spec 028, FR-001).</comment></data>
+  <data name="Setup_General_CurrencyHelp" xml:space="preserve"><value>The currency your books are kept in. This is fixed once setup is complete.</value><comment>Help text under the currency picker (spec 028, FR-002).</comment></data>
   <data name="Setup_Fees_AnnualFeeLabel" xml:space="preserve"><value>Annual Fee</value><comment>Membership Fees tab — annual fee label.</comment></data>
   <data name="Setup_Fees_AttendanceFeeLabel" xml:space="preserve"><value>Attendance Fee</value><comment>Membership Fees tab — attendance fee label.</comment></data>
   <data name="Setup_Fees_RenewalMonthLabel" xml:space="preserve"><value>Membership Renewal Month</value><comment>Membership Fees tab — renewal month label.</comment></data>

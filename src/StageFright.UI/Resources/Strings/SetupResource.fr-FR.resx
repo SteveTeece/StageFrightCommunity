@@ -21,6 +21,8 @@
   <data name="Setup_Error_Unexpected" xml:space="preserve"><value>Une erreur inattendue s'est produite. Veuillez réessayer.</value><comment>Generic setup failure message.</comment></data>
   <data name="Setup_General_OrgNameLabel" xml:space="preserve"><value>Nom de l'organisation</value><comment>General tab — organisation name label.</comment></data>
   <data name="Setup_General_OrgNamePlaceholder" xml:space="preserve"><value>ex. : Chorale de Springfield</value><comment>Placeholder for the organisation name field.</comment></data>
+  <data name="Setup_General_CurrencyLabel" xml:space="preserve"><value>Devise</value><comment>General tab — organisation currency picker label (spec 028, FR-001).</comment></data>
+  <data name="Setup_General_CurrencyHelp" xml:space="preserve"><value>La devise dans laquelle vos comptes sont tenus. Elle est figée une fois la configuration terminée.</value><comment>Help text under the currency picker (spec 028, FR-002).</comment></data>
   <data name="Setup_Fees_AnnualFeeLabel" xml:space="preserve"><value>Cotisation annuelle</value><comment>Membership Fees tab — annual fee label.</comment></data>
   <data name="Setup_Fees_AttendanceFeeLabel" xml:space="preserve"><value>Frais de présence</value><comment>Membership Fees tab — attendance fee label.</comment></data>
   <data name="Setup_Fees_RenewalMonthLabel" xml:space="preserve"><value>Mois de renouvellement de l'adhésion</value><comment>Membership Fees tab — renewal month label.</comment></data>

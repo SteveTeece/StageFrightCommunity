@@ -131,6 +131,181 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-29T06:54:37.746Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:05:17.360Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:05:17.512Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:05:17.662Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:08:26.789Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:08:26.945Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:14:00.637Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:14:00.788Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:14:00.933Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:14:01.077Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:14:01.223Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:14:01.369Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:14:01.515Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:24:37.053Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:24:37.202Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:24:37.349Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:24:37.491Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:24:37.637Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:24:37.783Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:32:41.581Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:32:41.762Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014a",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:32:42.367Z"
     }
   ],
   "telemetryInstanceId": "527a7469-9665-4240-b165-addc44766471",
@@ -155,6 +330,10 @@
         "T018",
         "T019",
         "T021"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs::InitializeAsync_PersistsRequestedCurrency_Normalised",
+        "InitializeAsync_Throws_WhenCurrencyUnknown; tests/StageFright.UI.Tests/Pages/Setup/CurrencyPickerTests.cs"
       ]
     },
     "FR-002": {
@@ -163,6 +342,10 @@
         "T012",
         "T020",
         "T021"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Settings/SettingsServiceTests.cs::SaveAsync_Throws_WhenCurrencyCodeDiffersFromPersisted",
+        "SaveAsync_Saves_WhenCurrencyCodeUnchanged"
       ]
     },
     "FR-003": {
@@ -176,6 +359,9 @@
         "T025",
         "T026",
         "T027"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Localization/MoneyFormatterTests.cs; tests/StageFright.Integration.Tests/Scenarios/V28_CurrencyConfigurationTests.cs::ZeroDecimalCurrency_ShowsNoFractionalDigits_AndReconciles"
       ]
     },
     "FR-004": {
@@ -188,6 +374,9 @@
         "T025",
         "T026",
         "T027"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/V28_CurrencyConfigurationTests.cs::EveryFinancialReport_ShowsTheConfiguredCurrency_AndNeverDollarOrAud"
       ]
     },
     "FR-005": {
@@ -196,6 +385,10 @@
         "T011",
         "T015",
         "T016"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Finance/TaxCalculatorTests.cs::SplitInclusive_NetPlusTax_AlwaysEqualsGross_AtAnyMinorUnitDigits",
+        "SplitInclusive_RoundsTaxToConfiguredMinorUnit"
       ]
     },
     "FR-006": {
@@ -204,6 +397,9 @@
         "T006",
         "T007",
         "T013"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs"
       ]
     },
     "FR-007": {
@@ -501,6 +697,21 @@
       "decision": "Source the bank reconciliation book balance from the existing IGLRepository.GetAccountBalanceAsync(accountId, statementDate)",
       "why": "It already exists and is keyed on AccountId (not the denormalized GLAccount string), so the report inherits the aggregate-by-identity rule with no new repository method",
       "rejected": "Recomputing the ledger balance in the provider from raw transactions"
+    },
+    {
+      "decision": "Route every StageFright.Reports provider FormatCurrency helper (and TaxSummary/ChartOfAccounts inline money) through the static MoneyFormatter.Format",
+      "why": "FR-003/FR-004 need the configured symbol+precision on printed/exported amounts; providers previously emitted bare ToString(F2) with no symbol",
+      "rejected": "Injecting an IMoneyFormatter into every provider (churns ~10 static helpers for no behavioural gain under single-currency-per-dataset)"
+    },
+    {
+      "decision": "Update the ~30 pre-existing report/UI/integration money assertions to compare against MoneyFormatter.Format(<decimal>m) rather than hard-coded \"$x.xx\"",
+      "why": "Keeps those tests correct under the configured currency and robust to the host culture grouping, matching how production formats",
+      "rejected": "Hard-coding the en-AU dollar literal (brittle if the CI host culture changes)"
+    },
+    {
+      "decision": "Serialise MoneyFormatter-sensitive integration tests via a DisableParallelization xUnit collection (V6, V16, V28, AudZeroDrift)",
+      "why": "MoneyFormatter.Configure sets process-wide static state; a JPY config in V28 could race the AUD assertions now in V6/V16",
+      "rejected": "Disabling parallelization for the whole Integration.Tests assembly"
     }
   ],
   "step_summaries": {
@@ -510,7 +721,208 @@
     },
     "tasks": {
       "summary": "94 tasks across 13 phases (Setup, Foundational, one per US1-US10, Polish); wave-grouped with explicit joins; oversized budget, full per-story Goal/Independent Test/Checkpoint."
+    },
+    "implement": {
+      "summary": "Phase 3 / US1 (T009-T028): MoneyFormatter now drives every screen/report/PDF/CSV amount from Settings.CurrencyCode (ISO 4217, default AUD); mandatory setup currency picker, currency immutable after setup, TaxCalculator rounds to the currency minor unit; AUD output byte-identical (1868 tests green)."
     }
   },
-  "currentTask": "T009"
+  "currentTask": "T014a",
+  "task_summaries": {
+    "T015": {
+      "status": "DONE",
+      "did": "SplitInclusive gains optional int minorUnitDigits=2 param used for rounding; net=gross-tax remainder unchanged",
+      "files": [
+        "src/StageFright.Core/Modules/Finance/TaxCalculator.cs"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Every SplitInclusive caller now passes CurrencyCatalog.Get(settings.CurrencyCode).MinorUnitDigits",
+      "files": [
+        "src/StageFright.Core/Modules/Rehearsals/AttendanceService.cs",
+        "src/StageFright.Core/Modules/Finance/FeeService.cs",
+        "src/StageFright.Core/Modules/Finance/IncomeEntryService.cs",
+        "src/StageFright.Core/Modules/Finance/ExpensePaymentService.cs",
+        "src/StageFright.Core/Modules/Finance/ReactivationForgivenessService.cs",
+        "src/StageFright.UI/Pages/Finance/RecordIncome.razor.cs",
+        "src/StageFright.UI/Pages/Finance/ExpensePaymentPage.razor.cs",
+        "src/StageFright.App/Seeding/DebugDataSeeder.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "TaxCalculatorTests: added 0/2/3 minor-digit re-sum theory + rounding table + default-2 guard",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Finance/TaxCalculatorTests.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "New CurrencyCatalogTests: 0/2/3-decimal coverage, Get throws on unknown, TryGet returns false+Default, case-insensitive",
+      "files": [
+        "tests/StageFright.Core.Tests/Localization/CurrencyCatalogTests.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "New MoneyFormatterTests: en-AU/en-US/fr-FR/de-DE + JPY config — symbol, digit count, grouping, code prefix, null fallback",
+      "files": [
+        "tests/StageFright.Core.Tests/Localization/MoneyFormatterTests.cs"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "SetupFormModel gains [Required] string CurrencyCode = \"AUD\"",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupFormModel.cs"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "SetupRequest gains trailing string CurrencyCode = \"AUD\"",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/SetupRequest.cs"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "SetupService validates CurrencyCode against CurrencyCatalog (Validation_Setup_CurrencyUnknown) + persists normalised code to Settings.CurrencyCode",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/SetupService.cs",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.en-US.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.fr-FR.resx"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "SettingsService.SaveAsync rejects a CurrencyCode change vs persisted (Validation_Settings_CurrencyImmutable)",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/SettingsService.cs"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "GeneralAppearanceTab: mandatory #setup-currency select from CurrencyCatalog.All bound to SetupFormModel.CurrencyCode; wired into SetupWizard request; Setup_General_Currency{Label,Help} keys",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor.cs",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs",
+        "src/StageFright.UI/Resources/Strings/SetupResource.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.en-US.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.fr-FR.resx"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "SetupServiceTests + SettingsServiceTests: non-AUD persist + normalise, unknown-currency throw, post-setup currency-change rejection",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs",
+        "tests/StageFright.Core.Tests/Modules/Settings/SettingsServiceTests.cs"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "CurrencyPickerTests (bUnit): option-per-catalog-entry, defaults AUD, binds model",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/CurrencyPickerTests.cs"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "IncomeStatementReportProvider.FormatCurrency -> MoneyFormatter.Format",
+      "files": [
+        "src/StageFright.Reports/Providers/IncomeStatementReportProvider.cs"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "BalanceSheetReportProvider.FormatCurrency -> MoneyFormatter.Format",
+      "files": [
+        "src/StageFright.Reports/Providers/BalanceSheetReportProvider.cs"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "TrialBalanceReportProvider.FormatCurrency -> MoneyFormatter.Format (incl. imbalance message args)",
+      "files": [
+        "src/StageFright.Reports/Providers/TrialBalanceReportProvider.cs"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "TaxSummaryReportProvider money cells route through new FormatCurrency -> MoneyFormatter.Format",
+      "files": [
+        "src/StageFright.Reports/Providers/TaxSummaryReportProvider.cs"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "AccountRegister/GeneralLedger/ChartOfAccounts/MemberAccountSummary money -> MoneyFormatter.Format (Committee/MemberList show no money)",
+      "files": [
+        "src/StageFright.Reports/Providers/AccountRegisterReportProvider.cs",
+        "src/StageFright.Reports/Providers/GeneralLedgerReportProvider.cs",
+        "src/StageFright.Reports/Providers/ChartOfAccountsReportProvider.cs",
+        "src/StageFright.Reports/Providers/MemberAccountSummaryReportProvider.cs"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "JournalEntryPage totals row ToString(N2) -> MoneyFormatter.Format",
+      "files": [
+        "src/StageFright.UI/Pages/Finance/JournalEntryPage.razor"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "Corrected stale fixed-$/AUD prose: CLAUDE.md Localization note + spec 027 spec.md/data-model.md/contracts superseding notes (MoneyFormatter XML doc already current from T007)",
+      "files": [
+        "CLAUDE.md",
+        "specs/027-localization-support/spec.md",
+        "specs/027-localization-support/data-model.md",
+        "specs/027-localization-support/contracts/localization-contracts.md",
+        "specs/027-localization-support/contracts/resource-key-catalog.md"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "AudZeroDriftTests: AUD MoneyFormatter == legacy $ string, TaxCalculator 2-digit unchanged, IncomeStatement/TrialBalance figures + stored Transaction values byte-identical",
+      "files": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs",
+        "tests/StageFright.Integration.Tests/MoneyFormatterStateCollection.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V6_AccountingReportsTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V16_GenericSalesTaxTests.cs"
+      ]
+    },
+    "T014a": {
+      "status": "DONE",
+      "did": "V28_CurrencyConfigurationTests: US1 AC-1..AC-4 end to end — JPY reports carry ¥ never $/AUD, zero-decimal reconciles, fr-FR grouping keeps ¥, AUD byte-identical",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V28_CurrencyConfigurationTests.cs"
+      ]
+    }
+  },
+  "verified": [
+    {
+      "what": "full solution rebuild",
+      "command": "dotnet build StageFrightCommunity.slnx -t:Rebuild",
+      "result": "Build succeeded, 0 warnings, 0 errors",
+      "warnings": []
+    },
+    {
+      "what": "full test suite (no --no-build)",
+      "command": "dotnet test StageFrightCommunity.slnx",
+      "result": "1868 passed, 0 failed, 0 skipped (Core 671, Reports 217, Localization 23, UI 602, Data 154, Integration 201); baseline was 1805",
+      "warnings": [
+        "updated ~30 pre-existing report/UI/integration assertions from bare F2 strings to MoneyFormatter.Format(...) — expected consequence of routing report money through the configured formatter"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "note": "T028 left specs/027-localization-support/research.md and plan.md decision-log lines still asserting a fixed $/AUD; the load-bearing current-reading docs (spec.md, data-model.md, both contracts) now carry a superseding note. T092 (Polish) is the designated final pass for the remaining 027 lines.",
+      "step": "implement"
+    }
+  ],
+  "last_action": "Phase 3 (US1) complete — 21/21 tasks (T009-T028 + T014a) checked off; full rebuild 0W/0E; 1868 tests pass (was 1805). Phases 4-13 not started."
 }

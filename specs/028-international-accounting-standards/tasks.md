@@ -63,46 +63,46 @@ currency and precision and no `$`/`AUD` appears.
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T009** [P] [US1] Unit — `CurrencyCatalog` lookups incl. 0- and 3-decimal; `Get` throws `ValidationException` on an unknown code; `TryGet` returns `false` + `Default` on a miss; both case-insensitive · `tests/StageFright.Core.Tests/Localization/CurrencyCatalogTests.cs`
-- [ ] **T010** [P] [US1] Unit — `MoneyFormatter` under `en-AU`/`en-US`/`fr-FR`/`de-DE` and a `JPY` config: symbol, digit count, grouping · `tests/StageFright.Core.Tests/Localization/MoneyFormatterTests.cs`
-- [ ] **T011** [P] [US1] Unit — `TaxCalculator.SplitInclusive` parts re-sum to gross exactly at 0/2/3 minor digits · `tests/StageFright.Core.Tests/Modules/Finance/TaxCalculatorTests.cs`
-- [ ] **T012** [P] [US1] Integration — setup with a non-`AUD` currency persists `CurrencyCode`; `SettingsService.SaveAsync` rejects a later `CurrencyCode` change · `tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs`, `SettingsServiceTests.cs`
-- [ ] **T013** [P] [US1] Integration — **AUD zero-drift**: a reference dataset produces identical report figures and identical stored values before/after (SC-004, FR-006, FR-031) · `tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs`
-- [ ] **T014** [P] [US1] bUnit — setup currency picker renders `CurrencyCatalog.All`, defaults `AUD`, binds the model · `tests/StageFright.UI.Tests/Pages/Setup/CurrencyPickerTests.cs`
-- [ ] **T014a** [P] [US1] **Acceptance** — `V28_CurrencyConfiguration` drives US1 AC-1…AC-4 end to end: fresh install → setup picks a non-`AUD` currency (incl. a zero-decimal `JPY`) → record a fee + payment → generate every financial report; asserts the chosen symbol and minor-unit precision throughout, no `$`/`AUD`, regional grouping/placement with the configured symbol unchanged (AC-3), zero-decimal reconciles exactly (AC-2), and an `AUD` dataset is byte-identical (AC-4) · `tests/StageFright.Integration.Tests/Scenarios/V28_CurrencyConfigurationTests.cs`
+- [x] **T009** [P] [US1] Unit — `CurrencyCatalog` lookups incl. 0- and 3-decimal; `Get` throws `ValidationException` on an unknown code; `TryGet` returns `false` + `Default` on a miss; both case-insensitive · `tests/StageFright.Core.Tests/Localization/CurrencyCatalogTests.cs`
+- [x] **T010** [P] [US1] Unit — `MoneyFormatter` under `en-AU`/`en-US`/`fr-FR`/`de-DE` and a `JPY` config: symbol, digit count, grouping · `tests/StageFright.Core.Tests/Localization/MoneyFormatterTests.cs`
+- [x] **T011** [P] [US1] Unit — `TaxCalculator.SplitInclusive` parts re-sum to gross exactly at 0/2/3 minor digits · `tests/StageFright.Core.Tests/Modules/Finance/TaxCalculatorTests.cs`
+- [x] **T012** [P] [US1] Integration — setup with a non-`AUD` currency persists `CurrencyCode`; `SettingsService.SaveAsync` rejects a later `CurrencyCode` change · `tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs`, `SettingsServiceTests.cs`
+- [x] **T013** [P] [US1] Integration — **AUD zero-drift**: a reference dataset produces identical report figures and identical stored values before/after (SC-004, FR-006, FR-031) · `tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs`
+- [x] **T014** [P] [US1] bUnit — setup currency picker renders `CurrencyCatalog.All`, defaults `AUD`, binds the model · `tests/StageFright.UI.Tests/Pages/Setup/CurrencyPickerTests.cs`
+- [x] **T014a** [P] [US1] **Acceptance** — `V28_CurrencyConfiguration` drives US1 AC-1…AC-4 end to end: fresh install → setup picks a non-`AUD` currency (incl. a zero-decimal `JPY`) → record a fee + payment → generate every financial report; asserts the chosen symbol and minor-unit precision throughout, no `$`/`AUD`, regional grouping/placement with the configured symbol unchanged (AC-3), zero-decimal reconciles exactly (AC-2), and an `AUD` dataset is byte-identical (AC-4) · `tests/StageFright.Integration.Tests/Scenarios/V28_CurrencyConfigurationTests.cs`
 
 ### Implementation
 
 **Wave 1 — rounding (single file, then its callers):**
 
-- [ ] **T015** [US1] `TaxCalculator.SplitInclusive` — add an optional `int minorUnitDigits = 2` parameter used for rounding (the default keeps every un-updated call site at today's 2-digit behaviour); `net = gross − tax` remains the remainder · `src/StageFright.Core/Modules/Finance/TaxCalculator.cs`
-- [ ] **T016** [US1] Update every `SplitInclusive` caller to pass the configured currency's `MinorUnitDigits` (`CurrencyCatalog.Get(settings.CurrencyCode).MinorUnitDigits`) — Core services `AttendanceService.cs`, `FeeService.cs`, `IncomeEntryService.cs`, `ExpensePaymentService.cs`, `ReactivationForgivenessService.cs`; UI tax-hint sites `src/StageFright.UI/Pages/Finance/ExpensePaymentPage.razor.cs`, `src/StageFright.UI/Pages/Finance/RecordIncome.razor.cs`; and `src/StageFright.App/Seeding/DebugDataSeeder.cs` *(needs T015)*
+- [x] **T015** [US1] `TaxCalculator.SplitInclusive` — add an optional `int minorUnitDigits = 2` parameter used for rounding (the default keeps every un-updated call site at today's 2-digit behaviour); `net = gross − tax` remains the remainder · `src/StageFright.Core/Modules/Finance/TaxCalculator.cs`
+- [x] **T016** [US1] Update every `SplitInclusive` caller to pass the configured currency's `MinorUnitDigits` (`CurrencyCatalog.Get(settings.CurrencyCode).MinorUnitDigits`) — Core services `AttendanceService.cs`, `FeeService.cs`, `IncomeEntryService.cs`, `ExpensePaymentService.cs`, `ReactivationForgivenessService.cs`; UI tax-hint sites `src/StageFright.UI/Pages/Finance/ExpensePaymentPage.razor.cs`, `src/StageFright.UI/Pages/Finance/RecordIncome.razor.cs`; and `src/StageFright.App/Seeding/DebugDataSeeder.cs` *(needs T015)*
 
 **⟶ then — setup plumbing (independent files):**
 
-- [ ] **T017** [P] [US1] `SetupFormModel` — add `string CurrencyCode` (`[Required]`, default `"AUD"`) · `src/StageFright.UI/Pages/Setup/SetupFormModel.cs`
-- [ ] **T018** [P] [US1] `SetupRequest` — add trailing `string CurrencyCode = "AUD"` · `src/StageFright.Core/Modules/Settings/SetupRequest.cs`
+- [x] **T017** [P] [US1] `SetupFormModel` — add `string CurrencyCode` (`[Required]`, default `"AUD"`) · `src/StageFright.UI/Pages/Setup/SetupFormModel.cs`
+- [x] **T018** [P] [US1] `SetupRequest` — add trailing `string CurrencyCode = "AUD"` · `src/StageFright.Core/Modules/Settings/SetupRequest.cs`
 
 **⟶ then:**
 
-- [ ] **T019** [US1] `SetupService.InitializeAsync` — validate `CurrencyCode ∈ CurrencyCatalog.All` (`Validation_Setup_CurrencyUnknown`); persist to `Settings.CurrencyCode` · `src/StageFright.Core/Modules/Settings/SetupService.cs` *(needs T018)*
-- [ ] **T020** [US1] `SettingsService.SaveAsync` — reject a `CurrencyCode` that differs from the persisted value (`Validation_Settings_CurrencyImmutable`) · `src/StageFright.Core/Modules/Settings/SettingsService.cs`
-- [ ] **T021** [US1] `GeneralAppearanceTab` — add currency `<select id="setup-currency">` bound to `SetupFormModel.CurrencyCode`, options from `CurrencyCatalog.All` · `src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor` + `.razor.cs` *(needs T017)*
+- [x] **T019** [US1] `SetupService.InitializeAsync` — validate `CurrencyCode ∈ CurrencyCatalog.All` (`Validation_Setup_CurrencyUnknown`); persist to `Settings.CurrencyCode` · `src/StageFright.Core/Modules/Settings/SetupService.cs` *(needs T018)*
+- [x] **T020** [US1] `SettingsService.SaveAsync` — reject a `CurrencyCode` that differs from the persisted value (`Validation_Settings_CurrencyImmutable`) · `src/StageFright.Core/Modules/Settings/SettingsService.cs`
+- [x] **T021** [US1] `GeneralAppearanceTab` — add currency `<select id="setup-currency">` bound to `SetupFormModel.CurrencyCode`, options from `CurrencyCatalog.All` · `src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor` + `.razor.cs` *(needs T017)*
 
 **⟶ then — report money routing (independent providers):**
 
-- [ ] **T022** [P] [US1] `IncomeStatementReportProvider` — private `FormatCurrency` → `MoneyFormatter.Format` · `src/StageFright.Reports/Providers/IncomeStatementReportProvider.cs`
-- [ ] **T023** [P] [US1] `BalanceSheetReportProvider` — `FormatCurrency` → `MoneyFormatter.Format` · `src/StageFright.Reports/Providers/BalanceSheetReportProvider.cs`
-- [ ] **T024** [P] [US1] `TrialBalanceReportProvider` — `FormatCurrency` → `MoneyFormatter.Format` · `src/StageFright.Reports/Providers/TrialBalanceReportProvider.cs`
-- [ ] **T025** [P] [US1] `TaxSummaryReportProvider` — money cells → `MoneyFormatter` · `src/StageFright.Reports/Providers/TaxSummaryReportProvider.cs`
-- [ ] **T026** [P] [US1] Remaining providers — money cells → `MoneyFormatter`: `AccountRegisterReportProvider`, `GeneralLedgerReportProvider`, `ChartOfAccountsReportProvider`, `MemberAccountSummaryReportProvider`, `CommitteeReportProvider`, `MemberListReportProvider` · `src/StageFright.Reports/Providers/*.cs`
-- [ ] **T027** [P] [US1] `JournalEntryPage` — the debit/credit totals row `ToString("N2")` → `MoneyFormatter.Format` (precision follows currency) · `src/StageFright.UI/Pages/Finance/JournalEntryPage.razor`
+- [x] **T022** [P] [US1] `IncomeStatementReportProvider` — private `FormatCurrency` → `MoneyFormatter.Format` · `src/StageFright.Reports/Providers/IncomeStatementReportProvider.cs`
+- [x] **T023** [P] [US1] `BalanceSheetReportProvider` — `FormatCurrency` → `MoneyFormatter.Format` · `src/StageFright.Reports/Providers/BalanceSheetReportProvider.cs`
+- [x] **T024** [P] [US1] `TrialBalanceReportProvider` — `FormatCurrency` → `MoneyFormatter.Format` · `src/StageFright.Reports/Providers/TrialBalanceReportProvider.cs`
+- [x] **T025** [P] [US1] `TaxSummaryReportProvider` — money cells → `MoneyFormatter` · `src/StageFright.Reports/Providers/TaxSummaryReportProvider.cs`
+- [x] **T026** [P] [US1] Remaining providers — money cells → `MoneyFormatter`: `AccountRegisterReportProvider`, `GeneralLedgerReportProvider`, `ChartOfAccountsReportProvider`, `MemberAccountSummaryReportProvider`, `CommitteeReportProvider`, `MemberListReportProvider` · `src/StageFright.Reports/Providers/*.cs`
+- [x] **T027** [P] [US1] `JournalEntryPage` — the debit/credit totals row `ToString("N2")` → `MoneyFormatter.Format` (precision follows currency) · `src/StageFright.UI/Pages/Finance/JournalEntryPage.razor`
 
 > `BankReconciliationReportProvider` money formatting is folded into its US5 rewrite (T051) — same file.
 
 **⟶ then — docs sync (same task, project Spec & Docs Workflow rule):**
 
-- [ ] **T028** [US1] Correct stale "always AUD / `$` fixed" prose — `MoneyFormatter` XML doc, `CLAUDE.md` Localization section, `specs/027-localization-support/` lines that assert a fixed `$`/`AUD` · `src/StageFright.Core/Localization/MoneyFormatter.cs`, `CLAUDE.md`, `specs/027-localization-support/*.md`
+- [x] **T028** [US1] Correct stale "always AUD / `$` fixed" prose — `MoneyFormatter` XML doc, `CLAUDE.md` Localization section, `specs/027-localization-support/` lines that assert a fixed `$`/`AUD` · `src/StageFright.Core/Localization/MoneyFormatter.cs`, `CLAUDE.md`, `specs/027-localization-support/*.md`
 
 **Checkpoint**: a non-`AUD` (incl. `JPY`) organisation completes setup; every screen, report, PDF and
 CSV shows the configured symbol + precision; no mismatched symbol/code anywhere; the `AUD`

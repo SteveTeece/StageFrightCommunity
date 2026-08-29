@@ -126,7 +126,7 @@ public class TaxSummaryReportProvider : IReportProvider
                     net >= 0
                         ? _localizer.Get<ReportsResource>("Reports_TaxSummary_NetTaxPayable")
                         : _localizer.Get<ReportsResource>("Reports_TaxSummary_NetTaxRefundable"),
-                    Math.Abs(net).ToString("F2")
+                    FormatCurrency(Math.Abs(net))
                 ],
                 IsEmphasized = true
             }
@@ -145,6 +145,8 @@ public class TaxSummaryReportProvider : IReportProvider
 
     private static ReportRow DescriptionRow(string description, decimal amount) => new()
     {
-        Cells = [description, amount.ToString("F2")]
+        Cells = [description, FormatCurrency(amount)]
     };
+
+    private static string FormatCurrency(decimal amount) => MoneyFormatter.Format(amount);
 }

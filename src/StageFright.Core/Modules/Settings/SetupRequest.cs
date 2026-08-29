@@ -30,4 +30,7 @@ public record SetupRequest(
     DateTime OpeningBalanceAsAtDate = default,
     // LanguageCode: chosen display language as a BCP-47 culture id (spec 027, US3 / FR-013).
     // Null keeps Settings.LanguageCode null ("follow the OS display language").
-    string? LanguageCode = null);
+    string? LanguageCode = null,
+    // CurrencyCode: ISO 4217 code the organisation keeps its books in (spec 028, FR-001).
+    // Defaults to "AUD"; validated against CurrencyCatalog.All and fixed after setup (FR-002).
+    string CurrencyCode = "AUD");

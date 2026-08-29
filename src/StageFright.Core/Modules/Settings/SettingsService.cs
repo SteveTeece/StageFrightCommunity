@@ -58,6 +58,16 @@ public class SettingsService : ISettingsService
 
         var existing = await _repository.GetAsync(ct);
 
+        // Currency is chosen once at first-run setup and fixed for the life of the dataset
+        // (spec 028, FR-002) — no Settings edit surface renders a currency control, so a
+        // differing incoming value can only be a bug or a tampered request.
+        if (existing is not null
+            && !string.IsNullOrWhiteSpace(existing.CurrencyCode)
+            && !string.Equals(existing.CurrencyCode, settings.CurrencyCode, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Settings_CurrencyImmutable"), "Settings", nameof(SaveAsync));
+        }
+
         string? oldValue = existing is null
             ? null
             : JsonSerializer.Serialize(new { existing.OrganizationName, existing.AnnualFee, existing.AttendanceFee, existing.Theme });

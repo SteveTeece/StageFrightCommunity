@@ -85,7 +85,8 @@ public class FeeService : IFeeService
             ? settings.AnnualFeeTaxCode ?? TaxCode.TaxExempt
             : (TaxCode?)null;
         var (incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
-            ? TaxCalculator.SplitInclusive(settings.AnnualFee, settings.TaxRate ?? 0m)
+            ? TaxCalculator.SplitInclusive(settings.AnnualFee, settings.TaxRate ?? 0m,
+                CurrencyCatalog.Get(settings.CurrencyCode).MinorUnitDigits)
             : (settings.AnnualFee, 0m);
 
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>

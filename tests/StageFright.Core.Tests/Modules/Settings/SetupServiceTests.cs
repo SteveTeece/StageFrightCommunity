@@ -273,6 +273,56 @@ public class SetupServiceTests : TestBase
             Arg.Any<CancellationToken>());
     }
 
+    // --- Currency (spec 028, US1 / FR-001) ---
+
+    [Fact]
+    public async Task InitializeAsync_PersistsDefaultCurrency_WhenNotSpecified()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        await svc.InitializeAsync(ValidRequest(), Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s!.CurrencyCode == "AUD"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData("USD", "USD")]
+    [InlineData("jpy", "JPY")]
+    [InlineData(" eur ", "EUR")]
+    public async Task InitializeAsync_PersistsRequestedCurrency_Normalised(string requested, string persisted)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        var request = ValidRequest() with { CurrencyCode = requested };
+        await svc.InitializeAsync(request, Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s!.CurrencyCode == persisted),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData("ZZZ")]
+    [InlineData("")]
+    [InlineData("dollars")]
+    public async Task InitializeAsync_Throws_WhenCurrencyUnknown(string code)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var request = ValidRequest() with { CurrencyCode = code };
+        await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
+        await _settingsRepo.DidNotReceive().SaveAsync(Arg.Any<Settings>(), Arg.Any<CancellationToken>());
+    }
+
     // --- Queued accounts / opening balances (spec 017) ---
 
     [Fact]

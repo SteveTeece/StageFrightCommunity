@@ -59,7 +59,7 @@ public class TrialBalanceReportProvider : IReportProvider
         {
             throw new GLBalanceException(
                 _localizer.Get<ReportsResource>("Reports_TrialBalance_GLImbalanceError",
-                    totalDebits.ToString("F2"), totalCredits.ToString("F2")),
+                    FormatCurrency(totalDebits), FormatCurrency(totalCredits)),
                 "Transaction",
                 "TrialBalance");
         }
@@ -132,5 +132,5 @@ public class TrialBalanceReportProvider : IReportProvider
         return (from, to);
     }
 
-    private static string FormatCurrency(decimal amount) => amount.ToString("F2");
+    private static string FormatCurrency(decimal amount) => MoneyFormatter.Format(amount);
 }

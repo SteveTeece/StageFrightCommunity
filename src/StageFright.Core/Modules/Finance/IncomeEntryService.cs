@@ -106,7 +106,8 @@ public class IncomeEntryService : IIncomeEntryService
             // Taxable while tax applies: DR Bank gross / CR Income net / CR Tax Collected.
             // Otherwise a 2-line pair; postings while tax doesn't apply carry no tax code at all.
             var (incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
-                ? TaxCalculator.SplitInclusive(request.Amount, settings?.TaxRate ?? 0m)
+                ? TaxCalculator.SplitInclusive(request.Amount, settings?.TaxRate ?? 0m,
+                    CurrencyCatalog.Get(settings?.CurrencyCode ?? CurrencyCatalog.Default.Code).MinorUnitDigits)
                 : (request.Amount, 0m);
 
             var lines = new List<Transaction>

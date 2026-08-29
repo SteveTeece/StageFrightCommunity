@@ -99,7 +99,8 @@ public class AttendanceService : IAttendanceService
             ? settings.AttendanceFeeTaxCode ?? TaxCode.TaxExempt
             : (TaxCode?)null;
         var (incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
-            ? TaxCalculator.SplitInclusive(settings.AttendanceFee, settings.TaxRate ?? 0m)
+            ? TaxCalculator.SplitInclusive(settings.AttendanceFee, settings.TaxRate ?? 0m,
+                CurrencyCatalog.Get(settings.CurrencyCode).MinorUnitDigits)
             : (settings.AttendanceFee, 0m);
 
         int presentCount = 0;

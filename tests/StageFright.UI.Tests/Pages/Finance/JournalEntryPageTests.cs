@@ -5,6 +5,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.UI.Pages.Finance;
 
@@ -110,8 +111,8 @@ public class JournalEntryPageTests : LocalizedTestContext
         cut.FindAll(".journal-credit")[0].Change("50");
         cut.FindAll(".journal-debit")[0].Change("100");
 
-        Assert.Equal("100.00", cut.Find(".journal-total-debits").TextContent);
-        Assert.Equal("0.00", cut.Find(".journal-total-credits").TextContent);
+        Assert.Equal(MoneyFormatter.Format(100m), cut.Find(".journal-total-debits").TextContent);
+        Assert.Equal(MoneyFormatter.Format(0m), cut.Find(".journal-total-credits").TextContent);
     }
 
     [Fact]
@@ -122,8 +123,8 @@ public class JournalEntryPageTests : LocalizedTestContext
         cut.FindAll(".journal-debit")[0].Change("100");
         cut.FindAll(".journal-credit")[0].Change("50");
 
-        Assert.Equal("0.00", cut.Find(".journal-total-debits").TextContent);
-        Assert.Equal("50.00", cut.Find(".journal-total-credits").TextContent);
+        Assert.Equal(MoneyFormatter.Format(0m), cut.Find(".journal-total-debits").TextContent);
+        Assert.Equal(MoneyFormatter.Format(50m), cut.Find(".journal-total-credits").TextContent);
     }
 
     // --- Balance badge + totals ---
@@ -230,7 +231,7 @@ public class JournalEntryPageTests : LocalizedTestContext
         cut.FindAll("button").First(b => b.TextContent.Contains("Record Another")).Click();
 
         Assert.Equal(2, cut.FindAll(".journal-account").Count);
-        Assert.Equal("0.00", cut.Find(".journal-total-debits").TextContent);
+        Assert.Equal(MoneyFormatter.Format(0m), cut.Find(".journal-total-debits").TextContent);
     }
 
     [Fact]

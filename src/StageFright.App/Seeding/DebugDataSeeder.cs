@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Agm;
 using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Events;
@@ -531,7 +532,8 @@ public class DebugDataSeeder : IDebugDataSeeder
     {
         var taxCode = settings.IsTaxApplicable ? (settings.AnnualFeeTaxCode ?? TaxCode.TaxExempt) : (TaxCode?)null;
         var (incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
-            ? TaxCalculator.SplitInclusive(settings.AnnualFee, settings.TaxRate ?? 0m)
+            ? TaxCalculator.SplitInclusive(settings.AnnualFee, settings.TaxRate ?? 0m,
+                CurrencyCatalog.Get(settings.CurrencyCode).MinorUnitDigits)
             : (settings.AnnualFee, 0m);
 
         Fee savedFee = null!;

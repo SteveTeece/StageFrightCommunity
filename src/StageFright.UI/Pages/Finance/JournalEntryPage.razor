@@ -98,8 +98,8 @@
                             <tfoot>
                                 <tr class="fw-semibold">
                                     <td>@L["Finance_Journal_TotalsLabel"]</td>
-                                    <td class="text-end journal-total-debits">@TotalDebits.ToString("N2")</td>
-                                    <td class="text-end journal-total-credits">@TotalCredits.ToString("N2")</td>
+                                    <td class="text-end journal-total-debits">@MoneyFormatter.Format(TotalDebits)</td>
+                                    <td class="text-end journal-total-credits">@MoneyFormatter.Format(TotalCredits)</td>
                                     <td></td>
                                 </tr>
                             </tfoot>

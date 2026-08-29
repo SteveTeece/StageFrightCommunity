@@ -191,5 +191,5 @@ public class IncomeStatementReportProvider : IReportProvider
         return FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth);
     }
 
-    private static string FormatCurrency(decimal amount) => amount.ToString("F2");
+    private static string FormatCurrency(decimal amount) => MoneyFormatter.Format(amount);
 }

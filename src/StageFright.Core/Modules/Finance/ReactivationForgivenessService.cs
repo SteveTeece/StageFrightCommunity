@@ -1,6 +1,7 @@
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 
 namespace StageFright.Core.Modules.Finance;
 
@@ -81,7 +82,8 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
                 // organisation's current tax rate (single current rate, no rate history — see
                 // spec 016 Assumptions).
                 var (badDebtAmount, taxAdjustment) = fee.TaxCode == TaxCode.Taxable
-                    ? TaxCalculator.SplitInclusive(fee.Amount, settings?.TaxRate ?? 0m)
+                    ? TaxCalculator.SplitInclusive(fee.Amount, settings?.TaxRate ?? 0m,
+                        CurrencyCatalog.Get(settings?.CurrencyCode ?? CurrencyCatalog.Default.Code).MinorUnitDigits)
                     : (fee.Amount, 0m);
 
                 var lines = new List<Transaction>

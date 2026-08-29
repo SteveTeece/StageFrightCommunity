@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Finance;
 using StageFright.Data;
@@ -18,6 +19,7 @@ namespace StageFright.Integration.Tests.Scenarios;
 /// collected on sales = tax paid on purchases = $10).
 /// Uses a real SQLite in-memory database with full EF migrations.
 /// </summary>
+[Collection("MoneyFormatterState")]
 public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
 {
     private StageFrightDbContext _db = null!;
@@ -153,10 +155,10 @@ public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
         var result = await provider.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         var rows = result.Sections.Single().Rows;
-        Assert.Equal("10.00", rows.Single(r => r.Cells[0] == "Tax collected on sales").Cells[1]);
-        Assert.Equal("10.00", rows.Single(r => r.Cells[0] == "Tax paid on purchases").Cells[1]);
-        Assert.Equal("110.00", rows.Single(r => r.Cells[0] == "Total taxable sales").Cells[1]);
-        Assert.Equal("0.00", result.GrandTotal!.Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(10m), rows.Single(r => r.Cells[0] == "Tax collected on sales").Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(10m), rows.Single(r => r.Cells[0] == "Tax paid on purchases").Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(110m), rows.Single(r => r.Cells[0] == "Total taxable sales").Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(0m), result.GrandTotal!.Cells[1]);
     }
 
     [Fact]

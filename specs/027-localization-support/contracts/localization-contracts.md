@@ -189,11 +189,13 @@ Menu/tile providers (`StageFright.Core`) take `IStringLocalizer<NavigationResour
 namespace StageFright.Core.Localization;
 
 /// <summary>
-/// Formats monetary amounts for display. The amount is ALWAYS Australian dollars:
-/// the currency symbol/code is fixed ("$" or an explicit "AUD ") regardless of the
-/// active culture (FR-015 / FR-016). Only the decimal separator, digit grouping and
-/// symbol placement follow CultureInfo.CurrentCulture. Never use decimal.ToString("C")
-/// / "{0:C}" at a display site — that substitutes the culture's own currency symbol.
+/// Formats monetary amounts for display. Under spec 027 the amount was ALWAYS Australian
+/// dollars with a fixed "$" / "AUD ". SUPERSEDED BY SPEC 028: the symbol, ISO code and
+/// minor-unit precision now come from the organisation's configured currency
+/// (Settings.CurrencyCode, ISO 4217, default AUD), set once via MoneyFormatter.Configure(...)
+/// at startup; only the decimal separator, digit grouping and symbol placement follow
+/// CultureInfo.CurrentCulture. Never use decimal.ToString("C") / "{0:C}" at a display site —
+/// that substitutes the culture's own currency symbol.
 /// </summary>
 public static class MoneyFormatter   // or ICurrencyFormatter if a seam is wanted for tests
 {

@@ -26,13 +26,14 @@ public partial class ExpensePaymentPage : ComponentBase
     private bool _saving;
     private bool _isTaxApplicable;
     private decimal _taxRate;
+    private int _minorUnitDigits = 2;
     private string? _successMessage;
     private string? _errorMessage;
 
     private string? TaxInclusiveHint =>
         _isTaxApplicable && _form.TaxCode == TaxCode.Taxable && _form.Amount > 0m
             ? Loc.Get<FinanceResource>("Finance_Common_TaxInclusiveHint",
-                MoneyFormatter.Format(TaxCalculator.SplitInclusive(_form.Amount, _taxRate).Tax))
+                MoneyFormatter.Format(TaxCalculator.SplitInclusive(_form.Amount, _taxRate, _minorUnitDigits).Tax))
             : null;
 
     protected override async Task OnInitializedAsync()
@@ -50,6 +51,7 @@ public partial class ExpensePaymentPage : ComponentBase
             var settings = await SettingsService.GetAsync();
             _isTaxApplicable = settings?.IsTaxApplicable ?? false;
             _taxRate = settings?.TaxRate ?? 0m;
+            _minorUnitDigits = CurrencyCatalog.Get(settings?.CurrencyCode ?? CurrencyCatalog.Default.Code).MinorUnitDigits;
         }
         catch (Exception ex)
         {

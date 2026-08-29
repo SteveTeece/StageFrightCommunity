@@ -80,4 +80,44 @@ public class TaxCalculatorTests
 
         Assert.Equal(0.01m, tax);
     }
+
+    // --- spec 028 FR-005: rounding follows the configured currency's minor unit (0, 2 or 3 digits) ---
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void SplitInclusive_NetPlusTax_AlwaysEqualsGross_AtAnyMinorUnitDigits(int minorUnitDigits)
+    {
+        decimal[] grosses = [110m, 1000.555m, 12345.678m, 0.001m, 99.999m, 7m];
+
+        foreach (var gross in grosses)
+        {
+            var (net, tax) = TaxCalculator.SplitInclusive(gross, 12.5m, minorUnitDigits);
+            Assert.Equal(gross, net + tax);
+        }
+    }
+
+    [Theory]
+    [InlineData(1000.50, 10, 0, 91)]      // yen-style: gross*10/110 = 90.95… -> 91 whole units
+    [InlineData(110.00, 10, 2, 10.00)]    // cent-style: unchanged 2-digit behaviour
+    [InlineData(110.000, 10, 3, 10.000)]  // dinar-style: 3-digit minor unit
+    [InlineData(1.234, 10, 3, 0.112)]     // 1.234*10/110 = 0.11218… -> 0.112 at 3 digits
+    public void SplitInclusive_RoundsTaxToConfiguredMinorUnit(decimal gross, decimal ratePercent, int minorUnitDigits, decimal expectedTax)
+    {
+        var (net, tax) = TaxCalculator.SplitInclusive(gross, ratePercent, minorUnitDigits);
+
+        Assert.Equal(expectedTax, tax);
+        Assert.Equal(gross - expectedTax, net);
+        Assert.Equal(gross, net + tax);
+    }
+
+    [Fact]
+    public void SplitInclusive_DefaultsToTwoMinorUnitDigits_WhenNotSpecified()
+    {
+        var withDefault = TaxCalculator.SplitInclusive(100m, 10m);
+        var withExplicitTwo = TaxCalculator.SplitInclusive(100m, 10m, 2);
+
+        Assert.Equal(withExplicitTwo, withDefault);
+    }
 }

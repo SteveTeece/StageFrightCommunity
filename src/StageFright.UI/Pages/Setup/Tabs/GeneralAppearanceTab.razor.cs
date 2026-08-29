@@ -4,8 +4,10 @@ using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Setup.Tabs;
 
-/// <summary>General tab (US1) — organisation name. The theme dropdown (US6) lives in
-/// <see cref="ThemeSelectionTab"/>, rendered lower in the Organisation Settings tab.</summary>
+/// <summary>General tab (US1) — organisation name and the mandatory currency picker
+/// (spec 028, FR-001; <c>id="setup-currency"</c>, options from <c>CurrencyCatalog.All</c>).
+/// The theme dropdown (US6) lives in <see cref="ThemeSelectionTab"/>, rendered lower in the
+/// Organisation Settings tab.</summary>
 public partial class GeneralAppearanceTab : ComponentBase
 {
     [Parameter, EditorRequired] public SetupFormModel Model { get; set; } = null!;

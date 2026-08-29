@@ -152,5 +152,5 @@ public class BalanceSheetReportProvider : IReportProvider
             : fyEnd;
     }
 
-    private static string FormatCurrency(decimal amount) => amount.ToString("F2");
+    private static string FormatCurrency(decimal amount) => MoneyFormatter.Format(amount);
 }

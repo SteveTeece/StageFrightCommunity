@@ -208,4 +208,36 @@ public class SettingsServiceTests : TestBase
         await svc.SaveAsync(settings, Ct); // must not throw
         await _settingsRepo.Received(1).SaveAsync(settings, Arg.Any<CancellationToken>());
     }
+
+    // --- Currency immutability (spec 028, US1 / FR-002) ---
+
+    [Fact]
+    public async Task SaveAsync_Throws_WhenCurrencyCodeDiffersFromPersisted()
+    {
+        var persisted = ValidSettings();
+        persisted.CurrencyCode = "AUD";
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns(persisted);
+        var svc = CreateService();
+
+        var settings = ValidSettings();
+        settings.CurrencyCode = "USD";
+
+        await Assert.ThrowsAsync<ValidationException>(() => svc.SaveAsync(settings, Ct));
+        await _settingsRepo.DidNotReceive().SaveAsync(Arg.Any<Settings>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SaveAsync_Saves_WhenCurrencyCodeUnchanged()
+    {
+        var persisted = ValidSettings();
+        persisted.CurrencyCode = "JPY";
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns(persisted);
+        var svc = CreateService();
+
+        var settings = ValidSettings();
+        settings.CurrencyCode = "jpy"; // case-insensitive match, still allowed
+
+        await svc.SaveAsync(settings, Ct); // must not throw
+        await _settingsRepo.Received(1).SaveAsync(settings, Arg.Any<CancellationToken>());
+    }
 }

@@ -86,6 +86,7 @@ public class ChartOfAccountsReportProvider : IReportProvider
     }
 
     private string FormatBalance(AccountBalance a) =>
-        a.HasError ? _localizer.Get<ReportsResource>("Reports_ChartOfAccounts_BalanceError")
-                   : a.Balance?.ToString("F2") ?? _localizer.Get<ReportsResource>("Reports_ChartOfAccounts_BalanceError");
+        a.HasError || a.Balance is not { } balance
+            ? _localizer.Get<ReportsResource>("Reports_ChartOfAccounts_BalanceError")
+            : MoneyFormatter.Format(balance);
 }

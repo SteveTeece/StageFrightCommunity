@@ -3,3 +3,14 @@
     <InputText id="orgName" class="form-control form-control-sm" @bind-Value="Model.OrganizationName" placeholder="@L["Setup_General_OrgNamePlaceholder"]" />
     <ValidationMessage For="() => Model.OrganizationName" class="text-danger small" />
 </div>
+
+<div class="mb-3">
+    <label for="setup-currency" class="form-label">@L["Setup_General_CurrencyLabel"] <span aria-hidden="true" class="text-danger">*</span></label>
+    <select id="setup-currency" class="form-select form-select-sm" @bind="Model.CurrencyCode">
+        @foreach (var currency in CurrencyCatalog.All)
+        {
+            <option value="@currency.Code">@currency.DisplayName (@currency.Code)</option>
+        }
+    </select>
+    <div class="form-text small">@L["Setup_General_CurrencyHelp"]</div>
+</div>

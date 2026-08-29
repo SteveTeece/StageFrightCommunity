@@ -1,6 +1,7 @@
 using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Reports.Models;
 using StageFright.Reports.Providers;
@@ -239,7 +240,7 @@ public class ChartOfAccountsReportProviderTests
 
         var row = result.Sections.Single(s => s.Heading == "Assets").Rows.Single();
         Assert.Equal(3, row.Cells.Count);
-        Assert.Equal("500.00", row.Cells[2]);
+        Assert.Equal(MoneyFormatter.Format(500m), row.Cells[2]);
     }
 
     [Fact]
@@ -252,7 +253,7 @@ public class ChartOfAccountsReportProviderTests
         var result = await _sut.GenerateAsync(FiltersWith("true"), TestContext.Current.CancellationToken);
 
         var assets = result.Sections.Single(s => s.Heading == "Assets").Rows;
-        Assert.Equal("500.00", assets.Single(r => r.Cells[0] == "1100").Cells[2]);
+        Assert.Equal(MoneyFormatter.Format(500m), assets.Single(r => r.Cells[0] == "1100").Cells[2]);
         Assert.Equal("Error", assets.Single(r => r.Cells[0] == "1200").Cells[2]);
     }
 
@@ -281,7 +282,7 @@ public class ChartOfAccountsReportProviderTests
         var lines = csv.Split('\n').Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
 
         Assert.Equal("No.,Name,Balance", lines[0]);
-        Assert.Contains(lines, l => l == "1100,Cash on Hand,500.00");
+        Assert.Contains(lines, l => l == "1100,Cash on Hand," + MoneyFormatter.Format(500m));
     }
 
     // --- Helpers ---
