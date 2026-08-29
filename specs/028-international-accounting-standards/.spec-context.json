@@ -482,6 +482,46 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-29T08:58:06.437Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:33:59.296Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:33:59.903Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049a",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:34:00.504Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T050",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:34:12.114Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:34:12.620Z"
     }
   ],
   "telemetryInstanceId": "527a7469-9665-4240-b165-addc44766471",
@@ -673,6 +713,10 @@
         "T048",
         "T050",
         "T051"
+      ],
+      "tests": [
+        "tests/StageFright.Reports.Tests/BankReconciliationReportProviderTests.cs::GenerateAsync_ShowsBothBankStatementBalance_AndGeneralLedgerBalance",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_ConventionalBankReconciliationTests.cs::Report_ShowsBalancePerBankStatement_AndBalancePerGeneralLedger"
       ]
     },
     "FR-014": {
@@ -680,12 +724,20 @@
       "tasks": [
         "T048",
         "T050"
+      ],
+      "tests": [
+        "tests/StageFright.Reports.Tests/BankReconciliationReportProviderTests.cs::GenerateAsync_OutstandingItems_ListedAndCarriedIntoAdjustedBankBalance",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_ConventionalBankReconciliationTests.cs::OutstandingItems_AreListed_AndCarriedIntoTheAdjustedBankBalance"
       ]
     },
     "FR-015": {
       "title": "Finalising a reconciliation still requires it to balance; finalised recs stay immutable",
       "tasks": [
         "T049"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Finance/BankReconciliationServiceTests.cs::Should_RejectFinalise_When_DifferenceExceedsHalfCent_FR015",
+        "Should_RejectClearAndFinalise_When_ReconciliationIsFinalised_FR015;tests/StageFright.Integration.Tests/Scenarios/V28_ConventionalBankReconciliationTests.cs::FinalisedReconciliation_IsImmutable_AndFinalisationRequiredItToBalance"
       ]
     },
     "FR-016": {
@@ -955,6 +1007,21 @@
       "decision": "TaxSummaryReportProvider sets the basis line on BOTH return paths (tax-not-applicable early return and the main summary)",
       "why": "the not-applicable view is still a financial statement and T041 asserts uniform coverage across every financial report",
       "rejected": "setting it only on the main path"
+    },
+    {
+      "decision": "Bank reconciliation rewritten as one ReportSection per account with the adjusted-balance row sequence: balance per bank statement -> itemised outstanding deposits -> Add: outstanding deposits (sum, Deposit column) -> itemised outstanding payments -> Less: outstanding payments (sum) -> adjusted bank balance -> balance per general ledger -> Reconciled residual",
+      "why": "FR-013 needs both balances on the face; FR-014 needs the outstanding sums carried into the adjusted-balance arithmetic (adjusted = statement + deposits - payments), not merely listed; keeps the existing 4-column Date/Description/Deposit/Payment shape and label/amount-row convention",
+      "rejected": "keeping the four cleared/summary sub-sections (never showed the ledger balance, proved the tie a non-standard way)"
+    },
+    {
+      "decision": "Reconciled row shows MoneyFormatter.Format(adjustedBankBalance - ledgerBalance) (0.00 when tied) rather than an in-agreement phrase; Balance-per-general-ledger label carries no {Date} placeholder",
+      "why": "a zero residual between the two explicitly shown balances is itself the demonstration of agreement (SC-008) and mirrors the reports prior Difference idiom; the as-at-statement-date context already lives on the section header, so a date placeholder would be redundant and harder to assert",
+      "rejected": "a separate localized in agreement / out by string, and a {Date}-parameterised ledger-balance label"
+    },
+    {
+      "decision": "Removed the 10 now-dead Reports_BankReconciliation keys (SubHeader*, TotalCleared*, StatementClosingBalance, OpeningBalance, ClearedMovement, Difference) from neutral/en-US/fr-FR/qps-ploc rather than leaving them",
+      "why": "the provider was their only consumer (repo-wide grep) and it was fully rewritten; the orphan-key localization guard also forbids a satellite key with no neutral entry",
+      "rejected": "leaving them as harmless dead entries"
     }
   ],
   "step_summaries": {
@@ -966,10 +1033,10 @@
       "summary": "94 tasks across 13 phases (Setup, Foundational, one per US1-US10, Polish); wave-grouped with explicit joins; oversized budget, full per-story Goal/Independent Test/Checkpoint."
     },
     "implement": {
-      "summary": "Phase 6 / US4 (T041-T047): basis-of-accounting disclosure. ReportData gains optional BasisOfAccounting; PdfReportRenderer / CsvReportExporter / ReportViewer render it (below Generated: line / trailing self-labelled CSV record / <p> under the subtitle); new Reports_Common_BasisOfAccounting (neutral/en-US/fr-FR) with hybrid wording naming both member-fee accrual and cash treatment of other activity; all 8 financial-statement providers set it, Member List / Committee leave it null. Touched-project suites green: Reports 235, UI 613, Integration 215, Localization 25."
+      "summary": "Phase 7 / US5 (T048-T051): conventional bank reconciliation. BankReconciliationReportProvider rewritten to the adjusted-balance form — one section/account: balance per bank statement -> + outstanding deposits (listed+summed) -> - outstanding payments (listed+summed) -> adjusted bank balance -> balance per general ledger (GetAccountBalanceAsync at statement date) -> Reconciled residual; all money via MoneyFormatter. 6 new ReportsResource keys (neutral/en-US/fr-FR/qps-ploc), 10 dead cleared/summary keys removed. +2 FR-015 service tests, new V28_ConventionalBankReconciliation acceptance (5/5). Suites green: Core 684, Reports 236, Localization 25, UI 613, Data 154, Integration 220."
     }
   },
-  "currentTask": "T048",
+  "currentTask": "T051",
   "task_summaries": {
     "T015": {
       "status": "DONE",
@@ -1310,6 +1377,44 @@
         "src/StageFright.Reports/Providers/MemberAccountSummaryReportProvider.cs",
         "specs/028-international-accounting-standards/contracts/reports-contract.md"
       ]
+    },
+    "T048": {
+      "status": "DONE",
+      "did": "Rewrote BankReconciliationReportProviderTests for the conventional adjusted-balance layout — one section/account, both balances shown, outstanding items carried into the adjusted-bank-balance arithmetic, zero reconciled residual, with/without outstanding items, account filter; money via MoneyFormatter",
+      "files": [
+        "tests/StageFright.Reports.Tests/BankReconciliationReportProviderTests.cs"
+      ]
+    },
+    "T049": {
+      "status": "DONE",
+      "did": "Added two FR-015 tests to BankReconciliationServiceTests: finalise rejected when the difference exceeds the half-cent tolerance (no state change), and a finalised reconciliation rejects toggle-clear and re-finalise; updated the class doc-comment",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Finance/BankReconciliationServiceTests.cs"
+      ]
+    },
+    "T049a": {
+      "status": "DONE",
+      "did": "New V28_ConventionalBankReconciliationTests (integration acceptance, real SQLite+migrations): report shows balance per bank statement + balance per general ledger, lists+carries outstanding deposits/payments into the adjusted bank balance, the two sides agree (residual 0), works with no outstanding items, and a finalised reconciliation is immutable while finalisation still required balancing",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V28_ConventionalBankReconciliationTests.cs"
+      ]
+    },
+    "T050": {
+      "status": "DONE",
+      "did": "Rewrote BankReconciliationReportProvider.BuildAccountSectionsAsync to the conventional adjusted-balance form: one section/account — balance per bank statement, + outstanding deposits (listed+summed), − outstanding payments (listed+summed), adjusted bank balance, balance per general ledger (GetAccountBalanceAsync at the statement date), reconciled residual; all money via MoneyFormatter.Format",
+      "files": [
+        "src/StageFright.Reports/Providers/BankReconciliationReportProvider.cs"
+      ]
+    },
+    "T051": {
+      "status": "DONE",
+      "did": "ReportsResource neutral/en-US/fr-FR: added Reports_BankReconciliation_{BalancePerBankStatement,AddOutstandingDeposits,LessOutstandingPayments,AdjustedBankBalance,BalancePerGeneralLedger,Reconciled}; removed the 10 now-dead cleared/summary/difference keys; synced reports-contract.md",
+      "files": [
+        "src/StageFright.Reports/Resources/ReportsResource.resx",
+        "src/StageFright.Reports/Resources/ReportsResource.en-US.resx",
+        "src/StageFright.Reports/Resources/ReportsResource.fr-FR.resx",
+        "specs/028-international-accounting-standards/contracts/reports-contract.md"
+      ]
     }
   },
   "verified": [
@@ -1356,6 +1461,12 @@
       "command": "dotnet test Reports.Tests + Localization.Tests + UI.Tests + Integration.Tests",
       "result": "Reports 235 pass, Localization 25 pass, UI 613 pass, Integration 215 pass",
       "warnings": []
+    },
+    {
+      "what": "US5 tests fail-first then green",
+      "command": "dotnet test --filter BankReconciliation|V28_ConventionalBankReconciliation",
+      "result": "red before T050/T051 (provider emitted 4 cleared/summary sections per account, no balance-per-bank-statement/ledger rows); green after — BankReconciliationReportProviderTests 12/12, BankReconciliationServiceTests +2 FR-015, V28_ConventionalBankReconciliationTests 5/5",
+      "warnings": []
     }
   ],
   "concerns": [
@@ -1394,7 +1505,15 @@
     {
       "note": "BasisOfAccountingTests and V28_BasisOfAccountingDisclosureTests assert English tokens (accrual, cash, member) in the resolved Reports_Common_BasisOfAccounting string, so they are host-culture-dependent (green under en-*, would fail under a forced fr-FR test culture). Consistent with the existing integration suite English-literal assertions (e.g. V28_StatementIntegrityTests asserts s.Heading == Assets).",
       "step": "implement"
+    },
+    {
+      "note": "V28_ConventionalBankReconciliationTests.FinalisedReconciliation_IsImmutable_AndFinalisationRequiredItToBalance (AC-3) passes immediately rather than fail-first — it exercises pre-existing BankReconciliationRepository/Service guards (FR-015 is presentation-neutral), consistent with the T032a/T037a acceptance-test pattern already recorded. The four report-shape tests were red before T050/T051.",
+      "step": "implement"
+    },
+    {
+      "note": "T051 also touched two files beyond the three in tasks.md: ReportsResource.qps-ploc.resx (prune the 10 orphaned pseudo-locale keys, required by the orphan-key guard) and contracts/reports-contract.md (sync the bank-reconciliation ASCII sketch + notes to the shipped row layout / no-placeholder ledger label / residual Reconciled row).",
+      "step": "implement"
     }
   ],
-  "last_action": "Phase 6 (US4) complete — T041-T047 checked off; full solution build 0W/0E; touched-project suites green (Reports 235, UI 613, Integration 215, Localization 25). Phases 7-13 (US5-US10, Polish) not started."
+  "last_action": "Phase 7 (US5) complete — T048-T051 checked off; full solution build 0W/0E; full suite green (Core 684, Reports 236, Localization 25, UI 613, Data 154, Integration 220). Phases 8-13 (US6-US10, Polish; T052-T094) not started."
 }

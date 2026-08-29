@@ -85,16 +85,12 @@
   <data name="Reports_BankReconciliation_DepositColumn" xml:space="preserve"><value>Dépôt</value></data>
   <data name="Reports_BankReconciliation_PaymentColumn" xml:space="preserve"><value>Paiement</value></data>
   <data name="Reports_BankReconciliation_AccountHeader" xml:space="preserve"><value>{Account} ({Number}) — relevé au {StatementDate} [{Status}]</value><comment>{Account} account name, {Number} account number, {StatementDate} formatted 'd MMMM yyyy', {Status} localised reconciliation status.</comment></data>
-  <data name="Reports_BankReconciliation_SubHeaderClearedDeposits" xml:space="preserve"><value>{Header} — Dépôts pointés</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
-  <data name="Reports_BankReconciliation_SubHeaderClearedPayments" xml:space="preserve"><value>{Header} — Paiements pointés</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
-  <data name="Reports_BankReconciliation_SubHeaderUnpresentedItems" xml:space="preserve"><value>{Header} — Éléments non présentés</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
-  <data name="Reports_BankReconciliation_SubHeaderSummary" xml:space="preserve"><value>{Header} — Résumé</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
-  <data name="Reports_BankReconciliation_TotalClearedDeposits" xml:space="preserve"><value>Total des dépôts pointés</value></data>
-  <data name="Reports_BankReconciliation_TotalClearedPayments" xml:space="preserve"><value>Total des paiements pointés</value></data>
-  <data name="Reports_BankReconciliation_StatementClosingBalance" xml:space="preserve"><value>Solde de clôture du relevé</value></data>
-  <data name="Reports_BankReconciliation_OpeningBalance" xml:space="preserve"><value>Solde d'ouverture</value></data>
-  <data name="Reports_BankReconciliation_ClearedMovement" xml:space="preserve"><value>Mouvement pointé</value></data>
-  <data name="Reports_BankReconciliation_Difference" xml:space="preserve"><value>Différence</value></data>
+  <data name="Reports_BankReconciliation_BalancePerBankStatement" xml:space="preserve"><value>Solde selon le relevé bancaire</value><comment>First line of the conventional adjusted-balance reconciliation — the closing balance printed on the bank statement (FR-013).</comment></data>
+  <data name="Reports_BankReconciliation_AddOutstandingDeposits" xml:space="preserve"><value>Plus : dépôts en circulation</value><comment>Subtotal label for deposits recorded in the ledger but not yet on the bank statement; the amount is added to the statement balance (FR-014).</comment></data>
+  <data name="Reports_BankReconciliation_LessOutstandingPayments" xml:space="preserve"><value>Moins : paiements en circulation</value><comment>Subtotal label for payments recorded in the ledger but not yet cleared by the bank; the amount is deducted from the statement balance (FR-014).</comment></data>
+  <data name="Reports_BankReconciliation_AdjustedBankBalance" xml:space="preserve"><value>Solde bancaire ajusté</value><comment>Statement balance plus outstanding deposits less outstanding payments.</comment></data>
+  <data name="Reports_BankReconciliation_BalancePerGeneralLedger" xml:space="preserve"><value>Solde selon le grand livre</value><comment>The account's net general-ledger balance as at the statement date (FR-013).</comment></data>
+  <data name="Reports_BankReconciliation_Reconciled" xml:space="preserve"><value>Rapproché (solde bancaire ajusté moins solde selon le grand livre)</value><comment>Residual between the adjusted bank balance and the general-ledger balance; zero on a reconciled statement (SC-008).</comment></data>
   <data name="Reports_ChartOfAccounts_Name" xml:space="preserve"><value>Plan comptable</value></data>
   <data name="Reports_ChartOfAccounts_IncludeBalancesFilterLabel" xml:space="preserve"><value>Inclure les soldes actuels</value></data>
   <data name="Reports_ChartOfAccounts_NumberColumn" xml:space="preserve"><value>N°</value></data>

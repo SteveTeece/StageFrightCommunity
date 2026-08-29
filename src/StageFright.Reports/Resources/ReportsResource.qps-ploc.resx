@@ -83,16 +83,6 @@
   <data name="Reports_BankReconciliation_DepositColumn" xml:space="preserve"><value>⟦Dépósít—⟧</value></data>
   <data name="Reports_BankReconciliation_PaymentColumn" xml:space="preserve"><value>⟦Páýméñt—⟧</value></data>
   <data name="Reports_BankReconciliation_AccountHeader" xml:space="preserve"><value>⟦{Account} ({Number}) — státéméñt tó {StatementDate} [{Status}]—⟧</value><comment>{Account} account name, {Number} account number, {StatementDate} formatted 'd MMMM yyyy', {Status} localised reconciliation status.</comment></data>
-  <data name="Reports_BankReconciliation_SubHeaderClearedDeposits" xml:space="preserve"><value>⟦{Header} — Çléáréd Dépósíts—⟧</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
-  <data name="Reports_BankReconciliation_SubHeaderClearedPayments" xml:space="preserve"><value>⟦{Header} — Çléáréd Páýméñts—⟧</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
-  <data name="Reports_BankReconciliation_SubHeaderUnpresentedItems" xml:space="preserve"><value>⟦{Header} — Úñpréséñtéd Ítéms—⟧</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
-  <data name="Reports_BankReconciliation_SubHeaderSummary" xml:space="preserve"><value>⟦{Header} — Súmmárý—⟧</value><comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment></data>
-  <data name="Reports_BankReconciliation_TotalClearedDeposits" xml:space="preserve"><value>⟦Tótál çléáréd dépósíts—⟧</value></data>
-  <data name="Reports_BankReconciliation_TotalClearedPayments" xml:space="preserve"><value>⟦Tótál çléáréd páýméñts—⟧</value></data>
-  <data name="Reports_BankReconciliation_StatementClosingBalance" xml:space="preserve"><value>⟦Státéméñt çlósíñg báláñçé—⟧</value></data>
-  <data name="Reports_BankReconciliation_OpeningBalance" xml:space="preserve"><value>⟦Ópéñíñg báláñçé—⟧</value></data>
-  <data name="Reports_BankReconciliation_ClearedMovement" xml:space="preserve"><value>⟦Çléáréd móvéméñt—⟧</value></data>
-  <data name="Reports_BankReconciliation_Difference" xml:space="preserve"><value>⟦Dífféréñçé—⟧</value></data>
   <data name="Reports_ChartOfAccounts_Name" xml:space="preserve"><value>⟦Çhárt óf Áççóúñts—⟧</value></data>
   <data name="Reports_ChartOfAccounts_IncludeBalancesFilterLabel" xml:space="preserve"><value>⟦Íñçlúdé Çúrréñt Báláñçés—⟧</value></data>
   <data name="Reports_ChartOfAccounts_NumberColumn" xml:space="preserve"><value>⟦Ñó.—⟧</value></data>

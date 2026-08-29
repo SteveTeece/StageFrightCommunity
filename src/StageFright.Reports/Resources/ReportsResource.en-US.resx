@@ -393,39 +393,29 @@
     <value>{Account} ({Number}) — statement to {StatementDate} [{Status}]</value>
     <comment>{Account} account name, {Number} account number, {StatementDate} formatted 'd MMMM yyyy', {Status} localised reconciliation status.</comment>
   </data>
-  <data name="Reports_BankReconciliation_SubHeaderClearedDeposits" xml:space="preserve">
-    <value>{Header} — Cleared Deposits</value>
-    <comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment>
+  <data name="Reports_BankReconciliation_BalancePerBankStatement" xml:space="preserve">
+    <value>Balance per bank statement</value>
+    <comment>First line of the conventional adjusted-balance reconciliation — the closing balance printed on the bank statement (FR-013).</comment>
   </data>
-  <data name="Reports_BankReconciliation_SubHeaderClearedPayments" xml:space="preserve">
-    <value>{Header} — Cleared Payments</value>
-    <comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment>
+  <data name="Reports_BankReconciliation_AddOutstandingDeposits" xml:space="preserve">
+    <value>Add: outstanding deposits</value>
+    <comment>Subtotal label for deposits recorded in the ledger but not yet on the bank statement; the amount is added to the statement balance (FR-014).</comment>
   </data>
-  <data name="Reports_BankReconciliation_SubHeaderUnpresentedItems" xml:space="preserve">
-    <value>{Header} — Unpresented Items</value>
-    <comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment>
+  <data name="Reports_BankReconciliation_LessOutstandingPayments" xml:space="preserve">
+    <value>Less: outstanding payments</value>
+    <comment>Subtotal label for payments recorded in the ledger but not yet cleared by the bank; the amount is deducted from the statement balance (FR-014).</comment>
   </data>
-  <data name="Reports_BankReconciliation_SubHeaderSummary" xml:space="preserve">
-    <value>{Header} — Summary</value>
-    <comment>{Header} the account header line from Reports_BankReconciliation_AccountHeader.</comment>
+  <data name="Reports_BankReconciliation_AdjustedBankBalance" xml:space="preserve">
+    <value>Adjusted bank balance</value>
+    <comment>Statement balance plus outstanding deposits less outstanding payments.</comment>
   </data>
-  <data name="Reports_BankReconciliation_TotalClearedDeposits" xml:space="preserve">
-    <value>Total cleared deposits</value>
+  <data name="Reports_BankReconciliation_BalancePerGeneralLedger" xml:space="preserve">
+    <value>Balance per general ledger</value>
+    <comment>The account's net general-ledger balance as at the statement date (FR-013).</comment>
   </data>
-  <data name="Reports_BankReconciliation_TotalClearedPayments" xml:space="preserve">
-    <value>Total cleared payments</value>
-  </data>
-  <data name="Reports_BankReconciliation_StatementClosingBalance" xml:space="preserve">
-    <value>Statement closing balance</value>
-  </data>
-  <data name="Reports_BankReconciliation_OpeningBalance" xml:space="preserve">
-    <value>Opening balance</value>
-  </data>
-  <data name="Reports_BankReconciliation_ClearedMovement" xml:space="preserve">
-    <value>Cleared movement</value>
-  </data>
-  <data name="Reports_BankReconciliation_Difference" xml:space="preserve">
-    <value>Difference</value>
+  <data name="Reports_BankReconciliation_Reconciled" xml:space="preserve">
+    <value>Reconciled (adjusted bank balance less balance per general ledger)</value>
+    <comment>Residual between the adjusted bank balance and the general-ledger balance; zero on a reconciled statement (SC-008).</comment>
   </data>
 
   <!-- ============ Chart of Accounts ============ -->

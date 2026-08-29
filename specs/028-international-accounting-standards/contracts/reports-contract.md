@@ -86,12 +86,20 @@ is rewritten. For each bank/cash account's most recent reconciliation, at its st
 
 ```
 Balance per bank statement                         <StatementClosingBalance>
-  Add: outstanding deposits (each listed)          <+ sum>
-  Less: outstanding payments (each listed)         <- sum>
-Adjusted bank balance                              <computed>
-Balance per general ledger (as at statement date)  <GetAccountBalanceAsync(accountId, statementDate)>
-Reconciled                                          <"in agreement" / difference>
+  <each outstanding deposit, listed>               <amount in the Deposit column>
+  Add: outstanding deposits                        <+ sum, Deposit column>
+  <each outstanding payment, listed>              <amount in the Payment column>
+  Less: outstanding payments                       <- sum, Payment column>
+Adjusted bank balance                              <StatementClosingBalance + deposits − payments>
+Balance per general ledger                          <GetAccountBalanceAsync(accountId, statementDate)>
+Reconciled (adjusted bank balance less …)           <MoneyFormatter.Format(residual) — 0.00 when tied>
 ```
+
+One `ReportSection` per account, headed by the existing `Reports_BankReconciliation_AccountHeader`
+line (which already carries the account, statement date and status). The four columns
+(Date / Description / Deposit / Payment) are kept; the summary lines are emphasized label/amount
+rows with the amount in the Payment column (the outstanding-deposit subtotal uses the Deposit
+column). All amounts route through `MoneyFormatter.Format`.
 
 Contract:
 
@@ -99,8 +107,10 @@ Contract:
   reconciliation (FR-013, SC-008).
 * Outstanding deposits and outstanding payments are summed and **carried into** the adjusted-bank-balance
   arithmetic, not merely listed (FR-014).
-* `adjusted bank balance` and `balance per general ledger` are shown to be equal (a `Reconciled`
-  line stating agreement, or the residual if any).
+* The `Reconciled` line shows the residual `adjusted bank balance − balance per general ledger`
+  (`0.00` on a reconciled statement); a zero residual between the two explicitly shown balances is
+  the demonstration of agreement. The `Balance per general ledger` label carries no date
+  placeholder — the "as at the statement date" context is on the section header.
 * Outstanding items come from `IGLRepository.GetUnreconciledByAccountAsync(accountId, statementDate)`;
   the ledger balance from `IGLRepository.GetAccountBalanceAsync(accountId, statementDate)` (both
   already exist).

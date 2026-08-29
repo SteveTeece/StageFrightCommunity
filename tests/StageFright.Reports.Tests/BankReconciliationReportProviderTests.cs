@@ -2,18 +2,25 @@ using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Reports.Models;
 using StageFright.Reports.Providers;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Tests;
 
 /// <summary>
-/// Tests for BankReconciliationReportProvider:
-/// - Metadata (id, module, order)
-/// - Empty state when no reconciliations exist
-/// - Cleared deposits / cleared payments / unpresented / summary sections per account
-/// - Difference figure in the summary section
+/// Tests for BankReconciliationReportProvider — the conventional adjusted-balance layout
+/// (spec 028 US5, FR-013…FR-015):
+/// - Metadata (id, module, order) and the empty state
+/// - One section per bank account, headed with the account / statement line
+/// - "Balance per bank statement" and "Balance per general ledger" both shown (FR-013)
+/// - Outstanding deposits / payments listed AND carried into the adjusted-bank-balance
+///   arithmetic — not merely listed (FR-014)
+/// - Adjusted bank balance equals the ledger balance; the reconciled residual is zero (SC-008)
+/// - Runs with and without outstanding items
 /// - Account filter narrows to one account
+/// - Money cells route through MoneyFormatter (configured symbol + precision, FR-003)
 /// </summary>
 public class BankReconciliationReportProviderTests
 {
@@ -40,6 +47,8 @@ public class BankReconciliationReportProviderTests
 
         _gl.GetUnreconciledByAccountAsync(Arg.Any<Guid>(), Arg.Any<DateTime?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<Transaction>>(new List<Transaction>()));
+        _gl.GetAccountBalanceAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(0m));
 
         _sut = new BankReconciliationReportProvider(_recRepo, _accounts, _gl, RealLocalizer.Instance);
     }
@@ -47,10 +56,7 @@ public class BankReconciliationReportProviderTests
     // --- Metadata ---
 
     [Fact]
-    public void ReportId_IsBankReconciliation()
-    {
-        Assert.Equal("bank-reconciliation", _sut.ReportId);
-    }
+    public void ReportId_IsBankReconciliation() => Assert.Equal("bank-reconciliation", _sut.ReportId);
 
     [Fact]
     public void ModuleName_IsFinance_And_DisplayOrderIs50()
@@ -70,66 +76,89 @@ public class BankReconciliationReportProviderTests
         Assert.Contains("No reconciliations", result.SubTitle);
     }
 
-    // --- Sections ---
+    // --- Conventional adjusted-balance layout ---
 
     [Fact]
-    public async Task GenerateAsync_LatestReconciliation_ProducesFourSectionsPerAccount()
+    public async Task GenerateAsync_LatestReconciliation_ProducesOneSectionPerAccount()
     {
-        SetupReconciliation(CashId, opening: 100m, closing: 250m,
-            cleared: [MakeTransaction(CashId, debit: 200m), MakeTransaction(CashId, credit: 50m)]);
+        SetupReconciliation(CashId, closing: 150m,
+            cleared: [MakeTransaction(CashId, debit: 200m), MakeTransaction(CashId, credit: 50m)],
+            ledgerBalance: 150m);
 
         var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
 
-        Assert.Equal(4, result.Sections.Count);
-        Assert.Contains("Cleared Deposits", result.Sections[0].Heading);
-        Assert.Contains("Cleared Payments", result.Sections[1].Heading);
-        Assert.Contains("Unpresented Items", result.Sections[2].Heading);
-        Assert.Contains("Summary", result.Sections[3].Heading);
+        var section = Assert.Single(result.Sections);
+        Assert.Contains("Cash on Hand", section.Heading);
+        Assert.Contains("1100", section.Heading);
     }
 
     [Fact]
-    public async Task GenerateAsync_ClearedTransactions_SplitIntoDepositsAndPayments()
+    public async Task GenerateAsync_ShowsBothBankStatementBalance_AndGeneralLedgerBalance()
     {
-        SetupReconciliation(CashId, opening: 0m, closing: 150m,
-            cleared: [MakeTransaction(CashId, debit: 200m), MakeTransaction(CashId, credit: 50m)]);
+        SetupReconciliation(CashId, closing: 150m,
+            cleared: [MakeTransaction(CashId, debit: 150m)], ledgerBalance: 150m);
 
-        var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
+        var section = (await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken)).Sections[0];
 
-        var deposits = result.Sections[0];
-        var payments = result.Sections[1];
-        Assert.Single(deposits.Rows);
-        Assert.Equal("200.00", deposits.Subtotal!.Cells[2]);
-        Assert.Single(payments.Rows);
-        Assert.Equal("50.00", payments.Subtotal!.Cells[3]);
+        Assert.Equal(MoneyFormatter.Format(150m), AmountFor(section, "Reports_BankReconciliation_BalancePerBankStatement"));
+        Assert.Equal(MoneyFormatter.Format(150m), AmountFor(section, "Reports_BankReconciliation_BalancePerGeneralLedger"));
     }
 
     [Fact]
-    public async Task GenerateAsync_Summary_ContainsZeroDifference_WhenBalanced()
+    public async Task GenerateAsync_OutstandingItems_ListedAndCarriedIntoAdjustedBankBalance()
     {
-        // Opening 100 + cleared (200 − 50) = 250 = closing → difference 0.00.
-        SetupReconciliation(CashId, opening: 100m, closing: 250m,
-            cleared: [MakeTransaction(CashId, debit: 200m), MakeTransaction(CashId, credit: 50m)]);
+        // Statement 150; outstanding deposit 40, outstanding payment 25 → adjusted 165 == ledger 165.
+        SetupReconciliation(CashId, closing: 150m,
+            cleared: [MakeTransaction(CashId, debit: 150m)],
+            ledgerBalance: 165m,
+            outstanding:
+            [
+                MakeTransaction(CashId, debit: 40m, description: "Deposit in transit"),
+                MakeTransaction(CashId, credit: 25m, description: "Unpresented cheque")
+            ]);
 
-        var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
+        var section = (await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken)).Sections[0];
 
-        var summary = result.Sections[3];
-        var differenceRow = summary.Rows.Single(r => r.Cells[1] == "Difference");
-        Assert.Equal("0.00", differenceRow.Cells[3]);
+        // each outstanding item is listed
+        Assert.Contains(section.Rows, r => r.Cells[1] == "Deposit in transit" && r.Cells[2] == MoneyFormatter.Format(40m));
+        Assert.Contains(section.Rows, r => r.Cells[1] == "Unpresented cheque" && r.Cells[3] == MoneyFormatter.Format(25m));
+
+        // the totals are carried into the arithmetic, not merely listed
+        Assert.Equal(MoneyFormatter.Format(40m), DepositFor(section, "Reports_BankReconciliation_AddOutstandingDeposits"));
+        Assert.Equal(MoneyFormatter.Format(25m), AmountFor(section, "Reports_BankReconciliation_LessOutstandingPayments"));
+        Assert.Equal(MoneyFormatter.Format(165m), AmountFor(section, "Reports_BankReconciliation_AdjustedBankBalance"));
     }
 
     [Fact]
-    public async Task GenerateAsync_UnpresentedItems_ListedUpToStatementDate()
+    public async Task GenerateAsync_WhenReconciled_AdjustedBalanceEqualsLedger_AndResidualIsZero()
     {
-        SetupReconciliation(CashId, opening: 0m, closing: 0m, cleared: []);
-        _gl.GetUnreconciledByAccountAsync(CashId, StatementDate, Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<Transaction>>(
-                new List<Transaction> { MakeTransaction(CashId, debit: 75m) }));
+        SetupReconciliation(CashId, closing: 150m,
+            cleared: [MakeTransaction(CashId, debit: 150m)],
+            ledgerBalance: 165m,
+            outstanding: [MakeTransaction(CashId, debit: 40m), MakeTransaction(CashId, credit: 25m)]);
 
-        var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
+        var section = (await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken)).Sections[0];
 
-        var unpresented = result.Sections[2];
-        Assert.Single(unpresented.Rows);
-        Assert.Equal("75.00", unpresented.Rows[0].Cells[2]);
+        Assert.Equal(
+            AmountFor(section, "Reports_BankReconciliation_AdjustedBankBalance"),
+            AmountFor(section, "Reports_BankReconciliation_BalancePerGeneralLedger"));
+        Assert.Equal(MoneyFormatter.Format(0m), AmountFor(section, "Reports_BankReconciliation_Reconciled"));
+        Assert.True(RowFor(section, "Reports_BankReconciliation_Reconciled").IsEmphasized);
+    }
+
+    [Fact]
+    public async Task GenerateAsync_WithNoOutstandingItems_StillShowsBothBalances_AndProvesAgreement()
+    {
+        SetupReconciliation(CashId, closing: 150m,
+            cleared: [MakeTransaction(CashId, debit: 150m)], ledgerBalance: 150m);
+
+        var section = (await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken)).Sections[0];
+
+        Assert.Equal(MoneyFormatter.Format(150m), AmountFor(section, "Reports_BankReconciliation_BalancePerBankStatement"));
+        Assert.Equal(MoneyFormatter.Format(150m), AmountFor(section, "Reports_BankReconciliation_BalancePerGeneralLedger"));
+        Assert.Equal(MoneyFormatter.Format(150m), AmountFor(section, "Reports_BankReconciliation_AdjustedBankBalance"));
+        Assert.Equal(MoneyFormatter.Format(0m), DepositFor(section, "Reports_BankReconciliation_AddOutstandingDeposits"));
+        Assert.Equal(MoneyFormatter.Format(0m), AmountFor(section, "Reports_BankReconciliation_Reconciled"));
     }
 
     // --- Account filter ---
@@ -137,40 +166,53 @@ public class BankReconciliationReportProviderTests
     [Fact]
     public async Task GenerateAsync_AccountFilterByNumber_NarrowsToOneAccount()
     {
-        SetupReconciliation(CashId, opening: 0m, closing: 0m, cleared: []);
-        SetupReconciliation(SavingsId, opening: 0m, closing: 0m, cleared: []);
+        SetupReconciliation(CashId, closing: 0m, cleared: [], ledgerBalance: 0m);
+        SetupReconciliation(SavingsId, closing: 0m, cleared: [], ledgerBalance: 0m);
 
         var filters = new ReportFilterValues();
         filters.Set("account", "1110");
         var result = await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
-        Assert.Equal(4, result.Sections.Count);
-        Assert.All(result.Sections, s => Assert.Contains("Savings", s.Heading));
+        var section = Assert.Single(result.Sections);
+        Assert.Contains("Savings", section.Heading);
     }
 
     [Fact]
     public async Task GenerateAsync_AccountFilterByName_MatchesCaseInsensitively()
     {
-        SetupReconciliation(CashId, opening: 0m, closing: 0m, cleared: []);
-        SetupReconciliation(SavingsId, opening: 0m, closing: 0m, cleared: []);
+        SetupReconciliation(CashId, closing: 0m, cleared: [], ledgerBalance: 0m);
+        SetupReconciliation(SavingsId, closing: 0m, cleared: [], ledgerBalance: 0m);
 
         var filters = new ReportFilterValues();
         filters.Set("account", "cash");
         var result = await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
-        Assert.All(result.Sections, s => Assert.Contains("Cash on Hand", s.Heading));
+        var section = Assert.Single(result.Sections);
+        Assert.Contains("Cash on Hand", section.Heading);
     }
 
     // --- Helpers ---
 
-    private void SetupReconciliation(Guid accountId, decimal opening, decimal closing, Transaction[] cleared)
+    private static string Label(string key) => RealLocalizer.Instance.Get<ReportsResource>(key);
+
+    private static ReportRow RowFor(ReportSection section, string labelKey) =>
+        section.Rows.Single(r => r.Cells.Count > 1 && r.Cells[1] == Label(labelKey));
+
+    // Balance lines carry their amount in the last (Payment) column, matching the report's
+    // label/amount-row convention; the outstanding-deposit subtotal carries it in the Deposit column.
+    private static string AmountFor(ReportSection section, string labelKey) => RowFor(section, labelKey).Cells[3];
+
+    private static string DepositFor(ReportSection section, string labelKey) => RowFor(section, labelKey).Cells[2];
+
+    private void SetupReconciliation(Guid accountId, decimal closing, Transaction[] cleared,
+        decimal ledgerBalance, Transaction[]? outstanding = null)
     {
         var rec = new BankReconciliation
         {
             Id = Guid.NewGuid(),
             AccountId = accountId,
             StatementDate = StatementDate,
-            OpeningBalance = opening,
+            OpeningBalance = 0m,
             StatementClosingBalance = closing,
             Status = ReconciliationStatus.Finalised,
             Lines = cleared.Select(t => new ReconciliationLine
@@ -183,6 +225,10 @@ public class BankReconciliationReportProviderTests
         _recRepo.GetByAccountAsync(accountId, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<BankReconciliation>>(new List<BankReconciliation> { rec }));
         _recRepo.GetByIdAsync(rec.Id, Arg.Any<CancellationToken>()).Returns(rec);
+        _gl.GetAccountBalanceAsync(accountId, StatementDate, Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(ledgerBalance));
+        _gl.GetUnreconciledByAccountAsync(accountId, StatementDate, Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<Transaction>>(new List<Transaction>(outstanding ?? [])));
     }
 
     private static Account MakeBankAccount(Guid id, string name, string number) => new()
@@ -191,10 +237,11 @@ public class BankReconciliationReportProviderTests
         IsBankAccount = true, CreatedAt = DateTime.UtcNow
     };
 
-    private static Transaction MakeTransaction(Guid accountId, decimal debit = 0m, decimal credit = 0m) => new()
+    private static Transaction MakeTransaction(Guid accountId, decimal debit = 0m, decimal credit = 0m,
+        string? description = null) => new()
     {
         Id = Guid.NewGuid(), AccountId = accountId, Date = StatementDate.AddDays(-7),
         DebitAmount = debit, CreditAmount = credit, GLAccount = "1100",
-        Description = debit != 0m ? "Deposit" : "Payment", CreatedAt = DateTime.UtcNow
+        Description = description ?? (debit != 0m ? "Deposit" : "Payment"), CreatedAt = DateTime.UtcNow
     };
 }

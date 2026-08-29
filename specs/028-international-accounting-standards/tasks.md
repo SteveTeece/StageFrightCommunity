@@ -224,16 +224,16 @@ items).
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T048** [P] [US5] Report test — the rec report shows "balance per bank statement" and "balance per general ledger", carries each adjusting item into the arithmetic, and proves the two sides equal; runs with and without outstanding items · `tests/StageFright.Reports.Tests/Providers/BankReconciliationReportProviderTests.cs`
-- [ ] **T049** [P] [US5] Integration — finalisation still requires the reconciliation to balance; a finalised reconciliation stays immutable · `tests/StageFright.Core.Tests/Modules/Finance/BankReconciliationServiceTests.cs`
-- [ ] **T049a** [P] [US5] **Acceptance** — `V28_ConventionalBankReconciliation` drives US5 AC-1…AC-3: finalise a reconciliation with known outstanding deposits + payments, and one with none; asserts the report shows "balance per bank statement" and "balance per general ledger", carries each adjusting item into the arithmetic (not merely lists it), demonstrates the two sides agree, and that a finalised reconciliation is unchanged and non-editable on later view · `tests/StageFright.Integration.Tests/Scenarios/V28_ConventionalBankReconciliationTests.cs`
+- [x] **T048** [P] [US5] Report test — the rec report shows "balance per bank statement" and "balance per general ledger", carries each adjusting item into the arithmetic, and proves the two sides equal; runs with and without outstanding items · `tests/StageFright.Reports.Tests/Providers/BankReconciliationReportProviderTests.cs`
+- [x] **T049** [P] [US5] Integration — finalisation still requires the reconciliation to balance; a finalised reconciliation stays immutable · `tests/StageFright.Core.Tests/Modules/Finance/BankReconciliationServiceTests.cs`
+- [x] **T049a** [P] [US5] **Acceptance** — `V28_ConventionalBankReconciliation` drives US5 AC-1…AC-3: finalise a reconciliation with known outstanding deposits + payments, and one with none; asserts the report shows "balance per bank statement" and "balance per general ledger", carries each adjusting item into the arithmetic (not merely lists it), demonstrates the two sides agree, and that a finalised reconciliation is unchanged and non-editable on later view · `tests/StageFright.Integration.Tests/Scenarios/V28_ConventionalBankReconciliationTests.cs`
 
 ### Implementation
 
 **Wave 1 — the provider rewrite (single file), then its resources:**
 
-- [ ] **T050** [US5] `BankReconciliationReportProvider.BuildAccountSectionsAsync` — rewrite to: balance per bank statement → add outstanding deposits (listed + summed) → less outstanding payments (listed + summed) → adjusted bank balance → balance per general ledger (`GetAccountBalanceAsync(accountId, statementDate)`) → reconciled line; outstanding items from `GetUnreconciledByAccountAsync`; money via `MoneyFormatter` · `src/StageFright.Reports/Providers/BankReconciliationReportProvider.cs`
-- [ ] **T051** [US5] `ReportsResource` — add `Reports_BankReconciliation_BalancePerBankStatement`, `_AddOutstandingDeposits`, `_LessOutstandingPayments`, `_AdjustedBankBalance`, `_BalancePerGeneralLedger`, `_Reconciled` · `src/StageFright.Reports/Resources/ReportsResource.resx`, `.en-US.resx`, `.fr-FR.resx` *(needs T050)*
+- [x] **T050** [US5] `BankReconciliationReportProvider.BuildAccountSectionsAsync` — rewrite to: balance per bank statement → add outstanding deposits (listed + summed) → less outstanding payments (listed + summed) → adjusted bank balance → balance per general ledger (`GetAccountBalanceAsync(accountId, statementDate)`) → reconciled line; outstanding items from `GetUnreconciledByAccountAsync`; money via `MoneyFormatter` · `src/StageFright.Reports/Providers/BankReconciliationReportProvider.cs`
+- [x] **T051** [US5] `ReportsResource` — add `Reports_BankReconciliation_BalancePerBankStatement`, `_AddOutstandingDeposits`, `_LessOutstandingPayments`, `_AdjustedBankBalance`, `_BalancePerGeneralLedger`, `_Reconciled` · `src/StageFright.Reports/Resources/ReportsResource.resx`, `.en-US.resx`, `.fr-FR.resx` *(needs T050)*
 
 **Checkpoint**: the reconciliation report reads the way a bookkeeper or auditor expects and proves
 the two balances agree (SC-008).
