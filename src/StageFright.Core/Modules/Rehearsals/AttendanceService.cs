@@ -208,6 +208,15 @@ public class AttendanceService : IAttendanceService
 
                 await _glRepo.AddBalancedSetAsync(accrualLines, innerCt);
 
+                // Audit the fee accrual (spec 028, US8 / FR-026) — every financial posting path
+                // leaves an audit-trail entry, written inside this same transaction so a rollback
+                // takes the audit row with it.
+                await _audit.LogAsync(
+                    nameof(Fee), savedFee.Id, AuditAction.Create,
+                    oldValue: null,
+                    newValue: $"Attendance fee {settings.AttendanceFee:C} accrued for member {item.MemberId} (rehearsal {rehearsalId})",
+                    ct: innerCt);
+
                 if (paidAtCreation)
                 {
                     // Auto-create Payment record
@@ -255,6 +264,13 @@ public class AttendanceService : IAttendanceService
                             CreatedAt = now
                         },
                         innerCt);
+
+                    // Audit the automatic payment too (spec 028, US8 / FR-026).
+                    await _audit.LogAsync(
+                        nameof(Payment), savedPayment.Id, AuditAction.Create,
+                        oldValue: null,
+                        newValue: $"Attendance fee payment {settings.AttendanceFee:C} from member {item.MemberId} on {rehearsal.Date:yyyy-MM-dd}",
+                        ct: innerCt);
                 }
             }
 

@@ -151,7 +151,8 @@ public class SetupServiceIntegrationTests : IDisposable
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark), TestContext.Current.CancellationToken);
 
         var settings = await settingsRepo.GetAsync(TestContext.Current.CancellationToken);
-        Assert.Equal(1, settings!.AuditRetentionYears);
+        // spec 028, US8 / FR-023: the default retention on a fresh dataset is now five years.
+        Assert.Equal(5, settings!.AuditRetentionYears);
     }
 
     [Fact]

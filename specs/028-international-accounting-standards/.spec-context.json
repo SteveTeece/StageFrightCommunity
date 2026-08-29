@@ -714,6 +714,62 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-29T10:46:49.711Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T077",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:26:14.756Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T078",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:26:14.943Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T079",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:26:15.128Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T080",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:26:26.529Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T081",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:26:26.729Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T082",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:26:26.909Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T083",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:35:19.583Z"
     }
   ],
   "telemetryInstanceId": "527a7469-9665-4240-b165-addc44766471",
@@ -1031,6 +1087,11 @@
         "T006",
         "T077",
         "T080"
+      ],
+      "tests": [
+        "tests/StageFright.Data.Tests/Migrations/AuditRetentionDefaultTests.cs::FreshDataset_DefaultsAuditRetentionYearsToFive_AfterMigration",
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs::InitializeAsync_PersistsDefaultAuditRetentionYears_WhenNotSpecified",
+        "tests/StageFright.Data.Tests/Settings/SetupServiceIntegrationTests.cs::InitializeAsync_PersistsDefaultAuditRetentionYears"
       ]
     },
     "FR-024": {
@@ -1038,6 +1099,10 @@
       "tasks": [
         "T006",
         "T077"
+      ],
+      "tests": [
+        "tests/StageFright.Data.Tests/Migrations/AuditRetentionDefaultTests.cs::ExistingSettingsRow_KeepsItsConfiguredAuditRetentionYears_AfterMigration",
+        "tests/StageFright.Data.Tests/Migrations/AddAuditRetentionYearsToSettingsMigrationTests.cs::ExistingSettingsRow_BackfillsAuditRetentionYearsToOne_AfterMigration"
       ]
     },
     "FR-025": {
@@ -1046,6 +1111,11 @@
         "T079",
         "T082",
         "T083"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/PurgeFailureSurfacedTests.cs",
+        "tests/StageFright.Core.Tests/Modules/AuditTrail/AuditTrailServiceTests.cs::PurgeOlderThanAsync_PropagatesFailure_WhenRepositoryFails",
+        "tests/StageFright.UI.Tests/Pages/Dashboard/DashboardTests.cs::StartupWarningBanner_Rendered_WhenStartupWarningRecorded"
       ]
     },
     "FR-026": {
@@ -1053,6 +1123,9 @@
       "tasks": [
         "T078",
         "T081"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Rehearsals/AttendanceServiceAuditTests.cs"
       ]
     },
     "FR-027": {
@@ -1273,6 +1346,16 @@
       "decision": "Phase 9 executed implementation-before-tests (calculator -> providers -> setup plumbing -> service -> UI, then integration/bUnit tests)",
       "why": "the repo PostToolUse build-on-edit hook fails the per-file dotnet build when a test references an API added later in the wave; the wave dependency map in tasks.md is unchanged",
       "rejected": "strict test-first ordering (each new test file would hard-fail the hook and block subsequent edits)"
+    },
+    {
+      "decision": "Add a non-fatal warning channel (HasStartupWarning/StartupWarning/RecordWarning) to the existing IStartupDiagnosticService rather than a new service, and stop AuditTrailService.PurgeOlderThanAsync swallowing purge failures",
+      "why": "FR-025 requires the failure logged AND surfaced; the swallow was the silent discard. Reusing the holder keeps MauiPrograms existing catch as the single surfacing point; a warning (vs RecordError) never routes to the blocking /startup-error page so startup still completes",
+      "rejected": "A dedicated purge-failure banner service (plan Decision 8 rejects it); or leaving the service swallow and returning a result code"
+    },
+    {
+      "decision": "Surface the purge-failure warning as a dismissible banner on the Dashboard page, not the shell layout or App.razor",
+      "why": "Dashboard is the post-startup landing page and an explicit T083 target; lowest blast radius (only DashboardTests needs the new DI registration); dismissal is session-local and never clears the underlying diagnostic state",
+      "rejected": "ShellLayout/App.razor banner (touches every page and many test contexts); GeneralSettingsTab-only (less visible at startup)"
     }
   ],
   "step_summaries": {
@@ -1284,13 +1367,13 @@
       "summary": "94 tasks across 13 phases (Setup, Foundational, one per US1-US10, Polish); wave-grouped with explicit joins; oversized budget, full per-story Goal/Independent Test/Checkpoint."
     },
     "implement": {
-      "summary": "Phase 9 / US7: financial-year start is now an explicit (month+day) setup choice — FinancialYearCalculator + the 4 FY-preset report providers + OpeningBalancesWizard honour the day; SetupRequest/SetupFormModel/SetupService carry and validate it (1..28); mandatory pickers on the setup General tab plus a matching day picker on the Settings General tab. T065-T075 done; T076 spec-note done but its follow-on GitHub issue creation was blocked by the environment."
+      "summary": "Phase 10 / US8 shipped: audit-retention default raised 1->5 at the remaining declaration sites, attendance-fee accruals + auto-payments now write audit-trail entries, and a failed startup purge propagates and is surfaced as a dismissible Dashboard banner via a non-fatal IStartupDiagnosticService warning channel."
     },
     "specify": {
       "summary": "Phase 9 / US7: financial-year start is now an explicit (month+day) setup choice — FinancialYearCalculator + 4 FY-preset report providers + OpeningBalancesWizard honour the day; SetupRequest/SetupFormModel/SetupService carry & validate it (1..28); mandatory pickers on the setup General tab and a matching day picker on Settings; T065-T075 done, T076 spec-note done but its GitHub issue is blocked."
     }
   },
-  "currentTask": "T076",
+  "currentTask": "T083",
   "task_summaries": {
     "T015": {
       "status": "DONE",
@@ -1866,6 +1949,67 @@
       "files": [
         "tests/StageFright.Integration.Tests/InternationalAccounting/FinancialYearStartTests.cs"
       ]
+    },
+    "T077": {
+      "status": "DONE",
+      "did": "Migration test: fresh dataset defaults AuditRetentionYears to 5; a pre-028 configured value survives AddInternationalAccountingSettings",
+      "files": [
+        "tests/StageFright.Data.Tests/Migrations/AuditRetentionDefaultTests.cs"
+      ]
+    },
+    "T078": {
+      "status": "DONE",
+      "did": "AttendanceService audit test: fee accrual + auto-payment each write an AuditTrailEntry (paid); only the accrual when marked unpaid; inside the UoW transaction",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Rehearsals/AttendanceServiceAuditTests.cs"
+      ]
+    },
+    "T079": {
+      "status": "DONE",
+      "did": "Integration test: a failed purge propagates as DataAccessException and is recorded into StartupDiagnosticService as a non-fatal warning (HasStartupWarning, not HasStartupError); ClearError clears it",
+      "files": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/PurgeFailureSurfacedTests.cs"
+      ]
+    },
+    "T080": {
+      "status": "DONE",
+      "did": "Raised audit-retention default 1->5 at the remaining sites: SetupFormModel, SetupRequest; updated the SetupService default-flow test to expect 5",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupFormModel.cs",
+        "src/StageFright.Core/Modules/Settings/SetupRequest.cs",
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs"
+      ]
+    },
+    "T081": {
+      "status": "DONE",
+      "did": "AttendanceService.RecordBatchAsync now writes IAuditTrailService.LogAsync entries for the fee accrual and (when paid at creation) the auto-payment, inside the existing UoW transaction (FR-026)",
+      "files": [
+        "src/StageFright.Core/Modules/Rehearsals/AttendanceService.cs"
+      ]
+    },
+    "T082": {
+      "status": "DONE",
+      "did": "Purge failure now surfaced: AuditTrailService.PurgeOlderThanAsync stops swallowing; IStartupDiagnosticService gains a non-fatal warning channel (HasStartupWarning/StartupWarning/RecordWarning); MauiProgram's purge catch records the warning + Log.Error, retention fallback 1->5; reconciled AuditTrailServiceTests",
+      "files": [
+        "src/StageFright.Core/Contracts/IStartupDiagnosticService.cs",
+        "src/StageFright.Core/Modules/Settings/StartupDiagnosticService.cs",
+        "src/StageFright.Core/Modules/AuditTrail/AuditTrailService.cs",
+        "src/StageFright.App/MauiProgram.cs",
+        "tests/StageFright.Core.Tests/Modules/AuditTrail/AuditTrailServiceTests.cs"
+      ]
+    },
+    "T083": {
+      "status": "DONE",
+      "did": "Dashboard dismissible warning banner surfaces the non-fatal startup purge-failure diagnostic (Shared_StartupWarning_* in neutral/en-US/fr-FR); DashboardTests gains the IStartupDiagnosticService registration + 3 banner tests; data-model.md section 10 updated",
+      "files": [
+        "src/StageFright.UI/Pages/Dashboard/Dashboard.razor",
+        "src/StageFright.UI/Pages/Dashboard/Dashboard.razor.cs",
+        "src/StageFright.UI/Resources/Strings/SharedResource.resx",
+        "src/StageFright.UI/Resources/Strings/SharedResource.en-US.resx",
+        "src/StageFright.UI/Resources/Strings/SharedResource.fr-FR.resx",
+        "tests/StageFright.UI.Tests/Pages/Dashboard/DashboardTests.cs",
+        "specs/028-international-accounting-standards/data-model.md"
+      ]
     }
   },
   "verified": [
@@ -1932,6 +2076,14 @@
       "command": "dotnet test StageFrightCommunity.slnx --no-build",
       "result": "1986 passed, 0 failed, 0 skipped (Core 710, UI 621, Integration 240, Reports 236, Data 154, Localization 25)",
       "warnings": []
+    },
+    {
+      "what": "Full solution build + entire test suite after Phase 10 (US8)",
+      "command": "dotnet build StageFrightCommunity.slnx && dotnet test StageFrightCommunity.slnx --no-build",
+      "result": "build 0W/0E; 1999 tests pass (Reports 236, Localization 25, Core 714, UI 624, Data 156, Integration 244)",
+      "warnings": [
+        "one full-run flake in StageFright.UI.Tests (documented fee-substring GUID false-positive; untouched area; green on isolated re-run)"
+      ]
     }
   ],
   "concerns": [
@@ -1992,5 +2144,5 @@
       "step": "implement"
     }
   ],
-  "last_action": "Phase 9 (US7) complete: T065-T075 done, T076 partial (spec note done, gh issue blocked); build 0W/0E; 1986 tests pass"
+  "last_action": "Phase 10 (US8) complete — T077-T083 done, 1999 tests pass; phases 11-13 + T076 remain"
 }

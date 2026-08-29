@@ -7,8 +7,10 @@ namespace StageFright.Core.Modules.AuditTrail;
 
 /// <summary>
 /// Writes audit trail entries through IAuditTrailRepository.
-/// Performs the startup purge (entries older than 12 months). Purge failure is tolerated —
-/// a structured error is logged but startup continues (FR-022).
+/// Performs the startup purge of entries past the configured retention period. A purge failure is
+/// NOT swallowed here — it propagates to the startup sequence, which logs it and surfaces it as a
+/// non-fatal warning so it is never silently discarded (spec 028, US8 / FR-025); startup still
+/// continues.
 /// LogAsync no-ops while an AuditTrailSuppressionScope is active on the current async flow
 /// (used by the debug data seeder to avoid writing thousands of synthetic audit entries).
 /// </summary>
@@ -48,18 +50,13 @@ public class AuditTrailService : IAuditTrailService
     /// <summary>
     /// Hard-deletes audit trail entries older than the given cutoff. Called at startup with a
     /// cutoff derived from the configured retention period (Settings.AuditRetentionYears).
-    /// Failure is caught, logged, and startup continues.
+    /// A failure propagates to the caller (the startup sequence), which logs it and surfaces it as
+    /// a non-fatal startup warning — it is never silently discarded (spec 028, FR-025). Startup
+    /// still continues.
     /// </summary>
     public async Task PurgeOlderThanAsync(DateTime cutoff, CancellationToken ct = default)
     {
-        try
-        {
-            var count = await _repository.PurgeOlderThanAsync(cutoff, ct);
-            _logger.LogInformation("Audit trail purge complete: {Count} entries removed", count);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Audit trail purge failed; startup continues");
-        }
+        var count = await _repository.PurgeOlderThanAsync(cutoff, ct);
+        _logger.LogInformation("Audit trail purge complete: {Count} entries removed", count);
     }
 }

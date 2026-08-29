@@ -82,4 +82,6 @@
   <data name="Shared_App_NotFoundHeading" xml:space="preserve"><value>Page introuvable</value><comment>Heading shown when a URL matches no page.</comment></data>
   <data name="Shared_App_NotFoundBody" xml:space="preserve"><value>La page demandée est introuvable.</value><comment>Body text on the "page not found" screen; followed by the return-to-dashboard link.</comment></data>
   <data name="Shared_App_NotFoundReturnLink" xml:space="preserve"><value>Retour au tableau de bord</value><comment>Hyperlink caption on the "page not found" screen — navigates to the dashboard.</comment></data>
+  <data name="Shared_StartupWarning_AuditPurgeFailed" xml:space="preserve"><value>Le nettoyage au démarrage des entrées de piste d'audit expirées ne s'est pas terminé. Vos enregistrements sont intacts ; le nettoyage sera relancé au prochain démarrage de l'application.</value><comment>Non-fatal dashboard banner shown when the startup audit-trail purge failed (spec 028, FR-025).</comment></data>
+  <data name="Shared_StartupWarning_DismissLabel" xml:space="preserve"><value>Ignorer</value><comment>Button that hides the non-fatal startup-warning banner for the current session.</comment></data>
 </root>

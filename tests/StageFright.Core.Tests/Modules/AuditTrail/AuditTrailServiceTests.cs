@@ -9,9 +9,11 @@ using StageFright.Core.Tests.Fixtures;
 namespace StageFright.Core.Tests.Modules.AuditTrail;
 
 /// <summary>
-/// Unit tests for AuditTrailService: LogAsync persistence and PurgeOlderThanAsync's
-/// failure-tolerant behaviour (the method callers now reach through IAuditTrailService —
-/// see the #275 regression test in StartupSequenceTests for the DI-resolution fix itself).
+/// Unit tests for AuditTrailService: LogAsync persistence and PurgeOlderThanAsync's behaviour —
+/// a purge failure now propagates to the caller (spec 028, FR-025: logged and surfaced, never
+/// silently discarded) rather than being swallowed. The method callers reach through
+/// IAuditTrailService — see the #275 regression test in StartupSequenceTests for the
+/// DI-resolution fix itself.
 /// </summary>
 public class AuditTrailServiceTests : TestBase
 {
@@ -64,15 +66,16 @@ public class AuditTrailServiceTests : TestBase
     }
 
     [Fact]
-    public async Task PurgeOlderThanAsync_DoesNotThrow_WhenRepositoryFails()
+    public async Task PurgeOlderThanAsync_PropagatesFailure_WhenRepositoryFails()
     {
+        // FR-025: a purge failure must reach the startup sequence so it can be logged AND surfaced;
+        // the service no longer swallows it.
         var svc = CreateService();
         _repository.PurgeOlderThanAsync(Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns<Task<int>>(_ => throw new InvalidOperationException("db error"));
 
-        var ex = await Record.ExceptionAsync(() => svc.PurgeOlderThanAsync(DateTime.UtcNow, Ct));
-
-        Assert.Null(ex);
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => svc.PurgeOlderThanAsync(DateTime.UtcNow, Ct));
     }
 
     [Fact]

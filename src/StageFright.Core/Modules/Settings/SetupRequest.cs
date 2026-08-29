@@ -17,7 +17,7 @@ public record SetupRequest(
     int CommitteeRenewalMonth = 1,
     IReadOnlyList<string>? CommitteeOfficeHolderTitles = null,
     int? GeneralCommitteeSeatCountTarget = null,
-    int AuditRetentionYears = 1,
+    int AuditRetentionYears = 5,
     // QueuedAccounts: Chart of Accounts entries queued during setup (spec 017 FR-012/FR-013),
     // created together with the rest of setup at Finish.
     IReadOnlyList<QueuedAccountRequest>? QueuedAccounts = null,

@@ -250,8 +250,9 @@ public class SetupServiceTests : TestBase
 
         await svc.InitializeAsync(ValidRequest(), Ct);
 
+        // spec 028, US8 / FR-023: the default retention on a fresh dataset is now five years.
         await _settingsRepo.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s!.AuditRetentionYears == 1),
+            Arg.Is<Settings>(s => s!.AuditRetentionYears == 5),
             Arg.Any<CancellationToken>());
     }
 

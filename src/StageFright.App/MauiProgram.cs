@@ -353,16 +353,18 @@ public static class MauiProgram
         var migrationRunner = scope.ServiceProvider.GetRequiredService<PluginMigrationRunner>();
         migrationRunner.RunAsync().GetAwaiter().GetResult();
 
-        // Audit trail startup purge (FR-022): failure is tolerated, startup continues.
-        // Resolved via the registered interface — resolving the concrete AuditTrailService
-        // type here previously returned null (it was never registered by concrete type),
-        // silently skipping the purge while still logging a false "complete" message.
+        // Audit trail startup purge (FR-022): startup always continues, but a failure is now both
+        // logged AND surfaced into the startup-diagnostic state as a non-fatal warning so it is
+        // never silently discarded (spec 028, US8 / FR-025). Resolved via the registered interface
+        // — resolving the concrete AuditTrailService type here previously returned null (it was
+        // never registered by concrete type), silently skipping the purge while still logging a
+        // false "complete" message.
         try
         {
             var auditService = scope.ServiceProvider.GetRequiredService<IAuditTrailService>();
             var settingsService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
             var settings = settingsService.GetAsync().GetAwaiter().GetResult();
-            var retentionYears = settings?.AuditRetentionYears ?? 1;
+            var retentionYears = settings?.AuditRetentionYears ?? 5;
 
             auditService.PurgeOlderThanAsync(DateTime.UtcNow.AddYears(-retentionYears)).GetAwaiter().GetResult();
             Log.Information("Audit trail startup purge complete (retention: {RetentionYears} year(s))", retentionYears);
@@ -370,6 +372,7 @@ public static class MauiProgram
         catch (Exception ex)
         {
             Log.Error(ex, "Audit trail purge failed during startup; startup continues");
+            diagnosticService.RecordWarning("The startup cleanup of expired audit-trail entries did not complete. Your records are intact; it will be retried the next time the app starts.");
         }
     }
 }

@@ -18,6 +18,19 @@ public interface IStartupDiagnosticService
     /// <summary>Records a critical startup error.</summary>
     void RecordError(Exception ex, string? databasePath = null);
 
-    /// <summary>Clears any recorded startup error (called after database recreation).</summary>
+    /// <summary>
+    /// True if a non-fatal startup warning was recorded (spec 028, US8 / FR-025). A warning does
+    /// not block startup or trigger the recovery page — it is surfaced to the user as a dismissible
+    /// notice so a swallowed failure (e.g. a failed audit-trail purge) is never silently discarded.
+    /// </summary>
+    bool HasStartupWarning { get; }
+
+    /// <summary>The message of the non-fatal startup warning, or null if none was recorded.</summary>
+    string? StartupWarning { get; }
+
+    /// <summary>Records a non-fatal startup warning. Startup continues regardless.</summary>
+    void RecordWarning(string message);
+
+    /// <summary>Clears any recorded startup error and warning (called after database recreation).</summary>
     void ClearError();
 }

@@ -57,7 +57,7 @@ public sealed class SetupFormModel : IValidatableObject
     public int? GeneralCommitteeSeatCountTarget { get; set; }
 
     [Range(1, 7, ErrorMessage = "Audit retention period must be between 1 and 7 years.")]
-    public int AuditRetentionYears { get; set; } = 1;
+    public int AuditRetentionYears { get; set; } = 5;
 
     /// <summary>
     /// Chosen display language as a BCP-47 culture id (spec 027, US3 / FR-013). Pre-set by the

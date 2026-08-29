@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Modules.Dashboard;
+using StageFright.Core.Modules.Settings;
 using StageFright.Plugins.Contracts;
 using StageFright.UI.Pages.Dashboard;
 using StageFright.UI.Shared;
@@ -18,10 +19,12 @@ namespace StageFright.UI.Tests.Pages.Dashboard;
 public class DashboardTests : LocalizedTestContext
 {
     private readonly IDashboardService _dashboardService = Substitute.For<IDashboardService>();
+    private readonly StartupDiagnosticService _startupDiagnostics = new();
 
     public DashboardTests()
     {
         Services.AddSingleton(_dashboardService);
+        Services.AddSingleton<IStartupDiagnosticService>(_startupDiagnostics);
         ComponentFactories.AddStub<TileRenderer>(parameters =>
         {
             var provider = parameters.Get(x => x.Provider);
@@ -244,6 +247,44 @@ public class DashboardTests : LocalizedTestContext
 
         var extensionsSection = cut.Find("[aria-label='Extensions']");
         Assert.NotNull(extensionsSection.QuerySelector(".card.tile-test-tile.tile-size-1x2"));
+    }
+
+    // --- Startup warning banner (spec 028, US8 / FR-025) ---
+
+    [Fact]
+    public void StartupWarningBanner_NotRendered_WhenNoStartupWarning()
+    {
+        SetupProviders(MakeCoreProvider("members", 10));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        Assert.Empty(cut.FindAll("[data-testid='startup-warning-banner']"));
+    }
+
+    [Fact]
+    public void StartupWarningBanner_Rendered_WhenStartupWarningRecorded()
+    {
+        _startupDiagnostics.RecordWarning("Audit trail purge failed during startup.");
+        SetupProviders(MakeCoreProvider("members", 10));
+
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        var banner = cut.Find("[data-testid='startup-warning-banner']");
+        Assert.Contains("audit-trail", banner.TextContent, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void StartupWarningBanner_Dismissed_WhenDismissButtonClicked()
+    {
+        _startupDiagnostics.RecordWarning("Audit trail purge failed during startup.");
+        SetupProviders(MakeCoreProvider("members", 10));
+        var cut = Render<StageFright.UI.Pages.Dashboard.Dashboard>();
+
+        cut.Find("[data-testid='startup-warning-banner'] button").Click();
+
+        Assert.Empty(cut.FindAll("[data-testid='startup-warning-banner']"));
+        // The underlying diagnostic state is untouched — only hidden for this session.
+        Assert.True(_startupDiagnostics.HasStartupWarning);
     }
 
     private static IDashboardTileProvider MakeLinkedProvider(

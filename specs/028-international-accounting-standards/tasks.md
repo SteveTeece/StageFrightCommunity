@@ -338,21 +338,21 @@ confirm it is surfaced, record attendance that accrues a fee and confirm an audi
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T077** [P] [US8] Integration — a fresh dataset has `AuditRetentionYears == 5`; an existing dataset's configured value survives the migration · `tests/StageFright.Data.Tests/Migrations/AuditRetentionDefaultTests.cs`
-- [ ] **T078** [P] [US8] Integration — recording attendance that accrues a fee (paid and unpaid) writes an `AuditTrailEntry` for the accrual and for the auto-payment · `tests/StageFright.Core.Tests/Modules/Rehearsals/AttendanceServiceAuditTests.cs`
-- [ ] **T079** [P] [US8] Integration — a failed startup purge is recorded into the retrievable startup-diagnostic state (not only logged) · `tests/StageFright.Integration.Tests/InternationalAccounting/PurgeFailureSurfacedTests.cs`
+- [x] **T077** [P] [US8] Integration — a fresh dataset has `AuditRetentionYears == 5`; an existing dataset's configured value survives the migration · `tests/StageFright.Data.Tests/Migrations/AuditRetentionDefaultTests.cs`
+- [x] **T078** [P] [US8] Integration — recording attendance that accrues a fee (paid and unpaid) writes an `AuditTrailEntry` for the accrual and for the auto-payment · `tests/StageFright.Core.Tests/Modules/Rehearsals/AttendanceServiceAuditTests.cs`
+- [x] **T079** [P] [US8] Integration — a failed startup purge is recorded into the retrievable startup-diagnostic state (not only logged) · `tests/StageFright.Integration.Tests/InternationalAccounting/PurgeFailureSurfacedTests.cs`
 
 ### Implementation
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T080** [P] [US8] Raise the retention default `1 → 5` at the remaining declaration sites — `SetupFormModel` (default `5`), `SetupRequest` (default `5`), `SetupService` · `src/StageFright.UI/Pages/Setup/SetupFormModel.cs`, `src/StageFright.Core/Modules/Settings/SetupRequest.cs`, `SetupService.cs`  *(entity + config + migration are T003/T005/T006)*
-- [ ] **T081** [P] [US8] `AttendanceService` — write `IAuditTrailService.LogAsync` entries for the fee accrual and (when paid at creation) the auto-payment, inside the existing transaction · `src/StageFright.Core/Modules/Rehearsals/AttendanceService.cs`
-- [ ] **T082** [P] [US8] `MauiProgram` — on a failed audit purge, record the failure into the startup-diagnostic state holder in addition to `Log.Error`; startup still continues · `src/StageFright.App/MauiProgram.cs` + the startup-error state type
+- [x] **T080** [P] [US8] Raise the retention default `1 → 5` at the remaining declaration sites — `SetupFormModel` (default `5`), `SetupRequest` (default `5`), `SetupService` · `src/StageFright.UI/Pages/Setup/SetupFormModel.cs`, `src/StageFright.Core/Modules/Settings/SetupRequest.cs`, `SetupService.cs`  *(entity + config + migration are T003/T005/T006)*
+- [x] **T081** [P] [US8] `AttendanceService` — write `IAuditTrailService.LogAsync` entries for the fee accrual and (when paid at creation) the auto-payment, inside the existing transaction · `src/StageFright.Core/Modules/Rehearsals/AttendanceService.cs`
+- [x] **T082** [P] [US8] `MauiProgram` — on a failed audit purge, record the failure into the startup-diagnostic state holder in addition to `Log.Error`; startup still continues · `src/StageFright.App/MauiProgram.cs` + the startup-error state type
 
 **⟶ then:**
 
-- [ ] **T083** [US8] Surface the purge-failure diagnostic in the UI (the surface that already reads the DB-init startup-failure state — dashboard or settings banner) · `src/StageFright.UI/Layout/*` or `src/StageFright.UI/Pages/Dashboard/*` (`.razor.cs`)
+- [x] **T083** [US8] Surface the purge-failure diagnostic in the UI (the surface that already reads the DB-init startup-failure state — dashboard or settings banner) · `src/StageFright.UI/Layout/*` or `src/StageFright.UI/Pages/Dashboard/*` (`.razor.cs`)
 
 **Checkpoint**: 5-year default on new datasets, existing values preserved, purge failures visible,
 attendance accruals audited (SC-010, SC-011).

@@ -180,6 +180,16 @@ File: `src/StageFright.Reports/Models/ReportData.cs`
   `Reports_TrialBalance_GLImbalanceError` wording is revised to drop the tolerance phrasing.
 * `SetupResource` / `SettingsResource`: labels for the currency picker, the financial-year-start
   month/day pickers, and the "close periods through" control (+ `.en-US`, `.fr-FR`).
+* `SharedResource`: `Shared_StartupWarning_AuditPurgeFailed`, `Shared_StartupWarning_DismissLabel`
+  (+ `.en-US`, `.fr-FR`) — the dismissible dashboard banner shown when the startup audit-trail
+  purge failed (FR-025).
+
+`IStartupDiagnosticService` (existing, `StageFright.Core/Contracts/`) gains a **non-fatal** warning
+channel — `HasStartupWarning`, `StartupWarning`, `RecordWarning(string)` — alongside its existing
+fatal error channel. A failed startup audit purge is recorded here (by `MauiProgram`) and surfaced
+as the dashboard banner above; unlike `RecordError`, it never routes the user to the blocking
+`/startup-error` recovery page, and startup still completes (FR-025). `AuditTrailService.PurgeOlderThanAsync`
+no longer swallows a purge failure — it propagates so the startup sequence can log **and** surface it.
 
 All new user-facing text is resolved through `IStringLocalizer` per the localization rule — no
 hard-coded literals (enforced by `StageFright.Localization.Tests`).

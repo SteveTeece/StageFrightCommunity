@@ -2,6 +2,16 @@
 
 <PageTitle>@L["Dashboard_Page_Title"]</PageTitle>
 
+@if (ShowStartupWarning)
+{
+    <div class="alert alert-warning d-flex justify-content-between align-items-start" role="alert" data-testid="startup-warning-banner">
+        <span>@StartupWarningText</span>
+        <button type="button" class="btn btn-sm btn-outline-secondary ms-3" @onclick="DismissStartupWarning">
+            @StartupWarningDismissLabel
+        </button>
+    </div>
+}
+
 @if (!_initialized)
 {
     <div class="d-flex justify-content-center align-items-center py-4" role="status" aria-live="polite">
