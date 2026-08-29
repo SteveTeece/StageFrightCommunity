@@ -1036,7 +1036,7 @@
       "summary": "Phase 7 / US5 (T048-T051): conventional bank reconciliation. BankReconciliationReportProvider rewritten to the adjusted-balance form — one section/account: balance per bank statement -> + outstanding deposits (listed+summed) -> - outstanding payments (listed+summed) -> adjusted bank balance -> balance per general ledger (GetAccountBalanceAsync at statement date) -> Reconciled residual; all money via MoneyFormatter. 6 new ReportsResource keys (neutral/en-US/fr-FR/qps-ploc), 10 dead cleared/summary keys removed. +2 FR-015 service tests, new V28_ConventionalBankReconciliation acceptance (5/5). Suites green: Core 684, Reports 236, Localization 25, UI 613, Data 154, Integration 220."
     }
   },
-  "currentTask": "T051",
+  "currentTask": "T052",
   "task_summaries": {
     "T015": {
       "status": "DONE",
