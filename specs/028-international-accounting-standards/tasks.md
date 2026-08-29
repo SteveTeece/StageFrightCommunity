@@ -413,15 +413,15 @@ with rough sizing for each required point and that follow-on issues exist for in
 
 **Wave 1 — independent:**
 
-- [ ] **T090** [P] Full rebuild + test — `dotnet build -t:Rebuild` then `dotnet test` (no `--no-build`); resolve any warnings a full rebuild surfaces · `StageFrightCommunity.slnx`
-- [ ] **T091** [P] `StageFright.Localization.Tests` green — every new user-facing string is localized in the neutral, `en-US`, and `fr-FR` resource sets; no literal regressions · `tests/StageFright.Localization.Tests/`
-- [ ] **T091a** [P] Guard — a repo-wide source test asserts no `StageFright.Reports` provider and no `StageFright.UI` money-display site emits a hard-coded `"$"` / `"AUD"` currency literal or formats a money value with `ToString("C")` / `"{0:C}"` / `ToString("F2")`; every displayed, printed, or exported amount routes through `MoneyFormatter` (FR-004, SC-002) · `tests/StageFright.Localization.Tests/CurrencySymbolGuardTests.cs`
-- [ ] **T092** [P] Update `CLAUDE.md` (Localization + "money in reports" notes) and finalise any remaining stale `specs/027-localization-support/` lines · `CLAUDE.md`, `specs/027-localization-support/*.md`
+- [x] **T090** [P] Full rebuild + test — `dotnet build -t:Rebuild` then `dotnet test` (no `--no-build`); resolve any warnings a full rebuild surfaces · `StageFrightCommunity.slnx`
+- [x] **T091** [P] `StageFright.Localization.Tests` green — every new user-facing string is localized in the neutral, `en-US`, and `fr-FR` resource sets; no literal regressions · `tests/StageFright.Localization.Tests/`
+- [x] **T091a** [P] Guard — a repo-wide source test asserts no `StageFright.Reports` provider and no `StageFright.UI` money-display site emits a hard-coded `"$"` / `"AUD"` currency literal or formats a money value with `ToString("C")` / `"{0:C}"` / `ToString("F2")`; every displayed, printed, or exported amount routes through `MoneyFormatter` (FR-004, SC-002) · `tests/StageFright.Localization.Tests/CurrencySymbolGuardTests.cs`
+- [x] **T092** [P] Update `CLAUDE.md` (Localization + "money in reports" notes) and finalise any remaining stale `specs/027-localization-support/` lines · `CLAUDE.md`, `specs/027-localization-support/*.md`
 
 **⟶ then:**
 
-- [ ] **T093** Re-run the `AUD` zero-drift regression (T013) against the final build — identical report figures and stored monetary/tax/GL values (SC-004, FR-031, FR-032) · `tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs`
-- [ ] **T094** Walk SC-001…SC-013 against the running app (a non-AUD, non-first-of-month org end to end) and record evidence · `specs/028-international-accounting-standards/` (evidence note)
+- [x] **T093** Re-run the `AUD` zero-drift regression (T013) against the final build — identical report figures and stored monetary/tax/GL values (SC-004, FR-031, FR-032) · `tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs`
+- [x] **T094** Walk SC-001…SC-013 against the running app (a non-AUD, non-first-of-month org end to end) and record evidence · `specs/028-international-accounting-standards/` (evidence note)
 
 ---
 

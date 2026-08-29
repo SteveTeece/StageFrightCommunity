@@ -818,6 +818,54 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-29T23:04:25.175Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T090",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:27:52.975Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T091",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:27:53.168Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T091a",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:27:53.364Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T092",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:27:53.542Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T093",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:27:53.736Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T094",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:27:53.930Z"
     }
   ],
   "telemetryInstanceId": "527a7469-9665-4240-b165-addc44766471",
@@ -888,7 +936,9 @@
         "T027"
       ],
       "tests": [
-        "tests/StageFright.Integration.Tests/Scenarios/V28_CurrencyConfigurationTests.cs::EveryFinancialReport_ShowsTheConfiguredCurrency_AndNeverDollarOrAud"
+        "tests/StageFright.Localization.Tests/CurrencySymbolGuardTests.cs::Should_NotBakeInAMoneyFormat_When_ReportAndUiSurfaceScanned",
+        "Should_NotEmitAHardCodedCurrencySymbolOrCode_When_ReportAndUiSurfaceScanned",
+        "Should_RouteMoneyThroughMoneyFormatter_When_MoneyBearingProviderScanned"
       ]
     },
     "FR-005": {
@@ -1214,6 +1264,10 @@
         "T013",
         "T089",
         "T093"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_CurrencyConfigurationTests.cs::SameDataset_UnderAud_IsByteIdenticalToTheLegacyDollarString"
       ]
     },
     "FR-032": {
@@ -1221,6 +1275,10 @@
       "tasks": [
         "T060",
         "T093"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs::StoredTransactionValues_AreUntouched",
+        "TrialBalance_TiesAndShowsTheSameTotals"
       ]
     },
     "FR-033": {
@@ -1425,6 +1483,16 @@
       "decision": "US10 assessment scopes 2 of 4 points IN (tax-exclusive entry M; recoverable-tax 2310/2320 balance-sheet classification S-M) and 2 OUT (rate history L; multi-jurisdiction XL)",
       "why": "the two IN points are real, bounded gaps for tax-exclusive jurisdictions and net-refundable orgs; the two OUT points need a new model dimension disproportionate to community/amateur-theatre need and are the separate body of work the spec explicitly carves out",
       "rejected": "scoping all four out to avoid the issue-creation blocker - dishonest; or all four in - overcommits to an XL multi-jurisdiction redesign"
+    },
+    {
+      "decision": "T091a CurrencySymbolGuardTests is a new dedicated file, not an extension of Us2LocalizationGuardTests",
+      "why": "Us2 guards the C format repo-wide but not hard-coded $/AUD string literals, ToString(F2), or a positive providers-route-through-MoneyFormatter assertion; tasks.md T091a names this exact new path",
+      "rejected": "Adding the checks as extra [Fact]s inside Us2LocalizationGuardTests"
+    },
+    {
+      "decision": "T092 finalised only specs/027 spec.md FR-015 lines with Superseded-by-spec-028 notes; left plan.md/research.md historical",
+      "why": "Matches the T028 precedent (commit 19ab79f annotated spec.md + data-model.md only); plan.md/research.md are point-in-time design records",
+      "rejected": "Rewriting every fixed-$/AUD sentence across plan.md and research.md Decision 11"
     }
   ],
   "step_summaries": {
@@ -1436,13 +1504,13 @@
       "summary": "94 tasks across 13 phases (Setup, Foundational, one per US1-US10, Polish); wave-grouped with explicit joins; oversized budget, full per-story Goal/Independent Test/Checkpoint."
     },
     "implement": {
-      "summary": "Phase 12 (US10 spike): published docs/assessments/sales-tax-internationalisation.md with in-scope/out-of-scope + rough size for all 4 FR-029 points; verified FR-033 (no tax posting mechanic or stored tax code value changed); T088 GitHub-issue creation blocked by classifier, deferred issue specs recorded"
+      "summary": "Phase 13 polish complete: full rebuild 0W/0E + 2002 tests green; new CurrencySymbolGuardTests locks FR-004/SC-002; CLAUDE.md + spec-027 money prose finalised; AUD zero-drift re-verified; SC-001..SC-013 evidence recorded. T076/T088 GitHub issues blocked by classifier (specs in-repo for maintainer)."
     },
     "specify": {
       "summary": "Phase 9 / US7: financial-year start is now an explicit (month+day) setup choice — FinancialYearCalculator + 4 FY-preset report providers + OpeningBalancesWizard honour the day; SetupRequest/SetupFormModel/SetupService carry & validate it (1..28); mandatory pickers on the setup General tab and a matching day picker on Settings; T065-T075 done, T076 spec-note done but its GitHub issue is blocked."
     }
   },
-  "currentTask": "T089",
+  "currentTask": "T094",
   "task_summaries": {
     "T015": {
       "status": "DONE",
@@ -2121,6 +2189,49 @@
       "files": [
         "specs/028-international-accounting-standards/spec.md"
       ]
+    },
+    "T090": {
+      "status": "DONE",
+      "did": "Full dotnet build -t:Rebuild (0W/0E) + full dotnet test (2002 pass, 0 fail: Core 714, Localization 28, Reports 236, UI 624, Data 156, Integration 244)",
+      "files": [
+        "StageFrightCommunity.slnx"
+      ]
+    },
+    "T091": {
+      "status": "DONE",
+      "did": "StageFright.Localization.Tests green (28/28) incl. new currency guard; every spec-028 user-facing string localized neutral/en-US/fr-FR, no literal regressions",
+      "files": [
+        "tests/StageFright.Localization.Tests/"
+      ]
+    },
+    "T091a": {
+      "status": "DONE",
+      "did": "New CurrencySymbolGuardTests: repo-wide guard that no Reports provider / UI money site hard-codes $ or AUD literal or formats money with ToString(C)/{0:C}/ToString(F2); 9 money-bearing providers route through MoneyFormatter (FR-004, SC-002)",
+      "files": [
+        "tests/StageFright.Localization.Tests/CurrencySymbolGuardTests.cs"
+      ]
+    },
+    "T092": {
+      "status": "DONE",
+      "did": "CLAUDE.md Reports-pipeline money note added (MoneyFormatter for every provider/renderer/exporter amount + CurrencySymbolGuardTests ref); finalised remaining stale specs/027 spec.md FR-015 lines (Clarifications, Edge case, FR-015) with 'Superseded by spec 028' notes matching T028 precedent",
+      "files": [
+        "CLAUDE.md",
+        "specs/027-localization-support/spec.md"
+      ]
+    },
+    "T093": {
+      "status": "DONE",
+      "did": "Re-ran AUD zero-drift regression against final build: AudZeroDriftTests + V28_CurrencyConfigurationTests 9/9 pass - identical report figures and stored monetary/tax/GL values (SC-004, FR-031, FR-032)",
+      "files": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs"
+      ]
+    },
+    "T094": {
+      "status": "DONE",
+      "did": "Walked SC-001..SC-013: all covered by V28_* acceptance scenarios + InternationalAccounting suite (52/52 pass) against a non-AUD non-first-of-month org end to end; recorded sc-verification-evidence.md",
+      "files": [
+        "specs/028-international-accounting-standards/sc-verification-evidence.md"
+      ]
     }
   },
   "verified": [
@@ -2207,6 +2318,26 @@
       "command": "git diff master...HEAD -- <tax-adjacent files>",
       "result": "PASS - only tax-path change is the optional minorUnitDigits param on SplitInclusive (default 2 = AUD byte-identical); TaxCode enum unchanged; 2310/2320 accounts, GL line structure, TaxCode stamping, tax-inclusive entry model and Tax Summary net arithmetic all unchanged; rest is localization + MoneyFormatter routing",
       "warnings": []
+    },
+    {
+      "what": "Full rebuild + full test suite (Phase 13 T090)",
+      "command": "dotnet build -t:Rebuild -c Debug ; dotnet test -c Debug",
+      "result": "build 0 warnings / 0 errors; 2002 tests pass, 0 fail, 0 skip (Core 714, Localization 28, Reports 236, UI 624, Data 156, Integration 244)",
+      "warnings": []
+    },
+    {
+      "what": "AUD zero-drift regression re-run against final build (T093)",
+      "command": "dotnet test tests/StageFright.Integration.Tests --filter FullyQualifiedName~AudZeroDrift|FullyQualifiedName~V28_CurrencyConfiguration",
+      "result": "9/9 pass - identical report figures and stored monetary/tax/GL values for an AUD dataset",
+      "warnings": []
+    },
+    {
+      "what": "SC-001..SC-013 walk via acceptance + integration suites (T094)",
+      "command": "dotnet test tests/StageFright.Integration.Tests --filter FullyQualifiedName~V28_|FullyQualifiedName~InternationalAccounting",
+      "result": "52/52 pass; every SC mapped to a green V28_* scenario or InternationalAccounting test in specs/028-international-accounting-standards/sc-verification-evidence.md",
+      "warnings": [
+        "no hand-driven CDP MAUI walkthrough performed - acceptance suite drives the identical non-AUD non-first-of-month code paths incl. PDF/CSV"
+      ]
     }
   ],
   "concerns": [
@@ -2273,7 +2404,11 @@
     {
       "note": "T088 left unchecked: gh issue create is blocked by the environment action classifier (same as T076). The two in-scope follow-on issues (tax-exclusive entry; recoverable input tax 2320 classification) are specified verbatim in docs/assessments/sales-tax-internationalisation.md Follow-on issues section and noted in spec.md Assumptions, for the maintainer to file against parent #341.",
       "step": "implement"
+    },
+    {
+      "note": "T076 and T088 stay unchecked: gh issue create is blocked by the Claude Code auto-mode classifier. All three follow-on issue specs (FR-022 part-year FY; tax-exclusive entry; recoverable input tax 2320 classification) are written in full in spec.md Assumptions + docs/assessments/sales-tax-internationalisation.md for the maintainer to file. Plus the pre-existing stale capabilities/settings/spec.md tax wording (T086a) noted there too.",
+      "step": "implement"
     }
   ],
-  "last_action": "Phase 12 done - T087 + T089 checked (88/94); T088 blocked (gh issue create denied), issue specs recorded in assessment + spec.md; T076 + Phase 13 (T090-T094) remain"
+  "last_action": "Phase 13 done - T090-T094 checked (92/94). Only T076 + T088 remain, both blocked by the gh-issue-create classifier; full issue text is in spec.md Assumptions + the sales-tax assessment for the maintainer to file. Build 0W/0E, 2002 tests pass."
 }
