@@ -82,6 +82,8 @@ public class SetupService : ISetupService
             GeneralCommitteeSeatCountTarget = request.GeneralCommitteeSeatCountTarget,
             AuditRetentionYears = request.AuditRetentionYears,
             CurrencyCode = CurrencyCatalog.Get(request.CurrencyCode).Code,
+            FinancialYearStartMonth = request.FinancialYearStartMonth,
+            FinancialYearStartDay = request.FinancialYearStartDay,
             MaxAgeRangeYears = 150,
             MinimumMemberAge = 0,
             Theme = request.Theme,
@@ -186,5 +188,8 @@ public class SetupService : ISetupService
 
         if (!CurrencyCatalog.TryGet(request.CurrencyCode, out _))
             throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Setup_CurrencyUnknown"), "Settings", nameof(InitializeAsync));
+
+        if (request.FinancialYearStartDay < 1 || request.FinancialYearStartDay > 28)
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Setup_FinancialYearStartDayRange"), "Settings", nameof(InitializeAsync));
     }
 }

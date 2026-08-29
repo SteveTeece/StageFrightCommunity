@@ -69,8 +69,9 @@ public class IncomeStatementReportProvider : IReportProvider
     {
         var settings = await _settings.GetAsync(ct);
         var startMonth = settings?.FinancialYearStartMonth ?? FinancialYearCalculator.DefaultStartMonth;
+        var startDay = settings?.FinancialYearStartDay ?? FinancialYearCalculator.DefaultStartDay;
 
-        var (from, to) = ResolvePeriod(filters, startMonth);
+        var (from, to) = ResolvePeriod(filters, startMonth, startDay);
         var compare = bool.TryParse(filters.Get("compare"), out var cmp) && cmp;
 
         var allAccounts = (await _accounts.GetAllAsync(ct)).Concat(await _accounts.GetArchivedAsync(ct)).ToList();
@@ -169,16 +170,16 @@ public class IncomeStatementReportProvider : IReportProvider
         return (rows, total, priorTotal);
     }
 
-    private static (DateTime From, DateTime To) ResolvePeriod(ReportFilterValues filters, int startMonth)
+    private static (DateTime From, DateTime To) ResolvePeriod(ReportFilterValues filters, int startMonth, int startDay)
     {
         var period = filters.Get("period");
 
         if (string.Equals(period, "Last FY", StringComparison.OrdinalIgnoreCase))
-            return FinancialYearCalculator.GetPreviousRange(DateTime.UtcNow, startMonth);
+            return FinancialYearCalculator.GetPreviousRange(DateTime.UtcNow, startMonth, startDay);
 
         if (string.Equals(period, "Custom", StringComparison.OrdinalIgnoreCase))
         {
-            var (fyFrom, fyTo) = FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth);
+            var (fyFrom, fyTo) = FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth, startDay);
             var from = DateTime.TryParse(filters.Get("dateFrom"), out var df)
                 ? DateTime.SpecifyKind(df.Date, DateTimeKind.Utc)
                 : fyFrom;
@@ -189,7 +190,7 @@ public class IncomeStatementReportProvider : IReportProvider
         }
 
         // "This FY" (default / unrecognised value)
-        return FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth);
+        return FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth, startDay);
     }
 
     private static string FormatCurrency(decimal amount) => MoneyFormatter.Format(amount);

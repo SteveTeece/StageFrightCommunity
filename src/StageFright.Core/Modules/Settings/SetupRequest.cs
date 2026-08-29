@@ -33,4 +33,9 @@ public record SetupRequest(
     string? LanguageCode = null,
     // CurrencyCode: ISO 4217 code the organisation keeps its books in (spec 028, FR-001).
     // Defaults to "AUD"; validated against CurrencyCatalog.All and fixed after setup (FR-002).
-    string CurrencyCode = "AUD");
+    string CurrencyCode = "AUD",
+    // FinancialYearStartMonth / FinancialYearStartDay: the (month, day) the financial year
+    // opens on (spec 028, US7 / FR-019, FR-020). Chosen explicitly during first-run setup;
+    // defaults reproduce the Australian FY (1 July). Day is validated to 1..28.
+    int FinancialYearStartMonth = 7,
+    int FinancialYearStartDay = 1);

@@ -28,6 +28,21 @@ public sealed class SetupFormModel : IValidatableObject
     [Required(ErrorMessage = "Currency is required.")]
     public string CurrencyCode { get; set; } = "AUD";
 
+    /// <summary>
+    /// Month (1–12) the financial year starts on (spec 028, US7 / FR-019). Mandatory,
+    /// always-visible picker; defaults to July (Australian FY).
+    /// </summary>
+    [Range(1, 12, ErrorMessage = "Financial year start month must be between 1 and 12.")]
+    public int FinancialYearStartMonth { get; set; } = 7;
+
+    /// <summary>
+    /// Day of <see cref="FinancialYearStartMonth"/> (1–28) the financial year starts on
+    /// (spec 028, US7 / FR-020). Mandatory picker; defaults to the 1st. The 28 upper bound
+    /// avoids month-length edge cases.
+    /// </summary>
+    [Range(1, 28, ErrorMessage = "Financial year start day must be between 1 and 28.")]
+    public int FinancialYearStartDay { get; set; } = 1;
+
     public bool IsTaxApplicable { get; set; }
 
     public decimal? TaxRate { get; set; }

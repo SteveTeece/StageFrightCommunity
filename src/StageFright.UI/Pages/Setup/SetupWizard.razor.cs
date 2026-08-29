@@ -203,7 +203,9 @@ public partial class SetupWizard : ComponentBase
                 QueuedOpeningBalances: _queuedOpeningBalances.Count > 0 ? _queuedOpeningBalances : null,
                 OpeningBalanceAsAtDate: _openingBalanceAsAtDate,
                 LanguageCode: _model.LanguageCode,
-                CurrencyCode: _model.CurrencyCode);
+                CurrencyCode: _model.CurrencyCode,
+                FinancialYearStartMonth: _model.FinancialYearStartMonth,
+                FinancialYearStartDay: _model.FinancialYearStartDay);
 
             await SetupService.InitializeAsync(request);
 

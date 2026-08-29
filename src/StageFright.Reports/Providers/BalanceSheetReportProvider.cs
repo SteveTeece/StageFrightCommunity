@@ -169,7 +169,8 @@ public class BalanceSheetReportProvider : IReportProvider
     {
         var settings = await _settings.GetAsync(ct);
         var startMonth = settings?.FinancialYearStartMonth ?? FinancialYearCalculator.DefaultStartMonth;
-        var (_, fyEnd) = FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth);
+        var startDay = settings?.FinancialYearStartDay ?? FinancialYearCalculator.DefaultStartDay;
+        var (_, fyEnd) = FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth, startDay);
 
         return DateTime.TryParse(filters.Get("asAt"), out var d)
             ? new DateTime(d.Year, d.Month, d.Day, 23, 59, 59, DateTimeKind.Utc)

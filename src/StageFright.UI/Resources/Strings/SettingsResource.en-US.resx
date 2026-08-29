@@ -136,7 +136,8 @@
   <data name="Settings_General_MembershipRenewalMonthLabel" xml:space="preserve"><value>Membership Renewal Month</value><comment>General tab field label.</comment></data>
   <data name="Settings_General_AgmMonthLabel" xml:space="preserve"><value>AGM Month</value><comment>General tab field label.</comment></data>
   <data name="Settings_General_FinancialYearStartMonthLabel" xml:space="preserve"><value>Fiscal Year Start Month</value><comment>General tab field label.</comment></data>
-  <data name="Settings_General_FinancialYearStartHelp" xml:space="preserve"><value>Default July — Australian fiscal year.</value><comment>Help text under the financial-year-start-month field.</comment></data>
+  <data name="Settings_General_FinancialYearStartDayLabel" xml:space="preserve"><value>Fiscal Year Start Day</value><comment>General tab field label — day of the start month the fiscal year opens on (spec 028, FR-020).</comment></data>
+  <data name="Settings_General_FinancialYearStartHelp" xml:space="preserve"><value>Default 1 July — Australian fiscal year.</value><comment>Help text under the financial-year-start fields.</comment></data>
   <data name="Settings_General_AuditRetentionLabel" xml:space="preserve"><value>Audit Trail Retention (years)</value><comment>General tab field label.</comment></data>
   <data name="Settings_General_AuditRetentionHelp" xml:space="preserve"><value>How long audit trail history is kept before the startup purge removes it.</value><comment>Help text under the audit-retention field.</comment></data>
   <data name="Settings_General_ClosePeriodLabel" xml:space="preserve"><value>Close fiscal periods through</value><comment>General tab — label for the closed-through date control (spec 028, FR-016).</comment></data>

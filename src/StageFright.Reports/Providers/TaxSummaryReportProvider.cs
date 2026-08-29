@@ -69,7 +69,8 @@ public class TaxSummaryReportProvider : IReportProvider
         }
 
         var startMonth = settings.FinancialYearStartMonth;
-        var (qFrom, qTo) = GetCurrentQuarterRange(DateTime.UtcNow, startMonth);
+        var startDay = settings.FinancialYearStartDay;
+        var (qFrom, qTo) = GetCurrentQuarterRange(DateTime.UtcNow, startMonth, startDay);
 
         var from = DateTime.TryParse(filters.Get("dateFrom"), out var df)
             ? DateTime.SpecifyKind(df.Date, DateTimeKind.Utc)
@@ -135,9 +136,9 @@ public class TaxSummaryReportProvider : IReportProvider
         };
     }
 
-    private static (DateTime From, DateTime To) GetCurrentQuarterRange(DateTime date, int startMonth)
+    private static (DateTime From, DateTime To) GetCurrentQuarterRange(DateTime date, int startMonth, int startDay = FinancialYearCalculator.DefaultStartDay)
     {
-        var (fyFrom, _) = FinancialYearCalculator.GetRange(date, startMonth);
+        var (fyFrom, _) = FinancialYearCalculator.GetRange(date, startMonth, startDay);
         var monthsElapsed = ((date.Year - fyFrom.Year) * 12) + date.Month - fyFrom.Month;
         var quarterIndex = monthsElapsed / 3;
         var qFrom = fyFrom.AddMonths(quarterIndex * 3);

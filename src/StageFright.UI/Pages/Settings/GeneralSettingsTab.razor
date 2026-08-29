@@ -75,15 +75,29 @@ else
             </div>
             <div class="col-md-4">
                 <label for="financialYearStartMonth" class="form-label">@L["Settings_General_FinancialYearStartMonthLabel"]</label>
-                <InputSelect id="financialYearStartMonth" class="form-select form-select-sm" @bind-Value="s.FinancialYearStartMonth">
-                    @for (var m = 1; m <= 12; m++)
-                    {
-                        var month = m;
-                        <option value="@month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
-                    }
-                </InputSelect>
+                <div class="row g-1">
+                    <div class="col-7">
+                        <InputSelect id="financialYearStartMonth" class="form-select form-select-sm" @bind-Value="s.FinancialYearStartMonth">
+                            @for (var m = 1; m <= 12; m++)
+                            {
+                                var month = m;
+                                <option value="@month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-5">
+                        <InputSelect id="financialYearStartDay" aria-label="@L["Settings_General_FinancialYearStartDayLabel"]" class="form-select form-select-sm" @bind-Value="s.FinancialYearStartDay">
+                            @for (var d = 1; d <= 28; d++)
+                            {
+                                var day = d;
+                                <option value="@day">@day</option>
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
                 <div class="form-text small">@L["Settings_General_FinancialYearStartHelp"]</div>
                 <ValidationMessage For="() => s.FinancialYearStartMonth" />
+                <ValidationMessage For="() => s.FinancialYearStartDay" />
             </div>
         </div>
 

@@ -24,7 +24,8 @@
   <data name="Settings_General_MembershipRenewalMonthLabel" xml:space="preserve"><value>Mois de renouvellement de l'adhésion</value><comment>General tab field label.</comment></data>
   <data name="Settings_General_AgmMonthLabel" xml:space="preserve"><value>Mois de l'AGA</value><comment>General tab field label.</comment></data>
   <data name="Settings_General_FinancialYearStartMonthLabel" xml:space="preserve"><value>Mois de début de l'exercice</value><comment>General tab field label.</comment></data>
-  <data name="Settings_General_FinancialYearStartHelp" xml:space="preserve"><value>Par défaut juillet — exercice comptable australien.</value><comment>Help text under the financial-year-start-month field.</comment></data>
+  <data name="Settings_General_FinancialYearStartDayLabel" xml:space="preserve"><value>Jour de début de l'exercice</value><comment>General tab field label — day of the start month the financial year opens on (spec 028, FR-020).</comment></data>
+  <data name="Settings_General_FinancialYearStartHelp" xml:space="preserve"><value>Par défaut le 1er juillet — exercice comptable australien.</value><comment>Help text under the financial-year-start fields.</comment></data>
   <data name="Settings_General_AuditRetentionLabel" xml:space="preserve"><value>Conservation du journal d'audit (années)</value><comment>General tab field label.</comment></data>
   <data name="Settings_General_AuditRetentionHelp" xml:space="preserve"><value>Durée de conservation de l'historique du journal d'audit avant sa purge au démarrage.</value><comment>Help text under the audit-retention field.</comment></data>
   <data name="Settings_General_ClosePeriodLabel" xml:space="preserve"><value>Clôturer les périodes comptables jusqu'au</value><comment>General tab — label for the closed-through date control (spec 028, FR-016).</comment></data>

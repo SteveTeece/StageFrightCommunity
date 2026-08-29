@@ -123,7 +123,8 @@ public class TrialBalanceReportProvider : IReportProvider
     {
         var settings = await _settings.GetAsync(ct);
         var startMonth = settings?.FinancialYearStartMonth ?? FinancialYearCalculator.DefaultStartMonth;
-        var (fyFrom, fyTo) = FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth);
+        var startDay = settings?.FinancialYearStartDay ?? FinancialYearCalculator.DefaultStartDay;
+        var (fyFrom, fyTo) = FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth, startDay);
 
         var from = DateTime.TryParse(filters.Get("dateFrom"), out var df)
             ? DateTime.SpecifyKind(df.Date, DateTimeKind.Utc)

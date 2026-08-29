@@ -14,3 +14,29 @@
     </select>
     <div class="form-text small">@L["Setup_General_CurrencyHelp"]</div>
 </div>
+
+<div class="row g-2 mb-3">
+    <div class="col-md-6">
+        <label for="setup-fy-start-month" class="form-label">@L["Setup_General_FinancialYearStartMonthLabel"] <span aria-hidden="true" class="text-danger">*</span></label>
+        <InputSelect id="setup-fy-start-month" class="form-select form-select-sm" @bind-Value="Model.FinancialYearStartMonth">
+            @for (var m = 1; m <= 12; m++)
+            {
+                var month = m;
+                <option value="@month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="() => Model.FinancialYearStartMonth" class="text-danger small" />
+    </div>
+    <div class="col-md-6">
+        <label for="setup-fy-start-day" class="form-label">@L["Setup_General_FinancialYearStartDayLabel"] <span aria-hidden="true" class="text-danger">*</span></label>
+        <InputSelect id="setup-fy-start-day" class="form-select form-select-sm" @bind-Value="Model.FinancialYearStartDay">
+            @for (var d = 1; d <= 28; d++)
+            {
+                var day = d;
+                <option value="@day">@day</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="() => Model.FinancialYearStartDay" class="text-danger small" />
+    </div>
+    <div class="form-text small">@L["Setup_General_FinancialYearStartHelp"]</div>
+</div>

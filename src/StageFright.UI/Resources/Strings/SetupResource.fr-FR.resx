@@ -23,6 +23,9 @@
   <data name="Setup_General_OrgNamePlaceholder" xml:space="preserve"><value>ex. : Chorale de Springfield</value><comment>Placeholder for the organisation name field.</comment></data>
   <data name="Setup_General_CurrencyLabel" xml:space="preserve"><value>Devise</value><comment>General tab — organisation currency picker label (spec 028, FR-001).</comment></data>
   <data name="Setup_General_CurrencyHelp" xml:space="preserve"><value>La devise dans laquelle vos comptes sont tenus. Elle est figée une fois la configuration terminée.</value><comment>Help text under the currency picker (spec 028, FR-002).</comment></data>
+  <data name="Setup_General_FinancialYearStartMonthLabel" xml:space="preserve"><value>Mois de début de l'exercice</value><comment>General tab — financial-year start month picker label (spec 028, FR-019).</comment></data>
+  <data name="Setup_General_FinancialYearStartDayLabel" xml:space="preserve"><value>Jour de début de l'exercice</value><comment>General tab — financial-year start day picker label (spec 028, FR-020).</comment></data>
+  <data name="Setup_General_FinancialYearStartHelp" xml:space="preserve"><value>Date de début de votre exercice comptable. Par défaut le 1er juillet — l'exercice australien.</value><comment>Help text under the financial-year-start pickers (spec 028, FR-019).</comment></data>
   <data name="Setup_Fees_AnnualFeeLabel" xml:space="preserve"><value>Cotisation annuelle</value><comment>Membership Fees tab — annual fee label.</comment></data>
   <data name="Setup_Fees_AttendanceFeeLabel" xml:space="preserve"><value>Frais de présence</value><comment>Membership Fees tab — attendance fee label.</comment></data>
   <data name="Setup_Fees_RenewalMonthLabel" xml:space="preserve"><value>Mois de renouvellement de l'adhésion</value><comment>Membership Fees tab — renewal month label.</comment></data>

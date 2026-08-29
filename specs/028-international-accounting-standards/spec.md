@@ -469,8 +469,10 @@ forward.
   compliance; producing statutory financial statements remains each organisation's accountant's job.
 - **52/53-week ("4-4-5") fiscal calendars are out of scope**; the financial year is a start month plus
   a start day, running twelve months.
-- **A short first financial year (FR-022) is desirable but optional for this feature.** If it is not
-  built here it MUST be captured as a follow-on issue rather than dropped.
+- **A short first financial year (FR-022) is desirable but optional for this feature.** It is **not
+  built in this feature** (US7 delivered only the month + day FY-start choice). It is carried forward
+  as a dedicated follow-on GitHub issue — *"[FEATURE] Support a sub-twelve-month first financial year,
+  labelled as a part-year"* (parent #341, FY-start work #352) — rather than dropped (T076).
 - **"At least five years" (FR-023) is an informed default** for common record-keeping expectations;
   the exact figure (five versus seven) is a configuration default, not a hard rule, and the existing
   1–7 year adjustable range is retained.

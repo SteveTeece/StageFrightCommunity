@@ -40,7 +40,8 @@ public partial class OpeningBalancesWizard : ComponentBase
 
             var settings = await SettingsService.GetAsync();
             var startMonth = settings?.FinancialYearStartMonth ?? FinancialYearCalculator.DefaultStartMonth;
-            var (fyStart, _) = FinancialYearCalculator.GetRange(DateTime.Today, startMonth);
+            var startDay = settings?.FinancialYearStartDay ?? FinancialYearCalculator.DefaultStartDay;
+            var (fyStart, _) = FinancialYearCalculator.GetRange(DateTime.Today, startMonth, startDay);
             _asAtDate = fyStart;
         }
         catch (Exception ex)

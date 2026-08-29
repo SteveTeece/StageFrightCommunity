@@ -323,6 +323,56 @@ public class SetupServiceTests : TestBase
         await _settingsRepo.DidNotReceive().SaveAsync(Arg.Any<Settings>(), Arg.Any<CancellationToken>());
     }
 
+    // --- Financial-year start (spec 028, US7 / FR-019, FR-020) ---
+
+    [Fact]
+    public async Task InitializeAsync_PersistsDefaultFinancialYearStart_WhenNotSpecified()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        await svc.InitializeAsync(ValidRequest(), Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s!.FinancialYearStartMonth == 7 && s.FinancialYearStartDay == 1),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(4, 6)]
+    [InlineData(1, 1)]
+    [InlineData(2, 28)]
+    public async Task InitializeAsync_PersistsRequestedFinancialYearStart_MonthAndDay(int month, int day)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        var request = ValidRequest() with { FinancialYearStartMonth = month, FinancialYearStartDay = day };
+        await svc.InitializeAsync(request, Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s!.FinancialYearStartMonth == month && s.FinancialYearStartDay == day),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(29)]
+    [InlineData(40)]
+    public async Task InitializeAsync_Throws_WhenFinancialYearStartDayOutOfRange(int day)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var request = ValidRequest() with { FinancialYearStartDay = day };
+        await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
+        await _settingsRepo.DidNotReceive().SaveAsync(Arg.Any<Settings>(), Arg.Any<CancellationToken>());
+    }
+
     // --- Queued accounts / opening balances (spec 017) ---
 
     [Fact]
