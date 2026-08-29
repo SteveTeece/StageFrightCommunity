@@ -40,6 +40,10 @@ else if (_report != null)
                 {
                     <p class="text-muted mb-0 small">@_report.SubTitle</p>
                 }
+                @if (!string.IsNullOrEmpty(_report.BasisOfAccounting))
+                {
+                    <p class="text-muted small mb-0">@_report.BasisOfAccounting</p>
+                }
                 <small class="text-muted">@GeneratedAtText()</small>
             </div>
             <div class="report-actions" role="group" aria-label="@Shared["Shared_Report_ActionsAriaLabel"]">

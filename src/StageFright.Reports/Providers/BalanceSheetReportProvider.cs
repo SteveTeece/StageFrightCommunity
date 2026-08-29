@@ -113,6 +113,7 @@ public class BalanceSheetReportProvider : IReportProvider
             Title = _localizer.Get<ReportsResource>("Reports_BalanceSheet_Name"),
             SubTitle = _localizer.Get<ReportsResource>("Reports_BalanceSheet_SubTitle", asAt.ToString("d MMMM yyyy")),
             GeneratedAt = DateTime.UtcNow,
+            BasisOfAccounting = _localizer.Get<ReportsResource>("Reports_Common_BasisOfAccounting"),
             Columns =
             [
                 new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Account"), Alignment = ReportColumnAlignment.Left },

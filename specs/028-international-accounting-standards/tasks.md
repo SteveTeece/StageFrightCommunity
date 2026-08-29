@@ -186,25 +186,25 @@ carries an accurate basis-of-accounting statement (screen, PDF and CSV).
 
 ### Tests
 
-- [ ] **T041** [P] [US4] Report + component tests — each financial statement carries the basis line in PDF, CSV, and the viewer; Member List / Committee do not · `tests/StageFright.Reports.Tests/BasisOfAccountingTests.cs`, `tests/StageFright.UI.Tests/Shared/ReportViewerBasisTests.cs`
-- [ ] **T041a** [P] [US4] **Acceptance** — `V28_BasisOfAccountingDisclosure` drives US4 AC-1…AC-2: generate the Income Statement, Balance Sheet and Tax Summary (screen, PDF, CSV); asserts each carries a basis-of-accounting line whose wording names both the accrual treatment of member fees and the cash treatment of other income and expenditure — not a single blanket basis · `tests/StageFright.Integration.Tests/Scenarios/V28_BasisOfAccountingDisclosureTests.cs`
+- [x] **T041** [P] [US4] Report + component tests — each financial statement carries the basis line in PDF, CSV, and the viewer; Member List / Committee do not · `tests/StageFright.Reports.Tests/BasisOfAccountingTests.cs`, `tests/StageFright.UI.Tests/Shared/ReportViewerBasisTests.cs`
+- [x] **T041a** [P] [US4] **Acceptance** — `V28_BasisOfAccountingDisclosure` drives US4 AC-1…AC-2: generate the Income Statement, Balance Sheet and Tax Summary (screen, PDF, CSV); asserts each carries a basis-of-accounting line whose wording names both the accrual treatment of member fees and the cash treatment of other income and expenditure — not a single blanket basis · `tests/StageFright.Integration.Tests/Scenarios/V28_BasisOfAccountingDisclosureTests.cs`
 
 ### Implementation
 
 **Wave 1 — the model field (single file):**
 
-- [ ] **T042** [US4] `ReportData` — add `string? BasisOfAccounting { get; init; }` · `src/StageFright.Reports/Models/ReportData.cs`
+- [x] **T042** [US4] `ReportData` — add `string? BasisOfAccounting { get; init; }` · `src/StageFright.Reports/Models/ReportData.cs`
 
 **⟶ Wait for T042, then (independent consumers):**
 
-- [ ] **T043** [P] [US4] `PdfReportRenderer` — render `BasisOfAccounting` below the "Generated:" line when non-empty · `src/StageFright.Reports/Rendering/PdfReportRenderer.cs`
-- [ ] **T044** [P] [US4] `CsvReportExporter` — append `BasisOfAccounting` as a trailing labelled note record when non-null · `src/StageFright.Reports/Rendering/CsvReportExporter.cs`
-- [ ] **T045** [P] [US4] `ReportViewer` — show `BasisOfAccounting` beneath the subtitle when non-null · `src/StageFright.UI/Shared/ReportViewer.razor` + `.razor.cs`
-- [ ] **T046** [P] [US4] `ReportsResource` — add `Reports_Common_BasisOfAccounting` (hybrid accrual/cash wording; not a single blanket basis) · `src/StageFright.Reports/Resources/ReportsResource.resx`, `.en-US.resx`, `.fr-FR.resx`
+- [x] **T043** [P] [US4] `PdfReportRenderer` — render `BasisOfAccounting` below the "Generated:" line when non-empty · `src/StageFright.Reports/Rendering/PdfReportRenderer.cs`
+- [x] **T044** [P] [US4] `CsvReportExporter` — append `BasisOfAccounting` as a trailing labelled note record when non-null · `src/StageFright.Reports/Rendering/CsvReportExporter.cs`
+- [x] **T045** [P] [US4] `ReportViewer` — show `BasisOfAccounting` beneath the subtitle when non-null · `src/StageFright.UI/Shared/ReportViewer.razor` + `.razor.cs`
+- [x] **T046** [P] [US4] `ReportsResource` — add `Reports_Common_BasisOfAccounting` (hybrid accrual/cash wording; not a single blanket basis) · `src/StageFright.Reports/Resources/ReportsResource.resx`, `.en-US.resx`, `.fr-FR.resx`
 
 **⟶ then:**
 
-- [ ] **T047** [US4] Set `BasisOfAccounting` from `Reports_Common_BasisOfAccounting` in the eight financial-statement providers: Income Statement, Balance Sheet, Trial Balance, Tax Summary, Account Register, General Ledger, Bank Reconciliation, Member Account Summary · `src/StageFright.Reports/Providers/*.cs`
+- [x] **T047** [US4] Set `BasisOfAccounting` from `Reports_Common_BasisOfAccounting` in the eight financial-statement providers: Income Statement, Balance Sheet, Trial Balance, Tax Summary, Account Register, General Ledger, Bank Reconciliation, Member Account Summary · `src/StageFright.Reports/Providers/*.cs`
 
 **Checkpoint**: every financial statement states its hybrid basis on its face (SC-007).
 

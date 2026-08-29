@@ -23,7 +23,7 @@ Rendering contract:
 | Renderer | Placement |
 |----------|-----------|
 | `PdfReportRenderer` | Header column, one line below the "Generated: …" line, grey, small; only when non-null/non-empty. |
-| `CsvReportExporter` | After the grand-total row: one record with the label in column 0 and the basis text in column 1, remaining columns empty; only when non-null. |
+| `CsvReportExporter` | After the grand-total row: one record with the self-labelled basis text ("Basis of accounting: …") in column 0 and the remaining columns empty; only when non-null. (`CsvReportExporter` has no localizer, so the label is carried inside the single `Reports_Common_BasisOfAccounting` string rather than as a separate column.) |
 | `ReportViewer.razor` | A `<p class="text-muted small">` directly under the subtitle; only when non-null. |
 
 Providers that MUST set it (FR-012), from the shared key `Reports_Common_BasisOfAccounting`:

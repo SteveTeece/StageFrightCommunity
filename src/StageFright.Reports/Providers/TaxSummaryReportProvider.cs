@@ -58,6 +58,7 @@ public class TaxSummaryReportProvider : IReportProvider
                 Title = _localizer.Get<ReportsResource>("Reports_TaxSummary_Name"),
                 SubTitle = _localizer.Get<ReportsResource>("Reports_TaxSummary_SubTitleNotApplicable"),
                 GeneratedAt = DateTime.UtcNow,
+                BasisOfAccounting = _localizer.Get<ReportsResource>("Reports_Common_BasisOfAccounting"),
                 Columns =
                 [
                     new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Description"), Alignment = ReportColumnAlignment.Left },
@@ -113,6 +114,7 @@ public class TaxSummaryReportProvider : IReportProvider
             Title = _localizer.Get<ReportsResource>("Reports_TaxSummary_Name"),
             SubTitle = _localizer.Get<ReportsResource>("Reports_TaxSummary_SubTitle", from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy")),
             GeneratedAt = DateTime.UtcNow,
+            BasisOfAccounting = _localizer.Get<ReportsResource>("Reports_Common_BasisOfAccounting"),
             Columns =
             [
                 new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Description"), Alignment = ReportColumnAlignment.Left },

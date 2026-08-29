@@ -79,6 +79,7 @@ public class BankReconciliationReportProvider : IReportProvider
                 ? _localizer.Get<ReportsResource>("Reports_BankReconciliation_SubTitleNone")
                 : _localizer.Get<ReportsResource>("Reports_BankReconciliation_SubTitle", DateTime.UtcNow.ToString("d MMMM yyyy")),
             GeneratedAt = DateTime.UtcNow,
+            BasisOfAccounting = _localizer.Get<ReportsResource>("Reports_Common_BasisOfAccounting"),
             Columns =
             [
                 new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Date"), Alignment = ReportColumnAlignment.Left },

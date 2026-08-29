@@ -201,6 +201,10 @@
   <data name="Reports_Common_ClosingBalance" xml:space="preserve">
     <value>Closing Balance</value>
   </data>
+  <data name="Reports_Common_BasisOfAccounting" xml:space="preserve">
+    <value>Basis of accounting: member fees are recognised when levied (accrual basis); all other income and expenditure is recognised when received or paid (cash basis).</value>
+    <comment>Hybrid basis-of-accounting disclosure shown on every financial statement (FR-012). Must name both the accrual treatment of member fees and the cash treatment of other activity — never a single blanket basis.</comment>
+  </data>
 
   <!-- ============ Member List ============ -->
   <data name="Reports_MemberList_Name" xml:space="preserve">

@@ -49,6 +49,8 @@ public class PdfReportRenderer : IPdfReportRenderer
                     col.Item().Text(_localizer.Get<ReportsResource>(
                             "Reports_Render_GeneratedAt", report.GeneratedAt.ToString("d MMMM yyyy HH:mm")))
                         .FontSize(9).FontColor(Colors.Grey.Medium);
+                    if (!string.IsNullOrWhiteSpace(report.BasisOfAccounting))
+                        col.Item().Text(report.BasisOfAccounting).FontSize(9).FontColor(Colors.Grey.Medium);
                     col.Item().PaddingTop(4).LineHorizontal(0.5f);
                 });
 

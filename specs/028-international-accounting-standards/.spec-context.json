@@ -418,6 +418,70 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-29T08:22:00.949Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:41:04.681Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:50:03.318Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041a",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:50:03.912Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:52:44.518Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:52:44.737Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:52:44.946Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:52:45.170Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:58:06.437Z"
     }
   ],
   "telemetryInstanceId": "527a7469-9665-4240-b165-addc44766471",
@@ -596,6 +660,11 @@
         "T045",
         "T046",
         "T047"
+      ],
+      "tests": [
+        "tests/StageFright.Reports.Tests/BasisOfAccountingTests.cs",
+        "tests/StageFright.UI.Tests/Shared/ReportViewerBasisTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_BasisOfAccountingDisclosureTests.cs"
       ]
     },
     "FR-013": {
@@ -871,6 +940,21 @@
       "decision": "T040 reword also drops the literal $ prefix from Reports_TrialBalance_GLImbalanceError ({Debits}/{Credits} now carry the MoneyFormatter symbol)",
       "why": "Since T024 routed the args through MoneyFormatter the template produced a doubled $$1,000.00 under AUD; dropping the literal prefix is the correct fix and is the natural place to also drop the tolerance implication",
       "rejected": "Leaving the literal $ (doubled symbol) or switching args back to bare F2"
+    },
+    {
+      "decision": "CSV basis-of-accounting note is one self-labelled record in column 0 (remaining columns blank), not a separate label column",
+      "why": "CsvReportExporter has no ILocalizer and T046 delivers a single key; the label lives inside the Reports_Common_BasisOfAccounting sentence (\"Basis of accounting: ...\"), mirroring the section-heading write pattern already in the file",
+      "rejected": "Injecting ILocalizer into CsvReportExporter to emit a separate localized label column (churns the ctor + DI registration + every call site for one label)"
+    },
+    {
+      "decision": "Reports_Common_BasisOfAccounting en-US value is identical to the neutral en-AU baseline",
+      "why": "follows the T040 Reports_TrialBalance_GLImbalanceError precedent where a full-sentence en-US entry mirrors neutral verbatim",
+      "rejected": "an Americanised recognize/recognized spelling variant (inconsistent with the established resx pattern)"
+    },
+    {
+      "decision": "TaxSummaryReportProvider sets the basis line on BOTH return paths (tax-not-applicable early return and the main summary)",
+      "why": "the not-applicable view is still a financial statement and T041 asserts uniform coverage across every financial report",
+      "rejected": "setting it only on the main path"
     }
   ],
   "step_summaries": {
@@ -882,10 +966,10 @@
       "summary": "94 tasks across 13 phases (Setup, Foundational, one per US1-US10, Polish); wave-grouped with explicit joins; oversized budget, full per-story Goal/Independent Test/Checkpoint."
     },
     "implement": {
-      "summary": "Phase 5 / US3 (T036-T040): statement integrity. TrialBalanceReportProvider drops the 0.01 tolerance band (totalDebits != totalCredits, no tolerance, FR-011); BalanceSheetReportProvider appends an explicit emphasized out-of-balance line when totalAssets != totalLiabilities + totalEquity (FR-010). Reworded Reports_TrialBalance_GLImbalanceError (dropped tolerance implication + doubled $) and added Reports_BalanceSheet_OutOfBalance across neutral/en-US/fr-FR. 1903 tests pass (was ~1895)."
+      "summary": "Phase 6 / US4 (T041-T047): basis-of-accounting disclosure. ReportData gains optional BasisOfAccounting; PdfReportRenderer / CsvReportExporter / ReportViewer render it (below Generated: line / trailing self-labelled CSV record / <p> under the subtitle); new Reports_Common_BasisOfAccounting (neutral/en-US/fr-FR) with hybrid wording naming both member-fee accrual and cash treatment of other activity; all 8 financial-statement providers set it, Member List / Committee leave it null. Touched-project suites green: Reports 235, UI 613, Integration 215, Localization 25."
     }
   },
-  "currentTask": "T041",
+  "currentTask": "T048",
   "task_summaries": {
     "T015": {
       "status": "DONE",
@@ -1159,6 +1243,73 @@
         "src/StageFright.Reports/Resources/ReportsResource.en-US.resx",
         "src/StageFright.Reports/Resources/ReportsResource.fr-FR.resx"
       ]
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "(reconfirm) ReportData.BasisOfAccounting string? init property",
+      "files": [
+        "src/StageFright.Reports/Models/ReportData.cs"
+      ]
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "BasisOfAccountingTests (Reports.Tests): 8 financial providers set the shared Reports_Common_BasisOfAccounting string, MemberList/Committee leave it null, PDF renders + CSV appends a trailing basis record (absent when null); ReportViewerBasisTests (UI.Tests bUnit): viewer shows the basis line beneath the subtitle, none when null — all fail-first",
+      "files": [
+        "tests/StageFright.Reports.Tests/BasisOfAccountingTests.cs",
+        "tests/StageFright.UI.Tests/Shared/ReportViewerBasisTests.cs"
+      ]
+    },
+    "T041a": {
+      "status": "DONE",
+      "did": "V28_BasisOfAccountingDisclosureTests (integration acceptance): real SQLite+migrations; Income Statement/Balance Sheet/Tax Summary each carry the basis line on screen, in CSV (trailing record), and render to PDF; shared wording names both the accrual (member fees) and cash (other activity) treatments — fail-first",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V28_BasisOfAccountingDisclosureTests.cs"
+      ]
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "PdfReportRenderer: renders report.BasisOfAccounting as a grey FontSize(9) line directly below the Generated: line when non-empty",
+      "files": [
+        "src/StageFright.Reports/Rendering/PdfReportRenderer.cs"
+      ]
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "CsvReportExporter: appends report.BasisOfAccounting as a trailing self-labelled note record (field 0 = text, remaining columns blank) after the grand total when non-null",
+      "files": [
+        "src/StageFright.Reports/Rendering/CsvReportExporter.cs"
+      ]
+    },
+    "T045": {
+      "status": "DONE",
+      "did": "ReportViewer.razor: renders _report.BasisOfAccounting in a <p class='text-muted small mb-0'> directly beneath the subtitle when non-empty (no code-behind change needed)",
+      "files": [
+        "src/StageFright.UI/Shared/ReportViewer.razor"
+      ]
+    },
+    "T046": {
+      "status": "DONE",
+      "did": "ReportsResource neutral/en-US/fr-FR: added Reports_Common_BasisOfAccounting — hybrid wording naming both member-fee accrual and cash treatment of other activity (never a blanket basis)",
+      "files": [
+        "src/StageFright.Reports/Resources/ReportsResource.resx",
+        "src/StageFright.Reports/Resources/ReportsResource.en-US.resx",
+        "src/StageFright.Reports/Resources/ReportsResource.fr-FR.resx"
+      ]
+    },
+    "T047": {
+      "status": "DONE",
+      "did": "All 8 financial-statement providers set BasisOfAccounting = _localizer.Get<ReportsResource>(Reports_Common_BasisOfAccounting) on their returned ReportData (TaxSummary both the tax-not-applicable and main returns); Member List / Committee unchanged (null). Also synced reports-contract.md CSV rendering row.",
+      "files": [
+        "src/StageFright.Reports/Providers/IncomeStatementReportProvider.cs",
+        "src/StageFright.Reports/Providers/BalanceSheetReportProvider.cs",
+        "src/StageFright.Reports/Providers/TrialBalanceReportProvider.cs",
+        "src/StageFright.Reports/Providers/TaxSummaryReportProvider.cs",
+        "src/StageFright.Reports/Providers/AccountRegisterReportProvider.cs",
+        "src/StageFright.Reports/Providers/GeneralLedgerReportProvider.cs",
+        "src/StageFright.Reports/Providers/BankReconciliationReportProvider.cs",
+        "src/StageFright.Reports/Providers/MemberAccountSummaryReportProvider.cs",
+        "specs/028-international-accounting-standards/contracts/reports-contract.md"
+      ]
     }
   },
   "verified": [
@@ -1187,6 +1338,24 @@
       "command": "dotnet test --filter DifferByOneCent|OutOfBalanceRow",
       "result": "red before T038/T039 (no exception / null row), green after; V28_StatementIntegrity 5/5 pass",
       "warnings": []
+    },
+    {
+      "what": "full solution build after US4",
+      "command": "dotnet build StageFrightCommunity.slnx",
+      "result": "Build succeeded, 0 warnings, 0 errors",
+      "warnings": []
+    },
+    {
+      "what": "US4 tests fail-first then green",
+      "command": "dotnet test --filter BasisOfAccountingTests|ReportViewerBasisTests|V28_BasisOfAccountingDisclosureTests",
+      "result": "red before T043-T047 (BasisOfAccounting null / no basis text in CSV+viewer), green after: BasisOfAccountingTests 15/15, ReportViewerBasisTests 2/2, V28_BasisOfAccountingDisclosureTests 4/4",
+      "warnings": []
+    },
+    {
+      "what": "regression suites for the four touched test projects (no --no-build)",
+      "command": "dotnet test Reports.Tests + Localization.Tests + UI.Tests + Integration.Tests",
+      "result": "Reports 235 pass, Localization 25 pass, UI 613 pass, Integration 215 pass",
+      "warnings": []
     }
   ],
   "concerns": [
@@ -1213,7 +1382,19 @@
     {
       "note": "The Balance Sheet out-of-balance line renders after the Equity section but before the GrandTotal row (sections render, then GrandTotal), not immediately under Total Liabilities + Equity. Still an explicit, emphasized, never-clean line; a strictly-after-grand-total position would need a ReportData model change.",
       "step": "implement"
+    },
+    {
+      "note": "T042 (ReportData.BasisOfAccounting) was authored before the T041/T041a test files that reference it — same compile-safety adaptation already recorded for T033 (PostToolUse dotnet-build-on-edit hook blocks non-compiling edits). Fail-first still held: 12/15 BasisOfAccountingTests plus all ReportViewerBasisTests/V28_BasisOfAccountingDisclosureTests were red until T043-T047.",
+      "step": "implement"
+    },
+    {
+      "note": "reports-contract.md originally specified the CSV basis note as label-in-column-0 + text-in-column-1; shipped as a single self-labelled column-0 record (CsvReportExporter has no localizer). Contract doc updated in the same task (T047) to match.",
+      "step": "implement"
+    },
+    {
+      "note": "BasisOfAccountingTests and V28_BasisOfAccountingDisclosureTests assert English tokens (accrual, cash, member) in the resolved Reports_Common_BasisOfAccounting string, so they are host-culture-dependent (green under en-*, would fail under a forced fr-FR test culture). Consistent with the existing integration suite English-literal assertions (e.g. V28_StatementIntegrityTests asserts s.Heading == Assets).",
+      "step": "implement"
     }
   ],
-  "last_action": "Phase 5 (US3) complete — 5/5 tasks (T036-T040) checked off; build 0W/0E; 1903 tests pass. Phases 6-13 not started."
+  "last_action": "Phase 6 (US4) complete — T041-T047 checked off; full solution build 0W/0E; touched-project suites green (Reports 235, UI 613, Integration 215, Localization 25). Phases 7-13 (US5-US10, Polish) not started."
 }

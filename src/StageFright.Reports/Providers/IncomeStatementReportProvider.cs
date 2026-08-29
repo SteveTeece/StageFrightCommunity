@@ -126,6 +126,7 @@ public class IncomeStatementReportProvider : IReportProvider
                     priorFrom.ToString("d MMMM yyyy"), priorTo.ToString("d MMMM yyyy"))
                 : _localizer.Get<ReportsResource>("Reports_Common_DateRangeSubtitle", from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy")),
             GeneratedAt = DateTime.UtcNow,
+            BasisOfAccounting = _localizer.Get<ReportsResource>("Reports_Common_BasisOfAccounting"),
             Columns = columns,
             Sections =
             [

@@ -29,6 +29,7 @@
   <data name="Reports_Common_DateRangeSubtitle" xml:space="preserve"><value>{DateFrom} – {DateTo}</value><comment>{DateFrom} range start, {DateTo} range end — both already formatted 'd MMMM yyyy'.</comment></data>
   <data name="Reports_Common_OpeningBalance" xml:space="preserve"><value>Solde d'ouverture</value></data>
   <data name="Reports_Common_ClosingBalance" xml:space="preserve"><value>Solde de clôture</value></data>
+  <data name="Reports_Common_BasisOfAccounting" xml:space="preserve"><value>Méthode comptable : les cotisations des membres sont comptabilisées lorsqu'elles sont exigibles (comptabilité d'engagement) ; tous les autres produits et charges sont comptabilisés lors de leur encaissement ou de leur paiement (comptabilité de caisse).</value><comment>Hybrid basis-of-accounting disclosure shown on every financial statement (FR-012). Must name both the accrual treatment of member fees and the cash treatment of other activity — never a single blanket basis.</comment></data>
   <data name="Reports_MemberList_Name" xml:space="preserve"><value>Liste des membres</value></data>
   <data name="Reports_MemberList_StatusFilterLabel" xml:space="preserve"><value>Statut</value></data>
   <data name="Reports_MemberList_SubTitle" xml:space="preserve"><value>Statut : {Status} — {Date}</value><comment>{Status} selected status-filter value, {Date} generation date formatted 'd MMMM yyyy'.</comment></data>
