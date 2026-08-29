@@ -444,4 +444,8 @@
     <value>The organization currency is chosen during setup and cannot be changed afterwards.</value>
     <comment>Shown when a Settings save attempts to change CurrencyCode from its persisted value (spec 028, FR-002).</comment>
   </data>
+  <data name="Validation_ClosedPeriod_PostingRejected" xml:space="preserve">
+    <value>This transaction is dated in a closed financial period and cannot be posted. Change the date to a period that is still open.</value>
+    <comment>Shown when a financial posting is dated on or before Settings.ClosedThroughDate (spec 028, FR-017).</comment>
+  </data>
 </root>

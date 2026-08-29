@@ -198,7 +198,7 @@ public sealed class V1_FirstRunSetupTests : IAsyncLifetime
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(_db);
         var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo, RealLocalizer.Instance);
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var journalRepo = new JournalEntryRepository(_db);
         var unitOfWork = new UnitOfWork(_db);
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);

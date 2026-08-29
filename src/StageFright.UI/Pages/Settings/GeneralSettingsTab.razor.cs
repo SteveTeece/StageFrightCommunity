@@ -29,6 +29,12 @@ public partial class GeneralSettingsTab : ComponentBase
     private string? _errorMessage;
     private string? _successMessage;
 
+    // Close-period control (spec 028, US6 / FR-016). `_closeThroughDate` is seeded from the
+    // persisted value; the closed-through date only moves when the treasurer ticks
+    // `_confirmClosePeriod` — an unconfirmed save leaves it untouched.
+    private DateTime? _closeThroughDate;
+    private bool _confirmClosePeriod;
+
     // Display-language picker (spec 027, US3). The selection is applied on the next launch
     // (FR-021) — persisted with the rest of the General tab on Save. `_initialLanguageCode`
     // captures the loaded value so the restart notice shows the moment the selection differs.
@@ -60,6 +66,8 @@ public partial class GeneralSettingsTab : ComponentBase
 
             _initialLanguageCode = _settings?.LanguageCode ?? Languages.Default.CultureCode;
             _selectedLanguageCode = _initialLanguageCode;
+
+            _closeThroughDate = _settings?.ClosedThroughDate;
         }
         catch (Exception ex)
         {
@@ -94,6 +102,11 @@ public partial class GeneralSettingsTab : ComponentBase
             }
 
             _settings.LanguageCode = _selectedLanguageCode;
+
+            // The closed-through date only advances on an explicit confirmation; otherwise the
+            // persisted value loaded into _settings is saved back unchanged (spec 028, FR-016).
+            if (_confirmClosePeriod && _closeThroughDate is not null)
+                _settings.ClosedThroughDate = _closeThroughDate;
 
             await SettingsService.SaveAsync(_settings);
             _initialLanguageCode = _selectedLanguageCode;

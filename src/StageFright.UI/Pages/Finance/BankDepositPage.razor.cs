@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Exceptions;
 using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.Core.Modules.Localization.Resources;
 using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Finance;
@@ -69,6 +71,10 @@ public partial class BankDepositPage : ComponentBase
             await BankDepositService.RecordDepositAsync(request);
             _successMessage = Loc.Get<FinanceResource>("Finance_BankDeposit_SuccessMessage",
                 MoneyFormatter.Format(request.Amount));
+        }
+        catch (ClosedPeriodException)
+        {
+            _errorMessage = Loc.Get<ValidationResource>("Validation_ClosedPeriod_PostingRejected");
         }
         catch (Exception ex)
         {

@@ -223,7 +223,7 @@ public sealed class V11_ReportsMenuTests : IAsyncLifetime
 
     private IReportProviderRegistry BuildRegistryWithAllProviders()
     {
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var catRepo = new AccountRepository(_db);
         var memberRepo = new MemberRepository(_db);
         var feeRepo = new FeeRepository(_db);

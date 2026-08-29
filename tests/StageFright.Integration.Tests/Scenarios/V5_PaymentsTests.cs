@@ -71,7 +71,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
         await ApplyFeeForMemberAsync(member.Id, 2025, 50m);
         await ApplyFeeForMemberAsync(member.Id, 2026, 60m);
 
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var balanceBefore = await glRepo.GetMemberBalanceAsync(member.Id, TestContext.Current.CancellationToken);
         Assert.Equal(110m, balanceBefore);
 
@@ -111,7 +111,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             PaymentType = PaymentType.Annual
         }, TestContext.Current.CancellationToken);
 
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var balanceAfter = await glRepo.GetMemberBalanceAsync(member.Id, TestContext.Current.CancellationToken);
 
         // $50 payment covers 2025 fee; 2026 fee ($60) remains
@@ -137,7 +137,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             PaymentType = PaymentType.Annual
         }, TestContext.Current.CancellationToken);
 
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var balance = await glRepo.GetMemberBalanceAsync(member.Id, TestContext.Current.CancellationToken);
 
         // $70 paid, $50 owed → $20 credit = -$20 outstanding
@@ -220,7 +220,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             PaymentType = PaymentType.Annual
         }, TestContext.Current.CancellationToken);
 
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var balance = await glRepo.GetMemberBalanceAsync(member.Id, TestContext.Current.CancellationToken);
         Assert.Equal(0m, balance);
 
@@ -282,7 +282,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
             SelectedFeeIds = [fee2025Id, fee2026Id]
         }, TestContext.Current.CancellationToken);
 
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var balanceAfter = await glRepo.GetMemberBalanceAsync(member.Id, TestContext.Current.CancellationToken);
         Assert.Equal(0m, balanceAfter);
 
@@ -367,7 +367,7 @@ public sealed class V5_PaymentsTests : IAsyncLifetime
     {
         var feeRepo = new FeeRepository(_db);
         var paymentRepo = new PaymentRepository(_db, BuildAuditService());
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var memberRepo = new MemberRepository(_db);
         var audit = BuildAuditService();
         var unitOfWork = new UnitOfWork(_db);

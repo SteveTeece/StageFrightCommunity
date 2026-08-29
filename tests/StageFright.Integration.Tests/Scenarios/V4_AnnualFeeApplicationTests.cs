@@ -208,7 +208,7 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
         var member = await AddActiveMember("Karen");
         var svc = BuildFeeService();
 
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var balanceBefore = await glRepo.GetTotalOutstandingAsync(TestContext.Current.CancellationToken);
 
         await svc.ApplyAnnualFeesAsync(new[] { member.Id }, TestContext.Current.CancellationToken);
@@ -236,7 +236,7 @@ public sealed class V4_AnnualFeeApplicationTests : IAsyncLifetime
     {
         var memberRepo = new MemberRepository(_db);
         var feeRepo = new FeeRepository(_db);
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var accountRepo = new AccountRepository(_db);
         var settingsRepo = new SettingsRepository(_db);
         var auditRepo = new AuditTrailRepository(_db);

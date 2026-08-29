@@ -222,6 +222,9 @@ public static class MauiProgram
         services.AddScoped<ICombinedEventListService, CombinedEventListService>();
 
         // Finance module (Phase 6 + 9)
+        // Closed-period lock (spec 028, US6): GLRepository consults this at the GL choke point
+        // to reject a back-dated posting into a reported prior period.
+        services.AddScoped<IClosedPeriodGuard, ClosedPeriodGuard>();
         services.AddScoped<IFeeService, FeeService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IReactivationForgivenessService, ReactivationForgivenessService>();

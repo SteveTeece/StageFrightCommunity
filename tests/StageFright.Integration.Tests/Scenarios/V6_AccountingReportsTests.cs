@@ -302,28 +302,28 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
 
     private IncomeStatementReportProvider BuildIncomeStatementProvider()
     {
-        var gl = new GLRepository(_db);
+        var gl = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var cat = new AccountRepository(_db);
         return new IncomeStatementReportProvider(gl, cat, new SettingsRepository(_db), RealLocalizer.Instance);
     }
 
     private TrialBalanceReportProvider BuildTrialBalanceProvider()
     {
-        var gl = new GLRepository(_db);
+        var gl = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var cat = new AccountRepository(_db);
         return new TrialBalanceReportProvider(gl, cat, new SettingsRepository(_db), RealLocalizer.Instance);
     }
 
     private AccountRegisterReportProvider BuildAccountRegisterProvider()
     {
-        var gl = new GLRepository(_db);
+        var gl = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var cat = new AccountRepository(_db);
         return new AccountRegisterReportProvider(gl, cat, RealLocalizer.Instance);
     }
 
     private MemberAccountSummaryReportProvider BuildMemberAccountSummaryProvider()
     {
-        var gl = new GLRepository(_db);
+        var gl = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var members = new MemberRepository(_db);
         var fees = new FeeRepository(_db);
         return new MemberAccountSummaryReportProvider(gl, members, new MemberBalanceService(members, fees, gl), RealLocalizer.Instance);

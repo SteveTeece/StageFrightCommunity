@@ -433,6 +433,32 @@ public class SetupServiceTests : TestBase
             Arg.Any<CancellationToken>());
     }
 
+    // spec 028, US6 / FR-018: opening balances entered during first-run setup are always
+    // accepted. SetupService itself has no closed-through-date concept, and the real
+    // ClosedPeriodGuard is a no-op here because no Settings row exists yet.
+    [Fact]
+    public async Task InitializeAsync_PostsQueuedOpeningBalances_RegardlessOfClosedPeriod()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var accountId = Guid.NewGuid();
+        var svc = CreateService();
+
+        var request = ValidRequest() with
+        {
+            QueuedOpeningBalances = [new OpeningBalanceEntry { AccountId = accountId, Amount = 1000m }],
+            OpeningBalanceAsAtDate = new DateTime(2000, 1, 1) // deliberately far in the past
+        };
+
+        await svc.InitializeAsync(request, Ct); // must not throw
+
+        await _openingBalanceService.Received(1).RecordOpeningBalancesAsync(
+            Arg.Is<RecordOpeningBalancesRequest>(r =>
+                r!.Entries.Count == 1 && r.Entries[0].AccountId == accountId && r.Entries[0].Amount == 1000m),
+            Arg.Any<CancellationToken>());
+    }
+
     private static SetupRequest ValidRequest() => new(
         OrganizationName: "Test Org",
         AnnualFee: 75m,

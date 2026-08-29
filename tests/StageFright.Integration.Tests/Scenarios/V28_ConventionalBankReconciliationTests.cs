@@ -160,7 +160,7 @@ public sealed class V28_ConventionalBankReconciliationTests : IAsyncLifetime
 
         // Finalisation still requires the reconciliation to balance.
         var service = new BankReconciliationService(
-            repo, new AccountRepository(_db), new GLRepository(_db),
+            repo, new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))),
             Substitute.For<IAuditTrailService>(), RealLocalizer.Instance);
 
         var draft = await service.StartDraftAsync(new StartReconciliationRequest
@@ -179,7 +179,7 @@ public sealed class V28_ConventionalBankReconciliationTests : IAsyncLifetime
     // --- Helpers ---
 
     private BankReconciliationReportProvider Provider() => new(
-        new BankReconciliationRepository(_db), new AccountRepository(_db), new GLRepository(_db), RealLocalizer.Instance);
+        new BankReconciliationRepository(_db), new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), RealLocalizer.Instance);
 
     private async Task<ReportSection> GenerateSectionAsync(string accountFilter)
     {

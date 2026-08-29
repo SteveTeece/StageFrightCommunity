@@ -522,6 +522,110 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-29T09:34:12.620Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T056",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:54:29.838Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T057",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:54:30.444Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T064",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:56:27.535Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T058",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:56:28.170Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T059",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:59:23.954Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T060",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:59:24.155Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T061",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:59:24.334Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T062",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:09:44.459Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T063",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:09:45.040Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:17:14.696Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T053",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:17:14.862Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T054",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:17:15.025Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T055",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:17:15.181Z"
     }
   ],
   "telemetryInstanceId": "527a7469-9665-4240-b165-addc44766471",
@@ -745,6 +849,9 @@
       "tasks": [
         "T055",
         "T062"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Settings/ClosePeriodControlTests.cs"
       ]
     },
     "FR-017": {
@@ -759,6 +866,10 @@
         "T060",
         "T063",
         "T064"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Finance/ClosedPeriodGuardTests.cs",
+        "tests/StageFright.Integration.Tests/InternationalAccounting/ClosedPeriodLockTests.cs"
       ]
     },
     "FR-018": {
@@ -766,6 +877,10 @@
       "tasks": [
         "T054",
         "T058"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs::InitializeAsync_PostsQueuedOpeningBalances_RegardlessOfClosedPeriod",
+        "tests/StageFright.Integration.Tests/InternationalAccounting/ClosedPeriodLockTests.cs::Should_PostAnyBackdatedEntry_When_NoPeriodIsClosed"
       ]
     },
     "FR-019": {
@@ -1022,6 +1137,21 @@
       "decision": "Removed the 10 now-dead Reports_BankReconciliation keys (SubHeader*, TotalCleared*, StatementClosingBalance, OpeningBalance, ClearedMovement, Difference) from neutral/en-US/fr-FR/qps-ploc rather than leaving them",
       "why": "the provider was their only consumer (repo-wide grep) and it was fully rewritten; the orphan-key localization guard also forbids a satellite key with no neutral entry",
       "rejected": "leaving them as harmless dead entries"
+    },
+    {
+      "decision": "ClosedPeriodGuard throws a plain-message ClosedPeriodException (no ILocalizer dependency)",
+      "why": "matches the existing GL-layer convention — GLRepository/GLBalanceException use literal diagnostic strings; the localized Validation_ClosedPeriod_PostingRejected text is applied at the UI catch sites (T063). Also keeps the guard trivial to construct in the ~25 test files that build GLRepository directly.",
+      "rejected": "Injecting ILocalizer into the guard and resolving the resource key inside it"
+    },
+    {
+      "decision": "GLRepository takes a required IClosedPeriodGuard constructor param; all 57 test construction sites updated to pass a real ClosedPeriodGuard(new SettingsRepository(db))",
+      "why": "keeps the codebase-wide required-constructor-injection DA style (no nullable/optional dependency, which csharp-reviewer/silent-failure-hunter would flag). The real guard provably no-ops in those tests (no Settings row or null ClosedThroughDate).",
+      "rejected": "Optional nullable param defaulting to null/no-op; a second convenience constructor"
+    },
+    {
+      "decision": "The guard is called once per balanced set on the earliest line date, in AddBalancedSetAsync only; AddPairAsync inherits the check by delegation",
+      "why": "the contract explicitly permits \"or once for the earliest line date\"; a closed period covers every date <= ClosedThroughDate so the min date is sufficient. Avoids N identical Settings reads per posting and a redundant read for every pair.",
+      "rejected": "EnsureOpen per line, and an explicit second call inside AddPairAsync"
     }
   ],
   "step_summaries": {
@@ -1033,10 +1163,10 @@
       "summary": "94 tasks across 13 phases (Setup, Foundational, one per US1-US10, Polish); wave-grouped with explicit joins; oversized budget, full per-story Goal/Independent Test/Checkpoint."
     },
     "implement": {
-      "summary": "Phase 7 / US5 (T048-T051): conventional bank reconciliation. BankReconciliationReportProvider rewritten to the adjusted-balance form — one section/account: balance per bank statement -> + outstanding deposits (listed+summed) -> - outstanding payments (listed+summed) -> adjusted bank balance -> balance per general ledger (GetAccountBalanceAsync at statement date) -> Reconciled residual; all money via MoneyFormatter. 6 new ReportsResource keys (neutral/en-US/fr-FR/qps-ploc), 10 dead cleared/summary keys removed. +2 FR-015 service tests, new V28_ConventionalBankReconciliation acceptance (5/5). Suites green: Core 684, Reports 236, Localization 25, UI 613, Data 154, Integration 220."
+      "summary": "Phase 8 / US6 closed-period lock: ClosedPeriodException + IClosedPeriodGuard/ClosedPeriodGuard, enforced at the GLRepository choke point, passed through UnitOfWork, surfaced by a confirmed close-period control on the General settings tab and caught by all 7 finance posting forms; 13 tasks (T052-T064), build clean, tests green"
     }
   },
-  "currentTask": "T052",
+  "currentTask": "T055",
   "task_summaries": {
     "T015": {
       "status": "DONE",
@@ -1415,6 +1545,111 @@
         "src/StageFright.Reports/Resources/ReportsResource.fr-FR.resx",
         "specs/028-international-accounting-standards/contracts/reports-contract.md"
       ]
+    },
+    "T056": {
+      "status": "DONE",
+      "did": "New sealed ClosedPeriodException (Constitution §5.2 five-member shape); distinct signal, not a GLBalanceException subclass",
+      "files": [
+        "src/StageFright.Core/Exceptions/ClosedPeriodException.cs"
+      ]
+    },
+    "T057": {
+      "status": "DONE",
+      "did": "New IClosedPeriodGuard contract — Task EnsureOpen(DateTime postingDate, CancellationToken)",
+      "files": [
+        "src/StageFright.Core/Contracts/IClosedPeriodGuard.cs"
+      ]
+    },
+    "T064": {
+      "status": "DONE",
+      "did": "Added Validation_ClosedPeriod_PostingRejected to ValidationResource (neutral/en-US/fr-FR)",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.en-US.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.fr-FR.resx"
+      ]
+    },
+    "T058": {
+      "status": "DONE",
+      "did": "New ClosedPeriodGuard : IClosedPeriodGuard — reads Settings singleton; no-op on null settings/null date; throws ClosedPeriodException when postingDate.Date <= ClosedThroughDate.Date",
+      "files": [
+        "src/StageFright.Core/Modules/Finance/ClosedPeriodGuard.cs"
+      ]
+    },
+    "T059": {
+      "status": "DONE",
+      "did": "GLRepository injects IClosedPeriodGuard; AddBalancedSetAsync calls EnsureOpen on the earliest line date before the write (AddPairAsync covered via delegation); updated 57 test call sites to pass a real ClosedPeriodGuard",
+      "files": [
+        "src/StageFright.Data/Repositories/GLRepository.cs",
+        "tests/**/*.cs"
+      ]
+    },
+    "T060": {
+      "status": "DONE",
+      "did": "UnitOfWork.ExecuteInTransactionAsync passes ClosedPeriodException through unwrapped (rollback + rethrow), same as GLBalanceException",
+      "files": [
+        "src/StageFright.Data/UnitOfWork.cs"
+      ]
+    },
+    "T061": {
+      "status": "DONE",
+      "did": "Registered IClosedPeriodGuard -> ClosedPeriodGuard (scoped) in MauiProgram.RegisterCoreServices",
+      "files": [
+        "src/StageFright.App/MauiProgram.cs"
+      ]
+    },
+    "T062": {
+      "status": "DONE",
+      "did": "GeneralSettingsTab gains a close-period date control (#settings-close-through-date) + confirmation checkbox (#settings-close-through-confirm); HandleSaveAsync advances Settings.ClosedThroughDate only when confirmed; SettingsRepository.SaveAsync now maps ClosedThroughDate; 3 SettingsResource keys x3 locales",
+      "files": [
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor",
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor.cs",
+        "src/StageFright.Data/Repositories/SettingsRepository.cs",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.en-US.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.fr-FR.resx"
+      ]
+    },
+    "T063": {
+      "status": "DONE",
+      "did": "All 7 finance posting forms catch ClosedPeriodException before the generic catch and show Validation_ClosedPeriod_PostingRejected, leaving the form re-submittable",
+      "files": [
+        "src/StageFright.UI/Pages/Finance/JournalEntryPage.razor.cs",
+        "src/StageFright.UI/Pages/Finance/PaymentForm.razor.cs",
+        "src/StageFright.UI/Pages/Finance/ExpensePaymentPage.razor.cs",
+        "src/StageFright.UI/Pages/Finance/RecordIncome.razor.cs",
+        "src/StageFright.UI/Pages/Finance/BankDepositPage.razor.cs",
+        "src/StageFright.UI/Pages/Finance/OpeningBalancesWizard.razor.cs",
+        "src/StageFright.UI/Shared/ReactivationForgivenessDialog.razor.cs"
+      ]
+    },
+    "T052": {
+      "status": "DONE",
+      "did": "New ClosedPeriodGuardTests — null settings, null date, before/exactly-on/after boundary, date-only comparison",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Finance/ClosedPeriodGuardTests.cs"
+      ]
+    },
+    "T053": {
+      "status": "DONE",
+      "did": "New ClosedPeriodLockTests integration — journal/expense/income/deposit/payment/fee-accrual/forgiveness all reject a posting dated in the closed period leaving no JournalEntry/Transaction/Payment/Fee row; later-dated postings succeed",
+      "files": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/ClosedPeriodLockTests.cs"
+      ]
+    },
+    "T054": {
+      "status": "DONE",
+      "did": "SetupServiceTests: added InitializeAsync_PostsQueuedOpeningBalances_RegardlessOfClosedPeriod (FR-018)",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs"
+      ]
+    },
+    "T055": {
+      "status": "DONE",
+      "did": "New ClosePeriodControlTests bUnit — control renders, sets ClosedThroughDate only when date+confirm both given, seeds from persisted value",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Settings/ClosePeriodControlTests.cs"
+      ]
     }
   },
   "verified": [
@@ -1467,6 +1702,14 @@
       "command": "dotnet test --filter BankReconciliation|V28_ConventionalBankReconciliation",
       "result": "red before T050/T051 (provider emitted 4 cleared/summary sections per account, no balance-per-bank-statement/ledger rows); green after — BankReconciliationReportProviderTests 12/12, BankReconciliationServiceTests +2 FR-015, V28_ConventionalBankReconciliationTests 5/5",
       "warnings": []
+    },
+    {
+      "what": "full test suite (no --no-build skipped: ran --no-build after clean build)",
+      "command": "dotnet test StageFrightCommunity.slnx --no-build",
+      "result": "Core 691, Reports 236, UI 616 (+1 known GUID-substring flake, passes 5/5 on re-run), Data 154, Localization 25, Integration 235 — all green; +71 Core, +43 Integration vs baseline",
+      "warnings": [
+        "StageFright.UI.Tests EventListTests.DoesNotShow_FeeColumns_InEventList — documented random-hex-GUID contains-\"fee\" flake, unrelated to this diff (no Events/ParticipationGrid/EventForm change); confirmed passing 5/5 in isolation"
+      ]
     }
   ],
   "concerns": [
@@ -1513,7 +1756,15 @@
     {
       "note": "T051 also touched two files beyond the three in tasks.md: ReportsResource.qps-ploc.resx (prune the 10 orphaned pseudo-locale keys, required by the orphan-key guard) and contracts/reports-contract.md (sync the bank-reconciliation ASCII sketch + notes to the shipped row layout / no-placeholder ledger label / residual Reconciled row).",
       "step": "implement"
+    },
+    {
+      "note": "SettingsRepository.SaveAsync did not map ClosedThroughDate (nor LanguageCode/AuditRetentionYears/CurrencyCode/FinancialYearStartDay) on the detached-update path — real app relies on EF change-tracking. Added ClosedThroughDate to the copy list so T062 save-path works detached; the other unmapped fields are pre-existing and out of scope here.",
+      "step": "implement"
+    },
+    {
+      "note": "T063 catch was added only to the 7 posting forms named in the task. ReactivationForgivenessDialog uses _applyError; the others _errorMessage. No new bUnit test asserts the friendly message renders (T055 covers the settings control only) — the catch paths are exercised by ClosedPeriodLockTests at the service layer, not the UI layer.",
+      "step": "implement"
     }
   ],
-  "last_action": "Phase 7 (US5) complete — T048-T051 checked off; full solution build 0W/0E; full suite green (Core 684, Reports 236, Localization 25, UI 613, Data 154, Integration 220). Phases 8-13 (US6-US10, Polish; T052-T094) not started."
+  "last_action": "Phase 8 (US6) complete — T052-T064 checked; build 0W/0E; suite green (1 known GUID-substring UI flake, passes on re-run). Phases 9-13 (T065-T094) not started."
 }

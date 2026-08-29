@@ -96,7 +96,7 @@ public sealed class V17_BankDepositTests : IAsyncLifetime
             ToAccountId = SavingsAccountId
         }, TestContext.Current.CancellationToken);
 
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         Assert.Equal(-300m, await glRepo.GetAccountBalanceAsync(SystemAccounts.CashId, Today, TestContext.Current.CancellationToken));
         Assert.Equal(300m, await glRepo.GetAccountBalanceAsync(SavingsAccountId, Today, TestContext.Current.CancellationToken));
     }
@@ -149,7 +149,7 @@ public sealed class V17_BankDepositTests : IAsyncLifetime
     // --- Helpers ---
 
     private BankDepositService BuildBankDepositService() =>
-        new(new AccountRepository(_db), new GLRepository(_db), new JournalEntryRepository(_db),
+        new(new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new JournalEntryRepository(_db),
             BuildAuditService(), new UnitOfWork(_db), RealLocalizer.Instance);
 
     private static AuditTrailService BuildAuditService()

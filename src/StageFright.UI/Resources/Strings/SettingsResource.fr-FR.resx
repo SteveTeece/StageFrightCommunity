@@ -27,6 +27,9 @@
   <data name="Settings_General_FinancialYearStartHelp" xml:space="preserve"><value>Par défaut juillet — exercice comptable australien.</value><comment>Help text under the financial-year-start-month field.</comment></data>
   <data name="Settings_General_AuditRetentionLabel" xml:space="preserve"><value>Conservation du journal d'audit (années)</value><comment>General tab field label.</comment></data>
   <data name="Settings_General_AuditRetentionHelp" xml:space="preserve"><value>Durée de conservation de l'historique du journal d'audit avant sa purge au démarrage.</value><comment>Help text under the audit-retention field.</comment></data>
+  <data name="Settings_General_ClosePeriodLabel" xml:space="preserve"><value>Clôturer les périodes comptables jusqu'au</value><comment>General tab — label for the closed-through date control (spec 028, FR-016).</comment></data>
+  <data name="Settings_General_ClosePeriodHelp" xml:space="preserve"><value>Une fois définie, toute transaction financière datée à cette date ou avant est refusée. Cochez la case ci-dessous pour confirmer.</value><comment>Help text under the close-period date control.</comment></data>
+  <data name="Settings_General_ClosePeriodConfirm" xml:space="preserve"><value>Je comprends — clôturer toutes les périodes comptables jusqu'à la date ci-dessus</value><comment>Confirmation checkbox label required before the closed-through date is saved.</comment></data>
   <data name="Settings_General_AuditRetentionYears_One" xml:space="preserve"><value>{Count} an</value><comment>Audit-retention select option, singular.</comment></data>
   <data name="Settings_General_AuditRetentionYears_Other" xml:space="preserve"><value>{Count} ans</value><comment>Audit-retention select option, plural.</comment></data>
   <data name="Settings_General_MaxAgeLabel" xml:space="preserve"><value>Âge maximal des membres (années)</value><comment>General tab field label.</comment></data>

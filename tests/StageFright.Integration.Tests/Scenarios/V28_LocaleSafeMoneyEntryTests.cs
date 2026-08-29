@@ -145,7 +145,7 @@ public sealed class V28_LocaleSafeMoneyEntryTests : IAsyncLifetime
     {
         var audit = new AuditTrailService(new AuditTrailRepository(_db), NullLogger<AuditTrailService>.Instance);
         return new GeneralJournalService(
-            new AccountRepository(_db), new GLRepository(_db), new JournalEntryRepository(_db),
+            new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new JournalEntryRepository(_db),
             audit, new UnitOfWork(_db), RealLocalizer.Instance);
     }
 
@@ -153,7 +153,7 @@ public sealed class V28_LocaleSafeMoneyEntryTests : IAsyncLifetime
     {
         var audit = new AuditTrailService(new AuditTrailRepository(_db), NullLogger<AuditTrailService>.Instance);
         return new OpeningBalanceService(
-            new AccountRepository(_db), new GLRepository(_db), new JournalEntryRepository(_db),
+            new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new JournalEntryRepository(_db),
             audit, new UnitOfWork(_db), RealLocalizer.Instance);
     }
 }

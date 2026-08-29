@@ -138,7 +138,7 @@ public sealed class V16_ChartOfAccountsBalanceTests : IAsyncLifetime
     {
         var asAt = DateTime.UtcNow;
 
-        var gl = new GLRepository(_db);
+        var gl = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var expectedNetDebit = await gl.GetAccountBalanceAsync(SavingsAccountId, asAt, TestContext.Current.CancellationToken);
 
         var result = await BuildAccountBalanceService().GetActiveAccountBalancesAsync(TestContext.Current.CancellationToken);
@@ -160,13 +160,13 @@ public sealed class V16_ChartOfAccountsBalanceTests : IAsyncLifetime
     private AccountBalanceService BuildAccountBalanceService()
     {
         var accountRepo = new AccountRepository(_db);
-        var gl = new GLRepository(_db);
+        var gl = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         return new AccountBalanceService(accountRepo, gl, NullLogger<AccountBalanceService>.Instance);
     }
 
     private BalanceSheetReportProvider BuildBalanceSheetProvider()
     {
-        var gl = new GLRepository(_db);
+        var gl = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var accounts = new AccountRepository(_db);
         var settings = new SettingsRepository(_db);
         return new BalanceSheetReportProvider(gl, accounts, settings, RealLocalizer.Instance);

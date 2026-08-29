@@ -10,10 +10,12 @@ namespace StageFright.Data.Repositories;
 public class GLRepository : IGLRepository
 {
     private readonly StageFrightDbContext _db;
+    private readonly IClosedPeriodGuard _closedPeriodGuard;
 
-    public GLRepository(StageFrightDbContext db)
+    public GLRepository(StageFrightDbContext db, IClosedPeriodGuard closedPeriodGuard)
     {
         _db = db;
+        _closedPeriodGuard = closedPeriodGuard;
     }
 
     public async Task AddPairAsync(Transaction debit, Transaction credit, CancellationToken ct = default)
@@ -23,6 +25,8 @@ public class GLRepository : IGLRepository
                 "GL transaction pair imbalanced; operation cancelled.",
                 nameof(Transaction), nameof(AddPairAsync));
 
+        // The closed-period check runs inside the delegated AddBalancedSetAsync call below,
+        // so every pair posting is covered by the same GL choke point (spec 028, FR-017).
         await AddBalancedSetAsync(new[] { debit, credit }, ct);
     }
 
@@ -32,6 +36,13 @@ public class GLRepository : IGLRepository
             throw new GLBalanceException(
                 "A GL posting requires at least two lines.",
                 nameof(Transaction), nameof(AddBalancedSetAsync));
+
+        // Reject a back-dated posting into a closed period before anything is written; the
+        // enclosing unit-of-work transaction then rolls back, leaving no business row and no
+        // ledger line (spec 028, FR-017). Checking the earliest line's date is sufficient — a
+        // closed period covers every date on or before ClosedThroughDate. Runs before the
+        // try/catch below so ClosedPeriodException propagates unwrapped, not as DataAccessException.
+        await _closedPeriodGuard.EnsureOpen(lines.Min(l => l.Date), ct);
 
         foreach (var line in lines)
         {

@@ -60,7 +60,7 @@ public sealed class StartupBenchmarkTests : IAsyncLifetime
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(ctx);
         var accountService = new AccountService(accountRepo, glAssignment, auditSvc, reconciliationRepo, RealLocalizer.Instance);
-        var glRepo = new GLRepository(ctx);
+        var glRepo = new GLRepository(ctx, new ClosedPeriodGuard(new SettingsRepository(ctx)));
         var journalRepo = new JournalEntryRepository(ctx);
         var unitOfWork = new UnitOfWork(ctx);
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditSvc, unitOfWork, RealLocalizer.Instance);

@@ -139,6 +139,9 @@
   <data name="Settings_General_FinancialYearStartHelp" xml:space="preserve"><value>Default July — Australian fiscal year.</value><comment>Help text under the financial-year-start-month field.</comment></data>
   <data name="Settings_General_AuditRetentionLabel" xml:space="preserve"><value>Audit Trail Retention (years)</value><comment>General tab field label.</comment></data>
   <data name="Settings_General_AuditRetentionHelp" xml:space="preserve"><value>How long audit trail history is kept before the startup purge removes it.</value><comment>Help text under the audit-retention field.</comment></data>
+  <data name="Settings_General_ClosePeriodLabel" xml:space="preserve"><value>Close fiscal periods through</value><comment>General tab — label for the closed-through date control (spec 028, FR-016).</comment></data>
+  <data name="Settings_General_ClosePeriodHelp" xml:space="preserve"><value>Once set, any financial transaction dated on or before this date is rejected. Check the box below to confirm the change.</value><comment>Help text under the close-period date control.</comment></data>
+  <data name="Settings_General_ClosePeriodConfirm" xml:space="preserve"><value>I understand — close all fiscal periods through the date above</value><comment>Confirmation checkbox label required before the closed-through date is saved.</comment></data>
   <data name="Settings_General_AuditRetentionYears_One" xml:space="preserve"><value>{Count} year</value><comment>Audit-retention select option, singular.</comment></data>
   <data name="Settings_General_AuditRetentionYears_Other" xml:space="preserve"><value>{Count} years</value><comment>Audit-retention select option, plural.</comment></data>
   <data name="Settings_General_MaxAgeLabel" xml:space="preserve"><value>Maximum Member Age (years)</value><comment>General tab field label.</comment></data>

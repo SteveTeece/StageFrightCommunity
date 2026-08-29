@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Members;
 using StageFright.Data.Repositories;
 using StageFright.Data.Tests.Infrastructure;
@@ -221,7 +222,7 @@ public class RepositoryIntegrationTests : IDisposable
         var accounts = await accountRepo.GetAllAsync(TestContext.Current.CancellationToken);
         var cat = accounts.First();
 
-        var repo = new GLRepository(db);
+        var repo = new GLRepository(db, new ClosedPeriodGuard(new SettingsRepository(db)));
 
         var debit = new Transaction
         {

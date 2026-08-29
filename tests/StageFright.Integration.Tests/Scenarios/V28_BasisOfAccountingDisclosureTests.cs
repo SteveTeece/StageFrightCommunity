@@ -132,7 +132,7 @@ public sealed class V28_BasisOfAccountingDisclosureTests : IAsyncLifetime
 
     private async Task<IReadOnlyList<ReportData>> GenerateAllAsync()
     {
-        var gl = new GLRepository(_db);
+        var gl = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var accounts = new AccountRepository(_db);
         var settings = new SettingsRepository(_db);
         var ct = TestContext.Current.CancellationToken;

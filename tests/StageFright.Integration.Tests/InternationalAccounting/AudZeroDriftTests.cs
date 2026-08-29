@@ -130,10 +130,10 @@ public sealed class AudZeroDriftTests : IAsyncLifetime
     }
 
     private IncomeStatementReportProvider BuildIncome() =>
-        new(new GLRepository(_db), new AccountRepository(_db), new SettingsRepository(_db), RealLocalizer.Instance);
+        new(new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new AccountRepository(_db), new SettingsRepository(_db), RealLocalizer.Instance);
 
     private TrialBalanceReportProvider BuildTrialBalance() =>
-        new(new GLRepository(_db), new AccountRepository(_db), new SettingsRepository(_db), RealLocalizer.Instance);
+        new(new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new AccountRepository(_db), new SettingsRepository(_db), RealLocalizer.Instance);
 
     private static ReportFilterValues FyFilters()
     {

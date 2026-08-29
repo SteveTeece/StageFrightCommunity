@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Exceptions;
 using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.Core.Modules.Localization.Resources;
 using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Finance;
@@ -61,6 +63,10 @@ public partial class OpeningBalancesWizard : ComponentBase
             await OpeningBalanceService.RecordOpeningBalancesAsync(request);
             _successMessage = Loc.Get<FinanceResource>("Finance_OpeningBalances_SuccessMessage",
                 request.AsAtDate.ToString("d MMMM yyyy"));
+        }
+        catch (ClosedPeriodException)
+        {
+            _errorMessage = Loc.Get<ValidationResource>("Validation_ClosedPeriod_PostingRejected");
         }
         catch (Exception ex)
         {

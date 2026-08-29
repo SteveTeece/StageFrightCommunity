@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
+using StageFright.Core.Exceptions;
 using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.Core.Modules.Localization.Resources;
 using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Shared;
@@ -88,6 +90,10 @@ public partial class ReactivationForgivenessDialog : ComponentBase
             await ForgivenessService.ApplyForgivenessAsync(MemberId, _selected.ToList());
             await OnForgivenessApplied.InvokeAsync();
             await CloseAsync();
+        }
+        catch (ClosedPeriodException)
+        {
+            _applyError = Loc.Get<ValidationResource>("Validation_ClosedPeriod_PostingRejected");
         }
         catch (Exception ex)
         {

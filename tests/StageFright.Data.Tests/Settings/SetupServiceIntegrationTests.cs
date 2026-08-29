@@ -34,7 +34,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
         var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo, RealLocalizer.Instance);
-        var glRepo = new GLRepository(db);
+        var glRepo = new GLRepository(db, new ClosedPeriodGuard(new SettingsRepository(db)));
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
@@ -65,7 +65,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
         var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo, RealLocalizer.Instance);
-        var glRepo = new GLRepository(db);
+        var glRepo = new GLRepository(db, new ClosedPeriodGuard(new SettingsRepository(db)));
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
@@ -93,7 +93,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
         var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo, RealLocalizer.Instance);
-        var glRepo = new GLRepository(db);
+        var glRepo = new GLRepository(db, new ClosedPeriodGuard(new SettingsRepository(db)));
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
@@ -119,7 +119,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
         var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo, RealLocalizer.Instance);
-        var glRepo = new GLRepository(db);
+        var glRepo = new GLRepository(db, new ClosedPeriodGuard(new SettingsRepository(db)));
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
@@ -142,7 +142,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
         var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo, RealLocalizer.Instance);
-        var glRepo = new GLRepository(db);
+        var glRepo = new GLRepository(db, new ClosedPeriodGuard(new SettingsRepository(db)));
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
@@ -168,7 +168,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(db);
         var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo, RealLocalizer.Instance);
-        var glRepo = new GLRepository(db);
+        var glRepo = new GLRepository(db, new ClosedPeriodGuard(new SettingsRepository(db)));
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
         var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);

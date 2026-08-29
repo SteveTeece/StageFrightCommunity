@@ -103,6 +103,20 @@ else
         </div>
 
         <div class="row g-2 mb-2">
+            <div class="col-md-4">
+                <label for="settings-close-through-date" class="form-label">@L["Settings_General_ClosePeriodLabel"]</label>
+                <InputDate id="settings-close-through-date" class="form-control form-control-sm" @bind-Value="_closeThroughDate" />
+                <div class="form-text small">@L["Settings_General_ClosePeriodHelp"]</div>
+            </div>
+            <div class="col-md-8 d-flex align-items-start pt-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="settings-close-through-confirm" @bind="_confirmClosePeriod" />
+                    <label class="form-check-label small" for="settings-close-through-confirm">@L["Settings_General_ClosePeriodConfirm"]</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-2 mb-2">
             <div class="col-md-6">
                 <label for="maxAge" class="form-label">@L["Settings_General_MaxAgeLabel"]</label>
                 <InputNumber id="maxAge" class="form-control form-control-sm" @bind-Value="s.MaxAgeRangeYears" />

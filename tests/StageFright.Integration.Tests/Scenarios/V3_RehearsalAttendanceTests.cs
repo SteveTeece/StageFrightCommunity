@@ -373,7 +373,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
     {
         var memberRepo = new MemberRepository(_db);
         var feeRepo = new FeeRepository(_db);
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         return new MemberBalanceService(memberRepo, feeRepo, glRepo);
     }
 
@@ -381,7 +381,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
     {
         var memberRepo = new MemberRepository(_db);
         var feeRepo = new FeeRepository(_db);
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var accountRepo = new AccountRepository(_db);
         var settingsRepo = new SettingsRepository(_db);
         var auditRepo = new AuditTrailRepository(_db);
@@ -394,7 +394,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
     {
         var feeRepo = new FeeRepository(_db);
         var paymentRepo = new PaymentRepository(_db, BuildAuditService());
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var memberRepo = new MemberRepository(_db);
         var unitOfWork = new UnitOfWork(_db);
         return new PaymentService(feeRepo, paymentRepo, glRepo, memberRepo, BuildAuditService(), unitOfWork, RealLocalizer.Instance);
@@ -439,7 +439,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var paymentRepo = new PaymentRepository(_db, auditSvc);
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var accountRepo = new AccountRepository(_db);
         var settingsRepo = new SettingsRepository(_db);
         var unitOfWork = new UnitOfWork(_db);

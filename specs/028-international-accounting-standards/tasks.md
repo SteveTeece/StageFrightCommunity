@@ -253,30 +253,30 @@ ones succeed. Opening balances during first-run setup are still accepted.
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T052** [P] [US6] Unit — `ClosedPeriodGuard`: null settings, null date, date before / exactly on / after the closed-through date · `tests/StageFright.Core.Tests/Modules/Finance/ClosedPeriodGuardTests.cs`
-- [ ] **T053** [P] [US6] Integration — for each posting path (fee, payment, expense, income, bank deposit, manual journal, forgiveness), a transaction dated on/before `ClosedThroughDate` leaves no `Fee`/`Payment`/`Transaction`/`JournalEntry` row; a later one posts · `tests/StageFright.Integration.Tests/InternationalAccounting/ClosedPeriodLockTests.cs`
-- [ ] **T054** [P] [US6] Integration — first-run setup opening balances are accepted regardless (`ClosedThroughDate` is null during setup) · `tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs`
-- [ ] **T055** [P] [US6] bUnit — the settings close-period control + confirmation sets `Settings.ClosedThroughDate` · `tests/StageFright.UI.Tests/Pages/Settings/ClosePeriodControlTests.cs`
+- [x] **T052** [P] [US6] Unit — `ClosedPeriodGuard`: null settings, null date, date before / exactly on / after the closed-through date · `tests/StageFright.Core.Tests/Modules/Finance/ClosedPeriodGuardTests.cs`
+- [x] **T053** [P] [US6] Integration — for each posting path (fee, payment, expense, income, bank deposit, manual journal, forgiveness), a transaction dated on/before `ClosedThroughDate` leaves no `Fee`/`Payment`/`Transaction`/`JournalEntry` row; a later one posts · `tests/StageFright.Integration.Tests/InternationalAccounting/ClosedPeriodLockTests.cs`
+- [x] **T054** [P] [US6] Integration — first-run setup opening balances are accepted regardless (`ClosedThroughDate` is null during setup) · `tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs`
+- [x] **T055** [P] [US6] bUnit — the settings close-period control + confirmation sets `Settings.ClosedThroughDate` · `tests/StageFright.UI.Tests/Pages/Settings/ClosePeriodControlTests.cs`
 
 ### Implementation
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T056** [P] [US6] `ClosedPeriodException` — `sealed class : Exception`, Constitution §5.2 five-member shape · `src/StageFright.Core/Exceptions/ClosedPeriodException.cs`
-- [ ] **T057** [P] [US6] `IClosedPeriodGuard` — `Task EnsureOpen(DateTime postingDate, CancellationToken ct = default)` · `src/StageFright.Core/Contracts/IClosedPeriodGuard.cs`
+- [x] **T056** [P] [US6] `ClosedPeriodException` — `sealed class : Exception`, Constitution §5.2 five-member shape · `src/StageFright.Core/Exceptions/ClosedPeriodException.cs`
+- [x] **T057** [P] [US6] `IClosedPeriodGuard` — `Task EnsureOpen(DateTime postingDate, CancellationToken ct = default)` · `src/StageFright.Core/Contracts/IClosedPeriodGuard.cs`
 
 **⟶ then:**
 
-- [ ] **T058** [US6] `ClosedPeriodGuard` — depends on `ISettingsRepository`; no-op on null settings / null date; throws `ClosedPeriodException` when `postingDate.Date <= ClosedThroughDate.Value.Date` (`Validation_ClosedPeriod_PostingRejected`) · `src/StageFright.Core/Modules/Finance/ClosedPeriodGuard.cs` *(needs T056, T057)*
-- [ ] **T059** [US6] `GLRepository` — inject `IClosedPeriodGuard`; call `EnsureOpen` per line in `AddBalancedSetAsync` and `AddPairAsync` before `SaveChangesAsync` · `src/StageFright.Data/Repositories/GLRepository.cs` *(needs T058)*
-- [ ] **T060** [US6] `UnitOfWork.ExecuteInTransactionAsync` — let `ClosedPeriodException` propagate unwrapped (same pass-through list as `GLBalanceException`) · `src/StageFright.Data/UnitOfWork.cs`
-- [ ] **T061** [US6] `MauiProgram.RegisterCoreServices` — register `IClosedPeriodGuard → ClosedPeriodGuard` · `src/StageFright.App/MauiProgram.cs` *(needs T058)*
+- [x] **T058** [US6] `ClosedPeriodGuard` — depends on `ISettingsRepository`; no-op on null settings / null date; throws `ClosedPeriodException` when `postingDate.Date <= ClosedThroughDate.Value.Date` (`Validation_ClosedPeriod_PostingRejected`) · `src/StageFright.Core/Modules/Finance/ClosedPeriodGuard.cs` *(needs T056, T057)*
+- [x] **T059** [US6] `GLRepository` — inject `IClosedPeriodGuard`; call `EnsureOpen` per line in `AddBalancedSetAsync` and `AddPairAsync` before `SaveChangesAsync` · `src/StageFright.Data/Repositories/GLRepository.cs` *(needs T058)*
+- [x] **T060** [US6] `UnitOfWork.ExecuteInTransactionAsync` — let `ClosedPeriodException` propagate unwrapped (same pass-through list as `GLBalanceException`) · `src/StageFright.Data/UnitOfWork.cs`
+- [x] **T061** [US6] `MauiProgram.RegisterCoreServices` — register `IClosedPeriodGuard → ClosedPeriodGuard` · `src/StageFright.App/MauiProgram.cs` *(needs T058)*
 
 **⟶ then:**
 
-- [ ] **T062** [US6] `GeneralSettingsTab` — "close all financial periods through <date>" control (`id="settings-close-through-date"`) + explicit confirmation; `SettingsService.SaveAsync` persists `ClosedThroughDate` · `src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor` + `.razor.cs`
-- [ ] **T063** [US6] Finance posting forms — catch `ClosedPeriodException` → `Validation_ClosedPeriod_PostingRejected`; leave the form re-submittable · `src/StageFright.UI/Pages/Finance/JournalEntryPage.razor.cs`, `PaymentForm.razor.cs`, `ExpensePaymentPage.razor.cs`, `RecordIncome.razor.cs`, `BankDepositPage.razor.cs`, `OpeningBalancesWizard.razor.cs`, `src/StageFright.UI/Shared/ReactivationForgivenessDialog.razor.cs`
-- [ ] **T064** [US6] `ValidationResource` — add `Validation_ClosedPeriod_PostingRejected` · `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx`, `.en-US.resx`, `.fr-FR.resx`
+- [x] **T062** [US6] `GeneralSettingsTab` — "close all financial periods through <date>" control (`id="settings-close-through-date"`) + explicit confirmation; `SettingsService.SaveAsync` persists `ClosedThroughDate` · `src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor` + `.razor.cs`
+- [x] **T063** [US6] Finance posting forms — catch `ClosedPeriodException` → `Validation_ClosedPeriod_PostingRejected`; leave the form re-submittable · `src/StageFright.UI/Pages/Finance/JournalEntryPage.razor.cs`, `PaymentForm.razor.cs`, `ExpensePaymentPage.razor.cs`, `RecordIncome.razor.cs`, `BankDepositPage.razor.cs`, `OpeningBalancesWizard.razor.cs`, `src/StageFright.UI/Shared/ReactivationForgivenessDialog.razor.cs`
+- [x] **T064** [US6] `ValidationResource` — add `Validation_ClosedPeriod_PostingRejected` · `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx`, `.en-US.resx`, `.fr-FR.resx`
 
 **Checkpoint**: a back-dated posting into a closed period is rejected with no business row and no
 ledger line (SC-009); setup opening balances still work.
