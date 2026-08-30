@@ -32,8 +32,8 @@
 ## Notes
 
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`.
-- Two design decisions that had multiple reasonable interpretations were settled with the requester before drafting (recorded here rather than left as clarification markers):
-  1. On first run, after the language is chosen the app **auto-restarts into the wizard** (rather than continuing in the old language and applying the choice on the next launch).
-  2. The Settings screen **replaces** its inline "restart required" notice with a **post-save modal dialog** (rather than keeping both).
-- One reasonable default chosen without asking: if the first-run choice equals the culture the session is already running in, the restart is skipped (FR-004). Rationale: a fresh install whose OS language already matches a shipped set should not force a needless restart.
-- Sample-data-seeding-failure handling (FR-013 / Story 3 scenario 5) is deliberately minimal because the path is Debug-only; recovery is a developer action.
+- **Revised after initial drafting (issue #361 follow-up).** A language change now takes effect **immediately in the running session** on every path — first run and Settings alike — and **no restart prompt, dialog, inline notice or instruction appears anywhere** (FR-008, FR-010, FR-020, SC-007). The earlier "record the choice then auto-restart" first-run model and the "post-save Settings restart dialog" were both removed, along with all non-Windows self-restart degradation and the standalone "restart capability" requirements. This **reverses** spec 027's constraint that a language change applies only on the next launch (no in-session switching).
+- Design decision settled with the requester during this revision: the Debug-only sample-data first-run path also becomes restart-free — seeding runs **inside the pre-wizard step** and the app transitions straight to the dashboard in-session (FR-012, FR-013). Release builds proceed from language selection into the full setup wizard (Story 3, scenario 2).
+- One reasonable default kept from the original draft: confirming the first-run screen without changing the pre-selected language still records the preference so the screen does not reappear (Story 1, scenario 5).
+- Sample-data-seeding-failure handling (FR-015 / Story 3 scenario 5) is deliberately minimal because the path is Debug-only; recovery is a developer action.
+- Requirements were renumbered when the restart-model requirements were removed; the spec now runs FR-001–FR-023 with no gaps.
