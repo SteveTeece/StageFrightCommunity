@@ -483,11 +483,16 @@
       "what": "US1 complete: full solution build + full test suite after retiring wizard language/sample-data widgets and fixing a CultureInfo test-parallelism race",
       "command": "dotnet build StageFrightCommunity.slnx && dotnet test StageFrightCommunity.slnx",
       "result": "Build: 0 warnings/0 errors. Tests: 2062/2062 passed across all six projects (Core.Tests 751, Reports.Tests 236, Localization.Tests 28, Data.Tests 158, UI.Tests 629, Integration.Tests 260)."
+    },
+    {
+      "what": "US2 complete: full solution build + full test suite after Settings live-switch + restart-notice removal",
+      "command": "dotnet build StageFrightCommunity.slnx && dotnet test StageFrightCommunity.slnx",
+      "result": "Build: 0 warnings/0 errors. Tests: 2064/2064 passed across all six projects (Core.Tests 751, Reports.Tests 236, Localization.Tests 28, Data.Tests 158, UI.Tests 631, Integration.Tests 260)."
     }
   ],
   "step_summaries": {
     "implement": {
-      "summary": "User Story 1 (P1/MVP) complete: /language-select screen live-switches culture with no restart before the wizard; wizard never shows language/sample-data controls; full suite green (2062/2062)."
+      "summary": "User Stories 1 & 2 (P1/P2) complete: first-run and Settings both apply a language change live via CultureProvider.Switch, no restart notice anywhere; full suite green (2064/2064)."
     }
   }
 }
