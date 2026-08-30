@@ -1,0 +1,17 @@
+{
+  "workflow": "speckit",
+  "specName": "First-Run Language Selection & Optional Sample-Data Seeding",
+  "branch": "029-first-run-language-seed",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-30T06:59:44.544Z"
+    }
+  ],
+  "telemetryInstanceId": "95362f86-b658-4cf0-ae9b-0366f5523b43"
+}

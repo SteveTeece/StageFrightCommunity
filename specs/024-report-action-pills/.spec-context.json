@@ -3,7 +3,7 @@
   "specName": "report action pills",
   "branch": "dev",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -101,6 +101,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-26T07:59:53.550Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-30T06:57:10.908Z"
     }
   ],
   "telemetryInstanceId": "c84e5596-c4b2-4c79-a3cd-983e412e41b3",
