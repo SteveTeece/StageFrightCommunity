@@ -101,7 +101,8 @@ public class ExpensePaymentService : IExpensePaymentService
                 CreatedAt = now
             }, innerCt);
 
-            // Taxable while tax applies: DR Expense net / DR Tax Paid / CR Bank gross.
+            // Taxable while tax applies: DR Expense net / DR Tax Receivable (2320, recoverable
+            // input tax — an Asset since spec 028 #355; the debit posting is unchanged) / CR Bank gross.
             // Under Exclusive entry mode request.Amount is the net and tax is added on top (the
             // bank line still takes the gross); under Inclusive it is the gross and tax splits out.
             // Otherwise a 2-line pair; postings while tax doesn't apply carry no tax code at all.

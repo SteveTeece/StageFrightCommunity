@@ -625,3 +625,54 @@ pre-#354; a freshly-migrated `Settings` row reads `Inclusive` (issue #354 accept
 `T123 | T124`; `{T123, T124, T116} → T125 | T126`; `T123 → T127`; `T116 → T128 | T129`;
 `{T115, T116, T132} → T130 | T131`; `T132 | T133 | T134`; then tests `T135 | T136 | T137 | T138` →
 `T139 → T140`.
+
+---
+
+## Phase 16: Issue #355 — Classify recoverable input tax (account 2320) as a Balance Sheet asset (US10, FR-029 / FR-030)
+
+**Follow-on issue [#355](https://github.com/SteveTeece/StageFrightCommunity/issues/355)** (parent #341,
+follows spike #350 and `docs/assessments/sales-tax-internationalisation.md` Point 3 — the in-scope
+"Issue B", rough size S–M), implemented on this branch as part of spec 028.
+
+**Goal**: tax paid on purchases is recoverable from the tax authority, so it is an **asset**, not a
+liability. Re-type the seeded system account `2320` from `AccountType.Liability` "Tax Paid" to
+`AccountType.Asset` "Tax Receivable" (the assessment's **option 1**, preferred). The account keeps its
+`2320` number as a documented asset exception — renumbering would desync the denormalised
+`Transaction.GLAccount` snapshot on every historical ledger row. `2310` "Tax Collected" stays a
+liability. Classification and presentation only: no stored monetary amount, no `TaxCode` value, no
+ledger line moves, so the AUD zero-drift regression (T013) still passes.
+
+**Independent Test**: post a net-refundable ledger (tax paid on purchases > tax collected on sales) →
+the Balance Sheet's Assets section carries "Tax Receivable (2320)" as a positive amount; post a
+net-payable ledger → the tax owed shows under Liabilities via `2310`; the Trial Balance ties in both;
+migrate a pre-#355 database → account `2320` flips from `Liability`/"Tax Paid" to `Asset`/"Tax
+Receivable" with its number unchanged.
+
+**Wave 1 — schema + seed:**
+
+- [x] **T141** [US10] `StageFrightDbContext.SeedSystemAccounts` — account `…0005`: `Type = AccountType.Asset` (was `Liability`), `Name = "Tax Receivable"` (was `"Tax Paid"`); `AccountNumber` stays `"2320"`, `SortOrder` stays `11` · `src/StageFright.Data/StageFrightDbContext.cs`
+- [x] **T142** [US10] EF migration `ReclassifyInputTaxAsReceivable` — `UpdateData` on `Accounts` id `…0005` setting `Name`/`Type`; `Down` restores `"Tax Paid"`/`"Liability"`; `.Designer.cs` + `StageFrightDbContextModelSnapshot` regenerated to the new seed values · `src/StageFright.Data/Migrations/*_ReclassifyInputTaxAsReceivable.cs` *(needs T141)*
+
+**⟶ then — doc-comments (no behaviour change):**
+
+- [x] **T143** [P] [US10] `SystemAccounts` — `TaxPaidId` / `TaxPaidNumber` doc-comments: "Tax Receivable — Asset 2320 … the `TaxPaid*` C# names are retained for continuity; the number stays 2320 as a documented asset exception" · `src/StageFright.Core/Modules/Finance/SystemAccounts.cs`
+- [x] **T144** [P] [US10] `AccountNumberAssignmentService` + `Account` entity — refresh the "fixed system accounts" doc-comments: `2310` = "Tax Collected" (Liability), `2320` = "Tax Receivable" (Asset, kept in the 2000s as a documented exception) · `src/StageFright.Core/Modules/Finance/AccountNumberAssignmentService.cs`, `src/StageFright.Core/Entities/Account.cs`
+- [x] **T145** [P] [US10] `TaxSummaryReportProvider` / `ExpensePaymentService` / `DebugDataSeeder` — inline comments name the account "Tax Receivable"; `TaxSummaryReportProvider` records that the net calc reads directional GL movements (not classification), so its sign convention is unchanged — **no code change** · those files
+
+**⟶ then — tests:**
+
+- [x] **T146** [P] [US10] Integration — `ReclassifyInputTaxAsReceivableMigrationTests` (`StageFright.Data.Tests/Migrations/`): migrate to `20260830021225_AddTaxEntryMode` → `2320` is `Liability`/"Tax Paid"; migrate to latest → `2320` is `Asset`/"Tax Receivable", number `"2320"`, `IsSystem`; `2310` unchanged · `tests/StageFright.Data.Tests/Migrations/ReclassifyInputTaxAsReceivableMigrationTests.cs`
+- [x] **T147** [P] [US10] Integration — `RecoverableInputTaxClassificationTests` (`InternationalAccounting/`, real SQLite + full migrations): net-refundable ledger → Balance Sheet Assets carries "Tax Receivable (2320)" positive, Liabilities carries "Tax Collected (2310)", exactly 3 sections (no out-of-balance); net-payable ledger → tax owed under Liabilities via `2310`; Trial Balance ties and lists `2320` under Assets · `tests/StageFright.Integration.Tests/InternationalAccounting/RecoverableInputTaxClassificationTests.cs`
+- [x] **T148** [P] [US10] `OpeningBalanceServiceTests` — the `TaxPaidId` mock account becomes `AccountType.Asset` "Tax Receivable"; `Should_AcceptEntry_When_TargetingMemberReceivableOrTaxAccount` now expects a **debit** `25` on `TaxPaidId` (asset normal side) · `tests/StageFright.Core.Tests/Modules/Finance/OpeningBalanceServiceTests.cs`
+
+**⟶ then — docs + verification:**
+
+- [x] **T149** [US10] Spec & docs — `spec.md`: Assumptions bullet (#355 delivered as Phase 16), FR-033 verification extended for #355, new SC-016, Verbatim Constraints `2310`/`2320` line; `data-model.md`: intro sentence, the `ReclassifyInputTaxAsReceivable` migration entry, new §13; `docs/assessments/sales-tax-internationalisation.md`: Point 3 / Issue B / Summary table / filing status marked delivered; `CLAUDE.md` Finance / GL integrity note · those files
+- [x] **T150** [US10] Full `dotnet build` + `dotnet test` (no `--no-build`) green, incl. `AudZeroDriftTests` zero-drift (FR-031 / FR-032); close GitHub issue #355 · `StageFrightCommunity.slnx`
+
+**Checkpoint**: a net-refundable org's Balance Sheet presents recoverable tax under Assets ("Tax
+Receivable (2320)"); a net-payable org's tax owed shows under Liabilities ("Tax Collected (2310)");
+the Trial Balance ties exactly in both; an `AUD` dataset's reports and stored values are
+byte-identical to pre-#355 (issue #355 acceptance, SC-016).
+
+**Dependencies**: `T141 → T142` → `T143 | T144 | T145` → `T146 | T147 | T148` → `T149 → T150`.

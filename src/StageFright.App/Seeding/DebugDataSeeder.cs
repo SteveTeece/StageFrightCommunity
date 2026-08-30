@@ -165,8 +165,8 @@ public class DebugDataSeeder : IDebugDataSeeder
         // Opening Balance Equity plug itself) so a sample org starts with a realistic
         // whole-of-chart position, not just a single bank figure. Bad Debt Expense is
         // deliberately left at $0 — no historical bad debt is itself a legitimate
-        // starting position. Tax Collected/Paid only get a balance when the coordinator
-        // actually enabled sales tax during setup.
+        // starting position. Tax Collected (2310) and Tax Receivable (2320) only get a
+        // balance when the coordinator actually enabled sales tax during setup.
         var openingBalanceEntries = new List<OpeningBalanceEntry>
         {
             new() { AccountId = bankAccount.Id, Amount = 2000m },

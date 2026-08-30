@@ -474,6 +474,11 @@ forward.
   `8%` rate, posts income (or expense) net `100`, tax `8` and bank `108` with a balanced ledger; an
   organisation with tax-inclusive entry (the default) posts identical figures to a pre-#354 build for
   the same tax-inclusive gross, and a freshly-migrated dataset reports tax-inclusive entry.
+- **SC-016**: An organisation whose tax paid on purchases exceeds its tax collected on sales sees the
+  recoverable amount presented under Assets on the Balance Sheet (account `2320` "Tax Receivable"),
+  while an organisation that owes net tax sees the amount owed under Liabilities (account `2310` "Tax
+  Collected"); the Trial Balance ties exactly in both cases and no stored monetary or `TaxCode` value
+  changes (issue #355).
 
 ## Assumptions
 
@@ -529,14 +534,29 @@ forward.
   `SplitInclusive` re-sums by construction. No change to the GL line structure, the `2310` / `2320`
   accounts, or the `TaxCode` enum / stored values; `Inclusive` mode and the AUD zero-drift regression
   (T013) are byte-identical.
-- **FR-033 verification (T089, extended for #354).** A `git diff master...HEAD` review of every
+- **Recoverable input tax as a balance-sheet asset (#355) is delivered.** The in-scope "Issue B" from
+  the US10 spike is now **implemented on this branch as part of spec 028 (Phase 16, tasks T141–T150)**:
+  the seeded system account `2320` is re-typed from `AccountType.Liability` "Tax Paid" to
+  `AccountType.Asset` "Tax Receivable" via the `ReclassifyInputTaxAsReceivable` migration (an
+  `UpdateData` on the seed row that moves no monetary amount, no `TaxCode`, and no ledger line). `2310`
+  "Tax Collected" stays a `Liability`. The account keeps its `2320` number as a documented asset
+  exception — renumbering would desync the denormalised `Transaction.GLAccount` snapshot on historical
+  rows. `BalanceSheetReportProvider` and `TrialBalanceReportProvider` group by `AccountType`, so a
+  net-refundable organisation's recoverable tax now presents under Assets and a net-payable
+  organisation's tax owed under Liabilities, with the Trial Balance still tying exactly (no provider
+  code change). The Tax Summary net arithmetic is unchanged — it reads directional GL movements, not
+  the account's classification, so no sign flip was needed. `Inclusive` / `AUD` datasets and the
+  zero-drift regression (T013) are byte-identical.
+- **FR-033 verification (T089, extended for #354 and #355).** A `git diff master...HEAD` review of every
   tax-adjacent file confirms the tax-path changes on this branch are additive and leave the existing
   mechanic untouched: the optional `minorUnitDigits` rounding-precision parameter on
   `TaxCalculator.SplitInclusive` (default `2`), and the opt-in `Settings.TaxEntryMode` / `SplitExclusive`
   path (#354, Phase 15) which only interprets a **newly entered** figure and defaults to `Inclusive`.
-  The GL line structure, the `2310` / `2320` accounts, the `TaxCode` enum and its stored values, the
-  tax-inclusive entry model, and the Tax Summary net arithmetic are untouched; the `AudZeroDriftTests`
-  stored-value assertions (T013) hold against the final build.
+  The GL line structure, the `2310` / `2320` account numbers and balances, the `TaxCode` enum and its
+  stored values, the tax-inclusive entry model, and the Tax Summary net arithmetic are untouched; the
+  `2320` re-type (#355, Phase 16) is an `AccountType` classification change on the seed row only — it
+  moves no amount, `TaxCode` or ledger line. The `AudZeroDriftTests` stored-value assertions (T013)
+  hold against the final build.
 - Financial reports remain synchronous, unaudited management accounts.
 - The eleventh sub-issue count refers to #342–#352; two originally-deferred gaps (G9, G11) were
   promoted into #352 and #351 at the user's request and are in scope.
@@ -554,4 +574,6 @@ and the implementation MUST use them exactly:
 - `AuditRetentionYears` — the existing organisation-configuration field whose default this feature
   raises.
 - `2310` / `2320` — the general-ledger account numbers for collected and recoverable sales tax
-  referenced by the sales-tax assessment.
+  referenced by the sales-tax assessment. Since spec 028 Phase 16 / #355, `2320` is the
+  `AccountType.Asset` account "Tax Receivable" (recoverable input tax), keeping its number as a
+  documented asset exception; `2310` "Tax Collected" remains a `Liability`.

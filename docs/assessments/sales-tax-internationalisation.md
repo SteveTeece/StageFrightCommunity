@@ -135,6 +135,18 @@ presentation** change only.
 **Decision: IN SCOPE (follow-on).** → **[Issue B](#follow-on-issues)**. **Rough size: S–M**
 (option 1 preferred; final option chosen on the issue).
 
+> **Delivered.** Implemented on branch `028-international-accounting-standards` as spec 028 Phase 16
+> (tasks T141–T150, issue [#355](https://github.com/SteveTeece/StageFrightCommunity/issues/355)),
+> **option 1**: the seeded system account `2320` is re-typed from `AccountType.Liability` "Tax Paid"
+> to `AccountType.Asset` "Tax Receivable" via the `ReclassifyInputTaxAsReceivable` migration
+> (`UpdateData` on the seed row). It keeps the number `2320` as a documented asset exception —
+> renumbering would desync the denormalised `Transaction.GLAccount` snapshot on historical rows.
+> `BalanceSheetReportProvider` and `TrialBalanceReportProvider` group by `AccountType`, so a
+> net-refundable org's recoverable tax now shows under Assets and a net-payable org's tax owed under
+> Liabilities, with the Trial Balance still tying — no provider change. The Tax Summary net calc reads
+> directional GL movements, not classification, so its sign convention was unchanged. No stored
+> monetary amount or `TaxCode` value moved; the AUD zero-drift regression is byte-identical.
+
 ---
 
 ## Point 4 — Multiple simultaneous rates or jurisdictions
@@ -163,7 +175,7 @@ it is its own epic under a fresh parent issue. **Rough size if ever done: XL.**
 |---|-------|----------|------|-----------|
 | 1 | Rate changes over time | **Out of scope** | L | — |
 | 2 | Tax-exclusive entry | **In scope — delivered** (spec 028 Phase 15, #354) | M | Issue A |
-| 3 | Recoverable-tax balance-sheet classification (`2310` / `2320`) | **In scope** | S–M | Issue B |
+| 3 | Recoverable-tax balance-sheet classification (`2310` / `2320`) | **In scope — delivered** (spec 028 Phase 16, #355) | S–M | Issue B |
 | 4 | Multiple simultaneous rates / jurisdictions | **Out of scope** | XL | — |
 
 ---
@@ -178,8 +190,9 @@ Two in-scope points require a follow-on GitHub issue each (FR-030). Both are fil
 > (recoverable input tax classification), both against parent **#341**, referencing spike **#350**.
 > The specs below are the issue bodies as filed.
 >
-> **#354 is delivered** — implemented on branch `028-international-accounting-standards` as spec 028
-> Phase 15 (tasks T114–T140) and the issue closed. #355 remains open.
+> **#354 and #355 are delivered** — implemented on branch `028-international-accounting-standards` as
+> spec 028 Phase 15 (tasks T114–T140) and Phase 16 (tasks T141–T150) respectively, and both issues
+> closed.
 
 ### Issue A — Tax-exclusive amount entry — [#354](https://github.com/SteveTeece/StageFrightCommunity/issues/354)
 
@@ -242,6 +255,12 @@ Two in-scope points require a follow-on GitHub issue each (FR-030). Both are fil
 > - Trial Balance still ties exactly.
 >
 > Rough size: **S–M**.
+
+**Delivered** (spec 028 Phase 16, tasks T141–T150) — the preferred approach (option 1): `2320` is
+re-typed to `AccountType.Asset` "Tax Receivable" via the `ReclassifyInputTaxAsReceivable` migration,
+keeping its number as a documented asset exception; `BalanceSheetReportProvider` needs no change; the
+Tax Summary net calc (directional-movement based) needed no sign flip; `AudZeroDriftTests` stays
+byte-identical. Issue closed.
 
 ---
 

@@ -5,8 +5,10 @@ gains five fields (`InceptionDate` via the Phase 14 follow-on migration for issu
 via the Phase 15 follow-on migration for issue #354) and one changed default. Everything else here is
 a non-persisted type: a value object, two helpers, one exception, one guard contract, (Phase 14) a
 first-period-aware `FinancialYearCalculator` overload, and (Phase 15) `TaxCalculator.SplitExclusive` /
-`TaxCalculator.Split(mode)`. The append-only ledger — `Fee`, `Payment`, `Transaction`, `JournalEntry`
-— is **not touched** (FR-031, FR-032, FR-033).
+`TaxCalculator.Split(mode)`. Phase 16 (issue #355) adds no field at all — it re-types one seeded
+system account (`2320`, recoverable input tax) from `Liability` to `Asset` via a data migration. The
+append-only ledger — `Fee`, `Payment`, `Transaction`, `JournalEntry` — is **not touched** (FR-031,
+FR-032, FR-033).
 
 ---
 
@@ -59,6 +61,16 @@ A further follow-on migration `<timestamp>_AddTaxEntryMode` (spec 028 Phase 15 /
 The `NOT NULL DEFAULT 'Inclusive'` backfills the single existing row as the column is added, so every
 pre-#354 dataset keeps today's tax-inclusive entry behaviour and stays byte-identical (SC-015,
 `AddTaxEntryModeMigrationTests`).
+
+A further follow-on migration `<timestamp>_ReclassifyInputTaxAsReceivable` (spec 028 Phase 16 / issue
+#355) re-types one seeded row — no schema change:
+
+* `UPDATE Accounts SET Name = 'Tax Receivable', Type = 'Asset' WHERE Id = '…0005';`
+  (`migrationBuilder.UpdateData` on `Name` + `Type`; `Down` restores `'Tax Paid'` / `'Liability'`).
+
+The account number stays `2320`; `2310` "Tax Collected" is untouched. No monetary amount, no
+`TaxCode`, no ledger line moves, so an `AUD` dataset's reports and stored values are byte-identical
+(SC-016, FR-031, `ReclassifyInputTaxAsReceivableMigrationTests`).
 
 ### State / lifecycle notes
 
@@ -282,3 +294,35 @@ hard-coded literals (enforced by `StageFright.Localization.Tests`).
   `Finance_Common_AmountLabelTaxExclusive`; `Settings_Tax_EntryModeLabel`, `Setup_Tax_EntryModeLabel`;
   `Enum_TaxEntryMode_Inclusive` / `Enum_TaxEntryMode_Exclusive` — neutral + `.en-US` + `.fr-FR`,
   `qps-ploc` regenerated; `Us2LocalizationGuardTests.UserFacingEnums` gains `typeof(TaxEntryMode)`.
+
+---
+
+## 13. Phase 16 — recoverable input tax as a balance-sheet asset (issue #355)
+
+* **Seed change** (`StageFrightDbContext.SeedSystemAccounts`) — the system account with `Id`
+  `00000000-0000-0000-0000-000000000005` changes from `Name = "Tax Paid"`, `Type = Liability` to
+  `Name = "Tax Receivable"`, `Type = Asset`. `AccountNumber` stays `"2320"` and `SortOrder` stays
+  `11`. Tax paid on purchases is recoverable from the tax authority, so it is an asset (a receivable);
+  `2310` "Tax Collected" (owed to the authority) stays a `Liability`.
+* **Migration** `ReclassifyInputTaxAsReceivable` — `UpdateData` on the two columns above; `Down`
+  restores `"Tax Paid"` / `"Liability"`. The paired `.Designer.cs` and `StageFrightDbContextModelSnapshot`
+  reflect the new seed values. No column added or dropped.
+* **Number kept in the 2000s.** `AccountNumber` immutability, and the fact that `Transaction.GLAccount`
+  is a denormalised posting-time string snapshot on every historical ledger row, make renumbering
+  `2320` into the asset range a data-rewrite with an audit cost out of proportion to a presentation
+  fix. `GetNextAccountNumberAsync` is unaffected — it already excludes system accounts from its
+  max-in-range scan and `2320` is outside the `1000–1999` asset window it searches.
+* **Reports.** `BalanceSheetReportProvider` and `TrialBalanceReportProvider` section purely by
+  `AccountType`, so `2320` now falls under Assets with a debit-normal (positive) balance and no
+  provider change. `TaxSummaryReportProvider` is unchanged: `taxOnPurchases` and `net` are computed
+  from directional GL movements (`GetAccountMovementsAsync`), not the account's classification, so the
+  sign convention (`net = tax on sales − tax on purchases`) needs no flip.
+* **`OpeningBalanceService`** is unchanged in code — `ToNormalSide` already keys off `account.Type`,
+  so a positive carried-over balance for `2320` now posts debit-normal (asset) instead of
+  credit-normal. `SystemAccounts` / `AccountNumberAssignmentService` / `Account` doc-comments are
+  refreshed to "Tax Receivable"; the `SystemAccounts.TaxPaid*` C# identifiers are retained for
+  continuity.
+* **No persisted-state change beyond the one seed row.** No `Settings` field, no `TaxCode`, no ledger
+  line, no stored monetary amount. An `AUD` dataset is byte-identical (SC-016, FR-031–FR-033;
+  `ReclassifyInputTaxAsReceivableMigrationTests`, `RecoverableInputTaxClassificationTests`,
+  `AudZeroDriftTests`).

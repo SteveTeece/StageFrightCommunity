@@ -95,8 +95,11 @@ public class TaxSummaryReportProvider : IReportProvider
         var (taxCollectedDebits, taxCollectedCredits) = movements.GetValueOrDefault(SystemAccounts.TaxCollectedId);
         var (taxPaidDebits, taxPaidCredits) = movements.GetValueOrDefault(SystemAccounts.TaxPaidId);
 
-        var taxOnSales = taxCollectedCredits - taxCollectedDebits;   // net CR movement of Tax Collected (2310)
-        var taxOnPurchases = taxPaidDebits - taxPaidCredits;         // net DR movement of Tax Paid (2320)
+        var taxOnSales = taxCollectedCredits - taxCollectedDebits;   // net CR movement of Tax Collected (2310, Liability)
+        // Net DR movement of Tax Receivable (2320) — an Asset since spec 028 #355. The net calc reads
+        // directional GL movements, not the account's classification, so the sign convention here is
+        // unchanged by the re-type: net = tax on sales − tax on purchases, payable when positive.
+        var taxOnPurchases = taxPaidDebits - taxPaidCredits;
         var totalSales = totalTaxableSales + taxOnSales;
         var net = taxOnSales - taxOnPurchases;
 

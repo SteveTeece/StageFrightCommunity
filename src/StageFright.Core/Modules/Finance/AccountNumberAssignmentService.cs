@@ -9,8 +9,10 @@ namespace StageFright.Core.Modules.Finance;
 /// archived accounts included):
 /// Asset (bank) → 1110+, Asset (non-bank) → 1300+, Liability → 2000+,
 /// Equity → 3300+, Income → 4000+, Expense → 6000+.
-/// Fixed system accounts: Cash on Hand=1100, Member Receivable=1200, GST Collected=2310,
-/// GST Paid=2320, Opening Balance Equity=3100, Accumulated Surplus=3200, Bad Debt=6999.
+/// Fixed system accounts: Cash on Hand=1100, Member Receivable=1200, Tax Collected=2310
+/// (Liability), Tax Receivable=2320 (Asset — recoverable input tax; kept in the 2000s as
+/// a documented exception, spec 028 #355), Opening Balance Equity=3100,
+/// Accumulated Surplus=3200, Bad Debt=6999.
 /// </summary>
 public class AccountNumberAssignmentService
 {
