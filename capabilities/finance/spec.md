@@ -115,7 +115,7 @@ A manually entered general journal MUST contain at least two lines, exactly one 
 - **THEN** the journal is rejected with a validation error before any GL write is attempted
 
 ### Opening balances post once per account at its normal side, self-balanced by an equity plug
-The opening balances wizard MUST post each entered non-zero balance to its account's normal debit/credit side (debit for Asset/Expense, credit for Liability/Equity/Income, flipped for a negative entry) and MUST post any resulting residual to Opening Balance Equity so the entry always balances on its own. Member Receivable, the tax clearing accounts (Tax Collected 2310, Tax Paid 2320), and Opening Balance Equity itself are not eligible entry targets.
+The opening balances wizard MUST post each entered non-zero balance to its account's normal debit/credit side (debit for Asset/Expense, credit for Liability/Equity/Income, flipped for a negative entry) and MUST post any resulting residual to Opening Balance Equity so the entry always balances on its own. Only Opening Balance Equity itself is excluded as an entry target — it is the residual plug, not an enterable row; every other account, including Member Receivable and the tax clearing accounts (Tax Collected 2310, Tax Receivable 2320), is an eligible target so a coordinator migrating from another system can seed real carried-over balances for them.
 
 #### Scenario: entered opening balances don't net to zero
 - **WHEN** the sum of entered debit-side and credit-side balances differ

@@ -100,12 +100,12 @@ Every type in `StageFright.Core/Exceptions/` SHALL be a `sealed class` deriving 
 
 ### Fields that snapshot state at posting/accrual time are immutable and never retroactively rewritten
 
-Several entities stamp a value at the moment of creation that reflects "the rule in force then," and that value SHALL NOT be updated even if the organization-wide rule later changes: `Transaction.GstCode`, `Transaction.GLAccount`, and `Fee.GstCode` are all fixed at posting/accrual time; `Account.AccountNumber` is fixed at account creation. Historical rows are read literally, never recalculated against current settings.
+Several entities stamp a value at the moment of creation that reflects "the rule in force then," and that value SHALL NOT be updated even if the organization-wide rule later changes: `Transaction.TaxCode`, `Transaction.GLAccount`, and `Fee.TaxCode` are all fixed at posting/accrual time; `Account.AccountNumber` is fixed at account creation. Historical rows are read literally, never recalculated against current settings.
 
-#### Scenario: GST registration status changes
+#### Scenario: sales-tax applicability changes
 
-- **WHEN** an organisation's `Settings.IsGstRegistered` flag changes after some fees/transactions were already posted
-- **THEN** existing `Fee.GstCode` and `Transaction.GstCode` values on prior rows are left untouched; only newly created rows use the new setting
+- **WHEN** an organisation's `Settings.IsTaxApplicable` flag changes after some fees/transactions were already posted
+- **THEN** existing `Fee.TaxCode` and `Transaction.TaxCode` values on prior rows are left untouched; only newly created rows use the new setting
 
 #### Scenario: an account's legacy number scheme is queried
 
