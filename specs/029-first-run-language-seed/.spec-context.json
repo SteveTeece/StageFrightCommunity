@@ -323,10 +323,42 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-30T09:58:29.520Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T10:12:07.182Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T10:13:11.404Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T10:16:15.206Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T10:29:39.775Z"
     }
   ],
   "telemetryInstanceId": "95362f86-b658-4cf0-ae9b-0366f5523b43",
-  "currentTask": "T032",
+  "currentTask": "T036",
   "task_summaries": {
     "T001": {
       "status": "DONE"
@@ -538,6 +570,34 @@
       "files": [
         "src/StageFright.UI/Pages/Setup/FirstRunLanguageScreen.razor"
       ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "CLAUDE.md: Navigation section now notes /language-select ahead of /setup; Localization section's stale next-launch/restart-notice sentence replaced with the live CultureProvider.Switch in-session switch and the ILanguagePreferenceStore ladder tier",
+      "files": [
+        "CLAUDE.md"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "adding-a-language.md: language picker refs moved from 'Setup Wizard language step' to the /language-select screen (one-minute version, SetupResource table row, step 5, qps-ploc note); section 9 retitled and rewritten — 4-tier ladder with the ILanguagePreferenceStore preference tier, restart-notice paragraph replaced by the live CultureProvider.Switch description for both entry points",
+      "files": [
+        "docs/localization/adding-a-language.md"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "Full verification: dotnet build (Debug) 0 warnings/0 errors; dotnet test full suite 2067 passed / 0 real failures (the lone EventFormTests.DoesNotRender_FeeOrPaidFields fail is the CLAUDE.md-documented GUID-substring flake — passes in isolation, Phase 6 touched only docs). Quickstart scenarios 1-5 via mapped filters all green: S1 V1+V22 Integration 11/11, S2 GeneralSettingsTabTests 12/12, S3+4 FirstRunLanguageScreenTests 9/9, S5 SetupWizardTests 19/19",
+      "files": [
+        "specs/029-first-run-language-seed/quickstart.md"
+      ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "Live CDP-driven verification on a clean install: /language-select renders before /setup, lists en-AU/en-US/fr-FR by endonym, en-AU pre-selected, choice persists to preferences.dat (no DB), no process restart on confirm, and a relaunch with the preference recorded comes up on /setup fully in French. Recorded a blocking finding: the in-session CultureProvider.Switch re-render does not take effect in the real MAUI WebView2 host (wizard stayed English after confirming fr-FR; new language only appears after a full restart) — see concern/verified entries. Light/dark theme comparison not reached.",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/FirstRunLanguageScreen.razor"
+      ]
     }
   },
   "verified": [
@@ -560,6 +620,23 @@
       "what": "US3 complete: full solution build + full test suite after adding the Debug-only Load-sample-data path to the first-run screen; also re-ran the two new seeding tests 3x paired to confirm a discovered bUnit Click()-vs-ClickAsync() timing race was actually fixed, not just incidentally passing",
       "command": "dotnet build StageFrightCommunity.slnx && dotnet test StageFrightCommunity.slnx",
       "result": "Build: 0 warnings/0 errors. Tests: 2067/2067 passed across all six projects (Core.Tests 751, Reports.Tests 236, Localization.Tests 28, UI.Tests 634, Data.Tests 158, Integration.Tests 260)."
+    },
+    {
+      "what": "T035 full build + test suite + quickstart scenario filters",
+      "command": "dotnet build -c Debug; dotnet test -c Debug",
+      "result": "build 0 warn/0 err; 2067 tests pass; sole failure EventFormTests.DoesNotRender_FeeOrPaidFields is the CLAUDE.md-documented GUID-substring flake (passes in isolation); quickstart S1-S5 filters all green (11/12/9/19)",
+      "warnings": [
+        "EventFormTests.DoesNotRender_FeeOrPaidFields flaky GUID-substring false-positive - known, re-ran green in isolation"
+      ]
+    },
+    {
+      "what": "T036 live MAUI-app visual verification of /language-select + in-session switch (CDP-driven, clean install)",
+      "command": "StageFright.App.exe with WEBVIEW2 --remote-debugging-port=9222, CDP Runtime.evaluate",
+      "result": "PARTIAL/FAIL. PASS: /language-select renders before /setup on clean install; lists en-AU/en-US/fr-FR by endonym; en-AU pre-selected; choice persists to preferences.dat outside the DB; no process restart on confirm (PID stable); relaunch with preference recorded resolves to fr-FR (log) and shows /setup fully in French, skipping /language-select (FR-005/FR-006 step 2 / Acceptance Scenario 6). FAIL: confirming fr-FR on /language-select does NOT re-render the running session - /setup stayed entirely English (Setup Wizard / Next / Organisation Name / nav). CultureProvider.Switch has no visible effect in the real WebView2 host; only a full process restart applies the new language. Light/dark theme variants not reached - primary behaviour fails first.",
+      "warnings": [
+        "FR-004/FR-008/SC-001/SC-006 not met: in-session language switch is non-functional in the real app despite green bUnit coverage (T007/T008/T024) and green integration test V22",
+        "T037 (Settings entry point) not run - exercises the same CultureProvider.Switch mechanism per FR-009, so presumed broken identically; needs a completed setup to test"
+      ]
     }
   ],
   "step_summaries": {
@@ -594,5 +671,12 @@
         "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs::Confirm_WithSampleDataChecked_ShowsError_WhenSeedingFails"
       ]
     }
-  }
+  },
+  "concerns": [
+    {
+      "note": "BLOCKING DEFECT found in T036 live verification: in-session language switching (CultureProvider.Switch, the central mechanism of spec 029) does not work in the real MAUI WebView2 host. Confirming a language on /language-select persists it and navigates on with no restart, but the destination renders in the OLD language - the new one only appears after a full app restart, i.e. the same user-visible symptom as issue #361. Startup resolution incl. the new no-DB preference tier is fine. Suspected root cause: CultureInfo.CurrentUICulture is AsyncLocal-backed; MauiProgram pins an explicit value on the root execution context at startup; Switch sets CurrentUICulture on the (unwinding) click-handler context and DefaultThreadCurrentUICulture process-wide, but the Blazor renderer keeps the startup-pinned CurrentUICulture, so IStringLocalizer never sees the change. bUnit tests (T007/T008/T024) and integration V22 pass because they render synchronously on the same context that calls Switch. Fix belongs in US1 T004/T016 + US2 T027 (a real switch mechanism that the renderer honours - e.g. re-resolve/reassign on the renderer dispatcher, or forceLoad navigation), plus a test that actually exercises a cross-context render. Out of scope for Phase 6 polish; needs its own debug+fix+test pass. T036 and T037 left unchecked.",
+      "step": "implement"
+    }
+  ],
+  "last_action": "Phase 6: T033/T034 docs done, T035 build+tests green (2067 pass); T036 live verification FOUND A BLOCKING DEFECT — in-session CultureProvider.Switch does not re-render the real MAUI app; T036/T037 left unchecked, spec NOT marked complete"
 }

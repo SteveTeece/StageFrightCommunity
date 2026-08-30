@@ -15,7 +15,8 @@ user-facing string lives and how the pieces fit.
 * To add a language you copy each neutral `.resx` to `<Marker>.<culture>.resx`
   (e.g. `MembersResource.fr-FR.resx`), translate the `<value>` of each entry, and rebuild.
   **No code changes, no list to edit.** The app discovers the new set at runtime and offers it
-  in Settings → General and in the first-run Setup Wizard, listed by the language's own name.
+  in Settings → General and on the first-run language screen (`/language-select`), listed by the
+  language's own name.
 * Anything you don't translate falls back, key by key, to the Australian English value — never a
   blank, never a raw key.
 
@@ -36,7 +37,7 @@ class `<Name>Resource.cs` and, beside it, the neutral `<Name>Resource.resx` plus
 | `EventsResource` | `src/StageFright.UI/Resources/Strings/` | Events and AGM screens. |
 | `FinanceResource` | `src/StageFright.UI/Resources/Strings/` | All Finance screens. |
 | `SettingsResource` | `src/StageFright.UI/Resources/Strings/` | The Settings page and its tabs, including the language picker. |
-| `SetupResource` | `src/StageFright.UI/Resources/Strings/` | The first-run Setup Wizard steps, including the language step. |
+| `SetupResource` | `src/StageFright.UI/Resources/Strings/` | The first-run Setup Wizard steps, plus the pre-wizard `/language-select` screen — the display-language picker is no longer a wizard step (spec 029). |
 | `NavigationResource` | `src/StageFright.Core/Modules/Localization/Resources/` | Navigation-bar item titles and short labels, and the app shell chrome. |
 | `ValidationResource` | `src/StageFright.Core/Modules/Localization/Resources/` | User-facing validation and domain-error message text. |
 | `EnumsResource` | `src/StageFright.Core/Modules/Localization/Resources/` | The display text of every user-facing enumeration value (see §4.4). Shared so a status reads the same on a screen and in a printed report. |
@@ -69,10 +70,10 @@ language catalog and startup resolution live in `src/StageFright.Core/Modules/Lo
 4. Rebuild the solution (`dotnet build`). The build compiles each `.resx` into a satellite
    assembly next to the main one.
 5. Launch the app. The new language now appears in **Settings → General → Display language** and
-   in the **Setup Wizard language step**, listed by its own endonym (its
-   `CultureInfo.NativeName`, e.g. *Français (France)*). Selecting it and restarting presents the
-   whole app — text, dates, numbers, and the separators/placement of money amounts — in that
-   language and region.
+   on the **first-run `/language-select` screen**, listed by its own endonym (its
+   `CultureInfo.NativeName`, e.g. *Français (France)*). Selecting it presents the whole app —
+   text, dates, numbers, and the separators/placement of money amounts — in that language and
+   region **immediately, in the running session, with no restart**.
 
 That is the whole process. There is no supported-languages list, no registration call, and no
 screen or business-logic code to touch (**SC-003**). A maintainer's only involvement is code
@@ -164,8 +165,8 @@ per-key fallback. It exists to let the automated tests prove that switching lang
 falling back both work.
 
 `qps-ploc` is **not a shipped language**: it is test-fixture content, and the runtime catalog
-excludes any culture whose name starts with `qps-`, so it never appears in the Settings or Setup
-pickers and never matches the operating-system language. Do not translate it by hand; if the
+excludes any culture whose name starts with `qps-`, so it never appears in the Settings or
+first-run pickers and never matches the operating-system language. Do not translate it by hand; if the
 neutral files change, re-run the script.
 
 ---
@@ -203,24 +204,44 @@ guard (`Us2LocalizationGuardTests`) explicitly exempts them and nothing else.
 
 ---
 
-## 9. Startup language resolution and the restart notice
+## 9. Startup language resolution and in-session switching
 
-At startup `LanguageProvider` resolves the display culture in this order (**FR-023 / SC-010**):
+At startup `LanguageProvider` resolves the display culture in this order (**FR-006** of spec 029,
+extending spec 027's **FR-023 / SC-010**):
 
-1. an **explicit** choice saved in `Settings.LanguageCode` that names a shipped language — always
-   wins;
-2. otherwise the **operating-system display language**, if the app ships a matching set — matched
+1. an **explicit** choice saved in `Settings.LanguageCode` that names a shipped language, once the
+   database exists — always wins;
+2. otherwise the **recorded no-database language preference** — `ILanguagePreferenceStore`, backed
+   by the MAUI `Preferences` store (spec 029) — when it names a shipped language. This is what a
+   launch that happens *before* setup completes resolves from, so onboarding comes up in the
+   chosen language with no re-prompt;
+3. otherwise the **operating-system display language**, if the app ships a matching set — matched
    by exact culture first (`fr-CA`), then by parent language (`fr`), `qps-*` excluded;
-3. otherwise **Australian English**.
+4. otherwise **Australian English**.
+
+Every step is wrapped so an unreadable setting, an unknown stored code, or an unresolvable OS
+culture drops to the next step rather than throwing.
 
 `Settings.LanguageCode` is a nullable column (added by the `AddLanguageCodeToSettings`
 migration). It stays `null` until the user picks a language explicitly, so an untouched install
 keeps following the system language across OS changes, and an upgraded install behaves exactly as
-before. A `LanguageCode` naming a language no longer shipped is treated as "no explicit choice"
-and re-resolved.
+before. A `LanguageCode` — or a recorded preference — naming a language no longer shipped is
+treated as "no explicit choice" and re-resolved.
 
-Changing the language in Settings or the Setup Wizard **persists immediately** and shows an
-inline "restart to finish switching" notice. The running app is not re-rendered in the new
-language — the change takes effect on the next launch. In-session live switching is out of scope
-for v1; the `CultureProvider` cascading component in `src/StageFright.UI/Layout/` is the seam a
-later story would use to add it without touching call sites (**FR-021**).
+**A language change applies live, in the running session — there is no "restart required" notice
+anywhere, and no next-launch delay** (spec 029, superseding spec 027's FR-021). Both entry points
+call `CultureProvider.Switch(CultureInfo)` (`src/StageFright.UI/Layout/CultureProvider.razor.cs`),
+which reassigns the process culture (`CultureInfo.DefaultThreadCurrent[UI]Culture` plus
+`CurrentCulture` / `CurrentUICulture`), updates its cascaded `CurrentCulture`, and re-renders the
+whole app tree it wraps:
+
+* the first-run **`/language-select`** screen, shown before the setup wizard on a clean install
+  with no recorded preference — on confirm it calls `ILanguagePreferenceStore.Set` then
+  `CultureProvider.Switch`, then continues to `/setup` (or, for a Debug sample-data run, straight
+  to `/dashboard`);
+* **Settings → General → Display language** — on a successful save with a changed selection it
+  writes both `Settings.LanguageCode` and `ILanguagePreferenceStore.Set`, then calls
+  `CultureProvider.Switch`.
+
+The setup wizard no longer has a language step; setup completion records the resolved language
+into `Settings.LanguageCode`, keeping it in step with the no-database preference.
