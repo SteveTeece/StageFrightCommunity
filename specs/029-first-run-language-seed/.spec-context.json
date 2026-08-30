@@ -291,10 +291,42 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-30T09:27:00.616Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:36:29.611Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:58:28.947Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:58:29.231Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:58:29.520Z"
     }
   ],
   "telemetryInstanceId": "95362f86-b658-4cf0-ae9b-0366f5523b43",
-  "currentTask": "T028",
+  "currentTask": "T032",
   "task_summaries": {
     "T001": {
       "status": "DONE"
@@ -471,6 +503,41 @@
       "files": [
         "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor"
       ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Added Setup_FirstRun_SeedingError resx key to neutral/en-US/fr-FR/qps-ploc",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SetupResource.resx",
+        "SetupResource.en-US.resx",
+        "SetupResource.fr-FR.resx",
+        "SetupResource.qps-ploc.resx"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "Extended FirstRunLanguageScreenTests: sample-data control renders only when IDebugDataSeeder resolves, confirming with it ticked seeds then navigates to /dashboard (via ClickAsync to correctly await the real Task.Run seeding hop), and a SeedAsync failure shows the error without navigating or double-calling InitializeAsync",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "FirstRunLanguageScreen.razor.cs: optionally resolves IDebugDataSeeder, and on confirm with sample data ticked builds a placeholder SetupRequest, calls SetupService.InitializeAsync then IDebugDataSeeder.SeedAsync under the same seeding-progress try/finally shape the old SetupWizard used, navigating to /dashboard on success or showing Setup_FirstRun_SeedingError on failure",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/FirstRunLanguageScreen.razor.cs",
+        "src/StageFright.UI/Resources/Strings/SetupResource*.resx"
+      ],
+      "concerns": [
+        "Fixed a genuine bUnit test-timing bug found while verifying this task: a plain synchronous .Click() on the confirm button does not reliably await the real Task.Run seeding hop under load, so the two new US3 tests use ClickAsync(new MouseEventArgs()) instead, matching the codebase's existing convention for async-submit buttons elsewhere"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "Added the debug-only Load sample data RadzenSwitch (Name=seedData) and the seeding-progress overlay to FirstRunLanguageScreen.razor, reusing the existing setup-seeding-overlay CSS and Setup_Seeding_Message/Setup_SampleData_CheckboxLabel keys",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/FirstRunLanguageScreen.razor"
+      ]
     }
   },
   "verified": [
@@ -488,11 +555,44 @@
       "what": "US2 complete: full solution build + full test suite after Settings live-switch + restart-notice removal",
       "command": "dotnet build StageFrightCommunity.slnx && dotnet test StageFrightCommunity.slnx",
       "result": "Build: 0 warnings/0 errors. Tests: 2064/2064 passed across all six projects (Core.Tests 751, Reports.Tests 236, Localization.Tests 28, Data.Tests 158, UI.Tests 631, Integration.Tests 260)."
+    },
+    {
+      "what": "US3 complete: full solution build + full test suite after adding the Debug-only Load-sample-data path to the first-run screen; also re-ran the two new seeding tests 3x paired to confirm a discovered bUnit Click()-vs-ClickAsync() timing race was actually fixed, not just incidentally passing",
+      "command": "dotnet build StageFrightCommunity.slnx && dotnet test StageFrightCommunity.slnx",
+      "result": "Build: 0 warnings/0 errors. Tests: 2067/2067 passed across all six projects (Core.Tests 751, Reports.Tests 236, Localization.Tests 28, UI.Tests 634, Data.Tests 158, Integration.Tests 260)."
     }
   ],
   "step_summaries": {
     "implement": {
-      "summary": "User Stories 1 & 2 (P1/P2) complete: first-run and Settings both apply a language change live via CultureProvider.Switch, no restart notice anywhere; full suite green (2064/2064)."
+      "summary": "User Stories 1, 2 & 3 (P1/P2/P3) complete: first-run and Settings both apply a language change live via CultureProvider.Switch with no restart notice anywhere, and Debug builds can load sample data straight from the first-run screen, skipping the wizard entirely; full suite green (2067/2067)."
+    }
+  },
+  "coverage": {
+    "FR-011": {
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs::SampleDataControl_Renders_WhenDebugSeederRegistered",
+        "DoesNotRender_SampleDataControl_WhenNoDebugSeederRegistered"
+      ]
+    },
+    "FR-012": {
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs::Confirm_WithSampleDataChecked_SeedsThenNavigatesToDashboard"
+      ]
+    },
+    "FR-013": {
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs::Confirm_WithSampleDataChecked_SeedsThenNavigatesToDashboard"
+      ]
+    },
+    "FR-014": {
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs::SeedDataCheckbox_IsAbsent_FromOrganisationSettingsTab"
+      ]
+    },
+    "FR-015": {
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs::Confirm_WithSampleDataChecked_ShowsError_WhenSeedingFails"
+      ]
     }
   }
 }

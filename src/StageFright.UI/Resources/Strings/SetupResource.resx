@@ -121,6 +121,8 @@
   <data name="Setup_FirstRun_Heading" xml:space="preserve"><value>Welcome to StageFright Community</value><comment>First-run language-select screen heading (spec 029).</comment></data>
   <data name="Setup_FirstRun_Subheading" xml:space="preserve"><value>Choose your display language to get started.</value><comment>Sub-heading under the first-run screen title (spec 029).</comment></data>
   <data name="Setup_FirstRun_ConfirmButton" xml:space="preserve"><value>Continue</value><comment>First-run language-select screen — confirm button (spec 029).</comment></data>
+  <data name="Setup_FirstRun_SeedingError" xml:space="preserve"><value>Something went wrong while loading the sample data. Please try again.</value><comment>First-run language-select screen — sample-data seeding failure message (spec 029, US3).</comment></data>
+  <data name="Setup_FirstRun_SampleOrganizationPlaceholder" xml:space="preserve"><value>Sample Organisation</value><comment>First-run language-select screen — placeholder organisation name for the sample-data setup request; DebugDataSeeder overwrites it with a generated name once seeding runs (spec 029, US3).</comment></data>
   <data name="Setup_Wizard_Heading" xml:space="preserve"><value>StageFright Community - Setup Wizard</value><comment>Setup Wizard page heading.</comment></data>
   <data name="Setup_Wizard_Subheading" xml:space="preserve"><value>Complete the setup below to get started.</value><comment>Sub-heading under the wizard title.</comment></data>
   <data name="Setup_Tab_OrganisationSettings" xml:space="preserve"><value>Organisation Settings</value><comment>Setup Wizard tab title.</comment></data>

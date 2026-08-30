@@ -25,6 +25,14 @@
         <span class="form-text small mb-0">@L["Setup_Language_HelpText"]</span>
     </div>
 
+    @if (_debugSeeder is not null)
+    {
+        <div class="mb-3 d-flex align-items-center gap-2">
+            <RadzenSwitch Name="seedData" Value="@_seedWithTestData" Change="@((bool v) => HandleSeedWithTestDataChanged(v))" />
+            <label for="seedData" class="form-check-label small">@L["Setup_SampleData_CheckboxLabel"]</label>
+        </div>
+    }
+
     <div class="d-flex gap-2 mt-3">
         <button type="button" id="btn-confirm-language" class="btn btn-primary btn-sm" disabled="@_confirming" @onclick="HandleConfirmAsync">
             @if (_confirming)
@@ -35,3 +43,17 @@
         </button>
     </div>
 </div>
+
+@if (_seedingInProgress)
+{
+    <div class="setup-seeding-overlay" role="status" aria-live="polite" aria-atomic="true">
+        <div class="setup-seeding-overlay-card text-center">
+            <div class="spinner-border text-primary mb-2" role="status" aria-hidden="true"></div>
+            <p class="mb-1">@L["Setup_Seeding_Message"]</p>
+            @if (_seedingProgress is not null)
+            {
+                <p class="mb-0 small text-muted">@_seedingProgress</p>
+            }
+        </div>
+    </div>
+}
