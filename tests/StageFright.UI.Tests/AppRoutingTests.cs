@@ -33,6 +33,12 @@ public class AppRoutingTests : LocalizedTestContext
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         _deviceThemeProvider.GetPreference().Returns(PlatformThemePreference.Dark);
         _diagnostics.HasStartupError.Returns(false);
+
+        // The /setup redirect target mounts SetupWizard, which hosts a BlazorBootstrap <Tabs> —
+        // same JS-interop stubbing SetupWizardTests/SetupWizardThemeTests already need.
+        JSInterop.SetupVoid("window.blazorBootstrap.tabs.initialize", _ => true);
+        JSInterop.SetupVoid("window.blazorBootstrap.tabs.show", _ => true);
+        JSInterop.SetupVoid("window.blazorBootstrap.tabs.dispose", _ => true);
     }
 
     [Fact]

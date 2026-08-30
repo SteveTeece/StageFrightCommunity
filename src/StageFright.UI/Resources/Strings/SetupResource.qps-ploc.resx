@@ -86,7 +86,6 @@
   <data name="Setup_Review_AgmMonthTerm" xml:space="preserve"><value>⟦ÁGM Móñth—⟧</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_AuditRetentionTerm" xml:space="preserve"><value>⟦Áúdít Tráíl Rétéñtíóñ—⟧</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_SeatTargetTerm" xml:space="preserve"><value>⟦Séát Çóúñt Tárgét—⟧</value><comment>Review tab term.</comment></data>
-  <data name="Setup_Review_LoadSampleDataTerm" xml:space="preserve"><value>⟦Lóád sámplé dátá—⟧</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_Yes" xml:space="preserve"><value>⟦Ýés—⟧</value><comment>Review tab — affirmative value.</comment></data>
   <data name="Setup_Review_No" xml:space="preserve"><value>⟦Ñó—⟧</value><comment>Review tab — negative value.</comment></data>
   <data name="Setup_Review_NotSet" xml:space="preserve"><value>⟦Ñót sét—⟧</value><comment>Review tab — shown for an unset optional value.</comment></data>

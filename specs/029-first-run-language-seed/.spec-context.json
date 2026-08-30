@@ -203,10 +203,58 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-30T08:42:43.089Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:57:27.591Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:57:28.043Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:57:28.487Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:57:28.921Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:57:29.349Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:57:29.793Z"
     }
   ],
   "telemetryInstanceId": "95362f86-b658-4cf0-ae9b-0366f5523b43",
-  "currentTask": "T017",
+  "currentTask": "T023",
   "task_summaries": {
     "T001": {
       "status": "DONE"
@@ -301,6 +349,52 @@
       "did": "App.razor.cs routes to /language-select vs /setup based on ILanguagePreferenceStore",
       "files": [
         "src/StageFright.UI/App.razor.cs"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "Deleted LanguageSelectionTab.razor/.razor.cs",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/LanguageSelectionTab.razor (deleted)",
+        "LanguageSelectionTab.razor.cs (deleted)"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "Deleted SampleDataTab.razor/.razor.cs",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/SampleDataTab.razor (deleted)",
+        "SampleDataTab.razor.cs (deleted)"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "Removed LanguageSelectionTab/SampleDataTab markup and Disabled attrs from SetupWizard.razor",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Stripped seedWithTestData/debugSeeder/IsTabBypassed from SetupWizard.razor.cs; LanguageCode now from cascaded CultureProvider; unconditional opening-balance guard",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "Dropped unused LanguageCode field from SetupFormModel",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupFormModel.cs"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "Removed DebugSeederAvailable/SeedWithTestData params + Load-sample-data row from ReviewTab; dropped Setup_Review_LoadSampleDataTerm resx key",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/ReviewTab.razor",
+        "ReviewTab.razor.cs",
+        "src/StageFright.UI/Resources/Strings/SetupResource*.resx"
       ]
     }
   },

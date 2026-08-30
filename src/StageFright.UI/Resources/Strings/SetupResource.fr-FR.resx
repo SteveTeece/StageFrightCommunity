@@ -86,7 +86,6 @@
   <data name="Setup_Review_AgmMonthTerm" xml:space="preserve"><value>Mois de l'AGA</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_AuditRetentionTerm" xml:space="preserve"><value>Conservation du journal d'audit</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_SeatTargetTerm" xml:space="preserve"><value>Objectif de sièges</value><comment>Review tab term.</comment></data>
-  <data name="Setup_Review_LoadSampleDataTerm" xml:space="preserve"><value>Charger des données d'exemple</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_Yes" xml:space="preserve"><value>Oui</value><comment>Review tab — affirmative value.</comment></data>
   <data name="Setup_Review_No" xml:space="preserve"><value>Non</value><comment>Review tab — negative value.</comment></data>
   <data name="Setup_Review_NotSet" xml:space="preserve"><value>Non défini</value><comment>Review tab — shown for an unset optional value.</comment></data>

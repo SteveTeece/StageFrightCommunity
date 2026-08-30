@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Localization;
-using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Settings;
@@ -12,14 +11,18 @@ namespace StageFright.UI.Pages.Setup;
 
 public partial class SetupWizard : ComponentBase
 {
-    [Inject] private IServiceProvider ServiceProvider { get; set; } = null!;
     [Inject] private IStringLocalizer<SetupResource> L { get; set; } = null!;
 
     [CascadingParameter] private ThemeProvider? ThemeProvider { get; set; }
 
+    // Display language (spec 029, US1): the first-run screen already recorded the choice and
+    // switched the running session's culture before the wizard ever renders — Finish simply
+    // reads whatever CultureProvider is currently presenting in, rather than owning a language
+    // field of its own.
+    [CascadingParameter] private CultureProvider? CultureProvider { get; set; }
+
     private readonly SetupFormModel _model = new();
     private EditContext _editContext = null!;
-    private IDebugDataSeeder? _debugSeeder;
 
     // Fully qualified — a bare "Tabs" is ambiguous with our own sibling
     // StageFright.UI.Pages.Setup.Tabs namespace (nested namespaces are reachable by
@@ -52,56 +55,20 @@ public partial class SetupWizard : ComponentBase
     private readonly List<string> _queuedCommitteeTitles = new();
 
     private bool _submitting;
-    private bool _seedingInProgress;
-    private bool _seedWithTestData;
     private string? _errorMessage;
-    private string? _seedingProgress;
 
     protected override void OnInitialized()
     {
         _editContext = new EditContext(_model);
-
-        // IDebugDataSeeder is only registered in Debug builds (MauiProgram.cs) — there is
-        // never a database seed in Release, so resolve it optionally rather than requiring
-        // it via [Inject], and hide the "Load sample data" checkbox when it's unavailable.
-        _debugSeeder = ServiceProvider.GetService(typeof(IDebugDataSeeder)) as IDebugDataSeeder;
     }
 
     // Called both by a direct tab-header click and by Next (which already knows the target
     // index) — a single place that keeps _currentTabIndex and the lazy-render flag in sync
-    // regardless of which triggered the move (FR-003). Also the single choke point every
-    // tab-activation path funnels through, so guarding it against a bypassed index here
-    // makes that guarantee hold regardless of how a click reaches it.
+    // regardless of which triggered the move (FR-003).
     private void SetActiveTab(int index)
     {
-        if (IsTabBypassed(index))
-            return;
-
         _tabShown[index] = true;
         _currentTabIndex = index;
-    }
-
-    // Chart of Accounts (1), Opening Balances (2), and Committee (3) become unreachable
-    // once sample data is selected — the sample data supplies this information itself
-    // (spec 022 FR-003). Backs both the SetActiveTab guard above and HandleNextAsync's
-    // skip below, so the two can never drift out of sync on which tabs are bypassed.
-    private bool IsTabBypassed(int index) => _seedWithTestData && index is >= 1 and <= 3;
-
-    // Organisation Settings tab's "Load sample data" checkbox (spec 022 FR-001, moved
-    // here from the old Review-tab checkbox). Checking it discards whatever the
-    // coordinator has already queued on the three now-bypassed tabs (FR-006) — nothing
-    // to discard on uncheck, since those tabs can only be repopulated once they're
-    // reachable again (FR-007).
-    private void HandleSeedWithTestDataChanged(bool value)
-    {
-        _seedWithTestData = value;
-
-        if (value)
-        {
-            _queuedAccounts.Clear();
-            _queuedOpeningBalances.Clear();
-            _queuedCommitteeTitles.Clear();
-        }
     }
 
     private async Task HandleNextAsync()
@@ -113,8 +80,6 @@ public partial class SetupWizard : ComponentBase
             return;
 
         var nextIndex = _currentTabIndex + 1;
-        while (nextIndex < _tabShown.Count && IsTabBypassed(nextIndex))
-            nextIndex++;
         if (nextIndex >= _tabShown.Count)
             return;
 
@@ -173,10 +138,11 @@ public partial class SetupWizard : ComponentBase
         _submitting = true;
         _errorMessage = null;
 
-        // FR-021: Finish requires either a real opening balance or an explicit opt-in to
-        // sample data instead — checked before any orchestration starts so a rejected
-        // Finish leaves every queue untouched (Edge Cases), same as an EditContext failure.
-        if (_queuedOpeningBalances.Count == 0 && !_seedWithTestData)
+        // FR-021: Finish requires a real opening balance — checked before any orchestration
+        // starts so a rejected Finish leaves every queue untouched (Edge Cases), same as an
+        // EditContext failure. Sample data is no longer a substitute (spec 029 FR-017): it is
+        // reachable only from the first-run screen now, never from this wizard.
+        if (_queuedOpeningBalances.Count == 0)
         {
             _errorMessage = L["Setup_Error_NoOpeningBalance"];
             _submitting = false;
@@ -202,7 +168,7 @@ public partial class SetupWizard : ComponentBase
                 QueuedAccounts: _queuedAccounts.Count > 0 ? _queuedAccounts : null,
                 QueuedOpeningBalances: _queuedOpeningBalances.Count > 0 ? _queuedOpeningBalances : null,
                 OpeningBalanceAsAtDate: _openingBalanceAsAtDate,
-                LanguageCode: _model.LanguageCode,
+                LanguageCode: CultureProvider?.CurrentCulture.Name,
                 CurrencyCode: _model.CurrencyCode,
                 FinancialYearStartMonth: _model.FinancialYearStartMonth,
                 FinancialYearStartDay: _model.FinancialYearStartDay,
@@ -210,24 +176,6 @@ public partial class SetupWizard : ComponentBase
                 TaxEntryMode: _model.TaxEntryMode);
 
             await SetupService.InitializeAsync(request);
-
-            if (_seedWithTestData && _debugSeeder is not null)
-            {
-                _seedingInProgress = true;
-                try
-                {
-                    var progress = new Progress<string>(msg =>
-                    {
-                        _seedingProgress = msg;
-                        InvokeAsync(StateHasChanged);
-                    });
-                    await Task.Run(() => _debugSeeder.SeedAsync(progress));
-                }
-                finally
-                {
-                    _seedingInProgress = false;
-                }
-            }
 
             Nav.NavigateTo("/dashboard");
         }

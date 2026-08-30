@@ -19,10 +19,6 @@
         <dt class="col-5">@L["Setup_Review_AgmMonthTerm"]</dt><dd class="col-7">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Model.CommitteeRenewalMonth)</dd>
         <dt class="col-5">@L["Setup_Review_AuditRetentionTerm"]</dt><dd class="col-7">@AuditRetentionText()</dd>
         <dt class="col-5">@L["Setup_Review_SeatTargetTerm"]</dt><dd class="col-7">@(Model.GeneralCommitteeSeatCountTarget?.ToString() ?? L["Setup_Review_NotSet"].Value)</dd>
-        @if (DebugSeederAvailable)
-        {
-            <dt class="col-5">@L["Setup_Review_LoadSampleDataTerm"]</dt><dd class="col-7">@YesNo(SeedWithTestData)</dd>
-        }
     </dl>
 
     <div class="row g-3 mb-2">

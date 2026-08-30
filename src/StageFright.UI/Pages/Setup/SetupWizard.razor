@@ -30,13 +30,9 @@
                                     <GeneralAppearanceTab Model="_model" />
                                     <MembershipFeesTab Model="_model" />
                                     <div class="row g-3 mb-3">
-                                        <LanguageSelectionTab Model="_model" />
                                         <ThemeSelectionTab />
                                         <SalesTaxTab Model="_model" />
                                     </div>
-                                    <SampleDataTab DebugSeederAvailable="_debugSeeder is not null"
-                                                   SeedWithTestData="_seedWithTestData"
-                                                   SeedWithTestDataChanged="HandleSeedWithTestDataChanged" />
                                 </ChildContent>
                                 <ErrorContent Context="tabError"><div class="alert alert-danger">@L["Setup_Tab_LoadFailed"]</div></ErrorContent>
                             </ErrorBoundary>
@@ -44,7 +40,7 @@
                     </div>
                 </Content>
             </Tab>
-            <Tab Title="@L["Setup_Tab_ChartOfAccounts"]" Disabled="@_seedWithTestData" OnClick="@(() => SetActiveTab(1))">
+            <Tab Title="@L["Setup_Tab_ChartOfAccounts"]" OnClick="@(() => SetActiveTab(1))">
                 <Content>
                     <div class="pt-3">
                         @if (_tabShown[1])
@@ -61,7 +57,7 @@
                     </div>
                 </Content>
             </Tab>
-            <Tab Title="@L["Setup_Tab_OpeningBalances"]" Disabled="@_seedWithTestData" OnClick="@(() => SetActiveTab(2))">
+            <Tab Title="@L["Setup_Tab_OpeningBalances"]" OnClick="@(() => SetActiveTab(2))">
                 <Content>
                     <div class="pt-3">
                         @if (_tabShown[2])
@@ -77,7 +73,7 @@
                     </div>
                 </Content>
             </Tab>
-            <Tab Title="@L["Setup_Tab_Committee"]" Disabled="@_seedWithTestData" OnClick="@(() => SetActiveTab(3))">
+            <Tab Title="@L["Setup_Tab_Committee"]" OnClick="@(() => SetActiveTab(3))">
                 <Content>
                     <div class="pt-3">
                         @if (_tabShown[3])
@@ -104,9 +100,7 @@
                                 <ChildContent>
                                     <ReviewTab Model="_model"
                                                QueuedCommitteeTitles="_queuedCommitteeTitles"
-                                               QueuedAccounts="_queuedAccounts"
-                                               DebugSeederAvailable="_debugSeeder is not null"
-                                               SeedWithTestData="_seedWithTestData" />
+                                               QueuedAccounts="_queuedAccounts" />
                                 </ChildContent>
                                 <ErrorContent Context="tabError"><div class="alert alert-danger">@L["Setup_Tab_LoadFailed"]</div></ErrorContent>
                             </ErrorBoundary>
@@ -134,17 +128,3 @@
         </div>
     </EditForm>
 </div>
-
-@if (_seedingInProgress)
-{
-    <div class="setup-seeding-overlay" role="status" aria-live="polite" aria-atomic="true">
-        <div class="setup-seeding-overlay-card text-center">
-            <div class="spinner-border text-primary mb-2" role="status" aria-hidden="true"></div>
-            <p class="mb-1">@L["Setup_Seeding_Message"]</p>
-            @if (_seedingProgress is not null)
-            {
-                <p class="mb-0 small text-muted">@_seedingProgress</p>
-            }
-        </div>
-    </div>
-}

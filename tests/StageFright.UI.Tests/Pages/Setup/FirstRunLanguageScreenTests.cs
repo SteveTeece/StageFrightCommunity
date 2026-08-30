@@ -64,6 +64,7 @@ public class FirstRunLanguageScreenTests : LocalizedTestContext
     [Fact]
     public void Confirm_RecordsThePreference()
     {
+        using var _ = new CultureRestorer();
         var cut = RenderScreen();
         cut.Find("#languageSelect").Change("fr-FR");
 
@@ -75,6 +76,7 @@ public class FirstRunLanguageScreenTests : LocalizedTestContext
     [Fact]
     public void Confirm_SwitchesTheRunningSessionCulture()
     {
+        using var _ = new CultureRestorer();
         var cut = RenderScreen();
         cut.Find("#languageSelect").Change("fr-FR");
 
@@ -86,6 +88,7 @@ public class FirstRunLanguageScreenTests : LocalizedTestContext
     [Fact]
     public void Confirm_Navigates_ToSetup_WhenSampleDataNotOffered()
     {
+        using var _ = new CultureRestorer();
         var cut = RenderScreen();
         cut.Find("#languageSelect").Change("fr-FR");
 
