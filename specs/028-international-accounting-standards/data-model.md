@@ -1,11 +1,12 @@
 # Phase 1 Data Model: International accounting-practice readiness
 
 No entity is added and no entity is removed. `Settings` (the singleton, already soft-delete-exempt)
-gains four fields (the fourth, `InceptionDate`, via the Phase 14 follow-on migration for issue #353)
-and one changed default. Everything else here is a non-persisted type: a value object, two helpers,
-one exception, one guard contract, and (Phase 14) a first-period-aware `FinancialYearCalculator`
-overload. The append-only ledger — `Fee`, `Payment`, `Transaction`, `JournalEntry` — is **not
-touched** (FR-031, FR-032, FR-033).
+gains five fields (`InceptionDate` via the Phase 14 follow-on migration for issue #353, `TaxEntryMode`
+via the Phase 15 follow-on migration for issue #354) and one changed default. Everything else here is
+a non-persisted type: a value object, two helpers, one exception, one guard contract, (Phase 14) a
+first-period-aware `FinancialYearCalculator` overload, and (Phase 15) `TaxCalculator.SplitExclusive` /
+`TaxCalculator.Split(mode)`. The append-only ledger — `Fee`, `Payment`, `Transaction`, `JournalEntry`
+— is **not touched** (FR-031, FR-032, FR-033).
 
 ---
 
@@ -21,10 +22,12 @@ File: `src/StageFright.Core/Entities/Settings.cs` · EF config:
 | `ClosedThroughDate` | `DateTime?` | nullable | `null` | `null` = no period closed. When set, any GL posting line dated on or **before** this date (date-inclusive) is rejected. Only ever moves forward in practice; no explicit monotonicity constraint in v1. | FR-016, FR-017 |
 | `AuditRetentionYears` | `int` | non-null | **`5`** (was `1`) | Range 1–7 unchanged; still user-configurable. The migration changes only the column default — it does **not** rewrite the existing row (FR-024). | FR-023, FR-024 |
 | `InceptionDate` | `DateTime?` | nullable | `null` | Optional organisation founding date, captured at first-run setup (Phase 14 / issue #353). `null` on every dataset created before it was offered. When later than the `(FinancialYearStartMonth, FinancialYearStartDay)` anchor, the first financial year opens on this date and every FY-preset report labels it a part-year; later years are full twelve-month periods. Presentation / range calculation only — no stored amount changes. | FR-022 |
+| `TaxEntryMode` | `TaxEntryMode` enum (`Inclusive` \| `Exclusive`) | non-null | `Inclusive` | How a newly entered taxable amount is interpreted (Phase 15 / issue #354). `Inclusive` (every pre-#354 dataset) = the entered figure is the tax-inclusive gross, split via `TaxCalculator.SplitInclusive`. `Exclusive` = the entered figure is the net; tax is added on top via `TaxCalculator.SplitExclusive` and the receivable/bank line (and `Fee.Amount` / `Payment.Amount`) carry the gross. Only meaningful while `IsTaxApplicable`; `SettingsService.SaveAsync` / `SetupService` force it to `Inclusive` when tax is off. Stored as its member name string (`HasConversion<string>()`). No stored monetary or `TaxCode` value changes. | FR-029, FR-030 (issue #354) |
 
 Unchanged and relevant: `FinancialYearStartMonth` (`int`, default `7`) keeps its name and default —
 it is a Verbatim Constraint. `LanguageCode`, `Theme`, `IsTaxApplicable`, `TaxRate`,
-`AnnualFeeTaxCode`, `AttendanceFeeTaxCode` are untouched.
+`AnnualFeeTaxCode`, `AttendanceFeeTaxCode` are untouched (the Phase 15 `TaxEntryMode` field is
+*added* alongside them, never altering their values or the tax-inclusive posting path).
 
 ### Storage / migration
 
@@ -48,6 +51,14 @@ added separately because the rest of spec 028 had already shipped, adds:
 
 It starts `null`, so an existing dataset keeps a full twelve-month first year with no part-year label
 (SC-014).
+
+A further follow-on migration `<timestamp>_AddTaxEntryMode` (spec 028 Phase 15 / issue #354) adds:
+
+* `ALTER TABLE Settings ADD COLUMN TaxEntryMode TEXT NOT NULL DEFAULT 'Inclusive';`
+
+The `NOT NULL DEFAULT 'Inclusive'` backfills the single existing row as the column is added, so every
+pre-#354 dataset keeps today's tax-inclusive entry behaviour and stays byte-identical (SC-015,
+`AddTaxEntryModeMigrationTests`).
 
 ### State / lifecycle notes
 
@@ -232,3 +243,42 @@ hard-coded literals (enforced by `StageFright.Localization.Tests`).
   are unchanged (FR-031, FR-032).
 * The dashboard finance tile carries only month-to-date / inception-to-date figures — no FY-preset
   figure — so there is no part-year surface there.
+
+---
+
+## 12. Phase 15 — tax-exclusive amount entry (issue #354), `Settings.TaxEntryMode` + calculator
+
+* **`TaxEntryMode`** (`src/StageFright.Core/Enums/`) — `Inclusive` (0, default) \| `Exclusive` (1).
+  Persisted on `Settings.TaxEntryMode` as its member name string.
+* **`TaxCalculator`** (`src/StageFright.Core/Modules/Finance/`) gains, alongside `SplitInclusive`:
+  * `SplitExclusive(decimal net, decimal ratePercent, int minorUnitDigits = 2)` → `(decimal Gross,
+    decimal Tax)` with `tax = round(net × ratePercent ÷ 100, minorUnitDigits, AwayFromZero)`,
+    `gross = net + tax`.
+  * `Split(decimal enteredAmount, TaxEntryMode mode, decimal ratePercent, int minorUnitDigits = 2)`
+    → `(decimal Gross, decimal Net, decimal Tax)` — the single dispatch point every taxable posting
+    service uses (`Inclusive` → `SplitInclusive`, `Exclusive` → `SplitExclusive`); `gross` always
+    equals `net + tax`.
+* **`FeeService`, `IncomeEntryService`, `ExpensePaymentService`, `AttendanceService`** call
+  `TaxCalculator.Split(entered, settings.TaxEntryMode, rate, digits)`. In `Exclusive` mode the entered
+  figure is the net: the primary receivable/bank line, `Fee.Amount`, `Payment.Amount` and (attendance)
+  both legs of the paid-at-creation cash pair carry the gross; the income/expense line keeps the net;
+  the tax clearing line is unchanged. `Inclusive` mode is byte-identical to pre-#354. The GL line
+  structure, the `2310` / `2320` accounts and the `TaxCode` values are untouched (FR-031–FR-033).
+* **`ReactivationForgivenessService`** is **not** changed — it reverses a *stored* gross `Fee.Amount`,
+  and `SplitInclusive` of an exact gross re-sums to it by construction, so the write-off stays
+  balanced whichever entry mode raised the fee and no historical figure is reinterpreted.
+* **Setup / Settings plumbing**: `SetupFormModel` `+ TaxEntryMode TaxEntryMode = Inclusive`;
+  `SetupRequest` `+ TaxEntryMode TaxEntryMode = Inclusive` (trailing); `SetupService.InitializeAsync`
+  persists `request.IsTaxApplicable ? request.TaxEntryMode : Inclusive`; `SalesTaxTab` and
+  `TaxSettingsTab` render an Inclusive/Exclusive `<InputSelect>` while tax applies (and reset to
+  `Inclusive` on toggle-off); `SettingsService.SaveAsync` forces `Inclusive` when `!IsTaxApplicable`;
+  `GeneralSettingsTab.HandleSaveAsync` merges `TaxEntryMode` from the fresh fetch like the other
+  tax-owned fields.
+* **UI hints**: `RecordIncome` / `ExpensePaymentPage` load `_taxEntryMode` and pick
+  `Finance_Common_TaxExclusiveHint` (`Plus tax of {Amount} — total {Total}`) vs the existing
+  `Finance_Common_TaxInclusiveHint`, and the Amount field label reflects the mode
+  (`Finance_Common_AmountLabelTax{Inclusive,Exclusive}`).
+* **Resources**: `Finance_Common_TaxExclusiveHint`, `Finance_Common_AmountLabelTaxInclusive`,
+  `Finance_Common_AmountLabelTaxExclusive`; `Settings_Tax_EntryModeLabel`, `Setup_Tax_EntryModeLabel`;
+  `Enum_TaxEntryMode_Inclusive` / `Enum_TaxEntryMode_Exclusive` — neutral + `.en-US` + `.fr-FR`,
+  `qps-ploc` regenerated; `Us2LocalizationGuardTests.UserFacingEnums` gains `typeof(TaxEntryMode)`.

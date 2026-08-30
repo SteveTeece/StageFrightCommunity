@@ -85,7 +85,8 @@ public class AttendanceServiceTests : TestBase
             .Returns(ci => ci.ArgAt<Payment>(0));
     }
 
-    private void SetSettings(bool isTaxApplicable, TaxCode? attendanceFeeTaxCode, decimal attendanceFee) =>
+    private void SetSettings(bool isTaxApplicable, TaxCode? attendanceFeeTaxCode, decimal attendanceFee,
+        TaxEntryMode taxEntryMode = TaxEntryMode.Inclusive) =>
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>())
             .Returns(new Settings
             {
@@ -94,6 +95,7 @@ public class AttendanceServiceTests : TestBase
                 MembershipRenewalMonth = 1, MaxAgeRangeYears = 150,
                 MinimumMemberAge = 0, SchemaVersion = "1.1.0",
                 IsTaxApplicable = isTaxApplicable, TaxRate = isTaxApplicable ? 10m : null, AttendanceFeeTaxCode = attendanceFeeTaxCode,
+                TaxEntryMode = taxEntryMode,
                 CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
             });
 
@@ -228,6 +230,38 @@ public class AttendanceServiceTests : TestBase
                 && lines.Any(t => t.CreditAmount == 10m && t.AccountId == IncomeAccountId)
                 && lines.Any(t => t.CreditAmount == 1m && t.AccountId == SystemAccounts.TaxCollectedId)
                 && lines.All(t => t.TaxCode == TaxCode.Taxable)),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RecordBatch_TaxableAndExclusiveMode_AccrualAndPaymentPairCarryGross_IncomeKeepsNet()
+    {
+        // issue #354: in Exclusive mode settings.AttendanceFee (10) is the net; tax is added on top
+        // so the receivable, Fee.Amount, Payment.Amount and both legs of the cash payment pair carry
+        // the gross (11), while the income accrual line keeps the net (10).
+        SetSettings(isTaxApplicable: true, attendanceFeeTaxCode: TaxCode.Taxable, attendanceFee: 10m,
+            taxEntryMode: TaxEntryMode.Exclusive);
+        var svc = CreateService();
+        var items = new[] { new AttendanceBatchItem { MemberId = ActiveMemberId, Attended = true, MarkAsUnpaid = false } };
+
+        await svc.RecordBatchAsync(RehearsalId, items, Ct);
+
+        await _feeRepo.Received(1).AddAsync(
+            Arg.Is<Fee>(f => f!.FeeType == FeeType.Attendance && f.Amount == 11m),
+            Arg.Any<CancellationToken>());
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines!.Count == 3
+                && lines.Any(t => t.DebitAmount == 11m && t.AccountId == MemberReceivableAccountId)
+                && lines.Any(t => t.CreditAmount == 10m && t.AccountId == IncomeAccountId)
+                && lines.Any(t => t.CreditAmount == 1m && t.AccountId == SystemAccounts.TaxCollectedId)),
+            Arg.Any<CancellationToken>());
+        await _glRepo.Received().AddPairAsync(
+            Arg.Is<Transaction>(t => t!.DebitAmount == 11m && t.AccountId == CashAccountId),
+            Arg.Is<Transaction>(t => t!.CreditAmount == 11m && t.AccountId == MemberReceivableAccountId),
+            Arg.Any<CancellationToken>());
+        await _paymentRepo.Received(1).AddAsync(
+            Arg.Is<Payment>(p => p!.Amount == 11m),
             Arg.Any<CancellationToken>());
     }
 

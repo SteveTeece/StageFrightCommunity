@@ -40,6 +40,7 @@
   <data name="Setup_Language_HelpText" xml:space="preserve"><value>Vous pourrez modifier ce choix plus tard dans les Paramètres.</value><comment>Help text under the Setup Wizard language dropdown.</comment></data>
   <data name="Setup_Tax_AppliesLabel" xml:space="preserve"><value>La taxe sur les ventes s'applique à cette organisation</value><comment>Sales Tax tab — applicability checkbox label.</comment></data>
   <data name="Setup_Tax_RateLabel" xml:space="preserve"><value>Taux de taxe (%)</value><comment>Sales Tax tab — tax rate label.</comment></data>
+  <data name="Setup_Tax_EntryModeLabel" xml:space="preserve"><value>Saisie du montant</value><comment>Sales Tax tab — label for the tax-inclusive / tax-exclusive amount-entry mode selector.</comment></data>
   <data name="Setup_Tax_AnnualFeeTreatmentLabel" xml:space="preserve"><value>Traitement fiscal de la cotisation annuelle</value><comment>Sales Tax tab — annual fee tax-code label.</comment></data>
   <data name="Setup_Tax_AttendanceFeeTreatmentLabel" xml:space="preserve"><value>Traitement fiscal des frais de présence</value><comment>Sales Tax tab — attendance fee tax-code label.</comment></data>
   <data name="Setup_Tax_TaxExemptDefaultOption" xml:space="preserve"><value>Exonéré de taxe (par défaut)</value><comment>Tax-treatment select — the unset/default option.</comment></data>

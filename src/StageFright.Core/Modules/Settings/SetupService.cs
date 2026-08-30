@@ -66,6 +66,7 @@ public class SetupService : ISetupService
         var taxRate = request.IsTaxApplicable ? request.TaxRate : null;
         var annualFeeTaxCode = request.IsTaxApplicable ? request.AnnualFeeTaxCode : null;
         var attendanceFeeTaxCode = request.IsTaxApplicable ? request.AttendanceFeeTaxCode : null;
+        var taxEntryMode = request.IsTaxApplicable ? request.TaxEntryMode : TaxEntryMode.Inclusive;
 
         var settings = new SettingsEntity
         {
@@ -78,6 +79,7 @@ public class SetupService : ISetupService
             TaxRate = taxRate,
             AnnualFeeTaxCode = annualFeeTaxCode,
             AttendanceFeeTaxCode = attendanceFeeTaxCode,
+            TaxEntryMode = taxEntryMode,
             CommitteeRenewalMonth = request.CommitteeRenewalMonth,
             GeneralCommitteeSeatCountTarget = request.GeneralCommitteeSeatCountTarget,
             AuditRetentionYears = request.AuditRetentionYears,

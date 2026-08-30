@@ -160,6 +160,7 @@
   <data name="Settings_Tax_ConfirmDisable" xml:space="preserve"><value>Confirm: tax fields will be hidden and future postings will no longer carry a tax code.</value><comment>Confirmation prompt when turning sales tax off. Rendered after a bold "Confirm:" lead-in.</comment></data>
   <data name="Settings_Tax_ConfirmButton" xml:space="preserve"><value>Confirm</value><comment>Confirm button for the sales-tax toggle.</comment></data>
   <data name="Settings_Tax_RateLabel" xml:space="preserve"><value>Tax Rate (%)</value><comment>Sales Tax tab — tax rate field label.</comment></data>
+  <data name="Settings_Tax_EntryModeLabel" xml:space="preserve"><value>Amount entry</value><comment>Sales Tax tab — label for the tax-inclusive / tax-exclusive amount-entry mode selector.</comment></data>
   <data name="Settings_Tax_AnnualFeeTreatmentLabel" xml:space="preserve"><value>Annual Fee Tax Treatment</value><comment>Sales Tax tab — annual fee tax-code field label.</comment></data>
   <data name="Settings_Tax_AttendanceFeeTreatmentLabel" xml:space="preserve"><value>Attendance Fee Tax Treatment</value><comment>Sales Tax tab — attendance fee tax-code field label.</comment></data>
   <data name="Settings_Tax_TaxExemptDefaultOption" xml:space="preserve"><value>Tax-exempt (default)</value><comment>Tax-treatment select — the unset/default option.</comment></data>

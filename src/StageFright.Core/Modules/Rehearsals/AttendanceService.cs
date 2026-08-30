@@ -98,10 +98,14 @@ public class AttendanceService : IAttendanceService
         var taxCode = settings.IsTaxApplicable
             ? settings.AttendanceFeeTaxCode ?? TaxCode.TaxExempt
             : (TaxCode?)null;
-        var (incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
-            ? TaxCalculator.SplitInclusive(settings.AttendanceFee, settings.TaxRate ?? 0m,
+        // Under Exclusive entry mode settings.AttendanceFee is the net and tax is added on top;
+        // under Inclusive it is the gross and tax is split back out. Fee.Amount, the receivable
+        // and the paid-at-creation payment pair all carry the gross; the income line the net
+        // (issue #354).
+        var (grossAmount, incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
+            ? TaxCalculator.Split(settings.AttendanceFee, settings.TaxEntryMode, settings.TaxRate ?? 0m,
                 CurrencyCatalog.Get(settings.CurrencyCode).MinorUnitDigits)
-            : (settings.AttendanceFee, 0m);
+            : (settings.AttendanceFee, settings.AttendanceFee, 0m);
 
         int presentCount = 0;
         var attendanceRecords = new List<AttendanceRecord>();
@@ -144,7 +148,7 @@ public class AttendanceService : IAttendanceService
                     Id = Guid.NewGuid(),
                     MemberId = item.MemberId,
                     FeeType = FeeType.Attendance,
-                    Amount = settings.AttendanceFee,
+                    Amount = grossAmount,
                     FeeDate = rehearsal.Date,
                     DueDate = rehearsal.Date,
                     PaidAtCreation = paidAtCreation,
@@ -163,7 +167,7 @@ public class AttendanceService : IAttendanceService
                         Id = Guid.NewGuid(),
                         Date = rehearsal.Date,
                         AccountId = SystemAccounts.MemberReceivableId,
-                        DebitAmount = settings.AttendanceFee,
+                        DebitAmount = grossAmount,
                         CreditAmount = 0m,
                         GLAccount = SystemAccounts.MemberReceivableNumber,
                         MemberId = item.MemberId,
@@ -225,7 +229,7 @@ public class AttendanceService : IAttendanceService
                         Id = Guid.NewGuid(),
                         MemberId = item.MemberId,
                         Date = rehearsal.Date,
-                        Amount = settings.AttendanceFee,
+                        Amount = grossAmount,
                         PaymentMethod = PaymentMethod.Cash,
                         PaymentType = PaymentType.Attendance,
                         CreatedAt = now,
@@ -240,7 +244,7 @@ public class AttendanceService : IAttendanceService
                             Id = Guid.NewGuid(),
                             Date = rehearsal.Date,
                             AccountId = SystemAccounts.CashId,
-                            DebitAmount = settings.AttendanceFee,
+                            DebitAmount = grossAmount,
                             CreditAmount = 0m,
                             GLAccount = SystemAccounts.CashNumber,
                             MemberId = item.MemberId,
@@ -255,7 +259,7 @@ public class AttendanceService : IAttendanceService
                             Date = rehearsal.Date,
                             AccountId = SystemAccounts.MemberReceivableId,
                             DebitAmount = 0m,
-                            CreditAmount = settings.AttendanceFee,
+                            CreditAmount = grossAmount,
                             GLAccount = SystemAccounts.MemberReceivableNumber,
                             MemberId = item.MemberId,
                             PaymentId = savedPayment.Id,

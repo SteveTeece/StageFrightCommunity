@@ -38,6 +38,7 @@ public class SettingsService : ISettingsService
             settings.TaxRate = null;
             settings.AnnualFeeTaxCode = null;
             settings.AttendanceFeeTaxCode = null;
+            settings.TaxEntryMode = TaxEntryMode.Inclusive;
         }
         else if (settings.TaxRate is not (> 0))
         {

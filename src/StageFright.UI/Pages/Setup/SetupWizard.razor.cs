@@ -206,7 +206,8 @@ public partial class SetupWizard : ComponentBase
                 CurrencyCode: _model.CurrencyCode,
                 FinancialYearStartMonth: _model.FinancialYearStartMonth,
                 FinancialYearStartDay: _model.FinancialYearStartDay,
-                InceptionDate: _model.InceptionDate);
+                InceptionDate: _model.InceptionDate,
+                TaxEntryMode: _model.TaxEntryMode);
 
             await SetupService.InitializeAsync(request);
 

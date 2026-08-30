@@ -29,14 +29,30 @@ public partial class ExpensePaymentPage : ComponentBase
     private bool _isTaxApplicable;
     private decimal _taxRate;
     private int _minorUnitDigits = 2;
+    private TaxEntryMode _taxEntryMode = TaxEntryMode.Inclusive;
     private string? _successMessage;
     private string? _errorMessage;
 
-    private string? TaxInclusiveHint =>
-        _isTaxApplicable && _form.TaxCode == TaxCode.Taxable && _form.Amount > 0m
-            ? Loc.Get<FinanceResource>("Finance_Common_TaxInclusiveHint",
-                MoneyFormatter.Format(TaxCalculator.SplitInclusive(_form.Amount, _taxRate, _minorUnitDigits).Tax))
-            : null;
+    // The Amount field is entered gross under Inclusive mode and net under Exclusive mode (issue #354).
+    private string AmountLabel =>
+        !_isTaxApplicable ? L["Finance_Common_AmountLabel"]
+        : _taxEntryMode == TaxEntryMode.Exclusive ? L["Finance_Common_AmountLabelTaxExclusive"]
+        : L["Finance_Common_AmountLabelTaxInclusive"];
+
+    private string? TaxHint
+    {
+        get
+        {
+            if (!_isTaxApplicable || _form.TaxCode != TaxCode.Taxable || _form.Amount <= 0m)
+                return null;
+
+            var (gross, _, tax) = TaxCalculator.Split(_form.Amount, _taxEntryMode, _taxRate, _minorUnitDigits);
+            return _taxEntryMode == TaxEntryMode.Exclusive
+                ? Loc.Get<FinanceResource>("Finance_Common_TaxExclusiveHint",
+                    MoneyFormatter.Format(tax), MoneyFormatter.Format(gross))
+                : Loc.Get<FinanceResource>("Finance_Common_TaxInclusiveHint", MoneyFormatter.Format(tax));
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -54,6 +70,7 @@ public partial class ExpensePaymentPage : ComponentBase
             _isTaxApplicable = settings?.IsTaxApplicable ?? false;
             _taxRate = settings?.TaxRate ?? 0m;
             _minorUnitDigits = CurrencyCatalog.Get(settings?.CurrencyCode ?? CurrencyCatalog.Default.Code).MinorUnitDigits;
+            _taxEntryMode = settings?.TaxEntryMode ?? TaxEntryMode.Inclusive;
         }
         catch (Exception ex)
         {

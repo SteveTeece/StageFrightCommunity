@@ -40,7 +40,7 @@ else
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label" for="amount">@L["Finance_Common_AmountLabel"] <span aria-hidden="true">*</span></label>
+                                <label class="form-label" for="amount">@AmountLabel <span aria-hidden="true">*</span></label>
                                 <div class="input-group input-group-sm @(_errors.ContainsKey("Amount") ? "has-validation" : "")">
                                     <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
                                     <InputNumber id="amount"
@@ -91,9 +91,9 @@ else
                                         <option value="@StageFright.Core.Enums.TaxCode.Taxable">@StageFright.Core.Enums.TaxCode.Taxable.LocalizeEnum()</option>
                                         <option value="@StageFright.Core.Enums.TaxCode.TaxExempt">@StageFright.Core.Enums.TaxCode.TaxExempt.LocalizeEnum()</option>
                                     </InputSelect>
-                                    @if (TaxInclusiveHint is not null)
+                                    @if (TaxHint is not null)
                                     {
-                                        <div class="form-text small">@TaxInclusiveHint</div>
+                                        <div class="form-text small">@TaxHint</div>
                                     }
                                 </div>
                             }

@@ -470,6 +470,10 @@ forward.
   first financial-year-preset period bounded at the inception date and labelled a part-year, while
   every later year is a full twelve months; an organisation with no inception date, or one on the
   anchor, is unchanged.
+- **SC-015**: An organisation with tax-exclusive amount entry active, entering a taxable `100` at an
+  `8%` rate, posts income (or expense) net `100`, tax `8` and bank `108` with a balanced ledger; an
+  organisation with tax-inclusive entry (the default) posts identical figures to a pre-#354 build for
+  the same tax-inclusive gross, and a freshly-migrated dataset reports tax-inclusive entry.
 
 ## Assumptions
 
@@ -513,12 +517,26 @@ forward.
   tax) alongside the current tax-inclusive entry"* and **#355** *"[FEATURE] Classify recoverable input
   tax (account `2320`) correctly on the Balance Sheet"*. Both issue bodies are also reproduced in the
   assessment's *Follow-on issues* section.
-- **FR-033 verification (T089).** A `git diff master...HEAD` review of every tax-adjacent file
-  confirms the only tax-path change on this branch is the optional `minorUnitDigits` rounding-precision
-  parameter on `TaxCalculator.SplitInclusive` (default `2`, so an AUD / 2-decimal dataset is
-  byte-identical). The GL line structure, the `2310` / `2320` accounts, the `TaxCode` enum and its
-  stored values, the tax-inclusive entry model, and the Tax Summary net arithmetic are untouched; the
-  `AudZeroDriftTests` stored-value assertions (T013) hold against the final build.
+- **Tax-exclusive amount entry (#354) is delivered.** The in-scope "Issue A" from the US10 spike is
+  now **implemented on this branch as part of spec 028 (Phase 15, tasks T114–T140)**: a per-organisation
+  `Settings.TaxEntryMode` (`Inclusive` — the default and every pre-#354 dataset — or `Exclusive`),
+  chosen at first-run setup and on the Sales Tax settings tab; `TaxCalculator.SplitExclusive` /
+  `TaxCalculator.Split(mode)` companions to `SplitInclusive`; and a mode branch in `FeeService`,
+  `IncomeEntryService`, `ExpensePaymentService` and `AttendanceService` so that in `Exclusive` mode
+  the entered figure is the net, tax is added on top, and the receivable/bank line (and `Fee.Amount` /
+  `Payment.Amount`) carry the gross while the income/expense line keeps the net.
+  `ReactivationForgivenessService` is unchanged — it reverses a stored gross `Fee.Amount`, which
+  `SplitInclusive` re-sums by construction. No change to the GL line structure, the `2310` / `2320`
+  accounts, or the `TaxCode` enum / stored values; `Inclusive` mode and the AUD zero-drift regression
+  (T013) are byte-identical.
+- **FR-033 verification (T089, extended for #354).** A `git diff master...HEAD` review of every
+  tax-adjacent file confirms the tax-path changes on this branch are additive and leave the existing
+  mechanic untouched: the optional `minorUnitDigits` rounding-precision parameter on
+  `TaxCalculator.SplitInclusive` (default `2`), and the opt-in `Settings.TaxEntryMode` / `SplitExclusive`
+  path (#354, Phase 15) which only interprets a **newly entered** figure and defaults to `Inclusive`.
+  The GL line structure, the `2310` / `2320` accounts, the `TaxCode` enum and its stored values, the
+  tax-inclusive entry model, and the Tax Summary net arithmetic are untouched; the `AudZeroDriftTests`
+  stored-value assertions (T013) hold against the final build.
 - Financial reports remain synchronous, unaudited management accounts.
 - The eleventh sub-issue count refers to #342–#352; two originally-deferred gaps (G9, G11) were
   promoted into #352 and #351 at the user's request and are in scope.

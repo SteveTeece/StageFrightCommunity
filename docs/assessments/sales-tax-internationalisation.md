@@ -92,6 +92,14 @@ accounts, or `TaxCode`. Historical records are unaffected because the mode only 
 
 **Decision: IN SCOPE (follow-on).** → **[Issue A](#follow-on-issues)**. **Rough size: M.**
 
+> **Delivered.** Implemented on branch `028-international-accounting-standards` as spec 028 Phase 15
+> (tasks T114–T140, issue [#354](https://github.com/SteveTeece/StageFrightCommunity/issues/354)):
+> `Settings.TaxEntryMode` (`Inclusive` default / `Exclusive`), `TaxCalculator.SplitExclusive` /
+> `Split(mode)`, a mode branch in `FeeService` / `IncomeEntryService` / `ExpensePaymentService` /
+> `AttendanceService`, the setup + Sales Tax settings selector, and the two entry-form tax hints.
+> No GL-structure, `2310` / `2320` or `TaxCode` change; `Inclusive` mode and the AUD zero-drift
+> regression are byte-identical.
+
 ---
 
 ## Point 3 — Balance-sheet classification of recoverable tax (accounts `2310` / `2320`)
@@ -154,7 +162,7 @@ it is its own epic under a fresh parent issue. **Rough size if ever done: XL.**
 | # | Point | Decision | Size | Follow-on |
 |---|-------|----------|------|-----------|
 | 1 | Rate changes over time | **Out of scope** | L | — |
-| 2 | Tax-exclusive entry | **In scope** | M | Issue A |
+| 2 | Tax-exclusive entry | **In scope — delivered** (spec 028 Phase 15, #354) | M | Issue A |
 | 3 | Recoverable-tax balance-sheet classification (`2310` / `2320`) | **In scope** | S–M | Issue B |
 | 4 | Multiple simultaneous rates / jurisdictions | **Out of scope** | XL | — |
 
@@ -169,6 +177,9 @@ Two in-scope points require a follow-on GitHub issue each (FR-030). Both are fil
 > (tax-exclusive entry) and [#355](https://github.com/SteveTeece/StageFrightCommunity/issues/355)
 > (recoverable input tax classification), both against parent **#341**, referencing spike **#350**.
 > The specs below are the issue bodies as filed.
+>
+> **#354 is delivered** — implemented on branch `028-international-accounting-standards` as spec 028
+> Phase 15 (tasks T114–T140) and the issue closed. #355 remains open.
 
 ### Issue A — Tax-exclusive amount entry — [#354](https://github.com/SteveTeece/StageFrightCommunity/issues/354)
 

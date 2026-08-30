@@ -40,6 +40,7 @@
   <data name="Setup_Language_HelpText" xml:space="preserve"><value>⟦Ýóú çáñ çháñgé thís látér íñ Séttíñgs.—⟧</value><comment>Help text under the Setup Wizard language dropdown.</comment></data>
   <data name="Setup_Tax_AppliesLabel" xml:space="preserve"><value>⟦Sálés táx ápplíés tó thís órgáñísátíóñ—⟧</value><comment>Sales Tax tab — applicability checkbox label.</comment></data>
   <data name="Setup_Tax_RateLabel" xml:space="preserve"><value>⟦Táx Ráté (%)—⟧</value><comment>Sales Tax tab — tax rate label.</comment></data>
+  <data name="Setup_Tax_EntryModeLabel" xml:space="preserve"><value>⟦Ámóúñt éñtrý—⟧</value><comment>Sales Tax tab — label for the tax-inclusive / tax-exclusive amount-entry mode selector.</comment></data>
   <data name="Setup_Tax_AnnualFeeTreatmentLabel" xml:space="preserve"><value>⟦Áññúál Féé Táx Tréátméñt—⟧</value><comment>Sales Tax tab — annual fee tax-code label.</comment></data>
   <data name="Setup_Tax_AttendanceFeeTreatmentLabel" xml:space="preserve"><value>⟦Áttéñdáñçé Féé Táx Tréátméñt—⟧</value><comment>Sales Tax tab — attendance fee tax-code label.</comment></data>
   <data name="Setup_Tax_TaxExemptDefaultOption" xml:space="preserve"><value>⟦Táx-éxémpt (défáúlt)—⟧</value><comment>Tax-treatment select — the unset/default option.</comment></data>

@@ -98,6 +98,7 @@ public partial class GeneralSettingsTab : ComponentBase
                 _settings.TaxRate = current.TaxRate;
                 _settings.AnnualFeeTaxCode = current.AnnualFeeTaxCode;
                 _settings.AttendanceFeeTaxCode = current.AttendanceFeeTaxCode;
+                _settings.TaxEntryMode = current.TaxEntryMode;
                 _settings.GeneralCommitteeSeatCountTarget = current.GeneralCommitteeSeatCountTarget;
             }
 

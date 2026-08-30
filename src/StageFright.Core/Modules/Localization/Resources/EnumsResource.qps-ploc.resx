@@ -26,6 +26,8 @@
   <data name="Enum_TaxCode_Taxable" xml:space="preserve"><value>⟦Táxáblé—⟧</value><comment>TaxCode enum — taxable supply.</comment></data>
   <data name="Enum_TaxCode_TaxExempt" xml:space="preserve"><value>⟦Táx-éxémpt—⟧</value><comment>TaxCode enum — tax-exempt supply.</comment></data>
   <data name="Enum_TaxCode_Excluded" xml:space="preserve"><value>⟦Éxçlúdéd—⟧</value><comment>TaxCode enum — excluded from tax reporting.</comment></data>
+  <data name="Enum_TaxEntryMode_Inclusive" xml:space="preserve"><value>⟦Táx-íñçlúsívé—⟧</value><comment>TaxEntryMode enum — the entered amount is the tax-inclusive gross.</comment></data>
+  <data name="Enum_TaxEntryMode_Exclusive" xml:space="preserve"><value>⟦Táx-éxçlúsívé—⟧</value><comment>TaxEntryMode enum — the entered amount is the net; tax is added on top.</comment></data>
   <data name="Enum_ReconciliationStatus_Draft" xml:space="preserve"><value>⟦Dráft—⟧</value><comment>ReconciliationStatus enum — draft (in progress).</comment></data>
   <data name="Enum_ReconciliationStatus_Finalised" xml:space="preserve"><value>⟦Fíñálíséd—⟧</value><comment>ReconciliationStatus enum — finalised (locked).</comment></data>
   <data name="Enum_JournalEntryType_Income" xml:space="preserve"><value>⟦Íñçómé—⟧</value><comment>JournalEntryType enum — income receipt.</comment></data>

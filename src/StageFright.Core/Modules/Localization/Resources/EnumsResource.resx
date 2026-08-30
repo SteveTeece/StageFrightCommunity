@@ -208,6 +208,14 @@
     <value>Excluded</value>
     <comment>TaxCode enum — excluded from tax reporting.</comment>
   </data>
+  <data name="Enum_TaxEntryMode_Inclusive" xml:space="preserve">
+    <value>Tax-inclusive</value>
+    <comment>TaxEntryMode enum — the entered amount is the tax-inclusive gross.</comment>
+  </data>
+  <data name="Enum_TaxEntryMode_Exclusive" xml:space="preserve">
+    <value>Tax-exclusive</value>
+    <comment>TaxEntryMode enum — the entered amount is the net; tax is added on top.</comment>
+  </data>
   <data name="Enum_ReconciliationStatus_Draft" xml:space="preserve">
     <value>Draft</value>
     <comment>ReconciliationStatus enum — draft (in progress).</comment>

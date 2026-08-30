@@ -130,6 +130,47 @@ public class TaxSettingsTabTests : LocalizedTestContext
         Assert.Contains("Settings saved successfully", cut.Markup);
     }
 
+    // --- issue #354: tax-inclusive / tax-exclusive amount-entry mode selector ---
+
+    [Fact]
+    public void TaxEntryModeSelector_HiddenWhenNotApplicable()
+    {
+        _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings());
+
+        var cut = Render<TaxSettingsTab>();
+
+        Assert.Throws<Bunit.ElementNotFoundException>(() => cut.Find("#taxEntryMode"));
+    }
+
+    [Fact]
+    public void TaxEntryModeSelector_Visible_WhenApplicable_WithBothOptions()
+    {
+        _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings(taxApplicable: true));
+
+        var cut = Render<TaxSettingsTab>();
+
+        var options = cut.FindAll("#taxEntryMode option");
+        Assert.Equal(2, options.Count);
+        Assert.Contains(options, o => o.GetAttribute("value") == "Inclusive");
+        Assert.Contains(options, o => o.GetAttribute("value") == "Exclusive");
+    }
+
+    [Fact]
+    public async Task HandleSaveAsync_PersistsChosenTaxEntryMode()
+    {
+        _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings(taxApplicable: true));
+        _settingsService.SaveAsync(Arg.Any<AppSettings>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+
+        var cut = Render<TaxSettingsTab>();
+        cut.Find("#taxEntryMode").Change("Exclusive");
+
+        await cut.Find("form").SubmitAsync();
+
+        await _settingsService.Received(1).SaveAsync(
+            Arg.Is<AppSettings>(s => s!.IsTaxApplicable && s.TaxEntryMode == TaxEntryMode.Exclusive),
+            Arg.Any<CancellationToken>());
+    }
+
     [Fact]
     public async Task HandleSaveAsync_MergesNonTaxFields_FromFreshFetch()
     {

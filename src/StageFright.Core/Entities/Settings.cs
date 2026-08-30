@@ -99,6 +99,16 @@ public class Settings
     /// </summary>
     public TaxCode? AttendanceFeeTaxCode { get; set; }
 
+    /// <summary>
+    /// How a newly entered taxable amount is interpreted: <see cref="TaxEntryMode.Inclusive"/>
+    /// (the default) treats it as the tax-inclusive gross; <see cref="TaxEntryMode.Exclusive"/>
+    /// treats it as the net and adds tax on top. Chosen at first-run setup and on the Sales Tax
+    /// settings tab; only meaningful while <see cref="IsTaxApplicable"/> is true and forced back to
+    /// <see cref="TaxEntryMode.Inclusive"/> when tax is turned off. Every pre-#354 dataset reads
+    /// <see cref="TaxEntryMode.Inclusive"/> and is byte-identical (spec 028, issue #354).
+    /// </summary>
+    public TaxEntryMode TaxEntryMode { get; set; } = TaxEntryMode.Inclusive;
+
     /// <summary>Maximum member age accepted by the system (years). Default: 150.</summary>
     public int MaxAgeRangeYears { get; set; } = 150;
 

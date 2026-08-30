@@ -94,7 +94,7 @@ public class Us2LocalizationGuardTests
     private static readonly Type[] UserFacingEnums =
     [
         typeof(MemberStatus), typeof(Theme), typeof(FeeType), typeof(PaymentMethod),
-        typeof(PaymentType), typeof(AccountType), typeof(TaxCode),
+        typeof(PaymentType), typeof(AccountType), typeof(TaxCode), typeof(TaxEntryMode),
         typeof(ReconciliationStatus), typeof(JournalEntryType),
     ];
 

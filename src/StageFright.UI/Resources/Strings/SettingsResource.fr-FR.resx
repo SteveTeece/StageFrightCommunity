@@ -48,6 +48,7 @@
   <data name="Settings_Tax_ConfirmDisable" xml:space="preserve"><value>Confirmer : les champs de taxe seront masqués et les futures écritures ne porteront plus de code de taxe.</value><comment>Confirmation prompt when turning sales tax off. Rendered after a bold "Confirm:" lead-in.</comment></data>
   <data name="Settings_Tax_ConfirmButton" xml:space="preserve"><value>Confirmer</value><comment>Confirm button for the sales-tax toggle.</comment></data>
   <data name="Settings_Tax_RateLabel" xml:space="preserve"><value>Taux de taxe (%)</value><comment>Sales Tax tab — tax rate field label.</comment></data>
+  <data name="Settings_Tax_EntryModeLabel" xml:space="preserve"><value>Saisie du montant</value><comment>Sales Tax tab — label for the tax-inclusive / tax-exclusive amount-entry mode selector.</comment></data>
   <data name="Settings_Tax_AnnualFeeTreatmentLabel" xml:space="preserve"><value>Traitement fiscal de la cotisation annuelle</value><comment>Sales Tax tab — annual fee tax-code field label.</comment></data>
   <data name="Settings_Tax_AttendanceFeeTreatmentLabel" xml:space="preserve"><value>Traitement fiscal des frais de présence</value><comment>Sales Tax tab — attendance fee tax-code field label.</comment></data>
   <data name="Settings_Tax_TaxExemptDefaultOption" xml:space="preserve"><value>Exonéré de taxe (par défaut)</value><comment>Tax-treatment select — the unset/default option.</comment></data>

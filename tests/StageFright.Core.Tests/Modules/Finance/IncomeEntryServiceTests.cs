@@ -294,6 +294,29 @@ public class IncomeEntryServiceTests : TestBase
             Arg.Any<CancellationToken>());
     }
 
+    [Fact]
+    public async Task RecordIncomeAsync_TaxableAndExclusiveMode_AddsTaxOnTop_BankTakesGross_IncomeTakesNet()
+    {
+        // issue #354: in Exclusive mode request.Amount is the net; tax is added on top so the
+        // bank line carries the gross while the income line keeps the entered net.
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>())
+            .Returns(MakeSettings(isTaxApplicable: true, taxEntryMode: TaxEntryMode.Exclusive));
+        var request = MakeRequest(100m);
+        request.TaxCode = TaxCode.Taxable;
+
+        await _sut.RecordIncomeAsync(request, Ct);
+
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines!.Count == 3
+                && lines.Any(t => t.DebitAmount == 110m && t.AccountId == CashAccountId)
+                && lines.Any(t => t.CreditAmount == 100m && t.AccountId == IncomeAccountId)
+                && lines.Any(t => t.CreditAmount == 10m && t.AccountId == SystemAccounts.TaxCollectedId)
+                && lines.Sum(t => t.DebitAmount) == lines.Sum(t => t.CreditAmount)
+                && lines.All(t => t.TaxCode == TaxCode.Taxable)),
+            Arg.Any<CancellationToken>());
+    }
+
     [Theory]
     [InlineData(TaxCode.TaxExempt)]
     [InlineData(TaxCode.Excluded)]
@@ -374,13 +397,14 @@ public class IncomeEntryServiceTests : TestBase
         CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
 
-    private static Settings MakeSettings(bool isTaxApplicable) => new()
+    private static Settings MakeSettings(bool isTaxApplicable, TaxEntryMode taxEntryMode = TaxEntryMode.Inclusive) => new()
     {
         Id = Guid.NewGuid(), OrganizationName = "Test Choir",
         AnnualFee = 50m, AttendanceFee = 10m,
         MembershipRenewalMonth = 1, MaxAgeRangeYears = 150,
         MinimumMemberAge = 0, SchemaVersion = "1.1.0",
         IsTaxApplicable = isTaxApplicable, TaxRate = isTaxApplicable ? 10m : null,
+        TaxEntryMode = taxEntryMode,
         CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
     };
 }

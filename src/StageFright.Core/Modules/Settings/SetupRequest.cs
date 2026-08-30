@@ -42,4 +42,8 @@ public record SetupRequest(
     // InceptionDate: optional date the organisation was founded (spec 028, FR-022 / issue #353).
     // Null (the default) for groups that don't supply it and every pre-existing dataset. When set
     // and later than the FY anchor, the first financial year is reported as a part-year.
-    DateTime? InceptionDate = null);
+    DateTime? InceptionDate = null,
+    // TaxEntryMode: how a newly entered taxable amount is interpreted (spec 028, issue #354) —
+    // Inclusive (the default, entered figure is the gross) or Exclusive (entered figure is the
+    // net, tax added on top). Forced to Inclusive at Finish when IsTaxApplicable is false.
+    TaxEntryMode TaxEntryMode = TaxEntryMode.Inclusive);

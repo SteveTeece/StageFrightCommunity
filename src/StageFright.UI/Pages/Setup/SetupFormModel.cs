@@ -58,6 +58,13 @@ public sealed class SetupFormModel : IValidatableObject
 
     public TaxCode? AttendanceFeeTaxCode { get; set; }
 
+    /// <summary>
+    /// How a newly entered taxable amount is interpreted (spec 028, issue #354): tax-inclusive
+    /// gross (the default) or tax-exclusive net with tax added on top. Only meaningful while
+    /// <see cref="IsTaxApplicable"/> is true; persisted onto <see cref="Core.Entities.Settings.TaxEntryMode"/>.
+    /// </summary>
+    public TaxEntryMode TaxEntryMode { get; set; } = TaxEntryMode.Inclusive;
+
     [Range(1, 12, ErrorMessage = "AGM month must be between 1 and 12.")]
     public int CommitteeRenewalMonth { get; set; } = 1;
 

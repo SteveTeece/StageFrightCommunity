@@ -102,11 +102,13 @@ public class ExpensePaymentService : IExpensePaymentService
             }, innerCt);
 
             // Taxable while tax applies: DR Expense net / DR Tax Paid / CR Bank gross.
+            // Under Exclusive entry mode request.Amount is the net and tax is added on top (the
+            // bank line still takes the gross); under Inclusive it is the gross and tax splits out.
             // Otherwise a 2-line pair; postings while tax doesn't apply carry no tax code at all.
-            var (expenseAmount, taxAmount) = taxCode == TaxCode.Taxable
-                ? TaxCalculator.SplitInclusive(request.Amount, settings?.TaxRate ?? 0m,
+            var (grossAmount, expenseAmount, taxAmount) = taxCode == TaxCode.Taxable
+                ? TaxCalculator.Split(request.Amount, settings?.TaxEntryMode ?? TaxEntryMode.Inclusive, settings?.TaxRate ?? 0m,
                     CurrencyCatalog.Get(settings?.CurrencyCode ?? CurrencyCatalog.Default.Code).MinorUnitDigits)
-                : (request.Amount, 0m);
+                : (request.Amount, request.Amount, 0m);
 
             var lines = new List<Transaction>
             {
@@ -129,7 +131,7 @@ public class ExpensePaymentService : IExpensePaymentService
                     Date = request.Date,
                     AccountId = bankAccount.Id,
                     DebitAmount = 0m,
-                    CreditAmount = request.Amount,
+                    CreditAmount = grossAmount,
                     GLAccount = bankAccount.AccountNumber,
                     JournalEntryId = entry.Id,
                     TaxCode = taxCode,

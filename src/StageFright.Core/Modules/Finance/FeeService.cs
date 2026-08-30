@@ -84,10 +84,13 @@ public class FeeService : IFeeService
         var taxCode = settings.IsTaxApplicable
             ? settings.AnnualFeeTaxCode ?? TaxCode.TaxExempt
             : (TaxCode?)null;
-        var (incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
-            ? TaxCalculator.SplitInclusive(settings.AnnualFee, settings.TaxRate ?? 0m,
+        // Under Exclusive entry mode settings.AnnualFee is the net and tax is added on top; under
+        // Inclusive it is the gross and tax is split back out. Either way the receivable and
+        // Fee.Amount carry the gross, the income line the net, the tax line the tax (issue #354).
+        var (grossAmount, incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
+            ? TaxCalculator.Split(settings.AnnualFee, settings.TaxEntryMode, settings.TaxRate ?? 0m,
                 CurrencyCatalog.Get(settings.CurrencyCode).MinorUnitDigits)
-            : (settings.AnnualFee, 0m);
+            : (settings.AnnualFee, settings.AnnualFee, 0m);
 
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
@@ -100,7 +103,7 @@ public class FeeService : IFeeService
                     Id = Guid.NewGuid(),
                     MemberId = memberId,
                     FeeType = FeeType.Annual,
-                    Amount = settings.AnnualFee,
+                    Amount = grossAmount,
                     FeeDate = feeDate,
                     DueDate = dueDate,
                     PaidAtCreation = false,
@@ -118,7 +121,7 @@ public class FeeService : IFeeService
                         Id = Guid.NewGuid(),
                         Date = feeDate,
                         AccountId = SystemAccounts.MemberReceivableId,
-                        DebitAmount = settings.AnnualFee,
+                        DebitAmount = grossAmount,
                         CreditAmount = 0m,
                         GLAccount = SystemAccounts.MemberReceivableNumber,
                         MemberId = memberId,

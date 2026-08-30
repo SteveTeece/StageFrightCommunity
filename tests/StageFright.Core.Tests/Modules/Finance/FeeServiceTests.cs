@@ -228,6 +228,29 @@ public class FeeServiceTests : TestBase
             Arg.Any<CancellationToken>());
     }
 
+    [Fact]
+    public async Task ApplyAnnualFees_TaxableAndExclusiveMode_AddsTaxOnTop_ReceivableAndFeeTakeGross()
+    {
+        // issue #354: in Exclusive mode settings.AnnualFee (100) is the net; tax is added on top so
+        // the member receivable and the stored Fee.Amount carry the gross (110), income keeps 100.
+        SetSettings(isTaxApplicable: true, annualFeeTaxCode: TaxCode.Taxable, annualFee: 100m,
+            taxEntryMode: TaxEntryMode.Exclusive);
+
+        await _sut.ApplyAnnualFeesAsync(new[] { ActiveMember1Id }, Ct);
+
+        await _feeRepo.Received(1).AddAsync(
+            Arg.Is<Fee>(f => f!.TaxCode == TaxCode.Taxable && f.Amount == 110m),
+            Arg.Any<CancellationToken>());
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines!.Count == 3
+                && lines.Any(t => t.DebitAmount == 110m && t.GLAccount == "1200")
+                && lines.Any(t => t.CreditAmount == 100m && t.GLAccount == "4000")
+                && lines.Any(t => t.CreditAmount == 10m && t.AccountId == SystemAccounts.TaxCollectedId)
+                && lines.Sum(t => t.DebitAmount) == lines.Sum(t => t.CreditAmount)),
+            Arg.Any<CancellationToken>());
+    }
+
     [Theory]
     [InlineData(TaxCode.TaxExempt)]
     [InlineData(TaxCode.Excluded)]
@@ -266,7 +289,8 @@ public class FeeServiceTests : TestBase
 
     // --- Helpers ---
 
-    private void SetSettings(bool isTaxApplicable, TaxCode? annualFeeTaxCode, decimal annualFee) =>
+    private void SetSettings(bool isTaxApplicable, TaxCode? annualFeeTaxCode, decimal annualFee,
+        TaxEntryMode taxEntryMode = TaxEntryMode.Inclusive) =>
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>())
             .Returns(new Settings
             {
@@ -275,6 +299,7 @@ public class FeeServiceTests : TestBase
                 MembershipRenewalMonth = 1, MaxAgeRangeYears = 150,
                 MinimumMemberAge = 0, SchemaVersion = "1.1.0",
                 IsTaxApplicable = isTaxApplicable, TaxRate = isTaxApplicable ? 10m : null, AnnualFeeTaxCode = annualFeeTaxCode,
+                TaxEntryMode = taxEntryMode,
                 CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
             });
 

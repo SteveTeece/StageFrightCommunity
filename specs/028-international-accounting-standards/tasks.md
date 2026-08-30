@@ -534,3 +534,94 @@ inception date and labelled a part-year; every later year is a full twelve month
 
 **Dependencies**: `T095 | T096` → `T097` → `T098 | T099 | T100 | T101` → `T102` → `T103 | T104` →
 `T105 | T106 | T107` → `T108` → `T109 | T110 | T111` → `T112` → `T113`.
+
+---
+
+## Phase 15: Issue #354 — Tax-exclusive amount entry (net + tax), alongside tax-inclusive (US10, FR-029 / FR-030)
+
+**Follow-on issue [#354](https://github.com/SteveTeece/StageFrightCommunity/issues/354)** (parent #341,
+follows spike #350 and `docs/assessments/sales-tax-internationalisation.md` Point 2 — the in-scope
+"Issue A", rough size M), implemented on this branch as part of spec 028.
+
+**Goal**: a per-organisation **tax entry mode** (`Inclusive` — today's behaviour, the default — or
+`Exclusive`). In `Exclusive` mode the figure the treasurer enters is the **net** and tax is added on
+top (`net 100` at `8%` → tax `8`, gross `108`); the primary receivable/bank line and any auto-payment
+carry the gross, the income/expense line the net, and the tax clearing line the tax. No change to the
+GL line structure, the `2310` / `2320` accounts, or the `TaxCode` enum / stored values. `Inclusive`
+mode is byte-identical to today, so the AUD zero-drift regression (T013) still passes. Historical
+records are untouched — the mode only interprets a **newly entered** figure.
+
+**Independent Test**: set `Settings.TaxEntryMode = Exclusive`, `TaxRate = 8`, a taxable income of
+`100` → GL posts income `100` / tax `8` / bank `108`, `AddBalancedSetAsync` balanced; flip to
+`Inclusive` and the same `108` entry posts income `100` / tax `8` / bank `108` as before; a
+freshly-migrated `Settings` row reads `Inclusive`; an AUD dataset's reports are byte-identical.
+
+**Wave 1 — enum + calculator (independent files):**
+
+- [x] **T114** [US10] `TaxEntryMode` enum — `Inclusive` (0, default) / `Exclusive` (1); doc-comment explains "the entered figure is the gross" vs "the entered figure is the net, tax added on top" · `src/StageFright.Core/Enums/TaxEntryMode.cs`
+- [x] **T115** [US10] `TaxCalculator` — add `SplitExclusive(decimal net, decimal ratePercent, int minorUnitDigits = 2)` → `(decimal Gross, decimal Tax)` with `tax = round(net × ratePercent ÷ 100, minorUnitDigits, AwayFromZero)`, `gross = net + tax`; and a `Split(decimal enteredAmount, TaxEntryMode mode, decimal ratePercent, int minorUnitDigits = 2)` → `(decimal Gross, decimal Net, decimal Tax)` dispatcher (Inclusive → `SplitInclusive`, Exclusive → `SplitExclusive`) so every posting service has one uniform call site; update the class doc-comment · `src/StageFright.Core/Modules/Finance/TaxCalculator.cs`
+
+**⟶ then — Settings schema:**
+
+- [x] **T116** [US10] `Settings` entity — add `TaxEntryMode TaxEntryMode { get; set; } = TaxEntryMode.Inclusive;`; doc-comment: how a newly entered taxable figure is interpreted; `Inclusive` for every pre-existing dataset (spec 028, issue #354) · `src/StageFright.Core/Entities/Settings.cs`
+- [x] **T117** [US10] `SettingsConfiguration` — `builder.Property(s => s.TaxEntryMode).HasConversion<string>().HasDefaultValue(TaxEntryMode.Inclusive)` (string-stored like every other enum column) · `src/StageFright.Data/Configurations/SettingsConfiguration.cs`
+
+**⟶ then:**
+
+- [x] **T118** [US10] EF migration `AddTaxEntryMode` — `TaxEntryMode` `TEXT NOT NULL DEFAULT 'Inclusive'` on `Settings`; snapshot updated · `src/StageFright.Data/Migrations/*_AddTaxEntryMode.cs` *(needs T116, T117)*
+
+**⟶ then — posting services adopt the mode (independent files):**
+
+- [x] **T119** [P] [US10] `FeeService.ApplyAnnualFeesAsync` — `TaxCalculator.Split(settings.AnnualFee, settings.TaxEntryMode, rate, digits)` → `(gross, net, tax)`; `Fee.Amount` and the MemberReceivable debit use `gross`, the Income credit `net`, the Tax Collected credit `tax`; non-taxable path unchanged · `src/StageFright.Core/Modules/Finance/FeeService.cs` *(needs T115, T116)*
+- [x] **T120** [P] [US10] `IncomeEntryService.RecordIncomeAsync` — `Split(request.Amount, settings.TaxEntryMode, …)`; the Bank debit uses `gross`, the Income credit `net`, Tax Collected `tax` · `src/StageFright.Core/Modules/Finance/IncomeEntryService.cs` *(needs T115, T116)*
+- [x] **T121** [P] [US10] `ExpensePaymentService.RecordExpenseAsync` — `Split(request.Amount, settings.TaxEntryMode, …)`; the Expense debit uses `net`, Tax Paid `tax`, the Bank credit `gross` · `src/StageFright.Core/Modules/Finance/ExpensePaymentService.cs` *(needs T115, T116)*
+- [x] **T122** [P] [US10] `AttendanceService.RecordBatchAsync` — `Split(settings.AttendanceFee, settings.TaxEntryMode, …)`; `Fee.Amount`, the MemberReceivable debit, the paid-at-creation Cash/receivable pair and `Payment.Amount` all use `gross`, the Income credit `net`, Tax Collected `tax` · `src/StageFright.Core/Modules/Rehearsals/AttendanceService.cs` *(needs T115, T116)*
+- [x] **T122a** [US10] `ReactivationForgivenessService` — **no code change**; extend the existing tax-adjustment comment to record why: the write-off reverses a *stored* gross `Fee.Amount`, and `SplitInclusive` of an exact gross re-sums by construction, so the pair stays balanced in either entry mode and no historical figure is reinterpreted · `src/StageFright.Core/Modules/Finance/ReactivationForgivenessService.cs`
+
+**⟶ then — setup capture (independent files):**
+
+- [x] **T123** [P] [US10] `SetupFormModel` — add `TaxEntryMode TaxEntryMode { get; set; } = TaxEntryMode.Inclusive;` · `src/StageFright.UI/Pages/Setup/SetupFormModel.cs`
+- [x] **T124** [P] [US10] `SetupRequest` — add trailing `TaxEntryMode TaxEntryMode = TaxEntryMode.Inclusive` · `src/StageFright.Core/Modules/Settings/SetupRequest.cs`
+
+**⟶ then:**
+
+- [x] **T125** [US10] `SetupService.InitializeAsync` — persist `TaxEntryMode = request.IsTaxApplicable ? request.TaxEntryMode : TaxEntryMode.Inclusive` (mirrors the "force tax fields null when tax off" rule) · `src/StageFright.Core/Modules/Settings/SetupService.cs` *(needs T124, T116)*
+- [x] **T126** [US10] `SetupWizard` — pass `TaxEntryMode: _model.TaxEntryMode` into `new SetupRequest(...)` · `src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs` *(needs T123, T124)*
+- [x] **T127** [US10] `SalesTaxTab` — Inclusive/Exclusive `<InputSelect>` bound to `Model.TaxEntryMode`, rendered only while `Model.IsTaxApplicable`; `HandleTaxToggleChanged` off-branch resets it to `Inclusive` · `src/StageFright.UI/Pages/Setup/Tabs/SalesTaxTab.razor`, `SalesTaxTab.razor.cs` *(needs T123)*
+
+**⟶ then — Settings edit surface:**
+
+- [x] **T128** [US10] `TaxSettingsTab` — same Inclusive/Exclusive selector bound to `s.TaxEntryMode`, only while `s.IsTaxApplicable`; `GeneralSettingsTab.HandleSaveAsync` merge gains `_settings.TaxEntryMode = current.TaxEntryMode` so a General-tab save can't clobber it · `src/StageFright.UI/Pages/Settings/TaxSettingsTab.razor`, `src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor.cs` *(needs T116)*
+- [x] **T129** [US10] `SettingsService.SaveAsync` — when `!settings.IsTaxApplicable`, force `settings.TaxEntryMode = TaxEntryMode.Inclusive` (the choke point every save path goes through, mirroring the rate/codes reset) · `src/StageFright.Core/Modules/Settings/SettingsService.cs` *(needs T116)*
+
+**⟶ then — UI tax hints + labels reflect the mode:**
+
+- [x] **T130** [P] [US10] `RecordIncome` — load `_taxEntryMode`; the tax hint picks `Finance_Common_TaxInclusiveHint` vs `Finance_Common_TaxExclusiveHint` (via `TaxCalculator.Split`), and the Amount label picks the tax-inclusive vs tax-exclusive variant while `_isTaxApplicable` · `src/StageFright.UI/Pages/Finance/RecordIncome.razor`, `RecordIncome.razor.cs` *(needs T115, T116, T132)*
+- [x] **T131** [P] [US10] `ExpensePaymentPage` — same treatment · `src/StageFright.UI/Pages/Finance/ExpensePaymentPage.razor`, `ExpensePaymentPage.razor.cs` *(needs T115, T116, T132)*
+
+**⟶ then — resources:**
+
+- [x] **T132** [US10] `FinanceResource` — `Finance_Common_TaxExclusiveHint` (`Plus tax of {Amount} — total {Total}`), `Finance_Common_AmountLabelTaxInclusive` (`Amount (tax inclusive)`), `Finance_Common_AmountLabelTaxExclusive` (`Amount (tax exclusive)`) · `src/StageFright.UI/Resources/Strings/FinanceResource.resx`, `.en-US.resx`, `.fr-FR.resx`
+- [x] **T133** [US10] `SettingsResource` + `SetupResource` — `Settings_Tax_EntryModeLabel`, `Setup_Tax_EntryModeLabel` (`Amount entry`) · `src/StageFright.UI/Resources/Strings/SettingsResource.resx` (+ `.en-US`, `.fr-FR`), `SetupResource.resx` (+ `.en-US`, `.fr-FR`)
+- [x] **T134** [US10] `EnumsResource` — `Enum_TaxEntryMode_Inclusive` (`Tax-inclusive`), `Enum_TaxEntryMode_Exclusive` (`Tax-exclusive`) in neutral / `.en-US` / `.fr-FR`; regenerate `qps-ploc` via `python scripts/generate-pseudo-locale.py` · `src/StageFright.Core/Modules/Localization/Resources/EnumsResource.resx` (+ satellites), `scripts/generate-pseudo-locale.py`
+
+**⟶ then — tests:**
+
+- [x] **T135** [P] [US10] Unit — `TaxCalculatorTests`: `SplitExclusive` rounding table at 0/2/3 minor digits; `gross == net + tax` exactly; zero net → zero tax; zero rate → zero tax; midpoint away-from-zero; `Split` returns `(gross, net, tax)` matching `SplitInclusive` for `Inclusive` and `SplitExclusive` for `Exclusive` · `tests/StageFright.Core.Tests/Modules/Finance/TaxCalculatorTests.cs`
+- [x] **T136** [P] [US10] Unit — `FeeServiceTests` / `IncomeEntryServiceTests` / `ExpensePaymentServiceTests` / `AttendanceServiceTests` each gain an `Exclusive`-mode taxable case: income/expense line = net, tax line = tax, receivable/bank line = gross, `Fee.Amount` / `Payment.Amount` = gross, ledger balanced · those four test files
+- [x] **T137** [P] [US10] Integration — `TaxExclusiveEntryTests` (`InternationalAccounting/`): `Exclusive` org, `100` @ `8%` → income `100` / tax `8` / bank (or receivable) `108`, balanced; `Inclusive` unchanged; re-sum exact at 0/2/3 digits; a freshly-migrated `Settings` row reads `Inclusive`; AUD zero-drift still passes · `tests/StageFright.Integration.Tests/InternationalAccounting/TaxExclusiveEntryTests.cs`
+- [x] **T138** [P] [US10] bUnit + guard — `TaxEntryModeSelectorTests`: the Inclusive/Exclusive selector renders on `TaxSettingsTab` only while tax applies and two-way binds `Settings.TaxEntryMode`; add `typeof(TaxEntryMode)` to `Us2LocalizationGuardTests.UserFacingEnums` · `tests/StageFright.UI.Tests/Pages/Settings/TaxEntryModeSelectorTests.cs`, `tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs`
+
+**⟶ then — docs + verification:**
+
+- [x] **T139** [US10] Spec & docs — `spec.md`: the US10 / FR-029–FR-033 area notes tax-exclusive entry is now delivered on this branch as Phase 15 / issue #354, plus a new SC; `data-model.md`: `Settings.TaxEntryMode` row, the `AddTaxEntryMode` migration, `TaxCalculator.SplitExclusive` / `Split`; `docs/assessments/sales-tax-internationalisation.md`: Point 2 / Issue A marked delivered; `CLAUDE.md` Finance/Localization money-path wording if it goes stale · those files
+- [x] **T140** [US10] Full `dotnet build` + `dotnet test` (no `--no-build`) green, incl. `AudZeroDriftTests` zero-drift (FR-031 / FR-032); close GitHub issue #354 · `StageFrightCommunity.slnx`
+
+**Checkpoint**: an `Exclusive`-mode org's taxable entry of `100` at `8%` posts net `100` / tax `8` /
+gross `108` with a balanced ledger; an `Inclusive`-mode org and an AUD dataset are byte-identical to
+pre-#354; a freshly-migrated `Settings` row reads `Inclusive` (issue #354 acceptance).
+
+**Dependencies**: `T114 → T115`; `T116 | T117 → T118`; `{T115, T116} → T119 | T120 | T121 | T122 | T122a`;
+`T123 | T124`; `{T123, T124, T116} → T125 | T126`; `T123 → T127`; `T116 → T128 | T129`;
+`{T115, T116, T132} → T130 | T131`; `T132 | T133 | T134`; then tests `T135 | T136 | T137 | T138` →
+`T139 → T140`.

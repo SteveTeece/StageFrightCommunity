@@ -61,6 +61,13 @@ else
                         <InputNumber id="taxRate" class="form-control form-control-sm" @bind-Value="s.TaxRate" @bind-Value:format="N2" />
                         <ValidationMessage For="() => s.TaxRate" />
                     </div>
+                    <div class="col-md-6">
+                        <label for="taxEntryMode" class="form-label">@L["Settings_Tax_EntryModeLabel"]</label>
+                        <InputSelect id="taxEntryMode" class="form-select form-select-sm" @bind-Value="s.TaxEntryMode">
+                            <option value="@TaxEntryMode.Inclusive">@TaxEntryMode.Inclusive.LocalizeEnum()</option>
+                            <option value="@TaxEntryMode.Exclusive">@TaxEntryMode.Exclusive.LocalizeEnum()</option>
+                        </InputSelect>
+                    </div>
                 </div>
                 <div class="row g-2 mb-2">
                     <div class="col-md-6">

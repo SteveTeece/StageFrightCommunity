@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using StageFright.Core.Entities;
+using StageFright.Core.Enums;
 
 namespace StageFright.Data.Configurations;
 
@@ -22,6 +23,7 @@ public class SettingsConfiguration : IEntityTypeConfiguration<Settings>
         builder.Property(s => s.AuditRetentionYears).HasDefaultValue(5);
         builder.Property(s => s.AnnualFeeTaxCode).HasConversion<string>();
         builder.Property(s => s.AttendanceFeeTaxCode).HasConversion<string>();
+        builder.Property(s => s.TaxEntryMode).HasConversion<string>().HasDefaultValue(TaxEntryMode.Inclusive);
         builder.Property(s => s.SchemaVersion).IsRequired();
         builder.Property(s => s.CreatedAt).IsRequired();
         builder.Property(s => s.UpdatedAt).IsRequired();
