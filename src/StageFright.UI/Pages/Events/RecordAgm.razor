@@ -1,19 +1,19 @@
 @page "/events/agm/{Id:guid}/record"
 
-<PageTitle>Record AGM — StageFright Community</PageTitle>
+<PageTitle>@L["Events_Agm_RecordPageTitle"]</PageTitle>
 
 <div class="page-header mb-2">
-    <h1 class="h3">Record AGM</h1>
+    <h1 class="h3">@L["Events_Agm_RecordHeading"]</h1>
 </div>
 
 @if (_loading)
 {
-    <p role="status" aria-live="polite">Loading…</p>
+    <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
 }
 else if (!string.IsNullOrEmpty(_guardMessage))
 {
     <div class="alert alert-warning py-1 mb-2 small" role="alert">@_guardMessage</div>
-    <a href="/events/agm" class="btn btn-outline-secondary btn-sm">Back to AGMs</a>
+    <a href="/events/agm" class="btn btn-outline-secondary btn-sm">@L["Events_Agm_BackButton"]</a>
 }
 else
 {
@@ -22,14 +22,14 @@ else
         <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
     }
 
-    <p class="text-muted">Meeting date: @_agm!.Date.ToString("d MMMM yyyy")</p>
+    <p class="text-muted">@MeetingDateText()</p>
 
-    <h2 class="h6 mb-1">Attendance</h2>
+    <h2 class="h6 mb-1">@L["Events_Agm_AttendanceHeading"]</h2>
     <div style="display:flex; flex-direction:column; height:360px;">
         <AgmAttendanceGrid @ref="_attendanceGrid" Members="@_activeMembers" />
     </div>
 
-    <h2 class="h6 mb-1 mt-3">Committee Elections</h2>
+    <h2 class="h6 mb-1 mt-3">@L["Events_Agm_CommitteeElectionsHeading"]</h2>
     <div class="row g-2 mb-2">
         @foreach (var type in _officeHolderTypes)
         {
@@ -38,7 +38,7 @@ else
                 <select id="office-@type.Id" class="form-select form-select-sm"
                         value="@(_officeHolderAssignments[type.Id]?.ToString() ?? "")"
                         @onchange="e => OnOfficeHolderChanged(type.Id, e.Value?.ToString())">
-                    <option value="">Vacant</option>
+                    <option value="">@L["Events_Agm_VacantOption"]</option>
                     @foreach (var member in _activeMembers)
                     {
                         <option value="@member.Id">@member.SortableFullName</option>
@@ -48,12 +48,12 @@ else
         }
     </div>
 
-    <h2 class="h6 mb-1">General Committee Members</h2>
+    <h2 class="h6 mb-1">@L["Events_Agm_GeneralCommitteeMembersHeading"]</h2>
     <p class="small text-muted">
-        Selected: @_generalCommitteeMemberIds.Count
+        @SelectedCountText()
         @if (_seatCountTarget.HasValue)
         {
-            <span> of @_seatCountTarget target seats</span>
+            <span> @SelectedOfTargetText()</span>
         }
     </p>
     <div class="mb-2" style="max-height:200px; overflow-y:auto;">
@@ -70,8 +70,8 @@ else
 
     <div class="d-flex gap-2 mt-2">
         <button class="btn btn-primary btn-sm" @onclick="SaveAsync" disabled="@_saving">
-            @(_saving ? "Saving…" : "Save AGM")
+            @(_saving ? Shared["Shared_Action_Saving"] : L["Events_Agm_RecordSubmitButton"])
         </button>
-        <a href="/events/agm" class="btn btn-outline-secondary btn-sm">Cancel</a>
+        <a href="/events/agm" class="btn btn-outline-secondary btn-sm">@Shared["Shared_Action_Cancel"]</a>
     </div>
 }

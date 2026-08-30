@@ -1,4 +1,6 @@
+using Microsoft.Extensions.Localization;
 using StageFright.Plugins.Contracts;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Modules.Events;
 
@@ -9,12 +11,19 @@ namespace StageFright.UI.Modules.Events;
 /// </summary>
 public class EventsDashboardTileProvider : IDashboardTileProvider
 {
+    private readonly IStringLocalizer<EventsResource> _localizer;
+
+    public EventsDashboardTileProvider(IStringLocalizer<EventsResource> localizer)
+    {
+        _localizer = localizer;
+    }
+
     public string TileId => "events";
-    public string Title => "Events";
+    public string Title => _localizer["Events_Tile_Title"];
     public string ModuleName => "Events";
     public int DisplayOrder => 30;
     public string? NavigateRoute => "/events";
-    public string? ActionText => "View Events";
+    public string? ActionText => _localizer["Events_Tile_ActionText"];
     public Type TileComponentType => typeof(EventsTile);
 
     public Task<TileData> GetTileDataAsync(CancellationToken ct) =>

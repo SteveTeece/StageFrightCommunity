@@ -16,7 +16,7 @@ namespace StageFright.UI.Tests.Pages.Events;
 /// already-recorded/future-date guards, attendance/office-holder/general-committee selection,
 /// FR-008 one-member-one-slot guard, save behavior, and post-save redirect.
 /// </summary>
-public class RecordAgmTests : RadzenGridTestContext
+public class RecordAgmTests : LocalizedTestContext
 {
     private readonly IAgmService _agmService = Substitute.For<IAgmService>();
     private readonly IMemberService _memberService = Substitute.For<IMemberService>();

@@ -1,7 +1,10 @@
 using System.Globalization;
 using BlazorBootstrap;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
+using StageFright.Core.Localization;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Modules.Finance;
 
@@ -15,6 +18,8 @@ public partial class OutstandingBalancesTile : ComponentBase
 {
     [Inject] private IMemberBalanceService MemberBalanceService { get; set; } = null!;
     [Inject] private IFinanceSummaryService FinanceSummaryService { get; set; } = null!;
+    [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
 
     private bool _loading = true;
     private bool _error;
@@ -57,7 +62,7 @@ public partial class OutstandingBalancesTile : ComponentBase
                     {
                         new LineChartDataset
                         {
-                            Label = "Total Owed",
+                            Label = L["Finance_OutstandingTile_TotalOwedSeries"],
                             Data = trend.Select(m => (double?)(double)(m.OutstandingAttendanceFees + m.OutstandingAnnualFees)).ToList(),
                             BorderColor = "#8a8fff",
                             BackgroundColor = "rgba(138, 143, 255, 0.15)",
@@ -66,7 +71,7 @@ public partial class OutstandingBalancesTile : ComponentBase
                         },
                         new LineChartDataset
                         {
-                            Label = "Attendance",
+                            Label = L["Finance_OutstandingTile_AttendanceSeries"],
                             Data = trend.Select(m => (double?)(double)m.OutstandingAttendanceFees).ToList(),
                             BorderColor = "#ff7d92",
                             BackgroundColor = "rgba(255, 125, 146, 0.15)",
@@ -75,7 +80,7 @@ public partial class OutstandingBalancesTile : ComponentBase
                         },
                         new LineChartDataset
                         {
-                            Label = "Annual",
+                            Label = L["Finance_OutstandingTile_AnnualSeries"],
                             Data = trend.Select(m => (double?)(double)m.OutstandingAnnualFees).ToList(),
                             BorderColor = "#ffb020",
                             BackgroundColor = "rgba(255, 176, 32, 0.15)",

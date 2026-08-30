@@ -17,7 +17,7 @@ namespace StageFright.UI.Tests.Pages.Events;
 /// click navigating to AGM detail, the per-row Record action for scheduled AGMs (FR-003), and
 /// the Print attendance report action (issue #302).
 /// </summary>
-public class AgmListTests : RadzenGridTestContext
+public class AgmListTests : LocalizedTestContext
 {
     private readonly IAgmService _agmService = Substitute.For<IAgmService>();
     private readonly IAgmAttendanceSheetService _agmAttendanceSheetService = Substitute.For<IAgmAttendanceSheetService>();

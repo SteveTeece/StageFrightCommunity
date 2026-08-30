@@ -1,10 +1,10 @@
 @page "/rehearsals"
 
-<PageTitle>Rehearsals — StageFright Community</PageTitle>
+<PageTitle>@L["Rehearsals_List_PageTitle"]</PageTitle>
 
 <div class="page-header d-flex align-items-center justify-content-between mb-2">
-    <h1 class="h3 mb-0">Rehearsals</h1>
-    <button class="btn btn-primary btn-sm" @onclick="AddRehearsal">Schedule Rehearsal</button>
+    <h1 class="h3 mb-0">@L["Rehearsals_List_Heading"]</h1>
+    <button class="btn btn-primary btn-sm" @onclick="AddRehearsal">@L["Rehearsals_List_ScheduleButton"]</button>
 </div>
 
 <div class="mb-2">
@@ -14,25 +14,25 @@
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
             </svg>
         </span>
-        <input type="search" class="form-control form-control-sm" placeholder="Search by date or notes…"
-               aria-label="Search rehearsals"
+        <input type="search" class="form-control form-control-sm" placeholder="@L["Rehearsals_List_SearchPlaceholder"]"
+               aria-label="@L["Rehearsals_List_SearchAriaLabel"]"
                @bind="_searchTerm" @bind:event="oninput" />
     </div>
 </div>
 
 @if (_loading)
 {
-    <p role="status" aria-live="polite">Loading rehearsals…</p>
+    <p role="status" aria-live="polite">@L["Rehearsals_List_LoadingText"]</p>
 }
 else if (!DisplayRehearsals.Any())
 {
     @if (_rehearsals.Count == 0)
     {
-        <p class="text-muted">No rehearsals scheduled yet.</p>
+        <p class="text-muted">@L["Rehearsals_List_EmptyNone"]</p>
     }
     else
     {
-        <p class="text-muted">No rehearsals match "<strong>@_searchTerm</strong>".</p>
+        <p class="text-muted">@NoMatchText()</p>
     }
 }
 else
@@ -41,19 +41,19 @@ else
                     AllowSorting="true" AllowPaging="true" PageSize="15"
                     class="rz-shadow-0">
         <Columns>
-            <RadzenDataGridColumn TItem="Rehearsal" Property="Date" Title="Date" Width="130px">
+            <RadzenDataGridColumn TItem="Rehearsal" Property="Date" Title="@L["Rehearsals_List_DateColumn"]" Width="130px">
                 <Template Context="r">
                     <button class="btn btn-link p-0 text-start"
                             @onclick="() => RecordAttendance(r.Id)"
-                            aria-label="View attendance for @r.Date.ToString("d MMM yyyy")">
+                            aria-label="@ViewAttendanceAriaLabel(r.Date)">
                         @r.Date.ToString("d MMM yyyy")
                     </button>
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Rehearsal" Property="Time" Title="Time" Width="80px">
+            <RadzenDataGridColumn TItem="Rehearsal" Property="Time" Title="@L["Rehearsals_List_TimeColumn"]" Width="80px">
                 <Template Context="r">@r.Time.ToString(@"hh\:mm")</Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Rehearsal" Title="Attendance" Width="120px">
+            <RadzenDataGridColumn TItem="Rehearsal" Title="@L["Rehearsals_List_AttendanceColumn"]" Width="120px">
                 <Template Context="r">
                     @if (r.StoredAttendanceRate.HasValue)
                     {
@@ -61,30 +61,30 @@ else
                     }
                     else
                     {
-                        <span class="text-muted small">Not recorded</span>
+                        <span class="text-muted small">@L["Rehearsals_List_AttendanceNotRecorded"]</span>
                     }
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Rehearsal" Property="Notes" Title="Notes" Width="300px" />
-            <RadzenDataGridColumn TItem="Rehearsal" Title="Actions" Width="180px" Sortable="false">
+            <RadzenDataGridColumn TItem="Rehearsal" Property="Notes" Title="@L["Rehearsals_List_NotesColumn"]" Width="300px" />
+            <RadzenDataGridColumn TItem="Rehearsal" Title="@Shared["Shared_Table_ActionsColumn"]" Width="180px" Sortable="false">
                 <Template Context="r">
                     <div class="d-flex flex-nowrap align-items-center gap-1">
                         @if (!r.StoredAttendanceRate.HasValue)
                         {
                             <button class="btn btn-primary btn-sm text-nowrap"
                                     @onclick="() => RecordAttendance(r.Id)"
-                                    aria-label="Record attendance for @r.Date.ToString("d MMM yyyy")">
-                                Record Attendance
+                                    aria-label="@RecordAttendanceAriaLabel(r.Date)">
+                                @L["Rehearsals_List_RecordAttendanceButton"]
                             </button>
                         }
                         else
                         {
-                            <span class="text-muted small">Recorded</span>
+                            <span class="text-muted small">@L["Rehearsals_List_RecordedText"]</span>
                         }
                         <button class="btn btn-outline-secondary btn-sm text-nowrap"
                                 @onclick="() => PrintRoll(r.Id)"
-                                aria-label="Print roll for @r.Date.ToString("d MMM yyyy")">
-                            Print Roll
+                                aria-label="@PrintRollAriaLabel(r.Date)">
+                            @L["Rehearsals_List_PrintRollButton"]
                         </button>
                     </div>
                 </Template>

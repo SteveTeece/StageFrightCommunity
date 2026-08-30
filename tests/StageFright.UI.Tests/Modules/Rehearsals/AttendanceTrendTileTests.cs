@@ -12,7 +12,7 @@ namespace StageFright.UI.Tests.Modules.Rehearsals;
 /// bUnit tests for AttendanceTrendTile (design 3a) — six-month attendance line chart
 /// across loading, error, empty-window and populated states.
 /// </summary>
-public class AttendanceTrendTileTests : BunitContext
+public class AttendanceTrendTileTests : LocalizedTestContext
 {
     private readonly IRehearsalService _rehearsalService = Substitute.For<IRehearsalService>();
 

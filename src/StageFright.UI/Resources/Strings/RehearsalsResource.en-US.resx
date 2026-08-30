@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Rehearsals_List_PageTitle" xml:space="preserve">
+    <value>Rehearsals — StageFright Community</value>
+    <comment>Browser tab title for the Rehearsals list page.</comment>
+  </data>
+  <data name="Rehearsals_List_Heading" xml:space="preserve">
+    <value>Rehearsals</value>
+    <comment>Page heading on the Rehearsals list.</comment>
+  </data>
+  <data name="Rehearsals_List_ScheduleButton" xml:space="preserve">
+    <value>Schedule Rehearsal</value>
+    <comment>Button that opens the schedule-rehearsal form.</comment>
+  </data>
+  <data name="Rehearsals_List_SearchPlaceholder" xml:space="preserve">
+    <value>Search by date or notes…</value>
+    <comment>Placeholder text in the Rehearsals search box.</comment>
+  </data>
+  <data name="Rehearsals_List_SearchAriaLabel" xml:space="preserve">
+    <value>Search rehearsals</value>
+    <comment>aria-label on the Rehearsals search input.</comment>
+  </data>
+  <data name="Rehearsals_List_LoadingText" xml:space="preserve">
+    <value>Loading rehearsals…</value>
+    <comment>Status text shown while the Rehearsals list loads.</comment>
+  </data>
+  <data name="Rehearsals_List_EmptyNone" xml:space="preserve">
+    <value>No rehearsals scheduled yet.</value>
+    <comment>Shown when there are no rehearsals at all.</comment>
+  </data>
+  <data name="Rehearsals_List_NoMatch" xml:space="preserve">
+    <value>No rehearsals match "{SearchTerm}".</value>
+    <comment>Shown when a search returns nothing. {SearchTerm} = the text the user typed.</comment>
+  </data>
+  <data name="Rehearsals_List_DateColumn" xml:space="preserve">
+    <value>Date</value>
+    <comment>Rehearsals grid column header — rehearsal date.</comment>
+  </data>
+  <data name="Rehearsals_List_TimeColumn" xml:space="preserve">
+    <value>Time</value>
+    <comment>Rehearsals grid column header — rehearsal time.</comment>
+  </data>
+  <data name="Rehearsals_List_AttendanceColumn" xml:space="preserve">
+    <value>Attendance</value>
+    <comment>Rehearsals grid column header — recorded attendance rate.</comment>
+  </data>
+  <data name="Rehearsals_List_NotesColumn" xml:space="preserve">
+    <value>Notes</value>
+    <comment>Rehearsals grid column header — rehearsal notes.</comment>
+  </data>
+  <data name="Rehearsals_List_AttendanceNotRecorded" xml:space="preserve">
+    <value>Not recorded</value>
+    <comment>Shown in the Attendance column when no attendance rate has been recorded.</comment>
+  </data>
+  <data name="Rehearsals_List_ViewAttendanceAriaLabel" xml:space="preserve">
+    <value>View attendance for {Date}</value>
+    <comment>aria-label on the date button that opens a rehearsal's recorded attendance. {Date} = the rehearsal date.</comment>
+  </data>
+  <data name="Rehearsals_List_RecordAttendanceButton" xml:space="preserve">
+    <value>Record Attendance</value>
+    <comment>Button that opens the attendance-recording grid for a rehearsal.</comment>
+  </data>
+  <data name="Rehearsals_List_RecordAttendanceAriaLabel" xml:space="preserve">
+    <value>Record attendance for {Date}</value>
+    <comment>aria-label on the Record Attendance button. {Date} = the rehearsal date.</comment>
+  </data>
+  <data name="Rehearsals_List_RecordedText" xml:space="preserve">
+    <value>Recorded</value>
+    <comment>Shown in the Actions column when a rehearsal's attendance has already been recorded.</comment>
+  </data>
+  <data name="Rehearsals_List_PrintRollButton" xml:space="preserve">
+    <value>Print Roll</value>
+    <comment>Button that prints the attendance roll PDF for a rehearsal.</comment>
+  </data>
+  <data name="Rehearsals_List_PrintRollAriaLabel" xml:space="preserve">
+    <value>Print roll for {Date}</value>
+    <comment>aria-label on the Print Roll button. {Date} = the rehearsal date.</comment>
+  </data>
+  <data name="Rehearsals_List_RollNoMembers" xml:space="preserve">
+    <value>No active members found — nothing to print.</value>
+    <comment>Shown when Print Roll is used but there are no active members.</comment>
+  </data>
+  <data name="Rehearsals_List_RollError" xml:space="preserve">
+    <value>Unable to print roll. Please try again.</value>
+    <comment>Shown when generating the attendance roll PDF fails.</comment>
+  </data>
+  <data name="Rehearsals_List_LoadError" xml:space="preserve">
+    <value>Unable to load rehearsals. Please try again.</value>
+    <comment>Shown when the Rehearsals list fails to load.</comment>
+  </data>
+  <data name="Rehearsals_Form_PageTitle" xml:space="preserve">
+    <value>Schedule Rehearsal — StageFright Community</value>
+    <comment>Browser tab title for the schedule-rehearsal form.</comment>
+  </data>
+  <data name="Rehearsals_Form_Heading" xml:space="preserve">
+    <value>Schedule Rehearsal</value>
+    <comment>Page heading on the schedule-rehearsal form.</comment>
+  </data>
+  <data name="Rehearsals_Form_DateLabel" xml:space="preserve">
+    <value>Date</value>
+    <comment>Schedule-rehearsal form field label — date.</comment>
+  </data>
+  <data name="Rehearsals_Form_TimeLabel" xml:space="preserve">
+    <value>Time</value>
+    <comment>Schedule-rehearsal form field label — time.</comment>
+  </data>
+  <data name="Rehearsals_Form_TimeRequired" xml:space="preserve">
+    <value>Time is required.</value>
+    <comment>Validation message shown when the time field is left blank.</comment>
+  </data>
+  <data name="Rehearsals_Form_NotesLabel" xml:space="preserve">
+    <value>Notes</value>
+    <comment>Schedule-rehearsal form field label — notes.</comment>
+  </data>
+  <data name="Rehearsals_Form_ScheduleButton" xml:space="preserve">
+    <value>Schedule</value>
+    <comment>Submit button on the schedule-rehearsal form.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_PageTitleView" xml:space="preserve">
+    <value>Attendance — StageFright Community</value>
+    <comment>Browser tab title when viewing a rehearsal's already-recorded attendance.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_PageTitleRecord" xml:space="preserve">
+    <value>Record Attendance — StageFright Community</value>
+    <comment>Browser tab title when recording attendance for a rehearsal.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_HeadingView" xml:space="preserve">
+    <value>Attendance</value>
+    <comment>Page heading when viewing a rehearsal's already-recorded attendance.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_HeadingRecord" xml:space="preserve">
+    <value>Record Attendance</value>
+    <comment>Page heading when recording attendance for a rehearsal.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_BackButton" xml:space="preserve">
+    <value>Back to Rehearsals</value>
+    <comment>Link back to the Rehearsals list from the attendance grid.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_RecordedBanner" xml:space="preserve">
+    <value>Attendance recorded at {Rate}% attendance rate. Records are immutable.</value>
+    <comment>Info banner shown when attendance has already been recorded. {Rate} = the stored attendance rate to one decimal place.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_NoRecords" xml:space="preserve">
+    <value>No attendance records found for this rehearsal.</value>
+    <comment>Shown when a rehearsal is marked recorded but has no attendance rows.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_AttendedColumn" xml:space="preserve">
+    <value>Attended</value>
+    <comment>Attendance grid column header — whether the member attended.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_PaidColumn" xml:space="preserve">
+    <value>Paid</value>
+    <comment>Attendance grid column header — whether the attendance fee was paid.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_MemberColumn" xml:space="preserve">
+    <value>Member</value>
+    <comment>Attendance grid column header — member name.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_FeeColumn" xml:space="preserve">
+    <value>Fee</value>
+    <comment>Attendance grid column header — the attendance fee for the row.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_AttendedAriaLabel" xml:space="preserve">
+    <value>{MemberName} attended</value>
+    <comment>aria-label on a row's Attended checkbox. {MemberName} = the member's name.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_PaidAriaLabel" xml:space="preserve">
+    <value>{MemberName} paid</value>
+    <comment>aria-label on a row's Paid checkbox in the read-only recorded view. {MemberName} = the member's name.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_MarkPaidAriaLabel" xml:space="preserve">
+    <value>Mark {MemberName} as paid</value>
+    <comment>aria-label on a row's Paid checkbox while recording. {MemberName} = the member's name.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_SelectAllAriaLabel" xml:space="preserve">
+    <value>Select all members as attended</value>
+    <comment>aria-label on the header checkbox that marks every member as attended.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_SelectAllLabel" xml:space="preserve">
+    <value>Select All</value>
+    <comment>Label beside the header checkbox that marks every member as attended.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_FutureNotice" xml:space="preserve">
+    <value>Attendance can be recorded starting {Date}.</value>
+    <comment>Shown when the rehearsal is in the future. {Date} = the rehearsal date, long form.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_NoActiveMembers" xml:space="preserve">
+    <value>No active members found. Add members before recording attendance.</value>
+    <comment>Shown when there are no active members to record attendance for.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_OwedBadge" xml:space="preserve">
+    <value>Owed</value>
+    <comment>Badge shown beside the fee when a member attended but has not paid.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_SaveButton" xml:space="preserve">
+    <value>Save Attendance</value>
+    <comment>Button that saves the recorded attendance for a rehearsal.</comment>
+  </data>
+  <data name="Rehearsals_Attendance_NotFound" xml:space="preserve">
+    <value>Rehearsal not found.</value>
+    <comment>Shown when the requested rehearsal id does not exist.</comment>
+  </data>
+  <data name="Rehearsals_Tile_Title" xml:space="preserve">
+    <value>Rehearsals</value>
+    <comment>Dashboard tile heading for the Rehearsals module.</comment>
+  </data>
+  <data name="Rehearsals_Tile_ActionText" xml:space="preserve">
+    <value>View Rehearsals</value>
+    <comment>Action link on the Rehearsals dashboard tile.</comment>
+  </data>
+  <data name="Rehearsals_Tile_UpcomingLabel" xml:space="preserve">
+    <value>Upcoming</value>
+    <comment>Rehearsals tile stat label — count of upcoming rehearsals.</comment>
+  </data>
+  <data name="Rehearsals_Tile_NextLabel" xml:space="preserve">
+    <value>Next</value>
+    <comment>Rehearsals tile stat label — date of the next rehearsal.</comment>
+  </data>
+  <data name="Rehearsals_Tile_LastAttendanceLabel" xml:space="preserve">
+    <value>Last attendance</value>
+    <comment>Rehearsals tile note label preceding the most recent recorded attendance rate.</comment>
+  </data>
+  <data name="Rehearsals_Tile_AttendanceDetail" xml:space="preserve">
+    <value>{Attended} of {Total} ({Rate}%)</value>
+    <comment>Rehearsals tile — recorded attendance. {Attended} = members who attended, {Total} = attendance records, {Rate} = rate to whole number.</comment>
+  </data>
+  <data name="Rehearsals_Tile_AttendanceRate" xml:space="preserve">
+    <value>{Rate}%</value>
+    <comment>Rehearsals tile — recorded attendance rate only. {Rate} = rate to whole number.</comment>
+  </data>
+  <data name="Rehearsals_Tile_NoAttendance" xml:space="preserve">
+    <value>No attendance recorded yet</value>
+    <comment>Rehearsals tile note shown when no attendance has been recorded.</comment>
+  </data>
+  <data name="Rehearsals_TrendTile_Title" xml:space="preserve">
+    <value>Attendance trend</value>
+    <comment>Dashboard tile heading for the six-month attendance-trend chart.</comment>
+  </data>
+  <data name="Rehearsals_TrendTile_Empty" xml:space="preserve">
+    <value>No attendance recorded in the last 6 months</value>
+    <comment>Attendance-trend tile message shown when there is no data to chart.</comment>
+  </data>
+  <data name="Rehearsals_TrendTile_Series" xml:space="preserve">
+    <value>Attendance %</value>
+    <comment>Attendance-trend chart legend label for the monthly average attendance-rate line.</comment>
+  </data>
+</root>

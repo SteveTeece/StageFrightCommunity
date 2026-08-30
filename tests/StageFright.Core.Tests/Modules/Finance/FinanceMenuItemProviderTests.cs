@@ -1,4 +1,6 @@
 using StageFright.Core.Modules.Finance;
+using StageFright.Core.Modules.Localization.Resources;
+using StageFright.Core.Tests.Fixtures;
 
 namespace StageFright.Core.Tests.Modules.Finance;
 
@@ -9,7 +11,7 @@ namespace StageFright.Core.Tests.Modules.Finance;
 /// </summary>
 public class FinanceMenuItemProviderTests
 {
-    private readonly FinanceMenuItemProvider _sut = new();
+    private readonly FinanceMenuItemProvider _sut = new(RealStringLocalizer.For<NavigationResource>());
 
     [Fact]
     public void GetMenuItems_DoesNotIncludeRecordExpense_AsSubItem()

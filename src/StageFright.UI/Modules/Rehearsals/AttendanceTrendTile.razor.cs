@@ -1,7 +1,9 @@
 using System.Globalization;
 using BlazorBootstrap;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Modules.Rehearsals;
 
@@ -14,6 +16,8 @@ public partial class AttendanceTrendTile : ComponentBase
     private const int MonthWindow = 6;
 
     [Inject] private IRehearsalService RehearsalService { get; set; } = null!;
+    [Inject] private IStringLocalizer<RehearsalsResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
 
     private bool _loading = true;
     private bool _error;
@@ -58,7 +62,7 @@ public partial class AttendanceTrendTile : ComponentBase
                     {
                         new LineChartDataset
                         {
-                            Label = "Attendance %",
+                            Label = L["Rehearsals_TrendTile_Series"],
                             Data = values,
                             BorderColor = "#38d2ff",
                             BackgroundColor = "rgba(56, 210, 255, 0.15)",

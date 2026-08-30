@@ -1,5 +1,48 @@
 <div class="mb-3">
-    <label for="orgName" class="form-label">Organisation Name <span aria-hidden="true" class="text-danger">*</span></label>
-    <InputText id="orgName" class="form-control form-control-sm" @bind-Value="Model.OrganizationName" placeholder="e.g. Springfield Choral Society" />
+    <label for="orgName" class="form-label">@L["Setup_General_OrgNameLabel"] <span aria-hidden="true" class="text-danger">*</span></label>
+    <InputText id="orgName" class="form-control form-control-sm" @bind-Value="Model.OrganizationName" placeholder="@L["Setup_General_OrgNamePlaceholder"]" />
     <ValidationMessage For="() => Model.OrganizationName" class="text-danger small" />
+</div>
+
+<div class="mb-3">
+    <label for="setup-currency" class="form-label">@L["Setup_General_CurrencyLabel"] <span aria-hidden="true" class="text-danger">*</span></label>
+    <select id="setup-currency" class="form-select form-select-sm" @bind="Model.CurrencyCode">
+        @foreach (var currency in CurrencyCatalog.All)
+        {
+            <option value="@currency.Code">@currency.DisplayName (@currency.Code)</option>
+        }
+    </select>
+    <div class="form-text small">@L["Setup_General_CurrencyHelp"]</div>
+</div>
+
+<div class="row g-2 mb-3">
+    <div class="col-md-6">
+        <label for="setup-fy-start-month" class="form-label">@L["Setup_General_FinancialYearStartMonthLabel"] <span aria-hidden="true" class="text-danger">*</span></label>
+        <InputSelect id="setup-fy-start-month" class="form-select form-select-sm" @bind-Value="Model.FinancialYearStartMonth">
+            @for (var m = 1; m <= 12; m++)
+            {
+                var month = m;
+                <option value="@month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="() => Model.FinancialYearStartMonth" class="text-danger small" />
+    </div>
+    <div class="col-md-6">
+        <label for="setup-fy-start-day" class="form-label">@L["Setup_General_FinancialYearStartDayLabel"] <span aria-hidden="true" class="text-danger">*</span></label>
+        <InputSelect id="setup-fy-start-day" class="form-select form-select-sm" @bind-Value="Model.FinancialYearStartDay">
+            @for (var d = 1; d <= 28; d++)
+            {
+                var day = d;
+                <option value="@day">@day</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="() => Model.FinancialYearStartDay" class="text-danger small" />
+    </div>
+    <div class="form-text small">@L["Setup_General_FinancialYearStartHelp"]</div>
+</div>
+
+<div class="mb-3">
+    <label for="setup-inception-date" class="form-label">@L["Setup_General_InceptionDateLabel"]</label>
+    <InputDate id="setup-inception-date" class="form-control form-control-sm" @bind-Value="Model.InceptionDate" />
+    <div class="form-text small">@L["Setup_General_InceptionDateHelp"]</div>
 </div>

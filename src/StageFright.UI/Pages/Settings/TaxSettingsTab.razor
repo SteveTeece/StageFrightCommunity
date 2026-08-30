@@ -14,7 +14,7 @@
 
 @if (_settings is null)
 {
-    <p role="status">Loading settings…</p>
+    <p role="status">@L["Settings_Common_LoadingText"]</p>
 }
 else
 {
@@ -24,14 +24,14 @@ else
         <DataAnnotationsValidator />
 
         <div class="mb-2">
-            <label class="form-label">Sales Tax</label>
+            <label class="form-label">@L["Settings_Tax_SalesTaxLabel"]</label>
             <div class="d-flex align-items-center gap-2">
                 <RadzenSwitch Name="taxApplicable"
                               Value="@s.IsTaxApplicable"
                               Disabled="@(_pendingTaxToggle is not null)"
                               Change="@((bool v) => HandleTaxToggleRequested(v))" />
                 <label class="form-check-label small" for="taxApplicable">
-                    Sales tax applies to this organisation
+                    @L["Settings_Tax_AppliesLabel"]
                 </label>
             </div>
 
@@ -40,15 +40,15 @@ else
                 <div class="alert alert-warning py-1 mb-2 small" role="alert" id="tax-toggle-confirm">
                     @if (_pendingTaxToggle == true)
                     {
-                        <span><strong>Confirm:</strong> future income and expense postings will split out sales tax, and tax reporting will be enabled.</span>
+                        <span>@L["Settings_Tax_ConfirmEnable"]</span>
                     }
                     else
                     {
-                        <span><strong>Confirm:</strong> tax fields will be hidden and future postings will no longer carry a tax code.</span>
+                        <span>@L["Settings_Tax_ConfirmDisable"]</span>
                     }
                     <div class="mt-1">
-                        <button type="button" class="btn btn-sm btn-warning" id="tax-toggle-confirm-btn" @onclick="ConfirmTaxToggle">Confirm</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary ms-1" @onclick="CancelTaxToggle">Cancel</button>
+                        <button type="button" class="btn btn-sm btn-warning" id="tax-toggle-confirm-btn" @onclick="ConfirmTaxToggle">@L["Settings_Tax_ConfirmButton"]</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary ms-1" @onclick="CancelTaxToggle">@Shared["Shared_Action_Cancel"]</button>
                     </div>
                 </div>
             }
@@ -57,26 +57,33 @@ else
             {
                 <div class="row g-2 mb-2">
                     <div class="col-md-6">
-                        <label for="taxRate" class="form-label">Tax Rate (%) <span class="text-danger">*</span></label>
+                        <label for="taxRate" class="form-label">@L["Settings_Tax_RateLabel"] <span class="text-danger">*</span></label>
                         <InputNumber id="taxRate" class="form-control form-control-sm" @bind-Value="s.TaxRate" @bind-Value:format="N2" />
                         <ValidationMessage For="() => s.TaxRate" />
+                    </div>
+                    <div class="col-md-6">
+                        <label for="taxEntryMode" class="form-label">@L["Settings_Tax_EntryModeLabel"]</label>
+                        <InputSelect id="taxEntryMode" class="form-select form-select-sm" @bind-Value="s.TaxEntryMode">
+                            <option value="@TaxEntryMode.Inclusive">@TaxEntryMode.Inclusive.LocalizeEnum()</option>
+                            <option value="@TaxEntryMode.Exclusive">@TaxEntryMode.Exclusive.LocalizeEnum()</option>
+                        </InputSelect>
                     </div>
                 </div>
                 <div class="row g-2 mb-2">
                     <div class="col-md-6">
-                        <label for="annualFeeTaxCode" class="form-label">Annual Fee Tax Treatment</label>
+                        <label for="annualFeeTaxCode" class="form-label">@L["Settings_Tax_AnnualFeeTreatmentLabel"]</label>
                         <InputSelect id="annualFeeTaxCode" class="form-select form-select-sm" @bind-Value="s.AnnualFeeTaxCode">
-                            <option value="">Tax-exempt (default)</option>
-                            <option value="@TaxCode.Taxable">Taxable</option>
-                            <option value="@TaxCode.TaxExempt">Tax-exempt</option>
+                            <option value="">@L["Settings_Tax_TaxExemptDefaultOption"]</option>
+                            <option value="@TaxCode.Taxable">@TaxCode.Taxable.LocalizeEnum()</option>
+                            <option value="@TaxCode.TaxExempt">@TaxCode.TaxExempt.LocalizeEnum()</option>
                         </InputSelect>
                     </div>
                     <div class="col-md-6">
-                        <label for="attendanceFeeTaxCode" class="form-label">Attendance Fee Tax Treatment</label>
+                        <label for="attendanceFeeTaxCode" class="form-label">@L["Settings_Tax_AttendanceFeeTreatmentLabel"]</label>
                         <InputSelect id="attendanceFeeTaxCode" class="form-select form-select-sm" @bind-Value="s.AttendanceFeeTaxCode">
-                            <option value="">Tax-exempt (default)</option>
-                            <option value="@TaxCode.Taxable">Taxable</option>
-                            <option value="@TaxCode.TaxExempt">Tax-exempt</option>
+                            <option value="">@L["Settings_Tax_TaxExemptDefaultOption"]</option>
+                            <option value="@TaxCode.Taxable">@TaxCode.Taxable.LocalizeEnum()</option>
+                            <option value="@TaxCode.TaxExempt">@TaxCode.TaxExempt.LocalizeEnum()</option>
                         </InputSelect>
                     </div>
                 </div>
@@ -85,7 +92,7 @@ else
 
         <div class="d-flex gap-2 mt-3">
             <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
-                @(_saving ? "Saving…" : "Save Settings")
+                @(_saving ? Shared["Shared_Action_Saving"] : L["Settings_Common_SaveButton"])
             </button>
         </div>
     </EditForm>

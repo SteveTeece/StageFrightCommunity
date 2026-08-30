@@ -1,11 +1,17 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.Extensions.Localization;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 using StageFright.Plugins.Contracts;
 
 namespace StageFright.UI.Layout;
 
 public partial class ShellLayout : LayoutComponentBase, IDisposable
 {
+    [Inject] private IStringLocalizer<NavigationResource> L { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
+
     private ThemeProvider? _themeProvider;
 
     /// <summary>
@@ -70,6 +76,16 @@ public partial class ShellLayout : LayoutComponentBase, IDisposable
             .FirstOrDefault(i => string.Equals(i.Route, route, StringComparison.OrdinalIgnoreCase));
 
     private void Navigate(string route) => Nav.NavigateTo(route);
+
+    /// <summary>aria-label for a nav group's expand/collapse chevron, localized with the group's title.</summary>
+    private string GroupToggleAriaLabel(MenuItem item) =>
+        IsGroupExpanded(item)
+            ? Loc.Get<NavigationResource>("Nav_Sidebar_CollapseGroupAriaLabel", item.Title)
+            : Loc.Get<NavigationResource>("Nav_Sidebar_ExpandGroupAriaLabel", item.Title);
+
+    /// <summary>aria-label for a nav item's count badge (e.g. "3 items").</summary>
+    private string BadgeItemsAriaLabel(string badgeText) =>
+        Loc.Get<NavigationResource>("Nav_Sidebar_BadgeItemsAriaLabel", badgeText);
 
     private async Task ToggleThemeAsync()
     {

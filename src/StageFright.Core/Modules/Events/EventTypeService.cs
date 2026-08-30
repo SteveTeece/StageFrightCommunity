@@ -2,6 +2,8 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Events;
 
@@ -14,11 +16,13 @@ public class EventTypeService : IEventTypeService
 {
     private readonly IEventTypeRepository _repo;
     private readonly IAuditTrailService _audit;
+    private readonly ILocalizer _localizer;
 
-    public EventTypeService(IEventTypeRepository repo, IAuditTrailService audit)
+    public EventTypeService(IEventTypeRepository repo, IAuditTrailService audit, ILocalizer localizer)
     {
         _repo = repo;
         _audit = audit;
+        _localizer = localizer;
     }
 
     public Task<IReadOnlyList<EventType>> GetAllAsync(CancellationToken ct = default) =>
@@ -36,7 +40,7 @@ public class EventTypeService : IEventTypeService
     public async Task<EventType> CreateAsync(string name, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ValidationException("Event type name is required.", nameof(EventType), nameof(CreateAsync));
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_EventType_NameRequired"), nameof(EventType), nameof(CreateAsync));
 
         var now = DateTime.UtcNow;
         var eventType = new EventType
@@ -61,12 +65,12 @@ public class EventTypeService : IEventTypeService
 
         if (eventType.IsSystemDefault)
             throw new ValidationException(
-                "System default event types cannot be archived.",
+                _localizer.Get<ValidationResource>("Validation_EventType_SystemDefaultCannotArchive"),
                 nameof(EventType), nameof(ArchiveAsync), id);
 
         if (await _repo.IsReferencedByEventsAsync(id, ct))
             throw new ValidationException(
-                "This event type cannot be archived because it is referenced by one or more events.",
+                _localizer.Get<ValidationResource>("Validation_EventType_ReferencedCannotArchive"),
                 nameof(EventType), nameof(ArchiveAsync), id);
 
         await _repo.ArchiveAsync(id, "system", ct);

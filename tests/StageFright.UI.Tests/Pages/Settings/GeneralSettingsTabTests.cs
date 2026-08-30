@@ -13,7 +13,7 @@ namespace StageFright.UI.Tests.Pages.Settings;
 /// and GST controls are both gone, and HandleSaveAsync merges tax-owned fields from a
 /// fresh fetch before saving (FR-008/cross-tab save safety).
 /// </summary>
-public class GeneralSettingsTabTests : BunitContext
+public class GeneralSettingsTabTests : LocalizedTestContext
 {
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
 

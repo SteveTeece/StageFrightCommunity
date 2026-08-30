@@ -42,14 +42,16 @@ public class OpeningBalanceServiceTests : TestBase
             {
                 MakeAccount(CashAccountId, "Cash on Hand", AccountType.Asset, "1100", isSystem: true, isBank: true),
                 MakeAccount(SystemAccounts.MemberReceivableId, "Member Receivable", AccountType.Asset, "1200", isSystem: true),
-                MakeAccount(SystemAccounts.TaxCollectedId, "GST Collected", AccountType.Liability, "2310", isSystem: true),
-                MakeAccount(SystemAccounts.TaxPaidId, "GST Paid", AccountType.Liability, "2320", isSystem: true),
+                MakeAccount(SystemAccounts.TaxCollectedId, "Tax Collected", AccountType.Liability, "2310", isSystem: true),
+                // 2320 is an Asset ("Tax Receivable") since spec 028 #355 — a positive opening
+                // balance for recoverable input tax posts debit-normal.
+                MakeAccount(SystemAccounts.TaxPaidId, "Tax Receivable", AccountType.Asset, "2320", isSystem: true),
                 MakeAccount(SystemAccounts.OpeningBalanceEquityId, "Opening Balance Equity", AccountType.Equity, "3100", isSystem: true),
                 MakeAccount(LoanAccountId, "Committee Loan", AccountType.Liability, "2000"),
                 MakeAccount(IncomeAccountId, "Raffle Income", AccountType.Income, "4000")
             });
 
-        _sut = new OpeningBalanceService(_accountRepo, _glRepo, _journalRepo, _audit, _unitOfWork);
+        _sut = new OpeningBalanceService(_accountRepo, _glRepo, _journalRepo, _audit, _unitOfWork, RealLocalizer.Instance);
     }
 
     // --- GetOpeningBalanceAccountsAsync ---
@@ -164,7 +166,7 @@ public class OpeningBalanceServiceTests : TestBase
             Arg.Is<IReadOnlyList<Transaction>>(lines =>
                 lines!.Any(t => t.DebitAmount == 100m && t.AccountId == SystemAccounts.MemberReceivableId)
                 && lines!.Any(t => t.CreditAmount == 50m && t.AccountId == SystemAccounts.TaxCollectedId)
-                && lines!.Any(t => t.CreditAmount == 25m && t.AccountId == SystemAccounts.TaxPaidId)),
+                && lines!.Any(t => t.DebitAmount == 25m && t.AccountId == SystemAccounts.TaxPaidId)),
             Arg.Any<CancellationToken>());
     }
 

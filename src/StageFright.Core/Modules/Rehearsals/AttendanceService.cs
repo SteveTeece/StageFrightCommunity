@@ -2,7 +2,9 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Rehearsals;
 
@@ -28,6 +30,7 @@ public class AttendanceService : IAttendanceService
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRehearsalService _rehearsalService;
+    private readonly ILocalizer _localizer;
 
     public AttendanceService(
         IRehearsalRepository rehearsalRepo,
@@ -40,7 +43,8 @@ public class AttendanceService : IAttendanceService
         ISettingsRepository settingsRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork,
-        IRehearsalService rehearsalService)
+        IRehearsalService rehearsalService,
+        ILocalizer localizer)
     {
         _rehearsalRepo = rehearsalRepo;
         _attendanceRepo = attendanceRepo;
@@ -53,6 +57,7 @@ public class AttendanceService : IAttendanceService
         _audit = audit;
         _unitOfWork = unitOfWork;
         _rehearsalService = rehearsalService;
+        _localizer = localizer;
     }
 
     public async Task<IReadOnlyList<AttendanceRecord>> GetByRehearsalAsync(Guid rehearsalId, CancellationToken ct = default)
@@ -75,17 +80,17 @@ public class AttendanceService : IAttendanceService
 
         if (rehearsal.Date.Date > DateTime.Today)
             throw new ValidationException(
-                "Attendance cannot be recorded before the rehearsal date.",
+                _localizer.Get<ValidationResource>("Validation_Attendance_BeforeRehearsalDate"),
                 "Rehearsal", nameof(RecordBatchAsync), rehearsalId);
 
         var settings = await _settingsRepo.GetAsync(ct)
-            ?? throw new ValidationException("Application settings are not configured.", "Settings", nameof(RecordBatchAsync));
+            ?? throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Settings_NotConfigured"), "Settings", nameof(RecordBatchAsync));
 
         // Resolve income account once for the whole batch
         var accounts = await _accountRepo.GetAllAsync(ct);
         var incomeAccount = accounts.FirstOrDefault(c => c.Type == AccountType.Income && !c.IsSystem)
             ?? throw new ValidationException(
-                "No income account configured. Please set up accounts in Settings before recording attendance.",
+                _localizer.Get<ValidationResource>("Validation_Attendance_NoIncomeAccount"),
                 "Account", nameof(RecordBatchAsync));
 
         // Per-fee-type tax treatment, stamped on each Fee at accrual. Tax is recognised
@@ -93,9 +98,14 @@ public class AttendanceService : IAttendanceService
         var taxCode = settings.IsTaxApplicable
             ? settings.AttendanceFeeTaxCode ?? TaxCode.TaxExempt
             : (TaxCode?)null;
-        var (incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
-            ? TaxCalculator.SplitInclusive(settings.AttendanceFee, settings.TaxRate ?? 0m)
-            : (settings.AttendanceFee, 0m);
+        // Under Exclusive entry mode settings.AttendanceFee is the net and tax is added on top;
+        // under Inclusive it is the gross and tax is split back out. Fee.Amount, the receivable
+        // and the paid-at-creation payment pair all carry the gross; the income line the net
+        // (issue #354).
+        var (grossAmount, incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
+            ? TaxCalculator.Split(settings.AttendanceFee, settings.TaxEntryMode, settings.TaxRate ?? 0m,
+                CurrencyCatalog.Get(settings.CurrencyCode).MinorUnitDigits)
+            : (settings.AttendanceFee, settings.AttendanceFee, 0m);
 
         int presentCount = 0;
         var attendanceRecords = new List<AttendanceRecord>();
@@ -138,7 +148,7 @@ public class AttendanceService : IAttendanceService
                     Id = Guid.NewGuid(),
                     MemberId = item.MemberId,
                     FeeType = FeeType.Attendance,
-                    Amount = settings.AttendanceFee,
+                    Amount = grossAmount,
                     FeeDate = rehearsal.Date,
                     DueDate = rehearsal.Date,
                     PaidAtCreation = paidAtCreation,
@@ -157,7 +167,7 @@ public class AttendanceService : IAttendanceService
                         Id = Guid.NewGuid(),
                         Date = rehearsal.Date,
                         AccountId = SystemAccounts.MemberReceivableId,
-                        DebitAmount = settings.AttendanceFee,
+                        DebitAmount = grossAmount,
                         CreditAmount = 0m,
                         GLAccount = SystemAccounts.MemberReceivableNumber,
                         MemberId = item.MemberId,
@@ -202,6 +212,15 @@ public class AttendanceService : IAttendanceService
 
                 await _glRepo.AddBalancedSetAsync(accrualLines, innerCt);
 
+                // Audit the fee accrual (spec 028, US8 / FR-026) — every financial posting path
+                // leaves an audit-trail entry, written inside this same transaction so a rollback
+                // takes the audit row with it.
+                await _audit.LogAsync(
+                    nameof(Fee), savedFee.Id, AuditAction.Create,
+                    oldValue: null,
+                    newValue: $"Attendance fee {settings.AttendanceFee:C} accrued for member {item.MemberId} (rehearsal {rehearsalId})",
+                    ct: innerCt);
+
                 if (paidAtCreation)
                 {
                     // Auto-create Payment record
@@ -210,7 +229,7 @@ public class AttendanceService : IAttendanceService
                         Id = Guid.NewGuid(),
                         MemberId = item.MemberId,
                         Date = rehearsal.Date,
-                        Amount = settings.AttendanceFee,
+                        Amount = grossAmount,
                         PaymentMethod = PaymentMethod.Cash,
                         PaymentType = PaymentType.Attendance,
                         CreatedAt = now,
@@ -225,7 +244,7 @@ public class AttendanceService : IAttendanceService
                             Id = Guid.NewGuid(),
                             Date = rehearsal.Date,
                             AccountId = SystemAccounts.CashId,
-                            DebitAmount = settings.AttendanceFee,
+                            DebitAmount = grossAmount,
                             CreditAmount = 0m,
                             GLAccount = SystemAccounts.CashNumber,
                             MemberId = item.MemberId,
@@ -240,7 +259,7 @@ public class AttendanceService : IAttendanceService
                             Date = rehearsal.Date,
                             AccountId = SystemAccounts.MemberReceivableId,
                             DebitAmount = 0m,
-                            CreditAmount = settings.AttendanceFee,
+                            CreditAmount = grossAmount,
                             GLAccount = SystemAccounts.MemberReceivableNumber,
                             MemberId = item.MemberId,
                             PaymentId = savedPayment.Id,
@@ -249,6 +268,13 @@ public class AttendanceService : IAttendanceService
                             CreatedAt = now
                         },
                         innerCt);
+
+                    // Audit the automatic payment too (spec 028, US8 / FR-026).
+                    await _audit.LogAsync(
+                        nameof(Payment), savedPayment.Id, AuditAction.Create,
+                        oldValue: null,
+                        newValue: $"Attendance fee payment {settings.AttendanceFee:C} from member {item.MemberId} on {rehearsal.Date:yyyy-MM-dd}",
+                        ct: innerCt);
                 }
             }
 

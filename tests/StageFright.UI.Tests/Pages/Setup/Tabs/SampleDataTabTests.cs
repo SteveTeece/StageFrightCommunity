@@ -7,7 +7,7 @@ namespace StageFright.UI.Tests.Pages.Setup.Tabs;
 /// checkbox, relocated here from ReviewTab so it renders on the Organisation Settings
 /// tab instead (FR-001). Markup and behavior are unchanged from the original checkbox;
 /// only its host component moved.</summary>
-public class SampleDataTabTests : BunitContext
+public class SampleDataTabTests : LocalizedTestContext
 {
     [Fact]
     public void SeedDataCheckbox_OnlyShown_WhenDebugSeederAvailable()

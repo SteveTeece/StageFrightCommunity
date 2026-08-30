@@ -1,6 +1,6 @@
 @if (_loading)
 {
-    <p role="status" aria-live="polite">Loading…</p>
+    <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
 }
 else
 {
@@ -14,7 +14,7 @@ else
         <div class="alert alert-success py-1 mb-2 small" role="status">
             @_successMessage
             <div class="mt-1">
-                <button class="btn btn-sm btn-outline-success" @onclick="RecordAnother">Record Another</button>
+                <button class="btn btn-sm btn-outline-success" @onclick="RecordAnother">@L["Finance_Common_RecordAnotherButton"]</button>
             </div>
         </div>
     }
@@ -24,8 +24,7 @@ else
         @if (_accounts.Count == 0)
         {
             <div class="alert alert-warning py-1 mb-2 small" role="alert">
-                No income accounts are configured. Please add an income account in the
-                <a href="/finance/accounts">Chart of Accounts</a> before recording income.
+                @((MarkupString)L["Finance_RecordIncome_NoAccountsHtml"].Value)
             </div>
         }
         else
@@ -36,12 +35,12 @@ else
                         <div class="row g-2">
 
                             <div class="col-md-4">
-                                <label class="form-label" for="incomeDate">Date <span aria-hidden="true">*</span></label>
+                                <label class="form-label" for="incomeDate">@L["Finance_Common_DateLabel"] <span aria-hidden="true">*</span></label>
                                 <InputDate id="incomeDate" class="form-control form-control-sm" @bind-Value="_form.Date" />
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label" for="amount">Amount <span aria-hidden="true">*</span></label>
+                                <label class="form-label" for="amount">@AmountLabel <span aria-hidden="true">*</span></label>
                                 <div class="input-group input-group-sm @(_errors.ContainsKey("Amount") ? "has-validation" : "")">
                                     <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
                                     <InputNumber id="amount"
@@ -56,11 +55,11 @@ else
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label" for="account">Account <span aria-hidden="true">*</span></label>
+                                <label class="form-label" for="account">@L["Finance_RecordIncome_AccountLabel"] <span aria-hidden="true">*</span></label>
                                 <InputSelect id="account"
                                              class="@(_errors.ContainsKey("AccountId") ? "form-select form-select-sm is-invalid" : "form-select form-select-sm")"
                                              @bind-Value="_form.AccountId">
-                                    <option value="@Guid.Empty">— select —</option>
+                                    <option value="@Guid.Empty">@L["Finance_Common_SelectOption"]</option>
                                     @foreach (var cat in _accounts)
                                     {
                                         <option value="@cat.Id">@cat.Name</option>
@@ -73,7 +72,7 @@ else
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label" for="depositAccount">Deposit to</label>
+                                <label class="form-label" for="depositAccount">@L["Finance_RecordIncome_DepositToLabel"]</label>
                                 <InputSelect id="depositAccount" class="form-select form-select-sm"
                                              @bind-Value="_form.DepositAccountId">
                                     @foreach (var bank in _bankAccounts)
@@ -86,33 +85,33 @@ else
                             @if (_isTaxApplicable)
                             {
                                 <div class="col-md-4">
-                                    <label class="form-label" for="taxCode">Tax Treatment</label>
+                                    <label class="form-label" for="taxCode">@L["Finance_Common_TaxTreatmentLabel"]</label>
                                     <InputSelect id="taxCode" class="form-select form-select-sm" @bind-Value="_form.TaxCode">
-                                        <option value="">Tax-exempt (default)</option>
-                                        <option value="@StageFright.Core.Enums.TaxCode.Taxable">Taxable</option>
-                                        <option value="@StageFright.Core.Enums.TaxCode.TaxExempt">Tax-exempt</option>
+                                        <option value="">@L["Finance_Common_TaxExemptDefaultOption"]</option>
+                                        <option value="@StageFright.Core.Enums.TaxCode.Taxable">@StageFright.Core.Enums.TaxCode.Taxable.LocalizeEnum()</option>
+                                        <option value="@StageFright.Core.Enums.TaxCode.TaxExempt">@StageFright.Core.Enums.TaxCode.TaxExempt.LocalizeEnum()</option>
                                     </InputSelect>
-                                    @if (TaxInclusiveHint is not null)
+                                    @if (TaxHint is not null)
                                     {
-                                        <div class="form-text small">@TaxInclusiveHint</div>
+                                        <div class="form-text small">@TaxHint</div>
                                     }
                                 </div>
                             }
 
                             <div class="col-12">
-                                <label class="form-label" for="description">Description</label>
+                                <label class="form-label" for="description">@L["Finance_Common_DescriptionLabel"]</label>
                                 <InputTextArea id="description" class="form-control form-control-sm" rows="2"
                                                @bind-Value="_form.Description"
-                                               placeholder="e.g. Christmas raffle, Annual fundraiser…" />
+                                               placeholder="@L["Finance_RecordIncome_DescriptionPlaceholder"]" />
                             </div>
 
                         </div>
 
                         <div class="d-flex gap-2 mt-2">
                             <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
-                                @(_saving ? "Saving…" : "Record Income")
+                                @(_saving ? Shared["Shared_Action_Saving"] : L["Finance_RecordIncome_SubmitButton"])
                             </button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="RecordAnother">Clear</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="RecordAnother">@L["Finance_Common_ClearButton"]</button>
                         </div>
                     </EditForm>
                 </div>

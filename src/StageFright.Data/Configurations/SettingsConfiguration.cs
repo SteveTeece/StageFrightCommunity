@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using StageFright.Core.Entities;
+using StageFright.Core.Enums;
 
 namespace StageFright.Data.Configurations;
 
@@ -14,11 +15,15 @@ public class SettingsConfiguration : IEntityTypeConfiguration<Settings>
         builder.Property(s => s.AnnualFee).HasPrecision(18, 2).IsRequired();
         builder.Property(s => s.AttendanceFee).HasPrecision(18, 2).IsRequired();
         builder.Property(s => s.Theme).HasConversion<string>();
+        builder.Property(s => s.LanguageCode).HasMaxLength(16);
+        builder.Property(s => s.CurrencyCode).IsRequired().HasMaxLength(3).HasDefaultValue("AUD");
+        builder.Property(s => s.FinancialYearStartDay).HasDefaultValue(1);
         builder.Property(s => s.IsTaxApplicable).HasDefaultValue(false);
         builder.Property(s => s.TaxRate).HasPrecision(5, 2);
-        builder.Property(s => s.AuditRetentionYears).HasDefaultValue(1);
+        builder.Property(s => s.AuditRetentionYears).HasDefaultValue(5);
         builder.Property(s => s.AnnualFeeTaxCode).HasConversion<string>();
         builder.Property(s => s.AttendanceFeeTaxCode).HasConversion<string>();
+        builder.Property(s => s.TaxEntryMode).HasConversion<string>().HasDefaultValue(TaxEntryMode.Inclusive);
         builder.Property(s => s.SchemaVersion).IsRequired();
         builder.Property(s => s.CreatedAt).IsRequired();
         builder.Property(s => s.UpdatedAt).IsRequired();

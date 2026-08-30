@@ -1,7 +1,9 @@
 using System.Globalization;
 using BlazorBootstrap;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Modules.Finance;
 
@@ -14,6 +16,8 @@ public partial class CashFlowTile : ComponentBase
     private const int MonthWindow = 6;
 
     [Inject] private IFinanceSummaryService FinanceSummaryService { get; set; } = null!;
+    [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
 
     private bool _loading = true;
     private bool _error;
@@ -41,14 +45,14 @@ public partial class CashFlowTile : ComponentBase
                     {
                         new BarChartDataset
                         {
-                            Label = "Income",
+                            Label = L["Finance_CashFlowTile_IncomeSeries"],
                             Data = months.Select(m => (double?)(double)m.Income).ToList(),
                             BackgroundColor = new List<string> { "#4f8dff" },
                             BorderColor = new List<string> { "#4f8dff" }
                         },
                         new BarChartDataset
                         {
-                            Label = "Expenses",
+                            Label = L["Finance_CashFlowTile_ExpensesSeries"],
                             Data = months.Select(m => (double?)(double)m.Expenses).ToList(),
                             BackgroundColor = new List<string> { "rgba(148, 163, 184, 0.55)" },
                             BorderColor = new List<string> { "rgba(148, 163, 184, 0.55)" }

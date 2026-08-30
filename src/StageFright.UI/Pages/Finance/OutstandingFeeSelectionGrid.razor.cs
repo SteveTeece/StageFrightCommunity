@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -8,6 +11,9 @@ public partial class OutstandingFeeSelectionGrid
     [Parameter] public IReadOnlyList<OutstandingFee> Fees { get; set; } = [];
     [Parameter] public bool ReadOnly { get; set; }
     [Parameter] public EventCallback<decimal> SelectionChanged { get; set; }
+
+    [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private List<OutstandingFeeRow> _rows = [];
 
@@ -23,6 +29,11 @@ public partial class OutstandingFeeSelectionGrid
     }
 
     private bool AllSelected => _rows.Count > 0 && _rows.All(r => r.Selected);
+
+    /// <summary>aria-label for a fee row's select checkbox — localised fee type + date.</summary>
+    private string SelectRowAriaLabel(OutstandingFee fee) =>
+        Loc.Get<FinanceResource>("Finance_FeeSelection_SelectRowAriaLabel",
+            fee.FeeType.LocalizeEnum(), fee.FeeDate.ToString("d"));
 
     private async Task ToggleSelectAll(bool value)
     {

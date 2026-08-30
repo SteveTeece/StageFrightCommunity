@@ -12,7 +12,7 @@ namespace StageFright.UI.Tests.Shared;
 /// (blank/length via DataAnnotations, duplicate against ExistingNames); only what the
 /// caller's OnSubmit does with a valid submit differs.
 /// </summary>
-public class AddAccountFormTests : BunitContext
+public class AddAccountFormTests : LocalizedTestContext
 {
     [Fact]
     public async Task ValidSubmit_InvokesOnSubmit_WithEnteredValues()

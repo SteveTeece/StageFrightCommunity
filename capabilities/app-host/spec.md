@@ -61,7 +61,7 @@ The app shell MUST ask a setup-completion service whether initial configuration 
 
 ### The setup wizard captures required configuration through validated steps before anything else can run
 
-The wizard MUST require organisation identity and tax details, fee/renewal configuration, and GST treatment before allowing submission, gating advancement on a per-step validation pass rather than only validating at final submit. Completion MUST persist configuration through one setup service call and then route straight into the app.
+The wizard MUST require organisation identity, fee/renewal configuration, and sales-tax treatment (applicability, rate, and per-fee tax codes) before allowing submission, gating advancement on a per-step validation pass rather than only validating at final submit. Completion MUST persist configuration through one setup service call and then route straight into the app.
 
 #### Scenario: user attempts to advance past an incomplete step
 - **WHEN** required fields for the current step fail validation

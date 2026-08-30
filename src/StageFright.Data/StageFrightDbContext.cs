@@ -121,8 +121,12 @@ public class StageFrightDbContext : DbContext
             new Account
             {
                 Id = new Guid("00000000-0000-0000-0000-000000000005"),
-                Name = "Tax Paid",
-                Type = AccountType.Liability,
+                // Tax paid on purchases is recoverable from the tax authority, so it is an
+                // asset (a receivable), not a liability (spec 028 Phase 16 / issue #355). The
+                // number stays in the 2000s as a documented exception — renumbering would
+                // desync the denormalized Transaction.GLAccount snapshot on historical rows.
+                Name = "Tax Receivable",
+                Type = AccountType.Asset,
                 AccountNumber = "2320",
                 SortOrder = 11,
                 IsSystem = true,

@@ -1,9 +1,9 @@
 <div class="col-md-6 setup-theme-toggle d-flex align-items-center gap-2">
-    <label for="themeSelect" class="small text-muted mb-0">Theme:</label>
+    <label for="themeSelect" class="small text-muted mb-0">@L["Setup_Theme_Label"]</label>
     <select id="themeSelect" class="form-select form-select-sm" style="width: auto;"
             value="@(ThemeProvider?.CurrentTheme == Core.Enums.Theme.Dark ? "Dark" : "Light")"
             @onchange="HandleThemeChangedAsync">
-        <option value="Light">Light</option>
-        <option value="Dark">Dark</option>
+        <option value="Light">@Core.Enums.Theme.Light.LocalizeEnum()</option>
+        <option value="Dark">@Core.Enums.Theme.Dark.LocalizeEnum()</option>
     </select>
 </div>

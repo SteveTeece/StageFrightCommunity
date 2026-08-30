@@ -12,7 +12,7 @@ namespace StageFright.UI.Tests.Pages.Settings;
 /// bUnit tests for CommitteeSettingsTab — office-holder title add/archive flow, seat-count-target
 /// persistence, and built-in titles rendering as read-only (FR-012/FR-013/FR-014).
 /// </summary>
-public class CommitteeSettingsTabTests : RadzenGridTestContext
+public class CommitteeSettingsTabTests : LocalizedTestContext
 {
     private readonly ICommitteeOfficeHolderTypeService _officeHolderTypeService = Substitute.For<ICommitteeOfficeHolderTypeService>();
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();

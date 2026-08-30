@@ -40,12 +40,12 @@ In the MVP, every audit entry SHALL attribute the action to a fixed "system" ide
 
 ### Audit history ages out on a rolling retention window instead of soft-delete
 
-Unlike other entities, audit entries carry no soft-delete fields — they SHALL instead be hard-deleted once older than a fixed retention period (12 months), evaluated at application startup. This keeps the audit log bounded over time without ever allowing an individual entry to be edited or archived.
+Unlike other entities, audit entries carry no soft-delete fields — they SHALL instead be hard-deleted once older than the organisation's configured retention period, evaluated at application startup. The retention period is user-configurable from 1 to 7 years (`Settings.AuditRetentionYears`) and defaults to **5 years** on a new dataset; an existing dataset keeps whatever value it was already configured with. This keeps the audit log bounded over time without ever allowing an individual entry to be edited or archived.
 
 #### Scenario: startup retention purge runs
 
 - **WHEN** the application starts
-- **THEN** all audit entries older than 12 months are permanently removed from the store
+- **THEN** all audit entries older than the configured retention period (default 5 years) are permanently removed from the store
 
 ### Retention purge failures never block application startup
 

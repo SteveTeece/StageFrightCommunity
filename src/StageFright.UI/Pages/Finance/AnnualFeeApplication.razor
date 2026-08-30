@@ -1,15 +1,15 @@
 @page "/finance/annual-fees"
 
-<PageTitle>Apply Annual Fees — StageFright Community</PageTitle>
+<PageTitle>@L["Finance_AnnualFees_PageTitle"]</PageTitle>
 
 <div class="page-header mb-2">
-    <h1 class="h3">Apply Annual Membership Fees</h1>
-    <p class="text-muted mb-0 small">Apply the current year annual fee to all eligible active members.</p>
+    <h1 class="h3">@L["Finance_AnnualFees_Heading"]</h1>
+    <p class="text-muted mb-0 small">@L["Finance_AnnualFees_Intro"]</p>
 </div>
 
 @if (_loading)
 {
-    <p role="status" aria-live="polite">Loading eligible members…</p>
+    <p role="status" aria-live="polite">@L["Finance_AnnualFees_LoadingText"]</p>
 }
 else
 {
@@ -21,29 +21,27 @@ else
     @if (_successMessage is not null)
     {
         <div class="alert alert-success py-1 mb-2 small" role="status">@_successMessage</div>
-        <a href="/finance" class="btn btn-outline-secondary btn-sm mt-1">Back to Finance</a>
+        <a href="/finance" class="btn btn-outline-secondary btn-sm mt-1">@L["Finance_AnnualFees_BackToFinanceButton"]</a>
     }
     else if (!_confirmed)
     {
         <div class="card mb-2">
             <div class="card-body py-2">
-                <h6 class="card-title mb-2">Confirmation</h6>
-                <p class="mb-1 small">
-                    <strong>@_eligibleCount</strong> active @(_eligibleCount == 1 ? "member is" : "members are") eligible for an annual fee this year.
-                </p>
+                <h6 class="card-title mb-2">@L["Finance_AnnualFees_ConfirmationHeading"]</h6>
+                <p class="mb-1 small">@EligibleSummaryText()</p>
                 @if (_eligibleCount == 0)
                 {
-                    <p class="text-muted small mb-2">No eligible members found. Either all active members already have an annual fee for the current year, or there are no active members.</p>
-                    <a href="/finance" class="btn btn-outline-secondary btn-sm">Back to Finance</a>
+                    <p class="text-muted small mb-2">@L["Finance_AnnualFees_NoneEligible"]</p>
+                    <a href="/finance" class="btn btn-outline-secondary btn-sm">@L["Finance_AnnualFees_BackToFinanceButton"]</a>
                 }
                 else
                 {
-                    <p class="text-muted small mb-2">Annual fee amount: <strong>@_annualFee.ToString("C")</strong></p>
+                    <p class="text-muted small mb-2">@L["Finance_AnnualFees_FeeAmountLabel"] <strong>@MoneyFormatter.Format(_annualFee)</strong></p>
                     <div class="d-flex gap-2">
                         <button class="btn btn-primary btn-sm" @onclick="ConfirmApply" disabled="@_applying">
-                            Apply Annual Fees
+                            @L["Finance_AnnualFees_ApplyButton"]
                         </button>
-                        <a href="/finance" class="btn btn-outline-secondary btn-sm">Cancel</a>
+                        <a href="/finance" class="btn btn-outline-secondary btn-sm">@Shared["Shared_Action_Cancel"]</a>
                     </div>
                 }
             </div>

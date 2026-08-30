@@ -1,6 +1,9 @@
 ﻿using System.Data.Common;
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -8,6 +11,8 @@ using Serilog;
 using Serilog.Events;
 using StageFright.App.Seeding;
 using StageFright.Core.Contracts;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization;
 using StageFright.Core.Modules.Agm;
 using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Dashboard;
@@ -161,6 +166,29 @@ public static class MauiProgram
 
     private static void RegisterCoreServices(IServiceCollection services)
     {
+        // Localization (spec 027): AddLocalization() registers the default
+        // ResourceManagerStringLocalizerFactory via TryAdd; the explicit AddSingleton below is a
+        // manual decorator registration — it is the LAST IStringLocalizerFactory registration, so
+        // it is what every IStringLocalizer<T> (including the AddLocalization()-registered
+        // StringLocalizer<T>) resolves, giving every lookup the missing-key logging behaviour
+        // (FR-008/FR-009) without needing a third-party DI "Decorate" helper.
+        services.AddLocalization();
+        services.AddSingleton<IStringLocalizerFactory>(sp =>
+            new MissingKeyLoggingLocalizerFactory(
+                new ResourceManagerStringLocalizerFactory(
+                    sp.GetRequiredService<IOptions<LocalizationOptions>>(),
+                    sp.GetRequiredService<ILoggerFactory>()),
+                sp.GetRequiredService<ILogger<MissingKeyLoggingLocalizerFactory>>()));
+        services.AddScoped<ILocalizer, Localizer>();
+
+        // Display-language resolution (spec 027, US3). The catalog discovers the shipped
+        // resource cultures at runtime (FR-011); SystemCultureProvider reads the OS UI culture;
+        // LanguageProvider resolves the startup culture — explicit Settings.LanguageCode → OS
+        // language → en-AU (FR-023) — and RunStartupSequence applies it before the first render.
+        services.AddSingleton<ISupportedLanguagesCatalog, SupportedLanguagesCatalog>();
+        services.AddSingleton<ISystemCultureProvider, SystemCultureProvider>();
+        services.AddScoped<ILanguageProvider, LanguageProvider>();
+
         services.AddScoped<IAuditTrailService, AuditTrailService>();
         services.AddScoped<ISetupService, SetupService>();
         services.AddSingleton<IDeviceThemePreferenceProvider, MauiDeviceThemePreferenceProvider>();
@@ -194,6 +222,9 @@ public static class MauiProgram
         services.AddScoped<ICombinedEventListService, CombinedEventListService>();
 
         // Finance module (Phase 6 + 9)
+        // Closed-period lock (spec 028, US6): GLRepository consults this at the GL choke point
+        // to reject a back-dated posting into a reported prior period.
+        services.AddScoped<IClosedPeriodGuard, ClosedPeriodGuard>();
         services.AddScoped<IFeeService, FeeService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IReactivationForgivenessService, ReactivationForgivenessService>();
@@ -256,6 +287,11 @@ public static class MauiProgram
 
     private static void RunStartupSequence(IServiceProvider services, string dbPath, string connectionString, StartupDiagnosticService diagnosticService)
     {
+        // Wire the static enum-display resolver to the composition root's decorated factory so
+        // LocalizeEnum() (FR-024) can render an enum without every call site injecting a
+        // localizer just to display one (spec 027).
+        EnumLocalizationExtensions.UseFactory(services.GetRequiredService<IStringLocalizerFactory>());
+
         // Run core EF Core migration + startup tasks
         using var scope = services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<StageFrightDbContext>();
@@ -280,20 +316,55 @@ public static class MauiProgram
             throw;
         }
 
+        // Apply the resolved display culture before the BlazorWebView first renders (spec 027,
+        // US3 / FR-023). LanguageProvider never throws; if anything here fails the process stays
+        // on its default culture and startup continues.
+        try
+        {
+            var languageProvider = scope.ServiceProvider.GetRequiredService<ILanguageProvider>();
+            var culture = languageProvider.ResolveStartupCultureAsync().GetAwaiter().GetResult();
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            CultureInfo.CurrentCulture = culture;
+            CultureInfo.CurrentUICulture = culture;
+            Log.Information("Display culture resolved to {Culture}", culture.Name);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to resolve/apply the display culture; continuing on the default culture");
+        }
+
+        // Configure money formatting for the organisation's currency (spec 028, FR-003), mirroring
+        // the culture application above — set once here, before the BlazorWebView renders. Any
+        // failure leaves MoneyFormatter on its AUD default and startup continues.
+        try
+        {
+            var settingsService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
+            var settings = settingsService.GetAsync().GetAwaiter().GetResult();
+            MoneyFormatter.Configure(CurrencyCatalog.Get(settings?.CurrencyCode ?? "AUD"));
+            Log.Information("Money formatting configured for {Currency}", settings?.CurrencyCode ?? "AUD");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to configure money formatting; continuing with the default currency (AUD)");
+        }
+
         // Run plugin migrations
         var migrationRunner = scope.ServiceProvider.GetRequiredService<PluginMigrationRunner>();
         migrationRunner.RunAsync().GetAwaiter().GetResult();
 
-        // Audit trail startup purge (FR-022): failure is tolerated, startup continues.
-        // Resolved via the registered interface — resolving the concrete AuditTrailService
-        // type here previously returned null (it was never registered by concrete type),
-        // silently skipping the purge while still logging a false "complete" message.
+        // Audit trail startup purge (FR-022): startup always continues, but a failure is now both
+        // logged AND surfaced into the startup-diagnostic state as a non-fatal warning so it is
+        // never silently discarded (spec 028, US8 / FR-025). Resolved via the registered interface
+        // — resolving the concrete AuditTrailService type here previously returned null (it was
+        // never registered by concrete type), silently skipping the purge while still logging a
+        // false "complete" message.
         try
         {
             var auditService = scope.ServiceProvider.GetRequiredService<IAuditTrailService>();
             var settingsService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
             var settings = settingsService.GetAsync().GetAwaiter().GetResult();
-            var retentionYears = settings?.AuditRetentionYears ?? 1;
+            var retentionYears = settings?.AuditRetentionYears ?? 5;
 
             auditService.PurgeOlderThanAsync(DateTime.UtcNow.AddYears(-retentionYears)).GetAwaiter().GetResult();
             Log.Information("Audit trail startup purge complete (retention: {RetentionYears} year(s))", retentionYears);
@@ -301,6 +372,7 @@ public static class MauiProgram
         catch (Exception ex)
         {
             Log.Error(ex, "Audit trail purge failed during startup; startup continues");
+            diagnosticService.RecordWarning("The startup cleanup of expired audit-trail entries did not complete. Your records are intact; it will be retried the next time the app starts.");
         }
     }
 }

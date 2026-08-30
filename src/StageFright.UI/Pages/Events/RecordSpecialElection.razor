@@ -1,19 +1,19 @@
 @page "/events/agm/special-election/new"
 
-<PageTitle>Record Special Election — StageFright Community</PageTitle>
+<PageTitle>@L["Events_SpecialElection_PageTitle"]</PageTitle>
 
 <div class="page-header mb-2">
-    <h1 class="h3">Record Special Election</h1>
+    <h1 class="h3">@L["Events_SpecialElection_Heading"]</h1>
 </div>
 
 @if (_loading)
 {
-    <p role="status" aria-live="polite">Loading…</p>
+    <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
 }
 else if (_currentPositions.Count == 0)
 {
-    <div class="alert alert-warning py-1 mb-2 small">No current committee positions found. Record an AGM first.</div>
-    <a href="/events/agm" class="btn btn-outline-secondary btn-sm">Back to AGMs</a>
+    <div class="alert alert-warning py-1 mb-2 small">@L["Events_SpecialElection_NoPositionsNotice"]</div>
+    <a href="/events/agm" class="btn btn-outline-secondary btn-sm">@L["Events_Agm_BackButton"]</a>
 }
 else
 {
@@ -23,11 +23,11 @@ else
     }
 
     <div class="mb-3">
-        <label for="outgoingPosition" class="form-label">Position Being Replaced</label>
+        <label for="outgoingPosition" class="form-label">@L["Events_SpecialElection_PositionLabel"]</label>
         <select id="outgoingPosition" class="form-select form-select-sm"
                 value="@(_selectedOutgoingId?.ToString() ?? "")"
                 @onchange="e => OnOutgoingChanged(e.Value?.ToString())">
-            <option value="">Select a position</option>
+            <option value="">@L["Events_SpecialElection_SelectPositionOption"]</option>
             @foreach (var record in _currentPositions)
             {
                 <option value="@record.Id">@DescribePosition(record)</option>
@@ -36,11 +36,11 @@ else
     </div>
 
     <div class="mb-3">
-        <label for="incomingMember" class="form-label">Incoming Member</label>
+        <label for="incomingMember" class="form-label">@L["Events_SpecialElection_IncomingMemberLabel"]</label>
         <select id="incomingMember" class="form-select form-select-sm"
                 value="@(_selectedIncomingMemberId?.ToString() ?? "")"
                 @onchange="e => OnIncomingChanged(e.Value?.ToString())">
-            <option value="">Select a member</option>
+            <option value="">@L["Events_SpecialElection_SelectMemberOption"]</option>
             @foreach (var member in _activeMembers)
             {
                 <option value="@member.Id">@member.SortableFullName</option>
@@ -49,15 +49,15 @@ else
     </div>
 
     <div class="mb-3">
-        <label for="replacementDate" class="form-label">Replacement Date</label>
+        <label for="replacementDate" class="form-label">@L["Events_SpecialElection_ReplacementDateLabel"]</label>
         <input type="date" id="replacementDate" class="form-control form-control-sm"
                @bind="_replacementDate" @bind:format="yyyy-MM-dd" />
     </div>
 
     <div class="d-flex gap-2">
         <button class="btn btn-primary btn-sm" @onclick="SaveAsync" disabled="@_saving">
-            @(_saving ? "Saving…" : "Save Special Election")
+            @(_saving ? Shared["Shared_Action_Saving"] : L["Events_SpecialElection_SubmitButton"])
         </button>
-        <a href="/events/agm" class="btn btn-outline-secondary btn-sm">Cancel</a>
+        <a href="/events/agm" class="btn btn-outline-secondary btn-sm">@Shared["Shared_Action_Cancel"]</a>
     </div>
 }

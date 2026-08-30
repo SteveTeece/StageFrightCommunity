@@ -40,7 +40,7 @@ public sealed class BalancedSetIntegrationTests : IAsyncLifetime
         });
         await _db.SaveChangesAsync();
 
-        _sut = new GLRepository(_db);
+        _sut = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         _journalRepo = new JournalEntryRepository(_db);
     }
 

@@ -194,15 +194,15 @@ public sealed class V1_FirstRunSetupTests : IAsyncLifetime
         var auditService = new Core.Modules.AuditTrail.AuditTrailService(
             auditRepo, NullLogger<Core.Modules.AuditTrail.AuditTrailService>.Instance);
         var officeHolderTypeRepo = new CommitteeOfficeHolderTypeRepository(_db);
-        var officeHolderTypeService = new Core.Modules.Members.CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService);
+        var officeHolderTypeService = new Core.Modules.Members.CommitteeOfficeHolderTypeService(officeHolderTypeRepo, auditService, RealLocalizer.Instance);
         var glAssignment = new AccountNumberAssignmentService(accountRepo);
         var reconciliationRepo = new BankReconciliationRepository(_db);
-        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo);
-        var glRepo = new GLRepository(_db);
+        var accountService = new AccountService(accountRepo, glAssignment, auditService, reconciliationRepo, RealLocalizer.Instance);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var journalRepo = new JournalEntryRepository(_db);
         var unitOfWork = new UnitOfWork(_db);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork);
-        return new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
+        return new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
     }
 
     private static SetupRequest ValidRequest() =>

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Finance;
 using StageFright.Data;
@@ -18,6 +19,7 @@ namespace StageFright.Integration.Tests.Scenarios;
 /// collected on sales = tax paid on purchases = $10).
 /// Uses a real SQLite in-memory database with full EF migrations.
 /// </summary>
+[Collection("MoneyFormatterState")]
 public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
 {
     private StageFrightDbContext _db = null!;
@@ -145,7 +147,7 @@ public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
             TaxCode = TaxCode.Taxable
         }, TestContext.Current.CancellationToken);
 
-        var provider = new TaxSummaryReportProvider(new GLRepository(_db), new AccountRepository(_db), new SettingsRepository(_db));
+        var provider = new TaxSummaryReportProvider(new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new AccountRepository(_db), new SettingsRepository(_db), RealLocalizer.Instance);
         var filters = new StageFright.Reports.Models.ReportFilterValues();
         filters.Set("dateFrom", $"{Today.AddDays(-1):yyyy-MM-dd}");
         filters.Set("dateTo", $"{Today.AddDays(1):yyyy-MM-dd}");
@@ -153,10 +155,10 @@ public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
         var result = await provider.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         var rows = result.Sections.Single().Rows;
-        Assert.Equal("10.00", rows.Single(r => r.Cells[0] == "Tax collected on sales").Cells[1]);
-        Assert.Equal("10.00", rows.Single(r => r.Cells[0] == "Tax paid on purchases").Cells[1]);
-        Assert.Equal("110.00", rows.Single(r => r.Cells[0] == "Total taxable sales").Cells[1]);
-        Assert.Equal("0.00", result.GrandTotal!.Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(10m), rows.Single(r => r.Cells[0] == "Tax collected on sales").Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(10m), rows.Single(r => r.Cells[0] == "Tax paid on purchases").Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(110m), rows.Single(r => r.Cells[0] == "Total taxable sales").Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(0m), result.GrandTotal!.Cells[1]);
     }
 
     [Fact]
@@ -164,7 +166,7 @@ public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
     {
         await SeedSettingsAsync(isTaxApplicable: false);
 
-        var provider = new TaxSummaryReportProvider(new GLRepository(_db), new AccountRepository(_db), new SettingsRepository(_db));
+        var provider = new TaxSummaryReportProvider(new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new AccountRepository(_db), new SettingsRepository(_db), RealLocalizer.Instance);
         var result = await provider.GenerateAsync(new StageFright.Reports.Models.ReportFilterValues(), TestContext.Current.CancellationToken);
 
         Assert.Empty(result.Sections);
@@ -174,12 +176,12 @@ public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
     // --- Helpers ---
 
     private IncomeEntryService BuildIncomeService() =>
-        new(new AccountRepository(_db), new GLRepository(_db), new JournalEntryRepository(_db),
-            new SettingsRepository(_db), BuildAuditService(), new UnitOfWork(_db));
+        new(new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new JournalEntryRepository(_db),
+            new SettingsRepository(_db), BuildAuditService(), new UnitOfWork(_db), RealLocalizer.Instance);
 
     private ExpensePaymentService BuildExpenseService() =>
-        new(new AccountRepository(_db), new GLRepository(_db), new JournalEntryRepository(_db),
-            new SettingsRepository(_db), BuildAuditService(), new UnitOfWork(_db));
+        new(new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new JournalEntryRepository(_db),
+            new SettingsRepository(_db), BuildAuditService(), new UnitOfWork(_db), RealLocalizer.Instance);
 
     private static AuditTrailService BuildAuditService()
     {

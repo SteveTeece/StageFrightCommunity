@@ -102,7 +102,7 @@ public sealed class V14_ExpensesTransfersTests : IAsyncLifetime
             ExpenseAccountId = VenueHireAccountId
         }, TestContext.Current.CancellationToken);
 
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         Assert.Equal(-120.50m, await glRepo.GetAccountBalanceAsync(SystemAccounts.CashId, Today, TestContext.Current.CancellationToken));
         Assert.Equal(120.50m, await glRepo.GetAccountBalanceAsync(VenueHireAccountId, Today, TestContext.Current.CancellationToken));
     }
@@ -173,12 +173,12 @@ public sealed class V14_ExpensesTransfersTests : IAsyncLifetime
     // --- Helpers ---
 
     private ExpensePaymentService BuildExpenseService() =>
-        new(new AccountRepository(_db), new GLRepository(_db), new JournalEntryRepository(_db),
-            new SettingsRepository(_db), BuildAuditService(), new UnitOfWork(_db));
+        new(new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new JournalEntryRepository(_db),
+            new SettingsRepository(_db), BuildAuditService(), new UnitOfWork(_db), RealLocalizer.Instance);
 
     private BankDepositService BuildBankDepositService() =>
-        new(new AccountRepository(_db), new GLRepository(_db), new JournalEntryRepository(_db),
-            BuildAuditService(), new UnitOfWork(_db));
+        new(new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new JournalEntryRepository(_db),
+            BuildAuditService(), new UnitOfWork(_db), RealLocalizer.Instance);
 
     private static AuditTrailService BuildAuditService()
     {

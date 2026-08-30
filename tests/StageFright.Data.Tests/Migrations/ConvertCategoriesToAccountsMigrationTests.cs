@@ -2,6 +2,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
+using StageFright.Core.Modules.Finance;
 using StageFright.Data.Repositories;
 
 namespace StageFright.Data.Tests.Migrations;
@@ -122,7 +123,7 @@ public sealed class ConvertCategoriesToAccountsMigrationTests : IDisposable
         await MigrateToLatestAsync();
 
         using var db = CreateContext();
-        var gl = new GLRepository(db);
+        var gl = new GLRepository(db, new ClosedPeriodGuard(new SettingsRepository(db)));
 
         // Pre-migration: 100 accrued − 50 paid = 50 outstanding.
         Assert.Equal(50m, await gl.GetMemberBalanceAsync(MemberId, TestContext.Current.CancellationToken));

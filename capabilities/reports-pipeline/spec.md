@@ -88,7 +88,7 @@ Since each report defines its own columns, section headings, and subtotal/grand-
 Reports that total or group ledger activity MUST key off `Transaction.AccountId` (the live foreign key), never off the denormalized `Transaction.GLAccount` string, which is a point-in-time label snapshot that can go stale if an account is later renamed.
 
 #### Scenario: an account is renamed after transactions were posted against it
-- **WHEN** a GL-based report (Trial Balance, General Ledger, Account Register, Balance Sheet, BAS Summary) aggregates historical activity
+- **WHEN** a GL-based report (Trial Balance, General Ledger, Account Register, Balance Sheet, Tax Summary) aggregates historical activity
 - **THEN** totals are computed by matching `AccountId`, so the report reflects the account's current name/type rather than whatever label was recorded at posting time
 
 ### Historical financial reports include archived accounts and members so past activity still resolves correctly

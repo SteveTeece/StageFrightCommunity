@@ -2,20 +2,31 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Reports.Models;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Rendering;
 
 /// <summary>
 /// Renders a ReportData structure to PDF bytes using QuestPDF.
 /// Includes title, subtitle, generation date, column headers, section headings,
-/// data rows, subtotals, and grand totals per FR-037.
+/// data rows, subtotals, and grand totals per FR-037. The report body text arrives
+/// pre-localized on <see cref="ReportData"/>; this renderer sources its own page
+/// furniture ("Generated: … UTC", the footer page numbers) from <see cref="ReportsResource"/>.
 /// </summary>
 public class PdfReportRenderer : IPdfReportRenderer
 {
+    private readonly ILocalizer _localizer;
+
     static PdfReportRenderer()
     {
         QuestPDF.Settings.License = LicenseType.Community;
+    }
+
+    public PdfReportRenderer(ILocalizer localizer)
+    {
+        _localizer = localizer;
     }
 
     public byte[] Render(ReportData report, string organizationName = "")
@@ -35,8 +46,11 @@ public class PdfReportRenderer : IPdfReportRenderer
                     col.Item().Text(report.Title).FontSize(16).Bold();
                     if (!string.IsNullOrEmpty(report.SubTitle))
                         col.Item().Text(report.SubTitle).FontSize(11).FontColor(Colors.Grey.Darken1);
-                    col.Item().Text($"Generated: {report.GeneratedAt:d MMMM yyyy HH:mm} UTC")
+                    col.Item().Text(_localizer.Get<ReportsResource>(
+                            "Reports_Render_GeneratedAt", report.GeneratedAt.ToString("d MMMM yyyy HH:mm")))
                         .FontSize(9).FontColor(Colors.Grey.Medium);
+                    if (!string.IsNullOrWhiteSpace(report.BasisOfAccounting))
+                        col.Item().Text(report.BasisOfAccounting).FontSize(9).FontColor(Colors.Grey.Medium);
                     col.Item().PaddingTop(4).LineHorizontal(0.5f);
                 });
 
@@ -97,11 +111,13 @@ public class PdfReportRenderer : IPdfReportRenderer
                     });
                 });
 
+                var pagePrefix = _localizer.Get<ReportsResource>("Reports_Render_PagePrefix");
+                var pageSeparator = _localizer.Get<ReportsResource>("Reports_Render_PageSeparator");
                 page.Footer().AlignRight().Text(text =>
                 {
-                    text.Span("Page ").FontSize(8);
+                    text.Span(pagePrefix).FontSize(8);
                     text.CurrentPageNumber().FontSize(8);
-                    text.Span(" of ").FontSize(8);
+                    text.Span(pageSeparator).FontSize(8);
                     text.TotalPages().FontSize(8);
                 });
             });

@@ -1,0 +1,1993 @@
+{
+  "workflow": "speckit",
+  "specName": "localization support",
+  "branch": "027-localization-support",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-27T10:04:28.454Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-27T10:10:32.296Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-27T10:11:40.110Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T10:17:43.415Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T10:22:18.848Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-27T10:22:38.629Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-27T11:29:38.644Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T11:37:41.575Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-27T11:37:54.840Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-27T22:43:46.585Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:43:48.543Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:43:50.138Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:45:54.599Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:51:46.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:51:46.731Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:51:47.572Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:15.725Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:15.935Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:16.155Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:16.375Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:16.585Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:16.807Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:17.042Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-27T22:57:17.306Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T00:44:27.295Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T00:44:27.544Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T00:44:27.830Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T00:44:28.116Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T00:44:28.389Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T01:19:37.322Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T01:19:37.586Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T01:19:37.802Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T01:19:38.010Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T01:19:38.191Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T01:19:38.385Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T01:19:38.596Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T01:19:38.818Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T01:19:39.053Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T02:29:22.822Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T03:58:39.198Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T04:07:00.877Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T04:21:56.204Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T04:37:32.037Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T04:46:34.730Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T05:03:26.172Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T05:06:39.654Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T05:41:25.784Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T08:18:54.292Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T08:19:03.988Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T08:49:46.305Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T08:50:06.708Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T08:50:17.100Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T09:58:11.752Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T09:58:40.774Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:07:11.788Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:25:42.309Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:25:42.464Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T050",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:25:42.621Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:28:12.757Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:31:16.235Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T053",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:31:16.405Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T054",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:31:16.590Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T055",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:33:02.189Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T056",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:42:41.921Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T057",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:42:42.092Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T058",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:42:42.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T059",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:44:41.721Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:54:35.776Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T10:54:35.970Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T060",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T21:54:03.663Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T061",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T21:54:14.680Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T062",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T21:54:14.875Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T063",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T21:54:28.202Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T064",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-28T21:54:28.404Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-28T21:54:34.834Z"
+    }
+  ],
+  "telemetryInstanceId": "bd71e5f2-b0ce-45df-9da3-06f68fa7a241",
+  "last_action": "all 64 tasks done — full rebuild 0 warn/0 err, full suite 1805 pass; T060 guard now repo-wide + App.razor extracted; docs shipped. Ready to mark complete + commit.",
+  "coverage": {
+    "FR-001": {
+      "title": "Store app-authored user-facing text (incl. aria-label/alt/title) in resource files, not literals",
+      "tasks": [
+        "T015",
+        "T018",
+        "T022",
+        "T026",
+        "T029",
+        "T060"
+      ],
+      "tests": [
+        "tests/StageFright.Localization.Tests/RehearsalsLocalizationGuardTests.cs::Should_HaveNoUserFacingLiteral_When_RehearsalsFileScanned"
+      ]
+    },
+    "FR-002": {
+      "title": "Address each text by a stable, wording-independent human-readable key",
+      "tasks": [
+        "T015",
+        "T017",
+        "T018",
+        "T029",
+        "T031"
+      ]
+    },
+    "FR-003": {
+      "title": "Ship a complete Australian English baseline covering every used key",
+      "tasks": [
+        "T015",
+        "T017",
+        "T018",
+        "T029",
+        "T031"
+      ],
+      "tests": [
+        "tests/StageFright.Localization.Tests/RehearsalsLocalizationGuardTests.cs::Should_HaveNeutralEntry_When_KeyReferencedInRehearsals"
+      ]
+    },
+    "FR-004": {
+      "title": "Preserve current wording exactly during extraction (no re-copy-editing)",
+      "tasks": [
+        "T017",
+        "T018",
+        "T020",
+        "T031",
+        "T042"
+      ]
+    },
+    "FR-005": {
+      "title": "Every screen/dialog/component/tile/menu/tab/wizard step reads text via resource lookup",
+      "tasks": [
+        "T022",
+        "T026",
+        "T031",
+        "T034",
+        "T037",
+        "T043"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Localization/RehearsalsLocalizedRenderTests.cs::RehearsalList_ChromeAndEmptyState_ComeFromResources",
+        "RehearsalForm_HeadingLabelsAndActions_ComeFromResources",
+        "AttendanceGrid_RecordMode_HeadersAndActions_ComeFromResources"
+      ]
+    },
+    "FR-006": {
+      "title": "Every PDF/CSV report reads titles, headers, section and total labels via resource lookup",
+      "tasks": [
+        "T030",
+        "T039",
+        "T040"
+      ],
+      "tests": [
+        "tests/StageFright.Reports.Tests/ReportsResourceLabelTests.cs::Should_ResolveToNeutralValue_When_RendererChromeKeyLookedUp",
+        "Should_SubstituteNamedPlaceholders_When_RendererChromeFormatKeysResolved"
+      ]
+    },
+    "FR-007": {
+      "title": "User-facing validation/domain-error messages sourced from resources; logs may stay English",
+      "tasks": [
+        "T019",
+        "T025",
+        "T041"
+      ],
+      "tests": [
+        "tests/StageFright.Localization.Tests/Us2ExceptionMessageGuardTests.cs::Should_HaveNeutralEntry_When_ValidationKeyReferencedInUs2Service",
+        "tests/StageFright.Localization.Tests/Us2ExceptionMessageGuardTests.cs::Should_HaveNoUserFacingLiteral_When_Us2ServiceExceptionScanned"
+      ]
+    },
+    "FR-008": {
+      "title": "Missing key falls back to Australian English; never a blank or raw key",
+      "tasks": [
+        "T008",
+        "T015",
+        "T047"
+      ],
+      "tests": [
+        "tests/StageFright.Localization.Tests/Us1LocalizationGuardTests.cs::Should_LogWarningAndFallBack_When_KeyMissingForActiveCulture"
+      ]
+    },
+    "FR-009": {
+      "title": "Record every missing-key fallback (log and/or test-detectable)",
+      "tasks": [
+        "T008",
+        "T015"
+      ],
+      "tests": [
+        "tests/StageFright.Localization.Tests/Us1LocalizationGuardTests.cs::Should_LogWarningAndFallBack_When_KeyMissingForActiveCulture"
+      ]
+    },
+    "FR-010": {
+      "title": "Ordered/named placeholders for runtime values; per-language count-dependent wording",
+      "tasks": [
+        "T018",
+        "T029"
+      ],
+      "tests": [
+        "tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs::Should_PairAndAgree_When_PluralKeyDefined",
+        "tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs::Should_AgreeOnTokens_When_SatelliteTranslatesKey"
+      ]
+    },
+    "FR-011": {
+      "title": "A new language is addable by supplying a resource set only, discovered at runtime",
+      "tasks": [
+        "T046",
+        "T052",
+        "T058"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Localization/SupportedLanguagesCatalogTests.cs",
+        "tests/StageFright.Localization.Tests/Us3PseudoLocaleGuardTests.cs::Should_NeverListPseudoLocale_When_CatalogBuiltAtRuntime"
+      ]
+    },
+    "FR-012": {
+      "title": "Settings language selector lists shipped languages by endonym and marks the active one",
+      "tasks": [
+        "T052",
+        "T056"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Localization/LanguagePickerRenderTests.cs::GeneralSettingsTab_ListsEveryShippedLanguageByEndonym",
+        "GeneralSettingsTab_MarksThePersistedLanguageAsActive"
+      ]
+    },
+    "FR-013": {
+      "title": "Setup Wizard first-run language choice, defaulting per FR-023",
+      "tasks": [
+        "T057"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Localization/LanguagePickerRenderTests.cs::SetupLanguageStep_ListsEndonymsAndPreSelectsTheDefault",
+        "SetupLanguageStep_WritesTheChoiceOntoTheModel"
+      ]
+    },
+    "FR-014": {
+      "title": "Persist the selected language and re-apply it automatically on restart",
+      "tasks": [
+        "T048",
+        "T055",
+        "T056"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Localization/LanguagePickerRenderTests.cs::GeneralSettingsTab_PersistsTheSelectedLanguage_OnSave",
+        "tests/StageFright.Data.Tests/Migrations/AddLanguageCodeToSettingsMigrationTests.cs::LanguageCode_RoundTrips_WhenSetAndReloaded"
+      ]
+    },
+    "FR-015": {
+      "title": "Culture date/number formatting to the region; monetary amounts stay fixed AUD symbol",
+      "tasks": [
+        "T010",
+        "T034",
+        "T044"
+      ],
+      "tests": [
+        "tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs::Should_NotUseCFormat_When_AnyDisplaySiteScanned"
+      ]
+    },
+    "FR-016": {
+      "title": "Changing language never alters stored values, financial amounts or GL balances",
+      "tasks": [
+        "T010",
+        "T046"
+      ]
+    },
+    "FR-017": {
+      "title": "No stored preference runs identical to today (Australian English)",
+      "tasks": [
+        "T053",
+        "T055"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Localization/LanguageProviderTests.cs",
+        "tests/StageFright.Data.Tests/Migrations/AddLanguageCodeToSettingsMigrationTests.cs::ExistingSettingsRow_HasNullLanguageCode_AfterMigration"
+      ]
+    },
+    "FR-018": {
+      "title": "Tests assert via keys/lookup; suite guards a used key missing its en-AU entry",
+      "tasks": [
+        "T013",
+        "T015",
+        "T016",
+        "T029"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Localization/RehearsalsLocalizedRenderTests.cs"
+      ]
+    },
+    "FR-019": {
+      "title": "User-entered data is never translated",
+      "tasks": [
+        "T015",
+        "T029"
+      ]
+    },
+    "FR-020": {
+      "title": "Plugin text stays the plugin's responsibility; host renders as-provided, no failure",
+      "tasks": [
+        "T030"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/PluginTextNonEnglishCultureTests.cs::Should_RenderPluginReportEnglishTextUnchanged_When_NonEnglishCultureActive_Integration",
+        "Should_ReturnPluginTileMetricsUnchanged_When_NonEnglishCultureActive_Integration"
+      ]
+    },
+    "FR-021": {
+      "title": "Inform the user a restart is needed; in-session switching out of scope for v1",
+      "tasks": [
+        "T056",
+        "T057",
+        "T059"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Localization/LanguagePickerRenderTests.cs::GeneralSettingsTab_ShowsRestartNotice_AfterTheSelectionChanges",
+        "GeneralSettingsTab_ShowsNoRestartNotice_BeforeAnyChange"
+      ]
+    },
+    "FR-022": {
+      "title": "Update docs on where resources live / how to add a language; refresh stale specs",
+      "tasks": [
+        "T061",
+        "T062"
+      ]
+    },
+    "FR-023": {
+      "title": "Default to OS display language when a matching set ships; else en-AU; explicit selection wins",
+      "tasks": [
+        "T046",
+        "T053",
+        "T054",
+        "T055"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Localization/LanguageProviderTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V21_LocalizationStartupTests.cs"
+      ]
+    },
+    "FR-024": {
+      "title": "User-facing enum display text from resources keyed Enum_<Type>_<Member>; identity stays invariant",
+      "tasks": [
+        "T009",
+        "T020",
+        "T029",
+        "T042"
+      ],
+      "tests": [
+        "tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs::Should_HaveEnumKey_When_MemberOfUserFacingEnum",
+        "tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs::Should_NotRenderRawEnum_When_AppSourceScanned"
+      ]
+    },
+    "SC-001": {
+      "tests": [
+        "tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs::Should_HaveNoUserFacingLiteral_When_AppSurfaceScanned"
+      ]
+    },
+    "SC-008": {
+      "tests": [
+        "tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs::Should_HaveNeutralEntry_When_KeyReferencedAnywhereInApp"
+      ]
+    },
+    "SC-005": {
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/V21_LocalizationStartupTests.cs::Should_ResolveToThePersistedLanguage_When_SettingsHasAnExplicitChoice_Integration"
+      ]
+    },
+    "SC-006": {
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/V21_LocalizationStartupTests.cs::Should_LeaveEveryStoredValueAndGlBalanceUnchanged_When_TheLanguageIsChanged_Integration"
+      ]
+    },
+    "SC-010": {
+      "tests": [
+        "tests/StageFright.Core.Tests/Localization/LanguageProviderTests.cs::Should_MatchParentLanguage_When_OsCultureIsARegionalVariantOfAShippedLanguage",
+        "Should_FallBackToEnAu_When_TheOsCultureHasNoShippedMatch"
+      ]
+    }
+  },
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 150,
+    "projectedTasks": 60,
+    "scopeSignal": "larger",
+    "verdict": "oversized"
+  },
+  "context": [
+    "living spec: none configured (living-specs.yml empty)",
+    "area: src/StageFright.UI — 65 .razor + 64 .razor.cs with hardcoded labels/headings/placeholders/status+error messages",
+    "area: src/StageFright.Core/Modules/*/MenuItemProvider.cs + dashboard tile providers — hardcoded Title/ShortLabel",
+    "area: src/StageFright.Reports providers + PDF/CSV renderers — report names, column headers, section/total labels",
+    "area: src/StageFright.Core/Exceptions + validation services — user-facing messages",
+    "area: src/StageFright.App/MauiProgram.cs — composition root; startup culture wiring belongs here",
+    "constraint: no existing i18n infra — zero .resx / IStringLocalizer / RequestLocalization / culture setup",
+    "constraint: CLAUDE.md — paired .razor.cs (no @code), one class per file, no custom JS, custom exceptions at boundaries, exhaustive test coverage",
+    "constraint: central NuGet versions via Directory.Packages.props",
+    "constraint: preserve Australian English wording verbatim; GL/stored values stay culture-invariant"
+  ],
+  "intent": "Move all app-authored user-facing text into per-language resource files (Australian English baseline) so every screen and report reads text via resource lookup, plus a persisted user-selectable display language.",
+  "expectations": [
+    "Translating user-entered data (member names, organisation name, account names, event titles, notes)",
+    "Translating Serilog / developer log output",
+    "Right-to-left layout support and non-Latin typography tuning",
+    "Changing plugin contract interfaces or localizing plugin-supplied text",
+    "Responsive redesign of PDF/CSV reports beyond minor width/wrapping tolerance",
+    "Shipping any production-translated non-English language (infrastructure + pseudo/test locale only)",
+    "Committing the changes in this session"
+  ],
+  "approach": "Add Microsoft.Extensions.Localization with ~11 area-scoped IStringLocalizer resource markers; the neutral .resx holds the exact en-AU baseline and is the fallback. A logging IStringLocalizerFactory decorator records missing-key fallbacks; a new StageFright.Localization.Tests project guards baseline completeness and residual literals. Settings.LanguageCode (new nullable column + migration) is resolved by ILanguageProvider at MauiProgram startup and sets the process culture before first render. Extraction is staged: US1 (nav shell + Members) fixes the pattern, US2 rolls it across all surfaces incl. reports/PDF and user-facing exception text, US3 adds the Settings/Setup language picker (applies on next launch + restart notice) plus a qps-ploc test locale.",
+  "decisions": [
+    {
+      "decision": "Use Microsoft.Extensions.Localization (IStringLocalizer) with ~11 area-scoped .resx marker classes; neutral .resx = en-AU baseline",
+      "why": "framework-standard, no new JS/toolkit, plain .resx for translators, built-in parent-culture fallback (FR-008); area scoping keeps ~11 files/culture vs ~130 per-component",
+      "rejected": "strongly-typed .resx designer only (no fallback/logging hook); JSON + custom loader (bespoke framework); DB-stored strings (no offline translator workflow)"
+    },
+    {
+      "decision": "Missing-key handling: a MissingKeyLoggingLocalizerFactory decorator logs the fallback at runtime, plus a build/test-time resource-completeness guard in a new StageFright.Localization.Tests project",
+      "why": "runtime layer protects the user with graceful en-AU fallback + a recorded warning (FR-008/FR-009); test layer stops a gap ever shipping (SC-008) and can be scoped per phase",
+      "rejected": "hard-fail at runtime on missing key (FR-008 wants graceful fallback); test-only check (misses field locale gaps)"
+    },
+    {
+      "decision": "Apply Settings.LanguageCode at MauiProgram startup by setting CultureInfo.DefaultThreadCurrentCulture/UICulture before first Blazor render, via a testable Core ILanguageProvider",
+      "why": "Hybrid BlazorWebView runs one process-wide culture with no request pipeline; startup is the only place that also covers non-UI paths (QuestPDF); mirrors how Settings.Theme is read at startup",
+      "rejected": "set culture in a root component OnInitialized (first-render flash, misses non-UI); RequestLocalization middleware (no ASP.NET pipeline in Hybrid)"
+    },
+    {
+      "decision": "FR-021 v1 default: a language change persists immediately and applies on next launch with an inline restart notice; keep a LanguageProvider cascade seam for a later live-switch story",
+      "why": "true in-session switch needs re-init of every component and re-resolution of AddSingleton menu providers - real regression surface; spec records this as an informed default and defers the live-switch question to clarify",
+      "rejected": "programmatic forced restart (abrupt, risks unsaved work); full live re-render for v1 (scope/risk)"
+    },
+    {
+      "decision": "Stage the extraction: US1 converts the nav shell + Members module end-to-end to fix the pattern (resx layout, key scheme, _Imports, code-behind injection, bUnit assertions, guard test); US2 repeats it mechanically across all remaining surfaces",
+      "why": "the design-bearing decisions must settle and pass review on one real slice before ~150 files of mechanical repetition; lets US1 merge with a per-phase-scoped residual-literal guard while US2 is still in progress",
+      "rejected": "big-bang all-files-at-once conversion (unreviewable, all-or-nothing merge)"
+    },
+    {
+      "decision": "Prove language switching/fallback with a test-only qps-ploc pseudo-locale, not a translated production language",
+      "why": "meets SC-003 (adding a language = resx + one catalog entry, zero code) and SC-004 (fallback + logging) without committing to real translation, which the spec Assumptions place out of scope",
+      "rejected": "translate a real second language e.g. en-US or mi-NZ for v1 (business decision the spec defers; en-US too close to en-AU to prove much)"
+    },
+    {
+      "decision": "Startup culture ladder: explicit Settings.LanguageCode -> OS display language (if catalog has an exact or parent-language match) -> en-AU; OS language read via an injectable ISystemCultureProvider seam; LanguageCode is never auto-persisted from the OS",
+      "why": "user requirement FR-023 - respect system localisation as the default when the resource set exists, else Australian English; keeping LanguageCode null until the user actively picks preserves follow-the-system behaviour across OS changes and an unchanged install still behaves exactly as before while en-AU is the only shipped set",
+      "rejected": "always follow the OS language ignoring the stored choice (explicit selection must win); auto-persist the detected OS language into LanguageCode on first run (would freeze the choice and stop later OS changes taking effect)"
+    },
+    {
+      "decision": "Localise user-facing enum values via Enum_<EnumTypeName>_<MemberName> keys in one shared EnumsResource (StageFright.Core) resolved by a LocalizeEnum(this Enum) helper; replace every enum.ToString()/switch at a display site; report-filter option VALUE stays the invariant token, only the LABEL is localised",
+      "why": "FR-024; same enums (MemberStatus, FeeType, PaymentMethod/Type, AccountType, TaxCode, ReconciliationStatus, JournalEntryType, Theme) render in both UI and Reports and must match; predictable key shape the completeness guard enforces; keeps enum identity out of storage/GL/filter tokens (FR-016)",
+      "rejected": "[Display(Name=)]/[Description] attributes (compile-time literal, no per-culture resource, bypasses missing-key logging); per-enum Dictionary<Enum,string> (no fallback/logging, drifts); per-area enum keys (same enum gets two divergent labels on screen vs report)"
+    },
+    {
+      "decision": "IStringLocalizerFactory decorator registered via a second explicit AddSingleton after AddLocalization() (last registration wins) instead of a third-party Scrutor-style Decorate() helper",
+      "why": "Microsoft.Extensions.DependencyInjection has no built-in Decorate(); AddLocalization() uses TryAdd for IStringLocalizerFactory, so an explicit AddSingleton registered afterward becomes the one every IStringLocalizer<T> resolves, with no new package",
+      "rejected": "Adding a third-party DI decoration package (e.g. Scrutor) purely for this one decorator"
+    },
+    {
+      "decision": "LocalizeEnum() resolves its IStringLocalizerFactory from a static holder (EnumLocalizationExtensions.UseFactory, set once in MauiProgram.RunStartupSequence and in LocalizedTestContext) rather than taking an injected parameter",
+      "why": "The contract consumption pattern shows a bare @value.Status.LocalizeEnum() call with no injected localizer; the factory is a process-wide singleton set exactly once before first use, consistent with this feature own process-wide culture model (plan.md Decision 5) for this single-user desktop app",
+      "rejected": "Requiring every enum-display call site to also inject IStringLocalizer<EnumsResource> alongside its module localizer"
+    },
+    {
+      "decision": "Named placeholders ({OrganisationName}, {Count}) are substituted by order of first appearance in the resolved string rather than true name-to-value binding",
+      "why": "ILocalizer.Get<TResource>(key, args) only takes positional object[] args (per the contract signature); order-of-appearance substitution is the simplest implementation that still lets .resx values use self-documenting named tokens instead of bare {0}/{1} for translators, consistent with simple-over-clever",
+      "rejected": "A full name-to-value dictionary API requiring every call site to pass named arguments"
+    },
+    {
+      "decision": "Parameterised strings ({SearchTerm},{GroupName},{MemberName},{Count}) resolved via ILocalizer.Get<T>/Plural<T> in code-behind helper methods, never L[\"key\",args] in markup",
+      "why": "IStringLocalizer<T> indexer uses string.Format {0} placeholders; the resource-key-catalog mandates named {Name} tokens which only the ILocalizer facade substitutes. Also keeps logic out of .razor per constitution 4.7 and dodges Razor parsing generic method calls as tags",
+      "rejected": "L[\"key\", args] in markup (wrong placeholder semantics); bare {0} in .resx (violates FR-010 + placeholder-parity guard)"
+    },
+    {
+      "decision": "AgeCalculationService.ValidateDateOfBirth messages + MemberDetail FeeType-enum column left for US2, not localized in US1",
+      "why": "AgeCalculationService is shared with StageFright.Reports (MemberListReportProvider) and new()-constructed in ~10 places incl. Reports.Tests - a ctor change is cross-cutting, not the Members-UI slice T025 scopes. FeeType enum keys are explicitly T042 (US2). US1 guard scoped to MemberStatus+Theme accordingly",
+      "rejected": "Adding IStringLocalizer to AgeCalculationService ctor now (wide blast radius across Reports)"
+    },
+    {
+      "decision": "Completed the partially-done T011: added @using StageFright.Core.Localization (+ Resources marker namespaces) to src/StageFright.UI/_Imports.razor",
+      "why": "T011 was marked done but only added @using Microsoft.Extensions.Localization; LocalizeEnum()/ILocalizer would not resolve in markup without the Core.Localization using",
+      "rejected": "per-file @using in each converted .razor"
+    },
+    {
+      "decision": "This session scoped to T032 (Rehearsals module) only, with an interim Rehearsals-scoped guard suite + FR-018 render tests, leaving repo-wide T029/T030 for the session that finishes US2",
+      "why": "user chose the One-module-verified option; US2 as a whole is ~150 files and cannot meet the build-green/full-test/doc bar in one pass; mirrors how US1 was checkpointed",
+      "rejected": "running the full repo-wide T029/T030 guards now (they would hard-fail with only Rehearsals converted)"
+    },
+    {
+      "decision": "RehearsalFormModel.Date: [Required(ErrorMessage=\"Date is required.\")] -> bare [Required]",
+      "why": "RequiredAttribute never fails on a non-nullable DateTime value type, so the custom message is dead; removing the literal keeps the residual-literal guard honest without a copy-edit of live copy (FR-004)",
+      "rejected": "keeping the literal (guard flags it) or routing it through a resource (DataAnnotations ErrorMessage needs a compile-time constant)"
+    },
+    {
+      "decision": "AgeCalculationService takes ILocalizer (not IStringLocalizer<ValidationResource>) via a required constructor param; MemberList/MemberDetail switch from new() to an injected AgeCalculationService registered in LocalizedTestContext; each test project gets a RealLocalizer fixture",
+      "why": "two of its three messages use named {Age}/{MaxYears}/{MinimumAge} placeholders which only ILocalizer.Get substitutes (the raw IStringLocalizer indexer does string.Format with {0} and would throw on {Age}); keeping a single required ctor matches the MemberValidationService (T025) precedent",
+      "rejected": "optional ILocalizer? param with hardcoded en-AU fallback (reintroduces literals the residual-literal guard flags); making Calculate static (wider public-API change touching MemberListReportProvider)"
+    },
+    {
+      "decision": "Report providers inject the ILocalizer facade (not IStringLocalizer<ReportsResource>)",
+      "why": "many report titles/subtitles use named-placeholder formatting ({DateFrom} - {DateTo}, Status: {Status} - {Date}) which only ILocalizer.Get<T>(key,args) substitutes; the RealLocalizer.Instance fixture already exists in Reports.Tests / Integration.Tests; enum cells resolve via ILocalizer.Enum which works without the EnumLocalizationExtensions.UseFactory static holder",
+      "rejected": "IStringLocalizer<ReportsResource> per contract §6 proposal (indexer only does string.Format {0}, would throw on named tokens); injecting both"
+    },
+    {
+      "decision": "Added ReportFilterDefinition.OptionLabels (IReadOnlyList<string> parallel to Options); ReportViewer renders OptionLabels[i] with fallback to Options[i]",
+      "why": "FR-024 / T039 requires the filter option VALUE to stay the culture-invariant token (compared in GenerateAsync, persisted) while the LABEL localises; the flat Options list had no place for a separate label; only MemberList + IncomeStatement + Committee populate it",
+      "rejected": "changing Options to (value,label) pairs (breaks GenerateAsync token comparisons + every test asserting filter.Options == [tokens]); leaving option labels un-localised (defers a real FR-024 gap to T029)"
+    },
+    {
+      "decision": "Report providers keep decimal.ToString(\"F2\") for amounts; NOT switched to MoneyFormatter",
+      "why": "no report provider ever used .ToString(\"C\")/{0:C} so the no-C-currency guard does not flag them, and switching to MoneyFormatter would add a $ symbol + thousands separators to report output, breaking SC-002 render parity and ~30 existing exact-string assertions",
+      "rejected": "MoneyFormatter.FormatWithCode in providers now (contract §8 only lists .ToString(\"C\") call sites as consumers; report amount display formatting, if changed at all, belongs in T040 renderers)"
+    },
+    {
+      "decision": "The 5 concrete PDF renderers ctor-inject the ILocalizer facade (not IStringLocalizer<ReportsResource>)",
+      "why": "matches the T039 report-provider precedent; renderer date lines use named-placeholder formatting ({Date} at {Time}, {Attended} of {Total}) which only ILocalizer.Get<T>(key,args) substitutes; RealLocalizer.Instance fixture already exists in Reports.Tests + Integration.Tests",
+      "rejected": "IStringLocalizer<ReportsResource> per contract proposal (indexer only does string.Format {0}, throws on named tokens)"
+    },
+    {
+      "decision": "CheckboxSheetPdfBuilder.Build gains an ILocalizer first param and resolves the SHARED chrome (Name column header, footer Page/of) itself; caller-specific text (title, dateLine, checkboxColumnHeader) still passed in already-localised by the two sheet renderers",
+      "why": "keeps the split clean - the internal static builder owns page furniture common to both sheets, each renderer owns its own title/heading; avoids threading 3 extra string params",
+      "rejected": "passing every chrome string as a Build() param (noisy); making the builder non-static with DI (it has no other state)"
+    },
+    {
+      "decision": "PDF footer localised as two xml:space=preserve keys Reports_Render_PagePrefix (\"Page \") + Reports_Render_PageSeparator (\" of \"); AGM position line as a bold Reports_AgmResults_PositionLabel (\"{Label}: \") prefix key",
+      "why": "QuestPDF builds the footer from dynamic CurrentPageNumber()/TotalPages() spans that cannot be one format string; the AGM position line renders label bold + member text regular in two spans, so a single {Label}: {Members} key would lose the bold-on-label-only styling. Both preserve exact en-AU visual output (SC-002)",
+      "rejected": "one composed Page {n} of {m} key (spans are runtime); one {Label}: {Members} key (drops bold split)"
+    },
+    {
+      "decision": "Report renderers still do NOT format currency - amounts arrive pre-formatted (F2) in ReportData.Cells from the providers; T040 touched only page CHROME, not amounts, despite the task text mentioning MoneyFormatter.FormatWithCode",
+      "why": "consistent with the T039 decision that report amount display stays F2 for SC-002 parity + ~30 existing exact-string assertions; the renderers have no decimal inputs to format - Cells are already strings",
+      "rejected": "post-processing Cells through MoneyFormatter in the renderer (would add $ + separators, break SC-002 and provider tests; provider F2 is the deliberate report convention)"
+    },
+    {
+      "decision": "T041 split by user choice: this session localized the 8 NON-Finance services (Agm, Event, EventType, CommitteeOfficeHolderType, Attendance, Settings, Setup, Backup) + interim guard; the 9 Finance services + BankReconciliationService.cs:153 {Difference:C} + T045 DI recheck + T029 repo-wide guard remain for the next session",
+      "why": "T041 is ~85 throw sites across ~18 services with wide test blast radius; prior sessions flagged it as own-session work; user picked Non-Finance-first checkpoint with green build/test/commit",
+      "rejected": "whole T041 in one session (long, risk of leaving build red); Finance-first"
+    },
+    {
+      "decision": "All 8 non-Finance services take the ILocalizer facade via a required ctor param (not IStringLocalizer<ValidationResource>); every test constructs them with RealLocalizer.Instance (new fixture added to StageFright.Data.Tests, mirroring Core.Tests/Integration.Tests)",
+      "why": "ILocalizer.Get<ValidationResource>(key, args) is the only path that substitutes named {Year}/{SchemaVersion}/{EntityType} placeholders; matches the AgeCalculationService (T041 groundwork) precedent; a real .resx-backed localizer keeps every existing ex.Message substring assertion (missing Accounts / 99.0.0 / upgrade / system / referenced) green with verbatim en-AU values",
+      "rejected": "StubStringLocalizer key-echo (breaks message-substring assertions); IStringLocalizer<T> indexer (throws on named tokens)"
+    },
+    {
+      "decision": "EntityNotFoundException built-in message and DataAccessException wrapper messages left in English; BackupService DeserializeAndValidate/ValidateVersion/ValidateCompleteness changed from private static to instance so they can read _localizer",
+      "why": "UI catches EntityNotFoundException without using ex.Message (substitutes its own localized text) and wraps DataAccessException.Message inside a localized frame - both diagnostic per FR-007; only ImportException.Message is shown verbatim to the user (BackupRestoreTab.razor.cs) so those 4 messages are localized",
+      "rejected": "localizing EntityNotFoundException (needs a static ILocalizer holder or a change to every throw site - wide blast radius, no user benefit)"
+    },
+    {
+      "decision": "All 9 Finance services take the ILocalizer facade via a required ctor param (not IStringLocalizer<ValidationResource>)",
+      "why": "parameterised messages use named tokens - {Name} (Account duplicate), {Date} (statement date), {Difference}/{Zero} (reconciliation finalise) - which only ILocalizer.Get<T>(key,args) substitutes; matches the AgeCalculationService + 8 non-Finance T041 precedent; RealLocalizer.Instance fixture already exists in Core/Data/Integration test projects",
+      "rejected": "IStringLocalizer<ValidationResource> indexer (string.Format {0} semantics, throws on named tokens); optional param with hardcoded en-AU fallback (reintroduces literals the guard flags)"
+    },
+    {
+      "decision": "BankReconciliationService finalise message routes BOTH the difference and the zero comparand through MoneyFormatter.Format via {Difference}/{Zero} named tokens",
+      "why": "the original {workspace.Difference:C} + literal \"$0.00\" is a T044-flagged user-facing C-format residual; MoneyFormatter.Format(0m) is byte-identical to \"$0.00\" under en-AU so FR-004 wording is preserved while FR-015 fixed-AUD display holds under any culture",
+      "rejected": "keeping :C (guard + FR-015 violation); a single composed key (loses the fixed-AUD guarantee on the zero comparand)"
+    },
+    {
+      "decision": "EntityNotFoundException built-in message and GLBalanceException/DataAccessException wrapper text stay English across the Finance services",
+      "why": "diagnostic per FR-007 - UI catches EntityNotFoundException and substitutes its own localized copy, GLBalanceException is a should-never-happen GL integrity assertion never shown verbatim; localizing them needs a static ILocalizer holder or every throw site changed (wide blast radius, no user benefit)",
+      "rejected": "localizing EntityNotFoundException/GLBalanceException now"
+    },
+    {
+      "decision": "T029 residual-literal scan is scoped to the UI display surface (Layout/Pages/Modules/Shared); report providers/renderers are covered by StageFright.Reports.Tests/ReportsResourceLabelTests (T030) instead",
+      "why": "the only string literals left in report providers are culture-invariant filter option-VALUE tokens (Active Only / This FY) compared in GenerateAsync and persisted - the localised label lives in the parallel OptionLabels array (T039 decision); a Capitalised-phrase heuristic cannot tell a token from copy",
+      "rejected": "scanning report providers with the csPhrase heuristic (false-positives every filter option token)"
+    },
+    {
+      "decision": "DataAnnotations ErrorMessage and IValidatableObject ValidationResult message literals are an explicit T029 guard exclusion, deferred to T060",
+      "why": "a DataAnnotations ErrorMessage must be a compile-time constant so it cannot go through ILocalizer with missing-key logging; the codebase already treats this as a known limitation (RehearsalFormModel/EventFormModel decisions); 3 files still carry them (SetupFormModel, NewAccountModel, NewEventTypeModel) - T060 hardens the guard and resolves them",
+      "rejected": "ErrorMessageResourceType/Name (bypasses the missing-key logging decorator); dropping to bare attributes now (regresses wording vs FR-004)"
+    },
+    {
+      "decision": "Did NOT bump Settings.SchemaVersion from 1.1.0 for the AddLanguageCodeToSettings migration",
+      "why": "the codebase has not bumped it for the last ~6 settings-column migrations; ~11 test files + V9_BackupRestoreTests assert \"1.1.0\" exactly as a backup-format contract; LanguageCode is a nullable presentation-only column not in the backup DTO",
+      "rejected": "bump to 1.1.1 (churns 11+ files and changes the backup manifest version for a presentation-only column)"
+    },
+    {
+      "decision": "Hand-wrote the EF migration + .Designer.cs + model-snapshot edit for T051",
+      "why": "dotnet ef cannot build the MAUI startup project in this environment (ResolvePackageAssets target missing / multi-TFM resolution error)",
+      "rejected": "repairing the MAUI workload (out of scope, unreliable) — validated instead by the migration round-trip tests and every MigrateAsync-based integration test passing"
+    },
+    {
+      "decision": "Named the UI cascading seam CultureProvider (StageFright.UI.Layout), not LanguageProvider",
+      "why": "avoids a same-name collision with the Core StageFright.Core.Modules.Localization.LanguageProvider startup service",
+      "rejected": "LanguageProvider in both namespaces (readability hazard)"
+    },
+    {
+      "decision": "SupportedLanguagesCatalog discovers cultures by scanning AppContext.BaseDirectory for <culture>/<our-assembly>.resources.dll, filtered to the 3 StageFright resource assemblies",
+      "why": "third-party satellites (Radzen, test platform: cs/de/fr/...) must never register as app languages",
+      "rejected": "scanning for any *.resources.dll (false positives)"
+    },
+    {
+      "decision": "qps-ploc fixtures generated by a committed regenerable script (scripts/generate-pseudo-locale.py); embedded as real satellites, kept out of the picker by the catalog qps-* name filter",
+      "why": "hundreds of keys across 12 files must keep key/placeholder parity with the evolving neutral sets; for IStringLocalizer to actually resolve qps-ploc the satellites must be built",
+      "rejected": "hand-authoring the pseudo values; build-excluding the resx (then the localizer cannot resolve it for the switching proof)"
+    },
+    {
+      "decision": "T060 folded the interim per-slice residual-literal scans into one repo-wide guard (Us2LocalizationGuardTests.Should_HaveNoUserFacingLiteral_When_AppSurfaceScanned) covering all of StageFright.UI plus every user-facing exception Message literal in StageFright.Core",
+      "why": "SC-001 wants a literal reintroduced ANYWHERE caught, not just inside a converted-file list",
+      "rejected": "keeping the 3 partial guards (a literal in an unlisted file slips through); scanning all of src (Core GL-transaction Description text + seed strings are legitimate culture-invariant literals -> false positives)"
+    },
+    {
+      "decision": "The 12 DataAnnotations ErrorMessage / ValidationResult attribute-argument strings stay Australian-English-only — a permanent, documented carve-out in the guard and in docs/localization/adding-a-language.md sec 7",
+      "why": "attribute arguments must be compile-time constants; a runtime IStringLocalizer lookup with missing-key logging is impossible there, and the strongly-typed-resx-designer alternative was rejected in research Decision 1",
+      "rejected": "a custom Blazor DataAnnotations-localization validator — regression surface across every form, out of proportion for a polish task"
+    },
+    {
+      "decision": "Doc refresh (T062) touched CLAUDE.md + spec 027 resource-key-catalog.md + a forward-note on spec 007 account-balance-service-contract.md; left 007 plan/research/tasks untouched",
+      "why": "those are historical records of a shipped feature and accurate for their time; the contract doc is the one still read as current guidance",
+      "rejected": "rewriting the shipped 007 plan/research/tasks docs to past tense (churn, rewrites history for no reader benefit)"
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Plan: IStringLocalizer + ~11 area .resx markers (neutral = exact en-AU baseline), logging fallback decorator + a new completeness/residual-literal guard test project, Settings.LanguageCode resolved at MauiProgram startup, staged US1(shell+Members)->US2(all surfaces incl reports/exceptions)->US3(Settings/Setup picker + qps-ploc). Constitution: all PASS, no violations.",
+      "key_finding": "No localization infra exists today; ~500-700 user-facing literals span ~150 files across UI/Core/Reports, and the existing Settings.Theme/ThemeProvider/ISettingsService pattern is a direct template for the language preference."
+    },
+    "tasks": {
+      "summary": "64 tasks (T001-T064) across 6 phases: Setup(3) -> Foundational(11, blocks all) -> US1 shell+Members(14) -> US2 all remaining surfaces/reports/exceptions/enums(17) -> US3 Settings.LanguageCode + OS-aware startup ladder + pickers + qps-ploc(14) -> Polish(5); wave-grouped, widest parallel wave is US2 T031-T044 (one per module)."
+    },
+    "implement": {
+      "summary": "Phase 6 Polish (T060-T064): residual-literal guard made repo-wide (SC-001), which exposed + fixed 5 un-extracted literals in App.razor; added docs/localization/adding-a-language.md; refreshed CLAUDE.md + stale spec docs; full rebuild 0/0, full suite 1805 green."
+    }
+  },
+  "currentTask": "T064",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Added Microsoft.Extensions.Localization 10.0.10 central PackageVersion entry",
+      "files": [
+        "Directory.Packages.props"
+      ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Scaffolded StageFright.Localization.Tests xUnit project (refs Core/UI/Reports) and added it to the .slnx",
+      "files": [
+        "tests/StageFright.Localization.Tests/StageFright.Localization.Tests.csproj",
+        "StageFrightCommunity.slnx"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "Added version-less Microsoft.Extensions.Localization PackageReference and NeutralLanguage=en-AU to Core/Reports/UI csproj files",
+      "files": [
+        "src/StageFright.Core/StageFright.Core.csproj",
+        "src/StageFright.Reports/StageFright.Reports.csproj",
+        "src/StageFright.UI/StageFright.UI.csproj"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Created Core area markers NavigationResource/ValidationResource/EnumsResource + empty neutral .resx each",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.cs",
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.cs",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/EnumsResource.cs",
+        "src/StageFright.Core/Modules/Localization/Resources/EnumsResource.resx"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Created Reports area marker ReportsResource + empty neutral .resx",
+      "files": [
+        "src/StageFright.Reports/Resources/ReportsResource.cs",
+        "src/StageFright.Reports/Resources/ReportsResource.resx"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Created 8 UI area markers (Shared/Dashboard/Members/Rehearsals/Events/Finance/Settings/Setup) + empty neutral .resx each",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SharedResource.cs",
+        "src/StageFright.UI/Resources/Strings/DashboardResource.cs",
+        "src/StageFright.UI/Resources/Strings/MembersResource.cs",
+        "src/StageFright.UI/Resources/Strings/RehearsalsResource.cs",
+        "src/StageFright.UI/Resources/Strings/EventsResource.cs",
+        "src/StageFright.UI/Resources/Strings/FinanceResource.cs",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.cs",
+        "src/StageFright.UI/Resources/Strings/SetupResource.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Created ILocalizer facade + Localizer impl (Get/Get-args/Plural/Enum) with named-placeholder substitution",
+      "files": [
+        "src/StageFright.Core/Localization/ILocalizer.cs",
+        "src/StageFright.Core/Localization/Localizer.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Created MissingKeyLoggingLocalizerFactory decorator over IStringLocalizerFactory logging ResourceNotFound as a Warning",
+      "files": [
+        "src/StageFright.Core/Localization/MissingKeyLoggingLocalizerFactory.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Created EnumLocalizationExtensions.LocalizeEnum resolving Enum_<Type>_<Member> via a static factory holder set at startup",
+      "files": [
+        "src/StageFright.Core/Localization/EnumLocalizationExtensions.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Created MoneyFormatter.Format/FormatWithCode with fixed AUD symbol and culture-driven separators",
+      "files": [
+        "src/StageFright.Core/Localization/MoneyFormatter.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Added @using Microsoft.Extensions.Localization and StageFright.Core.Localization to _Imports.razor",
+      "files": [
+        "src/StageFright.UI/_Imports.razor"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Created guard-test scanning infrastructure: LocalizerKeyUsageScanner, ResxKeyScanner, PlaceholderTokenScanner, UserFacingEnumScanner (no assertions yet)",
+      "files": [
+        "tests/StageFright.Localization.Tests/Scanning/LocalizerKeyUsage.cs",
+        "tests/StageFright.Localization.Tests/Scanning/LocalizerKeyUsageScanner.cs",
+        "tests/StageFright.Localization.Tests/Scanning/ResxKeyScanner.cs",
+        "tests/StageFright.Localization.Tests/Scanning/PlaceholderTokenScanner.cs",
+        "tests/StageFright.Localization.Tests/Scanning/UserFacingEnumScanner.cs"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Created LocalizedTestContext bUnit base registering AddLocalization() and wiring EnumLocalizationExtensions for tests",
+      "files": [
+        "tests/StageFright.UI.Tests/LocalizedTestContext.cs"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Wired AddLocalization/decorated IStringLocalizerFactory/ILocalizer in RegisterCoreServices and EnumLocalizationExtensions.UseFactory in RunStartupSequence",
+      "files": [
+        "src/StageFright.App/MauiProgram.cs"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "Authored en-AU NavigationResource.resx entries (shell chrome + Members menu Title/ShortLabel, incl. aria-labels)",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.resx"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "Authored en-AU MembersResource.resx entries for MemberList/MemberDetail/MemberForm/MembersTile (labels, headings, buttons, placeholders, aria-labels, plural pair)",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/MembersResource.resx"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "Authored en-AU ValidationResource.resx entries for MemberValidationService + AgeCalculationService messages (named placeholders replace interpolation)",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "Authored EnumsResource.resx Enum_MemberStatus_* and Enum_Theme_* entries verbatim (FR-024)",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/Resources/EnumsResource.resx"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Authored SharedResource.resx cross-cutting actions (Save/Saving/Cancel/Edit/Loading/Actions/Status/Unexpected error)",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SharedResource.resx"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "ShellLayout: injected IStringLocalizer<NavigationResource>+ILocalizer; sidebar chrome/aria-labels/theme labels via resources + Theme.LocalizeEnum(); code-behind helpers for parameterised aria-labels",
+      "files": [
+        "src/StageFright.UI/Layout/ShellLayout.razor",
+        "src/StageFright.UI/Layout/ShellLayout.razor.cs",
+        "src/StageFright.UI/_Imports.razor"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "ThemeProvider: verified it carries no user-facing literals (theme display text lives in ShellLayout); no change required",
+      "files": [
+        "src/StageFright.UI/Layout/ThemeProvider.razor"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "MemberMenuItemProvider: ctor-inject IStringLocalizer<NavigationResource>; Title/ShortLabel from Nav_Members_Title/ShortLabel",
+      "files": [
+        "src/StageFright.Core/Modules/Members/MemberMenuItemProvider.cs"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "MemberValidationService: ctor-inject IStringLocalizer<ValidationResource>; 6 ValidationException messages from Validation_Member_* (exception types/context unchanged); updated 4 test ctor sites + added StubStringLocalizer to Core.Tests & Integration.Tests",
+      "files": [
+        "src/StageFright.Core/Modules/Members/MemberValidationService.cs",
+        "tests/StageFright.Core.Tests/Fixtures/StubStringLocalizer.cs",
+        "tests/StageFright.Integration.Tests/StubStringLocalizer.cs"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "MemberList/MemberDetail/MemberForm (.razor+.razor.cs): all literals/aria-labels/column headers via IStringLocalizer<MembersResource/SharedResource>; MemberStatus.LocalizeEnum(); MoneyFormatter.Format for fee amounts (FR-015); code-behind helpers for parameterised strings",
+      "files": [
+        "src/StageFright.UI/Pages/Members/MemberList.razor",
+        "src/StageFright.UI/Pages/Members/MemberList.razor.cs",
+        "src/StageFright.UI/Pages/Members/MemberDetail.razor",
+        "src/StageFright.UI/Pages/Members/MemberDetail.razor.cs",
+        "src/StageFright.UI/Pages/Members/MemberForm.razor",
+        "src/StageFright.UI/Pages/Members/MemberForm.razor.cs"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "MembersTile + MembersDashboardTileProvider: tile text/stat labels via MembersResource+SharedResource; MemberStatus.LocalizeEnum(); plural chip via ILocalizer.Plural; provider Title/ActionText from Members_Tile_*; fixed UI.Tests provider test + added RealStringLocalizer helper",
+      "files": [
+        "src/StageFright.UI/Modules/Members/MembersTile.razor",
+        "src/StageFright.UI/Modules/Members/MembersTile.razor.cs",
+        "src/StageFright.UI/Modules/Members/MembersDashboardTileProvider.cs",
+        "tests/StageFright.UI.Tests/RealStringLocalizer.cs"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "DI check: MemberValidationService (Scoped), MemberMenuItemProvider (Singleton), MembersDashboardTileProvider (Scoped) all resolve IStringLocalizer<T> from AddLocalization()+decorated factory - no factory-lambda registrations needed; verified by 186 Integration tests + real DI host",
+      "files": [
+        "src/StageFright.App/MauiProgram.cs"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "US1 guard suite (6 tests): baseline completeness (+plural-pair), MemberStatus/Theme enum-key coverage, residual-literal scan over US1 file list, no-raw-enum-render, no-C-currency-format, missing-key warning+neutral fallback",
+      "files": [
+        "tests/StageFright.Localization.Tests/Us1LocalizationGuardTests.cs"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "bUnit FR-018 tests (7): ShellLayout/ThemeProvider/MemberList/MemberForm/MembersTile assert rendered text resolves via IStringLocalizer keys + LocalizeEnum, not hardcoded English; flipped 5 existing test classes to LocalizedTestContext; LocalizedTestContext now registers ILocalizer",
+      "files": [
+        "tests/StageFright.UI.Tests/Localization/Us1LocalizedRenderTests.cs",
+        "tests/StageFright.UI.Tests/LocalizedTestContext.cs"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "Localized the Rehearsals module (RehearsalList/RehearsalForm/AttendanceGrid .razor+.razor.cs) to RehearsalsResource.resx en-AU entries; attendance fee via MoneyFormatter (FR-015); added Rehearsals-scoped guard suite + FR-018 render tests; flipped RehearsalListTests/AttendanceGridTests to LocalizedTestContext",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/RehearsalsResource.resx",
+        "src/StageFright.UI/Pages/Rehearsals/RehearsalList.razor",
+        "src/StageFright.UI/Pages/Rehearsals/RehearsalList.razor.cs",
+        "src/StageFright.UI/Pages/Rehearsals/RehearsalForm.razor",
+        "src/StageFright.UI/Pages/Rehearsals/RehearsalForm.razor.cs",
+        "src/StageFright.UI/Pages/Rehearsals/AttendanceGrid.razor",
+        "src/StageFright.UI/Pages/Rehearsals/AttendanceGrid.razor.cs",
+        "tests/StageFright.Localization.Tests/RehearsalsLocalizationGuardTests.cs",
+        "tests/StageFright.UI.Tests/Localization/RehearsalsLocalizedRenderTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Rehearsals/RehearsalListTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Rehearsals/AttendanceGridTests.cs"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "Localized Dashboard page + all 6 remaining dashboard tiles + tile providers to Dashboard/Events/Finance/Rehearsals/Shared resources; chart legend labels localized; tile amounts to MoneyFormatter; test classes flipped to LocalizedTestContext",
+      "files": [
+        "src/StageFright.UI/Pages/Dashboard/Dashboard.razor",
+        "src/StageFright.UI/Pages/Dashboard/Dashboard.razor.cs",
+        "src/StageFright.UI/Resources/Strings/DashboardResource.resx",
+        "src/StageFright.UI/Modules/Events/EventsTile.razor.cs",
+        "src/StageFright.UI/Modules/Finance/FinanceTile.razor.cs",
+        "src/StageFright.UI/Modules/Rehearsals/RehearsalsTile.razor.cs"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "All 6 nav menu providers ctor-inject IStringLocalizer<NavigationResource>; Title/ShortLabel/sub-item labels from NavigationResource.resx; EnumsResource.resx authored with all remaining user-facing enum keys (FeeType/PaymentMethod/PaymentType/AccountType/TaxCode/ReconciliationStatus/JournalEntryType)",
+      "files": [
+        "src/StageFright.Core/Modules/Dashboard/DashboardMenuItemProvider.cs",
+        "src/StageFright.Core/Modules/Events/EventsMenuItemProvider.cs",
+        "src/StageFright.Core/Modules/Finance/FinanceMenuItemProvider.cs",
+        "src/StageFright.Core/Modules/Rehearsals/RehearsalMenuItemProvider.cs",
+        "src/StageFright.Core/Modules/Settings/SettingsMenuItemProvider.cs",
+        "src/StageFright.UI/Modules/Reports/ReportMenuItemProvider.cs",
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/EnumsResource.resx"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "Localized all 6 shared components (AddAccountForm, BorderedListBox, OpeningBalanceEntryForm, ReactivationForgivenessDialog, ReportViewer, TileRenderer) to SharedResource.resx; AccountType via LocalizeEnum, money via MoneyFormatter, plural button labels via ILocalizer.Plural; 16 bUnit test classes flipped to LocalizedTestContext; full suite 1714 green",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SharedResource.resx",
+        "src/StageFright.UI/Shared/AddAccountForm.razor",
+        "src/StageFright.UI/Shared/AddAccountForm.razor.cs",
+        "src/StageFright.UI/Shared/BorderedListBox.razor",
+        "src/StageFright.UI/Shared/BorderedListBox.razor.cs",
+        "src/StageFright.UI/Shared/OpeningBalanceEntryForm.razor",
+        "src/StageFright.UI/Shared/OpeningBalanceEntryForm.razor.cs",
+        "src/StageFright.UI/Shared/ReactivationForgivenessDialog.razor",
+        "src/StageFright.UI/Shared/ReactivationForgivenessDialog.razor.cs",
+        "src/StageFright.UI/Shared/ReportViewer.razor",
+        "src/StageFright.UI/Shared/ReportViewer.razor.cs",
+        "src/StageFright.UI/Shared/TileRenderer.razor",
+        "src/StageFright.UI/Shared/TileRenderer.razor.cs"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "Localized all 10 Events/AGM screens + AgmAttendanceReportPrinter to EventsResource.resx/SharedResource; badges/status/validation/print messages, aria-labels, parameterised strings via code-behind helpers; EventFormModel annotations to bare [Required]; 8 Events bUnit test classes to LocalizedTestContext; full suite green",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/EventsResource.resx",
+        "src/StageFright.UI/Pages/Events/EventList.razor",
+        "src/StageFright.UI/Pages/Events/EventForm.razor",
+        "src/StageFright.UI/Pages/Events/EventDetail.razor",
+        "src/StageFright.UI/Pages/Events/ParticipationGrid.razor",
+        "src/StageFright.UI/Pages/Events/AgmList.razor",
+        "src/StageFright.UI/Pages/Events/AgmDetail.razor",
+        "src/StageFright.UI/Pages/Events/ScheduleAgm.razor",
+        "src/StageFright.UI/Pages/Events/RecordAgm.razor",
+        "src/StageFright.UI/Pages/Events/RecordSpecialElection.razor",
+        "src/StageFright.UI/Pages/Events/AgmAttendanceGrid.razor",
+        "src/StageFright.UI/Pages/Events/AgmAttendanceReportPrinter.cs"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "Localized SettingsPage + General/SalesTax/Committee/EventTypes/BackupRestore tabs to SettingsResource.resx/SharedResource; Theme+TaxCode via LocalizeEnum, audit-retention plural, fee adornments fixed to $; language picker row left for US3; 5 Settings bUnit test classes to LocalizedTestContext; full suite green",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SettingsResource.resx",
+        "src/StageFright.UI/Pages/Settings/SettingsPage.razor",
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor",
+        "src/StageFright.UI/Pages/Settings/TaxSettingsTab.razor",
+        "src/StageFright.UI/Pages/Settings/CommitteeSettingsTab.razor",
+        "src/StageFright.UI/Pages/Settings/EventTypesTab.razor",
+        "src/StageFright.UI/Pages/Settings/BackupRestoreTab.razor"
+      ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "Localized SetupWizard shell + all 9 tabs to SetupResource.resx; Review money via MoneyFormatter, Theme/TaxCode via LocalizeEnum, plural audit-retention lines, fee adornments to $; language step left for US3; 5 Setup tab bUnit classes to LocalizedTestContext; full suite green",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SetupResource.resx",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/MembershipFeesTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/ThemeSelectionTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/SalesTaxTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/SampleDataTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/ChartOfAccountsTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/OpeningBalancesTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/CommitteeTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/ReviewTab.razor"
+      ]
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "Localized StartupError.razor + ReportsPage.razor to SharedResource.resx; confirmed MainPage.xaml/App.xaml have no user-facing text; remaining Pages/** = Finance (T034)",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SharedResource.resx",
+        "src/StageFright.UI/Pages/StartupError.razor",
+        "src/StageFright.UI/Pages/StartupError.razor.cs",
+        "src/StageFright.UI/Pages/Reports/ReportsPage.razor",
+        "src/StageFright.UI/Pages/Reports/ReportsPage.razor.cs"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "Localized the Finance module (13 pages + code-behinds) to FinanceResource.resx en-AU entries; fee/payment/account/tax/recon enums via LocalizeEnum; all amounts via MoneyFormatter (FR-015); aria-labels + embedded-link warnings localized; 9 Finance bUnit test classes flipped to LocalizedTestContext",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/FinanceResource.resx",
+        "src/StageFright.UI/Pages/Finance/*.razor(.cs) x13",
+        "tests/StageFright.UI.Tests/Pages/Finance/*.cs x9"
+      ]
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "Localised all 11 report providers to ReportsResource.resx (~120 en-AU entries verbatim); ILocalizer facade injected; enum cells via ILocalizer.Enum; filter option labels via new ReportFilterDefinition.OptionLabels (values stay invariant tokens), rendered by ReportViewer",
+      "files": [
+        "src/StageFright.Reports/Resources/ReportsResource.resx",
+        "src/StageFright.Reports/Models/ReportFilterDefinition.cs",
+        "src/StageFright.UI/Shared/ReportViewer.razor",
+        "src/StageFright.Reports/Providers/*.cs (11)",
+        "tests/StageFright.Reports.Tests/*ReportProviderTests.cs (11)",
+        "tests/StageFright.Integration.Tests/Scenarios/V6|V11|V16|V18*.cs"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Added report-label tests (ReportsResourceLabelTests: report names/column headers/section+total labels resolve via ReportsResource, no raw-key/blank leak) and plugin-under-non-en test (PluginTextNonEnglishCultureTests: TestPlugin English report+tile text renders unchanged under fr-FR, run on a dedicated thread so the culture never leaks into parallel tests)",
+      "files": [
+        "tests/StageFright.Reports.Tests/ReportsResourceLabelTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/PluginTextNonEnglishCultureTests.cs"
+      ]
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "Localised all 6 PDF report renderers' page chrome to ReportsResource.resx (~21 en-AU keys verbatim): PdfReportRenderer 'Generated: {DateTime} UTC' + footer 'Page'/'of'; AttendanceRollPdfRenderer title/date-line/Name/Present/Pd headers; AgmResultsPdfRenderer title/meeting+attendance lines/Elected Positions/No positions/position label/General Committee Member; CheckboxSheetPdfBuilder Name col + footer + new nameColumnHeader param; Event/AgmAttendanceSheetPdfRenderer titles/date-lines/Participated+Attended headers. All 5 concrete renderers ctor-inject ILocalizer (resolves via existing AddScoped<ILocalizer>); CsvReportExporter untouched (no literals). 8 test-construction sites pass RealLocalizer.Instance; ReportsResourceLabelTests extended with 22 chrome-key + placeholder-substitution assertions.",
+      "files": [
+        "src/StageFright.Reports/Resources/ReportsResource.resx",
+        "src/StageFright.Reports/Rendering/PdfReportRenderer.cs",
+        "src/StageFright.Reports/Rendering/AttendanceRollPdfRenderer.cs",
+        "src/StageFright.Reports/Rendering/AgmResultsPdfRenderer.cs",
+        "src/StageFright.Reports/Rendering/CheckboxSheetPdfBuilder.cs",
+        "src/StageFright.Reports/Rendering/EventAttendanceSheetPdfRenderer.cs",
+        "src/StageFright.Reports/Rendering/AgmAttendanceSheetPdfRenderer.cs",
+        "tests/StageFright.Reports.Tests/PdfAndCsvRendererTests.cs",
+        "tests/StageFright.Reports.Tests/AttendanceRollPdfRendererTests.cs",
+        "tests/StageFright.Reports.Tests/AgmResultsPdfRendererTests.cs",
+        "tests/StageFright.Reports.Tests/EventAttendanceSheetPdfRendererTests.cs",
+        "tests/StageFright.Reports.Tests/AgmAttendanceSheetPdfRendererTests.cs",
+        "tests/StageFright.Reports.Tests/CommitteeReportProviderTests.cs",
+        "tests/StageFright.Reports.Tests/ReportsResourceLabelTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V6_AccountingReportsTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/PluginTextNonEnglishCultureTests.cs"
+      ]
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "Verified the user-facing enum sweep is complete: EnumsResource.resx holds every Enum_<Type>_<Member> key for all 9 user-facing enums (MemberStatus/FeeType/PaymentMethod/PaymentType/AccountType/TaxCode/ReconciliationStatus/JournalEntryType/Theme) verbatim (authored T038, cross-checked against Core/Enums members). Display sites converted across T034 (Finance UI), T038 (menu providers), T039 (report providers via ILocalizer.Enum). One residual raw-enum display site found + fixed: MemberDetail Fee Payment History grid FeeType column (fee.FeeType.ToString() -> fee.FeeType.LocalizeEnum()), the item the companion decisions explicitly deferred from US1 to T042. Repo-wide .ToString() enum-at-display-site scan of UI+Reports now clean.",
+      "files": [
+        "src/StageFright.UI/Pages/Members/MemberDetail.razor.cs"
+      ]
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "Verified the repo-wide C-format sweep is complete: zero decimal.ToString(\"C\")/{0:C}/FormatString=\"{0:C}\" display sites remain in UI (.razor/.razor.cs) or Reports (providers use F2; renderers never format currency - amounts arrive pre-formatted in Cells). Finance screen sweep was done in T034. Remaining ':C' occurrences in src are all non-display: audit-trail newValue: strings (audit records, FR-007 exempt) and MoneyFormatter's own sanctioned ToString(\"C\", clonedFormat) implementation. The single user-facing residual - BankReconciliationService.cs:153 ReconciliationException message 'the difference is {x:C}, not /usr/bin/bash.00.' - is exception-message text owned by T041, not a T044 display site.",
+      "files": [
+        "(verification only - no code change)"
+      ]
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "Localized user-facing exception Message text in all 9 Finance services (Account/BankReconciliation/ExpensePayment/Payment/Fee/GeneralJournal/IncomeEntry/BankDeposit/OpeningBalance) via injected ILocalizer -> 39 new verbatim en-AU ValidationResource keys (+ reuse of Validation_Settings_NotConfigured); BankReconciliationService {Difference:C}+$0.00 finalise message routed through MoneyFormatter.Format (T044 residual closed); ~30 test ctor sites pass RealLocalizer.Instance; interim Us2ExceptionMessageGuardTests extended to cover Finance. Full build 0/0, full suite 1757 pass.",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx",
+        "src/StageFright.Core/Modules/Finance/AccountService.cs",
+        "src/StageFright.Core/Modules/Finance/BankReconciliationService.cs",
+        "src/StageFright.Core/Modules/Finance/ExpensePaymentService.cs",
+        "src/StageFright.Core/Modules/Finance/PaymentService.cs",
+        "src/StageFright.Core/Modules/Finance/FeeService.cs",
+        "src/StageFright.Core/Modules/Finance/GeneralJournalService.cs",
+        "src/StageFright.Core/Modules/Finance/IncomeEntryService.cs",
+        "src/StageFright.Core/Modules/Finance/BankDepositService.cs",
+        "src/StageFright.Core/Modules/Finance/OpeningBalanceService.cs",
+        "tests/StageFright.Core.Tests/Modules/Finance/*ServiceTests.cs",
+        "tests/StageFright.Data.Tests/Settings/SetupServiceIntegrationTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/*.cs",
+        "tests/StageFright.Localization.Tests/Us2ExceptionMessageGuardTests.cs"
+      ]
+    },
+    "T045": {
+      "status": "DONE",
+      "did": "DI recheck after T041 Finance: all 9 Finance services + report providers/renderers + menu providers + non-Finance services are plain AddScoped/AddSingleton<I,Impl>() registrations (only factory lambdas in MauiProgram are PluginMigrationRunner and the T014 IStringLocalizerFactory decorator), so DI auto-resolves the new ILocalizer/IStringLocalizer<T> ctor params from AddScoped<ILocalizer,Localizer>(). No MauiProgram.cs change required; verified by the 188-test Integration suite on the real DI host passing end-to-end.",
+      "files": [
+        "src/StageFright.App/MauiProgram.cs (verification only - no change)"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "Added repo-wide US2 localization guard suite Us2LocalizationGuardTests (8 facts): baseline key-completeness across the US1+US2 surface, Enum_<Type>_<Member> coverage for all 9 user-facing enums + no-raw-enum-render, residual-literal scan over the UI display surface (Layout/Pages/Modules/Shared), no-orphan-satellite-key, plural-pair+placeholder-parity (excludes Enum_*_Other members), cross-culture satellite token-parity, and no-\"C\"-currency repo-wide (excludes MoneyFormatter + audit newValue: + log text). Report-provider filter option-value tokens (T039) and DataAnnotations ErrorMessage/ValidationResult (compile-time-constant, T060) are documented exclusions. Full rebuild 0/0; full suite 1765 pass (Localization 11->19).",
+      "files": [
+        "tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs",
+        "tests/StageFright.Localization.Tests/Us2ExceptionMessageGuardTests.cs"
+      ]
+    },
+    "T048": {
+      "status": "DONE",
+      "did": "Added nullable Settings.LanguageCode (presentation-only, FR-016) + defensive HasMaxLength(16) in SettingsConfiguration; SchemaVersion left at 1.1.0 (see decision)",
+      "files": [
+        "src/StageFright.Core/Entities/Settings.cs",
+        "src/StageFright.Data/Configurations/SettingsConfiguration.cs"
+      ]
+    },
+    "T049": {
+      "status": "DONE",
+      "did": "Added ILanguageProvider (FR-023 startup ladder), ISupportedLanguagesCatalog (runtime-discovered, FR-011), ISystemCultureProvider (OS UI-culture seam) contracts",
+      "files": [
+        "src/StageFright.Core/Contracts/ILanguageProvider.cs",
+        "src/StageFright.Core/Contracts/ISupportedLanguagesCatalog.cs",
+        "src/StageFright.Core/Contracts/ISystemCultureProvider.cs"
+      ]
+    },
+    "T050": {
+      "status": "DONE",
+      "did": "Added SupportedLanguage immutable value object (CultureCode, Endonym from CultureInfo.NativeName title-cased, IsDefault; equality by CultureCode)",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/SupportedLanguage.cs"
+      ]
+    },
+    "T051": {
+      "status": "DONE",
+      "did": "Hand-wrote EF migration 20260828120000_AddLanguageCodeToSettings (Up: AddColumn LanguageCode TEXT maxLength 16 nullable on Settings; Down: DropColumn) + .Designer.cs regenerated from the updated model snapshot; StageFrightDbContextModelSnapshot.cs updated. dotnet ef unavailable in this env (MAUI startup project ResolvePackageAssets)",
+      "files": [
+        "src/StageFright.Data/Migrations/20260828120000_AddLanguageCodeToSettings.cs",
+        "src/StageFright.Data/Migrations/20260828120000_AddLanguageCodeToSettings.Designer.cs",
+        "src/StageFright.Data/Migrations/StageFrightDbContextModelSnapshot.cs"
+      ]
+    },
+    "T052": {
+      "status": "DONE",
+      "did": "SupportedLanguagesCatalog: runtime discovery of shipped resource cultures by scanning AppContext.BaseDirectory for <culture>/<our-assembly>.resources.dll folders; always includes neutral en-AU (IsDefault); excludes qps-*; Find resolves null/blank/unknown to null; ordered default-first then by endonym",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/SupportedLanguagesCatalog.cs"
+      ]
+    },
+    "T053": {
+      "status": "DONE",
+      "did": "LanguageProvider: FR-023 ladder (explicit Settings.LanguageCode -> OS culture exact then parent-language match in catalog -> en-AU); every step wrapped, never throws; DefaultCulture = en-AU",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/LanguageProvider.cs"
+      ]
+    },
+    "T054": {
+      "status": "DONE",
+      "did": "SystemCultureProvider (App layer) over CultureInfo.InstalledUICulture; returns InvariantCulture on any failure",
+      "files": [
+        "src/StageFright.App/SystemCultureProvider.cs"
+      ]
+    },
+    "T055": {
+      "status": "DONE",
+      "did": "MauiProgram: registered ISupportedLanguagesCatalog/ISystemCultureProvider (singleton) + ILanguageProvider (scoped); RunStartupSequence now resolves ResolveStartupCultureAsync after migrations and sets CultureInfo.DefaultThreadCurrentCulture/UICulture + CurrentCulture/UICulture before first BlazorWebView render; wrapped so failure continues on default culture",
+      "files": [
+        "src/StageFright.App/MauiProgram.cs"
+      ]
+    },
+    "T056": {
+      "status": "DONE",
+      "did": "GeneralSettingsTab: language <select> bound to ISupportedLanguagesCatalog.All by endonym, marks active one, persists Settings.LanguageCode on Save, inline restart notice (alert-info role=status) shown while selection differs from loaded value (FR-012/FR-014/FR-021); 3 new SettingsResource keys",
+      "files": [
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor",
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor.cs",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.resx"
+      ]
+    },
+    "T057": {
+      "status": "DONE",
+      "did": "Setup Wizard first-run language step: new LanguageSelectionTab (endonym <select>, pre-selects FR-023-resolved default via ILanguageProvider); SetupFormModel.LanguageCode + SetupRequest.LanguageCode + SetupService writes Settings.LanguageCode; 2 new SetupResource keys",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/LanguageSelectionTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/LanguageSelectionTab.razor.cs",
+        "src/StageFright.UI/Pages/Setup/SetupFormModel.cs",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs",
+        "src/StageFright.Core/Modules/Settings/SetupRequest.cs",
+        "src/StageFright.Core/Modules/Settings/SetupService.cs",
+        "src/StageFright.UI/Resources/Strings/SetupResource.resx"
+      ]
+    },
+    "T058": {
+      "status": "DONE",
+      "did": "qps-ploc pseudo-locale: regenerable scripts/generate-pseudo-locale.py + 12 <Marker>.qps-ploc.resx fixtures (bracketed/accented values, {tokens} preserved, 3 keys omitted for fallback proof); embedded as satellites, filtered from catalog by qps-* name",
+      "files": [
+        "scripts/generate-pseudo-locale.py",
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.qps-ploc.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.qps-ploc.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/EnumsResource.qps-ploc.resx",
+        "src/StageFright.Reports/Resources/ReportsResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/SharedResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/DashboardResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/MembersResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/RehearsalsResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/EventsResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/FinanceResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.qps-ploc.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.qps-ploc.resx"
+      ]
+    },
+    "T059": {
+      "status": "DONE",
+      "did": "Added CultureProvider cascading component (StageFright.UI.Layout) parallel to ThemeProvider; wraps ShellLayout tree, cascades the startup-resolved CurrentUICulture read-only; no v1 behaviour change (FR-021 seam). Named CultureProvider to avoid colliding with the Core LanguageProvider service",
+      "files": [
+        "src/StageFright.UI/Layout/CultureProvider.razor",
+        "src/StageFright.UI/Layout/CultureProvider.razor.cs",
+        "src/StageFright.UI/Layout/ShellLayout.razor"
+      ]
+    },
+    "T046": {
+      "status": "DONE",
+      "did": "US3 tests: LanguageProviderTests (FR-023 ladder, 10 cases), SupportedLanguagesCatalogTests (runtime discovery, qps-* exclusion, Find null/blank/unknown, endonym, case-insensitive), AddLanguageCodeToSettingsMigrationTests (pre-migration row -> null LanguageCode; round-trip), V21_LocalizationStartupTests (SC-005 persisted choice, SC-010 OS fallback, SC-006 no data/GL change on switch)",
+      "files": [
+        "tests/StageFright.Core.Tests/Localization/LanguageProviderTests.cs",
+        "tests/StageFright.Core.Tests/Localization/SupportedLanguagesCatalogTests.cs",
+        "tests/StageFright.Data.Tests/Migrations/AddLanguageCodeToSettingsMigrationTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V21_LocalizationStartupTests.cs"
+      ]
+    },
+    "T047": {
+      "status": "DONE",
+      "did": "US3 qps-ploc e2e + picker bUnit: Us3PseudoLocaleGuardTests (catalog never lists qps-ploc; pseudo value renders under qps-ploc; omitted key falls back to en-AU value; absent-everywhere key logs Warning) + LanguagePickerRenderTests (endonym list, active-marked, restart notice on change, persist on Save, Setup step pre-select); LocalizedTestContext registers the US3 language services",
+      "files": [
+        "tests/StageFright.Localization.Tests/Us3PseudoLocaleGuardTests.cs",
+        "tests/StageFright.UI.Tests/Localization/LanguagePickerRenderTests.cs",
+        "tests/StageFright.UI.Tests/LocalizedTestContext.cs"
+      ]
+    },
+    "T060": {
+      "status": "DONE",
+      "did": "Made residual-literal guard repo-wide: Us2LocalizationGuardTests scans all of StageFright.UI + every user-facing exception Message literal in StageFright.Core; froze DataAnnotations ErrorMessage as the one documented carve-out. Guard then flagged App.razor (project root, outside the old 4-dir scope) — localized its 5 error-boundary/not-found literals to 6 new Shared_App_* keys + qps-ploc.",
+      "files": [
+        "tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs",
+        "src/StageFright.UI/App.razor",
+        "src/StageFright.UI/App.razor.cs",
+        "src/StageFright.UI/Resources/Strings/SharedResource.resx",
+        "src/StageFright.UI/Resources/Strings/SharedResource.qps-ploc.resx"
+      ]
+    },
+    "T061": {
+      "status": "DONE",
+      "did": "Added docs/localization/adding-a-language.md — translator/maintainer guide (FR-022, SC-009): resource-file locations table, key-naming scheme, step-by-step add-a-language, partial-language fallback, what-not-to-translate, qps-ploc pseudo-locale, DataAnnotations carve-out, guard-suite enforcement summary, startup resolution + restart notice.",
+      "files": [
+        "docs/localization/adding-a-language.md"
+      ]
+    },
+    "T062": {
+      "status": "DONE",
+      "did": "Refreshed stale docs: CLAUDE.md gains a Localization section (resx locations, @L pattern, LocalizeEnum, MoneyFormatter-not-{0:C}, runtime catalog, restart notice) + Localization module in the list + money-column data-grid note; resource-key-catalog.md updated to past tense (T060 done, repo-wide, ErrorMessage carve-out); spec 007 account-balance contract gets a forward-note that its {0:C} money columns moved to MoneyFormatter.",
+      "files": [
+        "CLAUDE.md",
+        "specs/027-localization-support/contracts/resource-key-catalog.md",
+        "specs/007-account-balance-expense-tab/contracts/account-balance-service-contract.md"
+      ]
+    },
+    "T063": {
+      "status": "DONE",
+      "did": "Ran quickstart.md validation: automated backbone green — guard suite 23/23 (US1/US2 residual-literal now repo-wide, enum coverage, no-C-currency, missing-key logging), integration V21_LocalizationStartup + PluginTextNonEnglishCulture + DB/GL-byte-identical all pass, bUnit LanguagePicker/localized-render pass. Manual-only scenarios (live-app en-AU pixel parity SC-002, live comma-separator money input 3.7) noted as outstanding human verification — not executable headless.",
+      "files": [
+        "specs/027-localization-support/quickstart.md"
+      ]
+    },
+    "T064": {
+      "status": "DONE",
+      "did": "Full dotnet build -t:Rebuild: 0 warnings / 0 errors across all 13 projects. Full dotnet test (no --no-build): 1805 passed, 0 failed, 0 skipped — Reports 217, Core 620, Localization 23, UI 599, Data 154, Integration 192.",
+      "files": [
+        "(repo root)"
+      ]
+    }
+  },
+  "verified": [
+    {
+      "what": "Full solution build after Phase 1+2 changes",
+      "command": "dotnet build StageFrightCommunity.slnx",
+      "result": "Build succeeded, 0 Warning(s), 0 Error(s)",
+      "warnings": [
+        "Transient CS1574 cref-not-resolved on EnumsResource.cs before EnumLocalizationExtensions.LocalizeEnum existed; resolved once T009 landed"
+      ]
+    },
+    {
+      "what": "Full test suite after Phase 1+2 changes (no --no-build)",
+      "command": "dotnet test StageFrightCommunity.slnx",
+      "result": "1693 existing tests passed (597 Core.Tests, 178 Reports.Tests, 580 UI.Tests, 152 Data.Tests, 186 Integration.Tests), 0 failed; StageFright.Localization.Tests has no tests yet (T012 is scanning infrastructure only, no assertions until Phase 3 T015)",
+      "warnings": []
+    },
+    {
+      "what": "Full solution build + full test suite after US1 extraction",
+      "command": "dotnet build StageFrightCommunity.slnx; dotnet test StageFrightCommunity.slnx --no-build",
+      "result": "Build: 0 warnings/0 errors. Tests: 1706 passed / 0 failed (Localization 6, Reports 178, Core 597, UI 587, Data 152, Integration 186)",
+      "warnings": [
+        "GateGuard fact-gate denied first Write/Edit of ~20 files once each (expected on this machine; retried)",
+        "razor-codebehind-check hook false-positives on _Imports.razor (no code-behind) - benign",
+        "SCOPE WARNING hook at 37 files - expected for an extraction sweep"
+      ]
+    },
+    {
+      "what": "US1 localization guard suite (T015)",
+      "command": "dotnet test tests/StageFright.Localization.Tests/",
+      "result": "6/6 pass: completeness (+plural-pair), MemberStatus/Theme enum coverage, residual-literal scan over US1 slice, no-raw-enum, no-C-currency, missing-key warning+neutral fallback"
+    },
+    {
+      "what": "FR-018 bUnit render tests (T016) + existing bUnit suite",
+      "command": "dotnet test tests/StageFright.UI.Tests/",
+      "result": "587/587 pass; 7 new tests assert US1 text resolves via IStringLocalizer keys / LocalizeEnum; 60 pre-existing Member/Shell tests kept green by flipping them to LocalizedTestContext (neutral en-AU values are byte-identical to prior hardcoded copy)"
+    },
+    {
+      "what": "Full solution build + full -t:Rebuild after T032 Rehearsals localization",
+      "command": "dotnet build StageFrightCommunity.slnx -t:Rebuild",
+      "result": "Build succeeded, 0 Warning(s), 0 Error(s)",
+      "warnings": [
+        "GateGuard fact-gate denied first Write/Edit of each file once (expected on this machine; retried succeeds)"
+      ]
+    },
+    {
+      "what": "Full test suite after T032 (no --no-build on first pass, then --no-build re-run)",
+      "command": "dotnet test StageFrightCommunity.slnx",
+      "result": "1714 passed / 0 failed (Localization 9, Reports 178, Core 597, UI 592, Data 152, Integration 186) — up 8 from the US1 baseline of 1706",
+      "warnings": []
+    },
+    {
+      "what": "Rehearsals-scoped localization guard suite (interim, precedes repo-wide T029)",
+      "command": "dotnet test tests/StageFright.Localization.Tests/",
+      "result": "9/9 pass: US1 six + Rehearsals three (baseline-completeness incl. Shared area, residual-literal scan incl. aria-label/placeholder, no-C-currency)"
+    },
+    {
+      "what": "Full solution build + full test suite after T034 (Finance) and T041 groundwork (AgeCalculationService)",
+      "command": "dotnet build StageFrightCommunity.slnx; dotnet test StageFrightCommunity.slnx --no-build",
+      "result": "Build 0 warnings / 0 errors. Tests 1714 passed / 0 failed (Localization 9, Reports 178, Core 597, UI 592, Data 152, Integration 186)",
+      "warnings": [
+        "dotnet-build-on-edit PostToolUse hook fails noisily on each intermediate edit until the module compiles - expected, edits still land",
+        "SCOPE WARNING hook fired repeatedly - expected for a localization extraction sweep",
+        "git LF->CRLF autocrlf warnings on commit - benign"
+      ]
+    },
+    {
+      "what": "Full solution build + full test suite after T039 + T030",
+      "command": "dotnet build StageFrightCommunity.slnx; dotnet test StageFrightCommunity.slnx",
+      "result": "Build 0 warnings / 0 errors. Tests 1733 passed / 0 failed (Reports 195 up from 178, Integration 188 up from 186, Core 597, UI 592, Data 152, Localization 9)",
+      "warnings": [
+        "dotnet-build-on-edit PostToolUse hook fails noisily on each intermediate edit until the project compiles - expected, edits still land",
+        "SCOPE WARNING hook fired repeatedly (33 files) - expected for a Reports-wide localization sweep",
+        "First full-suite run had 1 Integration failure from my new culture-mutating test leaking fr-FR into a parallel test; fixed by running those cases on a dedicated thread, re-run clean"
+      ]
+    },
+    {
+      "what": "Reports.Tests verbatim-transcription parity (existing 178 string-assertion tests)",
+      "command": "dotnet test tests/StageFright.Reports.Tests/",
+      "result": "195/195 pass - every pre-existing assertion on report titles/headings/column headers/total labels stayed green because ReportsResource.resx neutral values are byte-identical to the prior hardcoded English (FR-004)"
+    },
+    {
+      "what": "Full solution build + full test suite after T040/T042/T044",
+      "command": "dotnet build StageFrightCommunity.slnx; dotnet test StageFrightCommunity.slnx",
+      "result": "Build 0 warnings / 0 errors. Tests 1755 passed / 0 failed (Reports 217 up from 195, Integration 188, Core 597, UI 592, Data 152, Localization 9)",
+      "warnings": [
+        "dotnet-build-on-edit PostToolUse hook fails noisily on each intermediate edit until the project compiles - expected, edits still land",
+        "StrategicCompact advisory at ~250k context - noted, not acted on"
+      ]
+    },
+    {
+      "what": "T044 repo-wide C-format display-site sweep",
+      "command": "grep -rn for ToString(\"C\")/{0:C}/FormatString across src/ UI + Reports + Core",
+      "result": "Zero display-site C-format remains in UI or Reports; Finance UI swept in T034; providers use F2; renderers never format currency. Remaining src :C = audit newValue: strings (FR-007 exempt) + MoneyFormatter impl + one T041-owned exception message",
+      "warnings": []
+    },
+    {
+      "what": "T045 DI check for renderer ILocalizer ctor deps (partial - pre-T041)",
+      "command": "grep MauiProgram.cs renderer + ILocalizer registrations; 188 Integration tests on real DI host",
+      "result": "All 5 PDF renderers use plain AddScoped<IX,X>() (no factory lambda) so the new ILocalizer ctor param resolves from AddScoped<ILocalizer,Localizer>(); Integration suite green end-to-end. Must re-verify after T041 adds IStringLocalizer to ~18 service ctors",
+      "warnings": [
+        "T045 not closed - waits on T041"
+      ]
+    },
+    {
+      "what": "dotnet build (full solution) + full dotnet test after localizing user-facing exception messages in the 8 non-Finance Core services",
+      "command": "dotnet build StageFrightCommunity.slnx ; dotnet test StageFrightCommunity.slnx",
+      "result": "Build 0 warnings / 0 errors. Tests: Core 597, Reports 217, UI 592, Localization 11 (+2 new interim guard), Data 152, Integration 188 = 1757 pass / 0 fail",
+      "warnings": [
+        "StageFright.UI.Tests DoesNotRender_FeeColumns/DoesNotRender_FeeOrPaidFields intermittently false-positive on random bUnit GUID substrings containing hex \"fee\" - documented flake, passed on isolated re-run, diff does not touch Events/ParticipationGrid/EventForm"
+      ]
+    },
+    {
+      "what": "Full solution rebuild after T041 Finance + T029 + T045",
+      "command": "dotnet build StageFrightCommunity.slnx -t:Rebuild",
+      "result": "Build succeeded, 0 Warning(s), 0 Error(s)",
+      "warnings": [
+        "dotnet-build-on-edit PostToolUse hook fails noisily on each intermediate edit until the project compiles - expected",
+        "SCOPE WARNING hook fired repeatedly (33 files) - expected for a localization sweep"
+      ]
+    },
+    {
+      "what": "Full test suite (no --no-build after rebuild)",
+      "command": "dotnet test StageFrightCommunity.slnx --no-build",
+      "result": "1765 passed / 0 failed (Localization 19 up from 11, Reports 217, Core 597, UI 592, Data 152, Integration 188)",
+      "warnings": []
+    },
+    {
+      "what": "Finance module unit tests - verbatim wording preserved (FR-004) after routing 41 exception messages through ValidationResource",
+      "command": "dotnet test tests/StageFright.Core.Tests/ --filter FullyQualifiedName~Finance",
+      "result": "260/260 pass - every pre-existing ex.Message substring assertion stayed green because the 39 new ValidationResource neutral values are byte-identical to the prior hardcoded English"
+    },
+    {
+      "what": "Repo-wide US2 localization guard suite (T029)",
+      "command": "dotnet test tests/StageFright.Localization.Tests/",
+      "result": "19/19 pass: baseline completeness, 9-enum coverage + no-raw-enum, residual-literal over US1+US2 UI surface, orphan-satellite, plural-pair + placeholder parity, cross-culture token parity, no-C-currency repo-wide"
+    },
+    {
+      "what": "full solution rebuild (dotnet build -t:Rebuild)",
+      "command": "dotnet build StageFrightCommunity.slnx -t:Rebuild",
+      "result": "Build succeeded — 0 Warning(s), 0 Error(s)",
+      "warnings": []
+    },
+    {
+      "what": "full test suite (no --no-build)",
+      "command": "dotnet test StageFrightCommunity.slnx",
+      "result": "1805 passed, 0 failed, 0 skipped (Localization 23, Core 620, Reports 217, UI 599, Data 154, Integration 192)",
+      "warnings": []
+    },
+    {
+      "what": "Full clean rebuild of every project",
+      "command": "dotnet build StageFrightCommunity.slnx -t:Rebuild",
+      "result": "Build succeeded — 0 Warning(s), 0 Error(s) across all 13 projects",
+      "warnings": []
+    },
+    {
+      "what": "Full test suite, no --no-build",
+      "command": "dotnet test StageFrightCommunity.slnx",
+      "result": "1805 passed, 0 failed, 0 skipped (Reports 217, Core 620, Localization 23, UI 599, Data 154, Integration 192)",
+      "warnings": []
+    },
+    {
+      "what": "Repo-wide residual-literal guard (T060) — first run flagged App.razor, fixed, re-ran green",
+      "command": "dotnet test tests/StageFright.Localization.Tests",
+      "result": "23/23 pass; Should_HaveNoUserFacingLiteral_When_AppSurfaceScanned green after localizing App.razor error-boundary/not-found chrome",
+      "warnings": [
+        "git LF->CRLF normalization notices on edited files — pre-existing repo autocrlf behaviour, benign"
+      ]
+    },
+    {
+      "what": "qps-ploc pseudo-locale regeneration after adding Shared_App_* keys",
+      "command": "python scripts/generate-pseudo-locale.py",
+      "result": "clean; only the 6 new Shared_App_* entries added to SharedResource.qps-ploc.resx, no drift in the other 11 files",
+      "warnings": []
+    }
+  ],
+  "concerns": [
+    {
+      "note": "US1 residual-literal guard uses targeted heuristics (Capitalised multi-word C# literals; text-node/aria/alt/title/placeholder regex), not a Roslyn AST scan. Adequate for the US1 slice but T060 (Polish) must harden it before the repo-wide zero-literal assertion.",
+      "step": "implement"
+    },
+    {
+      "note": "Two minor presentation-only changes vs. exact prior wording: MemberList no-match message drops the <strong> around the search term (now a {SearchTerm} resource placeholder); MembersTile Loading text normalised from Loading... to Loading (ellipsis). Wording preserved; note if a spec/QA pass flags it.",
+      "step": "implement"
+    },
+    {
+      "note": "Three catch blocks in RehearsalList/AttendanceGrid no longer surface raw ex.Message to the user (now Rehearsals_List_LoadError / Shared_Error_Unexpected), matching the US1 MemberForm precedent. PrintRoll still Logger.LogError-s the exception; the load/save failures were never logged before and still are not.",
+      "step": "implement"
+    },
+    {
+      "note": "T041 is only partly done: AgeCalculationService is localized, but the bulk - service-thrown ValidationException/DomainValidationException/ReconciliationException message text across ~18 Core services (AgmService, EventService, EventTypeService, AccountService x6 test-ctor files, BankReconciliationService, FeeService, GeneralJournalService, OpeningBalanceService x5, AttendanceService, BankDeposit/Expense/Income/Payment services, CommitteeOfficeHolderTypeService, SettingsService, SetupService) - remains. Each needs a ValidationResource key set + ctor localizer injection + test call-site fan-out. High blast radius; should be its own session(s).",
+      "step": "implement"
+    },
+    {
+      "note": "T039 localised report PROVIDERS only. Report RENDERERS (T040) still emit hardcoded English chrome: PdfReportRenderer (\"Generated: \", \" UTC\", \"Page \"/\" of \"), AttendanceRollPdfRenderer / AgmResultsPdfRenderer / CheckboxSheetPdfBuilder + the two sheet renderers (titles, \"Name\", \"Present\"/\"Pd\"/\"Attended\"/\"Participated\", date lines). A generated PDF/CSV therefore has localised report BODY but English rendering chrome until T040. CsvReportExporter has no user-facing literals.",
+      "step": "implement"
+    },
+    {
+      "note": "US2 remaining after this session: T041 (service-thrown ValidationException/DomainValidationException message text across ~18 Core services - high test blast radius, own session), T040 (report renderers, above), T042 (verify enum display-site sweep repo-wide - EnumsResource keys already authored in T038, Finance done in T034, Reports done here), T044 (verify repo-wide decimal.ToString(\"C\")/{0:C}/FormatString sweep - Finance done, reports never used C), T045 (DI check for the new ILocalizer ctor deps - MauiProgram AddScoped<IReportProvider,X>() resolves ILocalizer automatically, likely a no-op), T029 (repo-wide guard suite). Then US3 T046-T059, Polish T060-T064.",
+      "step": "implement"
+    },
+    {
+      "note": "T041 is the last open US2 Wave-1 task and is high blast radius (~18 Core services: AgmService, EventService, EventTypeService, AccountService, BankReconciliationService, FeeService, GeneralJournalService, OpeningBalanceService, AttendanceService, BankDeposit/Expense/Income/Payment services, CommitteeOfficeHolderTypeService, SettingsService, SetupService - each needs a ValidationResource key set + ctor IStringLocalizer<ValidationResource> injection + test call-site fan-out). One concrete residual it owns: BankReconciliationService.cs:153 ReconciliationException message still has {Difference:C} + a literal $0.00 - route through MoneyFormatter when localising. Should be its own session(s).",
+      "step": "implement"
+    },
+    {
+      "note": "T045 (DI check) verified only for the renderer ILocalizer ctor deps landed so far; it must be re-run once T041 adds IStringLocalizer<ValidationResource> to ~18 service ctors to confirm none needs a factory-lambda registration. T029 (repo-wide guard suite) is blocked until T041 lands - a residual-literal scan over Core/Exceptions + *ValidationService would hard-fail today.",
+      "step": "implement"
+    },
+    {
+      "note": "US2 T041 is HALF done: Finance services (AccountService, BankDepositService, BankReconciliationService incl. the {workspace.Difference:C} at line 153, ExpensePaymentService, FeeService, GeneralJournalService, IncomeEntryService, OpeningBalanceService, PaymentService) still throw hardcoded ValidationException/ReconciliationException/GLBalanceException messages. Then T045 (DI recheck - non-Finance needed NO MauiProgram change since all 8 are plain AddScoped<I,Impl>) and T029 (repo-wide guard suite) remain. T029 blocked until Finance done.",
+      "step": "implement"
+    },
+    {
+      "note": "3 form-model classes still carry un-localized DataAnnotations ErrorMessage / ValidationResult text: src/StageFright.UI/Pages/Setup/SetupFormModel.cs (Organisation name / Annual fee / Attendance fee / Renewal month / AGM month / Audit retention / Tax rate), src/StageFright.UI/Shared/NewAccountModel.cs (Account name), src/StageFright.UI/Pages/Settings/EventTypesTab.razor.cs NewEventTypeModel (Event type name). Compile-time-constant limitation - excluded from the T029 residual-literal guard and flagged for T060 (guard hardening + strict zero-literal). Needs either a custom localized ValidationAttribute or code-behind validation via ILocalizer.",
+      "step": "implement"
+    },
+    {
+      "note": "MissingKeyLoggingLocalizerFactory logs only on LocalizedString.ResourceNotFound, which does not fire when a key is omitted from an active satellite but present in neutral (ResourceManager resolves it silently). Per-key satellite fallback to en-AU works (no blank/raw key), but is not logged — SC-004 every-fallback-recorded is only partially met. Candidate for T060/Polish.",
+      "step": "implement"
+    },
+    {
+      "note": "App.razor was missed by US2 (T043) — it is at the StageFright.UI project root, outside the Layout/Pages/Modules/Shared dirs the per-phase guard scanned. T060 repo-wide guard caught it; now fixed. Residual: the guard covers all of StageFright.UI + Core Modules/Exceptions, but StageFright.App XAML and StageFright.Reports non-provider/renderer code are still outside its scan.",
+      "step": "implement"
+    },
+    {
+      "note": "Manual live-app verification still outstanding: SC-002 (en-AU pixel-parity across full screen/report inventory) and quickstart 3.7 (entering 1234,50 under a comma-decimal culture round-trips to the same stored decimal) need a human running the MAUI app — not executable headless.",
+      "step": "implement"
+    }
+  ]
+}

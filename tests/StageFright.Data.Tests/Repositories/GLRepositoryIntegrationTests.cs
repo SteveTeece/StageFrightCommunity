@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Modules.Finance;
 using StageFright.Data;
 using StageFright.Data.Repositories;
 
@@ -43,7 +44,7 @@ public sealed class GLRepositoryIntegrationTests : IAsyncLifetime
         });
         await _db.SaveChangesAsync();
 
-        _sut = new GLRepository(_db);
+        _sut = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
     }
 
     public async ValueTask DisposeAsync()

@@ -18,7 +18,7 @@ namespace StageFright.UI.Tests.Pages.Events;
 /// click-tested — no seam exists to intercept the real File.WriteAllBytes/Process.Start call,
 /// matching RehearsalListTests.cs's precedent).
 /// </summary>
-public class EventListTests : RadzenGridTestContext
+public class EventListTests : LocalizedTestContext
 {
     private readonly ICombinedEventListService _combinedEventListService = Substitute.For<ICombinedEventListService>();
     private readonly IEventAttendanceSheetService _eventAttendanceSheetService = Substitute.For<IEventAttendanceSheetService>();

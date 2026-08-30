@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 using StageFright.Plugins.Contracts;
 
 namespace StageFright.Core.Modules.Dashboard;
@@ -7,6 +9,13 @@ namespace StageFright.Core.Modules.Dashboard;
 /// </summary>
 public class DashboardMenuItemProvider : IMenuItemProvider
 {
+    private readonly IStringLocalizer<NavigationResource> _localizer;
+
+    public DashboardMenuItemProvider(IStringLocalizer<NavigationResource> localizer)
+    {
+        _localizer = localizer;
+    }
+
     public string ModuleName => "Dashboard";
     public int DisplayOrder => 0;
 
@@ -14,9 +23,9 @@ public class DashboardMenuItemProvider : IMenuItemProvider
     [
         new MenuItem
         {
-            Title = "Dashboard",
+            Title = _localizer["Nav_Dashboard_Title"],
             Route = "/dashboard",
-            ShortLabel = "HOME",
+            ShortLabel = _localizer["Nav_Dashboard_ShortLabel"],
             DisplayOrder = 0
         }
     ];

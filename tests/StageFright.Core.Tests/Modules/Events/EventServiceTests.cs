@@ -33,7 +33,7 @@ public class EventServiceTests : TestBase
     }
 
     private EventService CreateService() =>
-        new(_eventRepo, _participationRepo, _memberRepo, _audit, _unitOfWork);
+        new(_eventRepo, _participationRepo, _memberRepo, _audit, _unitOfWork, RealLocalizer.Instance);
 
     // --- ScheduleAsync ---
 

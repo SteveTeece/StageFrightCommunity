@@ -1,71 +1,71 @@
 @page "/settings"
 
-<PageTitle>Settings — StageFright Community</PageTitle>
+<PageTitle>@L["Settings_Page_Title"]</PageTitle>
 
 <div class="settings-page">
-    <h1>Settings</h1>
+    <h1>@L["Settings_Page_Heading"]</h1>
 
     <Tabs DefaultActiveTabIndex="@DefaultTabIndex">
-        <Tab Title="General" OnClick="OnGeneralClicked">
+        <Tab Title="@L["Settings_Tab_General"]" OnClick="OnGeneralClicked">
             <Content>
                 <div class="pt-3">
                     @if (GeneralShown)
                     {
                         <ErrorBoundary>
                             <ChildContent><GeneralSettingsTab /></ChildContent>
-                            <ErrorContent><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                            <ErrorContent><div class="alert alert-danger">@L["Settings_Tab_LoadFailed"]</div></ErrorContent>
                         </ErrorBoundary>
                     }
                 </div>
             </Content>
         </Tab>
-        <Tab Title="Sales Tax" OnClick="OnTaxClicked">
+        <Tab Title="@L["Settings_Tab_SalesTax"]" OnClick="OnTaxClicked">
             <Content>
                 <div class="pt-3">
                     @if (TaxShown)
                     {
                         <ErrorBoundary>
                             <ChildContent><TaxSettingsTab /></ChildContent>
-                            <ErrorContent><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                            <ErrorContent><div class="alert alert-danger">@L["Settings_Tab_LoadFailed"]</div></ErrorContent>
                         </ErrorBoundary>
                     }
                 </div>
             </Content>
         </Tab>
-        <Tab Title="Event Types" OnClick="OnEventTypesClicked">
+        <Tab Title="@L["Settings_Tab_EventTypes"]" OnClick="OnEventTypesClicked">
             <Content>
                 <div class="pt-3">
                     @if (EventTypesShown)
                     {
                         <ErrorBoundary>
                             <ChildContent><EventTypesTab /></ChildContent>
-                            <ErrorContent><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                            <ErrorContent><div class="alert alert-danger">@L["Settings_Tab_LoadFailed"]</div></ErrorContent>
                         </ErrorBoundary>
                     }
                 </div>
             </Content>
         </Tab>
-        <Tab Title="Backup &amp; Restore" OnClick="OnBackupClicked">
+        <Tab Title="@L["Settings_Tab_BackupRestore"]" OnClick="OnBackupClicked">
             <Content>
                 <div class="pt-3">
                     @if (BackupShown)
                     {
                         <ErrorBoundary>
                             <ChildContent><BackupRestoreTab /></ChildContent>
-                            <ErrorContent><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                            <ErrorContent><div class="alert alert-danger">@L["Settings_Tab_LoadFailed"]</div></ErrorContent>
                         </ErrorBoundary>
                     }
                 </div>
             </Content>
         </Tab>
-        <Tab Title="Committee" OnClick="OnCommitteeClicked">
+        <Tab Title="@L["Settings_Tab_Committee"]" OnClick="OnCommitteeClicked">
             <Content>
                 <div class="pt-3">
                     @if (CommitteeShown)
                     {
                         <ErrorBoundary>
                             <ChildContent><CommitteeSettingsTab /></ChildContent>
-                            <ErrorContent><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                            <ErrorContent><div class="alert alert-danger">@L["Settings_Tab_LoadFailed"]</div></ErrorContent>
                         </ErrorBoundary>
                     }
                 </div>
@@ -78,7 +78,7 @@
                 <Content>
                     <ErrorBoundary>
                         <ChildContent><DynamicComponent Type="tab.SettingsComponentType" /></ChildContent>
-                        <ErrorContent><div class="alert alert-warning">This settings tab failed to load.</div></ErrorContent>
+                        <ErrorContent><div class="alert alert-warning">@L["Settings_Tab_PluginLoadFailed"]</div></ErrorContent>
                     </ErrorBoundary>
                 </Content>
             </Tab>

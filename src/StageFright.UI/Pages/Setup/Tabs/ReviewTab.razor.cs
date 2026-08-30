@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Settings;
 using StageFright.UI.Layout;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Setup.Tabs;
 
@@ -19,4 +23,22 @@ public partial class ReviewTab : ComponentBase
     [Parameter] public bool SeedWithTestData { get; set; }
 
     [CascadingParameter] private ThemeProvider? ThemeProvider { get; set; }
+
+    [Inject] private IStringLocalizer<SetupResource> L { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
+
+    private string ThemeText() =>
+        (ThemeProvider?.CurrentTheme == Theme.Dark ? Theme.Dark : Theme.Light).LocalizeEnum();
+
+    private string YesNo(bool value) =>
+        value ? L["Setup_Review_Yes"].Value : L["Setup_Review_No"].Value;
+
+    private string TaxCodeText(TaxCode? code) =>
+        code?.LocalizeEnum() ?? L["Setup_Review_TaxExemptDefault"].Value;
+
+    private string AuditRetentionText() =>
+        Loc.Plural<SetupResource>("Setup_Review_AuditRetentionYears", Model.AuditRetentionYears);
+
+    private string AccountTypeText(QueuedAccountRequest account) =>
+        account.Type.LocalizeEnum() + (account.IsBankAccount ? L["Setup_Review_BankCashSuffix"].Value : string.Empty);
 }

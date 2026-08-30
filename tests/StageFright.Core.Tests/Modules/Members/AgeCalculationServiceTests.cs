@@ -9,7 +9,7 @@ namespace StageFright.Core.Tests.Modules.Members;
 /// </summary>
 public class AgeCalculationServiceTests : TestBase
 {
-    private readonly AgeCalculationService _svc = new();
+    private readonly AgeCalculationService _svc = new(RealLocalizer.Instance);
 
     // --- Age calculation ---
 

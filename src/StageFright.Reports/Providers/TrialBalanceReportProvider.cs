@@ -2,9 +2,11 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Providers;
 
@@ -13,23 +15,26 @@ namespace StageFright.Reports.Providers;
 /// Sections: Assets, Liabilities, Equity, Income, Expenses — grouped by AccountId
 /// (the denormalized Transaction.GLAccount string is a posting-time snapshot and is
 /// never used for aggregation). Default date range is the current financial year.
-/// Throws GLBalanceException if |TotalDebits − TotalCredits| > 0.01 per FR-034.
+/// Throws GLBalanceException on any non-zero difference between TotalDebits and
+/// TotalCredits — there is no tolerance band (FR-011).
 /// </summary>
 public class TrialBalanceReportProvider : IReportProvider
 {
     private readonly IGLRepository _gl;
     private readonly IAccountRepository _accounts;
     private readonly ISettingsRepository _settings;
+    private readonly ILocalizer _localizer;
 
-    public TrialBalanceReportProvider(IGLRepository gl, IAccountRepository accounts, ISettingsRepository settings)
+    public TrialBalanceReportProvider(IGLRepository gl, IAccountRepository accounts, ISettingsRepository settings, ILocalizer localizer)
     {
         _gl = gl;
         _accounts = accounts;
         _settings = settings;
+        _localizer = localizer;
     }
 
     public string ReportId => "trial-balance";
-    public string ReportName => "Trial Balance";
+    public string ReportName => _localizer.Get<ReportsResource>("Reports_TrialBalance_Name");
     public string ModuleName => "Finance";
     public int DisplayOrder => 20;
 
@@ -40,22 +45,22 @@ public class TrialBalanceReportProvider : IReportProvider
             var (from, to) = FinancialYearCalculator.GetRange(DateTime.UtcNow, FinancialYearCalculator.DefaultStartMonth);
             return
             [
-                new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = "From", DefaultValue = $"{from:yyyy-MM-dd}" },
-                new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = "To", DefaultValue = $"{to:yyyy-MM-dd}" }
+                new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_Filter_From"), DefaultValue = $"{from:yyyy-MM-dd}" },
+                new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_Filter_To"), DefaultValue = $"{to:yyyy-MM-dd}" }
             ];
         }
     }
 
     public async Task<ReportData> GenerateAsync(ReportFilterValues filters, CancellationToken ct = default)
     {
-        var (from, to) = await ParseDateRangeAsync(filters, ct);
+        var (from, to, isPartYear) = await ParseDateRangeAsync(filters, ct);
         var (totalDebits, totalCredits) = await _gl.GetBalanceTotalsAsync(from, to, ct);
 
-        if (Math.Abs(totalDebits - totalCredits) > 0.01m)
+        if (totalDebits != totalCredits)
         {
             throw new GLBalanceException(
-                $"GL Balance Verification Failed: Total Debits (${totalDebits:F2}) ≠ Total Credits (${totalCredits:F2}). " +
-                "The Trial Balance cannot be generated while the ledger is out of balance.",
+                _localizer.Get<ReportsResource>("Reports_TrialBalance_GLImbalanceError",
+                    FormatCurrency(totalDebits), FormatCurrency(totalCredits)),
                 "Transaction",
                 "TrialBalance");
         }
@@ -88,45 +93,51 @@ public class TrialBalanceReportProvider : IReportProvider
 
         return new ReportData
         {
-            Title = "Trial Balance",
-            SubTitle = $"{from:d MMMM yyyy} – {to:d MMMM yyyy}",
+            Title = _localizer.Get<ReportsResource>("Reports_TrialBalance_Name"),
+            SubTitle = PartYearSubtitle.Wrap(
+                _localizer,
+                _localizer.Get<ReportsResource>("Reports_Common_DateRangeSubtitle", from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy")),
+                isPartYear),
             GeneratedAt = DateTime.UtcNow,
+            BasisOfAccounting = _localizer.Get<ReportsResource>("Reports_Common_BasisOfAccounting"),
             Columns =
             [
-                new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right },
-                new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Account"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Debit"), Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Credit"), Alignment = ReportColumnAlignment.Right }
             ],
             Sections =
             [
-                new ReportSection { Heading = "Assets", Rows = RowsFor(AccountType.Asset) },
-                new ReportSection { Heading = "Liabilities", Rows = RowsFor(AccountType.Liability) },
-                new ReportSection { Heading = "Equity", Rows = RowsFor(AccountType.Equity) },
-                new ReportSection { Heading = "Income", Rows = RowsFor(AccountType.Income) },
-                new ReportSection { Heading = "Expenses", Rows = RowsFor(AccountType.Expense) }
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Assets"), Rows = RowsFor(AccountType.Asset) },
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Liabilities"), Rows = RowsFor(AccountType.Liability) },
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Equity"), Rows = RowsFor(AccountType.Equity) },
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Income"), Rows = RowsFor(AccountType.Income) },
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Expenses"), Rows = RowsFor(AccountType.Expense) }
             ],
             GrandTotal = new ReportRow
             {
-                Cells = ["Totals", FormatCurrency(totalDebits), FormatCurrency(totalCredits)],
+                Cells = [_localizer.Get<ReportsResource>("Reports_TrialBalance_TotalsRow"), FormatCurrency(totalDebits), FormatCurrency(totalCredits)],
                 IsEmphasized = true
             }
         };
     }
 
-    private async Task<(DateTime From, DateTime To)> ParseDateRangeAsync(ReportFilterValues filters, CancellationToken ct)
+    private async Task<(DateTime From, DateTime To, bool IsPartYear)> ParseDateRangeAsync(ReportFilterValues filters, CancellationToken ct)
     {
         var settings = await _settings.GetAsync(ct);
         var startMonth = settings?.FinancialYearStartMonth ?? FinancialYearCalculator.DefaultStartMonth;
-        var (fyFrom, fyTo) = FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth);
+        var startDay = settings?.FinancialYearStartDay ?? FinancialYearCalculator.DefaultStartDay;
+        var (fyFrom, fyTo, isPartYear) = FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth, startDay, settings?.InceptionDate);
 
-        var from = DateTime.TryParse(filters.Get("dateFrom"), out var df)
-            ? DateTime.SpecifyKind(df.Date, DateTimeKind.Utc)
-            : fyFrom;
-        var to = DateTime.TryParse(filters.Get("dateTo"), out var dt)
-            ? new DateTime(dt.Year, dt.Month, dt.Day, 23, 59, 59, DateTimeKind.Utc)
-            : fyTo;
-        return (from, to);
+        var hasFrom = DateTime.TryParse(filters.Get("dateFrom"), out var df);
+        var hasTo = DateTime.TryParse(filters.Get("dateTo"), out var dt);
+        var from = hasFrom ? DateTime.SpecifyKind(df.Date, DateTimeKind.Utc) : fyFrom;
+        var to = hasTo ? new DateTime(dt.Year, dt.Month, dt.Day, 23, 59, 59, DateTimeKind.Utc) : fyTo;
+
+        // The part-year label describes the default FY-preset period only; a user-supplied custom
+        // range is never labelled.
+        return (from, to, isPartYear && !hasFrom && !hasTo);
     }
 
-    private static string FormatCurrency(decimal amount) => amount.ToString("F2");
+    private static string FormatCurrency(decimal amount) => MoneyFormatter.Format(amount);
 }

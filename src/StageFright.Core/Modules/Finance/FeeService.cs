@@ -2,6 +2,8 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Finance;
 
@@ -20,6 +22,7 @@ public class FeeService : IFeeService
     private readonly ISettingsRepository _settingsRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILocalizer _localizer;
 
     public FeeService(
         IMemberRepository memberRepo,
@@ -28,7 +31,8 @@ public class FeeService : IFeeService
         IAccountRepository accountRepo,
         ISettingsRepository settingsRepo,
         IAuditTrailService audit,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILocalizer localizer)
     {
         _memberRepo = memberRepo;
         _feeRepo = feeRepo;
@@ -37,6 +41,7 @@ public class FeeService : IFeeService
         _settingsRepo = settingsRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
+        _localizer = localizer;
     }
 
     public async Task<IReadOnlyList<Member>> GetEligibleMembersAsync(CancellationToken ct = default)
@@ -61,12 +66,13 @@ public class FeeService : IFeeService
 
         var settings = await _settingsRepo.GetAsync(ct)
             ?? throw new ValidationException(
-                "Application settings are not configured.", "Settings", nameof(ApplyAnnualFeesAsync));
+                _localizer.Get<ValidationResource>("Validation_Settings_NotConfigured"),
+                "Settings", nameof(ApplyAnnualFeesAsync));
 
         var accounts = await _accountRepo.GetAllAsync(ct);
         var incomeAccount = accounts.FirstOrDefault(c => c.Type == AccountType.Income && !c.IsSystem)
             ?? throw new ValidationException(
-                "No income account configured. Please set up accounts in Settings before applying fees.",
+                _localizer.Get<ValidationResource>("Validation_Fee_NoIncomeAccount"),
                 "Account", nameof(ApplyAnnualFeesAsync));
 
         var currentYear = DateTime.UtcNow.Year;
@@ -78,9 +84,13 @@ public class FeeService : IFeeService
         var taxCode = settings.IsTaxApplicable
             ? settings.AnnualFeeTaxCode ?? TaxCode.TaxExempt
             : (TaxCode?)null;
-        var (incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
-            ? TaxCalculator.SplitInclusive(settings.AnnualFee, settings.TaxRate ?? 0m)
-            : (settings.AnnualFee, 0m);
+        // Under Exclusive entry mode settings.AnnualFee is the net and tax is added on top; under
+        // Inclusive it is the gross and tax is split back out. Either way the receivable and
+        // Fee.Amount carry the gross, the income line the net, the tax line the tax (issue #354).
+        var (grossAmount, incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
+            ? TaxCalculator.Split(settings.AnnualFee, settings.TaxEntryMode, settings.TaxRate ?? 0m,
+                CurrencyCatalog.Get(settings.CurrencyCode).MinorUnitDigits)
+            : (settings.AnnualFee, settings.AnnualFee, 0m);
 
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
@@ -93,7 +103,7 @@ public class FeeService : IFeeService
                     Id = Guid.NewGuid(),
                     MemberId = memberId,
                     FeeType = FeeType.Annual,
-                    Amount = settings.AnnualFee,
+                    Amount = grossAmount,
                     FeeDate = feeDate,
                     DueDate = dueDate,
                     PaidAtCreation = false,
@@ -111,7 +121,7 @@ public class FeeService : IFeeService
                         Id = Guid.NewGuid(),
                         Date = feeDate,
                         AccountId = SystemAccounts.MemberReceivableId,
-                        DebitAmount = settings.AnnualFee,
+                        DebitAmount = grossAmount,
                         CreditAmount = 0m,
                         GLAccount = SystemAccounts.MemberReceivableNumber,
                         MemberId = memberId,

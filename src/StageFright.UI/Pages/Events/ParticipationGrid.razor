@@ -1,32 +1,32 @@
 @page "/events/{EventId:guid}/participation"
 
-<PageTitle>Record Participation — StageFright Community</PageTitle>
+<PageTitle>@L["Events_Participation_PageTitle"]</PageTitle>
 
 <div class="page-header mb-2">
-    <h1 class="h3">Record Participation</h1>
+    <h1 class="h3">@L["Events_Participation_Heading"]</h1>
     @if (_event is not null)
     {
-        <p class="text-muted mb-0">@_event.Date.ToString("dddd, d MMMM yyyy") — @(_event.EventType?.Name ?? "Event")</p>
+        <p class="text-muted mb-0">@SubtitleText()</p>
     }
 </div>
 
 @if (_alreadyRecorded)
 {
     <div class="alert alert-info py-1 mb-2 small" role="alert">
-        Participation has already been recorded for this event. Records are immutable after saving.
+        @L["Events_Participation_AlreadyRecordedNotice"]
     </div>
-    <a href="/events" class="btn btn-outline-secondary btn-sm">Back to Events</a>
+    <a href="/events" class="btn btn-outline-secondary btn-sm">@L["Events_Participation_BackButton"]</a>
 }
 else if (_isFutureDate)
 {
     <div class="alert alert-info py-1 mb-2 small" role="alert">
-        Participation can be recorded starting @_event?.Date.ToString("dddd, d MMMM yyyy").
+        @FutureNoticeText()
     </div>
-    <a href="/events" class="btn btn-outline-secondary btn-sm">Back to Events</a>
+    <a href="/events" class="btn btn-outline-secondary btn-sm">@L["Events_Participation_BackButton"]</a>
 }
 else if (_loading)
 {
-    <p role="status" aria-live="polite">Loading members…</p>
+    <p role="status" aria-live="polite">@L["Events_Participation_LoadingMembersText"]</p>
 }
 else
 {
@@ -37,7 +37,7 @@ else
 
     @if (_members.Count == 0)
     {
-        <div class="alert alert-warning py-1 mb-2 small">No active members found. Add members before recording participation.</div>
+        <div class="alert alert-warning py-1 mb-2 small">@L["Events_Participation_NoActiveMembers"]</div>
     }
     else
     {
@@ -45,17 +45,17 @@ else
                         AllowSorting="true" AllowPaging="true" PageSize="15"
                         class="rz-shadow-0">
             <Columns>
-                <RadzenDataGridColumn TItem="ParticipationRow" Property="MemberName" Title="Member" />
-                <RadzenDataGridColumn TItem="ParticipationRow" Title="Participated" Width="160px" Sortable="false">
+                <RadzenDataGridColumn TItem="ParticipationRow" Property="MemberName" Title="@L["Events_Participation_MemberColumn"]" />
+                <RadzenDataGridColumn TItem="ParticipationRow" Title="@L["Events_Participation_ParticipatedColumn"]" Width="160px" Sortable="false">
                     <HeaderTemplate>
                         <div class="d-flex flex-column align-items-center gap-1">
-                            <span>Participated</span>
+                            <span>@L["Events_Participation_ParticipatedColumn"]</span>
                             <span class="select-all-inline small text-muted">
                                 (<input type="checkbox" class="form-check-input" id="select-all-participants"
                                         checked="@_selectAll"
                                         @onchange="ToggleSelectAll"
-                                        aria-label="Select all participants" />
-                                <label class="form-check-label mb-0" for="select-all-participants">Select All</label>)
+                                        aria-label="@L["Events_Participation_SelectAllAriaLabel"]" />
+                                <label class="form-check-label mb-0" for="select-all-participants">@L["Events_Participation_SelectAllLabel"]</label>)
                             </span>
                         </div>
                     </HeaderTemplate>
@@ -64,7 +64,7 @@ else
                             <input type="checkbox" class="form-check-input" id="participated-@row.MemberId"
                                    checked="@row.Participated"
                                    @onchange="e => SetRowParticipated(row, (bool)(e.Value ?? false))"
-                                   aria-label="@row.MemberName participated" />
+                                   aria-label="@RowAriaLabel(row.MemberName)" />
                         </div>
                     </Template>
                 </RadzenDataGridColumn>
@@ -73,9 +73,9 @@ else
 
         <div class="d-flex gap-2 mt-2">
             <button class="btn btn-primary btn-sm" @onclick="SaveParticipation" disabled="@_saving">
-                @(_saving ? "Saving…" : "Save Participation")
+                @(_saving ? Shared["Shared_Action_Saving"] : L["Events_Participation_SaveButton"])
             </button>
-            <a href="/events" class="btn btn-outline-secondary btn-sm">Cancel</a>
+            <a href="/events" class="btn btn-outline-secondary btn-sm">@Shared["Shared_Action_Cancel"]</a>
         </div>
     }
 }

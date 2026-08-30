@@ -22,7 +22,7 @@ public class AccountRegisterReportProviderTests
 
     public AccountRegisterReportProviderTests()
     {
-        _sut = new AccountRegisterReportProvider(_gl, _accounts);
+        _sut = new AccountRegisterReportProvider(_gl, _accounts, RealLocalizer.Instance);
     }
 
     [Fact]

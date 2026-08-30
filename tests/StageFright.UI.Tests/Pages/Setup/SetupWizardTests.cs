@@ -1,6 +1,7 @@
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
@@ -8,6 +9,7 @@ using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Settings;
 using StageFright.UI.Pages.Setup;
 using StageFright.UI.Pages.Setup.Tabs;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Tests.Pages.Setup;
 
@@ -17,7 +19,7 @@ namespace StageFright.UI.Tests.Pages.Setup;
 /// the full SetupRequest, the sample-data seeding overlay, and — since spec 022 — the
 /// relocated "Load sample data" checkbox's tab-bypass/queue-discard behavior.
 /// </summary>
-public class SetupWizardTests : BunitContext
+public class SetupWizardTests : LocalizedTestContext
 {
     private readonly ISetupService _setupService = Substitute.For<ISetupService>();
     private readonly IDebugDataSeeder _debugSeeder = Substitute.For<IDebugDataSeeder>();
@@ -38,6 +40,14 @@ public class SetupWizardTests : BunitContext
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.initialize", _ => true);
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.show", _ => true);
     }
+
+    /// <summary>
+    /// The localized "Organisation Settings" tab title, resolved through the same
+    /// <see cref="IStringLocalizer{SetupResource}"/> the wizard renders it with — so these
+    /// assertions hold under any UI culture (en-US on CI renders "Organization Settings").
+    /// </summary>
+    private string OrgSettingsTabTitle =>
+        Services.GetRequiredService<IStringLocalizer<SetupResource>>()["Setup_Tab_OrganisationSettings"];
 
     private static void AdvanceFromOrganisationSettings(IRenderedComponent<SetupWizard> cut, string orgName = "My Choir")
     {
@@ -77,7 +87,7 @@ public class SetupWizardTests : BunitContext
     {
         var cut = Render<SetupWizard>();
 
-        var organisationSettings = cut.Markup.IndexOf("Organisation Settings", StringComparison.Ordinal);
+        var organisationSettings = cut.Markup.IndexOf(OrgSettingsTabTitle, StringComparison.Ordinal);
         var chartOfAccounts = cut.Markup.IndexOf("Chart of Accounts", StringComparison.Ordinal);
         var openingBalances = cut.Markup.IndexOf("Opening Balances", StringComparison.Ordinal);
         var committee = cut.Markup.IndexOf("Committee", StringComparison.Ordinal);
@@ -443,7 +453,7 @@ public class SetupWizardTests : BunitContext
         Assert.True(tabs.Single(t => t.Instance.Title == "Chart of Accounts").Instance.Disabled);
         Assert.True(tabs.Single(t => t.Instance.Title == "Opening Balances").Instance.Disabled);
         Assert.True(tabs.Single(t => t.Instance.Title == "Committee").Instance.Disabled);
-        Assert.False(tabs.Single(t => t.Instance.Title == "Organisation Settings").Instance.Disabled);
+        Assert.False(tabs.Single(t => t.Instance.Title == OrgSettingsTabTitle).Instance.Disabled);
         Assert.False(tabs.Single(t => t.Instance.Title == "Review").Instance.Disabled);
     }
 
@@ -497,7 +507,7 @@ public class SetupWizardTests : BunitContext
 
         // Navigate back to Organisation Settings (its header is never bypassed) and check
         // the box — this must discard everything just queued above (FR-006).
-        cut.FindAll(".nav-link").First(a => a.TextContent.Contains("Organisation Settings")).Click();
+        cut.FindAll(".nav-link").First(a => a.TextContent.Contains(OrgSettingsTabTitle)).Click();
         await cut.Find("#seedData").ChangeAsync(true);
         cut.Find("#btn-next").Click(); // -> Review directly (tabs now bypassed)
 

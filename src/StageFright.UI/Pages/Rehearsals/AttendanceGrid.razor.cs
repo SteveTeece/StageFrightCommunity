@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Rehearsals;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Rehearsals;
 
@@ -16,6 +19,9 @@ public partial class AttendanceGrid
     [Inject] private IMemberService MemberService { get; set; } = null!;
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private IStringLocalizer<RehearsalsResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private bool _loading = true;
     private bool _saving;
@@ -38,7 +44,7 @@ public partial class AttendanceGrid
 
             if (_rehearsal is null)
             {
-                _errorMessage = "Rehearsal not found.";
+                _errorMessage = L["Rehearsals_Attendance_NotFound"];
                 return;
             }
 
@@ -72,9 +78,9 @@ public partial class AttendanceGrid
                 Paid = false
             }).ToList();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _errorMessage = $"Failed to load attendance grid: {ex.Message}";
+            _errorMessage = Shared["Shared_Error_Unexpected"];
         }
         finally
         {
@@ -111,15 +117,43 @@ public partial class AttendanceGrid
         {
             _errorMessage = ex.Message;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _errorMessage = $"Failed to save attendance: {ex.Message}";
+            _errorMessage = Shared["Shared_Error_Unexpected"];
         }
         finally
         {
             _saving = false;
         }
     }
+
+    /// <summary>Browser tab title — depends on whether attendance is already recorded.</summary>
+    private string PageTitleText() =>
+        _alreadyRecorded ? L["Rehearsals_Attendance_PageTitleView"] : L["Rehearsals_Attendance_PageTitleRecord"];
+
+    /// <summary>Page heading — depends on whether attendance is already recorded.</summary>
+    private string HeadingText() =>
+        _alreadyRecorded ? L["Rehearsals_Attendance_HeadingView"] : L["Rehearsals_Attendance_HeadingRecord"];
+
+    /// <summary>Info banner shown when attendance has already been recorded, with the stored rate.</summary>
+    private string RecordedBannerText() =>
+        Loc.Get<RehearsalsResource>("Rehearsals_Attendance_RecordedBanner", _rehearsal?.StoredAttendanceRate?.ToString("F1") ?? string.Empty);
+
+    /// <summary>Notice shown when the rehearsal date is still in the future.</summary>
+    private string FutureNoticeText() =>
+        Loc.Get<RehearsalsResource>("Rehearsals_Attendance_FutureNotice", _rehearsal?.Date.ToString("dddd, d MMMM yyyy") ?? string.Empty);
+
+    /// <summary>aria-label for a row's Attended checkbox.</summary>
+    private string AttendedAriaLabel(string memberName) =>
+        Loc.Get<RehearsalsResource>("Rehearsals_Attendance_AttendedAriaLabel", memberName);
+
+    /// <summary>aria-label for a row's Paid checkbox in the read-only recorded view.</summary>
+    private string PaidAriaLabel(string memberName) =>
+        Loc.Get<RehearsalsResource>("Rehearsals_Attendance_PaidAriaLabel", memberName);
+
+    /// <summary>aria-label for a row's Paid checkbox while recording.</summary>
+    private string MarkPaidAriaLabel(string memberName) =>
+        Loc.Get<RehearsalsResource>("Rehearsals_Attendance_MarkPaidAriaLabel", memberName);
 
     private sealed class AttendanceRow
     {

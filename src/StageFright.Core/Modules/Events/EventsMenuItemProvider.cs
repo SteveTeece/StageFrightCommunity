@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 using StageFright.Plugins.Contracts;
 
 namespace StageFright.Core.Modules.Events;
@@ -8,6 +10,13 @@ namespace StageFright.Core.Modules.Events;
 /// </summary>
 public class EventsMenuItemProvider : IMenuItemProvider
 {
+    private readonly IStringLocalizer<NavigationResource> _localizer;
+
+    public EventsMenuItemProvider(IStringLocalizer<NavigationResource> localizer)
+    {
+        _localizer = localizer;
+    }
+
     public string ModuleName => "Events";
     public int DisplayOrder => 3;
 
@@ -15,15 +24,15 @@ public class EventsMenuItemProvider : IMenuItemProvider
     [
         new MenuItem
         {
-            Title = "Events",
+            Title = _localizer["Nav_Events_Title"],
             Route = "/events",
-            ShortLabel = "EVNT",
+            ShortLabel = _localizer["Nav_Events_ShortLabel"],
             DisplayOrder = 0,
             SubItems =
             [
-                new MenuItem { Title = "All Events", Route = "/events", DisplayOrder = 0 },
-                new MenuItem { Title = "Schedule AGM", Route = "/events/agm/new", DisplayOrder = 1 },
-                new MenuItem { Title = "AGMs", Route = "/events/agm", DisplayOrder = 2 }
+                new MenuItem { Title = _localizer["Nav_Events_AllEvents"], Route = "/events", DisplayOrder = 0 },
+                new MenuItem { Title = _localizer["Nav_Events_ScheduleAgm"], Route = "/events/agm/new", DisplayOrder = 1 },
+                new MenuItem { Title = _localizer["Nav_Events_Agms"], Route = "/events/agm", DisplayOrder = 2 }
             ]
         }
     ];

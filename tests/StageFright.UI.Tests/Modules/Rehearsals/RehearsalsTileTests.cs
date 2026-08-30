@@ -12,7 +12,7 @@ namespace StageFright.UI.Tests.Modules.Rehearsals;
 /// bUnit tests for RehearsalsTile (design 3a) — upcoming/next stats and the last
 /// recorded attendance "n of m (x%)" with its progress bar, across all states.
 /// </summary>
-public class RehearsalsTileTests : BunitContext
+public class RehearsalsTileTests : LocalizedTestContext
 {
     private readonly IRehearsalService _rehearsalService = Substitute.For<IRehearsalService>();
     private readonly IAttendanceRepository _attendanceRepository = Substitute.For<IAttendanceRepository>();

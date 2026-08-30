@@ -2,6 +2,8 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Finance;
 
@@ -20,6 +22,7 @@ public class PaymentService : IPaymentService
     private readonly IMemberRepository _memberRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILocalizer _localizer;
 
     public PaymentService(
         IFeeRepository feeRepo,
@@ -27,7 +30,8 @@ public class PaymentService : IPaymentService
         IGLRepository glRepo,
         IMemberRepository memberRepo,
         IAuditTrailService audit,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILocalizer localizer)
     {
         _feeRepo = feeRepo;
         _paymentRepo = paymentRepo;
@@ -35,13 +39,15 @@ public class PaymentService : IPaymentService
         _memberRepo = memberRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
+        _localizer = localizer;
     }
 
     public async Task<Payment> RecordAsync(RecordPaymentRequest request, CancellationToken ct = default)
     {
         if (request.Amount <= 0m)
             throw new ValidationException(
-                "Payment amount must be greater than zero.", nameof(Payment), nameof(RecordAsync));
+                _localizer.Get<ValidationResource>("Validation_Payment_AmountPositive"),
+                nameof(Payment), nameof(RecordAsync));
 
         Payment savedPayment = null!;
 
@@ -75,7 +81,8 @@ public class PaymentService : IPaymentService
             {
                 if (request.SelectedFeeIds.Count == 0)
                     throw new ValidationException(
-                        "At least one outstanding fee must be selected.", nameof(Payment), nameof(RecordAsync));
+                        _localizer.Get<ValidationResource>("Validation_Payment_SelectAtLeastOneFee"),
+                        nameof(Payment), nameof(RecordAsync));
 
                 var selectedSet = request.SelectedFeeIds.ToHashSet();
                 var selectedFees = fees.Where(f => selectedSet.Contains(f.Id)).ToList();
@@ -94,7 +101,8 @@ public class PaymentService : IPaymentService
 
                 if (request.Amount > selectedRemainingTotal)
                     throw new ValidationException(
-                        "Amount exceeds the selected fees' remaining total.", nameof(Payment), nameof(RecordAsync));
+                        _localizer.Get<ValidationResource>("Validation_Payment_AmountExceedsSelectedTotal"),
+                        nameof(Payment), nameof(RecordAsync));
 
                 fees = selectedFees;
             }

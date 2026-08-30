@@ -2,6 +2,8 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Finance;
 
@@ -17,19 +19,22 @@ public class GeneralJournalService : IGeneralJournalService
     private readonly IJournalEntryRepository _journalRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILocalizer _localizer;
 
     public GeneralJournalService(
         IAccountRepository accountRepo,
         IGLRepository glRepo,
         IJournalEntryRepository journalRepo,
         IAuditTrailService audit,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILocalizer localizer)
     {
         _accountRepo = accountRepo;
         _glRepo = glRepo;
         _journalRepo = journalRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
+        _localizer = localizer;
     }
 
     public async Task<IReadOnlyList<Account>> GetJournalAccountsAsync(CancellationToken ct = default)
@@ -45,32 +50,35 @@ public class GeneralJournalService : IGeneralJournalService
     {
         if (string.IsNullOrWhiteSpace(request.Description))
             throw new ValidationException(
-                "A description is required for manual journals.", nameof(JournalEntry), nameof(RecordJournalAsync));
+                _localizer.Get<ValidationResource>("Validation_Journal_DescriptionRequired"),
+                nameof(JournalEntry), nameof(RecordJournalAsync));
 
         if (request.Lines.Count < 2)
             throw new ValidationException(
-                "A journal requires at least two lines.", nameof(JournalEntry), nameof(RecordJournalAsync));
+                _localizer.Get<ValidationResource>("Validation_Journal_MinimumTwoLines"),
+                nameof(JournalEntry), nameof(RecordJournalAsync));
 
         foreach (var line in request.Lines)
         {
             if (line.DebitAmount < 0m || line.CreditAmount < 0m)
                 throw new ValidationException(
-                    "Journal line amounts cannot be negative.", nameof(JournalEntry), nameof(RecordJournalAsync));
+                    _localizer.Get<ValidationResource>("Validation_Journal_LineAmountsNonNegative"),
+                    nameof(JournalEntry), nameof(RecordJournalAsync));
 
             if ((line.DebitAmount != 0m) == (line.CreditAmount != 0m))
                 throw new ValidationException(
-                    "Each journal line must have exactly one non-zero side (debit or credit).",
+                    _localizer.Get<ValidationResource>("Validation_Journal_LineOneNonZeroSide"),
                     nameof(JournalEntry), nameof(RecordJournalAsync));
 
             if (line.AccountId == SystemAccounts.MemberReceivableId)
                 throw new ValidationException(
-                    "Manual journals cannot post to the Member Receivable account — member balances may only change through fee and payment workflows.",
+                    _localizer.Get<ValidationResource>("Validation_Journal_NoMemberReceivable"),
                     nameof(JournalEntry), nameof(RecordJournalAsync));
         }
 
         if (request.Lines.Sum(l => l.DebitAmount) != request.Lines.Sum(l => l.CreditAmount))
             throw new ValidationException(
-                "The journal is out of balance — total debits must equal total credits.",
+                _localizer.Get<ValidationResource>("Validation_Journal_OutOfBalance"),
                 nameof(JournalEntry), nameof(RecordJournalAsync));
 
         var all = await _accountRepo.GetAllAsync(ct);

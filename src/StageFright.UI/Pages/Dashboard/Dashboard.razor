@@ -1,22 +1,32 @@
 @page "/dashboard"
 
-<PageTitle>Dashboard — StageFright Community</PageTitle>
+<PageTitle>@L["Dashboard_Page_Title"]</PageTitle>
+
+@if (ShowStartupWarning)
+{
+    <div class="alert alert-warning d-flex justify-content-between align-items-start" role="alert" data-testid="startup-warning-banner">
+        <span>@StartupWarningText</span>
+        <button type="button" class="btn btn-sm btn-outline-secondary ms-3" @onclick="DismissStartupWarning">
+            @StartupWarningDismissLabel
+        </button>
+    </div>
+}
 
 @if (!_initialized)
 {
     <div class="d-flex justify-content-center align-items-center py-4" role="status" aria-live="polite">
         <div class="spinner-border text-primary me-2" aria-hidden="true"></div>
-        <span>Loading dashboard…</span>
+        <span>@L["Dashboard_LoadingText"]</span>
     </div>
 }
 else
 {
     <div class="page-header mb-2">
-        <h1 class="h3">Dashboard</h1>
+        <h1 class="h3">@L["Dashboard_Heading"]</h1>
     </div>
 
-    <section aria-label="Core Metrics" class="mb-2">
-        <h2 class="section-label mb-2">Core Metrics</h2>
+    <section aria-label="@L["Dashboard_CoreMetricsHeading"]" class="mb-2">
+        <h2 class="section-label mb-2">@L["Dashboard_CoreMetricsHeading"]</h2>
         <div class="sf-dash-grid">
             @foreach (var tile in _coreTiles)
             {
@@ -42,8 +52,8 @@ else
 
     @if (_extensionTiles.Count > 0)
     {
-        <section aria-label="Extensions" class="mb-2">
-            <h2 class="section-label mb-2">Extensions</h2>
+        <section aria-label="@L["Dashboard_ExtensionsHeading"]" class="mb-2">
+            <h2 class="section-label mb-2">@L["Dashboard_ExtensionsHeading"]</h2>
             <div class="sf-dash-grid">
                 @foreach (var tile in _extensionTiles)
                 {

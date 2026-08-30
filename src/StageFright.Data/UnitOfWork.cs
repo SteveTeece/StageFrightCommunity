@@ -31,6 +31,14 @@ public class UnitOfWork : IUnitOfWork
             if (tx is not null) await SafeRollbackAsync(tx);
             throw;
         }
+        catch (ClosedPeriodException)
+        {
+            // A back-dated posting into a closed period rolls the whole operation back and
+            // surfaces the typed exception unwrapped (spec 028, FR-017) — same pass-through
+            // treatment as GLBalanceException.
+            if (tx is not null) await SafeRollbackAsync(tx);
+            throw;
+        }
         catch (Exception ex) when (ex is not DataAccessException and not ValidationException)
         {
             if (tx is not null) await SafeRollbackAsync(tx);

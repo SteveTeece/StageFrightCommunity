@@ -12,7 +12,7 @@ namespace StageFright.UI.Tests.Modules.Events;
 /// bUnit tests for EventsTile (design 3a) — upcoming/next stats and the last recorded
 /// participation "n of m (x%)" with its progress bar, across all states.
 /// </summary>
-public class EventsTileTests : BunitContext
+public class EventsTileTests : LocalizedTestContext
 {
     private readonly IEventService _eventService = Substitute.For<IEventService>();
 

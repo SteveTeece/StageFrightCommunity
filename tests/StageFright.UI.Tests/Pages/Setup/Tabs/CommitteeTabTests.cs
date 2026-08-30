@@ -11,7 +11,7 @@ namespace StageFright.UI.Tests.Pages.Setup.Tabs;
 /// per-row remove) that replaced the old comma-separated textbox (FR-009/FR-010/FR-011).
 /// Rendered inside an EditForm since AGM month/seat count still use Input* components
 /// needing a cascaded EditContext (built manually — EditForm.ChildContent is generic).</summary>
-public class CommitteeTabTests : BunitContext
+public class CommitteeTabTests : LocalizedTestContext
 {
     private IRenderedComponent<EditForm> RenderInForm(
         SetupFormModel model,

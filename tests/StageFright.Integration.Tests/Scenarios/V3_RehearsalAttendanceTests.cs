@@ -373,7 +373,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
     {
         var memberRepo = new MemberRepository(_db);
         var feeRepo = new FeeRepository(_db);
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         return new MemberBalanceService(memberRepo, feeRepo, glRepo);
     }
 
@@ -381,23 +381,23 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
     {
         var memberRepo = new MemberRepository(_db);
         var feeRepo = new FeeRepository(_db);
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var accountRepo = new AccountRepository(_db);
         var settingsRepo = new SettingsRepository(_db);
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var unitOfWork = new UnitOfWork(_db);
-        return new FeeService(memberRepo, feeRepo, glRepo, accountRepo, settingsRepo, auditSvc, unitOfWork);
+        return new FeeService(memberRepo, feeRepo, glRepo, accountRepo, settingsRepo, auditSvc, unitOfWork, RealLocalizer.Instance);
     }
 
     private PaymentService BuildPaymentService()
     {
         var feeRepo = new FeeRepository(_db);
         var paymentRepo = new PaymentRepository(_db, BuildAuditService());
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var memberRepo = new MemberRepository(_db);
         var unitOfWork = new UnitOfWork(_db);
-        return new PaymentService(feeRepo, paymentRepo, glRepo, memberRepo, BuildAuditService(), unitOfWork);
+        return new PaymentService(feeRepo, paymentRepo, glRepo, memberRepo, BuildAuditService(), unitOfWork, RealLocalizer.Instance);
     }
 
     private AuditTrailService BuildAuditService()
@@ -413,8 +413,9 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         var settingsRepo = new SettingsRepository(_db);
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        var ageCalc = new AgeCalculationService();
-        var validation = new MemberValidationService(ageCalc);
+        var ageCalc = new AgeCalculationService(RealLocalizer.Instance);
+        var validation = new MemberValidationService(
+            ageCalc, new StubStringLocalizer<StageFright.Core.Modules.Localization.Resources.ValidationResource>());
         var unitOfWork = new UnitOfWork(_db);
         return new MemberService(memberRepo, committeeRepo, validation, settingsRepo, auditSvc, unitOfWork);
     }
@@ -438,13 +439,13 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var paymentRepo = new PaymentRepository(_db, auditSvc);
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var accountRepo = new AccountRepository(_db);
         var settingsRepo = new SettingsRepository(_db);
         var unitOfWork = new UnitOfWork(_db);
         var rehearsalSvc = BuildRehearsalService();
         return new AttendanceService(rehearsalRepo, attendanceRepo, memberRepo, feeRepo, paymentRepo,
-            glRepo, accountRepo, settingsRepo, auditSvc, unitOfWork, rehearsalSvc);
+            glRepo, accountRepo, settingsRepo, auditSvc, unitOfWork, rehearsalSvc, RealLocalizer.Instance);
     }
 
     private async Task<Member> AddActiveMember(string name)

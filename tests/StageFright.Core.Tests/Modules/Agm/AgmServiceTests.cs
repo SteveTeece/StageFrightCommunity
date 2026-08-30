@@ -45,7 +45,7 @@ public class AgmServiceTests : TestBase
     }
 
     private AgmService CreateService() =>
-        new(_agmRepo, _attendanceRepo, _termRepo, _positionRepo, _settingsService, _audit, _unitOfWork);
+        new(_agmRepo, _attendanceRepo, _termRepo, _positionRepo, _settingsService, _audit, _unitOfWork, RealLocalizer.Instance);
 
     private static RecordAgmRequest MakeRequest(
         IReadOnlyList<Guid>? attended = null,

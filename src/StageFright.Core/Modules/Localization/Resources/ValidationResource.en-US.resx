@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Validation_Member_FirstNameRequired" xml:space="preserve">
+    <value>First name is required.</value>
+    <comment>Validation error when a member's first name is blank.</comment>
+  </data>
+  <data name="Validation_Member_LastNameRequired" xml:space="preserve">
+    <value>Last name is required.</value>
+    <comment>Validation error when a member's last name is blank.</comment>
+  </data>
+  <data name="Validation_Member_FirstNameMaxLength" xml:space="preserve">
+    <value>First name must be 100 characters or fewer.</value>
+    <comment>Validation error when a member's first name is too long.</comment>
+  </data>
+  <data name="Validation_Member_LastNameMaxLength" xml:space="preserve">
+    <value>Last name must be 100 characters or fewer.</value>
+    <comment>Validation error when a member's last name is too long.</comment>
+  </data>
+  <data name="Validation_Member_StreetAddressRequired" xml:space="preserve">
+    <value>Street address is required.</value>
+    <comment>Validation error when a member's street address is blank.</comment>
+  </data>
+  <data name="Validation_Member_EmailInvalid" xml:space="preserve">
+    <value>Email format is invalid.</value>
+    <comment>Validation error when a member's email address is not a valid format.</comment>
+  </data>
+  <data name="Validation_Member_DateOfBirthInPast" xml:space="preserve">
+    <value>Date of birth must be in the past.</value>
+    <comment>Validation error when a member's date of birth is today or later.</comment>
+  </data>
+  <data name="Validation_Member_AgeExceedsMaxRange" xml:space="preserve">
+    <value>Date of birth implies an age of {Age} years, which exceeds the maximum allowed range of {MaxYears} years.</value>
+    <comment>Validation error when a member's implied age is above the configured maximum. {Age} = implied age; {MaxYears} = configured maximum age range.</comment>
+  </data>
+  <data name="Validation_Member_BelowMinimumAge" xml:space="preserve">
+    <value>Member must be at least {MinimumAge} years of age.</value>
+    <comment>Validation error when a member's implied age is below the configured minimum. {MinimumAge} = configured minimum member age.</comment>
+  </data>
+  <data name="Validation_Agm_AlreadyExistsForYear" xml:space="preserve">
+    <value>An AGM already exists for {Year}. Archive it before scheduling a replacement.</value>
+    <comment>Shown when scheduling an AGM for a year that already has one. {Year} = the calendar year that already has an AGM.</comment>
+  </data>
+  <data name="Validation_Agm_AlreadyRecorded" xml:space="preserve">
+    <value>This AGM has already been recorded.</value>
+    <comment>Shown when recording attendance/elections against an AGM that has already been recorded.</comment>
+  </data>
+  <data name="Validation_Agm_RecordBeforeMeetingDate" xml:space="preserve">
+    <value>Attendance and elections cannot be recorded before the AGM's meeting date.</value>
+    <comment>Shown when recording an AGM whose meeting date is in the future.</comment>
+  </data>
+  <data name="Validation_Agm_DuplicateCommitteeAssignment" xml:space="preserve">
+    <value>A member cannot hold more than one committee assignment from the same AGM.</value>
+    <comment>Shown when the same member is assigned to two committee slots from one AGM.</comment>
+  </data>
+  <data name="Validation_Agm_OutgoingPositionNoTerm" xml:space="preserve">
+    <value>The outgoing position record does not belong to a committee term.</value>
+    <comment>Data-integrity error when a special election's outgoing position record has no committee term.</comment>
+  </data>
+  <data name="Validation_Agm_TermAlreadyClosed" xml:space="preserve">
+    <value>This committee term has already been closed by a later AGM; a special election can no longer be recorded against it.</value>
+    <comment>Data-integrity error when a special election targets a committee term already closed by a later AGM.</comment>
+  </data>
+  <data name="Validation_Agm_IncomingMemberAlreadyOnCommittee" xml:space="preserve">
+    <value>The incoming member already holds an open committee slot in this term.</value>
+    <comment>Shown when a special-election incoming member already holds an open committee slot in the term.</comment>
+  </data>
+  <data name="Validation_Event_ParticipationBeforeEventDate" xml:space="preserve">
+    <value>Participation cannot be recorded before the event date.</value>
+    <comment>Shown when recording participation for an event whose date is in the future.</comment>
+  </data>
+  <data name="Validation_EventType_NameRequired" xml:space="preserve">
+    <value>Event type name is required.</value>
+    <comment>Shown when creating an event type with a blank name.</comment>
+  </data>
+  <data name="Validation_EventType_SystemDefaultCannotArchive" xml:space="preserve">
+    <value>System default event types cannot be archived.</value>
+    <comment>Shown when archiving a system-default event type.</comment>
+  </data>
+  <data name="Validation_EventType_ReferencedCannotArchive" xml:space="preserve">
+    <value>This event type cannot be archived because it is referenced by one or more events.</value>
+    <comment>Shown when archiving an event type still referenced by events.</comment>
+  </data>
+  <data name="Validation_OfficeHolderType_NameRequired" xml:space="preserve">
+    <value>Office-holder title name is required.</value>
+    <comment>Shown when adding or renaming a committee office-holder title with a blank name.</comment>
+  </data>
+  <data name="Validation_OfficeHolderType_BuiltInCannotRename" xml:space="preserve">
+    <value>Built-in office-holder titles cannot be renamed.</value>
+    <comment>Shown when renaming a built-in (President/Secretary/Treasurer) office-holder title.</comment>
+  </data>
+  <data name="Validation_OfficeHolderType_BuiltInCannotReorder" xml:space="preserve">
+    <value>Built-in office-holder titles cannot be reordered.</value>
+    <comment>Shown when reordering a built-in office-holder title.</comment>
+  </data>
+  <data name="Validation_OfficeHolderType_BuiltInCannotArchive" xml:space="preserve">
+    <value>Built-in office-holder titles cannot be archived.</value>
+    <comment>Shown when archiving a built-in office-holder title.</comment>
+  </data>
+  <data name="Validation_Attendance_BeforeRehearsalDate" xml:space="preserve">
+    <value>Attendance cannot be recorded before the rehearsal date.</value>
+    <comment>Shown when recording rehearsal attendance whose date is in the future.</comment>
+  </data>
+  <data name="Validation_Attendance_NoIncomeAccount" xml:space="preserve">
+    <value>No income account configured. Please set up accounts in Settings before recording attendance.</value>
+    <comment>Shown when recording rehearsal attendance before any non-system income account exists.</comment>
+  </data>
+  <data name="Validation_Settings_NotConfigured" xml:space="preserve">
+    <value>Application settings are not configured.</value>
+    <comment>Shown when a workflow needs the Settings singleton but first-run setup has not been completed.</comment>
+  </data>
+  <data name="Validation_Settings_TaxRateRequired" xml:space="preserve">
+    <value>A tax rate greater than zero is required when sales tax applies.</value>
+    <comment>Shown when sales tax is enabled but no positive tax rate is set (Settings save and first-run setup).</comment>
+  </data>
+  <data name="Validation_Settings_MinimumAgeNegative" xml:space="preserve">
+    <value>Minimum member age cannot be negative.</value>
+    <comment>Shown when saving Settings with a negative minimum member age.</comment>
+  </data>
+  <data name="Validation_Settings_MaxAgeRangeNegative" xml:space="preserve">
+    <value>Maximum age range cannot be negative.</value>
+    <comment>Shown when saving Settings with a negative maximum age range.</comment>
+  </data>
+  <data name="Validation_Settings_MinAgeExceedsMax" xml:space="preserve">
+    <value>Minimum member age cannot exceed the maximum age range.</value>
+    <comment>Shown when saving Settings with minimum member age above the maximum age range.</comment>
+  </data>
+  <data name="Validation_Settings_AuditRetentionRange" xml:space="preserve">
+    <value>Audit retention period must be between 1 and 7 years.</value>
+    <comment>Shown when the audit retention period is outside 1–7 years (Settings save and first-run setup).</comment>
+  </data>
+  <data name="Validation_Setup_AlreadyCompleted" xml:space="preserve">
+    <value>Setup has already been completed.</value>
+    <comment>Shown when first-run initialization is attempted after the Settings singleton already exists.</comment>
+  </data>
+  <data name="Validation_Setup_OrganisationNameRequired" xml:space="preserve">
+    <value>OrganizationName is required.</value>
+    <comment>Shown when first-run setup is submitted with a blank organisation name.</comment>
+  </data>
+  <data name="Validation_Setup_AnnualFeeNegative" xml:space="preserve">
+    <value>AnnualFee must be zero or greater.</value>
+    <comment>Shown when first-run setup is submitted with a negative annual fee.</comment>
+  </data>
+  <data name="Validation_Setup_AttendanceFeeNegative" xml:space="preserve">
+    <value>AttendanceFee must be zero or greater.</value>
+    <comment>Shown when first-run setup is submitted with a negative attendance fee.</comment>
+  </data>
+  <data name="Validation_Setup_MembershipRenewalMonthRange" xml:space="preserve">
+    <value>MembershipRenewalMonth must be between 1 and 12.</value>
+    <comment>Shown when first-run setup is submitted with a membership renewal month outside 1–12.</comment>
+  </data>
+  <data name="Validation_Backup_FileCorrupted" xml:space="preserve">
+    <value>Backup file is corrupted or not a StageFright backup.</value>
+    <comment>Shown when a selected backup file cannot be deserialised.</comment>
+  </data>
+  <data name="Validation_Backup_MissingSchemaVersion" xml:space="preserve">
+    <value>Backup file is missing a schema version.</value>
+    <comment>Shown when a backup file has no schema version recorded.</comment>
+  </data>
+  <data name="Validation_Backup_UnsupportedSchemaVersion" xml:space="preserve">
+    <value>This backup uses schema version {SchemaVersion}; this application supports major version {SupportedMajorVersion}. Please upgrade the application to restore this backup.</value>
+    <comment>Shown when a backup file's major schema version is not supported. {SchemaVersion} = the file's version; {SupportedMajorVersion} = the major version this build supports.</comment>
+  </data>
+  <data name="Validation_Backup_ImportIncomplete" xml:space="preserve">
+    <value>Import file incomplete: missing {EntityType}. Restore from complete backup.</value>
+    <comment>Shown when a backup file is missing an expected entity collection. {EntityType} = the missing collection name.</comment>
+  </data>
+  <data name="Validation_Account_NameRequired" xml:space="preserve">
+    <value>Account name is required.</value>
+    <comment>Shown when creating or renaming a chart-of-accounts account with a blank name.</comment>
+  </data>
+  <data name="Validation_Account_BankFlagAssetOnly" xml:space="preserve">
+    <value>The bank/cash flag can only be set on Asset accounts.</value>
+    <comment>Shown when the bank/cash flag is set on a non-Asset account.</comment>
+  </data>
+  <data name="Validation_Account_SystemCannotEdit" xml:space="preserve">
+    <value>System accounts cannot be edited.</value>
+    <comment>Shown when editing a system (built-in) account.</comment>
+  </data>
+  <data name="Validation_Account_SystemCannotArchive" xml:space="preserve">
+    <value>System accounts cannot be archived.</value>
+    <comment>Shown when archiving a system (built-in) account.</comment>
+  </data>
+  <data name="Validation_Account_ReferencedCannotArchive" xml:space="preserve">
+    <value>This account cannot be archived because it is referenced by one or more transactions.</value>
+    <comment>Shown when archiving an account still referenced by GL transactions.</comment>
+  </data>
+  <data name="Validation_Account_DraftReconciliationCannotArchive" xml:space="preserve">
+    <value>This bank account cannot be archived while it has a draft reconciliation in progress.</value>
+    <comment>Shown when archiving a bank account that has an in-progress draft reconciliation.</comment>
+  </data>
+  <data name="Validation_Account_NameDuplicate" xml:space="preserve">
+    <value>An account named '{Name}' already exists.</value>
+    <comment>Shown when an account name collides with an existing one. {Name} = the entered account name.</comment>
+  </data>
+  <data name="Validation_BankReconciliation_BankAccountsOnly" xml:space="preserve">
+    <value>Only bank/cash accounts can be reconciled.</value>
+    <comment>Shown when starting a reconciliation for a non-bank account.</comment>
+  </data>
+  <data name="Validation_BankReconciliation_DraftAlreadyExists" xml:space="preserve">
+    <value>This account already has a draft reconciliation. Finalize or delete it first.</value>
+    <comment>Shown when starting a reconciliation while a draft already exists for the account.</comment>
+  </data>
+  <data name="Validation_BankReconciliation_StatementDateAfterLast" xml:space="preserve">
+    <value>The statement date must be after the last finalized statement date ({Date}).</value>
+    <comment>Shown when a new reconciliation's statement date is not after the last finalised one. {Date} = last finalised statement date (yyyy-MM-dd).</comment>
+  </data>
+  <data name="Validation_BankReconciliation_FinalisedImmutable" xml:space="preserve">
+    <value>Finalized reconciliations are immutable and cannot be modified.</value>
+    <comment>Shown when toggling a cleared transaction on an already-finalised reconciliation.</comment>
+  </data>
+  <data name="Validation_BankReconciliation_TransactionClearedElsewhere" xml:space="preserve">
+    <value>This transaction is already cleared by another reconciliation.</value>
+    <comment>Shown when clearing a transaction already cleared by a different reconciliation.</comment>
+  </data>
+  <data name="Validation_BankReconciliation_TransactionNotEligible" xml:space="preserve">
+    <value>The transaction does not belong to this account or is dated after the statement date.</value>
+    <comment>Shown when clearing a transaction that is not eligible for this reconciliation.</comment>
+  </data>
+  <data name="Validation_BankReconciliation_AlreadyFinalised" xml:space="preserve">
+    <value>This reconciliation is already finalized.</value>
+    <comment>Shown when finalising a reconciliation that is already finalised.</comment>
+  </data>
+  <data name="Validation_BankReconciliation_DifferenceNotZero" xml:space="preserve">
+    <value>Cannot finalize: the difference is {Difference}, not {Zero}.</value>
+    <comment>Shown when finalising a reconciliation whose difference is not zero. {Difference} = the outstanding difference; {Zero} = zero amount, both formatted in fixed AUD.</comment>
+  </data>
+  <data name="Validation_Expense_AmountPositive" xml:space="preserve">
+    <value>Expense amount must be greater than zero.</value>
+    <comment>Shown when recording an expense payment with a non-positive amount.</comment>
+  </data>
+  <data name="Validation_Expense_PaymentAccountMustBeBank" xml:space="preserve">
+    <value>The payment account must be a bank/cash account.</value>
+    <comment>Shown when an expense payment's source account is not a bank/cash account.</comment>
+  </data>
+  <data name="Validation_Expense_AccountNotExpense" xml:space="preserve">
+    <value>Selected account is not an Expense account.</value>
+    <comment>Shown when an expense payment's target account is not an Expense account.</comment>
+  </data>
+  <data name="Validation_Expense_SystemAccountNotAllowed" xml:space="preserve">
+    <value>System accounts cannot be used for manual expense payments.</value>
+    <comment>Shown when an expense payment targets a system account.</comment>
+  </data>
+  <data name="Validation_Payment_AmountPositive" xml:space="preserve">
+    <value>Payment amount must be greater than zero.</value>
+    <comment>Shown when recording a member payment with a non-positive amount.</comment>
+  </data>
+  <data name="Validation_Payment_SelectAtLeastOneFee" xml:space="preserve">
+    <value>At least one outstanding fee must be selected.</value>
+    <comment>Shown when a targeted payment is submitted with an empty fee selection.</comment>
+  </data>
+  <data name="Validation_Payment_AmountExceedsSelectedTotal" xml:space="preserve">
+    <value>Amount exceeds the selected fees' remaining total.</value>
+    <comment>Shown when a targeted payment's amount is more than the selected fees still owe.</comment>
+  </data>
+  <data name="Validation_Fee_NoIncomeAccount" xml:space="preserve">
+    <value>No income account configured. Please set up accounts in Settings before applying fees.</value>
+    <comment>Shown when applying annual fees before any non-system income account exists.</comment>
+  </data>
+  <data name="Validation_Journal_DescriptionRequired" xml:space="preserve">
+    <value>A description is required for manual journals.</value>
+    <comment>Shown when a manual general journal is submitted with a blank description.</comment>
+  </data>
+  <data name="Validation_Journal_MinimumTwoLines" xml:space="preserve">
+    <value>A journal requires at least two lines.</value>
+    <comment>Shown when a manual general journal has fewer than two lines.</comment>
+  </data>
+  <data name="Validation_Journal_LineAmountsNonNegative" xml:space="preserve">
+    <value>Journal line amounts cannot be negative.</value>
+    <comment>Shown when a manual general journal line has a negative debit or credit.</comment>
+  </data>
+  <data name="Validation_Journal_LineOneNonZeroSide" xml:space="preserve">
+    <value>Each journal line must have exactly one non-zero side (debit or credit).</value>
+    <comment>Shown when a manual general journal line has both sides zero or both sides non-zero.</comment>
+  </data>
+  <data name="Validation_Journal_NoMemberReceivable" xml:space="preserve">
+    <value>Manual journals cannot post to the Member Receivable account — member balances may only change through fee and payment workflows.</value>
+    <comment>Shown when a manual general journal line targets the Member Receivable account.</comment>
+  </data>
+  <data name="Validation_Journal_OutOfBalance" xml:space="preserve">
+    <value>The journal is out of balance — total debits must equal total credits.</value>
+    <comment>Shown when a manual general journal's total debits do not equal its total credits.</comment>
+  </data>
+  <data name="Validation_Income_AmountPositive" xml:space="preserve">
+    <value>Income amount must be greater than zero.</value>
+    <comment>Shown when recording other income with a non-positive amount.</comment>
+  </data>
+  <data name="Validation_Income_AccountNotIncome" xml:space="preserve">
+    <value>Selected account is not an Income account.</value>
+    <comment>Shown when an other-income entry's target account is not an Income account.</comment>
+  </data>
+  <data name="Validation_Income_SystemAccountNotAllowed" xml:space="preserve">
+    <value>System accounts cannot be used for manual income entries.</value>
+    <comment>Shown when an other-income entry targets a system account.</comment>
+  </data>
+  <data name="Validation_Income_DepositAccountMustBeBank" xml:space="preserve">
+    <value>The deposit account must be a bank/cash account.</value>
+    <comment>Shown when an other-income entry's deposit account is not a bank/cash account.</comment>
+  </data>
+  <data name="Validation_BankDeposit_AmountPositive" xml:space="preserve">
+    <value>Deposit amount must be greater than zero.</value>
+    <comment>Shown when recording a bank deposit with a non-positive amount.</comment>
+  </data>
+  <data name="Validation_BankDeposit_TargetMustBeBank" xml:space="preserve">
+    <value>Deposits are only permitted into a bank account.</value>
+    <comment>Shown when a bank deposit's destination account is not a bank account.</comment>
+  </data>
+  <data name="Validation_BankDeposit_TargetNotCashOnHand" xml:space="preserve">
+    <value>The destination account must differ from Cash on Hand.</value>
+    <comment>Shown when a bank deposit's destination account is Cash on Hand.</comment>
+  </data>
+  <data name="Validation_OpeningBalance_AtLeastOneNonZero" xml:space="preserve">
+    <value>At least one non-zero opening balance is required.</value>
+    <comment>Shown when recording opening balances with no non-zero entry.</comment>
+  </data>
+  <data name="Validation_OpeningBalance_AccountOncePerBatch" xml:space="preserve">
+    <value>Each account may only appear once in the opening balances.</value>
+    <comment>Shown when an account is entered more than once in one opening-balances batch.</comment>
+  </data>
+  <data name="Validation_OpeningBalance_AccountNotEligible" xml:space="preserve">
+    <value>One or more accounts are not eligible for opening balances.</value>
+    <comment>Shown when an opening-balances entry targets an account not eligible for opening balances.</comment>
+  </data>
+  <data name="Validation_Setup_CurrencyUnknown" xml:space="preserve">
+    <value>The selected currency is not one this application supports.</value>
+    <comment>Shown when first-run setup is submitted with a currency code not in CurrencyCatalog.All (spec 028, FR-001).</comment>
+  </data>
+  <data name="Validation_Setup_FinancialYearStartDayRange" xml:space="preserve">
+    <value>The fiscal year start day must be between 1 and 28.</value>
+    <comment>Shown when first-run setup is submitted with a financial-year start day outside 1–28 (spec 028, FR-020).</comment>
+  </data>
+  <data name="Validation_Settings_CurrencyImmutable" xml:space="preserve">
+    <value>The organization currency is chosen during setup and cannot be changed afterwards.</value>
+    <comment>Shown when a Settings save attempts to change CurrencyCode from its persisted value (spec 028, FR-002).</comment>
+  </data>
+  <data name="Validation_ClosedPeriod_PostingRejected" xml:space="preserve">
+    <value>This transaction is dated in a closed financial period and cannot be posted. Change the date to a period that is still open.</value>
+    <comment>Shown when a financial posting is dated on or before Settings.ClosedThroughDate (spec 028, FR-017).</comment>
+  </data>
+</root>

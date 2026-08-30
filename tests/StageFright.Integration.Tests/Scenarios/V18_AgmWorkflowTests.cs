@@ -78,7 +78,7 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
         Assert.Equal(2026, term.LabelYear);
 
         // --- Committee reporting picks up the result (SC-002) ---
-        var reportProvider = new CommitteeReportProvider(new CommitteePositionRecordRepository(_db), new MemberRepository(_db));
+        var reportProvider = new CommitteeReportProvider(new CommitteePositionRecordRepository(_db), new MemberRepository(_db), RealLocalizer.Instance);
         var filters = new ReportFilterValues();
         filters.Set("memberFilter", "Active Only");
         var report = await reportProvider.GenerateAsync(filters, TestContext.Current.CancellationToken);
@@ -194,7 +194,7 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
     {
         var settingsRepo = new SettingsRepository(_db);
         var auditSvc = BuildAuditService();
-        var settingsSvc = new SettingsService(settingsRepo, auditSvc);
+        var settingsSvc = new SettingsService(settingsRepo, auditSvc, RealLocalizer.Instance);
 
         return new AgmService(
             new AgmRepository(_db),
@@ -203,7 +203,8 @@ public sealed class V18_AgmWorkflowTests : IAsyncLifetime
             new CommitteePositionRecordRepository(_db),
             settingsSvc,
             auditSvc,
-            new UnitOfWork(_db));
+            new UnitOfWork(_db),
+            RealLocalizer.Instance);
     }
 
     private async Task<Guid> GetBuiltInOfficeHolderTypeIdAsync(string name)

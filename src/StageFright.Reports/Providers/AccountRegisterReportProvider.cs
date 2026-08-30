@@ -1,7 +1,9 @@
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Providers;
 
@@ -13,22 +15,24 @@ public class AccountRegisterReportProvider : IReportProvider
 {
     private readonly IGLRepository _gl;
     private readonly IAccountRepository _accounts;
+    private readonly ILocalizer _localizer;
 
-    public AccountRegisterReportProvider(IGLRepository gl, IAccountRepository accounts)
+    public AccountRegisterReportProvider(IGLRepository gl, IAccountRepository accounts, ILocalizer localizer)
     {
         _gl = gl;
         _accounts = accounts;
+        _localizer = localizer;
     }
 
     public string ReportId => "account-register";
-    public string ReportName => "Account Register";
+    public string ReportName => _localizer.Get<ReportsResource>("Reports_AccountRegister_Name");
     public string ModuleName => "Finance";
     public int DisplayOrder => 30;
 
     public IReadOnlyList<ReportFilterDefinition> Filters =>
     [
-        new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = "From", DefaultValue = $"{DateTime.UtcNow.Year}-01-01" },
-        new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = "To", DefaultValue = $"{DateTime.UtcNow.Year}-12-31" }
+        new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_Filter_From"), DefaultValue = $"{DateTime.UtcNow.Year}-01-01" },
+        new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_Filter_To"), DefaultValue = $"{DateTime.UtcNow.Year}-12-31" }
     ];
 
     public async Task<ReportData> GenerateAsync(ReportFilterValues filters, CancellationToken ct = default)
@@ -66,17 +70,18 @@ public class AccountRegisterReportProvider : IReportProvider
 
         return new ReportData
         {
-            Title = "Account Register",
-            SubTitle = $"{from:d MMMM yyyy} – {to:d MMMM yyyy}",
+            Title = _localizer.Get<ReportsResource>("Reports_AccountRegister_Name"),
+            SubTitle = _localizer.Get<ReportsResource>("Reports_Common_DateRangeSubtitle", from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy")),
             GeneratedAt = DateTime.UtcNow,
+            BasisOfAccounting = _localizer.Get<ReportsResource>("Reports_Common_BasisOfAccounting"),
             Columns =
             [
-                new ReportColumn { Header = "Date", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right },
-                new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right },
-                new ReportColumn { Header = "Running Balance", Alignment = ReportColumnAlignment.Right }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Date"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Description"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Account"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Debit"), Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Credit"), Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_AccountRegister_RunningBalanceColumn"), Alignment = ReportColumnAlignment.Right }
             ],
             Sections = [new ReportSection { Rows = rows }]
         };
@@ -94,5 +99,5 @@ public class AccountRegisterReportProvider : IReportProvider
         return (from, to);
     }
 
-    private static string FormatCurrency(decimal amount) => amount.ToString("F2");
+    private static string FormatCurrency(decimal amount) => MoneyFormatter.Format(amount);
 }

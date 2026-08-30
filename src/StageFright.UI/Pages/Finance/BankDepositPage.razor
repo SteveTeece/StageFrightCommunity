@@ -1,13 +1,13 @@
 @page "/finance/bank-deposit"
 
-<PageTitle>Record Bank Deposit</PageTitle>
+<PageTitle>@L["Finance_BankDeposit_PageTitle"]</PageTitle>
 
 <div class="bank-deposit-page container-fluid py-2">
-    <h4 class="mb-2">Record Bank Deposit</h4>
+    <h4 class="mb-2">@L["Finance_BankDeposit_Heading"]</h4>
 
     @if (_loading)
     {
-        <p role="status" aria-live="polite">Loading…</p>
+        <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
     }
     else
     {
@@ -21,7 +21,7 @@
             <div class="alert alert-success py-1 mb-2 small" role="status">
                 @_successMessage
                 <div class="mt-1">
-                    <button class="btn btn-sm btn-outline-success" @onclick="RecordAnother">Record Another</button>
+                    <button class="btn btn-sm btn-outline-success" @onclick="RecordAnother">@L["Finance_Common_RecordAnotherButton"]</button>
                 </div>
             </div>
         }
@@ -31,8 +31,7 @@
             @if (_destinationAccounts.Count == 0)
             {
                 <div class="alert alert-warning py-1 mb-2 small" role="alert">
-                    Bank deposits need at least one bank account other than Cash on Hand. Please add a bank account in the
-                    <a href="/finance/accounts">Chart of Accounts</a> first.
+                    @((MarkupString)L["Finance_BankDeposit_NoAccountsHtml"].Value)
                 </div>
             }
             else
@@ -43,12 +42,12 @@
                             <div class="row g-2">
 
                                 <div class="col-md-4">
-                                    <label class="form-label" for="depositDate">Date <span aria-hidden="true">*</span></label>
+                                    <label class="form-label" for="depositDate">@L["Finance_Common_DateLabel"] <span aria-hidden="true">*</span></label>
                                     <InputDate id="depositDate" class="form-control form-control-sm" @bind-Value="_form.Date" />
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label class="form-label" for="depositAmount">Amount <span aria-hidden="true">*</span></label>
+                                    <label class="form-label" for="depositAmount">@L["Finance_Common_AmountLabel"] <span aria-hidden="true">*</span></label>
                                     <div class="input-group input-group-sm @(_errors.ContainsKey("Amount") ? "has-validation" : "")">
                                         <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
                                         <InputNumber id="depositAmount"
@@ -63,16 +62,16 @@
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label class="form-label" for="depositFrom">From</label>
-                                    <input id="depositFrom" class="form-control form-control-sm" value="Cash on Hand" disabled />
+                                    <label class="form-label" for="depositFrom">@L["Finance_BankDeposit_FromLabel"]</label>
+                                    <input id="depositFrom" class="form-control form-control-sm" value="@L["Finance_BankDeposit_FromValue"]" disabled />
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label class="form-label" for="toAccount">To <span aria-hidden="true">*</span></label>
+                                    <label class="form-label" for="toAccount">@L["Finance_BankDeposit_ToLabel"] <span aria-hidden="true">*</span></label>
                                     <InputSelect id="toAccount"
                                                  class="@(_errors.ContainsKey("ToAccountId") ? "form-select form-select-sm is-invalid" : "form-select form-select-sm")"
                                                  @bind-Value="_form.ToAccountId">
-                                        <option value="@Guid.Empty">— select —</option>
+                                        <option value="@Guid.Empty">@L["Finance_Common_SelectOption"]</option>
                                         @foreach (var bank in _destinationAccounts)
                                         {
                                             <option value="@bank.Id">@bank.AccountNumber @bank.Name</option>
@@ -85,19 +84,19 @@
                                 </div>
 
                                 <div class="col-12">
-                                    <label class="form-label" for="depositDescription">Description</label>
+                                    <label class="form-label" for="depositDescription">@L["Finance_Common_DescriptionLabel"]</label>
                                     <InputTextArea id="depositDescription" class="form-control form-control-sm" rows="2"
                                                    @bind-Value="_form.Description"
-                                                   placeholder="e.g. Banking of rehearsal attendance fees…" />
+                                                   placeholder="@L["Finance_BankDeposit_DescriptionPlaceholder"]" />
                                 </div>
 
                             </div>
 
                             <div class="d-flex gap-2 mt-2">
                                 <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
-                                    @(_saving ? "Saving…" : "Record Deposit")
+                                    @(_saving ? Shared["Shared_Action_Saving"] : L["Finance_BankDeposit_SubmitButton"])
                                 </button>
-                                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="RecordAnother">Clear</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="RecordAnother">@L["Finance_Common_ClearButton"]</button>
                             </div>
                         </EditForm>
                     </div>

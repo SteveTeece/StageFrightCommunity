@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Settings holds the organisation's operating configuration (identity, fees, renewal months, GST treatment, theme) as a single authoritative record, gates first-run setup, and provides the only disaster-recovery path (backup/restore) for the whole database. Without it, the app has no organisation-wide parameters to drive fee calculation, GST posting, or member-age rules, and no way to recover from a bad import or a lost device.
+Settings holds the organisation's operating configuration (identity, fees, renewal months, sales-tax treatment, currency, financial-year start, theme) as a single authoritative record, gates first-run setup, and provides the only disaster-recovery path (backup/restore) for the whole database. Without it, the app has no organisation-wide parameters to drive fee calculation, sales-tax posting, or member-age rules, and no way to recover from a bad import or a lost device.
 
 ## Requirements
 
@@ -21,10 +21,14 @@ The application MUST treat the absence of a persisted Settings record as "first 
 - **THEN** setup MUST refuse to run again rather than create a second record
 
 ### First-run setup creates the singleton with validated inputs and seeded defaults
-Setup MUST validate the incoming request (organisation name, ABN, non-negative fees, a renewal month in 1–12) before creating the Settings record, and MUST seed the standard set of default event types alongside it so the app is usable immediately after setup.
+Setup MUST validate the incoming request (organisation name present, non-negative fees, a membership renewal month in 1–12, an audit-retention period in 1–7 years, a currency code in the supported catalogue, a financial-year start day in 1–28, and — only when sales tax applies — a tax rate greater than zero) before creating the Settings record, and MUST seed the standard set of default event types alongside it so the app is usable immediately after setup.
 
 #### Scenario: setup submitted with an out-of-range renewal month
 - **WHEN** the requested membership renewal month is not between 1 and 12
+- **THEN** setup is rejected and no Settings record is created
+
+#### Scenario: setup submitted with sales tax enabled but no rate
+- **WHEN** the request has sales tax applicable but the tax rate is zero or unset
 - **THEN** setup is rejected and no Settings record is created
 
 #### Scenario: setup completes successfully
@@ -32,30 +36,18 @@ Setup MUST validate the incoming request (organisation name, ABN, non-negative f
 - **THEN** the Settings singleton is created
 - **AND** the standard default event types exist and are available immediately afterward
 
-### ABN, when present, must be a checksum-valid Australian Business Number
-Wherever an ABN is stored it MUST satisfy the ATO's weighted-checksum rule if non-empty; an absent ABN is always valid, since only new installs require one at setup while existing organisations may have none on file. User-entered formatting (spaces) MUST be normalized away so the persisted value is always a plain digit string, independent of how it was typed.
-[inferred: checksum enforcement is intentionally suspended in Debug builds so developers/testers can use synthetic ABNs; this is a deliberate carve-out, not a bug]
-
-#### Scenario: user types an ABN with grouping spaces
-- **WHEN** the user enters an ABN using the "XX XXX XXX XXX" grouping shown by the input
-- **THEN** the value persisted and validated is the plain 11-digit string with no spaces
-
-#### Scenario: an ABN fails the checksum
-- **WHEN** a non-empty ABN does not satisfy the ATO checksum (in a Release build)
-- **THEN** the save is rejected with a validation error
-
 ### Settings edits from independent tabs never clobber each other's fields
-Because organisation, GST, and other settings fields are edited from separate tabs against a shared singleton, each tab MUST re-fetch the currently persisted values for every field it does not own and merge them into its own save, so a stale in-memory copy from one tab can never overwrite a concurrent change saved from another.
+Because organisation, sales-tax, and other settings fields are edited from separate tabs against a shared singleton, each tab MUST re-fetch the currently persisted values for every field it does not own and merge them into its own save, so a stale in-memory copy from one tab can never overwrite a concurrent change saved from another.
 
-#### Scenario: GST registration changed in one tab, then General tab is saved
-- **WHEN** GST registration was toggled and saved from the GST/BAS tab
+#### Scenario: sales-tax applicability changed in one tab, then General tab is saved
+- **WHEN** sales-tax applicability was toggled and saved from the Sales Tax tab
 - **AND** the General tab (holding a stale copy of the settings loaded before that change) is then saved
-- **THEN** the GST registration change made in the other tab is preserved, not overwritten
+- **THEN** the sales-tax applicability change made in the other tab is preserved, not overwritten
 
-#### Scenario: organisation name changed in General tab, then GST tab is saved
+#### Scenario: organisation name changed in General tab, then Sales Tax tab is saved
 - **WHEN** the organisation name was changed and saved from the General tab
-- **AND** the GST/BAS tab is then saved
-- **THEN** the updated organisation name is preserved, not reverted to the value the GST tab originally loaded
+- **AND** the Sales Tax tab is then saved
+- **THEN** the updated organisation name is preserved, not reverted to the value the Sales Tax tab originally loaded
 
 ### Numeric and cross-field business rules guard every Settings save
 A save MUST reject a negative minimum member age, a negative maximum age range, and a minimum age that exceeds the maximum, regardless of which tab or caller initiated the save.
@@ -64,17 +56,21 @@ A save MUST reject a negative minimum member age, a negative maximum age range, 
 - **WHEN** a save is attempted with minimum member age greater than the maximum age range
 - **THEN** the save is rejected and no data is persisted
 
-### GST registration controls whether GST codes apply to fee accruals
-GST treatment codes for the annual and attendance fees are only meaningful while the organisation is GST-registered; setup MUST force both codes to null whenever the organisation is not registered, regardless of what was selected in the UI beforehand. Because toggling registration changes how future fee postings and BAS reporting behave, the UI MUST require an explicit confirmation step before the change takes effect.
+### Sales-tax applicability controls whether a rate and tax codes apply to fee accruals
+The tax rate (`Settings.TaxRate`), the per-fee treatment codes (`Settings.AnnualFeeTaxCode` / `Settings.AttendanceFeeTaxCode`) and the tax entry mode (`Settings.TaxEntryMode`) are only meaningful while `Settings.IsTaxApplicable` is true; both first-run setup and every later save MUST force the rate and both codes back to null and the entry mode back to `Inclusive` whenever sales tax is not applicable, regardless of what was selected in the UI beforehand. While sales tax IS applicable a rate greater than zero MUST be supplied or the save is rejected. Because toggling applicability changes how future fee postings and tax reporting behave, the Sales Tax settings tab MUST require an explicit confirmation step before the change takes effect.
 
-#### Scenario: setup request has GST codes selected but registration off
-- **WHEN** a setup request is submitted with `IsGstRegistered = false` and GST codes populated
-- **THEN** both stored GST codes are null, not the values that were selected in the UI
+#### Scenario: setup request has tax codes selected but sales tax not applicable
+- **WHEN** a setup request is submitted with `IsTaxApplicable = false` and a tax rate and/or per-fee tax codes populated
+- **THEN** the stored rate and both stored tax codes are null and the entry mode is `Inclusive`, not the values that were selected in the UI
 
-#### Scenario: user toggles GST registration
-- **WHEN** the user changes the "registered for GST" control from its current value
-- **THEN** the UI shows a confirmation describing the consequence (GST splitting enabled, or GST fields hidden and future postings uncoded) before the change is applied
-- **AND** cancelling leaves the prior registration state in effect [NEEDS CLARIFICATION: on later saves outside initial setup, is anything in this workflow expected to null the GST codes again if the user later re-registers, given the previous codes are never cleared when unregistering?]
+#### Scenario: sales tax is turned off on a later save
+- **WHEN** an existing Settings record carrying a rate and tax codes is saved again with `IsTaxApplicable = false`
+- **THEN** the persisted rate and both tax codes are cleared to null and the entry mode is reset to `Inclusive` on that same save
+
+#### Scenario: user toggles sales-tax applicability
+- **WHEN** the user changes the "sales tax applies" control on the Sales Tax settings tab from its current value
+- **THEN** the UI shows a confirmation describing the consequence (tax splitting enabled, or tax fields hidden and future postings uncoded) before the change is applied
+- **AND** cancelling leaves the prior applicability state in effect
 
 ### Event types are archivable, not deletable, and system defaults are protected
 Event types follow the soft-delete-everywhere rule: retiring one archives it rather than removing it, and it can be restored later. Event types seeded as system defaults MUST NOT be archivable through this UI, preserving the baseline set the app was seeded with.

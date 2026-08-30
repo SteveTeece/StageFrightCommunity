@@ -12,6 +12,8 @@ namespace StageFright.Core.Tests.Modules.Finance;
 /// Unit tests for BankReconciliationService — draft start validation (bank account,
 /// single draft, statement-date ordering), workspace difference calculation,
 /// toggle-clear rules, finalise gating at |diff| ≤ 0.005, and audit logging.
+/// Spec 028 FR-015: finalisation still requires the reconciliation to balance (no
+/// tolerance band beyond the half-cent), and a finalised reconciliation is immutable.
 /// </summary>
 public class BankReconciliationServiceTests : TestBase
 {
@@ -50,7 +52,7 @@ public class BankReconciliationServiceTests : TestBase
         _glRepo.GetUnreconciledByAccountAsync(Arg.Any<Guid>(), Arg.Any<DateTime?>(), Arg.Any<CancellationToken>())
             .Returns(new List<Transaction>());
 
-        _sut = new BankReconciliationService(_recRepo, _accountRepo, _glRepo, _audit);
+        _sut = new BankReconciliationService(_recRepo, _accountRepo, _glRepo, _audit, RealLocalizer.Instance);
     }
 
     // --- StartDraftAsync ---
@@ -268,6 +270,31 @@ public class BankReconciliationServiceTests : TestBase
         await _sut.FinaliseAsync(rec.Id, Ct);
 
         await _recRepo.Received(1).FinaliseAsync(rec.Id, Arg.Any<CancellationToken>());
+    }
+
+    // FR-015: finalisation still requires the reconciliation to balance — a one-cent
+    // difference is over the half-cent tolerance and must be rejected with no state change.
+    [Fact]
+    public async Task Should_RejectFinalise_When_DifferenceExceedsHalfCent_FR015()
+    {
+        var rec = MakeReconciliation(ReconciliationStatus.Draft, closingBalance: 0.01m);
+        _recRepo.GetByIdAsync(rec.Id, Arg.Any<CancellationToken>()).Returns(rec);
+
+        await Assert.ThrowsAsync<ReconciliationException>(() => _sut.FinaliseAsync(rec.Id, Ct));
+        await _recRepo.DidNotReceive().FinaliseAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+    }
+
+    // FR-015: a finalised reconciliation is immutable — neither clearing a line nor
+    // re-finalising it is permitted.
+    [Fact]
+    public async Task Should_RejectClearAndFinalise_When_ReconciliationIsFinalised_FR015()
+    {
+        var rec = MakeReconciliation(ReconciliationStatus.Finalised, closingBalance: 0m);
+        _recRepo.GetByIdAsync(rec.Id, Arg.Any<CancellationToken>()).Returns(rec);
+
+        await Assert.ThrowsAsync<ReconciliationException>(() => _sut.ToggleClearAsync(rec.Id, Guid.NewGuid(), Ct));
+        await Assert.ThrowsAsync<ReconciliationException>(() => _sut.FinaliseAsync(rec.Id, Ct));
+        await _recRepo.DidNotReceive().FinaliseAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 
     // --- DeleteDraftAsync ---

@@ -2,6 +2,7 @@ using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Reports.Models;
 using StageFright.Reports.Providers;
@@ -25,7 +26,7 @@ public class IncomeStatementReportProviderTests
 
     public IncomeStatementReportProviderTests()
     {
-        _sut = new IncomeStatementReportProvider(_gl, _accounts, _settings);
+        _sut = new IncomeStatementReportProvider(_gl, _accounts, _settings, RealLocalizer.Instance);
         _settings.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         SetupAccounts();
         SetupMovements();
@@ -93,7 +94,7 @@ public class IncomeStatementReportProviderTests
         var result = await _sut.GenerateAsync(PeriodFilters("This FY"), TestContext.Current.CancellationToken);
 
         var incomeSection = result.Sections.First(s => s.Heading == "Income");
-        Assert.Equal("150.00", incomeSection.Subtotal!.Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(150m), incomeSection.Subtotal!.Cells[1]);
     }
 
     [Fact]
@@ -122,7 +123,7 @@ public class IncomeStatementReportProviderTests
         var result = await _sut.GenerateAsync(PeriodFilters("This FY"), TestContext.Current.CancellationToken);
 
         Assert.Equal("Surplus", result.GrandTotal!.Cells[0]);
-        Assert.Equal("200.00", result.GrandTotal.Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(200m), result.GrandTotal.Cells[1]);
     }
 
     [Fact]
@@ -138,7 +139,7 @@ public class IncomeStatementReportProviderTests
         var result = await _sut.GenerateAsync(PeriodFilters("This FY"), TestContext.Current.CancellationToken);
 
         Assert.Equal("(Deficit)", result.GrandTotal!.Cells[0]);
-        Assert.Equal("-150.00", result.GrandTotal.Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(-150m), result.GrandTotal.Cells[1]);
     }
 
     [Fact]
@@ -214,8 +215,8 @@ public class IncomeStatementReportProviderTests
         Assert.Equal(3, result.Columns.Count);
         Assert.Equal("Prior Period", result.Columns[2].Header);
         var incomeRow = result.Sections.First(s => s.Heading == "Income").Rows.First(r => r.Cells[0] == "Dues");
-        Assert.Equal("300.00", incomeRow.Cells[1]);
-        Assert.Equal("100.00", incomeRow.Cells[2]);
+        Assert.Equal(MoneyFormatter.Format(300m), incomeRow.Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(100m), incomeRow.Cells[2]);
     }
 
     // --- Helpers ---

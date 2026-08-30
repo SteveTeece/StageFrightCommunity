@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI;
 
@@ -11,6 +13,7 @@ public partial class App : ComponentBase
     [Inject] private IStartupDiagnosticService Diagnostics { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
     [Inject] private ILogger<App> Logger { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> L { get; set; } = null!;
 
     private ErrorBoundary? _errorBoundary;
 

@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Nav_Members_Title" xml:space="preserve">
+    <value>Members</value>
+    <comment>Members top-level navigation item label.</comment>
+  </data>
+  <data name="Nav_Members_ShortLabel" xml:space="preserve">
+    <value>MEMB</value>
+    <comment>Members navigation item short/collapsed label.</comment>
+  </data>
+  <data name="Nav_Sidebar_MainNavigationAriaLabel" xml:space="preserve">
+    <value>Main navigation</value>
+    <comment>aria-label on the sidebar navigation landmark.</comment>
+  </data>
+  <data name="Nav_Sidebar_BrandText" xml:space="preserve">
+    <value>StageFright</value>
+    <comment>Product name shown beside the sidebar logo.</comment>
+  </data>
+  <data name="Nav_Sidebar_CollapseGroupAriaLabel" xml:space="preserve">
+    <value>Collapse {GroupName}</value>
+    <comment>aria-label on an expanded nav group's chevron. {GroupName} = the group's title.</comment>
+  </data>
+  <data name="Nav_Sidebar_ExpandGroupAriaLabel" xml:space="preserve">
+    <value>Expand {GroupName}</value>
+    <comment>aria-label on a collapsed nav group's chevron. {GroupName} = the group's title.</comment>
+  </data>
+  <data name="Nav_Sidebar_BadgeItemsAriaLabel" xml:space="preserve">
+    <value>{BadgeText} items</value>
+    <comment>aria-label on a nav item's count badge. {BadgeText} = the badge's displayed count.</comment>
+  </data>
+  <data name="Nav_ThemeToggle_Label" xml:space="preserve">
+    <value>Theme Selection</value>
+    <comment>Visible label for the sidebar light/dark theme switch.</comment>
+  </data>
+  <data name="Nav_ThemeToggle_SwitchToDarkAriaLabel" xml:space="preserve">
+    <value>Switch to dark mode</value>
+    <comment>aria-label on the theme switch while the light theme is active.</comment>
+  </data>
+  <data name="Nav_ThemeToggle_SwitchToLightAriaLabel" xml:space="preserve">
+    <value>Switch to light mode</value>
+    <comment>aria-label on the theme switch while the dark theme is active.</comment>
+  </data>
+  <data name="Nav_Dashboard_Title" xml:space="preserve">
+    <value>Dashboard</value>
+    <comment>Navigation label for the Dashboard.</comment>
+  </data>
+  <data name="Nav_Dashboard_ShortLabel" xml:space="preserve">
+    <value>HOME</value>
+    <comment>Collapsed nav-rail abbreviation for the Dashboard.</comment>
+  </data>
+  <data name="Nav_Rehearsals_Title" xml:space="preserve">
+    <value>Rehearsals</value>
+    <comment>Navigation label for the Rehearsals section.</comment>
+  </data>
+  <data name="Nav_Rehearsals_ShortLabel" xml:space="preserve">
+    <value>REH</value>
+    <comment>Collapsed nav-rail abbreviation for Rehearsals.</comment>
+  </data>
+  <data name="Nav_Events_Title" xml:space="preserve">
+    <value>Events</value>
+    <comment>Navigation label for the Events section.</comment>
+  </data>
+  <data name="Nav_Events_ShortLabel" xml:space="preserve">
+    <value>EVNT</value>
+    <comment>Collapsed nav-rail abbreviation for Events.</comment>
+  </data>
+  <data name="Nav_Events_AllEvents" xml:space="preserve">
+    <value>All Events</value>
+    <comment>Events sub-menu item — the full events list.</comment>
+  </data>
+  <data name="Nav_Events_ScheduleAgm" xml:space="preserve">
+    <value>Schedule AGM</value>
+    <comment>Events sub-menu item — schedule an Annual General Meeting.</comment>
+  </data>
+  <data name="Nav_Events_Agms" xml:space="preserve">
+    <value>AGMs</value>
+    <comment>Events sub-menu item — list of Annual General Meetings.</comment>
+  </data>
+  <data name="Nav_Finance_Title" xml:space="preserve">
+    <value>Finance</value>
+    <comment>Navigation label for the Finance section.</comment>
+  </data>
+  <data name="Nav_Finance_ShortLabel" xml:space="preserve">
+    <value>FIN</value>
+    <comment>Collapsed nav-rail abbreviation for Finance.</comment>
+  </data>
+  <data name="Nav_Finance_Overview" xml:space="preserve">
+    <value>Overview</value>
+    <comment>Finance sub-menu item — the Finance overview page.</comment>
+  </data>
+  <data name="Nav_Finance_ChartOfAccounts" xml:space="preserve">
+    <value>Chart of Accounts</value>
+    <comment>Finance sub-menu item — the chart of accounts.</comment>
+  </data>
+  <data name="Nav_Finance_RecordBankDeposit" xml:space="preserve">
+    <value>Record Bank Deposit</value>
+    <comment>Finance sub-menu item — record a bank deposit.</comment>
+  </data>
+  <data name="Nav_Finance_JournalEntries" xml:space="preserve">
+    <value>Journal Entries</value>
+    <comment>Finance sub-menu item — general journal entries.</comment>
+  </data>
+  <data name="Nav_Finance_Reconciliation" xml:space="preserve">
+    <value>Reconciliation</value>
+    <comment>Finance sub-menu item — bank reconciliation.</comment>
+  </data>
+  <data name="Nav_Finance_OpeningBalances" xml:space="preserve">
+    <value>Opening Balances</value>
+    <comment>Finance sub-menu item — opening balances.</comment>
+  </data>
+  <data name="Nav_Reports_Title" xml:space="preserve">
+    <value>Reports</value>
+    <comment>Navigation label for the Reports section.</comment>
+  </data>
+  <data name="Nav_Reports_ShortLabel" xml:space="preserve">
+    <value>RPT</value>
+    <comment>Collapsed nav-rail abbreviation for Reports.</comment>
+  </data>
+  <data name="Nav_Settings_Title" xml:space="preserve">
+    <value>Settings</value>
+    <comment>Navigation label for Settings.</comment>
+  </data>
+  <data name="Nav_Settings_ShortLabel" xml:space="preserve">
+    <value>SET</value>
+    <comment>Collapsed nav-rail abbreviation for Settings.</comment>
+  </data>
+</root>

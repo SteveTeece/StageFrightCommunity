@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Setup_Page_Title" xml:space="preserve"><value>⟦Fírst-Tímé Sétúp — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title — Setup Wizard.</comment></data>
+  <data name="Setup_Wizard_Heading" xml:space="preserve"><value>⟦StágéFríght Çómmúñítý - Sétúp Wízárd—⟧</value><comment>Setup Wizard page heading.</comment></data>
+  <data name="Setup_Wizard_Subheading" xml:space="preserve"><value>⟦Çómplété thé sétúp bélów tó gét stártéd.—⟧</value><comment>Sub-heading under the wizard title.</comment></data>
+  <data name="Setup_Tab_OrganisationSettings" xml:space="preserve"><value>⟦Órgáñísátíóñ Séttíñgs—⟧</value><comment>Setup Wizard tab title.</comment></data>
+  <data name="Setup_Tab_ChartOfAccounts" xml:space="preserve"><value>⟦Çhárt óf Áççóúñts—⟧</value><comment>Setup Wizard tab title.</comment></data>
+  <data name="Setup_Tab_OpeningBalances" xml:space="preserve"><value>⟦Ópéñíñg Báláñçés—⟧</value><comment>Setup Wizard tab title.</comment></data>
+  <data name="Setup_Tab_Committee" xml:space="preserve"><value>⟦Çómmíttéé—⟧</value><comment>Setup Wizard tab title.</comment></data>
+  <data name="Setup_Tab_Review" xml:space="preserve"><value>⟦Révíéw—⟧</value><comment>Setup Wizard tab title.</comment></data>
+  <data name="Setup_Tab_LoadFailed" xml:space="preserve"><value>⟦Thís táb fáíléd tó lóád.—⟧</value><comment>Shown when a setup tab throws.</comment></data>
+  <data name="Setup_Nav_NextButton" xml:space="preserve"><value>⟦Ñéxt—⟧</value><comment>Setup Wizard — advance to the next tab.</comment></data>
+  <data name="Setup_Nav_FinishButton" xml:space="preserve"><value>⟦Fíñísh—⟧</value><comment>Setup Wizard — complete setup.</comment></data>
+  <data name="Setup_Seeding_Message" xml:space="preserve"><value>⟦Séttíñg úp ýóúr sámplé dátá — thís máý táké á féw míñútés. Pléásé dóñ't çlósé thé ápp.—⟧</value><comment>Overlay message while sample data is being seeded.</comment></data>
+  <data name="Setup_Error_InvalidSubmit" xml:space="preserve"><value>⟦Sómé réqúíréd fíélds áré íñçómplété — çhéçk évérý táb béfóré fíñíshíñg.—⟧</value><comment>Shown when Finish is clicked with an invalid field somewhere.</comment></data>
+  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>⟦Éñtér át léást óñé ópéñíñg báláñçé, ór séléçt "Lóád sámplé dátá" óñ thé Révíéw táb, béfóré fíñíshíñg.—⟧</value><comment>Shown when Finish is attempted with no opening balance and no sample-data opt-in.</comment></data>
+  <data name="Setup_Error_Unexpected" xml:space="preserve"><value>⟦Áñ úñéxpéçtéd érrór óççúrréd. Pléásé trý ágáíñ.—⟧</value><comment>Generic setup failure message.</comment></data>
+  <data name="Setup_General_OrgNameLabel" xml:space="preserve"><value>⟦Órgáñísátíóñ Ñámé—⟧</value><comment>General tab — organisation name label.</comment></data>
+  <data name="Setup_General_OrgNamePlaceholder" xml:space="preserve"><value>⟦é.g. Spríñgfíéld Çhórál Sóçíétý—⟧</value><comment>Placeholder for the organisation name field.</comment></data>
+  <data name="Setup_General_CurrencyLabel" xml:space="preserve"><value>⟦Çúrréñçý—⟧</value><comment>General tab — organisation currency picker label (spec 028, FR-001).</comment></data>
+  <data name="Setup_General_CurrencyHelp" xml:space="preserve"><value>⟦Thé çúrréñçý ýóúr bóóks áré képt íñ. Thís ís fíxéd óñçé sétúp ís çómplété.—⟧</value><comment>Help text under the currency picker (spec 028, FR-002).</comment></data>
+  <data name="Setup_General_FinancialYearStartMonthLabel" xml:space="preserve"><value>⟦Fíñáñçíál Ýéár Stárt Móñth—⟧</value><comment>General tab — financial-year start month picker label (spec 028, FR-019).</comment></data>
+  <data name="Setup_General_FinancialYearStartDayLabel" xml:space="preserve"><value>⟦Fíñáñçíál Ýéár Stárt Dáý—⟧</value><comment>General tab — financial-year start day picker label (spec 028, FR-020).</comment></data>
+  <data name="Setup_General_FinancialYearStartHelp" xml:space="preserve"><value>⟦Whéñ ýóúr fíñáñçíál ýéár bégíñs. Défáúlt 1 Júlý — thé Áústrálíáñ fíñáñçíál ýéár.—⟧</value><comment>Help text under the financial-year-start pickers (spec 028, FR-019).</comment></data>
+  <data name="Setup_General_InceptionDateLabel" xml:space="preserve"><value>⟦Órgáñísátíóñ Íñçéptíóñ Dáté (óptíóñál)—⟧</value><comment>General tab — optional organisation founding-date picker label (spec 028, FR-022 / issue #353).</comment></data>
+  <data name="Setup_General_InceptionDateHelp" xml:space="preserve"><value>⟦Thé dáté ýóúr órgáñísátíóñ wás fóúñdéd. Léávé bláñk úñléss ít fálls áftér ýóúr fíñáñçíál ýéár stárt — théñ ýóúr fírst fíñáñçíál ýéár ís répórtéd ás á shórtér "párt-ýéár".—⟧</value><comment>Help text under the optional inception-date picker (spec 028, FR-022 / issue #353).</comment></data>
+  <data name="Setup_Fees_AnnualFeeLabel" xml:space="preserve"><value>⟦Áññúál Féé—⟧</value><comment>Membership Fees tab — annual fee label.</comment></data>
+  <data name="Setup_Fees_AttendanceFeeLabel" xml:space="preserve"><value>⟦Áttéñdáñçé Féé—⟧</value><comment>Membership Fees tab — attendance fee label.</comment></data>
+  <data name="Setup_Fees_RenewalMonthLabel" xml:space="preserve"><value>⟦Mémbérshíp Réñéwál Móñth—⟧</value><comment>Membership Fees tab — renewal month label.</comment></data>
+  <data name="Setup_Fees_AuditRetentionLabel" xml:space="preserve"><value>⟦Áúdít Tráíl Rétéñtíóñ (ýéárs)—⟧</value><comment>Membership Fees tab — audit retention label.</comment></data>
+  <data name="Setup_Fees_AuditRetentionHelp" xml:space="preserve"><value>⟦Hów lóñg áúdít tráíl hístórý ís képt béfóré thé stártúp púrgé rémóvés ít. Défáúlt 1 ýéár.—⟧</value><comment>Help text under the audit retention field.</comment></data>
+  <data name="Setup_Fees_AuditRetentionYears_One" xml:space="preserve"><value>⟦{Count} ýéár—⟧</value><comment>Audit-retention select option, singular.</comment></data>
+  <data name="Setup_Fees_AuditRetentionYears_Other" xml:space="preserve"><value>⟦{Count} ýéárs—⟧</value><comment>Audit-retention select option, plural.</comment></data>
+  <data name="Setup_Theme_Label" xml:space="preserve"><value>⟦Thémé:—⟧</value><comment>Setup Wizard theme dropdown label.</comment></data>
+  <data name="Setup_Language_Label" xml:space="preserve"><value>⟦Láñgúágé:—⟧</value><comment>Setup Wizard display-language dropdown label (spec 027, US3).</comment></data>
+  <data name="Setup_Language_HelpText" xml:space="preserve"><value>⟦Ýóú çáñ çháñgé thís látér íñ Séttíñgs.—⟧</value><comment>Help text under the Setup Wizard language dropdown.</comment></data>
+  <data name="Setup_Tax_AppliesLabel" xml:space="preserve"><value>⟦Sálés táx ápplíés tó thís órgáñísátíóñ—⟧</value><comment>Sales Tax tab — applicability checkbox label.</comment></data>
+  <data name="Setup_Tax_RateLabel" xml:space="preserve"><value>⟦Táx Ráté (%)—⟧</value><comment>Sales Tax tab — tax rate label.</comment></data>
+  <data name="Setup_Tax_EntryModeLabel" xml:space="preserve"><value>⟦Ámóúñt éñtrý—⟧</value><comment>Sales Tax tab — label for the tax-inclusive / tax-exclusive amount-entry mode selector.</comment></data>
+  <data name="Setup_Tax_AnnualFeeTreatmentLabel" xml:space="preserve"><value>⟦Áññúál Féé Táx Tréátméñt—⟧</value><comment>Sales Tax tab — annual fee tax-code label.</comment></data>
+  <data name="Setup_Tax_AttendanceFeeTreatmentLabel" xml:space="preserve"><value>⟦Áttéñdáñçé Féé Táx Tréátméñt—⟧</value><comment>Sales Tax tab — attendance fee tax-code label.</comment></data>
+  <data name="Setup_Tax_TaxExemptDefaultOption" xml:space="preserve"><value>⟦Táx-éxémpt (défáúlt)—⟧</value><comment>Tax-treatment select — the unset/default option.</comment></data>
+  <data name="Setup_SampleData_CheckboxLabel" xml:space="preserve"><value>⟦Lóád sámplé dátá (mémbérs, réhéársáls, évéñts &amp; fíñáñçés)—⟧</value><comment>Debug-only checkbox label — load sample data.</comment></data>
+  <data name="Setup_Coa_Intro" xml:space="preserve"><value>⟦Qúéúé áñý ñéw áççóúñts tó ádd tó ýóúr Çhárt óf Áççóúñts. Thís ís óptíóñál — ýóú çáñ álwáýs ádd áççóúñts látér fróm Fíñáñçé ▸ Çhárt óf Áççóúñts. Évérý áççóúñt lístéd héré — íñçlúdíñg thé sýstém áççóúñts álréádý séédéd fór ýóú — wíll éxíst óñçé sétúp fíñíshés.—⟧</value><comment>Chart of Accounts tab intro paragraph.</comment></data>
+  <data name="Setup_Coa_AddHeading" xml:space="preserve"><value>⟦Ádd Áççóúñt—⟧</value><comment>Chart of Accounts tab — add-account section heading.</comment></data>
+  <data name="Setup_Coa_QueueAccountButton" xml:space="preserve"><value>⟦Qúéúé Áççóúñt—⟧</value><comment>Submit button text for the add-account form in the setup wizard.</comment></data>
+  <data name="Setup_Coa_ExistingHeading" xml:space="preserve"><value>⟦Éxístíñg Áççóúñts—⟧</value><comment>Chart of Accounts tab — existing accounts list heading.</comment></data>
+  <data name="Setup_Coa_ExistingEmpty" xml:space="preserve"><value>⟦Ñó áççóúñts éxíst ýét.—⟧</value><comment>Empty text for the existing accounts list.</comment></data>
+  <data name="Setup_Coa_QueuedHeading" xml:space="preserve"><value>⟦Qúéúéd Áççóúñts—⟧</value><comment>Chart of Accounts tab — queued accounts list heading.</comment></data>
+  <data name="Setup_Coa_QueuedEmpty" xml:space="preserve"><value>⟦Ñó áççóúñts qúéúéd ýét.—⟧</value><comment>Empty text for the queued accounts list.</comment></data>
+  <data name="Setup_Coa_BankCashSuffix" xml:space="preserve"><value>⟦ · Báñk/Çásh—⟧</value><comment>Suffix appended to a bank/cash account's type in the account lists.</comment></data>
+  <data name="Setup_Coa_SystemBadge" xml:space="preserve"><value>⟦Sýstém—⟧</value><comment>Badge / title marking a system account.</comment></data>
+  <data name="Setup_Ob_Intro" xml:space="preserve"><value>⟦Éñtér ópéñíñg báláñçés fór áñý áççóúñts ýóú'd líké tó stárt wíth á báláñçé — íñçlúdíñg áççóúñts ýóú júst qúéúéd óñ thé Çhárt óf Áççóúñts táb. Thís ís óptíóñál; ýóú çáñ álsó lóád sámplé dátá fróm thé Révíéw táb íñstéád.—⟧</value><comment>Opening Balances tab intro paragraph.</comment></data>
+  <data name="Setup_Ob_AsAtLabel" xml:space="preserve"><value>⟦Ás át—⟧</value><comment>Opening Balances tab — as-at date label.</comment></data>
+  <data name="Setup_Ob_QueueBalancesButton" xml:space="preserve"><value>⟦Qúéúé Báláñçés—⟧</value><comment>Submit button text for the opening-balance form in the setup wizard.</comment></data>
+  <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>⟦ÁGM Móñth—⟧</value><comment>Committee tab — AGM month label.</comment></data>
+  <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>⟦Thé móñth ýóúr ÁGM ís ñórmállý héld. Drívés çómmíttéé térm bóúñdáríés.—⟧</value><comment>Help text under the AGM month field.</comment></data>
+  <data name="Setup_Committee_SeatTargetLabel" xml:space="preserve"><value>⟦Géñérál Çómmíttéé Séát Çóúñt Tárgét—⟧</value><comment>Committee tab — seat target label.</comment></data>
+  <data name="Setup_Committee_SeatTargetHelp" xml:space="preserve"><value>⟦Óptíóñál — gúídáñçé óñlý, ñó hárd çáp ís éñfórçéd whéñ réçórdíñg áñ ÁGM.—⟧</value><comment>Help text under the seat target field.</comment></data>
+  <data name="Setup_Committee_TitlesLabel" xml:space="preserve"><value>⟦Áddítíóñál Óffíçé-Hóldér Títlés—⟧</value><comment>Committee tab — additional titles input label.</comment></data>
+  <data name="Setup_Committee_TitlesPlaceholder" xml:space="preserve"><value>⟦é.g. Públíçítý Óffíçér—⟧</value><comment>Placeholder for the additional-title input.</comment></data>
+  <data name="Setup_Committee_AddTitleAriaLabel" xml:space="preserve"><value>⟦Ádd títlé—⟧</value><comment>aria-label on the add-title arrow button.</comment></data>
+  <data name="Setup_Committee_TitlesHelp" xml:space="preserve"><value>⟦Óptíóñál, óñé át á tímé. Présídéñt/Séçrétárý/Tréásúrér áré álwáýs íñçlúdéd. Çáñ álsó bé çóñfígúréd látér fróm Séttíñgs.—⟧</value><comment>Help text under the additional-titles input.</comment></data>
+  <data name="Setup_Committee_TitlesListLabel" xml:space="preserve"><value>⟦Áddítíóñál Títlés—⟧</value><comment>Committee tab — queued titles list label.</comment></data>
+  <data name="Setup_Committee_TitlesListEmpty" xml:space="preserve"><value>⟦Ñó áddítíóñál títlés áddéd ýét.—⟧</value><comment>Empty text for the queued titles list.</comment></data>
+  <data name="Setup_Committee_ErrorBlank" xml:space="preserve"><value>⟦Éñtér á títlé béfóré áddíñg.—⟧</value><comment>Validation — the title input was blank.</comment></data>
+  <data name="Setup_Committee_ErrorDuplicate" xml:space="preserve"><value>⟦"{Title}" hás álréádý bééñ áddéd.—⟧</value><comment>Validation — the title is already queued. {Title} = the entered title.</comment></data>
+  <data name="Setup_Review_Heading" xml:space="preserve"><value>⟦Révíéw—⟧</value><comment>Review tab heading.</comment></data>
+  <data name="Setup_Review_OrgNameTerm" xml:space="preserve"><value>⟦Órgáñísátíóñ Ñámé—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_ThemeTerm" xml:space="preserve"><value>⟦Thémé—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_AnnualFeeTerm" xml:space="preserve"><value>⟦Áññúál Féé—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_AttendanceFeeTerm" xml:space="preserve"><value>⟦Áttéñdáñçé Féé—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_RenewalMonthTerm" xml:space="preserve"><value>⟦Mémbérshíp Réñéwál Móñth—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_SalesTaxAppliesTerm" xml:space="preserve"><value>⟦Sálés Táx Ápplíés—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_TaxRateTerm" xml:space="preserve"><value>⟦Táx Ráté—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_AnnualFeeTaxTerm" xml:space="preserve"><value>⟦Áññúál Féé Táx Tréátméñt—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_AttendanceFeeTaxTerm" xml:space="preserve"><value>⟦Áttéñdáñçé Féé Táx Tréátméñt—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_AgmMonthTerm" xml:space="preserve"><value>⟦ÁGM Móñth—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_AuditRetentionTerm" xml:space="preserve"><value>⟦Áúdít Tráíl Rétéñtíóñ—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_SeatTargetTerm" xml:space="preserve"><value>⟦Séát Çóúñt Tárgét—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_LoadSampleDataTerm" xml:space="preserve"><value>⟦Lóád sámplé dátá—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_Yes" xml:space="preserve"><value>⟦Ýés—⟧</value><comment>Review tab — affirmative value.</comment></data>
+  <data name="Setup_Review_No" xml:space="preserve"><value>⟦Ñó—⟧</value><comment>Review tab — negative value.</comment></data>
+  <data name="Setup_Review_NotSet" xml:space="preserve"><value>⟦Ñót sét—⟧</value><comment>Review tab — shown for an unset optional value.</comment></data>
+  <data name="Setup_Review_TaxExemptDefault" xml:space="preserve"><value>⟦Táx-éxémpt (défáúlt)—⟧</value><comment>Review tab — shown for an unset tax treatment.</comment></data>
+  <data name="Setup_Review_TitlesHeading" xml:space="preserve"><value>⟦Áddítíóñál Óffíçé-Hóldér Títlés—⟧</value><comment>Review tab — queued titles heading.</comment></data>
+  <data name="Setup_Review_TitlesEmpty" xml:space="preserve"><value>⟦Ñóñé.—⟧</value><comment>Empty text for the review queued-titles list.</comment></data>
+  <data name="Setup_Review_AccountsHeading" xml:space="preserve"><value>⟦Qúéúéd Çhárt óf Áççóúñts Éñtríés—⟧</value><comment>Review tab — queued accounts heading.</comment></data>
+  <data name="Setup_Review_AccountsEmpty" xml:space="preserve"><value>⟦Ñóñé qúéúéd.—⟧</value><comment>Empty text for the review queued-accounts list.</comment></data>
+  <data name="Setup_Review_AuditRetentionYears_One" xml:space="preserve"><value>⟦{Count} ýéár—⟧</value><comment>Review tab audit-retention value, singular.</comment></data>
+  <data name="Setup_Review_AuditRetentionYears_Other" xml:space="preserve"><value>⟦{Count} ýéárs—⟧</value><comment>Review tab audit-retention value, plural.</comment></data>
+  <data name="Setup_Review_BankCashSuffix" xml:space="preserve"><value>⟦ · Báñk/Çásh—⟧</value><comment>Suffix appended to a bank/cash account's type in the review list.</comment></data>
+</root>

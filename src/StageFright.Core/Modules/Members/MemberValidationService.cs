@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Localization.Resources;
 using SettingsEntity = StageFright.Core.Entities.Settings;
 
 namespace StageFright.Core.Modules.Members;
@@ -10,13 +12,15 @@ namespace StageFright.Core.Modules.Members;
 public partial class MemberValidationService
 {
     private readonly AgeCalculationService _ageCalc;
+    private readonly IStringLocalizer<ValidationResource> _localizer;
 
     [GeneratedRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.None, matchTimeoutMilliseconds: 1000)]
     private static partial Regex EmailRegex();
 
-    public MemberValidationService(AgeCalculationService ageCalc)
+    public MemberValidationService(AgeCalculationService ageCalc, IStringLocalizer<ValidationResource> localizer)
     {
         _ageCalc = ageCalc;
+        _localizer = localizer;
     }
 
     public void Validate(CreateMemberRequest request, SettingsEntity settings)
@@ -34,22 +38,22 @@ public partial class MemberValidationService
         SettingsEntity settings, string operationContext)
     {
         if (string.IsNullOrWhiteSpace(firstName))
-            throw new ValidationException("First name is required.", "Member", operationContext);
+            throw new ValidationException(_localizer["Validation_Member_FirstNameRequired"], "Member", operationContext);
 
         if (string.IsNullOrWhiteSpace(lastName))
-            throw new ValidationException("Last name is required.", "Member", operationContext);
+            throw new ValidationException(_localizer["Validation_Member_LastNameRequired"], "Member", operationContext);
 
         if (firstName.Trim().Length > 100)
-            throw new ValidationException("First name must be 100 characters or fewer.", "Member", operationContext);
+            throw new ValidationException(_localizer["Validation_Member_FirstNameMaxLength"], "Member", operationContext);
 
         if (lastName.Trim().Length > 100)
-            throw new ValidationException("Last name must be 100 characters or fewer.", "Member", operationContext);
+            throw new ValidationException(_localizer["Validation_Member_LastNameMaxLength"], "Member", operationContext);
 
         if (string.IsNullOrWhiteSpace(streetAddress))
-            throw new ValidationException("Street address is required.", "Member", operationContext);
+            throw new ValidationException(_localizer["Validation_Member_StreetAddressRequired"], "Member", operationContext);
 
         if (!string.IsNullOrEmpty(email) && !EmailRegex().IsMatch(email))
-            throw new ValidationException("Email format is invalid.", "Member", operationContext);
+            throw new ValidationException(_localizer["Validation_Member_EmailInvalid"], "Member", operationContext);
 
         _ageCalc.ValidateDateOfBirth(dob, DateTime.UtcNow.Date, settings.MaxAgeRangeYears, settings.MinimumMemberAge);
     }
