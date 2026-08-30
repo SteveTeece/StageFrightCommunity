@@ -84,6 +84,7 @@ public class SetupService : ISetupService
             CurrencyCode = CurrencyCatalog.Get(request.CurrencyCode).Code,
             FinancialYearStartMonth = request.FinancialYearStartMonth,
             FinancialYearStartDay = request.FinancialYearStartDay,
+            InceptionDate = request.InceptionDate?.Date,
             MaxAgeRangeYears = 150,
             MinimumMemberAge = 0,
             Theme = request.Theme,

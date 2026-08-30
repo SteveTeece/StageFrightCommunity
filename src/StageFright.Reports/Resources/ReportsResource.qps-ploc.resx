@@ -27,8 +27,10 @@
   <data name="Reports_Filter_OptionLastFy" xml:space="preserve"><value>⟦Lást FÝ—⟧</value><comment>Income-statement period filter option label; option value stays the invariant token "Last FY".</comment></data>
   <data name="Reports_Filter_OptionCustom" xml:space="preserve"><value>⟦Çústóm—⟧</value><comment>Income-statement period filter option label; option value stays the invariant token "Custom".</comment></data>
   <data name="Reports_Common_DateRangeSubtitle" xml:space="preserve"><value>⟦{DateFrom} – {DateTo}—⟧</value><comment>{DateFrom} range start, {DateTo} range end — both already formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_Common_PartYearSubtitle" xml:space="preserve"><value>⟦{Period} (párt-ýéár — fírst fíñáñçíál ýéár)—⟧</value><comment>Wraps a financial-statement subtitle when the default FY-preset period is an organisation's sub-twelve-month first financial year (FR-022 / issue #353). {Period} is the already-formatted date-range or as-at subtitle.</comment></data>
   <data name="Reports_Common_OpeningBalance" xml:space="preserve"><value>⟦Ópéñíñg Báláñçé—⟧</value></data>
   <data name="Reports_Common_ClosingBalance" xml:space="preserve"><value>⟦Çlósíñg Báláñçé—⟧</value></data>
+  <data name="Reports_Common_BasisOfAccounting" xml:space="preserve"><value>⟦Básís óf áççóúñtíñg: mémbér féés áré réçógñíséd whéñ lévíéd (áççrúál básís); áll óthér íñçómé áñd éxpéñdítúré ís réçógñíséd whéñ réçéívéd ór páíd (çásh básís).—⟧</value><comment>Hybrid basis-of-accounting disclosure shown on every financial statement (FR-012). Must name both the accrual treatment of member fees and the cash treatment of other activity — never a single blanket basis.</comment></data>
   <data name="Reports_MemberList_Name" xml:space="preserve"><value>⟦Mémbér Líst—⟧</value></data>
   <data name="Reports_MemberList_StatusFilterLabel" xml:space="preserve"><value>⟦Státús—⟧</value></data>
   <data name="Reports_MemberList_SubTitle" xml:space="preserve"><value>⟦Státús: {Status} — {Date}—⟧</value><comment>{Status} selected status-filter value, {Date} generation date formatted 'd MMMM yyyy'.</comment></data>
@@ -66,7 +68,7 @@
   <data name="Reports_IncomeStatement_Deficit" xml:space="preserve"><value>⟦(Défíçít)—⟧</value></data>
   <data name="Reports_TrialBalance_Name" xml:space="preserve"><value>⟦Tríál Báláñçé—⟧</value></data>
   <data name="Reports_TrialBalance_TotalsRow" xml:space="preserve"><value>⟦Tótáls—⟧</value></data>
-  <data name="Reports_TrialBalance_GLImbalanceError" xml:space="preserve"><value>⟦GL Báláñçé Vérífíçátíóñ Fáíléd: Tótál Débíts (${Debits}) ≠ Tótál Çrédíts (${Credits}). Thé Tríál Báláñçé çáññót bé géñérátéd whílé thé lédgér ís óút óf báláñçé.—⟧</value><comment>{Debits}/{Credits} are the GL totals formatted 'F2'; each leading $ is a literal currency sign, not a placeholder.</comment></data>
+  <data name="Reports_TrialBalance_GLImbalanceError" xml:space="preserve"><value>⟦GL Báláñçé Vérífíçátíóñ Fáíléd: tótál débíts ({Debits}) dó ñót éqúál tótál çrédíts ({Credits}). Áñý dífféréñçé ís áñ érrór — thé Tríál Báláñçé çáññót bé géñérátéd whílé thé lédgér ís óút óf báláñçé.—⟧</value><comment>{Debits}/{Credits} are the GL totals pre-formatted through MoneyFormatter and already carry the configured currency symbol.</comment></data>
   <data name="Reports_AccountRegister_Name" xml:space="preserve"><value>⟦Áççóúñt Régístér—⟧</value></data>
   <data name="Reports_AccountRegister_RunningBalanceColumn" xml:space="preserve"><value>⟦Rúññíñg Báláñçé—⟧</value></data>
   <data name="Reports_BalanceSheet_Name" xml:space="preserve"><value>⟦Státéméñt óf Fíñáñçíál Pósítíóñ—⟧</value></data>
@@ -77,12 +79,19 @@
   <data name="Reports_BalanceSheet_TotalEquity" xml:space="preserve"><value>⟦Tótál Éqúítý—⟧</value></data>
   <data name="Reports_BalanceSheet_AccumulatedSurplus" xml:space="preserve"><value>⟦Áççúmúlátéd Súrplús—⟧</value></data>
   <data name="Reports_BalanceSheet_TotalLiabilitiesPlusEquity" xml:space="preserve"><value>⟦Tótál Líábílítíés + Éqúítý—⟧</value></data>
+  <data name="Reports_BalanceSheet_OutOfBalance" xml:space="preserve"><value>⟦Óút óf báláñçé bý—⟧</value><comment>Label on the explicit out-of-balance line appended when total assets do not equal total liabilities plus equity (FR-010). The adjacent cell shows the signed difference.</comment></data>
   <data name="Reports_BankReconciliation_Name" xml:space="preserve"><value>⟦Báñk Réçóñçílíátíóñ—⟧</value></data>
   <data name="Reports_BankReconciliation_SubTitle" xml:space="preserve"><value>⟦Móst réçéñt réçóñçílíátíóñ pér áççóúñt, géñérátéd {Date}—⟧</value><comment>{Date} generation date formatted 'd MMMM yyyy'.</comment></data>
   <data name="Reports_BankReconciliation_SubTitleNone" xml:space="preserve"><value>⟦Ñó réçóñçílíátíóñs hávé bééñ réçórdéd.—⟧</value></data>
   <data name="Reports_BankReconciliation_DepositColumn" xml:space="preserve"><value>⟦Dépósít—⟧</value></data>
   <data name="Reports_BankReconciliation_PaymentColumn" xml:space="preserve"><value>⟦Páýméñt—⟧</value></data>
   <data name="Reports_BankReconciliation_AccountHeader" xml:space="preserve"><value>⟦{Account} ({Number}) — státéméñt tó {StatementDate} [{Status}]—⟧</value><comment>{Account} account name, {Number} account number, {StatementDate} formatted 'd MMMM yyyy', {Status} localised reconciliation status.</comment></data>
+  <data name="Reports_BankReconciliation_BalancePerBankStatement" xml:space="preserve"><value>⟦Báláñçé pér báñk státéméñt—⟧</value><comment>First line of the conventional adjusted-balance reconciliation — the closing balance printed on the bank statement (FR-013).</comment></data>
+  <data name="Reports_BankReconciliation_AddOutstandingDeposits" xml:space="preserve"><value>⟦Ádd: óútstáñdíñg dépósíts—⟧</value><comment>Subtotal label for deposits recorded in the ledger but not yet on the bank statement; the amount is added to the statement balance (FR-014).</comment></data>
+  <data name="Reports_BankReconciliation_LessOutstandingPayments" xml:space="preserve"><value>⟦Léss: óútstáñdíñg páýméñts—⟧</value><comment>Subtotal label for payments recorded in the ledger but not yet cleared by the bank; the amount is deducted from the statement balance (FR-014).</comment></data>
+  <data name="Reports_BankReconciliation_AdjustedBankBalance" xml:space="preserve"><value>⟦Ádjústéd báñk báláñçé—⟧</value><comment>Statement balance plus outstanding deposits less outstanding payments.</comment></data>
+  <data name="Reports_BankReconciliation_BalancePerGeneralLedger" xml:space="preserve"><value>⟦Báláñçé pér géñérál lédgér—⟧</value><comment>The account's net general-ledger balance as at the statement date (FR-013).</comment></data>
+  <data name="Reports_BankReconciliation_Reconciled" xml:space="preserve"><value>⟦Réçóñçíléd (ádjústéd báñk báláñçé léss báláñçé pér géñérál lédgér)—⟧</value><comment>Residual between the adjusted bank balance and the general-ledger balance; zero on a reconciled statement (SC-008).</comment></data>
   <data name="Reports_ChartOfAccounts_Name" xml:space="preserve"><value>⟦Çhárt óf Áççóúñts—⟧</value></data>
   <data name="Reports_ChartOfAccounts_IncludeBalancesFilterLabel" xml:space="preserve"><value>⟦Íñçlúdé Çúrréñt Báláñçés—⟧</value></data>
   <data name="Reports_ChartOfAccounts_NumberColumn" xml:space="preserve"><value>⟦Ñó.—⟧</value></data>

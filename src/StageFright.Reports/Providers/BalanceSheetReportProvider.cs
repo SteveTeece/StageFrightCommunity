@@ -53,7 +53,7 @@ public class BalanceSheetReportProvider : IReportProvider
 
     public async Task<ReportData> GenerateAsync(ReportFilterValues filters, CancellationToken ct = default)
     {
-        var asAt = await ParseAsAtAsync(filters, ct);
+        var (asAt, isPartYear) = await ParseAsAtAsync(filters, ct);
 
         var allAccounts = (await _accounts.GetAllAsync(ct))
             .Concat(await _accounts.GetArchivedAsync(ct))
@@ -111,7 +111,10 @@ public class BalanceSheetReportProvider : IReportProvider
         return new ReportData
         {
             Title = _localizer.Get<ReportsResource>("Reports_BalanceSheet_Name"),
-            SubTitle = _localizer.Get<ReportsResource>("Reports_BalanceSheet_SubTitle", asAt.ToString("d MMMM yyyy")),
+            SubTitle = PartYearSubtitle.Wrap(
+                _localizer,
+                _localizer.Get<ReportsResource>("Reports_BalanceSheet_SubTitle", asAt.ToString("d MMMM yyyy")),
+                isPartYear),
             GeneratedAt = DateTime.UtcNow,
             BasisOfAccounting = _localizer.Get<ReportsResource>("Reports_Common_BasisOfAccounting"),
             Columns =
@@ -165,16 +168,21 @@ public class BalanceSheetReportProvider : IReportProvider
         return netIncome;
     }
 
-    private async Task<DateTime> ParseAsAtAsync(ReportFilterValues filters, CancellationToken ct)
+    private async Task<(DateTime AsAt, bool IsPartYear)> ParseAsAtAsync(ReportFilterValues filters, CancellationToken ct)
     {
         var settings = await _settings.GetAsync(ct);
         var startMonth = settings?.FinancialYearStartMonth ?? FinancialYearCalculator.DefaultStartMonth;
         var startDay = settings?.FinancialYearStartDay ?? FinancialYearCalculator.DefaultStartDay;
-        var (_, fyEnd) = FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth, startDay);
+        var (_, fyEnd, isPartYear) = FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth, startDay, settings?.InceptionDate);
 
-        return DateTime.TryParse(filters.Get("asAt"), out var d)
+        var hasAsAt = DateTime.TryParse(filters.Get("asAt"), out var d);
+        var asAt = hasAsAt
             ? new DateTime(d.Year, d.Month, d.Day, 23, 59, 59, DateTimeKind.Utc)
             : fyEnd;
+
+        // The default as-at date is the financial-year end; the part-year note applies only then,
+        // not to a user-chosen as-at date. The date itself is unchanged either way.
+        return (asAt, isPartYear && !hasAsAt);
     }
 
     private static string FormatCurrency(decimal amount) => MoneyFormatter.Format(amount);

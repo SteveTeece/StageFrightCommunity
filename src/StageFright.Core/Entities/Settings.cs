@@ -65,6 +65,15 @@ public class Settings
     public DateTime? ClosedThroughDate { get; set; }
 
     /// <summary>
+    /// The date the organisation was founded. Optional — captured at first-run setup, null (the
+    /// default) for every dataset created before this was offered. When it falls after the
+    /// financial-year anchor (<see cref="FinancialYearStartMonth"/> / <see cref="FinancialYearStartDay"/>),
+    /// the first financial year runs from this date to the day before the next anchor and every
+    /// FY-preset report labels it a part-year; later years are unaffected (spec 028, FR-022 / issue #353).
+    /// </summary>
+    public DateTime? InceptionDate { get; set; }
+
+    /// <summary>
     /// True when sales tax applies to the organisation. When false all tax UI is
     /// hidden, postings are 2-line, and tax codes/rate stay null. Default: false.
     /// </summary>

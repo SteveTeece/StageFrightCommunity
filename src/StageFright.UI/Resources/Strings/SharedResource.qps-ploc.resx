@@ -81,4 +81,6 @@
   <data name="Shared_App_NotFoundHeading" xml:space="preserve"><value>⟦Págé Ñót Fóúñd—⟧</value><comment>Heading shown when a URL matches no page.</comment></data>
   <data name="Shared_App_NotFoundBody" xml:space="preserve"><value>⟦Thé réqúéstéd págé çóúld ñót bé fóúñd.—⟧</value><comment>Body text on the "page not found" screen; followed by the return-to-dashboard link.</comment></data>
   <data name="Shared_App_NotFoundReturnLink" xml:space="preserve"><value>⟦Rétúrñ tó dáshbóárd—⟧</value><comment>Hyperlink caption on the "page not found" screen — navigates to the dashboard.</comment></data>
+  <data name="Shared_StartupWarning_AuditPurgeFailed" xml:space="preserve"><value>⟦Thé stártúp çléáñúp óf éxpíréd áúdít-tráíl éñtríés díd ñót çómplété. Ýóúr réçórds áré íñtáçt; thé çléáñúp wíll bé rétríéd thé ñéxt tímé thé ápp stárts.—⟧</value><comment>Non-fatal dashboard banner shown when the startup audit-trail purge failed (spec 028, FR-025).</comment></data>
+  <data name="Shared_StartupWarning_DismissLabel" xml:space="preserve"><value>⟦Dísmíss—⟧</value><comment>Button that hides the non-fatal startup-warning banner for the current session.</comment></data>
 </root>

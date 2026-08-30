@@ -43,6 +43,13 @@ public sealed class SetupFormModel : IValidatableObject
     [Range(1, 28, ErrorMessage = "Financial year start day must be between 1 and 28.")]
     public int FinancialYearStartDay { get; set; } = 1;
 
+    /// <summary>
+    /// Optional date the organisation was founded (spec 028, FR-022 / issue #353). Left blank by
+    /// most groups; when set and later than the financial-year start, the first financial year is
+    /// reported as a shorter "part-year". Persisted onto <see cref="Core.Entities.Settings.InceptionDate"/>.
+    /// </summary>
+    public DateTime? InceptionDate { get; set; }
+
     public bool IsTaxApplicable { get; set; }
 
     public decimal? TaxRate { get; set; }

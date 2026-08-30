@@ -53,7 +53,7 @@ public class TrialBalanceReportProvider : IReportProvider
 
     public async Task<ReportData> GenerateAsync(ReportFilterValues filters, CancellationToken ct = default)
     {
-        var (from, to) = await ParseDateRangeAsync(filters, ct);
+        var (from, to, isPartYear) = await ParseDateRangeAsync(filters, ct);
         var (totalDebits, totalCredits) = await _gl.GetBalanceTotalsAsync(from, to, ct);
 
         if (totalDebits != totalCredits)
@@ -94,7 +94,10 @@ public class TrialBalanceReportProvider : IReportProvider
         return new ReportData
         {
             Title = _localizer.Get<ReportsResource>("Reports_TrialBalance_Name"),
-            SubTitle = _localizer.Get<ReportsResource>("Reports_Common_DateRangeSubtitle", from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy")),
+            SubTitle = PartYearSubtitle.Wrap(
+                _localizer,
+                _localizer.Get<ReportsResource>("Reports_Common_DateRangeSubtitle", from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy")),
+                isPartYear),
             GeneratedAt = DateTime.UtcNow,
             BasisOfAccounting = _localizer.Get<ReportsResource>("Reports_Common_BasisOfAccounting"),
             Columns =
@@ -119,20 +122,21 @@ public class TrialBalanceReportProvider : IReportProvider
         };
     }
 
-    private async Task<(DateTime From, DateTime To)> ParseDateRangeAsync(ReportFilterValues filters, CancellationToken ct)
+    private async Task<(DateTime From, DateTime To, bool IsPartYear)> ParseDateRangeAsync(ReportFilterValues filters, CancellationToken ct)
     {
         var settings = await _settings.GetAsync(ct);
         var startMonth = settings?.FinancialYearStartMonth ?? FinancialYearCalculator.DefaultStartMonth;
         var startDay = settings?.FinancialYearStartDay ?? FinancialYearCalculator.DefaultStartDay;
-        var (fyFrom, fyTo) = FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth, startDay);
+        var (fyFrom, fyTo, isPartYear) = FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth, startDay, settings?.InceptionDate);
 
-        var from = DateTime.TryParse(filters.Get("dateFrom"), out var df)
-            ? DateTime.SpecifyKind(df.Date, DateTimeKind.Utc)
-            : fyFrom;
-        var to = DateTime.TryParse(filters.Get("dateTo"), out var dt)
-            ? new DateTime(dt.Year, dt.Month, dt.Day, 23, 59, 59, DateTimeKind.Utc)
-            : fyTo;
-        return (from, to);
+        var hasFrom = DateTime.TryParse(filters.Get("dateFrom"), out var df);
+        var hasTo = DateTime.TryParse(filters.Get("dateTo"), out var dt);
+        var from = hasFrom ? DateTime.SpecifyKind(df.Date, DateTimeKind.Utc) : fyFrom;
+        var to = hasTo ? new DateTime(dt.Year, dt.Month, dt.Day, 23, 59, 59, DateTimeKind.Utc) : fyTo;
+
+        // The part-year label describes the default FY-preset period only; a user-supplied custom
+        // range is never labelled.
+        return (from, to, isPartYear && !hasFrom && !hasTo);
     }
 
     private static string FormatCurrency(decimal amount) => MoneyFormatter.Format(amount);

@@ -71,7 +71,7 @@ public class IncomeStatementReportProvider : IReportProvider
         var startMonth = settings?.FinancialYearStartMonth ?? FinancialYearCalculator.DefaultStartMonth;
         var startDay = settings?.FinancialYearStartDay ?? FinancialYearCalculator.DefaultStartDay;
 
-        var (from, to) = ResolvePeriod(filters, startMonth, startDay);
+        var (from, to, isPartYear) = ResolvePeriod(filters, startMonth, startDay, settings?.InceptionDate);
         var compare = bool.TryParse(filters.Get("compare"), out var cmp) && cmp;
 
         var allAccounts = (await _accounts.GetAllAsync(ct)).Concat(await _accounts.GetArchivedAsync(ct)).ToList();
@@ -121,11 +121,14 @@ public class IncomeStatementReportProvider : IReportProvider
         return new ReportData
         {
             Title = _localizer.Get<ReportsResource>("Reports_IncomeStatement_Name"),
-            SubTitle = compare
-                ? _localizer.Get<ReportsResource>("Reports_IncomeStatement_SubTitleCompare",
-                    from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy"),
-                    priorFrom.ToString("d MMMM yyyy"), priorTo.ToString("d MMMM yyyy"))
-                : _localizer.Get<ReportsResource>("Reports_Common_DateRangeSubtitle", from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy")),
+            SubTitle = PartYearSubtitle.Wrap(
+                _localizer,
+                compare
+                    ? _localizer.Get<ReportsResource>("Reports_IncomeStatement_SubTitleCompare",
+                        from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy"),
+                        priorFrom.ToString("d MMMM yyyy"), priorTo.ToString("d MMMM yyyy"))
+                    : _localizer.Get<ReportsResource>("Reports_Common_DateRangeSubtitle", from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy")),
+                isPartYear),
             GeneratedAt = DateTime.UtcNow,
             BasisOfAccounting = _localizer.Get<ReportsResource>("Reports_Common_BasisOfAccounting"),
             Columns = columns,
@@ -170,12 +173,13 @@ public class IncomeStatementReportProvider : IReportProvider
         return (rows, total, priorTotal);
     }
 
-    private static (DateTime From, DateTime To) ResolvePeriod(ReportFilterValues filters, int startMonth, int startDay)
+    private static (DateTime From, DateTime To, bool IsPartYear) ResolvePeriod(
+        ReportFilterValues filters, int startMonth, int startDay, DateTime? inceptionDate)
     {
         var period = filters.Get("period");
 
         if (string.Equals(period, "Last FY", StringComparison.OrdinalIgnoreCase))
-            return FinancialYearCalculator.GetPreviousRange(DateTime.UtcNow, startMonth, startDay);
+            return FinancialYearCalculator.GetPreviousRange(DateTime.UtcNow, startMonth, startDay, inceptionDate);
 
         if (string.Equals(period, "Custom", StringComparison.OrdinalIgnoreCase))
         {
@@ -186,11 +190,11 @@ public class IncomeStatementReportProvider : IReportProvider
             var to = DateTime.TryParse(filters.Get("dateTo"), out var dt)
                 ? new DateTime(dt.Year, dt.Month, dt.Day, 23, 59, 59, DateTimeKind.Utc)
                 : fyTo;
-            return (from, to);
+            return (from, to, false);
         }
 
         // "This FY" (default / unrecognised value)
-        return FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth, startDay);
+        return FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth, startDay, inceptionDate);
     }
 
     private static string FormatCurrency(decimal amount) => MoneyFormatter.Format(amount);

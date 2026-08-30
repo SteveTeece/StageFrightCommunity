@@ -1,9 +1,11 @@
 # Phase 1 Data Model: International accounting-practice readiness
 
 No entity is added and no entity is removed. `Settings` (the singleton, already soft-delete-exempt)
-gains three fields and one changed default. Everything else here is a non-persisted type: a value
-object, two helpers, one exception, and one guard contract. The append-only ledger — `Fee`,
-`Payment`, `Transaction`, `JournalEntry` — is **not touched** (FR-031, FR-032, FR-033).
+gains four fields (the fourth, `InceptionDate`, via the Phase 14 follow-on migration for issue #353)
+and one changed default. Everything else here is a non-persisted type: a value object, two helpers,
+one exception, one guard contract, and (Phase 14) a first-period-aware `FinancialYearCalculator`
+overload. The append-only ledger — `Fee`, `Payment`, `Transaction`, `JournalEntry` — is **not
+touched** (FR-031, FR-032, FR-033).
 
 ---
 
@@ -18,6 +20,7 @@ File: `src/StageFright.Core/Entities/Settings.cs` · EF config:
 | `FinancialYearStartDay` | `int` | non-null | `1` | Range 1–28 (upper bound avoids month-length edge cases; 52/53-week calendars are out of scope). Combined with the existing `FinancialYearStartMonth` to bound every financial year. | FR-019, FR-020 |
 | `ClosedThroughDate` | `DateTime?` | nullable | `null` | `null` = no period closed. When set, any GL posting line dated on or **before** this date (date-inclusive) is rejected. Only ever moves forward in practice; no explicit monotonicity constraint in v1. | FR-016, FR-017 |
 | `AuditRetentionYears` | `int` | non-null | **`5`** (was `1`) | Range 1–7 unchanged; still user-configurable. The migration changes only the column default — it does **not** rewrite the existing row (FR-024). | FR-023, FR-024 |
+| `InceptionDate` | `DateTime?` | nullable | `null` | Optional organisation founding date, captured at first-run setup (Phase 14 / issue #353). `null` on every dataset created before it was offered. When later than the `(FinancialYearStartMonth, FinancialYearStartDay)` anchor, the first financial year opens on this date and every FY-preset report labels it a part-year; later years are full twelve-month periods. Presentation / range calculation only — no stored amount changes. | FR-022 |
 
 Unchanged and relevant: `FinancialYearStartMonth` (`int`, default `7`) keeps its name and default —
 it is a Verbatim Constraint. `LanguageCode`, `Theme`, `IsTaxApplicable`, `TaxRate`,
@@ -37,6 +40,14 @@ New EF Core migration `<timestamp>_AddInternationalAccountingSettings`:
 The `NOT NULL DEFAULT` on the two added non-null columns backfills the single existing row to `AUD` /
 day `1` as the column is added — an existing Australian dataset is therefore unchanged (FR-006,
 US7 AC-3, SC-004). `ClosedThroughDate` starts `null` (nothing retroactively closed).
+
+A follow-on migration `<timestamp>_AddOrganisationInceptionDate` (spec 028 Phase 14 / issue #353),
+added separately because the rest of spec 028 had already shipped, adds:
+
+* `ALTER TABLE Settings ADD COLUMN InceptionDate TEXT NULL;`
+
+It starts `null`, so an existing dataset keeps a full twelve-month first year with no part-year label
+(SC-014).
 
 ### State / lifecycle notes
 
@@ -158,9 +169,10 @@ File: `src/StageFright.Reports/Models/ReportData.cs`
 
 | File | Added / changed |
 |------|-----------------|
-| `src/StageFright.UI/Pages/Setup/SetupFormModel.cs` | `+ string CurrencyCode = "AUD"` (required); `+ int FinancialYearStartMonth = 7` (`[Range(1,12)]`); `+ int FinancialYearStartDay = 1` (`[Range(1,28)]`); `AuditRetentionYears` default `1 → 5`. |
-| `src/StageFright.Core/Modules/Settings/SetupRequest.cs` | `+ string CurrencyCode = "AUD"`; `+ int FinancialYearStartMonth = 7`; `+ int FinancialYearStartDay = 1`; `AuditRetentionYears` default `1 → 5`. |
-| `src/StageFright.Core/Modules/Settings/SetupService.cs` | Validate `CurrencyCode ∈ CurrencyCatalog.All`; validate `FinancialYearStartDay ∈ 1..28`; persist all three onto the new `Settings` fields. |
+| `src/StageFright.UI/Pages/Setup/SetupFormModel.cs` | `+ string CurrencyCode = "AUD"` (required); `+ int FinancialYearStartMonth = 7` (`[Range(1,12)]`); `+ int FinancialYearStartDay = 1` (`[Range(1,28)]`); `AuditRetentionYears` default `1 → 5`. Phase 14: `+ DateTime? InceptionDate` (optional, no `[Required]`). |
+| `src/StageFright.Core/Modules/Settings/SetupRequest.cs` | `+ string CurrencyCode = "AUD"`; `+ int FinancialYearStartMonth = 7`; `+ int FinancialYearStartDay = 1`; `AuditRetentionYears` default `1 → 5`. Phase 14: `+ DateTime? InceptionDate = null` (trailing). |
+| `src/StageFright.Core/Modules/Settings/SetupService.cs` | Validate `CurrencyCode ∈ CurrencyCatalog.All`; validate `FinancialYearStartDay ∈ 1..28`; persist all three onto the new `Settings` fields. Phase 14: persist `InceptionDate = request.InceptionDate?.Date`. |
+| `src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor` | Phase 14: optional `#setup-inception-date` `<InputDate>` bound to `SetupFormModel.InceptionDate` (no required marker). |
 | `src/StageFright.Core/Modules/Settings/SettingsService.cs` | `SaveAsync` rejects a `CurrencyCode` that differs from the persisted value (`Validation_Settings_CurrencyImmutable`). |
 
 ---
@@ -179,7 +191,11 @@ File: `src/StageFright.Reports/Models/ReportData.cs`
   `Reports_BankReconciliation_Reconciled` (+ `.en-US`, `.fr-FR`). The existing
   `Reports_TrialBalance_GLImbalanceError` wording is revised to drop the tolerance phrasing.
 * `SetupResource` / `SettingsResource`: labels for the currency picker, the financial-year-start
-  month/day pickers, and the "close periods through" control (+ `.en-US`, `.fr-FR`).
+  month/day pickers, and the "close periods through" control (+ `.en-US`, `.fr-FR`). Phase 14 adds
+  `Setup_General_InceptionDateLabel` / `Setup_General_InceptionDateHelp` (+ `.en-US`, `.fr-FR`).
+* `ReportsResource` (Phase 14): `Reports_Common_PartYearSubtitle` — `{Period} (part-year — first
+  financial year)`, wrapping a statement subtitle when the default FY-preset period is the
+  sub-twelve-month first financial year (+ `.en-US`, `.fr-FR`; `qps-ploc` regenerated).
 * `SharedResource`: `Shared_StartupWarning_AuditPurgeFailed`, `Shared_StartupWarning_DismissLabel`
   (+ `.en-US`, `.fr-FR`) — the dismissible dashboard banner shown when the startup audit-trail
   purge failed (FR-025).
@@ -193,3 +209,26 @@ no longer swallows a purge failure — it propagates so the startup sequence can
 
 All new user-facing text is resolved through `IStringLocalizer` per the localization rule — no
 hard-coded literals (enforced by `StageFright.Localization.Tests`).
+
+---
+
+## 11. Phase 14 — sub-twelve-month first financial year (FR-022 / issue #353), not persisted
+
+* **`FinancialYearCalculator`** (`src/StageFright.Core/Modules/Finance/`) gains first-period-aware
+  overloads: `GetRange(date, startMonth, startDay, DateTime? inceptionDate)` and
+  `GetPreviousRange(...)`, each returning `(DateTime From, DateTime To, bool IsPartYear)`. A `null`
+  inception date reproduces the existing 3-arg result with `IsPartYear == false`. The first period
+  is a part-year iff `inceptionDate.Date` is strictly after that financial year's normal opening
+  anchor and on or before its end; then `From` opens on the inception date. Every later year, and an
+  inception date on the anchor, is a full twelve months. `GetPreviousRange` pivots on the current
+  year's *un-clamped* anchor so it never collapses onto the part-year period.
+* **`PartYearSubtitle`** (`src/StageFright.Reports/Providers/`, `internal static`) — `Wrap(localizer,
+  subtitle, isPartYear)` returns the subtitle wrapped via `Reports_Common_PartYearSubtitle` when
+  `isPartYear`, else the subtitle unchanged.
+* **`TrialBalanceReportProvider`, `IncomeStatementReportProvider`, `TaxSummaryReportProvider`,
+  `BalanceSheetReportProvider`** pass `settings?.InceptionDate` into `FinancialYearCalculator` and
+  wrap their subtitle via `PartYearSubtitle.Wrap` when the default FY-preset period (no user date
+  override) is the part-year period. The as-at date, all monetary figures, and the integrity checks
+  are unchanged (FR-031, FR-032).
+* The dashboard finance tile carries only month-to-date / inception-to-date figures — no FY-preset
+  figure — so there is no part-year surface there.

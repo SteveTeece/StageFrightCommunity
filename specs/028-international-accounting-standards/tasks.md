@@ -463,3 +463,74 @@ T027` (parallel) → `T028` (docs).
 **Independent stories**: after Phase 2, US2 has no dependency on US1 and can be built alongside it.
 US3–US5 depend on US1's `MoneyFormatter` report routing (T022–T027). US6–US10 depend only on the
 Foundational `Settings` schema (T003/T005/T006).
+
+---
+
+## Phase 14: Issue #353 — Sub-twelve-month first financial year, labelled as a part-year (FR-022, US7)
+
+**Follow-on issue [#353](https://github.com/SteveTeece/StageFrightCommunity/issues/353)** (parent #341, follows
+FY-start work #352), implemented on this branch as part of spec 028 — the optional stub first year US7
+(#352) deliberately left out. FR-022 ("SHOULD support a first financial year shorter than twelve months
+and label such a period as a part-year") is carried here rather than dropped (T076).
+
+**Goal**: an optional organisation **inception date** captured at first-run setup. When it falls after
+the most recent financial-year anchor, the first FY-preset period runs `inception … nextAnchor − 1 day`
+and is labelled a **part-year** on every FY-preset report. Subsequent years are a full twelve months on
+the configured `(month, day)` anchor. A null inception date (every pre-existing dataset) and an
+inception date on the anchor are unchanged. Range calculation and presentation only — no stored
+monetary amount, tax amount or GL balance changes; the AUD zero-drift regression (T013) still passes.
+
+**Independent Test**: seed `Settings.InceptionDate` = 1 October with a 1 July anchor; generate the
+Income Statement, Trial Balance, Tax Summary and Balance Sheet — the first period is 1 Oct … 30 Jun and
+is shown as a part-year; a second-year org sees 1 Jul … 30 Jun with no part-year label; an AU (7, 1)
+dataset with no inception date is byte-identical.
+
+**Wave 1 — schema + calculator (independent files):**
+
+- [x] **T095** [US7] `Settings` entity — add `InceptionDate` (`DateTime?`, nullable, default `null`); the date the organisation was founded, optional, drives the part-year first period · `src/StageFright.Core/Entities/Settings.cs`
+- [x] **T096** [US7] `FinancialYearCalculator` — first-period-aware overloads: `GetRange(date, startMonth, startDay, DateTime? inceptionDate)` and `GetPreviousRange(...)` returning `(DateTime From, DateTime To, bool IsPartYear)`; a null inception reproduces the 3-arg result; part-year iff `inception > from && inception <= to`, in which case `From` opens on the inception date · `src/StageFright.Core/Modules/Finance/FinancialYearCalculator.cs`
+
+**⟶ then:**
+
+- [x] **T097** [US7] EF migration `AddOrganisationInceptionDate` — `InceptionDate` `TEXT NULL` on `Settings`; snapshot updated · `src/StageFright.Data/Migrations/*_AddOrganisationInceptionDate.cs` *(needs T095)*
+
+**⟶ then — report providers pass the inception date + part-year label (independent providers):**
+
+- [x] **T098** [P] [US7] `TrialBalanceReportProvider` — pass `settings.InceptionDate` to `FinancialYearCalculator.GetRange`; when the default period is the part-year first period (no user date override), wrap the subtitle via `Reports_Common_PartYearSubtitle` · `src/StageFright.Reports/Providers/TrialBalanceReportProvider.cs` *(needs T096)*
+- [x] **T099** [P] [US7] `IncomeStatementReportProvider` — same, for the This FY / Last FY presets (Custom is never part-year) · `src/StageFright.Reports/Providers/IncomeStatementReportProvider.cs` *(needs T096)*
+- [x] **T100** [P] [US7] `TaxSummaryReportProvider` — same, when the default quarter is the one that opens the part-year first period · `src/StageFright.Reports/Providers/TaxSummaryReportProvider.cs` *(needs T096)*
+- [x] **T101** [P] [US7] `BalanceSheetReportProvider` — when the FY containing the default as-at date is a part-year, wrap the "As at …" subtitle via `Reports_Common_PartYearSubtitle` (the as-at date itself is unchanged) · `src/StageFright.Reports/Providers/BalanceSheetReportProvider.cs` *(needs T096)*
+
+**⟶ then — resources:**
+
+- [x] **T102** [US7] `ReportsResource` — add `Reports_Common_PartYearSubtitle` (`{Period} (part-year — first financial year)`) · `src/StageFright.Reports/Resources/ReportsResource.resx`, `.en-US.resx`, `.fr-FR.resx`; regenerate `qps-ploc` · `scripts/generate-pseudo-locale.py`
+
+**⟶ then — setup capture (independent files):**
+
+- [x] **T103** [P] [US7] `SetupFormModel` — add optional `DateTime? InceptionDate` (no `[Required]`) · `src/StageFright.UI/Pages/Setup/SetupFormModel.cs`
+- [x] **T104** [P] [US7] `SetupRequest` — add trailing `DateTime? InceptionDate = null` · `src/StageFright.Core/Modules/Settings/SetupRequest.cs`
+
+**⟶ then:**
+
+- [x] **T105** [US7] `SetupService.InitializeAsync` — persist `Settings.InceptionDate = request.InceptionDate?.Date` · `src/StageFright.Core/Modules/Settings/SetupService.cs` *(needs T104, T095)*
+- [x] **T106** [US7] `SetupWizard` — pass `InceptionDate: _model.InceptionDate` into `new SetupRequest(...)` · `src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs` *(needs T103, T104)*
+- [x] **T107** [US7] `GeneralAppearanceTab` — optional `#setup-inception-date` `<InputDate>` bound to `Model.InceptionDate` (no required marker) · `src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor` *(needs T103)*
+- [x] **T108** [US7] `SetupResource` — `Setup_General_InceptionDateLabel`, `Setup_General_InceptionDateHelp` · `src/StageFright.UI/Resources/Strings/SetupResource.resx`, `.en-US.resx`, `.fr-FR.resx`; regenerate `qps-ploc`
+
+**⟶ then — tests:**
+
+- [x] **T109** [P] [US7] Unit — `FinancialYearCalculatorTests`: inception after the anchor → `From` clamped to inception + `IsPartYear` true; inception on the anchor / null inception → full twelve months, `IsPartYear` false; a second-year date → full year; `GetPreviousRange` from year two returns the part-year first period · `tests/StageFright.Core.Tests/Modules/Finance/FinancialYearCalculatorTests.cs`
+- [x] **T110** [P] [US7] Integration — `PartYearFirstFinancialYearTests`: seeded `InceptionDate` after the anchor → Income Statement / Trial Balance / Tax Summary / Balance Sheet subtitles carry the inception-bounded period and the part-year label; on-anchor & null inception unchanged; AU (7, 1) unchanged; a freshly-migrated `Settings` row has `InceptionDate == null` · `tests/StageFright.Integration.Tests/InternationalAccounting/PartYearFirstFinancialYearTests.cs`
+- [x] **T111** [P] [US7] bUnit — `InceptionDatePickerTests`: `#setup-inception-date` renders, is optional (no `*` marker), two-way binds `SetupFormModel.InceptionDate` · `tests/StageFright.UI.Tests/Pages/Setup/InceptionDatePickerTests.cs`
+
+**⟶ then — docs + verification:**
+
+- [x] **T112** [US7] Spec & docs — `spec.md`: FR-022 reworded to delivered, the "not built in this feature / #353" Assumptions bullet updated, the "Short first financial year" Edge Case, the Organisation-configuration Key Entity, and a new SC-014; `data-model.md`: `InceptionDate` row, the migration, the `FinancialYearCalculator` overload, the setup-plumbing rows · `specs/028-international-accounting-standards/spec.md`, `specs/028-international-accounting-standards/data-model.md`
+- [x] **T113** [US7] Full `dotnet build` + `dotnet test` (no `--no-build`) green, incl. `AudZeroDriftTests` zero-drift (FR-031/FR-032); close GitHub issue #353 · `StageFrightCommunity.slnx`
+
+**Checkpoint**: an org founded after its FY anchor sees its first FY-preset report period bounded at the
+inception date and labelled a part-year; every later year is a full twelve months; a null-inception
+(pre-028) dataset and an AU install are byte-identical (issue #353 acceptance, FR-022, SC-014).
+
+**Dependencies**: `T095 | T096` → `T097` → `T098 | T099 | T100 | T101` → `T102` → `T103 | T104` →
+`T105 | T106 | T107` → `T108` → `T109 | T110 | T111` → `T112` → `T113`.

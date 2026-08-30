@@ -24,9 +24,13 @@
   <data name="Settings_General_MembershipRenewalMonthLabel" xml:space="preserve"><value>⟦Mémbérshíp Réñéwál Móñth—⟧</value><comment>General tab field label.</comment></data>
   <data name="Settings_General_AgmMonthLabel" xml:space="preserve"><value>⟦ÁGM Móñth—⟧</value><comment>General tab field label.</comment></data>
   <data name="Settings_General_FinancialYearStartMonthLabel" xml:space="preserve"><value>⟦Fíñáñçíál Ýéár Stárt Móñth—⟧</value><comment>General tab field label.</comment></data>
-  <data name="Settings_General_FinancialYearStartHelp" xml:space="preserve"><value>⟦Défáúlt Júlý — Áústrálíáñ fíñáñçíál ýéár.—⟧</value><comment>Help text under the financial-year-start-month field.</comment></data>
+  <data name="Settings_General_FinancialYearStartDayLabel" xml:space="preserve"><value>⟦Fíñáñçíál Ýéár Stárt Dáý—⟧</value><comment>General tab field label — day of the start month the financial year opens on (spec 028, FR-020).</comment></data>
+  <data name="Settings_General_FinancialYearStartHelp" xml:space="preserve"><value>⟦Défáúlt 1 Júlý — Áústrálíáñ fíñáñçíál ýéár.—⟧</value><comment>Help text under the financial-year-start fields.</comment></data>
   <data name="Settings_General_AuditRetentionLabel" xml:space="preserve"><value>⟦Áúdít Tráíl Rétéñtíóñ (ýéárs)—⟧</value><comment>General tab field label.</comment></data>
   <data name="Settings_General_AuditRetentionHelp" xml:space="preserve"><value>⟦Hów lóñg áúdít tráíl hístórý ís képt béfóré thé stártúp púrgé rémóvés ít.—⟧</value><comment>Help text under the audit-retention field.</comment></data>
+  <data name="Settings_General_ClosePeriodLabel" xml:space="preserve"><value>⟦Çlósé fíñáñçíál péríóds thróúgh—⟧</value><comment>General tab — label for the closed-through date control (spec 028, FR-016).</comment></data>
+  <data name="Settings_General_ClosePeriodHelp" xml:space="preserve"><value>⟦Óñçé sét, áñý fíñáñçíál tráñsáçtíóñ dátéd óñ ór béfóré thís dáté ís réjéçtéd. Tíçk thé bóx bélów tó çóñfírm thé çháñgé.—⟧</value><comment>Help text under the close-period date control.</comment></data>
+  <data name="Settings_General_ClosePeriodConfirm" xml:space="preserve"><value>⟦Í úñdérstáñd — çlósé áll fíñáñçíál péríóds thróúgh thé dáté ábóvé—⟧</value><comment>Confirmation checkbox label required before the closed-through date is saved.</comment></data>
   <data name="Settings_General_AuditRetentionYears_One" xml:space="preserve"><value>⟦{Count} ýéár—⟧</value><comment>Audit-retention select option, singular.</comment></data>
   <data name="Settings_General_AuditRetentionYears_Other" xml:space="preserve"><value>⟦{Count} ýéárs—⟧</value><comment>Audit-retention select option, plural.</comment></data>
   <data name="Settings_General_MaxAgeLabel" xml:space="preserve"><value>⟦Máxímúm Mémbér Ágé (ýéárs)—⟧</value><comment>General tab field label.</comment></data>

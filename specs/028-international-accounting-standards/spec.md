@@ -300,8 +300,11 @@ forward.
   balances and prove they agree.
 - **Attendance accrual that is immediately paid** — both the accrual and the automatic payment must
   each be represented in the audit trail.
-- **Short first financial year** — an organisation founded mid-year: the first period may be shorter
-  than twelve months (see Assumptions for scope).
+- **Short first financial year** — an organisation founded mid-year (an optional inception date after
+  the financial-year anchor): the first period runs from the inception date to the day before the
+  next anchor and every financial-year-preset report labels it a part-year; later years are full
+  twelve-month periods. An inception date on the anchor, or none at all, gives a full twelve-month
+  first year with no label.
 
 ## Requirements
 
@@ -373,8 +376,10 @@ forward.
   the month.
 - **FR-021**: All financial-year-preset reports and dashboard figures MUST honour the configured
   financial-year start (month and day).
-- **FR-022**: The system SHOULD support a first financial year shorter than twelve months and label
-  such a period as a part-year. *(Scope note in Assumptions.)*
+- **FR-022**: The system supports a first financial year shorter than twelve months — an organisation
+  with an optional configured inception date later than its financial-year anchor — and labels that
+  first period as a part-year on every financial-year-preset report. *(Delivered on this branch as
+  spec 028 Phase 14 / issue #353 — see Assumptions.)*
 
 **Audit trail (US8)**
 
@@ -419,8 +424,9 @@ forward.
 
 - **Organisation configuration** — the single record of organisation-wide financial settings. Gains: a
   currency (ISO 4217 code, default `AUD`, fixed after setup); a financial-year start expressed as a
-  month and a day; a closed-through date for period locking. Already holds the financial-year start
-  month, audit-retention period, and tax configuration.
+  month and a day; a closed-through date for period locking; an optional inception date driving the
+  part-year first financial year (FR-022 / #353). Already holds the financial-year start month,
+  audit-retention period, and tax configuration.
 - **Monetary amount** — a value expressed in the organisation's single currency, stored and rounded to
   that currency's minor unit; never carries its own currency dimension.
 - **General-ledger transaction** — an immutable debit/credit line; unchanged by this feature and the
@@ -460,6 +466,10 @@ forward.
   behaviour on review.
 - **SC-013**: The sales-tax internationalisation assessment records a scoped decision for each of its
   four required points.
+- **SC-014**: An organisation whose inception date falls after its financial-year start reports its
+  first financial-year-preset period bounded at the inception date and labelled a part-year, while
+  every later year is a full twelve months; an organisation with no inception date, or one on the
+  anchor, is unchanged.
 
 ## Assumptions
 
@@ -469,11 +479,18 @@ forward.
   compliance; producing statutory financial statements remains each organisation's accountant's job.
 - **52/53-week ("4-4-5") fiscal calendars are out of scope**; the financial year is a start month plus
   a start day, running twelve months.
-- **A short first financial year (FR-022) is desirable but optional for this feature.** It is **not
-  built in this feature** (US7 delivered only the month + day FY-start choice). It is carried forward
-  as a dedicated follow-on GitHub issue — **#353** *"[FEATURE] Support a sub-twelve-month first
-  financial year, labelled as a part-year"* (parent #341, FY-start work #352), filed 2026-08-30 —
-  rather than dropped (T076).
+- **A short first financial year (FR-022) is delivered.** US7 (#352) delivered only the month + day
+  FY-start choice; the optional stub first year it deliberately left out was carried as follow-on
+  issue **#353** *"[FEATURE] Support a sub-twelve-month first financial year, labelled as a
+  part-year"* (parent #341, FY-start work #352, filed 2026-08-30, T076) and is now **implemented on
+  this branch as part of spec 028 (Phase 14, tasks T095–T113)**: an optional `Settings.InceptionDate`
+  captured at first-run setup and a first-period-aware `FinancialYearCalculator` overload. When the
+  inception date is later than the financial-year anchor the first financial year opens on the
+  inception date and is labelled a part-year on the Trial Balance, Income Statement, Tax Summary and
+  Balance Sheet; every later year is a full twelve months. A null inception date (every pre-existing
+  dataset) and an inception date on the anchor are unchanged — a full twelve-month first year, no
+  label. Range calculation and presentation only: no stored monetary amount, tax amount or GL
+  balance changes, and the AUD zero-drift regression (T013) still passes.
 - **The `capabilities/settings/spec.md` living spec still carries retired ABN / GST-registration
   wording** (`IsGstRegistered`, per-fee `GstCode`, the "GST / BAS" tab, the ATO ABN checksum), stale
   since spec 016 replaced that model with `Settings.IsTaxApplicable` / `TaxRate` / `TaxCode`. FR-028
