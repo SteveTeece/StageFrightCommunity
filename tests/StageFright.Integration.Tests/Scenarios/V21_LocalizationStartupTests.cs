@@ -73,7 +73,7 @@ public sealed class V21_LocalizationStartupTests : IAsyncLifetime
 
         var culture = await BuildLanguageProvider().ResolveStartupCultureAsync(TestContext.Current.CancellationToken);
 
-        Assert.Equal("en-AU", culture.Name); // parent-language ("en") match against the only shipped set
+        Assert.Equal("en-AU", culture.Name); // no exact/bare-"en" set; first "en" catalogue entry wins and en-AU (the default) sorts first
     }
 
     [Fact]

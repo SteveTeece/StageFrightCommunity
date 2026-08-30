@@ -38,8 +38,8 @@ public partial class GeneralSettingsTab : ComponentBase
     // Display-language picker (spec 027, US3). The selection is applied on the next launch
     // (FR-021) — persisted with the rest of the General tab on Save. `_initialLanguageCode`
     // captures the loaded value so the restart notice shows the moment the selection differs.
-    // Clearing the explicit choice back to "follow the OS language" (null) is only observable
-    // with more than one shipped language and is out of scope while en-AU is the only set.
+    // Clearing the explicit choice back to "follow the OS language" (null) is not offered by
+    // this picker in v1 — the <InputSelect> always binds a concrete culture code.
     private string _selectedLanguageCode = SupportedLanguagesCatalog.DefaultCultureCode;
     private string _initialLanguageCode = SupportedLanguagesCatalog.DefaultCultureCode;
 

@@ -40,11 +40,15 @@ public sealed class SupportedLanguagesCatalog : ISupportedLanguagesCatalog
     /// <c>StageFright.UI</c>. A folder counts only if it contains
     /// <c>&lt;name&gt;.resources.dll</c> for one of these, so third-party satellites
     /// (Radzen, the test platform) never register as an app language.
+    /// <c>null</c> <em>or empty</em> falls back to the three resource-owning assemblies (Core,
+    /// UI, Reports) — a DI container resolves an unregistered <see cref="IEnumerable{T}"/> as an
+    /// empty sequence rather than <c>null</c>, and an empty probe list would otherwise silently
+    /// collapse the shipped list to <c>en-AU</c> only (issue #360).
     /// </param>
     public SupportedLanguagesCatalog(IEnumerable<string> resourceAssemblyNames)
     {
-        _resourceAssemblyNames = resourceAssemblyNames?.Where(n => !string.IsNullOrWhiteSpace(n)).ToArray()
-            ?? DefaultResourceAssemblyNames;
+        var names = resourceAssemblyNames?.Where(n => !string.IsNullOrWhiteSpace(n)).ToArray();
+        _resourceAssemblyNames = names is { Length: > 0 } ? names : DefaultResourceAssemblyNames;
         _all = new Lazy<IReadOnlyList<SupportedLanguage>>(BuildCatalog);
     }
 

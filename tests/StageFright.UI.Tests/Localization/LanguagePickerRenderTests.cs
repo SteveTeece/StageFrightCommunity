@@ -14,7 +14,8 @@ namespace StageFright.UI.Tests.Localization;
 /// bUnit tests for the spec 027 US3 language pickers: the Settings General tab and the Setup
 /// Wizard step list every shipped language by its endonym, mark the active one, and the Settings
 /// picker shows an inline restart notice at the point of change (FR-012 / FR-021). A 2-entry
-/// fake catalog stands in so the "changed" path is observable while en-AU is the only real set.
+/// fake catalog stands in so the tests control exactly which languages are offered,
+/// independent of the satellite resource sets the build happens to ship.
 /// </summary>
 public sealed class LanguagePickerRenderTests : LocalizedTestContext
 {

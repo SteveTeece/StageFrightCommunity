@@ -73,4 +73,21 @@ public sealed class SupportedLanguagesCatalogTests
     {
         Assert.Equal(new SupportedLanguage("en-AU", isDefault: true), new SupportedLanguage("en-AU", isDefault: false));
     }
+
+    [Fact]
+    public void Should_FallBackToTheDefaultAssemblies_When_ConstructedWithAnEmptyAssemblyList()
+    {
+        // A DI container resolves an unregistered IEnumerable<string> as an *empty* sequence,
+        // not null — so an empty probe list must behave exactly like the parameterless
+        // constructor (probe Core / UI / Reports) rather than disabling discovery and leaving
+        // only en-AU (issue #360).
+        var viaEmptyList = new SupportedLanguagesCatalog([]);
+
+        Assert.Equal(
+            new SupportedLanguagesCatalog().All.Select(l => l.CultureCode),
+            viaEmptyList.All.Select(l => l.CultureCode));
+        Assert.True(
+            viaEmptyList.All.Count > 1,
+            "the satellite resource sets shipped in the build (e.g. en-US) should be discovered");
+    }
 }

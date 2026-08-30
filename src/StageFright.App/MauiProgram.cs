@@ -185,7 +185,10 @@ public static class MauiProgram
         // resource cultures at runtime (FR-011); SystemCultureProvider reads the OS UI culture;
         // LanguageProvider resolves the startup culture — explicit Settings.LanguageCode → OS
         // language → en-AU (FR-023) — and RunStartupSequence applies it before the first render.
-        services.AddSingleton<ISupportedLanguagesCatalog, SupportedLanguagesCatalog>();
+        // Constructed via the parameterless ctor explicitly: AddSingleton<TService,TImpl>() would
+        // let the container select the (IEnumerable<string>) test-seam ctor and inject an empty
+        // sequence, collapsing the shipped list to en-AU only (issue #360).
+        services.AddSingleton<ISupportedLanguagesCatalog>(_ => new SupportedLanguagesCatalog());
         services.AddSingleton<ISystemCultureProvider, SystemCultureProvider>();
         services.AddScoped<ILanguageProvider, LanguageProvider>();
 
