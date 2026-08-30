@@ -403,6 +403,16 @@
       "what": "Full solution builds cleanly after Foundational + US1-tests/routing/screen work (T001-T017)",
       "command": "dotnet build StageFrightCommunity.slnx",
       "result": "Build succeeded, 0 warnings, 0 errors"
+    },
+    {
+      "what": "US1 complete: full solution build + full test suite after retiring wizard language/sample-data widgets and fixing a CultureInfo test-parallelism race",
+      "command": "dotnet build StageFrightCommunity.slnx && dotnet test StageFrightCommunity.slnx",
+      "result": "Build: 0 warnings/0 errors. Tests: 2062/2062 passed across all six projects (Core.Tests 751, Reports.Tests 236, Localization.Tests 28, Data.Tests 158, UI.Tests 629, Integration.Tests 260)."
     }
-  ]
+  ],
+  "step_summaries": {
+    "implement": {
+      "summary": "User Story 1 (P1/MVP) complete: /language-select screen live-switches culture with no restart before the wizard; wizard never shows language/sample-data controls; full suite green (2062/2062)."
+    }
+  }
 }
