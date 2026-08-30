@@ -28,9 +28,15 @@ namespace StageFright.App.Seeding;
 /// as scheduled until its date passes, then is recorded). 2025 is therefore always a complete
 /// past year and 2026 is however far along "today" is. The three most-recently-held 2026
 /// rehearsals model a recent turnout dip: a flat 65% per-member attendance chance rather than
-/// the usual 85–100% profile rate. Currency and language follow the organisation's configured
-/// settings (defaults: AUD, Australian English). Only runs when the user opts in via the setup
-/// wizard checkbox. The whole run is wrapped in an AuditTrailSuppressionScope — seeded records
+/// the usual 85–100% profile rate. Before any of that it stamps a generated organisation name
+/// ("Clarence Valley Community Choir") and fee schedule — annual $120, per-rehearsal $2, a
+/// February membership renewal, an October committee renewal and a six-seat general committee —
+/// over whatever the setup wizard captured, so the sample dataset is internally consistent no
+/// matter what placeholder figures were typed to get past the wizard's own validation.
+/// Currency, language and sales-tax treatment are the exception: those follow the
+/// organisation's configured settings (defaults: AUD, Australian English, no tax). Only runs
+/// when the user opts in via the setup wizard checkbox. The whole run is wrapped in an
+/// AuditTrailSuppressionScope — seeded records
 /// are a synthetic starting fixture, not real user actions, so they produce no audit trail
 /// entries (issue #296).
 /// </summary>
@@ -166,6 +172,9 @@ public class DebugDataSeeder : IDebugDataSeeder
         var settings = await _settingsService.GetAsync(ct)
             ?? throw new InvalidOperationException("Settings must be initialised before seeding debug data.");
 
+        progress?.Report("Applying generated organisation settings…");
+        await ApplyGeneratedOrganisationSettingsAsync(settings, ct);
+
         var random = new Random(20250101); // fixed seed — a given run date reproduces the same dataset
         var attendanceProfile = BuildAttendanceProfile(activeMembers, random);
 
@@ -236,6 +245,37 @@ public class DebugDataSeeder : IDebugDataSeeder
         _logger.LogInformation(
             "Debug data seed complete — {Active} active, {Inactive} inactive, {Archived} archived members, 2 years.",
             activeMembers.Count, inactiveMembers.Count, archivedMembers.Count);
+    }
+
+    // -------------------------------------------------------------------------
+    // Generated organisation settings
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Stamps a generated organisation name and fee schedule over whatever the setup wizard
+    /// captured, so the sample dataset is internally consistent no matter what placeholder
+    /// figures were typed to satisfy the wizard's Organisation Settings tab. The fee amounts
+    /// are what the rest of the run reads: <see cref="SeedAnnualFeesAsync"/> is a no-op at a
+    /// zero annual fee, and the door-cash → petty-cash → bank sweep in
+    /// <see cref="SeedRehearsalsAsync"/> moves nothing at a zero attendance fee. The renewal
+    /// months and committee-seat target line up with the seeded February Term 1 fee run, the
+    /// late-October AGM (<see cref="GetAgmDate"/>) and the six general committee members
+    /// <see cref="SeedAgmAsync"/> elects at it. Currency, language, theme, sales-tax treatment,
+    /// financial-year start, inception date, audit retention and age ranges are deliberately
+    /// left as the coordinator configured them. The <see cref="ISettingsService.SaveAsync"/>
+    /// audit entry is suppressed like every other seeded write by the enclosing
+    /// <see cref="AuditTrailSuppressionScope"/>.
+    /// </summary>
+    private async Task ApplyGeneratedOrganisationSettingsAsync(Settings settings, CancellationToken ct)
+    {
+        settings.OrganizationName = "Clarence Valley Community Choir";
+        settings.AnnualFee = 120m;
+        settings.AttendanceFee = 2m;
+        settings.MembershipRenewalMonth = 2;          // February — collected at the first Term 1 rehearsal
+        settings.CommitteeRenewalMonth = 10;          // October — matches GetAgmDate
+        settings.GeneralCommitteeSeatCountTarget = 6; // matches SeedAgmAsync's six general members
+
+        await _settingsService.SaveAsync(settings, ct);
     }
 
     // -------------------------------------------------------------------------
