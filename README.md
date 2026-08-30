@@ -24,6 +24,7 @@ The master branch will always contain the code for the most recent release. The 
 Make a fork of this repo and use that as your private scratch pad. When you are ready for a review and merge, create a pull request to dev.
 
 ## Tools used
+* Claude Code -Sonnet 5 model (https://www.anthropic.com/claudecode)
 * Github Spec Kit (https://github.com/github/spec-kit)
 * SpecKit Companion (https://github.com/alfredoperez/speckit-companion)
 
