@@ -160,7 +160,7 @@ The application also applies pending migrations automatically on startup — see
 ### Reset the Database
 
 1. Close the application.
-2. Delete `stagefright.db` from the MAUI app-data directory (`FileSystem.AppDataDirectory`).
+2. Delete `stagefright.db` from the MAUI app-data directory (`FileSystem.AppDataDirectory`). On Windows (unpackaged head) that is `%LOCALAPPDATA%\StageFright Community\com.stagefright.community\Data\` — the repo-root `delete-database.cmd` script removes it (and its `-wal`/`-shm` sidecars) for you.
 3. Run the app again (or `dotnet ef database update`) — the schema and first-run `/setup` wizard both come back clean.
 
 ## Central Package Management
