@@ -13,31 +13,36 @@ using StageFright.Core.Modules.Rehearsals;
 namespace StageFright.App.Seeding;
 
 /// <summary>
-/// Seeds two full calendar years (2025–2026) of realistic small-NFP performing-group data
+/// Seeds two complete calendar years (2025–2026) of realistic small-NFP performing-group data
 /// after the first-run wizard completes: 51 members (43 active/3 inactive/5 archived), a
 /// petty-cash + single bank-account chart of accounts, 40 Monday-night rehearsals per year
 /// during NSW school terms with probabilistic attendance, annual subscription fees, a July
 /// Eisteddfod, a September Maclean/Yamba concert weekend, an annual raffle, an AGM each year
-/// with realistic (not full-house) attendance plus a mid-term committee resignation and
-/// special election, and a spread of dated operating expenses (insurance, musical director,
-/// hall hire, costumes, licensing, printing, bank fees). Financial activity is generated as
-/// if "today" were 27 October 2026 (the day after the 2026 AGM) — nothing dated after that
-/// is posted, so the tail end of Term 4 2026 rehearsals are scheduled but not yet
-/// paid/settled. Only runs when the user opts in via the setup wizard checkbox. The whole run
-/// is wrapped in an AuditTrailSuppressionScope — seeded records are a synthetic starting
-/// fixture, not real user actions, so they produce no audit trail entries (issue #296).
+/// (held late in October) with realistic (not full-house) attendance plus a mid-term committee
+/// resignation and special election, and a spread of dated operating expenses (insurance,
+/// musical director, hall hire, costumes, licensing, printing, bank fees). Financial activity
+/// is generated as if "today" were 31 December 2026, so both years are fully settled: every
+/// rehearsal through the end of 2026 has attendance recorded and its door cash banked, all
+/// annual fees are paid (bar the two deliberate non-payers), and the year-end expenses are
+/// posted — nothing is left scheduled-but-unrecorded. The last three rehearsals of 2026
+/// (early-to-mid December) model an end-of-year turnout dip: a flat 65% per-member attendance
+/// chance rather than the usual 85–100% profile rate. Currency and language follow the
+/// organisation's configured settings (defaults: AUD, Australian English). Only runs when the
+/// user opts in via the setup wizard checkbox. The whole run is wrapped in an
+/// AuditTrailSuppressionScope — seeded records are a synthetic starting fixture, not real user
+/// actions, so they produce no audit trail entries (issue #296).
 /// </summary>
 public class DebugDataSeeder : IDebugDataSeeder
 {
     private const decimal PettyCashFloat = 50m;
 
     /// <summary>
-    /// Seed data is generated as if "today" were 27 October 2026 — the day after the 2026
-    /// AGM, so both years' AGMs are recorded. Financial transactions (fees, payments,
-    /// income, expenses) dated after this are not posted — they represent activity that
-    /// has not happened yet from the seed data's point of view.
+    /// Seed data is generated as if "today" were 31 December 2026 — the end of the seeded
+    /// window, so both calendar years are complete: every rehearsal, AGM, fee payment,
+    /// deposit and expense dated on or before this is posted. Nothing in the fixture is
+    /// dated after it, so no "scheduled but not yet held" rehearsals are left over.
     /// </summary>
-    private static readonly DateTime SeedCurrentDate = Utc(2026, 10, 27);
+    private static readonly DateTime SeedCurrentDate = Utc(2026, 12, 31);
 
     private readonly IMemberService _memberService;
     private readonly IMemberRepository _memberRepository;
@@ -599,7 +604,9 @@ public class DebugDataSeeder : IDebugDataSeeder
     /// <summary>
     /// One rehearsal per Monday across 40 term weeks. Attendance fees are collected at the
     /// door into petty cash and, 2–3 days later, swept to the bank account above a small
-    /// float retained in the tin.
+    /// float retained in the tin. The last three rehearsals of 2026 (early-to-mid December)
+    /// use a flat 65% per-member attendance chance — an end-of-year turnout dip — instead of
+    /// each member's usual 85–100% profile rate.
     /// </summary>
     private async Task SeedRehearsalsAsync(
         int year,
@@ -609,8 +616,15 @@ public class DebugDataSeeder : IDebugDataSeeder
         Random random,
         CancellationToken ct)
     {
-        foreach (var date in GetRehearsalDates(year))
+        const double endOfYearAttendanceRate = 0.65;
+        var dates = GetRehearsalDates(year).ToList();
+        // 2026 is the final seeded year; its last three rehearsals model an end-of-year
+        // turnout dip (see the method summary). Earlier years keep the profile rate throughout.
+        var endOfYearDipFromIndex = year == 2026 ? dates.Count - 3 : int.MaxValue;
+
+        for (var i = 0; i < dates.Count; i++)
         {
+            var date = dates[i];
             var rehearsal = await _rehearsalService.ScheduleAsync(new ScheduleRehearsalRequest
             {
                 Date = date,
@@ -620,11 +634,12 @@ public class DebugDataSeeder : IDebugDataSeeder
             if (date > SeedCurrentDate)
                 continue; // future rehearsal — attendance not yet taken, no fees collected
 
+            var inEndOfYearDip = i >= endOfYearDipFromIndex;
             var items = activeMembers
                 .Select(m => new AttendanceBatchItem
                 {
                     MemberId = m.Id,
-                    Attended = random.NextDouble() < attendanceProfile[m.Id],
+                    Attended = random.NextDouble() < (inEndOfYearDip ? endOfYearAttendanceRate : attendanceProfile[m.Id]),
                     MarkAsUnpaid = false // attendance fee collected at the door
                 })
                 .ToList();
