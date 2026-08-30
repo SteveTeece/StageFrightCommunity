@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -20,8 +21,14 @@ public partial class GeneralSettingsTab : ComponentBase
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
     [Inject] private ISupportedLanguagesCatalog Languages { get; set; } = null!;
+    [Inject] private ILanguagePreferenceStore LanguagePreferenceStore { get; set; } = null!;
 
     [CascadingParameter] private ThemeProvider? ThemeProvider { get; set; }
+
+    // Display language (spec 029, US2): a changed selection applies to the running session
+    // immediately on save via the same CultureProvider.Switch mechanism the first-run screen
+    // uses — no restart notice any more (FR-010/FR-020/SC-007).
+    [CascadingParameter] private CultureProvider? CultureProvider { get; set; }
 
     private AppSettings? _settings;
 
@@ -35,16 +42,10 @@ public partial class GeneralSettingsTab : ComponentBase
     private DateTime? _closeThroughDate;
     private bool _confirmClosePeriod;
 
-    // Display-language picker (spec 027, US3). The selection is applied on the next launch
-    // (FR-021) — persisted with the rest of the General tab on Save. `_initialLanguageCode`
-    // captures the loaded value so the restart notice shows the moment the selection differs.
-    // Clearing the explicit choice back to "follow the OS language" (null) is not offered by
-    // this picker in v1 — the <InputSelect> always binds a concrete culture code.
+    // Display-language picker (spec 027, US3; spec 029 applies it live on save — see
+    // HandleSaveAsync). Clearing the explicit choice back to "follow the OS language" (null) is
+    // not offered by this picker in v1 — the <InputSelect> always binds a concrete culture code.
     private string _selectedLanguageCode = SupportedLanguagesCatalog.DefaultCultureCode;
-    private string _initialLanguageCode = SupportedLanguagesCatalog.DefaultCultureCode;
-
-    private bool LanguageChanged =>
-        !string.Equals(_selectedLanguageCode, _initialLanguageCode, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>"{n} year(s)" audit-retention select option, pluralised.</summary>
     private string AuditRetentionOptionText(int years) =>
@@ -64,8 +65,7 @@ public partial class GeneralSettingsTab : ComponentBase
             _settings = await SettingsService.GetAsync();
             Logger.LogInformation("GeneralSettingsTab: settings loaded. HasSettings={HasSettings}", _settings is not null);
 
-            _initialLanguageCode = _settings?.LanguageCode ?? Languages.Default.CultureCode;
-            _selectedLanguageCode = _initialLanguageCode;
+            _selectedLanguageCode = _settings?.LanguageCode ?? Languages.Default.CultureCode;
 
             _closeThroughDate = _settings?.ClosedThroughDate;
         }
@@ -86,6 +86,13 @@ public partial class GeneralSettingsTab : ComponentBase
         _saving = true;
         _errorMessage = null;
         _successMessage = null;
+
+        // Captured before _settings.LanguageCode is overwritten below — this is "the value
+        // loaded at init" (spec 029, FR-021), without needing a dedicated field for it.
+        var languageChanged = !string.Equals(
+            _selectedLanguageCode,
+            _settings.LanguageCode ?? Languages.Default.CultureCode,
+            StringComparison.OrdinalIgnoreCase);
 
         try
         {
@@ -110,7 +117,16 @@ public partial class GeneralSettingsTab : ComponentBase
                 _settings.ClosedThroughDate = _closeThroughDate;
 
             await SettingsService.SaveAsync(_settings);
-            _initialLanguageCode = _selectedLanguageCode;
+
+            // Apply the new language to the running session immediately, no restart (spec 029,
+            // FR-020/FR-021/SC-007) — the same record-then-switch sequence the first-run screen
+            // uses (FirstRunLanguageScreen.razor.cs).
+            if (languageChanged)
+            {
+                LanguagePreferenceStore.Set(_selectedLanguageCode);
+                CultureProvider?.Switch(CultureInfo.GetCultureInfo(_selectedLanguageCode));
+            }
+
             _successMessage = L["Settings_Common_SaveSuccess"];
         }
         catch (ValidationException ex)

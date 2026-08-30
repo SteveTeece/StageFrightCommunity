@@ -251,10 +251,50 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-30T08:57:29.793Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:26:57.355Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:26:58.477Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:26:59.254Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:27:00.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:27:00.616Z"
     }
   ],
   "telemetryInstanceId": "95362f86-b658-4cf0-ae9b-0366f5523b43",
-  "currentTask": "T023",
+  "currentTask": "T028",
   "task_summaries": {
     "T001": {
       "status": "DONE"
@@ -395,6 +435,41 @@
         "src/StageFright.UI/Pages/Setup/Tabs/ReviewTab.razor",
         "ReviewTab.razor.cs",
         "src/StageFright.UI/Resources/Strings/SetupResource*.resx"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "Added Set/Switch and no-restart-notice assertions to GeneralSettingsTabTests",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Settings/GeneralSettingsTabTests.cs"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "Deleted GeneralSettingsTab_ShowsRestartNotice test; broadened the no-notice test to cover after-change too",
+      "files": [
+        "tests/StageFright.UI.Tests/Localization/LanguagePickerRenderTests.cs"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "Removed Settings_General_LanguageRestartNotice key from all 4 SettingsResource files",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SettingsResource*.resx"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "GeneralSettingsTab.razor.cs: dropped LanguageChanged/_initialLanguageCode; HandleSaveAsync now calls ILanguagePreferenceStore.Set + CultureProvider.Switch when the language changed",
+      "files": [
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor.cs"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "Removed the restart-notice alert block from GeneralSettingsTab.razor",
+      "files": [
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor"
       ]
     }
   },

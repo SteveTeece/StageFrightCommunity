@@ -64,24 +64,17 @@ public sealed class LanguagePickerRenderTests : LocalizedTestContext
     }
 
     [Fact]
-    public void GeneralSettingsTab_ShowsNoRestartNotice_BeforeAnyChange()
+    public void GeneralSettingsTab_NeverShowsARestartNotice_BeforeOrAfterAChange()
     {
+        // spec 029: the change is visible the moment it is saved — there is nothing left to
+        // wait for, so no restart notice is ever shown at any point (FR-020/SC-007).
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings());
 
         var cut = Render<GeneralSettingsTab>();
-
         Assert.DoesNotContain("Restart the app", cut.Markup, StringComparison.OrdinalIgnoreCase);
-    }
 
-    [Fact]
-    public void GeneralSettingsTab_ShowsRestartNotice_AfterTheSelectionChanges()
-    {
-        _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings());
-
-        var cut = Render<GeneralSettingsTab>();
         cut.Find("#languageCode").Change("fr-FR");
-
-        Assert.Contains("Restart the app", cut.Markup, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Restart the app", cut.Markup, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
