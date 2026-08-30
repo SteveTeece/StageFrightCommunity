@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "First-Run Language Selection & Optional Sample-Data Seeding",
   "branch": "029-first-run-language-seed",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implementing",
   "history": [
     {
       "step": "specify",
@@ -32,7 +32,283 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-30T08:14:11.787Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-30T08:16:39.357Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-30T08:19:21.503Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-30T08:19:21.533Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-30T08:19:28.288Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-30T08:19:21.592Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:29:07.359Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:29:07.774Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:29:08.158Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:29:08.543Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:29:08.987Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:29:09.415Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:29:09.850Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:39.088Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:39.507Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:39.979Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:40.380Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:40.887Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:41.321Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:41.753Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:42.233Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:42.649Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:43.089Z"
     }
   ],
-  "telemetryInstanceId": "95362f86-b658-4cf0-ae9b-0366f5523b43"
+  "telemetryInstanceId": "95362f86-b658-4cf0-ae9b-0366f5523b43",
+  "currentTask": "T017",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE"
+    },
+    "T002": {
+      "status": "DONE"
+    },
+    "T003": {
+      "status": "DONE"
+    },
+    "T004": {
+      "status": "DONE"
+    },
+    "T005": {
+      "status": "DONE"
+    },
+    "T006": {
+      "status": "DONE"
+    },
+    "T007": {
+      "status": "DONE"
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "New FirstRunLanguageScreenTests.cs covering language-selection path (list/pre-select/confirm)",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "New AppRoutingTests.cs covering App startup redirect decisions",
+      "files": [
+        "tests/StageFright.UI.Tests/AppRoutingTests.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Rewrote SetupWizardTests: dropped sample-data cases, added LanguageCode-from-CultureProvider case",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Deleted SetupWizardNoSeederTests, folded Tabs_AreNeverDisabled into SetupWizardTests",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardNoSeederTests.cs (deleted)"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Removed DebugSeederAvailable/SeedWithTestData cases from ReviewTabTests",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/ReviewTabTests.cs"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Deleted SampleDataTabTests",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/SampleDataTabTests.cs (deleted)"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Removed LanguageSelectionTab-based cases from LanguagePickerRenderTests",
+      "files": [
+        "tests/StageFright.UI.Tests/Localization/LanguagePickerRenderTests.cs"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Added Setup_FirstRun_* resx keys to neutral/en-US/fr-FR/qps-ploc",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SetupResource.resx",
+        "SetupResource.en-US.resx",
+        "SetupResource.fr-FR.resx",
+        "SetupResource.qps-ploc.resx"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Created FirstRunLanguageScreen at /language-select (list, pre-select, confirm->Set+Switch+Nav)",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/FirstRunLanguageScreen.razor",
+        "FirstRunLanguageScreen.razor.cs"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "App.razor.cs routes to /language-select vs /setup based on ILanguagePreferenceStore",
+      "files": [
+        "src/StageFright.UI/App.razor.cs"
+      ]
+    }
+  },
+  "verified": [
+    {
+      "what": "Full solution builds cleanly after Foundational + US1-tests/routing/screen work (T001-T017)",
+      "command": "dotnet build StageFrightCommunity.slnx",
+      "result": "Build succeeded, 0 warnings, 0 errors"
+    }
+  ]
 }

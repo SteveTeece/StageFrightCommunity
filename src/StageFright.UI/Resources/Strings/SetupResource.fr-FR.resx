@@ -5,6 +5,10 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Setup_Page_Title" xml:space="preserve"><value>Configuration initiale — StageFright Community</value><comment>Browser tab title — Setup Wizard.</comment></data>
+  <data name="Setup_FirstRun_PageTitle" xml:space="preserve"><value>Bienvenue — StageFright Community</value><comment>Browser tab title — first-run language-select screen (spec 029).</comment></data>
+  <data name="Setup_FirstRun_Heading" xml:space="preserve"><value>Bienvenue dans StageFright Community</value><comment>First-run language-select screen heading (spec 029).</comment></data>
+  <data name="Setup_FirstRun_Subheading" xml:space="preserve"><value>Choisissez votre langue d'affichage pour commencer.</value><comment>Sub-heading under the first-run screen title (spec 029).</comment></data>
+  <data name="Setup_FirstRun_ConfirmButton" xml:space="preserve"><value>Continuer</value><comment>First-run language-select screen — confirm button (spec 029).</comment></data>
   <data name="Setup_Wizard_Heading" xml:space="preserve"><value>StageFright Community - Assistant de configuration</value><comment>Setup Wizard page heading.</comment></data>
   <data name="Setup_Wizard_Subheading" xml:space="preserve"><value>Terminez la configuration ci-dessous pour commencer.</value><comment>Sub-heading under the wizard title.</comment></data>
   <data name="Setup_Tab_OrganisationSettings" xml:space="preserve"><value>Paramètres de l'organisation</value><comment>Setup Wizard tab title.</comment></data>

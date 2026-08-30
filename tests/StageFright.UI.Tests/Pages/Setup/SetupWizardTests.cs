@@ -7,6 +7,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Settings;
+using StageFright.UI.Layout;
 using StageFright.UI.Pages.Setup;
 using StageFright.UI.Pages.Setup.Tabs;
 using StageFright.UI.Resources.Strings;
@@ -14,22 +15,21 @@ using StageFright.UI.Resources.Strings;
 namespace StageFright.UI.Tests.Pages.Setup;
 
 /// <summary>
-/// bUnit component tests for the tabbed SetupWizard (spec 017, spec 022): tab-click
-/// navigation, Next validation gating, Sales Tax dropdown visibility, Finish composing
-/// the full SetupRequest, the sample-data seeding overlay, and — since spec 022 — the
-/// relocated "Load sample data" checkbox's tab-bypass/queue-discard behavior.
+/// bUnit component tests for the tabbed SetupWizard (spec 017, spec 022; spec 029 dropped the
+/// language step/sample-data option and the tab-bypass mechanism outright): tab-click
+/// navigation, Next validation gating, Sales Tax dropdown visibility, and Finish composing the
+/// full SetupRequest — including LanguageCode now sourced from the cascaded CultureProvider
+/// rather than a wizard field.
 /// </summary>
 public class SetupWizardTests : LocalizedTestContext
 {
     private readonly ISetupService _setupService = Substitute.For<ISetupService>();
-    private readonly IDebugDataSeeder _debugSeeder = Substitute.For<IDebugDataSeeder>();
     private readonly IAccountService _accountService = Substitute.For<IAccountService>();
     private readonly IOpeningBalanceService _openingBalanceService = Substitute.For<IOpeningBalanceService>();
 
     public SetupWizardTests()
     {
         Services.AddSingleton(_setupService);
-        Services.AddSingleton(_debugSeeder);
         Services.AddSingleton(_accountService);
         Services.AddSingleton(_openingBalanceService);
         _setupService.InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>())
@@ -40,6 +40,9 @@ public class SetupWizardTests : LocalizedTestContext
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.initialize", _ => true);
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.show", _ => true);
     }
+
+    private IRenderedComponent<CultureProvider> RenderWizardUnderCulture() =>
+        Render<CultureProvider>(p => p.AddChildContent<SetupWizard>());
 
     /// <summary>
     /// The localized "Organisation Settings" tab title, resolved through the same
@@ -61,15 +64,6 @@ public class SetupWizardTests : LocalizedTestContext
         cut.Find("#btn-next").Click(); // -> Opening Balances
         cut.Find("#btn-next").Click(); // -> Committee
         cut.Find("#btn-next").Click(); // -> Review
-    }
-
-    // spec 022: the checkbox now lives on Organisation Settings, and checking it before
-    // ever clicking Next makes the single Next click land directly on Review (FR-004).
-    private static async Task CheckSampleDataAndAdvanceToReviewAsync(IRenderedComponent<SetupWizard> cut, string orgName = "My Choir")
-    {
-        cut.Find("#orgName").Change(orgName);
-        await cut.Find("#seedData").ChangeAsync(true);
-        cut.Find("#btn-next").Click();
     }
 
     private static async Task QueueRealOpeningBalanceAsync(IRenderedComponent<SetupWizard> cut)
@@ -240,7 +234,8 @@ public class SetupWizardTests : LocalizedTestContext
     public async Task ValidSubmit_FinishesNormally_When_NoAccountsQueued()
     {
         var cut = Render<SetupWizard>();
-        await CheckSampleDataAndAdvanceToReviewAsync(cut);
+        AdvanceToReview(cut);
+        await QueueRealOpeningBalanceAsync(cut);
 
         await cut.Find("form").SubmitAsync();
 
@@ -300,25 +295,26 @@ public class SetupWizardTests : LocalizedTestContext
     }
 
     [Fact]
-    public void SeedDataCheckbox_RendersOnOrganisationSettingsTab_WhenSeederAvailable()
+    public void SeedDataCheckbox_IsAbsent_FromOrganisationSettingsTab()
     {
+        // The debug-only "Load sample data" control moved to /language-select entirely
+        // (spec 029 FR-014) — the wizard itself never resolves IDebugDataSeeder or renders it.
         var cut = Render<SetupWizard>();
 
-        // Visible immediately on the first tab — no navigation needed (FR-001).
-        cut.Find("#seedData");
+        Assert.Empty(cut.FindAll("#seedData"));
     }
 
     [Fact]
-    public async Task SeedingOverlay_AppearsOnlyOnceSeedingStarts()
+    public void Tabs_AreNeverDisabled()
     {
+        // The tab-bypass mechanism is gone outright (spec 029 FR-017) — every tab's Disabled
+        // parameter stays false regardless of anything entered on Organisation Settings.
         var cut = Render<SetupWizard>();
-        await CheckSampleDataAndAdvanceToReviewAsync(cut);
 
-        Assert.DoesNotContain("setup-seeding-overlay", cut.Markup);
-
-        await cut.Find("form").SubmitAsync();
-
-        await _debugSeeder.Received(1).SeedAsync(Arg.Any<IProgress<string>>(), Arg.Any<CancellationToken>());
+        foreach (var tab in cut.FindComponents<BlazorBootstrap.Tab>())
+        {
+            Assert.False(tab.Instance.Disabled);
+        }
     }
 
     [Fact]
@@ -351,7 +347,8 @@ public class SetupWizardTests : LocalizedTestContext
     public async Task ValidSubmit_FinishesWithNoTitles_When_QueueLeftEmpty()
     {
         var cut = Render<SetupWizard>();
-        await CheckSampleDataAndAdvanceToReviewAsync(cut);
+        AdvanceToReview(cut);
+        await QueueRealOpeningBalanceAsync(cut);
 
         await cut.Find("form").SubmitAsync();
 
@@ -361,7 +358,7 @@ public class SetupWizardTests : LocalizedTestContext
     }
 
     [Fact]
-    public async Task Finish_Blocked_When_NoBalanceEntered_AndSampleDataUnselected()
+    public async Task Finish_Blocked_When_NoBalanceEntered()
     {
         var cut = Render<SetupWizard>();
         AdvanceToReview(cut);
@@ -403,22 +400,6 @@ public class SetupWizardTests : LocalizedTestContext
     }
 
     [Fact]
-    public async Task Finish_Succeeds_When_SampleDataSelected_AndNoBalanceEntered()
-    {
-        var cut = Render<SetupWizard>();
-        await CheckSampleDataAndAdvanceToReviewAsync(cut);
-
-        await cut.Find("form").SubmitAsync();
-
-        await _setupService.Received(1).InitializeAsync(
-            Arg.Is<SetupRequest>(r => r!.QueuedOpeningBalances == null),
-            Arg.Any<CancellationToken>());
-
-        var nav = Services.GetRequiredService<NavigationManager>();
-        Assert.EndsWith("/dashboard", nav.Uri);
-    }
-
-    [Fact]
     public async Task InvalidFinish_ShowsBannerError_WhenAnEarlierTabIsInvalid()
     {
         // Blank the organisation name via reflection-free means: enter it, advance, then
@@ -434,125 +415,20 @@ public class SetupWizardTests : LocalizedTestContext
         await _setupService.DidNotReceive().InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>());
     }
 
-    // --- spec 022 US2: selecting sample data bypasses the three manual-entry tabs ---
-
     [Fact]
-    public async Task ChartOfAccountsOpeningBalancesCommittee_BecomeDisabled_WhenSampleDataChecked()
+    public async Task ValidSubmit_ComposesLanguageCode_FromCascadedCultureProvider()
     {
-        var cut = Render<SetupWizard>();
-        cut.Find("#orgName").Change("My Choir");
-        await cut.Find("#seedData").ChangeAsync(true);
-
-        // Checked at the component-parameter level, not via rendered CSS: BlazorBootstrap's
-        // Tab applies its own "disabled" class through the same JS interop that drives
-        // Bootstrap's tab.js, which these tests stub as a no-op (see the JSInterop.SetupVoid
-        // calls in the constructor) — the same MAUI-WebView-JS-interop gap CLAUDE.md's Known
-        // Gotchas documents for Radzen. The Disabled parameter itself — what this app's code
-        // actually controls — is what's asserted here.
-        var tabs = cut.FindComponents<BlazorBootstrap.Tab>();
-        Assert.True(tabs.Single(t => t.Instance.Title == "Chart of Accounts").Instance.Disabled);
-        Assert.True(tabs.Single(t => t.Instance.Title == "Opening Balances").Instance.Disabled);
-        Assert.True(tabs.Single(t => t.Instance.Title == "Committee").Instance.Disabled);
-        Assert.False(tabs.Single(t => t.Instance.Title == OrgSettingsTabTitle).Instance.Disabled);
-        Assert.False(tabs.Single(t => t.Instance.Title == "Review").Instance.Disabled);
-    }
-
-    [Fact]
-    public async Task ClickingBypassedTabHeader_DoesNotNavigate_WhenSampleDataChecked()
-    {
-        var cut = Render<SetupWizard>();
-        cut.Find("#orgName").Change("My Choir");
-        await cut.Find("#seedData").ChangeAsync(true);
-
-        cut.FindAll(".nav-link").First(a => a.TextContent.Contains("Chart of Accounts")).Click();
-
-        // Still on Organisation Settings — its field remains visible and Chart of
-        // Accounts' content was never activated (FR-003).
-        cut.Find("#orgName");
-        Assert.Empty(cut.FindAll("#account-name"));
-    }
-
-    [Fact]
-    public async Task Next_SkipsBypassedTabs_GoesStraightToReview_WhenSampleDataChecked()
-    {
-        var cut = Render<SetupWizard>();
-        cut.Find("#orgName").Change("My Choir");
-        await cut.Find("#seedData").ChangeAsync(true);
-
-        cut.Find("#btn-next").Click();
-
-        Assert.Contains("Review", cut.Markup);
-        cut.Find("#btn-finish");
-        Assert.Empty(cut.FindAll("#account-name"));
-    }
-
-    // --- spec 022 US3: toggling the checkbox keeps the wizard consistent ---
-
-    [Fact]
-    public async Task CheckingSampleData_DiscardsQueuedAccountBalanceAndCommitteeTitle()
-    {
-        var cut = Render<SetupWizard>();
-        AdvanceFromOrganisationSettings(cut, "My Choir"); // -> Chart of Accounts
-
-        var coaTab = cut.FindComponent<ChartOfAccountsTab>();
-        await cut.InvokeAsync(() => coaTab.Instance.OnAdd.InvokeAsync(
-            new QueuedAccountRequest(Guid.NewGuid(), "Petty Cash", Core.Enums.AccountType.Asset, false)));
-
-        cut.Find("#btn-next").Click(); // -> Opening Balances
-        await QueueRealOpeningBalanceAsync(cut);
-
-        cut.Find("#btn-next").Click(); // -> Committee
-        cut.Find("#committee-role-input").Input("Publicity Officer");
-        cut.Find("#committee-role-add-btn").Click();
-
-        // Navigate back to Organisation Settings (its header is never bypassed) and check
-        // the box — this must discard everything just queued above (FR-006).
-        cut.FindAll(".nav-link").First(a => a.TextContent.Contains(OrgSettingsTabTitle)).Click();
-        await cut.Find("#seedData").ChangeAsync(true);
-        cut.Find("#btn-next").Click(); // -> Review directly (tabs now bypassed)
-
-        Assert.Contains("None queued.", cut.Markup);
-        Assert.Contains("None.", cut.Markup);
-
-        await cut.Find("form").SubmitAsync();
+        var cut = RenderWizardUnderCulture();
+        var wizard = cut.FindComponent<SetupWizard>();
+        AdvanceFromOrganisationSettings(wizard, "My Choir"); // -> Chart of Accounts
+        wizard.Find("#btn-next").Click(); // -> Opening Balances
+        await QueueRealOpeningBalanceAsync(wizard);
+        wizard.Find("#btn-next").Click(); // -> Committee
+        wizard.Find("#btn-next").Click(); // -> Review
+        await wizard.Find("form").SubmitAsync();
 
         await _setupService.Received(1).InitializeAsync(
-            Arg.Is<SetupRequest>(r =>
-                r!.QueuedAccounts == null
-                && r.QueuedOpeningBalances == null
-                && r.CommitteeOfficeHolderTitles!.Count == 0),
+            Arg.Is<SetupRequest>(r => r!.LanguageCode == cut.Instance.CurrentCulture.Name),
             Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task UncheckingSampleData_MakesTabsAvailableAgain_StartingEmpty()
-    {
-        var cut = Render<SetupWizard>();
-        cut.Find("#orgName").Change("My Choir");
-        await cut.Find("#seedData").ChangeAsync(true);
-        await cut.Find("#seedData").ChangeAsync(false);
-
-        cut.Find("#btn-next").Click(); // -> Chart of Accounts (no longer bypassed)
-
-        cut.Find("#account-name"); // reachable and empty — no leftover queued account
-    }
-
-    [Fact]
-    public async Task Finish_Blocked_AfterUncheckingSampleData_WithNoBalanceEntered()
-    {
-        var cut = Render<SetupWizard>();
-        cut.Find("#orgName").Change("My Choir");
-        await cut.Find("#seedData").ChangeAsync(true);
-        await cut.Find("#seedData").ChangeAsync(false);
-
-        cut.Find("#btn-next").Click(); // -> Chart of Accounts
-        cut.Find("#btn-next").Click(); // -> Opening Balances
-        cut.Find("#btn-next").Click(); // -> Committee
-        cut.Find("#btn-next").Click(); // -> Review
-
-        await cut.Find("form").SubmitAsync();
-
-        Assert.Contains("opening balance", cut.Markup, StringComparison.OrdinalIgnoreCase);
-        await _setupService.DidNotReceive().InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>());
     }
 }

@@ -26,6 +26,7 @@ public sealed class V21_LocalizationStartupTests : IAsyncLifetime
 {
     private StageFrightDbContext _db = null!;
     private readonly ISystemCultureProvider _systemCulture = Substitute.For<ISystemCultureProvider>();
+    private readonly ILanguagePreferenceStore _preferenceStore = Substitute.For<ILanguagePreferenceStore>();
 
     public async ValueTask InitializeAsync()
     {
@@ -111,7 +112,7 @@ public sealed class V21_LocalizationStartupTests : IAsyncLifetime
     // --- helpers -------------------------------------------------------------------
 
     private LanguageProvider BuildLanguageProvider() =>
-        new(BuildSettingsService(), new SupportedLanguagesCatalog(), _systemCulture);
+        new(BuildSettingsService(), new SupportedLanguagesCatalog(), _systemCulture, _preferenceStore);
 
     private SettingsService BuildSettingsService()
     {

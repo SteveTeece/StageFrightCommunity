@@ -190,6 +190,7 @@ public static class MauiProgram
         // sequence, collapsing the shipped list to en-AU only (issue #360).
         services.AddSingleton<ISupportedLanguagesCatalog>(_ => new SupportedLanguagesCatalog());
         services.AddSingleton<ISystemCultureProvider, SystemCultureProvider>();
+        services.AddSingleton<ILanguagePreferenceStore, MauiLanguagePreferenceStore>();
         services.AddScoped<ILanguageProvider, LanguageProvider>();
 
         services.AddScoped<IAuditTrailService, AuditTrailService>();

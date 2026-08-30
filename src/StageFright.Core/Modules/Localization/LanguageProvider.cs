@@ -4,26 +4,31 @@ using StageFright.Core.Contracts;
 namespace StageFright.Core.Modules.Localization;
 
 /// <summary>
-/// Default <see cref="ILanguageProvider"/> — resolves the startup culture with the FR-023
-/// ladder: an explicit <c>Settings.LanguageCode</c> that names a shipped language, else the OS
-/// display language when the catalog has an exact or parent-language match, else <c>en-AU</c>.
-/// Every step is wrapped so an unreadable setting, an unknown stored code, or an unresolvable OS
-/// culture drops to the next step rather than throwing (FR-017).
+/// Default <see cref="ILanguageProvider"/> — resolves the startup culture with the FR-006 ladder
+/// (spec 029, extending spec 027's FR-023): an explicit <c>Settings.LanguageCode</c> that names a
+/// shipped language, else a recorded <see cref="ILanguagePreferenceStore"/> preference naming a
+/// shipped language, else the OS display language when the catalog has an exact or
+/// parent-language match, else <c>en-AU</c>. Every step is wrapped so an unreadable setting, an
+/// unknown stored code, or an unresolvable OS culture drops to the next step rather than throwing
+/// (FR-017).
 /// </summary>
 public sealed class LanguageProvider : ILanguageProvider
 {
     private readonly ISettingsService _settingsService;
     private readonly ISupportedLanguagesCatalog _catalog;
     private readonly ISystemCultureProvider _systemCultureProvider;
+    private readonly ILanguagePreferenceStore _languagePreferenceStore;
 
     public LanguageProvider(
         ISettingsService settingsService,
         ISupportedLanguagesCatalog catalog,
-        ISystemCultureProvider systemCultureProvider)
+        ISystemCultureProvider systemCultureProvider,
+        ILanguagePreferenceStore languagePreferenceStore)
     {
         _settingsService = settingsService;
         _catalog = catalog;
         _systemCultureProvider = systemCultureProvider;
+        _languagePreferenceStore = languagePreferenceStore;
     }
 
     public CultureInfo DefaultCulture =>
@@ -44,7 +49,21 @@ public sealed class LanguageProvider : ILanguageProvider
             // Settings unreadable (pre-first-run, DB error) — fall through to the OS language.
         }
 
-        // (2) OS display language, when a matching resource set ships (FR-023 / SC-010).
+        // (2) Recorded no-database preference, when it names a shipped language (spec 029,
+        // FR-006 step 2) — read before the database exists, e.g. a first launch that recorded a
+        // language on /language-select but hasn't completed setup yet.
+        try
+        {
+            var recordedChoice = _catalog.Find(_languagePreferenceStore.Get());
+            if (recordedChoice is not null && SafeCulture(recordedChoice.CultureCode) is { } recordedCulture)
+                return recordedCulture;
+        }
+        catch
+        {
+            // Preference store unreadable — fall through to the OS language.
+        }
+
+        // (3) OS display language, when a matching resource set ships (FR-023 / SC-010).
         try
         {
             var osMatch = MatchOperatingSystemCulture(_systemCultureProvider.GetUiCulture());
@@ -56,7 +75,7 @@ public sealed class LanguageProvider : ILanguageProvider
             // OS culture unavailable — fall through to the default.
         }
 
-        // (3) Ultimate fallback — en-AU.
+        // (4) Ultimate fallback — en-AU.
         return DefaultCulture;
     }
 

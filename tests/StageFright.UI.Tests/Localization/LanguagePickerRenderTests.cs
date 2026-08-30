@@ -99,30 +99,6 @@ public sealed class LanguagePickerRenderTests : LocalizedTestContext
             Arg.Any<CancellationToken>());
     }
 
-    [Fact]
-    public void SetupLanguageStep_ListsEndonymsAndPreSelectsTheDefault()
-    {
-        var model = new SetupFormModel();
-
-        var cut = Render<LanguageSelectionTab>(p => p.Add(x => x.Model, model));
-
-        var options = cut.Find("#languageSelect").QuerySelectorAll("option");
-        Assert.Equal(2, options.Length);
-        Assert.Contains("English", options[0].TextContent, StringComparison.OrdinalIgnoreCase);
-        Assert.Equal("en-AU", model.LanguageCode);
-    }
-
-    [Fact]
-    public void SetupLanguageStep_WritesTheChoiceOntoTheModel()
-    {
-        var model = new SetupFormModel();
-        var cut = Render<LanguageSelectionTab>(p => p.Add(x => x.Model, model));
-
-        cut.Find("#languageSelect").Change("fr-FR");
-
-        Assert.Equal("fr-FR", model.LanguageCode);
-    }
-
     private sealed class FakeCatalog : ISupportedLanguagesCatalog
     {
         public FakeCatalog(params string[] codes) =>

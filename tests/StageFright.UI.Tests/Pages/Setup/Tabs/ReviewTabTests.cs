@@ -81,34 +81,13 @@ public class ReviewTabTests : LocalizedTestContext
     }
 
     [Fact]
-    public void SeedDataChoice_RendersReadOnlyRow_WhenDebugSeederAvailable()
+    public void NeverRenders_LoadSampleDataRow()
     {
-        var cut = Render<ReviewTab>(p => p
-            .Add(x => x.Model, new SetupFormModel())
-            .Add(x => x.DebugSeederAvailable, true)
-            .Add(x => x.SeedWithTestData, true));
-
-        Assert.Contains("Load sample data", cut.Markup);
-        Assert.Contains("Yes", cut.Markup);
-    }
-
-    [Fact]
-    public void SeedDataChoice_RendersNothing_WhenDebugSeederUnavailable()
-    {
-        var cut = Render<ReviewTab>(p => p
-            .Add(x => x.Model, new SetupFormModel())
-            .Add(x => x.DebugSeederAvailable, false));
+        // The sample-data choice is no longer surfaced on Review at all (spec 029 FR-014) —
+        // it moved to the first-run screen, which never displays a review-style summary.
+        var cut = Render<ReviewTab>(p => p.Add(x => x.Model, new SetupFormModel()));
 
         Assert.DoesNotContain("Load sample data", cut.Markup);
-    }
-
-    [Fact]
-    public void SeedDataChoice_IsReadOnly_NoCheckboxRendered()
-    {
-        var cut = Render<ReviewTab>(p => p
-            .Add(x => x.Model, new SetupFormModel())
-            .Add(x => x.DebugSeederAvailable, true));
-
         Assert.Empty(cut.FindAll("#seedData"));
     }
 }

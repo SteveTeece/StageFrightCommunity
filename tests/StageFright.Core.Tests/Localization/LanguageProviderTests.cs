@@ -16,12 +16,43 @@ public sealed class LanguageProviderTests
 {
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
     private readonly ISystemCultureProvider _systemCulture = Substitute.For<ISystemCultureProvider>();
+    private readonly ILanguagePreferenceStore _preferenceStore = Substitute.For<ILanguagePreferenceStore>();
 
     [Fact]
     public async Task Should_ReturnExplicitChoice_When_LanguageCodeNamesShippedLanguage()
     {
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(SettingsWith("fr-FR"));
         _systemCulture.GetUiCulture().Returns(CultureInfo.GetCultureInfo("en-US"));
+        var provider = Build("en-AU", "fr-FR");
+
+        var culture = await provider.ResolveStartupCultureAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal("fr-FR", culture.Name);
+    }
+
+    [Fact]
+    public async Task Should_UseRecordedPreference_When_NoExplicitChoice_AndPreferenceNamesShippedLanguage()
+    {
+        _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(SettingsWith(null));
+        _preferenceStore.Get().Returns("fr-FR");
+        _systemCulture.GetUiCulture().Returns(CultureInfo.GetCultureInfo("en-US"));
+        var provider = Build("en-AU", "fr-FR");
+
+        var culture = await provider.ResolveStartupCultureAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal("fr-FR", culture.Name);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("mi-NZ")]
+    public async Task Should_FallThroughToOsLanguage_When_RecordedPreferenceIsBlankOrUnshipped(string? recorded)
+    {
+        _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(SettingsWith(null));
+        _preferenceStore.Get().Returns(recorded);
+        _systemCulture.GetUiCulture().Returns(CultureInfo.GetCultureInfo("fr-FR"));
         var provider = Build("en-AU", "fr-FR");
 
         var culture = await provider.ResolveStartupCultureAsync(TestContext.Current.CancellationToken);
@@ -125,7 +156,7 @@ public sealed class LanguageProviderTests
     // --- helpers -------------------------------------------------------------------
 
     private LanguageProvider Build(params string[] shippedCultureCodes) =>
-        new(_settingsService, new FakeCatalog(shippedCultureCodes), _systemCulture);
+        new(_settingsService, new FakeCatalog(shippedCultureCodes), _systemCulture, _preferenceStore);
 
     private static Task<Settings?> SettingsWith(string? languageCode) =>
         Task.FromResult<Settings?>(new Settings

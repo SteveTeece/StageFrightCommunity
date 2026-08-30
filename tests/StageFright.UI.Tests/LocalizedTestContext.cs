@@ -34,6 +34,7 @@ public abstract class LocalizedTestContext : RadzenGridTestContext
 
         Services.AddSingleton<ISupportedLanguagesCatalog, SupportedLanguagesCatalog>();
         Services.AddSingleton<ISystemCultureProvider, EnAuSystemCultureProvider>();
+        Services.AddSingleton<ILanguagePreferenceStore, NullLanguagePreferenceStore>();
         Services.AddScoped<ISettingsService, NullSettingsService>();
         Services.AddScoped<ILanguageProvider, LanguageProvider>();
 
@@ -53,5 +54,15 @@ public abstract class LocalizedTestContext : RadzenGridTestContext
         public Task<Settings?> GetAsync(CancellationToken ct = default) => Task.FromResult<Settings?>(null);
 
         public Task SaveAsync(Settings settings, CancellationToken ct = default) => Task.CompletedTask;
+    }
+
+    /// <summary>Stand-in for tests that do not register their own <see cref="ILanguagePreferenceStore"/> — reports no recorded preference.</summary>
+    private sealed class NullLanguagePreferenceStore : ILanguagePreferenceStore
+    {
+        public string? Get() => null;
+
+        public void Set(string cultureCode)
+        {
+        }
     }
 }
