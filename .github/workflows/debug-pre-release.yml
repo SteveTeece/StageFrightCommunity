@@ -168,10 +168,16 @@ jobs:
       # No CodesignKey/EnableCodeSigning -> the build applies only an ad-hoc signature
       # (all an internal test build needs; testers still have to clear the Gatekeeper
       # quarantine flag — see the release notes text in publish-release).
-      # Passing BOTH RIDs in a single RuntimeIdentifier value is how the .NET MAUI Mac
-      # Catalyst targets emit a universal (lipo'd x64 + arm64) binary. Release builds do
-      # this by default; a Debug build has to state it explicitly. See
-      # https://learn.microsoft.com/dotnet/maui/mac-catalyst/deployment/publish-unsigned
+      # A universal (lipo'd x64 + arm64) binary comes from the *plural* RuntimeIdentifiers
+      # property, NOT the singular RuntimeIdentifier: the .NET SDK validates a lone
+      # RuntimeIdentifier as ONE RID and rejects a `;`-list with
+      # "NETSDK1083: The specified RuntimeIdentifier 'maccatalyst-x64;maccatalyst-arm64'
+      # is not recognized". MAUI's Mac Catalyst targets only rewrite a `;`-list in the
+      # singular property into the plural one when it is set inside the .csproj (as MAUI
+      # does for Release builds); they can't touch it when it arrives as a command-line
+      # global property, so a Debug build has to pass RuntimeIdentifiers itself. See the
+      # dotnet/macios .NET 8 release notes ("set the RuntimeIdentifiers property
+      # (plural, don't confuse with RuntimeIdentifier)").
       # The two RIDs MUST be joined with the escaped `%3B`, never a literal `;`: MSBuild's
       # own -p: switch parser treats `;` as a property-list delimiter (shell quoting only
       # stops the *shell* from splitting, not MSBuild), so a literal `;` makes it read
@@ -183,7 +189,7 @@ jobs:
           -f ${{ env.TFM }}
           -c Debug
           -p:CreatePackage=false
-          -p:RuntimeIdentifier=maccatalyst-x64%3Bmaccatalyst-arm64
+          -p:RuntimeIdentifiers=maccatalyst-x64%3Bmaccatalyst-arm64
 
       # `ditto` is Apple's supported way to archive an .app bundle for transport — it
       # preserves the symlinks, permissions, and resource forks that a plain `zip`
