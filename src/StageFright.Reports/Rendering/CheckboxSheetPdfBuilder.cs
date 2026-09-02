@@ -1,6 +1,8 @@
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using StageFright.Core.Localization;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Rendering;
 
@@ -25,12 +27,17 @@ internal static class CheckboxSheetPdfBuilder
     private const int RowsPerColumn = 32;
 
     internal static byte[] Build(
+        ILocalizer localizer,
         string organizationName,
         string title,
         string dateLine,
         string checkboxColumnHeader,
         IReadOnlyList<(string LastName, string FirstName, bool Checked)> rows)
     {
+        var nameColumnHeader = localizer.Get<ReportsResource>("Reports_Sheet_NameColumn");
+        var pagePrefix = localizer.Get<ReportsResource>("Reports_Render_PagePrefix");
+        var pageSeparator = localizer.Get<ReportsResource>("Reports_Render_PageSeparator");
+
         var chunks = rows.Count == 0
             ? new[] { Array.Empty<(string LastName, string FirstName, bool Checked)>() }
             : rows.Chunk(RowsPerColumn * 2).ToArray();
@@ -57,19 +64,19 @@ internal static class CheckboxSheetPdfBuilder
                         if (left.Length == 0)
                             return;
 
-                        row.RelativeItem().Element(c => BuildMemberTable(c, left, checkboxColumnHeader));
+                        row.RelativeItem().Element(c => BuildMemberTable(c, left, nameColumnHeader, checkboxColumnHeader));
 
                         if (right.Length > 0)
-                            row.RelativeItem().Element(c => BuildMemberTable(c, right, checkboxColumnHeader));
+                            row.RelativeItem().Element(c => BuildMemberTable(c, right, nameColumnHeader, checkboxColumnHeader));
                         else
                             row.RelativeItem();
                     });
 
                     page.Footer().AlignRight().Text(text =>
                     {
-                        text.Span("Page ").FontSize(8);
+                        text.Span(pagePrefix).FontSize(8);
                         text.CurrentPageNumber().FontSize(8);
-                        text.Span(" of ").FontSize(8);
+                        text.Span(pageSeparator).FontSize(8);
                         text.TotalPages().FontSize(8);
                     });
                 });
@@ -91,6 +98,7 @@ internal static class CheckboxSheetPdfBuilder
     private static void BuildMemberTable(
         IContainer container,
         IReadOnlyList<(string LastName, string FirstName, bool Checked)> rows,
+        string nameColumnHeader,
         string checkboxColumnHeader)
     {
         container.Table(table =>
@@ -103,7 +111,7 @@ internal static class CheckboxSheetPdfBuilder
 
             table.Header(header =>
             {
-                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text("Name").Bold().FontSize(9);
+                header.Cell().Background(Colors.Grey.Lighten3).Padding(7).Text(nameColumnHeader).Bold().FontSize(9);
                 header.Cell().Background(Colors.Grey.Lighten3).Padding(7).AlignCenter().Text(checkboxColumnHeader).Bold().FontSize(9);
             });
 

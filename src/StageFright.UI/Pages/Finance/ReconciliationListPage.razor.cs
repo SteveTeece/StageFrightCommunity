@@ -1,9 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.UI.Resources.Strings;
 using CoreValidationException = StageFright.Core.Exceptions.ValidationException;
 
 namespace StageFright.UI.Pages.Finance;
@@ -13,6 +16,9 @@ public partial class ReconciliationListPage : ComponentBase
     [Inject] private IAccountService AccountService { get; set; } = null!;
     [Inject] private IBankReconciliationService ReconciliationService { get; set; } = null!;
     [Inject] private NavigationManager Navigation { get; set; } = null!;
+    [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private bool _loading = true;
     private bool _starting;
@@ -25,6 +31,11 @@ public partial class ReconciliationListPage : ComponentBase
 
     private StartModel _startModel = new();
 
+    /// <summary>"A draft reconciliation to {date} is in progress." banner text.</summary>
+    private string DraftInProgressText() =>
+        Loc.Get<FinanceResource>("Finance_Reconciliation_DraftInProgress",
+            _draft?.StatementDate.ToString("d MMM yyyy") ?? string.Empty);
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -33,7 +44,7 @@ public partial class ReconciliationListPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load bank accounts: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_LoadAccountsError", ex.Message);
         }
         finally
         {
@@ -64,7 +75,7 @@ public partial class ReconciliationListPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load reconciliations: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_LoadError", ex.Message);
         }
     }
 
@@ -93,7 +104,7 @@ public partial class ReconciliationListPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to start reconciliation: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_StartError", ex.Message);
         }
         finally
         {

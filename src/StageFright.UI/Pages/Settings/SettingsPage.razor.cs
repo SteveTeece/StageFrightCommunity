@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using StageFright.Plugins.Contracts;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Settings;
 
@@ -12,6 +14,7 @@ public partial class SettingsPage : ComponentBase
     [Inject] private NavigationManager Nav { get; set; } = null!;
     [Inject] private IEnumerable<ISettingsTabProvider> TabProviders { get; set; } = null!;
     [Inject] private ILogger<SettingsPage> Logger { get; set; } = null!;
+    [Inject] private IStringLocalizer<SettingsResource> L { get; set; } = null!;
 
     private int DefaultTabIndex { get; set; }
     private IReadOnlyList<ISettingsTabProvider> PluginTabs { get; set; } = Array.Empty<ISettingsTabProvider>();

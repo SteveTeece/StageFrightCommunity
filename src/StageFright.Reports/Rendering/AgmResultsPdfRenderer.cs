@@ -1,20 +1,30 @@
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Agm;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Rendering;
 
 /// <summary>
 /// Renders a printable AGM results report to PDF bytes directly with QuestPDF — a plain
 /// position list, not a checkbox roll, so it doesn't use <see cref="CheckboxSheetPdfBuilder"/>;
-/// follows <see cref="PdfReportRenderer"/>'s page/header/footer layout instead.
+/// follows <see cref="PdfReportRenderer"/>'s page/header/footer layout instead. All page chrome
+/// is sourced from <see cref="ReportsResource"/>; position labels and member names render verbatim.
 /// </summary>
 public class AgmResultsPdfRenderer : IAgmResultsPdfRenderer
 {
+    private readonly ILocalizer _localizer;
+
     static AgmResultsPdfRenderer()
     {
         QuestPDF.Settings.License = LicenseType.Community;
+    }
+
+    public AgmResultsPdfRenderer(ILocalizer localizer)
+    {
+        _localizer = localizer;
     }
 
     public byte[] Render(AgmResultsData data, string organizationName = "")
@@ -31,21 +41,23 @@ public class AgmResultsPdfRenderer : IAgmResultsPdfRenderer
                 {
                     if (!string.IsNullOrWhiteSpace(organizationName))
                         col.Item().Text(organizationName).FontSize(22).Bold();
-                    col.Item().Text("AGM Results").FontSize(16).Bold();
-                    col.Item().Text($"Annual General Meeting: {data.AgmDate:d MMMM yyyy}")
+                    col.Item().Text(_localizer.Get<ReportsResource>("Reports_AgmResults_Title")).FontSize(16).Bold();
+                    col.Item().Text(_localizer.Get<ReportsResource>(
+                            "Reports_AgmResults_MeetingDateLine", data.AgmDate.ToString("d MMMM yyyy")))
                         .FontSize(11).FontColor(Colors.Grey.Darken1);
-                    col.Item().Text($"Attendance: {data.AttendedCount} of {data.TotalCount} members attended")
+                    col.Item().Text(_localizer.Get<ReportsResource>(
+                            "Reports_AgmResults_AttendanceLine", data.AttendedCount, data.TotalCount))
                         .FontSize(11).FontColor(Colors.Grey.Darken1);
                     col.Item().PaddingTop(4).LineHorizontal(0.5f);
                 });
 
                 page.Content().PaddingTop(10).Column(col =>
                 {
-                    col.Item().Text("Elected Positions").FontSize(12).Bold();
+                    col.Item().Text(_localizer.Get<ReportsResource>("Reports_AgmResults_ElectedPositionsHeading")).FontSize(12).Bold();
 
                     if (data.PositionLines.Count == 0 && data.GeneralCommitteeMemberNames.Count == 0)
                     {
-                        col.Item().PaddingTop(4).Text("No positions recorded.");
+                        col.Item().PaddingTop(4).Text(_localizer.Get<ReportsResource>("Reports_AgmResults_NoPositions"));
                         return;
                     }
 
@@ -53,14 +65,14 @@ public class AgmResultsPdfRenderer : IAgmResultsPdfRenderer
                     {
                         col.Item().PaddingTop(4).Text(t =>
                         {
-                            t.Span($"{line.Label}: ").Bold();
+                            t.Span(_localizer.Get<ReportsResource>("Reports_AgmResults_PositionLabel", line.Label)).Bold();
                             t.Span(line.MemberText);
                         });
                     }
 
                     if (data.GeneralCommitteeMemberNames.Count > 0)
                     {
-                        col.Item().PaddingTop(4).Text("General Committee Member:").Bold();
+                        col.Item().PaddingTop(4).Text(_localizer.Get<ReportsResource>("Reports_AgmResults_GeneralCommitteeMemberLabel")).Bold();
                         foreach (var name in data.GeneralCommitteeMemberNames)
                         {
                             col.Item().PaddingTop(1).PaddingLeft(10).Text(name);
@@ -68,11 +80,13 @@ public class AgmResultsPdfRenderer : IAgmResultsPdfRenderer
                     }
                 });
 
+                var pagePrefix = _localizer.Get<ReportsResource>("Reports_Render_PagePrefix");
+                var pageSeparator = _localizer.Get<ReportsResource>("Reports_Render_PageSeparator");
                 page.Footer().AlignRight().Text(text =>
                 {
-                    text.Span("Page ").FontSize(8);
+                    text.Span(pagePrefix).FontSize(8);
                     text.CurrentPageNumber().FontSize(8);
-                    text.Span(" of ").FontSize(8);
+                    text.Span(pageSeparator).FontSize(8);
                     text.TotalPages().FontSize(8);
                 });
             });

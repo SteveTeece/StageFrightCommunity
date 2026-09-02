@@ -1,4 +1,6 @@
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Members;
 
@@ -8,6 +10,13 @@ namespace StageFright.Core.Modules.Members;
 /// </summary>
 public class AgeCalculationService
 {
+    private readonly ILocalizer _localizer;
+
+    public AgeCalculationService(ILocalizer localizer)
+    {
+        _localizer = localizer;
+    }
+
     /// <summary>
     /// Returns age in whole years, or null when dob is null.
     /// </summary>
@@ -44,19 +53,19 @@ public class AgeCalculationService
 
         if (dob.Value >= today)
             throw new ValidationException(
-                "Date of birth must be in the past.",
+                _localizer.Get<ValidationResource>("Validation_Member_DateOfBirthInPast"),
                 "Member", nameof(ValidateDateOfBirth));
 
         var age = Calculate(dob, today)!.Value;
 
         if (age > maxAgeRangeYears)
             throw new ValidationException(
-                $"Date of birth implies an age of {age} years, which exceeds the maximum allowed range of {maxAgeRangeYears} years.",
+                _localizer.Get<ValidationResource>("Validation_Member_AgeExceedsMaxRange", age, maxAgeRangeYears),
                 "Member", nameof(ValidateDateOfBirth));
 
         if (minimumMemberAge > 0 && age < minimumMemberAge)
             throw new ValidationException(
-                $"Member must be at least {minimumMemberAge} years of age.",
+                _localizer.Get<ValidationResource>("Validation_Member_BelowMinimumAge", minimumMemberAge),
                 "Member", nameof(ValidateDateOfBirth));
     }
 }

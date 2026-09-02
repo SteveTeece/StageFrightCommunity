@@ -2,6 +2,8 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Events;
 
@@ -17,19 +19,22 @@ public class EventService : IEventService
     private readonly IMemberRepository _memberRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILocalizer _localizer;
 
     public EventService(
         IEventRepository eventRepo,
         IParticipationRepository participationRepo,
         IMemberRepository memberRepo,
         IAuditTrailService audit,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILocalizer localizer)
     {
         _eventRepo = eventRepo;
         _participationRepo = participationRepo;
         _memberRepo = memberRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
+        _localizer = localizer;
     }
 
     public async Task<Event> ScheduleAsync(ScheduleEventRequest request, CancellationToken ct = default)
@@ -77,7 +82,7 @@ public class EventService : IEventService
 
         if (evt.Date.Date > DateTime.Today)
             throw new ValidationException(
-                "Participation cannot be recorded before the event date.",
+                _localizer.Get<ValidationResource>("Validation_Event_ParticipationBeforeEventDate"),
                 "Event", nameof(RecordParticipationAsync), eventId);
 
         int participatedCount = 0;

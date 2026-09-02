@@ -12,7 +12,7 @@ namespace StageFright.UI.Tests.Pages.Settings;
 /// Uses a stateful fake ISettingsService (rather than an NSubstitute mock) so GetAsync
 /// reflects prior SaveAsync calls, faithfully simulating the shared underlying DB row.
 /// </summary>
-public class SettingsCrossTabSaveTests : BunitContext
+public class SettingsCrossTabSaveTests : LocalizedTestContext
 {
     private sealed class FakeSettingsService : ISettingsService
     {

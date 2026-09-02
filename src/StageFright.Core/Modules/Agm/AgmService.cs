@@ -2,6 +2,8 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Agm;
 
@@ -19,6 +21,7 @@ public class AgmService : IAgmService
     private readonly ISettingsService _settingsService;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILocalizer _localizer;
 
     public AgmService(
         IAgmRepository agmRepo,
@@ -27,7 +30,8 @@ public class AgmService : IAgmService
         ICommitteePositionRecordRepository positionRepo,
         ISettingsService settingsService,
         IAuditTrailService audit,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILocalizer localizer)
     {
         _agmRepo = agmRepo;
         _attendanceRepo = attendanceRepo;
@@ -36,13 +40,14 @@ public class AgmService : IAgmService
         _settingsService = settingsService;
         _audit = audit;
         _unitOfWork = unitOfWork;
+        _localizer = localizer;
     }
 
     public async Task<AnnualGeneralMeeting> ScheduleAsync(ScheduleAgmRequest request, CancellationToken ct = default)
     {
         if (await _agmRepo.ExistsForYearAsync(request.Date.Year, ct))
             throw new ValidationException(
-                $"An AGM already exists for {request.Date.Year}. Archive it before scheduling a replacement.",
+                _localizer.Get<ValidationResource>("Validation_Agm_AlreadyExistsForYear", request.Date.Year),
                 nameof(AnnualGeneralMeeting), nameof(ScheduleAsync));
 
         var now = DateTime.UtcNow;
@@ -73,12 +78,12 @@ public class AgmService : IAgmService
 
         if (agm.IsRecorded)
             throw new ValidationException(
-                "This AGM has already been recorded.",
+                _localizer.Get<ValidationResource>("Validation_Agm_AlreadyRecorded"),
                 nameof(AnnualGeneralMeeting), nameof(RecordAsync), agmId);
 
         if (agm.Date.Date > DateTime.Today)
             throw new ValidationException(
-                "Attendance and elections cannot be recorded before the AGM's meeting date.",
+                _localizer.Get<ValidationResource>("Validation_Agm_RecordBeforeMeetingDate"),
                 nameof(AnnualGeneralMeeting), nameof(RecordAsync), agmId);
 
         var assignedMemberIds = new List<Guid>();
@@ -88,7 +93,7 @@ public class AgmService : IAgmService
         var duplicate = assignedMemberIds.GroupBy(id => id).FirstOrDefault(g => g.Count() > 1);
         if (duplicate is not null)
             throw new ValidationException(
-                "A member cannot hold more than one committee assignment from the same AGM.",
+                _localizer.Get<ValidationResource>("Validation_Agm_DuplicateCommitteeAssignment"),
                 nameof(AnnualGeneralMeeting), nameof(RecordAsync));
 
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
@@ -203,7 +208,7 @@ public class AgmService : IAgmService
 
         var termId = outgoing.CommitteeTermId
             ?? throw new DataIntegrityException(
-                "The outgoing position record does not belong to a committee term.",
+                _localizer.Get<ValidationResource>("Validation_Agm_OutgoingPositionNoTerm"),
                 nameof(CommitteePositionRecord), nameof(RecordSpecialElectionAsync), outgoing.Id);
 
         var term = await _termRepo.GetByIdAsync(termId, ct)
@@ -211,13 +216,13 @@ public class AgmService : IAgmService
 
         if (term.EndDate is not null)
             throw new DataIntegrityException(
-                "This committee term has already been closed by a later AGM; a special election can no longer be recorded against it.",
+                _localizer.Get<ValidationResource>("Validation_Agm_TermAlreadyClosed"),
                 nameof(CommitteeTerm), nameof(RecordSpecialElectionAsync), term.Id);
 
         var existingOpenForIncoming = await _positionRepo.GetOpenByMemberInTermAsync(term.Id, request.IncomingMemberId, ct);
         if (existingOpenForIncoming is not null)
             throw new ValidationException(
-                "The incoming member already holds an open committee slot in this term.",
+                _localizer.Get<ValidationResource>("Validation_Agm_IncomingMemberAlreadyOnCommittee"),
                 nameof(CommitteePositionRecord), nameof(RecordSpecialElectionAsync), request.IncomingMemberId);
 
         CommitteePositionRecord savedIncoming = null!;

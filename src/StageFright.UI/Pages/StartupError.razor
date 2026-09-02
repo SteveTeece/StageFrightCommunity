@@ -3,9 +3,9 @@
 
 <div class="container mt-5">
     <div class="alert alert-danger" role="alert">
-        <h4 class="alert-heading">Database Error</h4>
+        <h4 class="alert-heading">@L["Shared_StartupError_Heading"]</h4>
         <p>
-            StageFright Community could not open its database. The file may be corrupted or inaccessible.
+            @L["Shared_StartupError_Body"]
         </p>
         @if (!string.IsNullOrEmpty(_errorDetail))
         {
@@ -16,17 +16,17 @@
 
     @if (!string.IsNullOrEmpty(_dbPath))
     {
-        <p class="text-muted small">Database location: <code>@_dbPath</code></p>
+        <p class="text-muted small">@L["Shared_StartupError_DbLocationLabel"] <code>@_dbPath</code></p>
     }
 
     <div class="d-flex gap-2 mt-3">
         @if (!string.IsNullOrEmpty(_dbPath))
         {
             <button class="btn btn-outline-secondary" type="button" @onclick="OpenFolderAsync">
-                Open File Location
+                @L["Shared_StartupError_OpenFolderButton"]
             </button>
             <button class="btn btn-warning" type="button" @onclick="RecreateAsync" disabled="@_recreating">
-                @(_recreating ? "Creating new database…" : "Create New Database")
+                @(_recreating ? L["Shared_StartupError_RecreatingText"] : L["Shared_StartupError_RecreateButton"])
             </button>
         }
     </div>

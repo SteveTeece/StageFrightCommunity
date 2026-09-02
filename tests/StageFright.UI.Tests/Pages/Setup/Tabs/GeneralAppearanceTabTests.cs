@@ -10,7 +10,7 @@ namespace StageFright.UI.Tests.Pages.Setup.Tabs;
 /// Rendered inside an EditForm since its InputText/ValidationMessage need a cascaded
 /// EditContext (built manually — EditForm.ChildContent is generic). The theme dropdown
 /// (US6) has its own test coverage in ThemeSelectionTabTests.</summary>
-public class GeneralAppearanceTabTests : BunitContext
+public class GeneralAppearanceTabTests : LocalizedTestContext
 {
     private static RenderFragment<EditContext> GeneralTab(SetupFormModel model) => _ => builder =>
     {

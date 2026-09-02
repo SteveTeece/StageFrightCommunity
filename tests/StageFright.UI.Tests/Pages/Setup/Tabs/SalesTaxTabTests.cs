@@ -11,7 +11,7 @@ namespace StageFright.UI.Tests.Pages.Setup.Tabs;
 /// treatment, and the clear-on-toggle-off behavior, relocated unchanged from the old
 /// wizard's Step 3. Rendered inside an EditForm since its Input* components need a
 /// cascaded EditContext (built manually — EditForm.ChildContent is generic).</summary>
-public class SalesTaxTabTests : BunitContext
+public class SalesTaxTabTests : LocalizedTestContext
 {
     private IRenderedComponent<EditForm> RenderInForm(SetupFormModel model) =>
         Render<EditForm>(p => p

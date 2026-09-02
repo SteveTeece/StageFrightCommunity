@@ -17,7 +17,7 @@ namespace StageFright.UI.Tests.Pages.Finance;
 /// (FR-008/FR-009/FR-011), and that recording a member payment happens inline on the
 /// Outstanding tab (no separate "Record Member Payment" tab).
 /// </summary>
-public class FinancePageTests : BunitContext
+public class FinancePageTests : LocalizedTestContext
 {
     private readonly IMemberBalanceService _memberBalanceService = Substitute.For<IMemberBalanceService>();
     private readonly IPaymentService _paymentService = Substitute.For<IPaymentService>();

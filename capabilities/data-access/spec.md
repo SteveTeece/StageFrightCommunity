@@ -111,7 +111,7 @@ Member and account balance queries (`GetMemberBalanceAsync`, `GetAccountBalanceA
 - **THEN** a `ValidationException` naming the reason is thrown before any database write is attempted
 
 #### Scenario: archiving a system account
-- **WHEN** any of the seeded system accounts (Cash, Member Receivable, Bad Debt Expense, GST Collected/Paid, Opening Balance Equity, Accumulated Surplus) is archived
+- **WHEN** any of the seeded system accounts (Cash, Member Receivable, Bad Debt Expense, Tax Collected, Tax Receivable, Opening Balance Equity, Accumulated Surplus) is archived
 - **THEN** the operation is rejected regardless of whether it is referenced by transactions
 
 ### Account numbers are allocated deterministically within a fixed range per account type

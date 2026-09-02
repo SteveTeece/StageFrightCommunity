@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Modules.Rehearsals;
+using StageFright.UI.Resources.Strings;
 using DomainValidationException = StageFright.Core.Exceptions.ValidationException;
 
 namespace StageFright.UI.Pages.Rehearsals;
@@ -10,6 +12,8 @@ public partial class RehearsalForm
 {
     [Inject] private IRehearsalService RehearsalService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private IStringLocalizer<RehearsalsResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
 
     private readonly RehearsalFormModel _model = new();
     private string _timeString = "19:00";
@@ -52,9 +56,9 @@ public partial class RehearsalForm
         {
             _errorMessage = ex.Message;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _errorMessage = $"An unexpected error occurred: {ex.Message}";
+            _errorMessage = Shared["Shared_Error_Unexpected"];
         }
         finally
         {
@@ -66,7 +70,7 @@ public partial class RehearsalForm
 
     private sealed class RehearsalFormModel
     {
-        [Required(ErrorMessage = "Date is required.")]
+        [Required]
         public DateTime Date { get; set; } = DateTime.UtcNow.Date;
 
         public string? Notes { get; set; }

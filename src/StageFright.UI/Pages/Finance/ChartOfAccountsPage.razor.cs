@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
 using StageFright.Reports.Rendering;
+using StageFright.UI.Resources.Strings;
 using StageFright.UI.Shared;
 using CoreValidationException = StageFright.Core.Exceptions.ValidationException;
 
@@ -19,6 +22,13 @@ public partial class ChartOfAccountsPage : ComponentBase
     [Inject] private IPdfReportRenderer PdfRenderer { get; set; } = null!;
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private ILogger<ChartOfAccountsPage> Logger { get; set; } = null!;
+    [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
+
+    /// <summary>aria-label for the inline rename field.</summary>
+    private string RenameAriaLabel(string name) =>
+        Loc.Get<FinanceResource>("Finance_Coa_RenameAriaLabel", name);
 
     private bool _loading = true;
     private string? _errorMessage;
@@ -54,7 +64,7 @@ public partial class ChartOfAccountsPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load accounts: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Coa_LoadError", ex.Message);
         }
         finally
         {
@@ -79,7 +89,7 @@ public partial class ChartOfAccountsPage : ComponentBase
                 newAccountModel.Name!,
                 newAccountModel.Type,
                 newAccountModel.Type == AccountType.Asset && newAccountModel.IsBankAccount);
-            _successMessage = $"Account '{created.Name}' created with number {created.AccountNumber}.";
+            _successMessage = Loc.Get<FinanceResource>("Finance_Coa_CreatedMessage", created.Name, created.AccountNumber);
             await LoadAccountsAsync();
         }
         catch (CoreValidationException ex)
@@ -88,7 +98,7 @@ public partial class ChartOfAccountsPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to create account: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Coa_CreateError", ex.Message);
         }
     }
 
@@ -113,7 +123,7 @@ public partial class ChartOfAccountsPage : ComponentBase
         try
         {
             await AccountService.UpdateAsync(id, _editName);
-            _successMessage = "Account renamed.";
+            _successMessage = L["Finance_Coa_RenamedMessage"];
             _editingId = null;
             await LoadAccountsAsync();
         }
@@ -123,7 +133,7 @@ public partial class ChartOfAccountsPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to rename account: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Coa_RenameError", ex.Message);
         }
     }
 
@@ -135,7 +145,7 @@ public partial class ChartOfAccountsPage : ComponentBase
         try
         {
             await AccountService.ArchiveAsync(id);
-            _successMessage = "Account archived.";
+            _successMessage = L["Finance_Coa_ArchivedMessage"];
             await LoadAccountsAsync();
         }
         catch (CoreValidationException ex)
@@ -144,7 +154,7 @@ public partial class ChartOfAccountsPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to archive account: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Coa_ArchiveError", ex.Message);
         }
     }
 
@@ -156,12 +166,12 @@ public partial class ChartOfAccountsPage : ComponentBase
         try
         {
             await AccountService.RestoreAsync(id);
-            _successMessage = "Account restored.";
+            _successMessage = L["Finance_Coa_RestoredMessage"];
             await LoadAccountsAsync();
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to restore account: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Coa_RestoreError", ex.Message);
         }
     }
 
@@ -175,7 +185,7 @@ public partial class ChartOfAccountsPage : ComponentBase
             var provider = ReportProviderRegistry.GetProvider("chart-of-accounts");
             if (provider == null)
             {
-                _errorMessage = "Unable to print. Please try again.";
+                _errorMessage = L["Finance_Coa_PrintError"];
                 return;
             }
 
@@ -195,7 +205,7 @@ public partial class ChartOfAccountsPage : ComponentBase
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to print chart of accounts");
-            _errorMessage = "Unable to print. Please try again.";
+            _errorMessage = L["Finance_Coa_PrintError"];
         }
     }
 }

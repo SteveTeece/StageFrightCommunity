@@ -20,7 +20,7 @@ namespace StageFright.UI.Tests.Shared;
 /// - Print button invokes IPdfReportRenderer
 /// - Export button invokes ICsvReportExporter
 /// </summary>
-public class ReportViewerTests : RadzenGridTestContext
+public class ReportViewerTests : LocalizedTestContext
 {
     private readonly IReportProvider _provider = Substitute.For<IReportProvider>();
     private readonly IPdfReportRenderer _pdfRenderer = Substitute.For<IPdfReportRenderer>();

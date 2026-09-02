@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Localization;
 using StageFright.Reports.Rendering;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Events;
 
@@ -16,11 +19,18 @@ public partial class EventDetail
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
     [Inject] private ILogger<EventDetail> Logger { get; set; } = null!;
+    [Inject] private IStringLocalizer<EventsResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private bool _loading = true;
     private Event? _event;
     private string? _errorMessage;
     private string? _printMessage;
+
+    /// <summary>Browser tab title — the event date, or a fallback before it loads.</summary>
+    private string PageTitleText() =>
+        $"{(_event is not null ? _event.Date.ToString("d MMM yyyy") : L["Events_Detail_PageTitleFallback"].Value)} — StageFright Community";
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,11 +38,11 @@ public partial class EventDetail
         {
             _event = await EventService.GetByIdWithDetailsAsync(Id);
             if (_event is null)
-                _errorMessage = "Event not found.";
+                _errorMessage = L["Events_Detail_NotFoundError"];
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load event details: {ex.Message}";
+            _errorMessage = Loc.Get<EventsResource>("Events_Detail_LoadError", ex.Message);
         }
         finally
         {
@@ -50,7 +60,7 @@ public partial class EventDetail
 
             if (sheetData.Members.Count == 0)
             {
-                _printMessage = "No active members found — nothing to print.";
+                _printMessage = L["Events_Detail_PrintNoMembers"];
                 return;
             }
 
@@ -66,7 +76,7 @@ public partial class EventDetail
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to print attendance sheet for event {EventId}", Id);
-            _printMessage = "Unable to print attendance sheet. Please try again.";
+            _printMessage = L["Events_Detail_PrintSheetError"];
         }
     }
 }

@@ -2,35 +2,35 @@
 
 @if (_loading)
 {
-    <span class="text-muted small">Loading...</span>
+    <span class="text-muted small">@Shared["Shared_Common_Loading"]</span>
 }
 else if (_error)
 {
-    <span class="text-danger small">Unable to load</span>
+    <span class="text-danger small">@Shared["Shared_Tile_LoadError"]</span>
 }
 else
 {
     <div class="tile-stats">
         <div>
             <div class="tile-stat-value">@_upcomingCount</div>
-            <div class="tile-stat-label">Upcoming</div>
+            <div class="tile-stat-label">@L["Rehearsals_Tile_UpcomingLabel"]</div>
         </div>
         <div>
             <div class="tile-stat-value accent">@(_nextDate?.ToString("MMM d") ?? "—")</div>
-            <div class="tile-stat-label">Next</div>
+            <div class="tile-stat-label">@L["Rehearsals_Tile_NextLabel"]</div>
         </div>
     </div>
     @if (HasLastAttendance)
     {
         <div class="tile-note">
-            Last attendance
+            @L["Rehearsals_Tile_LastAttendanceLabel"]
             @if (_recordCount > 0)
             {
-                <b class="@(IsGoodRate ? "text-success" : "")">@_attendedCount of @_recordCount (@($"{_lastRate:F0}")%)</b>
+                <b class="@(IsGoodRate ? "text-success" : "")">@AttendanceDetailText()</b>
             }
             else
             {
-                <b class="@(IsGoodRate ? "text-success" : "")">@($"{_lastRate:F0}")%</b>
+                <b class="@(IsGoodRate ? "text-success" : "")">@AttendanceRateText()</b>
             }
         </div>
         <div class="tile-progress">
@@ -39,6 +39,6 @@ else
     }
     else
     {
-        <div class="tile-note">No attendance recorded yet</div>
+        <div class="tile-note">@L["Rehearsals_Tile_NoAttendance"]</div>
     }
 }

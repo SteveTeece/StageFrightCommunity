@@ -44,7 +44,7 @@ public class BankDepositServiceTests : TestBase
                 MakeAccount(NonBankAssetAccountId, "Equipment", "1300")
             });
 
-        _sut = new BankDepositService(_accountRepo, _glRepo, _journalRepo, _audit, _unitOfWork);
+        _sut = new BankDepositService(_accountRepo, _glRepo, _journalRepo, _audit, _unitOfWork, RealLocalizer.Instance);
     }
 
     // --- Validation ---

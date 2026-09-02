@@ -1,10 +1,10 @@
 @page "/events"
 
-<PageTitle>Events — StageFright Community</PageTitle>
+<PageTitle>@L["Events_List_PageTitle"]</PageTitle>
 
 <div class="page-header d-flex align-items-center justify-content-between mb-2">
-    <h1 class="h3 mb-0">Events</h1>
-    <button class="btn btn-primary btn-sm" @onclick="AddEvent">Schedule Event</button>
+    <h1 class="h3 mb-0">@L["Events_List_Heading"]</h1>
+    <button class="btn btn-primary btn-sm" @onclick="AddEvent">@L["Events_List_ScheduleButton"]</button>
 </div>
 
 <div class="mb-2">
@@ -14,25 +14,25 @@
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
             </svg>
         </span>
-        <input type="search" class="form-control form-control-sm" placeholder="Search by date, type or notes…"
-               aria-label="Search events"
+        <input type="search" class="form-control form-control-sm" placeholder="@L["Events_List_SearchPlaceholder"]"
+               aria-label="@L["Events_List_SearchAriaLabel"]"
                @bind="_searchTerm" @bind:event="oninput" />
     </div>
 </div>
 
 @if (_loading)
 {
-    <p role="status" aria-live="polite">Loading events…</p>
+    <p role="status" aria-live="polite">@L["Events_List_LoadingText"]</p>
 }
 else if (!DisplayItems.Any())
 {
     @if (_events.Count == 0)
     {
-        <p class="text-muted">No events scheduled yet.</p>
+        <p class="text-muted">@L["Events_List_EmptyNone"]</p>
     }
     else
     {
-        <p class="text-muted">No events match "<strong>@_searchTerm</strong>".</p>
+        <p class="text-muted">@NoMatchText()</p>
     }
 }
 else
@@ -41,23 +41,23 @@ else
                     AllowSorting="true" AllowPaging="true" PageSize="15"
                     class="rz-shadow-0">
         <Columns>
-            <RadzenDataGridColumn TItem="CombinedEventListItem" Property="Date" Title="Date" Width="130px">
+            <RadzenDataGridColumn TItem="CombinedEventListItem" Property="Date" Title="@L["Events_List_DateColumn"]" Width="130px">
                 <Template Context="item">
                     <a href="@item.DetailUrl" class="text-decoration-none">@item.Date.ToString("d MMM yyyy")</a>
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="CombinedEventListItem" Property="TypeName" Title="Event Type" Width="150px" />
-            <RadzenDataGridColumn TItem="CombinedEventListItem" Title="Status" Width="120px" Sortable="false">
+            <RadzenDataGridColumn TItem="CombinedEventListItem" Property="TypeName" Title="@L["Events_List_EventTypeColumn"]" Width="150px" />
+            <RadzenDataGridColumn TItem="CombinedEventListItem" Title="@Shared["Shared_Table_StatusColumn"]" Width="120px" Sortable="false">
                 <Template Context="item">
                     @if (item.Kind == CombinedEventListItemKind.Agm)
                     {
                         @if (item.IsAgmRecorded == true)
                         {
-                            <span class="badge bg-success">Recorded</span>
+                            <span class="badge bg-success">@L["Events_Status_Recorded"]</span>
                         }
                         else
                         {
-                            <span class="badge bg-warning text-dark">Scheduled</span>
+                            <span class="badge bg-warning text-dark">@L["Events_Status_Scheduled"]</span>
                         }
                     }
                     else
@@ -68,13 +68,13 @@ else
                         }
                         else
                         {
-                            <span class="text-muted small">Not recorded</span>
+                            <span class="text-muted small">@L["Events_Status_NotRecorded"]</span>
                         }
                     }
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="CombinedEventListItem" Property="Notes" Title="Notes" />
-            <RadzenDataGridColumn TItem="CombinedEventListItem" Title="Actions" Width="240px" Sortable="false">
+            <RadzenDataGridColumn TItem="CombinedEventListItem" Property="Notes" Title="@L["Events_List_NotesColumn"]" />
+            <RadzenDataGridColumn TItem="CombinedEventListItem" Title="@Shared["Shared_Table_ActionsColumn"]" Width="240px" Sortable="false">
                 <Template Context="item">
                     <div class="d-flex flex-nowrap align-items-center gap-1">
                         @if (item.Kind == CombinedEventListItemKind.Agm)
@@ -82,13 +82,13 @@ else
                             @if (item.IsAgmRecorded != true)
                             {
                                 <a href="@($"/events/agm/{item.Id}/record")" class="btn btn-primary btn-sm text-nowrap">
-                                    Record
+                                    @L["Events_List_RecordButton"]
                                 </a>
                             }
                             <button class="btn btn-outline-secondary btn-sm text-nowrap"
                                     @onclick="() => PrintAgmAttendanceReport(item.Id)"
-                                    aria-label="Print attendance report for @item.Date.ToString("d MMM yyyy")">
-                                Print
+                                    aria-label="@PrintAgmReportAriaLabel(item.Date)">
+                                @L["Events_List_PrintButton"]
                             </button>
                         }
                         else
@@ -97,18 +97,18 @@ else
                             {
                                 <button class="btn btn-primary btn-sm text-nowrap"
                                         @onclick="() => RecordParticipation(item.Id)"
-                                        aria-label="Record participation for @item.Date.ToString("d MMM yyyy")">
-                                    Record Participation
+                                        aria-label="@RecordParticipationAriaLabel(item.Date)">
+                                    @L["Events_List_RecordParticipationButton"]
                                 </button>
                             }
                             else
                             {
-                                <span class="text-muted small">Recorded</span>
+                                <span class="text-muted small">@L["Events_Status_RecordedText"]</span>
                             }
                             <button class="btn btn-outline-secondary btn-sm text-nowrap"
                                     @onclick="() => PrintAttendanceSheet(item.Id)"
-                                    aria-label="Print attendance sheet for @item.Date.ToString("d MMM yyyy")">
-                                Print
+                                    aria-label="@PrintSheetAriaLabel(item.Date)">
+                                @L["Events_List_PrintButton"]
                             </button>
                         }
                     </div>

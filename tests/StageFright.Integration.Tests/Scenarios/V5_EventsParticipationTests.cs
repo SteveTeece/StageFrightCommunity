@@ -383,7 +383,7 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         var unitOfWork = new UnitOfWork(_db);
-        return new EventService(eventRepo, participationRepo, memberRepo, auditSvc, unitOfWork);
+        return new EventService(eventRepo, participationRepo, memberRepo, auditSvc, unitOfWork, RealLocalizer.Instance);
     }
 
     private EventTypeService BuildEventTypeService()
@@ -391,7 +391,7 @@ public sealed class V5_EventsParticipationTests : IAsyncLifetime
         var eventTypeRepo = new EventTypeRepository(_db);
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        return new EventTypeService(eventTypeRepo, auditSvc);
+        return new EventTypeService(eventTypeRepo, auditSvc, RealLocalizer.Instance);
     }
 
     private async Task<EventType> AddEventType(string name)

@@ -2,6 +2,8 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Finance;
 
@@ -16,26 +18,30 @@ public class BankDepositService : IBankDepositService
     private readonly IJournalEntryRepository _journalRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILocalizer _localizer;
 
     public BankDepositService(
         IAccountRepository accountRepo,
         IGLRepository glRepo,
         IJournalEntryRepository journalRepo,
         IAuditTrailService audit,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILocalizer localizer)
     {
         _accountRepo = accountRepo;
         _glRepo = glRepo;
         _journalRepo = journalRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
+        _localizer = localizer;
     }
 
     public async Task RecordDepositAsync(RecordBankDepositRequest request, CancellationToken ct = default)
     {
         if (request.Amount <= 0m)
             throw new ValidationException(
-                "Deposit amount must be greater than zero.", nameof(Transaction), nameof(RecordDepositAsync));
+                _localizer.Get<ValidationResource>("Validation_BankDeposit_AmountPositive"),
+                nameof(Transaction), nameof(RecordDepositAsync));
 
         var all = await _accountRepo.GetAllAsync(ct);
 
@@ -44,11 +50,13 @@ public class BankDepositService : IBankDepositService
 
         if (!toAccount.IsBankAccount)
             throw new ValidationException(
-                "Deposits are only permitted into a bank account.", nameof(Account), nameof(RecordDepositAsync));
+                _localizer.Get<ValidationResource>("Validation_BankDeposit_TargetMustBeBank"),
+                nameof(Account), nameof(RecordDepositAsync));
 
         if (toAccount.Id == SystemAccounts.CashId)
             throw new ValidationException(
-                "The destination account must differ from Cash on Hand.", nameof(Account), nameof(RecordDepositAsync));
+                _localizer.Get<ValidationResource>("Validation_BankDeposit_TargetNotCashOnHand"),
+                nameof(Account), nameof(RecordDepositAsync));
 
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {

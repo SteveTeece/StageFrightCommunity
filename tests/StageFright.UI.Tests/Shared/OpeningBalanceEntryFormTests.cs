@@ -16,7 +16,7 @@ namespace StageFright.UI.Tests.Shared;
 /// the setup wizard's Opening Balances tab (deferred-queue). Folds the standalone page's
 /// former Step 2 (enter) and Step 3 (confirm) into one entry table + submit action.
 /// </summary>
-public class OpeningBalanceEntryFormTests : BunitContext
+public class OpeningBalanceEntryFormTests : LocalizedTestContext
 {
     private readonly IOpeningBalanceService _openingBalanceService = Substitute.For<IOpeningBalanceService>();
     private static readonly Account BankAccount = new()

@@ -4,6 +4,8 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 using StageFright.Core.Modules.Members;
 using StageFright.Core.Modules.Settings.Backup;
 using SettingsEntity = StageFright.Core.Entities.Settings;
@@ -23,17 +25,20 @@ public class BackupService : IBackupService
     private readonly IUnitOfWork _uow;
     private readonly IAuditTrailService _audit;
     private readonly ILogger<BackupService> _logger;
+    private readonly ILocalizer _localizer;
 
     public BackupService(
         IBackupRepository backupRepo,
         IUnitOfWork uow,
         IAuditTrailService audit,
-        ILogger<BackupService> logger)
+        ILogger<BackupService> logger,
+        ILocalizer localizer)
     {
         _backupRepo = backupRepo;
         _uow = uow;
         _audit = audit;
         _logger = logger;
+        _localizer = localizer;
     }
 
     public async Task ExportAsync(string filePath, CancellationToken ct = default)
@@ -101,7 +106,7 @@ public class BackupService : IBackupService
 
     // --- Private helpers ---
 
-    private static BackupEnvelope DeserializeAndValidate(string filePath)
+    private BackupEnvelope DeserializeAndValidate(string filePath)
     {
         BackupEnvelope envelope;
         try
@@ -112,7 +117,7 @@ public class BackupService : IBackupService
         catch (Exception ex)
         {
             throw new ImportException(
-                "Backup file is corrupted or not a StageFright backup.",
+                _localizer.Get<ValidationResource>("Validation_Backup_FileCorrupted"),
                 innerException: ex);
         }
 
@@ -139,21 +144,21 @@ public class BackupService : IBackupService
         return envelope;
     }
 
-    private static void ValidateVersion(string schemaVersion)
+    private void ValidateVersion(string schemaVersion)
     {
         if (string.IsNullOrWhiteSpace(schemaVersion))
             throw new ImportException(
-                "Backup file is missing a schema version.",
+                _localizer.Get<ValidationResource>("Validation_Backup_MissingSchemaVersion"),
                 operationContext: "VersionCheck");
 
         var majorStr = schemaVersion.Split('.')[0];
         if (majorStr != SupportedMajorVersion)
             throw new ImportException(
-                $"This backup uses schema version {schemaVersion}; this application supports major version {SupportedMajorVersion}. Please upgrade the application to restore this backup.",
+                _localizer.Get<ValidationResource>("Validation_Backup_UnsupportedSchemaVersion", schemaVersion, SupportedMajorVersion),
                 operationContext: "VersionCheck");
     }
 
-    private static void ValidateCompleteness(BackupEnvelope envelope)
+    private void ValidateCompleteness(BackupEnvelope envelope)
     {
         // EntityCounts is the canonical presence marker. MapToEnvelope always writes every key
         // (even with count 0), so a missing key means the collection was never exported — the
@@ -173,9 +178,9 @@ public class BackupService : IBackupService
         if (!counts.ContainsKey("Accounts") && !counts.ContainsKey("Categories")) Fail("Accounts");
         if (!counts.ContainsKey("AuditTrailEntries")) Fail("AuditTrailEntries");
 
-        static void Fail(string entityType) =>
+        void Fail(string entityType) =>
             throw new ImportException(
-                $"Import file incomplete: missing {entityType}. Restore from complete backup.",
+                _localizer.Get<ValidationResource>("Validation_Backup_ImportIncomplete", entityType),
                 entityType: entityType,
                 operationContext: "CompletenessCheck");
     }

@@ -22,6 +22,17 @@ public class ReportData
     public ReportRow? GrandTotal { get; init; }
 
     /// <summary>
+    /// Optional basis-of-accounting disclosure shown on financial statements (FR-012). Null for
+    /// non-financial reports (Member List, Committee). When set, it is rendered by
+    /// <c>PdfReportRenderer</c> (a line below the "Generated: …" line), <c>CsvReportExporter</c>
+    /// (a trailing note record after the grand total), and <c>ReportViewer.razor</c> (below the
+    /// subtitle). Set by the financial-statement providers from the shared
+    /// <c>Reports_Common_BasisOfAccounting</c> string, which describes the hybrid basis
+    /// accurately — member fees on accrual, all other activity on cash.
+    /// </summary>
+    public string? BasisOfAccounting { get; init; }
+
+    /// <summary>
     /// Optional column headers for a collapsed master view (one row per section).
     /// Null/empty ⇒ report has no master-detail view; <c>ReportViewer</c> renders the flat table.
     /// When non-empty, every section in <see cref="Sections"/> must set <see cref="ReportSection.SummaryRow"/>.

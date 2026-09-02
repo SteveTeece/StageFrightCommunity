@@ -1,8 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Events;
+using StageFright.UI.Resources.Strings;
 using DomainValidationException = StageFright.Core.Exceptions.ValidationException;
 
 namespace StageFright.UI.Pages.Events;
@@ -12,6 +15,9 @@ public partial class EventForm
     [Inject] private IEventService EventService { get; set; } = null!;
     [Inject] private IEventTypeService EventTypeService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private IStringLocalizer<EventsResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private readonly EventFormModel _model = new();
     private bool _saving;
@@ -28,7 +34,7 @@ public partial class EventForm
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load event types: {ex.Message}";
+            _errorMessage = Loc.Get<EventsResource>("Events_Form_LoadTypesError", ex.Message);
         }
         finally
         {
@@ -58,7 +64,7 @@ public partial class EventForm
         }
         catch (Exception ex)
         {
-            _errorMessage = $"An unexpected error occurred: {ex.Message}";
+            _errorMessage = Loc.Get<EventsResource>("Events_Form_SaveError", ex.Message);
         }
         finally
         {
@@ -70,10 +76,12 @@ public partial class EventForm
 
     private sealed class EventFormModel
     {
-        [Required(ErrorMessage = "Date is required.")]
+        // A non-nullable DateTime is never null, so [Required] here is presentational only —
+        // the picker always supplies a value; a custom message would be dead code (spec 027).
+        [Required]
         public DateTime Date { get; set; } = DateTime.UtcNow.Date;
 
-        [Required(ErrorMessage = "Event type is required.")]
+        [Required]
         public Guid EventTypeId { get; set; }
 
         public string? Notes { get; set; }

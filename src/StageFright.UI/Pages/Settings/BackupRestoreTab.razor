@@ -13,23 +13,22 @@
     }
 
     <section aria-labelledby="backup-heading" class="mb-3">
-        <h6 id="backup-heading" class="mb-1">Backup</h6>
+        <h6 id="backup-heading" class="mb-1">@L["Settings_Backup_Heading"]</h6>
         <p class="text-muted small">
-            Creates a complete backup of all data (including archived records) in a <code>.sfbak</code> file.
+            @L["Settings_Backup_Description"]
         </p>
         <button class="btn btn-primary btn-sm" @onclick="HandleBackupAsync" disabled="@_busy">
-            @(_busy && _operation == "backup" ? "Creating backup…" : "Create Backup")
+            @(_busy && _operation == "backup" ? L["Settings_Backup_CreatingText"] : L["Settings_Backup_CreateButton"])
         </button>
     </section>
 
     <section aria-labelledby="restore-heading">
-        <h6 id="restore-heading" class="mb-1">Restore</h6>
+        <h6 id="restore-heading" class="mb-1">@L["Settings_Restore_Heading"]</h6>
         <p class="text-muted small">
-            Restores data from a <code>.sfbak</code> file. A checkpoint of the current database is created
-            automatically before any data is changed.
+            @L["Settings_Restore_Description"]
         </p>
         <div class="mb-2">
-            <label for="restore-file" class="form-label">Select backup file</label>
+            <label for="restore-file" class="form-label">@L["Settings_Restore_SelectFileLabel"]</label>
             <InputFile id="restore-file" class="form-control form-control-sm" OnChange="OnFileSelected" accept=".sfbak" disabled="@_busy" />
         </div>
 
@@ -37,11 +36,11 @@
         {
             <div class="card mb-2">
                 <div class="card-body py-2">
-                    <h6 class="card-title mb-2">Backup details</h6>
+                    <h6 class="card-title mb-2">@L["Settings_Restore_DetailsHeading"]</h6>
                     <dl class="row mb-0">
-                        <dt class="col-sm-5">Generated</dt>
+                        <dt class="col-sm-5">@L["Settings_Restore_GeneratedTerm"]</dt>
                         <dd class="col-sm-7">@_manifest.GeneratedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</dd>
-                        <dt class="col-sm-5">Schema version</dt>
+                        <dt class="col-sm-5">@L["Settings_Restore_SchemaVersionTerm"]</dt>
                         <dd class="col-sm-7"><code>@_manifest.SchemaVersion</code></dd>
                         @foreach (var kv in _manifest.EntityCounts.Where(kv => kv.Value > 0))
                         {
@@ -55,19 +54,18 @@
             @if (!_confirmed)
             {
                 <div class="alert alert-warning py-1 mb-2 small" role="alert">
-                    <strong>Warning:</strong> Restoring will overwrite data with the backup's records.
-                    A checkpoint of the current database will be saved in the same folder before any changes are made.
+                    @L["Settings_Restore_Warning"]
                 </div>
                 <button class="btn btn-warning btn-sm" @onclick="ConfirmRestore" disabled="@_busy">
-                    I understand — Restore from this backup
+                    @L["Settings_Restore_UnderstandButton"]
                 </button>
             }
             else
             {
                 <button class="btn btn-danger btn-sm" @onclick="HandleRestoreAsync" disabled="@_busy">
-                    @(_busy && _operation == "restore" ? "Restoring…" : "Confirm Restore")
+                    @(_busy && _operation == "restore" ? L["Settings_Restore_RestoringText"] : L["Settings_Restore_ConfirmButton"])
                 </button>
-                <button class="btn btn-secondary btn-sm ms-2" @onclick="CancelRestore" disabled="@_busy">Cancel</button>
+                <button class="btn btn-secondary btn-sm ms-2" @onclick="CancelRestore" disabled="@_busy">@Shared["Shared_Action_Cancel"]</button>
             }
         }
     </section>

@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.UI.Resources.Strings;
 using AppSettings = StageFright.Core.Entities.Settings;
 
 namespace StageFright.UI.Pages.Settings;
@@ -18,6 +21,9 @@ public partial class CommitteeSettingsTab : ComponentBase
     [Inject] private ICommitteeOfficeHolderTypeService OfficeHolderTypeService { get; set; } = null!;
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private ILogger<CommitteeSettingsTab> Logger { get; set; } = null!;
+    [Inject] private IStringLocalizer<SettingsResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private bool _loading = true;
     private bool _creating;
@@ -31,6 +37,9 @@ public partial class CommitteeSettingsTab : ComponentBase
     private int? _seatCountTarget;
 
     private NewOfficeHolderTypeModel _newModel = new();
+
+    private string ArchiveAriaLabel(string name) =>
+        Loc.Get<SettingsResource>("Settings_Committee_ArchiveAriaLabel", name);
 
     protected override async Task OnInitializedAsync()
     {
@@ -51,7 +60,7 @@ public partial class CommitteeSettingsTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load committee settings: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Committee_LoadError", ex.Message);
         }
         finally
         {
@@ -68,7 +77,7 @@ public partial class CommitteeSettingsTab : ComponentBase
         try
         {
             var created = await OfficeHolderTypeService.AddAsync(_newModel.Name!);
-            _successMessage = $"Office-holder title '{created.Name}' created.";
+            _successMessage = Loc.Get<SettingsResource>("Settings_Committee_TitleCreated", created.Name);
             _newModel = new NewOfficeHolderTypeModel();
             await LoadAsync();
         }
@@ -78,7 +87,7 @@ public partial class CommitteeSettingsTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to create office-holder title: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Committee_CreateError", ex.Message);
         }
         finally
         {
@@ -94,7 +103,7 @@ public partial class CommitteeSettingsTab : ComponentBase
         try
         {
             await OfficeHolderTypeService.ArchiveAsync(id, "coordinator");
-            _successMessage = "Office-holder title archived.";
+            _successMessage = L["Settings_Committee_TitleArchived"];
             await LoadAsync();
         }
         catch (ValidationException ex)
@@ -103,7 +112,7 @@ public partial class CommitteeSettingsTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to archive office-holder title: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Committee_ArchiveError", ex.Message);
         }
     }
 
@@ -123,7 +132,7 @@ public partial class CommitteeSettingsTab : ComponentBase
             current.GeneralCommitteeSeatCountTarget = _seatCountTarget;
             await SettingsService.SaveAsync(current);
             _settings = current;
-            _successMessage = "Seat count target saved.";
+            _successMessage = L["Settings_Committee_SeatTargetSaved"];
         }
         catch (ValidationException ex)
         {
@@ -131,7 +140,7 @@ public partial class CommitteeSettingsTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to save seat count target: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Committee_SeatTargetError", ex.Message);
         }
         finally
         {

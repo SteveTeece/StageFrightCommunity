@@ -15,7 +15,7 @@ namespace StageFright.UI.Tests.Shared;
 /// - Confirm calls ApplyForgivenessAsync with selected fee IDs
 /// - Empty fee list shows no-fees message
 /// </summary>
-public class ReactivationForgivenessDialogTests : BunitContext
+public class ReactivationForgivenessDialogTests : LocalizedTestContext
 {
     private readonly IReactivationForgivenessService _forgivenessService =
         Substitute.For<IReactivationForgivenessService>();

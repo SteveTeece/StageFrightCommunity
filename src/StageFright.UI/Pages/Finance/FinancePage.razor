@@ -1,13 +1,13 @@
 @page "/finance"
 
-<PageTitle>Finance — StageFright Community</PageTitle>
+<PageTitle>@L["Finance_Page_PageTitle"]</PageTitle>
 
 <div class="page-header mb-2">
-    <h1 class="h3 mb-0">Finance</h1>
+    <h1 class="h3 mb-0">@L["Finance_Page_Heading"]</h1>
 </div>
 
 <Tabs DefaultActiveTabIndex="@DefaultTabIndex">
-    <Tab Title="Outstanding" OnShown="@(() => NavToTab("outstanding"))">
+    <Tab Title="@L["Finance_Page_TabOutstanding"]" OnShown="@(() => NavToTab("outstanding"))">
         <Content>
             <div class="pt-2">
                 @if (SelectedMemberId == Guid.Empty)
@@ -21,24 +21,24 @@
             </div>
         </Content>
     </Tab>
-    <Tab Title="Record Income" OnShown="@(() => NavToTab("record-income"))">
+    <Tab Title="@L["Finance_Page_TabRecordIncome"]" OnShown="@(() => NavToTab("record-income"))">
         <Content>
             <div class="pt-2">
                 <RecordIncome />
             </div>
         </Content>
     </Tab>
-    <Tab Title="Record Expense" OnShown="@(() => NavToTab("record-expense"))">
+    <Tab Title="@L["Finance_Page_TabRecordExpense"]" OnShown="@(() => NavToTab("record-expense"))">
         <Content>
             <div class="pt-2">
                 <ExpensePaymentPage />
             </div>
         </Content>
     </Tab>
-    <Tab Title="Apply Annual Fees" OnShown="@(() => NavToTab("annual-fees"))">
+    <Tab Title="@L["Finance_Page_TabAnnualFees"]" OnShown="@(() => NavToTab("annual-fees"))">
         <Content>
             <div class="pt-2">
-                <a href="/finance/annual-fees" class="btn btn-primary btn-sm">Go to Annual Fee Application</a>
+                <a href="/finance/annual-fees" class="btn btn-primary btn-sm">@L["Finance_Page_AnnualFeesLink"]</a>
             </div>
         </Content>
     </Tab>

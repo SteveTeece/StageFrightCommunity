@@ -19,7 +19,7 @@ namespace StageFright.UI.Tests.Pages.Rehearsals;
 /// error alert paths (the happy-path render→temp-file→launch is not click-tested — no seam
 /// exists to intercept the real File.WriteAllBytes/Process.Start call).
 /// </summary>
-public class RehearsalListTests : RadzenGridTestContext
+public class RehearsalListTests : LocalizedTestContext
 {
     private readonly IRehearsalService _rehearsalService = Substitute.For<IRehearsalService>();
     private readonly IAttendanceRollService _attendanceRollService = Substitute.For<IAttendanceRollService>();

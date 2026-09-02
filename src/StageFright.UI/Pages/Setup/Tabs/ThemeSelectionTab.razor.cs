@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Enums;
 using StageFright.UI.Layout;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Setup.Tabs;
 
@@ -12,6 +14,8 @@ namespace StageFright.UI.Pages.Setup.Tabs;
 public partial class ThemeSelectionTab : ComponentBase
 {
     [CascadingParameter] private ThemeProvider? ThemeProvider { get; set; }
+
+    [Inject] private IStringLocalizer<SetupResource> L { get; set; } = null!;
 
     private async Task HandleThemeChangedAsync(ChangeEventArgs e)
     {

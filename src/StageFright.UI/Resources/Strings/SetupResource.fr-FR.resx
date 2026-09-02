@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Setup_Page_Title" xml:space="preserve"><value>Configuration initiale — StageFright Community</value><comment>Browser tab title — Setup Wizard.</comment></data>
+  <data name="Setup_FirstRun_PageTitle" xml:space="preserve"><value>Bienvenue — StageFright Community</value><comment>Browser tab title — first-run language-select screen (spec 029).</comment></data>
+  <data name="Setup_FirstRun_Heading" xml:space="preserve"><value>Bienvenue dans StageFright Community</value><comment>First-run language-select screen heading (spec 029).</comment></data>
+  <data name="Setup_FirstRun_Subheading" xml:space="preserve"><value>Choisissez votre langue d'affichage pour commencer.</value><comment>Sub-heading under the first-run screen title (spec 029).</comment></data>
+  <data name="Setup_FirstRun_ConfirmButton" xml:space="preserve"><value>Continuer</value><comment>First-run language-select screen — confirm button (spec 029).</comment></data>
+  <data name="Setup_FirstRun_SeedingError" xml:space="preserve"><value>Une erreur s'est produite lors du chargement des données d'exemple. Veuillez réessayer.</value><comment>First-run language-select screen — sample-data seeding failure message (spec 029, US3).</comment></data>
+  <data name="Setup_FirstRun_SampleOrganizationPlaceholder" xml:space="preserve"><value>Organisation d'exemple</value><comment>First-run language-select screen — placeholder organisation name for the sample-data setup request; DebugDataSeeder overwrites it with a generated name once seeding runs (spec 029, US3).</comment></data>
+  <data name="Setup_Wizard_Heading" xml:space="preserve"><value>StageFright Community - Assistant de configuration</value><comment>Setup Wizard page heading.</comment></data>
+  <data name="Setup_Wizard_Subheading" xml:space="preserve"><value>Terminez la configuration ci-dessous pour commencer.</value><comment>Sub-heading under the wizard title.</comment></data>
+  <data name="Setup_Tab_OrganisationSettings" xml:space="preserve"><value>Paramètres de l'organisation</value><comment>Setup Wizard tab title.</comment></data>
+  <data name="Setup_Tab_ChartOfAccounts" xml:space="preserve"><value>Plan comptable</value><comment>Setup Wizard tab title.</comment></data>
+  <data name="Setup_Tab_OpeningBalances" xml:space="preserve"><value>Soldes d'ouverture</value><comment>Setup Wizard tab title.</comment></data>
+  <data name="Setup_Tab_Committee" xml:space="preserve"><value>Comité</value><comment>Setup Wizard tab title.</comment></data>
+  <data name="Setup_Tab_Review" xml:space="preserve"><value>Récapitulatif</value><comment>Setup Wizard tab title.</comment></data>
+  <data name="Setup_Tab_LoadFailed" xml:space="preserve"><value>Échec du chargement de cet onglet.</value><comment>Shown when a setup tab throws.</comment></data>
+  <data name="Setup_Nav_NextButton" xml:space="preserve"><value>Suivant</value><comment>Setup Wizard — advance to the next tab.</comment></data>
+  <data name="Setup_Nav_FinishButton" xml:space="preserve"><value>Terminer</value><comment>Setup Wizard — complete setup.</comment></data>
+  <data name="Setup_Seeding_Message" xml:space="preserve"><value>Mise en place de vos données d'exemple — cela peut prendre quelques minutes. Veuillez ne pas fermer l'application.</value><comment>Overlay message while sample data is being seeded.</comment></data>
+  <data name="Setup_Error_InvalidSubmit" xml:space="preserve"><value>Certains champs obligatoires sont incomplets — vérifiez chaque onglet avant de terminer.</value><comment>Shown when Finish is clicked with an invalid field somewhere.</comment></data>
+  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>Saisissez au moins un solde d'ouverture, ou cochez « Charger des données d'exemple » sur l'onglet Récapitulatif, avant de terminer.</value><comment>Shown when Finish is attempted with no opening balance and no sample-data opt-in.</comment></data>
+  <data name="Setup_Error_Unexpected" xml:space="preserve"><value>Une erreur inattendue s'est produite. Veuillez réessayer.</value><comment>Generic setup failure message.</comment></data>
+  <data name="Setup_General_OrgNameLabel" xml:space="preserve"><value>Nom de l'organisation</value><comment>General tab — organisation name label.</comment></data>
+  <data name="Setup_General_OrgNamePlaceholder" xml:space="preserve"><value>ex. : Chorale de Springfield</value><comment>Placeholder for the organisation name field.</comment></data>
+  <data name="Setup_General_CurrencyLabel" xml:space="preserve"><value>Devise</value><comment>General tab — organisation currency picker label (spec 028, FR-001).</comment></data>
+  <data name="Setup_General_CurrencyHelp" xml:space="preserve"><value>La devise dans laquelle vos comptes sont tenus. Elle est figée une fois la configuration terminée.</value><comment>Help text under the currency picker (spec 028, FR-002).</comment></data>
+  <data name="Setup_General_FinancialYearStartMonthLabel" xml:space="preserve"><value>Mois de début de l'exercice</value><comment>General tab — financial-year start month picker label (spec 028, FR-019).</comment></data>
+  <data name="Setup_General_FinancialYearStartDayLabel" xml:space="preserve"><value>Jour de début de l'exercice</value><comment>General tab — financial-year start day picker label (spec 028, FR-020).</comment></data>
+  <data name="Setup_General_FinancialYearStartHelp" xml:space="preserve"><value>Date de début de votre exercice comptable. Par défaut le 1er juillet — l'exercice australien.</value><comment>Help text under the financial-year-start pickers (spec 028, FR-019).</comment></data>
+  <data name="Setup_General_InceptionDateLabel" xml:space="preserve"><value>Date de création de l'organisation (facultatif)</value><comment>General tab — optional organisation founding-date picker label (spec 028, FR-022 / issue #353).</comment></data>
+  <data name="Setup_General_InceptionDateHelp" xml:space="preserve"><value>La date de fondation de votre organisation. Laissez vide sauf si elle est postérieure au début de votre exercice comptable — dans ce cas, votre premier exercice est présenté comme un « exercice partiel » plus court.</value><comment>Help text under the optional inception-date picker (spec 028, FR-022 / issue #353).</comment></data>
+  <data name="Setup_Fees_AnnualFeeLabel" xml:space="preserve"><value>Cotisation annuelle</value><comment>Membership Fees tab — annual fee label.</comment></data>
+  <data name="Setup_Fees_AttendanceFeeLabel" xml:space="preserve"><value>Frais de présence</value><comment>Membership Fees tab — attendance fee label.</comment></data>
+  <data name="Setup_Fees_RenewalMonthLabel" xml:space="preserve"><value>Mois de renouvellement de l'adhésion</value><comment>Membership Fees tab — renewal month label.</comment></data>
+  <data name="Setup_Fees_AuditRetentionLabel" xml:space="preserve"><value>Conservation du journal d'audit (années)</value><comment>Membership Fees tab — audit retention label.</comment></data>
+  <data name="Setup_Fees_AuditRetentionHelp" xml:space="preserve"><value>Durée de conservation de l'historique du journal d'audit avant sa purge au démarrage. Par défaut 1 an.</value><comment>Help text under the audit retention field.</comment></data>
+  <data name="Setup_Fees_AuditRetentionYears_One" xml:space="preserve"><value>{Count} an</value><comment>Audit-retention select option, singular.</comment></data>
+  <data name="Setup_Fees_AuditRetentionYears_Other" xml:space="preserve"><value>{Count} ans</value><comment>Audit-retention select option, plural.</comment></data>
+  <data name="Setup_Theme_Label" xml:space="preserve"><value>Thème :</value><comment>Setup Wizard theme dropdown label.</comment></data>
+  <data name="Setup_Language_Label" xml:space="preserve"><value>Langue :</value><comment>Setup Wizard display-language dropdown label (spec 027, US3).</comment></data>
+  <data name="Setup_Language_HelpText" xml:space="preserve"><value>Vous pourrez modifier ce choix plus tard dans les Paramètres.</value><comment>Help text under the Setup Wizard language dropdown.</comment></data>
+  <data name="Setup_Tax_AppliesLabel" xml:space="preserve"><value>La taxe sur les ventes s'applique à cette organisation</value><comment>Sales Tax tab — applicability checkbox label.</comment></data>
+  <data name="Setup_Tax_RateLabel" xml:space="preserve"><value>Taux de taxe (%)</value><comment>Sales Tax tab — tax rate label.</comment></data>
+  <data name="Setup_Tax_EntryModeLabel" xml:space="preserve"><value>Saisie du montant</value><comment>Sales Tax tab — label for the tax-inclusive / tax-exclusive amount-entry mode selector.</comment></data>
+  <data name="Setup_Tax_AnnualFeeTreatmentLabel" xml:space="preserve"><value>Traitement fiscal de la cotisation annuelle</value><comment>Sales Tax tab — annual fee tax-code label.</comment></data>
+  <data name="Setup_Tax_AttendanceFeeTreatmentLabel" xml:space="preserve"><value>Traitement fiscal des frais de présence</value><comment>Sales Tax tab — attendance fee tax-code label.</comment></data>
+  <data name="Setup_Tax_TaxExemptDefaultOption" xml:space="preserve"><value>Exonéré de taxe (par défaut)</value><comment>Tax-treatment select — the unset/default option.</comment></data>
+  <data name="Setup_SampleData_CheckboxLabel" xml:space="preserve"><value>Charger des données d'exemple (membres, répétitions, événements et finances)</value><comment>Debug-only checkbox label — load sample data.</comment></data>
+  <data name="Setup_Coa_Intro" xml:space="preserve"><value>Mettez en attente les nouveaux comptes à ajouter à votre plan comptable. C'est facultatif — vous pouvez toujours ajouter des comptes plus tard depuis Finances ▸ Plan comptable. Chaque compte listé ici — y compris les comptes système déjà créés pour vous — existera une fois la configuration terminée.</value><comment>Chart of Accounts tab intro paragraph.</comment></data>
+  <data name="Setup_Coa_AddHeading" xml:space="preserve"><value>Ajouter un compte</value><comment>Chart of Accounts tab — add-account section heading.</comment></data>
+  <data name="Setup_Coa_QueueAccountButton" xml:space="preserve"><value>Mettre le compte en attente</value><comment>Submit button text for the add-account form in the setup wizard.</comment></data>
+  <data name="Setup_Coa_ExistingHeading" xml:space="preserve"><value>Comptes existants</value><comment>Chart of Accounts tab — existing accounts list heading.</comment></data>
+  <data name="Setup_Coa_ExistingEmpty" xml:space="preserve"><value>Aucun compte n'existe pour le moment.</value><comment>Empty text for the existing accounts list.</comment></data>
+  <data name="Setup_Coa_QueuedHeading" xml:space="preserve"><value>Comptes en attente</value><comment>Chart of Accounts tab — queued accounts list heading.</comment></data>
+  <data name="Setup_Coa_QueuedEmpty" xml:space="preserve"><value>Aucun compte en attente pour le moment.</value><comment>Empty text for the queued accounts list.</comment></data>
+  <data name="Setup_Coa_BankCashSuffix" xml:space="preserve"><value> · Banque/Caisse</value><comment>Suffix appended to a bank/cash account's type in the account lists.</comment></data>
+  <data name="Setup_Coa_SystemBadge" xml:space="preserve"><value>Système</value><comment>Badge / title marking a system account.</comment></data>
+  <data name="Setup_Ob_Intro" xml:space="preserve"><value>Saisissez les soldes d'ouverture des comptes que vous souhaitez démarrer avec un solde — y compris ceux que vous venez de mettre en attente sur l'onglet Plan comptable. C'est facultatif ; vous pouvez aussi charger des données d'exemple depuis l'onglet Récapitulatif.</value><comment>Opening Balances tab intro paragraph.</comment></data>
+  <data name="Setup_Ob_AsAtLabel" xml:space="preserve"><value>À la date du</value><comment>Opening Balances tab — as-at date label.</comment></data>
+  <data name="Setup_Ob_QueueBalancesButton" xml:space="preserve"><value>Mettre les soldes en attente</value><comment>Submit button text for the opening-balance form in the setup wizard.</comment></data>
+  <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>Mois de l'AGA</value><comment>Committee tab — AGM month label.</comment></data>
+  <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>Le mois où se tient habituellement votre AGA. Détermine les limites des mandats du comité.</value><comment>Help text under the AGM month field.</comment></data>
+  <data name="Setup_Committee_SeatTargetLabel" xml:space="preserve"><value>Objectif de sièges au comité général</value><comment>Committee tab — seat target label.</comment></data>
+  <data name="Setup_Committee_SeatTargetHelp" xml:space="preserve"><value>Facultatif — à titre indicatif uniquement, aucune limite stricte n'est appliquée lors de la saisie d'une AGA.</value><comment>Help text under the seat target field.</comment></data>
+  <data name="Setup_Committee_TitlesLabel" xml:space="preserve"><value>Intitulés de fonction supplémentaires</value><comment>Committee tab — additional titles input label.</comment></data>
+  <data name="Setup_Committee_TitlesPlaceholder" xml:space="preserve"><value>ex. : Responsable communication</value><comment>Placeholder for the additional-title input.</comment></data>
+  <data name="Setup_Committee_AddTitleAriaLabel" xml:space="preserve"><value>Ajouter l'intitulé</value><comment>aria-label on the add-title arrow button.</comment></data>
+  <data name="Setup_Committee_TitlesHelp" xml:space="preserve"><value>Facultatif, un à la fois. Président / Secrétaire / Trésorier sont toujours inclus. Peut aussi être configuré plus tard dans les Paramètres.</value><comment>Help text under the additional-titles input.</comment></data>
+  <data name="Setup_Committee_TitlesListLabel" xml:space="preserve"><value>Intitulés supplémentaires</value><comment>Committee tab — queued titles list label.</comment></data>
+  <data name="Setup_Committee_TitlesListEmpty" xml:space="preserve"><value>Aucun intitulé supplémentaire ajouté pour le moment.</value><comment>Empty text for the queued titles list.</comment></data>
+  <data name="Setup_Committee_ErrorBlank" xml:space="preserve"><value>Saisissez un intitulé avant d'ajouter.</value><comment>Validation — the title input was blank.</comment></data>
+  <data name="Setup_Committee_ErrorDuplicate" xml:space="preserve"><value>« {Title} » a déjà été ajouté.</value><comment>Validation — the title is already queued. {Title} = the entered title.</comment></data>
+  <data name="Setup_Review_Heading" xml:space="preserve"><value>Récapitulatif</value><comment>Review tab heading.</comment></data>
+  <data name="Setup_Review_OrgNameTerm" xml:space="preserve"><value>Nom de l'organisation</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_ThemeTerm" xml:space="preserve"><value>Thème</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_AnnualFeeTerm" xml:space="preserve"><value>Cotisation annuelle</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_AttendanceFeeTerm" xml:space="preserve"><value>Frais de présence</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_RenewalMonthTerm" xml:space="preserve"><value>Mois de renouvellement de l'adhésion</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_SalesTaxAppliesTerm" xml:space="preserve"><value>Taxe sur les ventes applicable</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_TaxRateTerm" xml:space="preserve"><value>Taux de taxe</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_AnnualFeeTaxTerm" xml:space="preserve"><value>Traitement fiscal de la cotisation annuelle</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_AttendanceFeeTaxTerm" xml:space="preserve"><value>Traitement fiscal des frais de présence</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_AgmMonthTerm" xml:space="preserve"><value>Mois de l'AGA</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_AuditRetentionTerm" xml:space="preserve"><value>Conservation du journal d'audit</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_SeatTargetTerm" xml:space="preserve"><value>Objectif de sièges</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_Yes" xml:space="preserve"><value>Oui</value><comment>Review tab — affirmative value.</comment></data>
+  <data name="Setup_Review_No" xml:space="preserve"><value>Non</value><comment>Review tab — negative value.</comment></data>
+  <data name="Setup_Review_NotSet" xml:space="preserve"><value>Non défini</value><comment>Review tab — shown for an unset optional value.</comment></data>
+  <data name="Setup_Review_TaxExemptDefault" xml:space="preserve"><value>Exonéré de taxe (par défaut)</value><comment>Review tab — shown for an unset tax treatment.</comment></data>
+  <data name="Setup_Review_TitlesHeading" xml:space="preserve"><value>Intitulés de fonction supplémentaires</value><comment>Review tab — queued titles heading.</comment></data>
+  <data name="Setup_Review_TitlesEmpty" xml:space="preserve"><value>Aucun.</value><comment>Empty text for the review queued-titles list.</comment></data>
+  <data name="Setup_Review_AccountsHeading" xml:space="preserve"><value>Écritures de plan comptable en attente</value><comment>Review tab — queued accounts heading.</comment></data>
+  <data name="Setup_Review_AccountsEmpty" xml:space="preserve"><value>Aucun en attente.</value><comment>Empty text for the review queued-accounts list.</comment></data>
+  <data name="Setup_Review_AuditRetentionYears_One" xml:space="preserve"><value>{Count} an</value><comment>Review tab audit-retention value, singular.</comment></data>
+  <data name="Setup_Review_AuditRetentionYears_Other" xml:space="preserve"><value>{Count} ans</value><comment>Review tab audit-retention value, plural.</comment></data>
+  <data name="Setup_Review_BankCashSuffix" xml:space="preserve"><value> · Banque/Caisse</value><comment>Suffix appended to a bank/cash account's type in the review list.</comment></data>
+</root>

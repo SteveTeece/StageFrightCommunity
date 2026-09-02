@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Agm;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Events;
 
@@ -16,6 +19,9 @@ public partial class RecordAgm : ComponentBase
     [Inject] private ICommitteeOfficeHolderTypeService OfficeHolderTypeService { get; set; } = null!;
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private IStringLocalizer<EventsResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private AgmAttendanceGrid? _attendanceGrid;
     private AnnualGeneralMeeting? _agm;
@@ -29,6 +35,15 @@ public partial class RecordAgm : ComponentBase
     private string? _guardMessage;
     private string? _errorMessage;
 
+    private string MeetingDateText() =>
+        Loc.Get<EventsResource>("Events_Agm_MeetingDateText", _agm!.Date.ToString("d MMMM yyyy"));
+
+    private string SelectedCountText() =>
+        Loc.Get<EventsResource>("Events_Agm_SelectedCount", _generalCommitteeMemberIds.Count);
+
+    private string SelectedOfTargetText() =>
+        Loc.Get<EventsResource>("Events_Agm_SelectedOfTarget", _seatCountTarget ?? 0);
+
     protected override async Task OnParametersSetAsync()
     {
         _loading = true;
@@ -37,21 +52,21 @@ public partial class RecordAgm : ComponentBase
         _agm = await AgmService.GetByIdAsync(Id);
         if (_agm is null)
         {
-            _guardMessage = "AGM not found.";
+            _guardMessage = L["Events_Agm_GuardNotFound"];
             _loading = false;
             return;
         }
 
         if (_agm.IsRecorded)
         {
-            _guardMessage = "This AGM has already been recorded.";
+            _guardMessage = L["Events_Agm_GuardAlreadyRecorded"];
             _loading = false;
             return;
         }
 
         if (_agm.Date.Date > DateTime.Today)
         {
-            _guardMessage = "This AGM's date has not yet arrived.";
+            _guardMessage = L["Events_Agm_GuardFutureDate"];
             _loading = false;
             return;
         }
@@ -95,7 +110,7 @@ public partial class RecordAgm : ComponentBase
         var allAssignedMemberIds = assignedOfficeHolders.Values.Concat(_generalCommitteeMemberIds).ToList();
         if (allAssignedMemberIds.Count != allAssignedMemberIds.Distinct().Count())
         {
-            _errorMessage = "A member cannot hold more than one committee assignment from the same AGM.";
+            _errorMessage = L["Events_Agm_DuplicateAssignmentError"];
             return;
         }
 
@@ -117,7 +132,7 @@ public partial class RecordAgm : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to save AGM: {ex.Message}";
+            _errorMessage = Loc.Get<EventsResource>("Events_Agm_RecordSaveError", ex.Message);
         }
         finally
         {

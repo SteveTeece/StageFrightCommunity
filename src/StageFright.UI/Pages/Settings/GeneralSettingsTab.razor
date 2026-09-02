@@ -14,7 +14,7 @@
 
 @if (_settings is null)
 {
-    <p role="status">Loading settings…</p>
+    <p role="status">@L["Settings_Common_LoadingText"]</p>
 }
 else
 {
@@ -25,7 +25,7 @@ else
 
         <div class="row g-2 mb-2">
             <div class="col-md-6">
-                <label for="orgName" class="form-label">Organisation Name <span class="text-danger">*</span></label>
+                <label for="orgName" class="form-label">@L["Settings_General_OrganisationNameLabel"] <span class="text-danger">*</span></label>
                 <InputText id="orgName" class="form-control form-control-sm" @bind-Value="s.OrganizationName" />
                 <ValidationMessage For="() => s.OrganizationName" />
             </div>
@@ -33,17 +33,17 @@ else
 
         <div class="row g-2 mb-2">
             <div class="col-md-6">
-                <label for="annualFee" class="form-label">Annual Membership Fee <span class="text-danger">*</span></label>
+                <label for="annualFee" class="form-label">@L["Settings_General_AnnualFeeLabel"] <span class="text-danger">*</span></label>
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
+                    <span class="input-group-text">$</span>
                     <InputNumber id="annualFee" class="form-control" @bind-Value="s.AnnualFee" @bind-Value:format="N2" />
                 </div>
                 <ValidationMessage For="() => s.AnnualFee" />
             </div>
             <div class="col-md-6">
-                <label for="attendanceFee" class="form-label">Attendance Fee <span class="text-danger">*</span></label>
+                <label for="attendanceFee" class="form-label">@L["Settings_General_AttendanceFeeLabel"] <span class="text-danger">*</span></label>
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
+                    <span class="input-group-text">$</span>
                     <InputNumber id="attendanceFee" class="form-control" @bind-Value="s.AttendanceFee" @bind-Value:format="N2" />
                 </div>
                 <ValidationMessage For="() => s.AttendanceFee" />
@@ -52,7 +52,7 @@ else
 
         <div class="row g-2 mb-2">
             <div class="col-md-4">
-                <label for="membershipRenewalMonth" class="form-label">Membership Renewal Month <span class="text-danger">*</span></label>
+                <label for="membershipRenewalMonth" class="form-label">@L["Settings_General_MembershipRenewalMonthLabel"] <span class="text-danger">*</span></label>
                 <InputSelect id="membershipRenewalMonth" class="form-select form-select-sm" @bind-Value="s.MembershipRenewalMonth">
                     @for (var m = 1; m <= 12; m++)
                     {
@@ -63,7 +63,7 @@ else
                 <ValidationMessage For="() => s.MembershipRenewalMonth" />
             </div>
             <div class="col-md-4">
-                <label for="committeeRenewalMonth" class="form-label">AGM Month</label>
+                <label for="committeeRenewalMonth" class="form-label">@L["Settings_General_AgmMonthLabel"]</label>
                 <InputSelect id="committeeRenewalMonth" class="form-select form-select-sm" @bind-Value="s.CommitteeRenewalMonth">
                     @for (var m = 1; m <= 12; m++)
                     {
@@ -74,42 +74,70 @@ else
                 <ValidationMessage For="() => s.CommitteeRenewalMonth" />
             </div>
             <div class="col-md-4">
-                <label for="financialYearStartMonth" class="form-label">Financial Year Start Month</label>
-                <InputSelect id="financialYearStartMonth" class="form-select form-select-sm" @bind-Value="s.FinancialYearStartMonth">
-                    @for (var m = 1; m <= 12; m++)
-                    {
-                        var month = m;
-                        <option value="@month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
-                    }
-                </InputSelect>
-                <div class="form-text small">Default July — Australian financial year.</div>
+                <label for="financialYearStartMonth" class="form-label">@L["Settings_General_FinancialYearStartMonthLabel"]</label>
+                <div class="row g-1">
+                    <div class="col-7">
+                        <InputSelect id="financialYearStartMonth" class="form-select form-select-sm" @bind-Value="s.FinancialYearStartMonth">
+                            @for (var m = 1; m <= 12; m++)
+                            {
+                                var month = m;
+                                <option value="@month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-5">
+                        <InputSelect id="financialYearStartDay" aria-label="@L["Settings_General_FinancialYearStartDayLabel"]" class="form-select form-select-sm" @bind-Value="s.FinancialYearStartDay">
+                            @for (var d = 1; d <= 28; d++)
+                            {
+                                var day = d;
+                                <option value="@day">@day</option>
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+                <div class="form-text small">@L["Settings_General_FinancialYearStartHelp"]</div>
                 <ValidationMessage For="() => s.FinancialYearStartMonth" />
+                <ValidationMessage For="() => s.FinancialYearStartDay" />
             </div>
         </div>
 
         <div class="row g-2 mb-2">
             <div class="col-md-4">
-                <label for="auditRetentionYears" class="form-label">Audit Trail Retention (years)</label>
+                <label for="auditRetentionYears" class="form-label">@L["Settings_General_AuditRetentionLabel"]</label>
                 <InputSelect id="auditRetentionYears" class="form-select form-select-sm" @bind-Value="s.AuditRetentionYears">
                     @for (var y = 1; y <= 7; y++)
                     {
                         var years = y;
-                        <option value="@years">@years year@(years == 1 ? "" : "s")</option>
+                        <option value="@years">@AuditRetentionOptionText(years)</option>
                     }
                 </InputSelect>
-                <div class="form-text small">How long audit trail history is kept before the startup purge removes it.</div>
+                <div class="form-text small">@L["Settings_General_AuditRetentionHelp"]</div>
                 <ValidationMessage For="() => s.AuditRetentionYears" />
             </div>
         </div>
 
         <div class="row g-2 mb-2">
+            <div class="col-md-4">
+                <label for="settings-close-through-date" class="form-label">@L["Settings_General_ClosePeriodLabel"]</label>
+                <InputDate id="settings-close-through-date" class="form-control form-control-sm" @bind-Value="_closeThroughDate" />
+                <div class="form-text small">@L["Settings_General_ClosePeriodHelp"]</div>
+            </div>
+            <div class="col-md-8 d-flex align-items-start pt-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="settings-close-through-confirm" @bind="_confirmClosePeriod" />
+                    <label class="form-check-label small" for="settings-close-through-confirm">@L["Settings_General_ClosePeriodConfirm"]</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-2 mb-2">
             <div class="col-md-6">
-                <label for="maxAge" class="form-label">Maximum Member Age (years)</label>
+                <label for="maxAge" class="form-label">@L["Settings_General_MaxAgeLabel"]</label>
                 <InputNumber id="maxAge" class="form-control form-control-sm" @bind-Value="s.MaxAgeRangeYears" />
                 <ValidationMessage For="() => s.MaxAgeRangeYears" />
             </div>
             <div class="col-md-6">
-                <label for="minAge" class="form-label">Minimum Member Age (years)</label>
+                <label for="minAge" class="form-label">@L["Settings_General_MinAgeLabel"]</label>
                 <InputNumber id="minAge" class="form-control form-control-sm" @bind-Value="s.MinimumMemberAge" />
                 <ValidationMessage For="() => s.MinimumMemberAge" />
             </div>
@@ -117,28 +145,41 @@ else
 
         <div class="row g-2 mb-2">
             <div class="col-md-6">
-                <label for="theme-toggle-switch" class="form-label">Theme</label>
+                <label for="theme-toggle-switch" class="form-label">@L["Settings_General_ThemeLabel"]</label>
                 <div class="d-flex align-items-center gap-2">
                     <RadzenSwitch Name="theme-toggle-switch"
                                   Value="@(s.Theme == StageFright.Core.Enums.Theme.Dark)"
                                   Change="@(async (bool _) => await HandleThemeToggleAsync())" />
-                    <span class="text-muted small">Current: @s.Theme</span>
+                    <span class="text-muted small">@ThemeCurrentText(s.Theme)</span>
                 </div>
             </div>
             <div class="col-md-6">
-                <label for="showParticipationGraphs" class="form-label">Dashboard</label>
+                <label for="showParticipationGraphs" class="form-label">@L["Settings_General_DashboardLabel"]</label>
                 <div class="d-flex align-items-center gap-2">
                     <RadzenSwitch Name="showParticipationGraphs" @bind-Value="s.ShowParticipationGraphs" />
                     <label class="form-check-label small" for="showParticipationGraphs">
-                        Show year-to-date participation graphs on Rehearsals and Events tiles
+                        @L["Settings_General_ShowGraphsLabel"]
                     </label>
                 </div>
             </div>
         </div>
 
+        <div class="row g-2 mb-2">
+            <div class="col-md-6">
+                <label for="languageCode" class="form-label">@L["Settings_General_LanguageLabel"]</label>
+                <InputSelect id="languageCode" class="form-select form-select-sm" @bind-Value="_selectedLanguageCode">
+                    @foreach (var language in Languages.All)
+                    {
+                        <option value="@language.CultureCode">@language.Endonym</option>
+                    }
+                </InputSelect>
+                <div class="form-text small">@L["Settings_General_LanguageHelp"]</div>
+            </div>
+        </div>
+
         <div class="d-flex gap-2 mt-3">
             <button type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
-                @(_saving ? "Saving…" : "Save Settings")
+                @(_saving ? Shared["Shared_Action_Saving"] : L["Settings_Common_SaveButton"])
             </button>
         </div>
     </EditForm>

@@ -16,7 +16,7 @@ namespace StageFright.UI.Tests.Pages.Finance;
 /// OpeningBalanceEntryForm, which folds entry, live plug preview, and posting into one
 /// step per spec 017's extraction), rerun warning, posting, and error handling.
 /// </summary>
-public class OpeningBalancesWizardTests : BunitContext
+public class OpeningBalancesWizardTests : LocalizedTestContext
 {
     private readonly IOpeningBalanceService _openingService = Substitute.For<IOpeningBalanceService>();
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();

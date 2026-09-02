@@ -22,7 +22,7 @@ public class CommitteeOfficeHolderTypeServiceTests : TestBase
             .Returns(ci => ci.ArgAt<CommitteeOfficeHolderType>(0));
     }
 
-    private CommitteeOfficeHolderTypeService CreateService() => new(_repo, _audit);
+    private CommitteeOfficeHolderTypeService CreateService() => new(_repo, _audit, RealLocalizer.Instance);
 
     private static CommitteeOfficeHolderType BuiltIn(string name, int order) => new()
     {

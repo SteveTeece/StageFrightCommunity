@@ -13,7 +13,7 @@ namespace StageFright.UI.Tests.Pages.Finance;
 /// bUnit tests for AnnualFeeApplication — eligibility count display, confirm triggers service,
 /// cancel navigation, zero-eligible state, and success message after apply.
 /// </summary>
-public class AnnualFeeApplicationTests : BunitContext
+public class AnnualFeeApplicationTests : LocalizedTestContext
 {
     private readonly IFeeService _feeService = Substitute.For<IFeeService>();
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();

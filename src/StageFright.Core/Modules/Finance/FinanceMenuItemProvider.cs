@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 using StageFright.Plugins.Contracts;
 
 namespace StageFright.Core.Modules.Finance;
@@ -11,6 +13,13 @@ namespace StageFright.Core.Modules.Finance;
 /// </summary>
 public class FinanceMenuItemProvider : IMenuItemProvider
 {
+    private readonly IStringLocalizer<NavigationResource> _localizer;
+
+    public FinanceMenuItemProvider(IStringLocalizer<NavigationResource> localizer)
+    {
+        _localizer = localizer;
+    }
+
     public string ModuleName => "Finance";
     public int DisplayOrder => 4;
 
@@ -18,18 +27,18 @@ public class FinanceMenuItemProvider : IMenuItemProvider
     [
         new MenuItem
         {
-            Title = "Finance",
+            Title = _localizer["Nav_Finance_Title"],
             Route = "/finance",
-            ShortLabel = "FIN",
+            ShortLabel = _localizer["Nav_Finance_ShortLabel"],
             DisplayOrder = 0,
             SubItems =
             [
-                new MenuItem { Title = "Overview", Route = "/finance", DisplayOrder = 0 },
-                new MenuItem { Title = "Chart of Accounts", Route = "/finance/accounts", DisplayOrder = 1 },
-                new MenuItem { Title = "Record Bank Deposit", Route = "/finance/bank-deposit", DisplayOrder = 3 },
-                new MenuItem { Title = "Journal Entries", Route = "/finance/journal", DisplayOrder = 4 },
-                new MenuItem { Title = "Reconciliation", Route = "/finance/reconciliation", DisplayOrder = 5 },
-                new MenuItem { Title = "Opening Balances", Route = "/finance/opening-balances", DisplayOrder = 6 }
+                new MenuItem { Title = _localizer["Nav_Finance_Overview"], Route = "/finance", DisplayOrder = 0 },
+                new MenuItem { Title = _localizer["Nav_Finance_ChartOfAccounts"], Route = "/finance/accounts", DisplayOrder = 1 },
+                new MenuItem { Title = _localizer["Nav_Finance_RecordBankDeposit"], Route = "/finance/bank-deposit", DisplayOrder = 3 },
+                new MenuItem { Title = _localizer["Nav_Finance_JournalEntries"], Route = "/finance/journal", DisplayOrder = 4 },
+                new MenuItem { Title = _localizer["Nav_Finance_Reconciliation"], Route = "/finance/reconciliation", DisplayOrder = 5 },
+                new MenuItem { Title = _localizer["Nav_Finance_OpeningBalances"], Route = "/finance/opening-balances", DisplayOrder = 6 }
             ]
         }
     ];

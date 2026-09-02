@@ -5,6 +5,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Modules.AuditTrail;
+using StageFright.Core.Modules.Localization;
 using StageFright.Core.Modules.Settings;
 using StageFright.Data;
 using StageFright.Data.Repositories;
@@ -128,6 +129,25 @@ public sealed class StartupSequenceTests : IAsyncLifetime
         var remaining = await _db.AuditTrailEntries.IgnoreQueryFilters().ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.DoesNotContain(remaining, e => e.Id == oldEnoughForOneYear.Id);
         Assert.Contains(remaining, e => e.Id == withinOneYear.Id);
+    }
+
+    [Fact]
+    public void SupportedLanguagesCatalog_ResolvesViaDiContainer_DiscoversShippedLanguages()
+    {
+        // Regression for #360: AddSingleton<ISupportedLanguagesCatalog, SupportedLanguagesCatalog>()
+        // let the container pick the (IEnumerable<string>) test-seam constructor and inject an
+        // *empty* sequence (DI resolves an unregistered IEnumerable<string> as empty, not null),
+        // collapsing the shipped-language list to en-AU only. However it is registered, a
+        // DI-resolved catalog must still discover the satellite resource sets shipped in the
+        // build — this project ships en-US and fr-FR beside the en-AU neutral baseline.
+        var services = new ServiceCollection();
+        services.AddSingleton<ISupportedLanguagesCatalog, SupportedLanguagesCatalog>();
+        using var provider = services.BuildServiceProvider();
+
+        var catalog = provider.GetRequiredService<ISupportedLanguagesCatalog>();
+
+        Assert.Contains(catalog.All, l => l.CultureCode == "en-US");
+        Assert.Contains(catalog.All, l => l.CultureCode == "fr-FR");
     }
 
     // --- Startup diagnostic service (T172 corrupted-DB error dialog) ---

@@ -19,7 +19,7 @@ public class MemberListReportProviderTests
 
     public MemberListReportProviderTests()
     {
-        _sut = new MemberListReportProvider(_members, new AgeCalculationService());
+        _sut = new MemberListReportProvider(_members, new AgeCalculationService(RealLocalizer.Instance), RealLocalizer.Instance);
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class MemberListReportProviderTests
         var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
 
         var row = result.Sections.Single().Rows.Single();
-        var expectedAge = new AgeCalculationService().Calculate(dob, DateTime.UtcNow.Date);
+        var expectedAge = new AgeCalculationService(RealLocalizer.Instance).Calculate(dob, DateTime.UtcNow.Date);
         Assert.Equal(expectedAge.ToString(), row.Cells[5]);
     }
 
@@ -62,7 +62,7 @@ public class MemberListReportProviderTests
         var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
 
         var row = result.Sections.Single().Rows.Single();
-        var expectedAge = new AgeCalculationService().Calculate(dob, DateTime.UtcNow.Date);
+        var expectedAge = new AgeCalculationService(RealLocalizer.Instance).Calculate(dob, DateTime.UtcNow.Date);
         Assert.Equal(expectedAge.ToString(), row.Cells[5]);
     }
 

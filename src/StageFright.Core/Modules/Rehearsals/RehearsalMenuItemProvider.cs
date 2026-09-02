@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 using StageFright.Plugins.Contracts;
 
 namespace StageFright.Core.Modules.Rehearsals;
@@ -8,6 +10,13 @@ namespace StageFright.Core.Modules.Rehearsals;
 /// </summary>
 public class RehearsalMenuItemProvider : IMenuItemProvider
 {
+    private readonly IStringLocalizer<NavigationResource> _localizer;
+
+    public RehearsalMenuItemProvider(IStringLocalizer<NavigationResource> localizer)
+    {
+        _localizer = localizer;
+    }
+
     public string ModuleName => "Rehearsals";
     public int DisplayOrder => 2;
 
@@ -16,10 +25,10 @@ public class RehearsalMenuItemProvider : IMenuItemProvider
         {
             new()
             {
-                Title = "Rehearsals",
+                Title = _localizer["Nav_Rehearsals_Title"],
                 Route = "/rehearsals",
                 Icon = "schedule",
-                ShortLabel = "REH",
+                ShortLabel = _localizer["Nav_Rehearsals_ShortLabel"],
                 DisplayOrder = 0
             }
         };

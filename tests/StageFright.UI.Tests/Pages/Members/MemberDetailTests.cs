@@ -11,7 +11,7 @@ namespace StageFright.UI.Tests.Pages.Members;
 /// <summary>
 /// bUnit tests for MemberDetail — committee badge ARIA attribute and empty-history rendering.
 /// </summary>
-public class MemberDetailTests : BunitContext
+public class MemberDetailTests : LocalizedTestContext
 {
     private readonly IMemberService _memberService = Substitute.For<IMemberService>();
     private readonly ICommitteeService _committeeService = Substitute.For<ICommitteeService>();

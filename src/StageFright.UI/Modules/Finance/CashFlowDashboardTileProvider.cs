@@ -1,4 +1,6 @@
+using Microsoft.Extensions.Localization;
 using StageFright.Plugins.Contracts;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Modules.Finance;
 
@@ -10,8 +12,15 @@ namespace StageFright.UI.Modules.Finance;
 /// </summary>
 public class CashFlowDashboardTileProvider : IDashboardTileProvider
 {
+    private readonly IStringLocalizer<FinanceResource> _localizer;
+
+    public CashFlowDashboardTileProvider(IStringLocalizer<FinanceResource> localizer)
+    {
+        _localizer = localizer;
+    }
+
     public string TileId => "finance-cashflow";
-    public string Title => "Cash flow · 6 months";
+    public string Title => _localizer["Finance_CashFlowTile_Title"];
     public string ModuleName => "Finance";
     public int DisplayOrder => 50;
     public Type TileComponentType => typeof(CashFlowTile);

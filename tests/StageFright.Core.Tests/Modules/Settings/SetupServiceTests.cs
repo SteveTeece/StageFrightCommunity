@@ -31,7 +31,7 @@ public class SetupServiceTests : TestBase
 
     private SetupService CreateService() => new(
         _settingsRepo, _accountRepo, _eventTypeRepo, _officeHolderTypeService,
-        _accountService, _openingBalanceService, _audit);
+        _accountService, _openingBalanceService, _audit, RealLocalizer.Instance);
 
     // --- IsSetupCompleteAsync ---
 
@@ -250,8 +250,9 @@ public class SetupServiceTests : TestBase
 
         await svc.InitializeAsync(ValidRequest(), Ct);
 
+        // spec 028, US8 / FR-023: the default retention on a fresh dataset is now five years.
         await _settingsRepo.Received(1).SaveAsync(
-            Arg.Is<Settings>(s => s!.AuditRetentionYears == 1),
+            Arg.Is<Settings>(s => s!.AuditRetentionYears == 5),
             Arg.Any<CancellationToken>());
     }
 
@@ -271,6 +272,120 @@ public class SetupServiceTests : TestBase
         await _settingsRepo.Received(1).SaveAsync(
             Arg.Is<Settings>(s => s!.AuditRetentionYears == years),
             Arg.Any<CancellationToken>());
+    }
+
+    // --- Currency (spec 028, US1 / FR-001) ---
+
+    [Fact]
+    public async Task InitializeAsync_PersistsDefaultCurrency_WhenNotSpecified()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        await svc.InitializeAsync(ValidRequest(), Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s!.CurrencyCode == "AUD"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData("USD", "USD")]
+    [InlineData("jpy", "JPY")]
+    [InlineData(" eur ", "EUR")]
+    public async Task InitializeAsync_PersistsRequestedCurrency_Normalised(string requested, string persisted)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        var request = ValidRequest() with { CurrencyCode = requested };
+        await svc.InitializeAsync(request, Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s!.CurrencyCode == persisted),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData("ZZZ")]
+    [InlineData("")]
+    [InlineData("dollars")]
+    public async Task InitializeAsync_Throws_WhenCurrencyUnknown(string code)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var request = ValidRequest() with { CurrencyCode = code };
+        await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
+        await _settingsRepo.DidNotReceive().SaveAsync(Arg.Any<Settings>(), Arg.Any<CancellationToken>());
+    }
+
+    // --- Financial-year start (spec 028, US7 / FR-019, FR-020) ---
+
+    [Fact]
+    public async Task InitializeAsync_PersistsDefaultFinancialYearStart_WhenNotSpecified()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        await svc.InitializeAsync(ValidRequest(), Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s!.FinancialYearStartMonth == 7 && s.FinancialYearStartDay == 1),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(4, 6)]
+    [InlineData(1, 1)]
+    [InlineData(2, 28)]
+    public async Task InitializeAsync_PersistsRequestedFinancialYearStart_MonthAndDay(int month, int day)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+
+        var request = ValidRequest() with { FinancialYearStartMonth = month, FinancialYearStartDay = day };
+        await svc.InitializeAsync(request, Ct);
+
+        await _settingsRepo.Received(1).SaveAsync(
+            Arg.Is<Settings>(s => s!.FinancialYearStartMonth == month && s.FinancialYearStartDay == day),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(29)]
+    [InlineData(40)]
+    public async Task InitializeAsync_Throws_WhenFinancialYearStartDayOutOfRange(int day)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var request = ValidRequest() with { FinancialYearStartDay = day };
+        await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
+        await _settingsRepo.DidNotReceive().SaveAsync(Arg.Any<Settings>(), Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(13)]
+    [InlineData(-1)]
+    public async Task InitializeAsync_Throws_WhenFinancialYearStartMonthOutOfRange(int month)
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        var svc = CreateService();
+
+        var request = ValidRequest() with { FinancialYearStartMonth = month };
+        await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(request, Ct));
+        await _settingsRepo.DidNotReceive().SaveAsync(Arg.Any<Settings>(), Arg.Any<CancellationToken>());
     }
 
     // --- Queued accounts / opening balances (spec 017) ---
@@ -380,6 +495,32 @@ public class SetupServiceTests : TestBase
         await _openingBalanceService.Received(1).RecordOpeningBalancesAsync(
             Arg.Is<RecordOpeningBalancesRequest>(r =>
                 r!.Entries.Count == 1 && r.Entries[0].AccountId == existingAccountId && r.Entries[0].Amount == 200m),
+            Arg.Any<CancellationToken>());
+    }
+
+    // spec 028, US6 / FR-018: opening balances entered during first-run setup are always
+    // accepted. SetupService itself has no closed-through-date concept, and the real
+    // ClosedPeriodGuard is a no-op here because no Settings row exists yet.
+    [Fact]
+    public async Task InitializeAsync_PostsQueuedOpeningBalances_RegardlessOfClosedPeriod()
+    {
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var accountId = Guid.NewGuid();
+        var svc = CreateService();
+
+        var request = ValidRequest() with
+        {
+            QueuedOpeningBalances = [new OpeningBalanceEntry { AccountId = accountId, Amount = 1000m }],
+            OpeningBalanceAsAtDate = new DateTime(2000, 1, 1) // deliberately far in the past
+        };
+
+        await svc.InitializeAsync(request, Ct); // must not throw
+
+        await _openingBalanceService.Received(1).RecordOpeningBalancesAsync(
+            Arg.Is<RecordOpeningBalancesRequest>(r =>
+                r!.Entries.Count == 1 && r.Entries[0].AccountId == accountId && r.Entries[0].Amount == 1000m),
             Arg.Any<CancellationToken>());
     }
 

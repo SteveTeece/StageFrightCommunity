@@ -11,7 +11,7 @@ namespace StageFright.UI.Tests.Pages.Setup.Tabs;
 /// EditForm since its Input*/ValidationMessage components need a cascaded EditContext.
 /// EditForm.ChildContent is RenderFragment&lt;EditContext&gt; (generic), so bUnit's
 /// AddChildContent&lt;T&gt; shorthand doesn't apply — built manually instead.</summary>
-public class MembershipFeesTabTests : BunitContext
+public class MembershipFeesTabTests : LocalizedTestContext
 {
     private IRenderedComponent<EditForm> RenderInForm(SetupFormModel model) =>
         Render<EditForm>(p => p

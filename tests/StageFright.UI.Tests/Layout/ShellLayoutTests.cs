@@ -16,7 +16,7 @@ namespace StageFright.UI.Tests.Layout;
 /// renders sub-items as expandable groups (auto-expanding on active child routes),
 /// and handles badges, active-route highlighting, navigation, and the theme toggle.
 /// </summary>
-public class ShellLayoutTests : BunitContext
+public class ShellLayoutTests : LocalizedTestContext
 {
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
     private readonly IDeviceThemePreferenceProvider _deviceThemeProvider = Substitute.For<IDeviceThemePreferenceProvider>();

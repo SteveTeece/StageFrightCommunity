@@ -5,11 +5,11 @@
 @using StageFright.UI.Pages.Setup.Tabs
 @using StageFright.UI.Shared
 
-<PageTitle>First-Time Setup — StageFright Community</PageTitle>
+<PageTitle>@L["Setup_Page_Title"]</PageTitle>
 
 <div class="mt-3">
-    <h1 class="mb-1">StageFright Community - Setup Wizard</h1>
-    <p class="text-muted mb-3 small">Complete the setup below to get started.</p>
+    <h1 class="mb-1">@L["Setup_Wizard_Heading"]</h1>
+    <p class="text-muted mb-3 small">@L["Setup_Wizard_Subheading"]</p>
 
     @if (_errorMessage is not null)
     {
@@ -20,7 +20,7 @@
         <DataAnnotationsValidator />
 
         <Tabs @ref="_tabsRef">
-            <Tab Title="Organisation Settings" OnClick="@(() => SetActiveTab(0))">
+            <Tab Title="@L["Setup_Tab_OrganisationSettings"]" OnClick="@(() => SetActiveTab(0))">
                 <Content>
                     <div class="pt-3">
                         @if (_tabShown[0])
@@ -33,17 +33,14 @@
                                         <ThemeSelectionTab />
                                         <SalesTaxTab Model="_model" />
                                     </div>
-                                    <SampleDataTab DebugSeederAvailable="_debugSeeder is not null"
-                                                   SeedWithTestData="_seedWithTestData"
-                                                   SeedWithTestDataChanged="HandleSeedWithTestDataChanged" />
                                 </ChildContent>
-                                <ErrorContent Context="tabError"><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                                <ErrorContent Context="tabError"><div class="alert alert-danger">@L["Setup_Tab_LoadFailed"]</div></ErrorContent>
                             </ErrorBoundary>
                         }
                     </div>
                 </Content>
             </Tab>
-            <Tab Title="Chart of Accounts" Disabled="@_seedWithTestData" OnClick="@(() => SetActiveTab(1))">
+            <Tab Title="@L["Setup_Tab_ChartOfAccounts"]" OnClick="@(() => SetActiveTab(1))">
                 <Content>
                     <div class="pt-3">
                         @if (_tabShown[1])
@@ -54,13 +51,13 @@
                                                          OnAdd="HandleQueueAccount"
                                                          OnRemove="HandleRemoveQueuedAccount" />
                                 </ChildContent>
-                                <ErrorContent Context="tabError"><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                                <ErrorContent Context="tabError"><div class="alert alert-danger">@L["Setup_Tab_LoadFailed"]</div></ErrorContent>
                             </ErrorBoundary>
                         }
                     </div>
                 </Content>
             </Tab>
-            <Tab Title="Opening Balances" Disabled="@_seedWithTestData" OnClick="@(() => SetActiveTab(2))">
+            <Tab Title="@L["Setup_Tab_OpeningBalances"]" OnClick="@(() => SetActiveTab(2))">
                 <Content>
                     <div class="pt-3">
                         @if (_tabShown[2])
@@ -70,13 +67,13 @@
                                     <OpeningBalancesTab QueuedAccounts="_queuedAccounts"
                                                          OnSubmit="HandleQueueOpeningBalances" />
                                 </ChildContent>
-                                <ErrorContent Context="tabError"><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                                <ErrorContent Context="tabError"><div class="alert alert-danger">@L["Setup_Tab_LoadFailed"]</div></ErrorContent>
                             </ErrorBoundary>
                         }
                     </div>
                 </Content>
             </Tab>
-            <Tab Title="Committee" Disabled="@_seedWithTestData" OnClick="@(() => SetActiveTab(3))">
+            <Tab Title="@L["Setup_Tab_Committee"]" OnClick="@(() => SetActiveTab(3))">
                 <Content>
                     <div class="pt-3">
                         @if (_tabShown[3])
@@ -88,13 +85,13 @@
                                                   OnAdd="HandleQueueCommitteeTitle"
                                                   OnRemove="HandleRemoveQueuedCommitteeTitle" />
                                 </ChildContent>
-                                <ErrorContent Context="tabError"><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                                <ErrorContent Context="tabError"><div class="alert alert-danger">@L["Setup_Tab_LoadFailed"]</div></ErrorContent>
                             </ErrorBoundary>
                         }
                     </div>
                 </Content>
             </Tab>
-            <Tab Title="Review" OnClick="@(() => SetActiveTab(4))">
+            <Tab Title="@L["Setup_Tab_Review"]" OnClick="@(() => SetActiveTab(4))">
                 <Content>
                     <div class="pt-3">
                         @if (_tabShown[4])
@@ -103,11 +100,9 @@
                                 <ChildContent>
                                     <ReviewTab Model="_model"
                                                QueuedCommitteeTitles="_queuedCommitteeTitles"
-                                               QueuedAccounts="_queuedAccounts"
-                                               DebugSeederAvailable="_debugSeeder is not null"
-                                               SeedWithTestData="_seedWithTestData" />
+                                               QueuedAccounts="_queuedAccounts" />
                                 </ChildContent>
-                                <ErrorContent Context="tabError"><div class="alert alert-danger">This tab failed to load.</div></ErrorContent>
+                                <ErrorContent Context="tabError"><div class="alert alert-danger">@L["Setup_Tab_LoadFailed"]</div></ErrorContent>
                             </ErrorBoundary>
                         }
                     </div>
@@ -118,7 +113,7 @@
         <div class="d-flex gap-2 mt-3">
             @if (_currentTabIndex < _tabShown.Count - 1)
             {
-                <button type="button" id="btn-next" class="btn btn-primary btn-sm" @onclick="HandleNextAsync">Next</button>
+                <button type="button" id="btn-next" class="btn btn-primary btn-sm" @onclick="HandleNextAsync">@L["Setup_Nav_NextButton"]</button>
             }
             else
             {
@@ -127,23 +122,9 @@
                     {
                         <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                     }
-                    Finish
+                    @L["Setup_Nav_FinishButton"]
                 </button>
             }
         </div>
     </EditForm>
 </div>
-
-@if (_seedingInProgress)
-{
-    <div class="setup-seeding-overlay" role="status" aria-live="polite" aria-atomic="true">
-        <div class="setup-seeding-overlay-card text-center">
-            <div class="spinner-border text-primary mb-2" role="status" aria-hidden="true"></div>
-            <p class="mb-1">Setting up your sample data — this may take a few minutes. Please don't close the app.</p>
-            @if (_seedingProgress is not null)
-            {
-                <p class="mb-0 small text-muted">@_seedingProgress</p>
-            }
-        </div>
-    </div>
-}

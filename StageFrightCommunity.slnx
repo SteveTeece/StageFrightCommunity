@@ -11,6 +11,7 @@
     <Project Path="tests/StageFright.Core.Tests/StageFright.Core.Tests.csproj" />
     <Project Path="tests/StageFright.Data.Tests/StageFright.Data.Tests.csproj" />
     <Project Path="tests/StageFright.Integration.Tests/StageFright.Integration.Tests.csproj" />
+    <Project Path="tests/StageFright.Localization.Tests/StageFright.Localization.Tests.csproj" />
     <Project Path="tests/StageFright.Reports.Tests/StageFright.Reports.Tests.csproj" />
     <Project Path="tests/StageFright.TestPlugin/StageFright.TestPlugin.csproj" />
     <Project Path="tests/StageFright.UI.Tests/StageFright.UI.Tests.csproj" />

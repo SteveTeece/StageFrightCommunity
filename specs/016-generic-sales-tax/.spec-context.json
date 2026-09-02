@@ -3,7 +3,7 @@
   "specName": "Generic International Sales Tax (Replacing ABN & GST)",
   "branch": "016-generic-sales-tax",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -327,7 +327,15 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-18T11:03:33.801Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-30T06:57:39.584Z"
     }
   ],
-  "currentTask": "T036"
+  "currentTask": "T036",
+  "telemetryInstanceId": "93ca3d3d-76b7-4b04-bf09-dc4c9ed36b6f"
 }

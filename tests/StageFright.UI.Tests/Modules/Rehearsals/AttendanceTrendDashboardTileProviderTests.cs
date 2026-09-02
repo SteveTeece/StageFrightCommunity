@@ -1,12 +1,13 @@
 using StageFright.Plugins.Contracts;
 using StageFright.UI.Modules.Rehearsals;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Tests.Modules.Rehearsals;
 
 /// <summary>Unit tests for AttendanceTrendDashboardTileProvider metadata and TileData.</summary>
 public class AttendanceTrendDashboardTileProviderTests
 {
-    private readonly IDashboardTileProvider _provider = new AttendanceTrendDashboardTileProvider();
+    private readonly IDashboardTileProvider _provider = new AttendanceTrendDashboardTileProvider(RealStringLocalizer.For<RehearsalsResource>());
 
     [Fact]
     public void Should_ExposeTrendTileMetadata_When_Constructed()

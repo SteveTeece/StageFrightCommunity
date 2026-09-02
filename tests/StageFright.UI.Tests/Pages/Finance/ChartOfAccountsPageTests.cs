@@ -20,7 +20,7 @@ namespace StageFright.UI.Tests.Pages.Finance;
 /// message, restore, system account read-only enforcement, and the Balance column
 /// (currency rendering, sorting, and per-row error indicator).
 /// </summary>
-public class ChartOfAccountsPageTests : RadzenGridTestContext
+public class ChartOfAccountsPageTests : LocalizedTestContext
 {
     private readonly IAccountService _accountService = Substitute.For<IAccountService>();
     private readonly IAccountBalanceService _accountBalanceService = Substitute.For<IAccountBalanceService>();

@@ -1,6 +1,7 @@
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 
 namespace StageFright.Core.Modules.Finance;
 
@@ -80,8 +81,13 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
                 // decreasing adjustment reversing the tax accrued with the fee, at the
                 // organisation's current tax rate (single current rate, no rate history — see
                 // spec 016 Assumptions).
+                // No Settings.TaxEntryMode branch here (unlike the accrual services — issue #354):
+                // this reverses a *stored* gross Fee.Amount, and SplitInclusive of an exact gross
+                // re-sums to it by construction, so the pair stays balanced whichever entry mode
+                // was in force when the fee was raised and no historical figure is reinterpreted.
                 var (badDebtAmount, taxAdjustment) = fee.TaxCode == TaxCode.Taxable
-                    ? TaxCalculator.SplitInclusive(fee.Amount, settings?.TaxRate ?? 0m)
+                    ? TaxCalculator.SplitInclusive(fee.Amount, settings?.TaxRate ?? 0m,
+                        CurrencyCatalog.Get(settings?.CurrencyCode ?? CurrencyCatalog.Default.Code).MinorUnitDigits)
                     : (fee.Amount, 0m);
 
                 var lines = new List<Transaction>

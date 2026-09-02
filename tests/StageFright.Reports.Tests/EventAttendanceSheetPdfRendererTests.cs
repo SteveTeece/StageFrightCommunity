@@ -11,7 +11,7 @@ namespace StageFright.Reports.Tests;
 /// </summary>
 public class EventAttendanceSheetPdfRendererTests
 {
-    private readonly IEventAttendanceSheetPdfRenderer _renderer = new EventAttendanceSheetPdfRenderer();
+    private readonly IEventAttendanceSheetPdfRenderer _renderer = new EventAttendanceSheetPdfRenderer(RealLocalizer.Instance);
 
     private static EventAttendanceSheetData MakeSheet(params EventAttendanceSheetMember[] members) => new()
     {

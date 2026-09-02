@@ -19,7 +19,12 @@ public static class SystemAccounts
     /// <summary>Tax Collected — Liability 2310. Tax clearing account for sales.</summary>
     public static readonly Guid TaxCollectedId = new("00000000-0000-0000-0000-000000000004");
 
-    /// <summary>Tax Paid — Liability 2320. Tax clearing account for purchases.</summary>
+    /// <summary>
+    /// Tax Receivable — Asset 2320. Tax clearing account for purchases: tax paid on
+    /// purchases is recoverable from the tax authority, so the account is an asset
+    /// (spec 028 Phase 16 / issue #355). The <c>TaxPaid*</c> C# names are retained for
+    /// continuity; the number stays 2320 as a documented asset exception.
+    /// </summary>
     public static readonly Guid TaxPaidId = new("00000000-0000-0000-0000-000000000005");
 
     /// <summary>Opening Balance Equity — Equity 3100. Plug account for the opening balances wizard.</summary>
@@ -40,7 +45,7 @@ public static class SystemAccounts
     /// <summary>Account number of Tax Collected.</summary>
     public const string TaxCollectedNumber = "2310";
 
-    /// <summary>Account number of Tax Paid.</summary>
+    /// <summary>Account number of Tax Receivable (an Asset, despite the 2000s number — see <see cref="TaxPaidId"/>).</summary>
     public const string TaxPaidNumber = "2320";
 
     /// <summary>Account number of Opening Balance Equity.</summary>

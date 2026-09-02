@@ -2,6 +2,8 @@ using System.Text.Json;
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Settings;
 
@@ -13,11 +15,13 @@ public class SettingsService : ISettingsService
 {
     private readonly ISettingsRepository _repository;
     private readonly IAuditTrailService _audit;
+    private readonly ILocalizer _localizer;
 
-    public SettingsService(ISettingsRepository repository, IAuditTrailService audit)
+    public SettingsService(ISettingsRepository repository, IAuditTrailService audit, ILocalizer localizer)
     {
         _repository = repository;
         _audit = audit;
+        _localizer = localizer;
     }
 
     public Task<global::StageFright.Core.Entities.Settings?> GetAsync(CancellationToken ct = default) =>
@@ -34,25 +38,36 @@ public class SettingsService : ISettingsService
             settings.TaxRate = null;
             settings.AnnualFeeTaxCode = null;
             settings.AttendanceFeeTaxCode = null;
+            settings.TaxEntryMode = TaxEntryMode.Inclusive;
         }
         else if (settings.TaxRate is not (> 0))
         {
-            throw new ValidationException("A tax rate greater than zero is required when sales tax applies.", "Settings", nameof(SaveAsync));
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Settings_TaxRateRequired"), "Settings", nameof(SaveAsync));
         }
 
         if (settings.MinimumMemberAge < 0)
-            throw new ValidationException("Minimum member age cannot be negative.", "Settings", nameof(SaveAsync));
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Settings_MinimumAgeNegative"), "Settings", nameof(SaveAsync));
 
         if (settings.MaxAgeRangeYears < 0)
-            throw new ValidationException("Maximum age range cannot be negative.", "Settings", nameof(SaveAsync));
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Settings_MaxAgeRangeNegative"), "Settings", nameof(SaveAsync));
 
         if (settings.MinimumMemberAge > settings.MaxAgeRangeYears)
-            throw new ValidationException("Minimum member age cannot exceed the maximum age range.", "Settings", nameof(SaveAsync));
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Settings_MinAgeExceedsMax"), "Settings", nameof(SaveAsync));
 
         if (settings.AuditRetentionYears < 1 || settings.AuditRetentionYears > 7)
-            throw new ValidationException("Audit retention period must be between 1 and 7 years.", "Settings", nameof(SaveAsync));
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Settings_AuditRetentionRange"), "Settings", nameof(SaveAsync));
 
         var existing = await _repository.GetAsync(ct);
+
+        // Currency is chosen once at first-run setup and fixed for the life of the dataset
+        // (spec 028, FR-002) — no Settings edit surface renders a currency control, so a
+        // differing incoming value can only be a bug or a tampered request.
+        if (existing is not null
+            && !string.IsNullOrWhiteSpace(existing.CurrencyCode)
+            && !string.Equals(existing.CurrencyCode, settings.CurrencyCode, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Settings_CurrencyImmutable"), "Settings", nameof(SaveAsync));
+        }
 
         string? oldValue = existing is null
             ? null

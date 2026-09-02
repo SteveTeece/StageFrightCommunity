@@ -1,0 +1,716 @@
+{
+  "workflow": "speckit",
+  "specName": "First-Run Language Selection & Optional Sample-Data Seeding",
+  "branch": "029-first-run-language-seed",
+  "currentStep": "implement",
+  "status": "implementing",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-30T06:59:44.544Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-30T07:54:58.537Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-30T08:03:15.255Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:14:11.787Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-30T08:16:39.357Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-30T08:19:21.503Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-30T08:19:21.533Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-30T08:19:28.288Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-30T08:19:21.592Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:29:07.359Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:29:07.774Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:29:08.158Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:29:08.543Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:29:08.987Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:29:09.415Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:29:09.850Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:39.088Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:39.507Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:39.979Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:40.380Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:40.887Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:41.321Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:41.753Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:42.233Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:42.649Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:42:43.089Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:57:27.591Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:57:28.043Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:57:28.487Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:57:28.921Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:57:29.349Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T08:57:29.793Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:26:57.355Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:26:58.477Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:26:59.254Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:27:00.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:27:00.616Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:36:29.611Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:58:28.947Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:58:29.231Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T09:58:29.520Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T10:12:07.182Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T10:13:11.404Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T10:16:15.206Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T10:29:39.775Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "user",
+      "at": "2026-09-02T07:48:46.000Z"
+    }
+  ],
+  "telemetryInstanceId": "95362f86-b658-4cf0-ae9b-0366f5523b43",
+  "currentTask": "T037",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE"
+    },
+    "T002": {
+      "status": "DONE"
+    },
+    "T003": {
+      "status": "DONE"
+    },
+    "T004": {
+      "status": "DONE"
+    },
+    "T005": {
+      "status": "DONE"
+    },
+    "T006": {
+      "status": "DONE"
+    },
+    "T007": {
+      "status": "DONE"
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "New FirstRunLanguageScreenTests.cs covering language-selection path (list/pre-select/confirm)",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "New AppRoutingTests.cs covering App startup redirect decisions",
+      "files": [
+        "tests/StageFright.UI.Tests/AppRoutingTests.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Rewrote SetupWizardTests: dropped sample-data cases, added LanguageCode-from-CultureProvider case",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Deleted SetupWizardNoSeederTests, folded Tabs_AreNeverDisabled into SetupWizardTests",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardNoSeederTests.cs (deleted)"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Removed DebugSeederAvailable/SeedWithTestData cases from ReviewTabTests",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/ReviewTabTests.cs"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Deleted SampleDataTabTests",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/Tabs/SampleDataTabTests.cs (deleted)"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Removed LanguageSelectionTab-based cases from LanguagePickerRenderTests",
+      "files": [
+        "tests/StageFright.UI.Tests/Localization/LanguagePickerRenderTests.cs"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Added Setup_FirstRun_* resx keys to neutral/en-US/fr-FR/qps-ploc",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SetupResource.resx",
+        "SetupResource.en-US.resx",
+        "SetupResource.fr-FR.resx",
+        "SetupResource.qps-ploc.resx"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Created FirstRunLanguageScreen at /language-select (list, pre-select, confirm->Set+Switch+Nav)",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/FirstRunLanguageScreen.razor",
+        "FirstRunLanguageScreen.razor.cs"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "App.razor.cs routes to /language-select vs /setup based on ILanguagePreferenceStore",
+      "files": [
+        "src/StageFright.UI/App.razor.cs"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "Deleted LanguageSelectionTab.razor/.razor.cs",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/LanguageSelectionTab.razor (deleted)",
+        "LanguageSelectionTab.razor.cs (deleted)"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "Deleted SampleDataTab.razor/.razor.cs",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/SampleDataTab.razor (deleted)",
+        "SampleDataTab.razor.cs (deleted)"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "Removed LanguageSelectionTab/SampleDataTab markup and Disabled attrs from SetupWizard.razor",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Stripped seedWithTestData/debugSeeder/IsTabBypassed from SetupWizard.razor.cs; LanguageCode now from cascaded CultureProvider; unconditional opening-balance guard",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "Dropped unused LanguageCode field from SetupFormModel",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupFormModel.cs"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "Removed DebugSeederAvailable/SeedWithTestData params + Load-sample-data row from ReviewTab; dropped Setup_Review_LoadSampleDataTerm resx key",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/ReviewTab.razor",
+        "ReviewTab.razor.cs",
+        "src/StageFright.UI/Resources/Strings/SetupResource*.resx"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "Added Set/Switch and no-restart-notice assertions to GeneralSettingsTabTests",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Settings/GeneralSettingsTabTests.cs"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "Deleted GeneralSettingsTab_ShowsRestartNotice test; broadened the no-notice test to cover after-change too",
+      "files": [
+        "tests/StageFright.UI.Tests/Localization/LanguagePickerRenderTests.cs"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "Removed Settings_General_LanguageRestartNotice key from all 4 SettingsResource files",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SettingsResource*.resx"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "GeneralSettingsTab.razor.cs: dropped LanguageChanged/_initialLanguageCode; HandleSaveAsync now calls ILanguagePreferenceStore.Set + CultureProvider.Switch when the language changed",
+      "files": [
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor.cs"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "Removed the restart-notice alert block from GeneralSettingsTab.razor",
+      "files": [
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Added Setup_FirstRun_SeedingError resx key to neutral/en-US/fr-FR/qps-ploc",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SetupResource.resx",
+        "SetupResource.en-US.resx",
+        "SetupResource.fr-FR.resx",
+        "SetupResource.qps-ploc.resx"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "Extended FirstRunLanguageScreenTests: sample-data control renders only when IDebugDataSeeder resolves, confirming with it ticked seeds then navigates to /dashboard (via ClickAsync to correctly await the real Task.Run seeding hop), and a SeedAsync failure shows the error without navigating or double-calling InitializeAsync",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "FirstRunLanguageScreen.razor.cs: optionally resolves IDebugDataSeeder, and on confirm with sample data ticked builds a placeholder SetupRequest, calls SetupService.InitializeAsync then IDebugDataSeeder.SeedAsync under the same seeding-progress try/finally shape the old SetupWizard used, navigating to /dashboard on success or showing Setup_FirstRun_SeedingError on failure",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/FirstRunLanguageScreen.razor.cs",
+        "src/StageFright.UI/Resources/Strings/SetupResource*.resx"
+      ],
+      "concerns": [
+        "Fixed a genuine bUnit test-timing bug found while verifying this task: a plain synchronous .Click() on the confirm button does not reliably await the real Task.Run seeding hop under load, so the two new US3 tests use ClickAsync(new MouseEventArgs()) instead, matching the codebase's existing convention for async-submit buttons elsewhere"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "Added the debug-only Load sample data RadzenSwitch (Name=seedData) and the seeding-progress overlay to FirstRunLanguageScreen.razor, reusing the existing setup-seeding-overlay CSS and Setup_Seeding_Message/Setup_SampleData_CheckboxLabel keys",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/FirstRunLanguageScreen.razor"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "CLAUDE.md: Navigation section now notes /language-select ahead of /setup; Localization section's stale next-launch/restart-notice sentence replaced with the live CultureProvider.Switch in-session switch and the ILanguagePreferenceStore ladder tier",
+      "files": [
+        "CLAUDE.md"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "adding-a-language.md: language picker refs moved from 'Setup Wizard language step' to the /language-select screen (one-minute version, SetupResource table row, step 5, qps-ploc note); section 9 retitled and rewritten — 4-tier ladder with the ILanguagePreferenceStore preference tier, restart-notice paragraph replaced by the live CultureProvider.Switch description for both entry points",
+      "files": [
+        "docs/localization/adding-a-language.md"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "Full verification: dotnet build (Debug) 0 warnings/0 errors; dotnet test full suite 2067 passed / 0 real failures (the lone EventFormTests.DoesNotRender_FeeOrPaidFields fail is the CLAUDE.md-documented GUID-substring flake — passes in isolation, Phase 6 touched only docs). Quickstart scenarios 1-5 via mapped filters all green: S1 V1+V22 Integration 11/11, S2 GeneralSettingsTabTests 12/12, S3+4 FirstRunLanguageScreenTests 9/9, S5 SetupWizardTests 19/19",
+      "files": [
+        "specs/029-first-run-language-seed/quickstart.md"
+      ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "Live CDP-driven verification on a clean install: /language-select renders before /setup, lists en-AU/en-US/fr-FR by endonym, en-AU pre-selected, choice persists to preferences.dat (no DB), no process restart on confirm, and a relaunch with the preference recorded comes up on /setup fully in French. Recorded a blocking finding: the in-session CultureProvider.Switch re-render does not take effect in the real MAUI WebView2 host (wizard stayed English after confirming fr-FR; new language only appears after a full restart) — see concern/verified entries. Light/dark theme comparison not reached.",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/FirstRunLanguageScreen.razor"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "Manual user-confirmed live verification of the Settings -> General display-language change in the real MAUI app: changing Display language and saving re-renders the running app in the new language immediately with no process restart, and no restart notice appears at any point (before the change / after the selection changes / after the save). Confirmed in both light and dark themes. Settings entry point (FR-009); the in-session CultureProvider.Switch re-render IS effective here because Settings renders inside the live cascaded CultureProvider. The separate T036 first-run /language-select -> /setup blocking concern is unaffected and remains open.",
+      "files": [
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor"
+      ]
+    }
+  },
+  "verified": [
+    {
+      "what": "Full solution builds cleanly after Foundational + US1-tests/routing/screen work (T001-T017)",
+      "command": "dotnet build StageFrightCommunity.slnx",
+      "result": "Build succeeded, 0 warnings, 0 errors"
+    },
+    {
+      "what": "US1 complete: full solution build + full test suite after retiring wizard language/sample-data widgets and fixing a CultureInfo test-parallelism race",
+      "command": "dotnet build StageFrightCommunity.slnx && dotnet test StageFrightCommunity.slnx",
+      "result": "Build: 0 warnings/0 errors. Tests: 2062/2062 passed across all six projects (Core.Tests 751, Reports.Tests 236, Localization.Tests 28, Data.Tests 158, UI.Tests 629, Integration.Tests 260)."
+    },
+    {
+      "what": "US2 complete: full solution build + full test suite after Settings live-switch + restart-notice removal",
+      "command": "dotnet build StageFrightCommunity.slnx && dotnet test StageFrightCommunity.slnx",
+      "result": "Build: 0 warnings/0 errors. Tests: 2064/2064 passed across all six projects (Core.Tests 751, Reports.Tests 236, Localization.Tests 28, Data.Tests 158, UI.Tests 631, Integration.Tests 260)."
+    },
+    {
+      "what": "US3 complete: full solution build + full test suite after adding the Debug-only Load-sample-data path to the first-run screen; also re-ran the two new seeding tests 3x paired to confirm a discovered bUnit Click()-vs-ClickAsync() timing race was actually fixed, not just incidentally passing",
+      "command": "dotnet build StageFrightCommunity.slnx && dotnet test StageFrightCommunity.slnx",
+      "result": "Build: 0 warnings/0 errors. Tests: 2067/2067 passed across all six projects (Core.Tests 751, Reports.Tests 236, Localization.Tests 28, UI.Tests 634, Data.Tests 158, Integration.Tests 260)."
+    },
+    {
+      "what": "T035 full build + test suite + quickstart scenario filters",
+      "command": "dotnet build -c Debug; dotnet test -c Debug",
+      "result": "build 0 warn/0 err; 2067 tests pass; sole failure EventFormTests.DoesNotRender_FeeOrPaidFields is the CLAUDE.md-documented GUID-substring flake (passes in isolation); quickstart S1-S5 filters all green (11/12/9/19)",
+      "warnings": [
+        "EventFormTests.DoesNotRender_FeeOrPaidFields flaky GUID-substring false-positive - known, re-ran green in isolation"
+      ]
+    },
+    {
+      "what": "T036 live MAUI-app visual verification of /language-select + in-session switch (CDP-driven, clean install)",
+      "command": "StageFright.App.exe with WEBVIEW2 --remote-debugging-port=9222, CDP Runtime.evaluate",
+      "result": "PARTIAL/FAIL. PASS: /language-select renders before /setup on clean install; lists en-AU/en-US/fr-FR by endonym; en-AU pre-selected; choice persists to preferences.dat outside the DB; no process restart on confirm (PID stable); relaunch with preference recorded resolves to fr-FR (log) and shows /setup fully in French, skipping /language-select (FR-005/FR-006 step 2 / Acceptance Scenario 6). FAIL: confirming fr-FR on /language-select does NOT re-render the running session - /setup stayed entirely English (Setup Wizard / Next / Organisation Name / nav). CultureProvider.Switch has no visible effect in the real WebView2 host; only a full process restart applies the new language. Light/dark theme variants not reached - primary behaviour fails first.",
+      "warnings": [
+        "FR-004/FR-008/SC-001/SC-006 not met: in-session language switch is non-functional in the real app despite green bUnit coverage (T007/T008/T024) and green integration test V22",
+        "T037 (Settings entry point) not run - exercises the same CultureProvider.Switch mechanism per FR-009, so presumed broken identically; needs a completed setup to test"
+      ]
+    },
+    {
+      "what": "T037 live MAUI-app visual verification of the Settings -> General display-language change (manual, user-confirmed 2026-09-02)",
+      "command": "Manual: real MAUI app, set-up install, Settings -> General -> change Display language -> Save, observed in light and dark themes",
+      "result": "PASS. Saving a changed Display language in Settings re-renders the running app in the new language immediately, with no process restart. No 'restart required' / restart notice appears at any point - before the change, after the selection changes, or after saving (FR-010 / FR-020 / SC-007). Confirmed in both light and dark themes. Contrary to the T036 presumption that the Settings path would be 'broken identically', the in-session CultureProvider.Switch re-render IS effective here in the real WebView2 host - Settings renders inside the live cascaded CultureProvider, so StateHasChanged propagates to its descendants.",
+      "warnings": [
+        "The T036 blocking concern is a different code path (first-run /language-select confirm -> navigate to /setup, which does NOT re-render live in the real app) and is unaffected by this result - it remains OPEN and still needs its own debug+fix+test pass."
+      ]
+    },
+    {
+      "what": "T036 blocking defect FIXED (in-session CultureProvider.Switch had no effect in the real MAUI host)",
+      "command": "root-cause repro (dotnet console, ExecutionContext boundary model) + code fix + dotnet build + dotnet test full suite",
+      "result": "Root cause confirmed by a deterministic repro: CultureInfo.CurrentCulture/CurrentUICulture are AsyncLocal-backed; MauiProgram.RunStartupSequence pinned them on the startup thread, which shadows the DefaultThreadCurrent* globals on the Blazor renderer's execution context, so Switch updated the globals but every queued render kept reading the stale pinned value (only a process restart re-pinned). FIX: MauiProgram.RunStartupSequence and CultureProvider.Switch now set ONLY CultureInfo.DefaultThreadCurrentCulture / DefaultThreadCurrentUICulture (plain process-wide statics) - never the per-context CurrentCulture/CurrentUICulture. Repro proves that with no per-context override anywhere, a render on a separately-captured ExecutionContext reads the new culture. Build: 0 warnings / 0 errors. Full suite: 2068/2068 pass across all six projects (UI.Tests 635, +1 new regression guard CultureProviderTests.Switch_DoesNotPinAPerContextOverride_SoLaterGlobalChangesStillTakeEffect; Core 751, Reports 236, Localization 28, Data 158, Integration 260).",
+      "warnings": [
+        "Live in-app re-verification of T036 (first-run /language-select -> /setup renders in the chosen language in the same session, both themes) and a re-confirm of T037 are still PENDING - bUnit renders synchronously so it cannot reproduce the ExecutionContext-boundary failure; the fix is proven at the mechanism level (repro) + unit/integration level (green suite), not yet re-watched in the real WebView2 host."
+      ]
+    }
+  ],
+  "step_summaries": {
+    "implement": {
+      "summary": "User Stories 1, 2 & 3 (P1/P2/P3) complete: first-run and Settings both apply a language change live via CultureProvider.Switch with no restart notice anywhere, and Debug builds can load sample data straight from the first-run screen, skipping the wizard entirely; full suite green (2067/2067)."
+    }
+  },
+  "coverage": {
+    "FR-011": {
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs::SampleDataControl_Renders_WhenDebugSeederRegistered",
+        "DoesNotRender_SampleDataControl_WhenNoDebugSeederRegistered"
+      ]
+    },
+    "FR-012": {
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs::Confirm_WithSampleDataChecked_SeedsThenNavigatesToDashboard"
+      ]
+    },
+    "FR-013": {
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs::Confirm_WithSampleDataChecked_SeedsThenNavigatesToDashboard"
+      ]
+    },
+    "FR-014": {
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/SetupWizardTests.cs::SeedDataCheckbox_IsAbsent_FromOrganisationSettingsTab"
+      ]
+    },
+    "FR-015": {
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs::Confirm_WithSampleDataChecked_ShowsError_WhenSeedingFails"
+      ]
+    }
+  },
+  "concerns": [
+    {
+      "note": "BLOCKING DEFECT found in T036 live verification: in-session language switching (CultureProvider.Switch, the central mechanism of spec 029) does not work in the real MAUI WebView2 host. Confirming a language on /language-select persists it and navigates on with no restart, but the destination renders in the OLD language - the new one only appears after a full app restart, i.e. the same user-visible symptom as issue #361. Startup resolution incl. the new no-DB preference tier is fine. Suspected root cause: CultureInfo.CurrentUICulture is AsyncLocal-backed; MauiProgram pins an explicit value on the root execution context at startup; Switch sets CurrentUICulture on the (unwinding) click-handler context and DefaultThreadCurrentUICulture process-wide, but the Blazor renderer keeps the startup-pinned CurrentUICulture, so IStringLocalizer never sees the change. bUnit tests (T007/T008/T024) and integration V22 pass because they render synchronously on the same context that calls Switch. Fix belongs in US1 T004/T016 + US2 T027 (a real switch mechanism that the renderer honours - e.g. re-resolve/reassign on the renderer dispatcher, or forceLoad navigation), plus a test that actually exercises a cross-context render. Out of scope for Phase 6 polish; needs its own debug+fix+test pass. T036 and T037 left unchecked.",
+      "step": "implement",
+      "resolved": true,
+      "resolvedAt": "2026-09-02T08:20:00.000Z",
+      "resolution": "FIXED 2026-09-02. The suspected root cause was correct. A deterministic ExecutionContext-boundary repro confirmed it, and the fix removes the per-context pin at BOTH sites: MauiProgram.RunStartupSequence and CultureProvider.Switch now assign ONLY CultureInfo.DefaultThreadCurrentCulture / DefaultThreadCurrentUICulture (plain process-wide statics), never CurrentCulture / CurrentUICulture. With no AsyncLocal override anywhere, every render reads CurrentUICulture straight through to the globals, so an in-session Switch is visible on the very next render regardless of which execution context runs it. New regression guard CultureProviderTests.Switch_DoesNotPinAPerContextOverride_SoLaterGlobalChangesStillTakeEffect. Docs updated (CLAUDE.md Localization, adding-a-language.md sec 9, contract, research.md Decision 2 correction, data-model.md). Build 0/0; full suite 2068/2068. Live in-app re-verification of T036/T037 in the real WebView2 host is still pending (bUnit cannot reproduce the EC-boundary failure)."
+    }
+  ],
+  "last_action": "T036 BLOCKING DEFECT FIXED (2026-09-02). Root cause (per-context CultureInfo.CurrentCulture/CurrentUICulture pin at startup shadowing the DefaultThreadCurrent* globals on the renderer's ExecutionContext) confirmed via a deterministic repro; fix sets ONLY the process-wide globals at both sites (MauiProgram.RunStartupSequence + CultureProvider.Switch). +1 regression test; build 0/0; full suite 2068/2068 green; docs refreshed. Concern marked resolved. STILL PENDING: live re-verification of T036 (first-run path, both themes) and a T037 re-confirm in the real MAUI app - the fix is proven at the mechanism + unit/integration level but not yet re-watched in the WebView2 host. Spec stays status=implementing until that live check is done."
+}

@@ -14,7 +14,7 @@ namespace StageFright.UI.Tests.Modules.Members;
 /// bUnit tests for MembersTile (design 3a) — active/inactive/total stats and the
 /// outstanding-fees chip across loading, error, zero and populated states.
 /// </summary>
-public class MembersTileTests : BunitContext
+public class MembersTileTests : LocalizedTestContext
 {
     private readonly IMemberService _memberService = Substitute.For<IMemberService>();
     private readonly IMemberBalanceService _balanceService = Substitute.For<IMemberBalanceService>();

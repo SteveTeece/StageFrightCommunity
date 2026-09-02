@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Events_Tile_Title" xml:space="preserve"><value>⟦Évéñts—⟧</value><comment>Dashboard tile heading for the Events module.</comment></data>
+  <data name="Events_Tile_ActionText" xml:space="preserve"><value>⟦Víéw Évéñts—⟧</value><comment>Action link on the Events dashboard tile.</comment></data>
+  <data name="Events_Tile_UpcomingLabel" xml:space="preserve"><value>⟦Úpçómíñg—⟧</value><comment>Events tile stat label — count of upcoming events.</comment></data>
+  <data name="Events_Tile_NextLabel" xml:space="preserve"><value>⟦Ñéxt—⟧</value><comment>Events tile stat label — date of the next event.</comment></data>
+  <data name="Events_Tile_LastParticipationLabel" xml:space="preserve"><value>⟦Lást pártíçípátíóñ—⟧</value><comment>Events tile note label preceding the most recent recorded participation rate.</comment></data>
+  <data name="Events_Tile_ParticipationDetail" xml:space="preserve"><value>⟦{Participated} óf {Total} ({Rate}%)—⟧</value><comment>Events tile — recorded participation. {Participated} = members who participated, {Total} = participation records, {Rate} = rate to whole number.</comment></data>
+  <data name="Events_Tile_ParticipationRate" xml:space="preserve"><value>⟦{Rate}%—⟧</value><comment>Events tile — recorded participation rate only. {Rate} = rate to whole number.</comment></data>
+  <data name="Events_Tile_NoParticipation" xml:space="preserve"><value>⟦Ñó pártíçípátíóñ réçórdéd ýét—⟧</value><comment>Events tile note shown when no participation has been recorded.</comment></data>
+  <data name="Events_Status_Recorded" xml:space="preserve"><value>⟦Réçórdéd—⟧</value><comment>Badge — an event/AGM whose outcome has been recorded.</comment></data>
+  <data name="Events_Status_Scheduled" xml:space="preserve"><value>⟦Sçhédúléd—⟧</value><comment>Badge — an event/AGM that is scheduled but not yet recorded.</comment></data>
+  <data name="Events_Status_NotRecorded" xml:space="preserve"><value>⟦Ñót réçórdéd—⟧</value><comment>Shown when participation has not been recorded.</comment></data>
+  <data name="Events_Status_RecordedText" xml:space="preserve"><value>⟦Réçórdéd—⟧</value><comment>Plain-text 'Recorded' shown in an Actions column once recording is done.</comment></data>
+  <data name="Events_List_PageTitle" xml:space="preserve"><value>⟦Évéñts — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title — Events list.</comment></data>
+  <data name="Events_List_Heading" xml:space="preserve"><value>⟦Évéñts—⟧</value><comment>Events list page heading.</comment></data>
+  <data name="Events_List_ScheduleButton" xml:space="preserve"><value>⟦Sçhédúlé Évéñt—⟧</value><comment>Button opening the schedule-event form.</comment></data>
+  <data name="Events_List_SearchPlaceholder" xml:space="preserve"><value>⟦Séárçh bý dáté, týpé ór ñótés…—⟧</value><comment>Events search box placeholder.</comment></data>
+  <data name="Events_List_SearchAriaLabel" xml:space="preserve"><value>⟦Séárçh évéñts—⟧</value><comment>aria-label on the Events search input.</comment></data>
+  <data name="Events_List_LoadingText" xml:space="preserve"><value>⟦Lóádíñg évéñts…—⟧</value><comment>Status text while the Events list loads.</comment></data>
+  <data name="Events_List_EmptyNone" xml:space="preserve"><value>⟦Ñó évéñts sçhédúléd ýét.—⟧</value><comment>Shown when there are no events.</comment></data>
+  <data name="Events_List_NoMatch" xml:space="preserve"><value>⟦Ñó évéñts mátçh "{SearchTerm}".—⟧</value><comment>Shown when a search returns nothing. {SearchTerm} = typed text.</comment></data>
+  <data name="Events_List_DateColumn" xml:space="preserve"><value>⟦Dáté—⟧</value><comment>Events grid column — date.</comment></data>
+  <data name="Events_List_EventTypeColumn" xml:space="preserve"><value>⟦Évéñt Týpé—⟧</value><comment>Events grid column — event type.</comment></data>
+  <data name="Events_List_NotesColumn" xml:space="preserve"><value>⟦Ñótés—⟧</value><comment>Events grid column — notes.</comment></data>
+  <data name="Events_List_RecordButton" xml:space="preserve"><value>⟦Réçórd—⟧</value><comment>Button — record an AGM outcome.</comment></data>
+  <data name="Events_List_PrintButton" xml:space="preserve"><value>⟦Príñt—⟧</value><comment>Button — print an attendance sheet/report.</comment></data>
+  <data name="Events_List_PrintAgmReportAriaLabel" xml:space="preserve"><value>⟦Príñt áttéñdáñçé répórt fór {Date}—⟧</value><comment>aria-label. {Date} = AGM date.</comment></data>
+  <data name="Events_List_RecordParticipationButton" xml:space="preserve"><value>⟦Réçórd Pártíçípátíóñ—⟧</value><comment>Button — record event participation.</comment></data>
+  <data name="Events_List_RecordParticipationAriaLabel" xml:space="preserve"><value>⟦Réçórd pártíçípátíóñ fór {Date}—⟧</value><comment>aria-label. {Date} = event date.</comment></data>
+  <data name="Events_List_PrintSheetAriaLabel" xml:space="preserve"><value>⟦Príñt áttéñdáñçé shéét fór {Date}—⟧</value><comment>aria-label. {Date} = event date.</comment></data>
+  <data name="Events_List_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád évéñts: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_List_PrintNoMembers" xml:space="preserve"><value>⟦Ñó áçtívé mémbérs fóúñd — ñóthíñg tó príñt.—⟧</value><comment>Shown when there are no active members to print.</comment></data>
+  <data name="Events_List_PrintSheetError" xml:space="preserve"><value>⟦Úñáblé tó príñt áttéñdáñçé shéét. Pléásé trý ágáíñ.—⟧</value><comment>Shown when printing the sheet fails.</comment></data>
+  <data name="Events_Form_PageTitle" xml:space="preserve"><value>⟦Sçhédúlé Évéñt — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title — schedule event.</comment></data>
+  <data name="Events_Form_Heading" xml:space="preserve"><value>⟦Sçhédúlé Évéñt—⟧</value><comment>Schedule-event form heading.</comment></data>
+  <data name="Events_Form_DateLabel" xml:space="preserve"><value>⟦Dáté—⟧</value><comment>Schedule-event form — date label.</comment></data>
+  <data name="Events_Form_EventTypeLabel" xml:space="preserve"><value>⟦Évéñt Týpé—⟧</value><comment>Schedule-event form — event type label.</comment></data>
+  <data name="Events_Form_LoadingTypesText" xml:space="preserve"><value>⟦Lóádíñg évéñt týpés…—⟧</value><comment>Shown while event types load.</comment></data>
+  <data name="Events_Form_SelectTypeOption" xml:space="preserve"><value>⟦— Séléçt évéñt týpé ——⟧</value><comment>Placeholder option in the event-type select.</comment></data>
+  <data name="Events_Form_NotesLabel" xml:space="preserve"><value>⟦Ñótés—⟧</value><comment>Schedule-event form — notes label.</comment></data>
+  <data name="Events_Form_SubmitButton" xml:space="preserve"><value>⟦Sçhédúlé—⟧</value><comment>Schedule-event form submit button.</comment></data>
+  <data name="Events_Form_LoadTypesError" xml:space="preserve"><value>⟦Fáíléd tó lóád évéñt týpés: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_Form_SaveError" xml:space="preserve"><value>⟦Áñ úñéxpéçtéd érrór óççúrréd: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_Detail_PageTitleFallback" xml:space="preserve"><value>⟦Évéñt—⟧</value><comment>Browser tab title fallback before the event loads.</comment></data>
+  <data name="Events_Detail_BackButton" xml:space="preserve"><value>⟦Báçk tó Évéñts—⟧</value><comment>Link back to the Events list.</comment></data>
+  <data name="Events_Detail_PrintSheetButton" xml:space="preserve"><value>⟦Príñt Áttéñdáñçé Shéét—⟧</value><comment>Button — print the attendance sheet.</comment></data>
+  <data name="Events_Detail_PrintSheetAriaLabel" xml:space="preserve"><value>⟦Príñt áttéñdáñçé shéét—⟧</value><comment>aria-label on the print-attendance-sheet button.</comment></data>
+  <data name="Events_Detail_EventTypeLabel" xml:space="preserve"><value>⟦Évéñt Týpé—⟧</value><comment>Event detail — event type term.</comment></data>
+  <data name="Events_Detail_NotesLabel" xml:space="preserve"><value>⟦Ñótés—⟧</value><comment>Event detail — notes term.</comment></data>
+  <data name="Events_Detail_ParticipationRateLabel" xml:space="preserve"><value>⟦Pártíçípátíóñ Ráté—⟧</value><comment>Event detail — participation rate term.</comment></data>
+  <data name="Events_Detail_AttendanceSection" xml:space="preserve"><value>⟦Áttéñdáñçé—⟧</value><comment>Event detail — attendance section heading / aria-label.</comment></data>
+  <data name="Events_Detail_MemberColumn" xml:space="preserve"><value>⟦Mémbér—⟧</value><comment>Event detail attendance grid — member column.</comment></data>
+  <data name="Events_Detail_ParticipatedColumn" xml:space="preserve"><value>⟦Pártíçípátéd—⟧</value><comment>Event detail attendance grid — participated column.</comment></data>
+  <data name="Events_Detail_ParticipatedYes" xml:space="preserve"><value>⟦Ýés—⟧</value><comment>Badge — the member participated.</comment></data>
+  <data name="Events_Detail_ParticipatedYesAriaLabel" xml:space="preserve"><value>⟦Pártíçípátéd—⟧</value><comment>aria-label — the member participated.</comment></data>
+  <data name="Events_Detail_ParticipatedNo" xml:space="preserve"><value>⟦Ñó—⟧</value><comment>Badge — the member did not participate.</comment></data>
+  <data name="Events_Detail_ParticipatedNoAriaLabel" xml:space="preserve"><value>⟦Díd ñót pártíçípáté—⟧</value><comment>aria-label — the member did not participate.</comment></data>
+  <data name="Events_Detail_NoAttendanceRecords" xml:space="preserve"><value>⟦Ñó áttéñdáñçé réçórds fóúñd.—⟧</value><comment>Shown when a recorded event has no attendance rows.</comment></data>
+  <data name="Events_Detail_ParticipationNotRecorded" xml:space="preserve"><value>⟦Pártíçípátíóñ hás ñót ýét bééñ réçórdéd fór thís évéñt.—⟧</value><comment>Shown when participation is not recorded.</comment></data>
+  <data name="Events_Detail_RecordParticipationButton" xml:space="preserve"><value>⟦Réçórd Pártíçípátíóñ—⟧</value><comment>Button — record participation.</comment></data>
+  <data name="Events_Detail_NotFoundError" xml:space="preserve"><value>⟦Évéñt ñót fóúñd.—⟧</value><comment>Shown when the event id does not exist.</comment></data>
+  <data name="Events_Detail_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád évéñt détáíls: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_Detail_PrintNoMembers" xml:space="preserve"><value>⟦Ñó áçtívé mémbérs fóúñd — ñóthíñg tó príñt.—⟧</value><comment>Shown when there are no active members to print.</comment></data>
+  <data name="Events_Detail_PrintSheetError" xml:space="preserve"><value>⟦Úñáblé tó príñt áttéñdáñçé shéét. Pléásé trý ágáíñ.—⟧</value><comment>Shown when printing the sheet fails.</comment></data>
+  <data name="Events_Participation_PageTitle" xml:space="preserve"><value>⟦Réçórd Pártíçípátíóñ — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title — record participation.</comment></data>
+  <data name="Events_Participation_Heading" xml:space="preserve"><value>⟦Réçórd Pártíçípátíóñ—⟧</value><comment>Record-participation page heading.</comment></data>
+  <data name="Events_Participation_Subtitle" xml:space="preserve"><value>⟦{Date} — {TypeName}—⟧</value><comment>Sub-heading. {Date} = event date, {TypeName} = event type.</comment></data>
+  <data name="Events_Participation_AlreadyRecordedNotice" xml:space="preserve"><value>⟦Pártíçípátíóñ hás álréádý bééñ réçórdéd fór thís évéñt. Réçórds áré ímmútáblé áftér sávíñg.—⟧</value><comment>Shown when participation is already recorded.</comment></data>
+  <data name="Events_Participation_BackButton" xml:space="preserve"><value>⟦Báçk tó Évéñts—⟧</value><comment>Link back to Events.</comment></data>
+  <data name="Events_Participation_FutureNotice" xml:space="preserve"><value>⟦Pártíçípátíóñ çáñ bé réçórdéd stártíñg {Date}.—⟧</value><comment>Shown for a future event. {Date} = event date, long form.</comment></data>
+  <data name="Events_Participation_LoadingMembersText" xml:space="preserve"><value>⟦Lóádíñg mémbérs…—⟧</value><comment>Status text while members load.</comment></data>
+  <data name="Events_Participation_NoActiveMembers" xml:space="preserve"><value>⟦Ñó áçtívé mémbérs fóúñd. Ádd mémbérs béfóré réçórdíñg pártíçípátíóñ.—⟧</value><comment>Shown when there are no active members.</comment></data>
+  <data name="Events_Participation_MemberColumn" xml:space="preserve"><value>⟦Mémbér—⟧</value><comment>Grid column — member.</comment></data>
+  <data name="Events_Participation_ParticipatedColumn" xml:space="preserve"><value>⟦Pártíçípátéd—⟧</value><comment>Grid column — participated.</comment></data>
+  <data name="Events_Participation_SelectAllAriaLabel" xml:space="preserve"><value>⟦Séléçt áll pártíçípáñts—⟧</value><comment>aria-label on the select-all checkbox.</comment></data>
+  <data name="Events_Participation_SelectAllLabel" xml:space="preserve"><value>⟦Séléçt Áll—⟧</value><comment>Label beside the select-all checkbox.</comment></data>
+  <data name="Events_Participation_RowAriaLabel" xml:space="preserve"><value>⟦{MemberName} pártíçípátéd—⟧</value><comment>aria-label on a row checkbox. {MemberName} = member name.</comment></data>
+  <data name="Events_Participation_SaveButton" xml:space="preserve"><value>⟦Sávé Pártíçípátíóñ—⟧</value><comment>Button — save participation.</comment></data>
+  <data name="Events_Participation_NotFoundError" xml:space="preserve"><value>⟦Évéñt ñót fóúñd.—⟧</value><comment>Shown when the event id does not exist.</comment></data>
+  <data name="Events_Participation_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád pártíçípátíóñ gríd: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_Participation_SaveError" xml:space="preserve"><value>⟦Fáíléd tó sávé pártíçípátíóñ: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_Agm_ListPageTitle" xml:space="preserve"><value>⟦ÁGMs — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title — AGM list.</comment></data>
+  <data name="Events_Agm_ListHeading" xml:space="preserve"><value>⟦ÁGMs—⟧</value><comment>AGM list heading.</comment></data>
+  <data name="Events_Agm_ListEmptyNotice" xml:space="preserve"><value>⟦Ñó ÁGMs hávé bééñ réçórdéd ýét.—⟧</value><comment>Shown when there are no AGMs.</comment></data>
+  <data name="Events_Agm_ScheduleButton" xml:space="preserve"><value>⟦Sçhédúlé ÁGM—⟧</value><comment>Button opening the schedule-AGM form.</comment></data>
+  <data name="Events_Agm_DateColumn" xml:space="preserve"><value>⟦Dáté—⟧</value><comment>AGM grid column — date.</comment></data>
+  <data name="Events_Agm_AttendanceColumn" xml:space="preserve"><value>⟦Áttéñdáñçé—⟧</value><comment>AGM grid column — attendance count.</comment></data>
+  <data name="Events_Agm_AttendanceValue" xml:space="preserve"><value>⟦{Attended} óf {Total}—⟧</value><comment>AGM attendance summary. {Attended}/{Total} = counts.</comment></data>
+  <data name="Events_Agm_RecordButton" xml:space="preserve"><value>⟦Réçórd—⟧</value><comment>Button — record an AGM.</comment></data>
+  <data name="Events_Agm_PrintButton" xml:space="preserve"><value>⟦Príñt—⟧</value><comment>Button — print AGM attendance report.</comment></data>
+  <data name="Events_Agm_PrintReportAriaLabel" xml:space="preserve"><value>⟦Príñt áttéñdáñçé répórt fór {Date}—⟧</value><comment>aria-label. {Date} = AGM date.</comment></data>
+  <data name="Events_Agm_PrintError" xml:space="preserve"><value>⟦Úñáblé tó príñt áttéñdáñçé répórt. Pléásé trý ágáíñ.—⟧</value><comment>Shown when printing the AGM report fails.</comment></data>
+  <data name="Events_Agm_DetailPageTitle" xml:space="preserve"><value>⟦ÁGM — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title — AGM detail.</comment></data>
+  <data name="Events_Agm_NotFoundNotice" xml:space="preserve"><value>⟦ÁGM ñót fóúñd.—⟧</value><comment>Shown when the AGM id does not exist.</comment></data>
+  <data name="Events_Agm_BackButton" xml:space="preserve"><value>⟦Báçk tó ÁGMs—⟧</value><comment>Link back to the AGM list.</comment></data>
+  <data name="Events_Agm_DetailHeading" xml:space="preserve"><value>⟦ÁGM — {Date}—⟧</value><comment>AGM detail heading. {Date} = AGM date.</comment></data>
+  <data name="Events_Agm_PrintReportButton" xml:space="preserve"><value>⟦Príñt Áttéñdáñçé Répórt—⟧</value><comment>Button — print the AGM attendance report.</comment></data>
+  <data name="Events_Agm_PrintReportButtonAriaLabel" xml:space="preserve"><value>⟦Príñt áttéñdáñçé répórt—⟧</value><comment>aria-label on the print-attendance-report button.</comment></data>
+  <data name="Events_Agm_PrintResultsButton" xml:space="preserve"><value>⟦Príñt ÁGM Résúlts—⟧</value><comment>Button — print the AGM results report.</comment></data>
+  <data name="Events_Agm_PrintResultsButtonAriaLabel" xml:space="preserve"><value>⟦Príñt ÁGM résúlts répórt—⟧</value><comment>aria-label on the print-AGM-results button.</comment></data>
+  <data name="Events_Agm_ArchiveButton" xml:space="preserve"><value>⟦Árçhívé—⟧</value><comment>Button — archive the AGM.</comment></data>
+  <data name="Events_Agm_ArchivingText" xml:space="preserve"><value>⟦Árçhívíñg…—⟧</value><comment>Archive button text while archiving.</comment></data>
+  <data name="Events_Agm_RecordAttendanceLink" xml:space="preserve"><value>⟦Réçórd Áttéñdáñçé &amp; Éléçtíóñs—⟧</value><comment>Link — record the AGM's attendance and elections.</comment></data>
+  <data name="Events_Agm_AttendanceHeading" xml:space="preserve"><value>⟦Áttéñdáñçé—⟧</value><comment>AGM detail — attendance section heading.</comment></data>
+  <data name="Events_Agm_AttendanceSummary" xml:space="preserve"><value>⟦{Attended} óf {Total} mémbérs áttéñdéd.—⟧</value><comment>{Attended}/{Total} = counts.</comment></data>
+  <data name="Events_Agm_ElectedPositionsHeading" xml:space="preserve"><value>⟦Éléçtéd Pósítíóñs—⟧</value><comment>AGM detail — elected positions heading.</comment></data>
+  <data name="Events_Agm_NoPositionsRecorded" xml:space="preserve"><value>⟦Ñó pósítíóñs réçórdéd.—⟧</value><comment>Shown when no positions were recorded for an AGM.</comment></data>
+  <data name="Events_Agm_GeneralCommitteeHeading" xml:space="preserve"><value>⟦Géñérál Çómmíttéé Mémbér—⟧</value><comment>AGM detail — general committee members heading.</comment></data>
+  <data name="Events_Agm_UnknownPosition" xml:space="preserve"><value>⟦Úñkñówñ Pósítíóñ—⟧</value><comment>Fallback label for a committee position with no name.</comment></data>
+  <data name="Events_Agm_HolderPresent" xml:space="preserve"><value>⟦préséñt—⟧</value><comment>Used as the end of a still-open committee term ("1 Jan 2024–present").</comment></data>
+  <data name="Events_Agm_HolderTerm" xml:space="preserve"><value>⟦{Name} ({Start}–{End})—⟧</value><comment>One dated holder of a multi-holder position. {Name} = member, {Start}/{End} = term dates.</comment></data>
+  <data name="Events_Agm_PrintNoRecords" xml:space="preserve"><value>⟦Ñó áttéñdáñçé réçórds fóúñd — ñóthíñg tó príñt.—⟧</value><comment>Shown when there are no attendance records to print.</comment></data>
+  <data name="Events_Agm_PrintResultsError" xml:space="preserve"><value>⟦Úñáblé tó príñt ÁGM résúlts répórt. Pléásé trý ágáíñ.—⟧</value><comment>Shown when printing the AGM results fails.</comment></data>
+  <data name="Events_Agm_SchedulePageTitle" xml:space="preserve"><value>⟦Sçhédúlé ÁGM — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title — schedule AGM.</comment></data>
+  <data name="Events_Agm_ScheduleHeading" xml:space="preserve"><value>⟦Sçhédúlé ÁGM—⟧</value><comment>Schedule-AGM form heading.</comment></data>
+  <data name="Events_Agm_MeetingDateLabel" xml:space="preserve"><value>⟦Méétíñg Dáté—⟧</value><comment>Schedule-AGM form — meeting date label.</comment></data>
+  <data name="Events_Agm_NotesLabel" xml:space="preserve"><value>⟦Ñótés—⟧</value><comment>Schedule-AGM form — notes label.</comment></data>
+  <data name="Events_Agm_ScheduleSubmitButton" xml:space="preserve"><value>⟦Sçhédúlé—⟧</value><comment>Schedule-AGM form submit button.</comment></data>
+  <data name="Events_Agm_ScheduleError" xml:space="preserve"><value>⟦Fáíléd tó sçhédúlé ÁGM: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_Agm_RecordPageTitle" xml:space="preserve"><value>⟦Réçórd ÁGM — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title — record AGM.</comment></data>
+  <data name="Events_Agm_RecordHeading" xml:space="preserve"><value>⟦Réçórd ÁGM—⟧</value><comment>Record-AGM page heading.</comment></data>
+  <data name="Events_Agm_GuardNotFound" xml:space="preserve"><value>⟦ÁGM ñót fóúñd.—⟧</value><comment>Guard — the AGM id does not exist.</comment></data>
+  <data name="Events_Agm_GuardAlreadyRecorded" xml:space="preserve"><value>⟦Thís ÁGM hás álréádý bééñ réçórdéd.—⟧</value><comment>Guard — the AGM is already recorded.</comment></data>
+  <data name="Events_Agm_GuardFutureDate" xml:space="preserve"><value>⟦Thís ÁGM's dáté hás ñót ýét árrívéd.—⟧</value><comment>Guard — the AGM date is in the future.</comment></data>
+  <data name="Events_Agm_MeetingDateText" xml:space="preserve"><value>⟦Méétíñg dáté: {Date}—⟧</value><comment>Record-AGM — the meeting date. {Date} = AGM date.</comment></data>
+  <data name="Events_Agm_CommitteeElectionsHeading" xml:space="preserve"><value>⟦Çómmíttéé Éléçtíóñs—⟧</value><comment>Record-AGM — committee elections heading.</comment></data>
+  <data name="Events_Agm_VacantOption" xml:space="preserve"><value>⟦Váçáñt—⟧</value><comment>Committee-election select — the vacant option.</comment></data>
+  <data name="Events_Agm_GeneralCommitteeMembersHeading" xml:space="preserve"><value>⟦Géñérál Çómmíttéé Mémbérs—⟧</value><comment>Record-AGM — general committee members heading.</comment></data>
+  <data name="Events_Agm_SelectedCount" xml:space="preserve"><value>⟦Séléçtéd: {Count}—⟧</value><comment>Record-AGM — count of selected general committee members. {Count} = number.</comment></data>
+  <data name="Events_Agm_SelectedOfTarget" xml:space="preserve"><value>⟦óf {Count} tárgét séáts—⟧</value><comment>Record-AGM — target seats suffix. {Count} = target.</comment></data>
+  <data name="Events_Agm_RecordSubmitButton" xml:space="preserve"><value>⟦Sávé ÁGM—⟧</value><comment>Record-AGM form submit button.</comment></data>
+  <data name="Events_Agm_DuplicateAssignmentError" xml:space="preserve"><value>⟦Á mémbér çáññót hóld móré tháñ óñé çómmíttéé ássígñméñt fróm thé sámé ÁGM.—⟧</value><comment>Validation — a member was assigned two positions.</comment></data>
+  <data name="Events_Agm_RecordSaveError" xml:space="preserve"><value>⟦Fáíléd tó sávé ÁGM: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_SpecialElection_PageTitle" xml:space="preserve"><value>⟦Réçórd Spéçíál Éléçtíóñ — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title — special election.</comment></data>
+  <data name="Events_SpecialElection_Heading" xml:space="preserve"><value>⟦Réçórd Spéçíál Éléçtíóñ—⟧</value><comment>Special election page heading.</comment></data>
+  <data name="Events_SpecialElection_NoPositionsNotice" xml:space="preserve"><value>⟦Ñó çúrréñt çómmíttéé pósítíóñs fóúñd. Réçórd áñ ÁGM fírst.—⟧</value><comment>Shown when there are no current positions.</comment></data>
+  <data name="Events_SpecialElection_PositionLabel" xml:space="preserve"><value>⟦Pósítíóñ Béíñg Répláçéd—⟧</value><comment>Special election — outgoing position label.</comment></data>
+  <data name="Events_SpecialElection_SelectPositionOption" xml:space="preserve"><value>⟦Séléçt á pósítíóñ—⟧</value><comment>Placeholder option — outgoing position select.</comment></data>
+  <data name="Events_SpecialElection_IncomingMemberLabel" xml:space="preserve"><value>⟦Íñçómíñg Mémbér—⟧</value><comment>Special election — incoming member label.</comment></data>
+  <data name="Events_SpecialElection_SelectMemberOption" xml:space="preserve"><value>⟦Séléçt á mémbér—⟧</value><comment>Placeholder option — incoming member select.</comment></data>
+  <data name="Events_SpecialElection_ReplacementDateLabel" xml:space="preserve"><value>⟦Répláçéméñt Dáté—⟧</value><comment>Special election — replacement date label.</comment></data>
+  <data name="Events_SpecialElection_SubmitButton" xml:space="preserve"><value>⟦Sávé Spéçíál Éléçtíóñ—⟧</value><comment>Special election form submit button.</comment></data>
+  <data name="Events_SpecialElection_PositionFallback" xml:space="preserve"><value>⟦Géñérál Çómmíttéé Mémbér—⟧</value><comment>Fallback label when a position has no office-holder-type name.</comment></data>
+  <data name="Events_SpecialElection_PositionDescription" xml:space="preserve"><value>⟦{Position} — {Member}—⟧</value><comment>Outgoing position option text. {Position} = position name, {Member} = current holder.</comment></data>
+  <data name="Events_SpecialElection_ValidationSelectBoth" xml:space="preserve"><value>⟦Séléçt thé pósítíóñ béíñg répláçéd áñd thé íñçómíñg mémbér.—⟧</value><comment>Validation — both selects required.</comment></data>
+  <data name="Events_SpecialElection_SaveError" xml:space="preserve"><value>⟦Fáíléd tó réçórd spéçíál éléçtíóñ: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Events_AgmAttendance_NoActiveMembers" xml:space="preserve"><value>⟦Ñó áçtívé mémbérs fóúñd.—⟧</value><comment>AGM attendance grid — shown when there are no active members.</comment></data>
+  <data name="Events_AgmAttendance_AttendedColumn" xml:space="preserve"><value>⟦Áttéñdéd—⟧</value><comment>AGM attendance grid — attended column.</comment></data>
+  <data name="Events_AgmAttendance_SelectAllAriaLabel" xml:space="preserve"><value>⟦Séléçt áll mémbérs ás áttéñdéd—⟧</value><comment>aria-label on the select-all checkbox.</comment></data>
+  <data name="Events_AgmAttendance_SelectAllLabel" xml:space="preserve"><value>⟦Séléçt Áll—⟧</value><comment>Label beside the select-all checkbox.</comment></data>
+  <data name="Events_AgmAttendance_MemberColumn" xml:space="preserve"><value>⟦Mémbér—⟧</value><comment>AGM attendance grid — member column.</comment></data>
+  <data name="Events_AgmAttendance_RowAriaLabel" xml:space="preserve"><value>⟦{MemberName} áttéñdéd—⟧</value><comment>aria-label on a row checkbox. {MemberName} = member name.</comment></data>
+</root>

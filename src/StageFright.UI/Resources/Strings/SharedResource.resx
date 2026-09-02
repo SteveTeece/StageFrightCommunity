@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Shared_Action_Save" xml:space="preserve">
+    <value>Save</value>
+    <comment>Generic Save button label.</comment>
+  </data>
+  <data name="Shared_Action_Saving" xml:space="preserve">
+    <value>Saving…</value>
+    <comment>Generic Save button label while a save is in progress.</comment>
+  </data>
+  <data name="Shared_Action_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Generic Cancel button label.</comment>
+  </data>
+  <data name="Shared_Action_Edit" xml:space="preserve">
+    <value>Edit</value>
+    <comment>Generic Edit button label.</comment>
+  </data>
+  <data name="Shared_Common_Loading" xml:space="preserve">
+    <value>Loading…</value>
+    <comment>Generic loading indicator text.</comment>
+  </data>
+  <data name="Shared_Table_ActionsColumn" xml:space="preserve">
+    <value>Actions</value>
+    <comment>Generic grid column header for a row's action buttons.</comment>
+  </data>
+  <data name="Shared_Table_StatusColumn" xml:space="preserve">
+    <value>Status</value>
+    <comment>Generic grid column / field label for a status value.</comment>
+  </data>
+  <data name="Shared_Error_Unexpected" xml:space="preserve">
+    <value>An unexpected error occurred. Please try again.</value>
+    <comment>Generic fallback message shown when an operation fails unexpectedly.</comment>
+  </data>
+  <data name="Shared_Tile_LoadError" xml:space="preserve">
+    <value>Unable to load</value>
+    <comment>Generic dashboard-tile message shown when the tile's data fails to load.</comment>
+  </data>
+  <data name="Shared_Tile_LoadErrorFor" xml:space="preserve">
+    <value>Unable to load {TileTitle}</value>
+    <comment>Tile renderer error text. {TileTitle} = the failing tile's title.</comment>
+  </data>
+  <data name="Shared_Action_Close" xml:space="preserve">
+    <value>Close</value>
+    <comment>Generic Close button / dialog-dismiss aria-label.</comment>
+  </data>
+  <data name="Shared_Action_Remove" xml:space="preserve">
+    <value>Remove</value>
+    <comment>Generic Remove button label / aria-label (e.g. remove a row from a bordered list box).</comment>
+  </data>
+  <data name="Shared_Action_TryAgain" xml:space="preserve">
+    <value>Try Again</value>
+    <comment>Generic retry button label.</comment>
+  </data>
+  <data name="Shared_Action_Apply" xml:space="preserve">
+    <value>Apply</value>
+    <comment>Generic Apply button label (e.g. apply report filters).</comment>
+  </data>
+  <data name="Shared_ListBox_DefaultEmpty" xml:space="preserve">
+    <value>Nothing added yet.</value>
+    <comment>Default empty-state text for a bordered list box.</comment>
+  </data>
+  <data name="Shared_AddAccount_NamePlaceholder" xml:space="preserve">
+    <value>Account name</value>
+    <comment>Placeholder and aria-label for the account-name field in the shared add-account form.</comment>
+  </data>
+  <data name="Shared_AddAccount_TypeAriaLabel" xml:space="preserve">
+    <value>Account type</value>
+    <comment>aria-label for the account-type select in the shared add-account form.</comment>
+  </data>
+  <data name="Shared_AddAccount_BankAccountLabel" xml:space="preserve">
+    <value>Bank / cash account</value>
+    <comment>Checkbox label marking an asset account as a bank/cash account.</comment>
+  </data>
+  <data name="Shared_AddAccount_AddingText" xml:space="preserve">
+    <value>Adding…</value>
+    <comment>Add-account submit button text while a create is in progress.</comment>
+  </data>
+  <data name="Shared_AddAccount_SubmitButton" xml:space="preserve">
+    <value>Add Account</value>
+    <comment>Default submit button text for the shared add-account form.</comment>
+  </data>
+  <data name="Shared_AddAccount_DuplicateError" xml:space="preserve">
+    <value>An account named '{AccountName}' already exists.</value>
+    <comment>Shown when the entered account name matches an existing one. {AccountName} = the entered name.</comment>
+  </data>
+  <data name="Shared_OpeningBalances_AlreadyPostedWarning" xml:space="preserve">
+    <value>Opening balances have already been posted. Posting again will add to the existing balances rather than replace them.</value>
+    <comment>Warning shown above the opening-balances entry table when balances already exist.</comment>
+  </data>
+  <data name="Shared_OpeningBalances_Instruction" xml:space="preserve">
+    <value>Enter each account's balance as at {AsAtDate}. Leave accounts you don't need at zero. Any difference is posted to Opening Balance Equity automatically.</value>
+    <comment>Instruction above the opening-balances entry table. {AsAtDate} = the as-at date, long form.</comment>
+  </data>
+  <data name="Shared_OpeningBalances_NumberColumn" xml:space="preserve">
+    <value>Number</value>
+    <comment>Opening-balances table column header — account number.</comment>
+  </data>
+  <data name="Shared_OpeningBalances_AccountColumn" xml:space="preserve">
+    <value>Account</value>
+    <comment>Opening-balances table column header — account name.</comment>
+  </data>
+  <data name="Shared_OpeningBalances_TypeColumn" xml:space="preserve">
+    <value>Type</value>
+    <comment>Opening-balances table column header — account type.</comment>
+  </data>
+  <data name="Shared_OpeningBalances_BalanceColumn" xml:space="preserve">
+    <value>Balance</value>
+    <comment>Opening-balances table column header — the entered balance.</comment>
+  </data>
+  <data name="Shared_OpeningBalances_BalanceForAriaLabel" xml:space="preserve">
+    <value>Balance for {AccountName}</value>
+    <comment>aria-label on an opening-balance amount input. {AccountName} = the account name.</comment>
+  </data>
+  <data name="Shared_OpeningBalances_PlugRow" xml:space="preserve">
+    <value>Opening Balance Equity plug</value>
+    <comment>Opening-balances table footer row label for the balancing equity plug.</comment>
+  </data>
+  <data name="Shared_OpeningBalances_PostingText" xml:space="preserve">
+    <value>Posting…</value>
+    <comment>Opening-balances submit button text while a post is in progress.</comment>
+  </data>
+  <data name="Shared_OpeningBalances_SubmitButton" xml:space="preserve">
+    <value>Post Opening Balances</value>
+    <comment>Default submit button text for the shared opening-balances form.</comment>
+  </data>
+  <data name="Shared_Forgiveness_Title" xml:space="preserve">
+    <value>Reactivation Fee Forgiveness</value>
+    <comment>Heading of the reactivation fee-forgiveness dialog.</comment>
+  </data>
+  <data name="Shared_Forgiveness_LoadingText" xml:space="preserve">
+    <value>Loading fees…</value>
+    <comment>Status text while the forgiveness dialog loads outstanding fees.</comment>
+  </data>
+  <data name="Shared_Forgiveness_NoFees" xml:space="preserve">
+    <value>No outstanding fees to forgive for this member.</value>
+    <comment>Shown when the member has no outstanding fees.</comment>
+  </data>
+  <data name="Shared_Forgiveness_Instruction" xml:space="preserve">
+    <value>Prior-year fees are pre-selected for forgiveness. Uncheck any fees you wish to retain.</value>
+    <comment>Instruction text in the forgiveness dialog.</comment>
+  </data>
+  <data name="Shared_Forgiveness_PriorYearBadge" xml:space="preserve">
+    <value>Prior year</value>
+    <comment>Badge marking a fee as being from a prior year.</comment>
+  </data>
+  <data name="Shared_Forgiveness_FeeRow" xml:space="preserve">
+    <value>{FeeDate} — {Amount}</value>
+    <comment>A selectable fee row in the forgiveness dialog. {FeeDate} = fee date, {Amount} = fee amount as AUD.</comment>
+  </data>
+  <data name="Shared_Forgiveness_ApplyingText" xml:space="preserve">
+    <value>Applying…</value>
+    <comment>Forgiveness submit button text while applying.</comment>
+  </data>
+  <data name="Shared_Forgiveness_ForgiveButton_One" xml:space="preserve">
+    <value>Forgive {Count} fee</value>
+    <comment>Forgiveness submit button label, singular. {Count} = number of selected fees.</comment>
+  </data>
+  <data name="Shared_Forgiveness_ForgiveButton_Other" xml:space="preserve">
+    <value>Forgive {Count} fees</value>
+    <comment>Forgiveness submit button label, plural. {Count} = number of selected fees.</comment>
+  </data>
+  <data name="Shared_Forgiveness_LoadError" xml:space="preserve">
+    <value>Failed to load fees: {Detail}</value>
+    <comment>Shown when loading fees for forgiveness fails. {Detail} = the error detail.</comment>
+  </data>
+  <data name="Shared_Forgiveness_ApplyError" xml:space="preserve">
+    <value>Failed to apply forgiveness: {Detail}</value>
+    <comment>Shown when applying forgiveness fails. {Detail} = the error detail.</comment>
+  </data>
+  <data name="Shared_Report_GeneratingText" xml:space="preserve">
+    <value>Generating report...</value>
+    <comment>Status text while a report is being generated.</comment>
+  </data>
+  <data name="Shared_Report_GenerateFailedHeading" xml:space="preserve">
+    <value>Unable to generate report.</value>
+    <comment>Bold lead-in of the report-generation error alert.</comment>
+  </data>
+  <data name="Shared_Report_GeneratedAt" xml:space="preserve">
+    <value>Generated: {Timestamp} UTC</value>
+    <comment>Report viewer — when the report was generated. {Timestamp} = date and time.</comment>
+  </data>
+  <data name="Shared_Report_ActionsAriaLabel" xml:space="preserve">
+    <value>Report actions</value>
+    <comment>aria-label on the report action button group.</comment>
+  </data>
+  <data name="Shared_Report_PrintButton" xml:space="preserve">
+    <value>Print / PDF</value>
+    <comment>Report viewer button — print / save as PDF.</comment>
+  </data>
+  <data name="Shared_Report_ExportCsvButton" xml:space="preserve">
+    <value>Export CSV</value>
+    <comment>Report viewer button — export as CSV.</comment>
+  </data>
+  <data name="Shared_Report_RefreshButton" xml:space="preserve">
+    <value>Refresh</value>
+    <comment>Report viewer button — regenerate the report.</comment>
+  </data>
+  <data name="Shared_Report_RowsRange" xml:space="preserve">
+    <value>Rows {From}–{To} of {Total}</value>
+    <comment>Report viewer paging summary. {From}/{To} = visible row range, {Total} = total rows.</comment>
+  </data>
+  <data name="Shared_Report_PrevPage" xml:space="preserve">
+    <value>‹ Prev</value>
+    <comment>Report viewer — previous page button.</comment>
+  </data>
+  <data name="Shared_Report_NextPage" xml:space="preserve">
+    <value>Next ›</value>
+    <comment>Report viewer — next page button.</comment>
+  </data>
+  <data name="Shared_Report_PrevPageAriaLabel" xml:space="preserve">
+    <value>Previous page</value>
+    <comment>aria-label on the report viewer previous-page button.</comment>
+  </data>
+  <data name="Shared_Report_NextPageAriaLabel" xml:space="preserve">
+    <value>Next page</value>
+    <comment>aria-label on the report viewer next-page button.</comment>
+  </data>
+  <data name="Shared_Report_PageOf" xml:space="preserve">
+    <value>Page {Current} of {Total}</value>
+    <comment>Report viewer paging indicator. {Current} = current page, {Total} = total pages.</comment>
+  </data>
+  <data name="Shared_Report_PageNavAriaLabel" xml:space="preserve">
+    <value>Report page navigation</value>
+    <comment>aria-label on the report viewer pagination nav.</comment>
+  </data>
+  <data name="Shared_Report_CancelledError" xml:space="preserve">
+    <value>Report generation was cancelled.</value>
+    <comment>Shown when report generation is cancelled by the user.</comment>
+  </data>
+  <data name="Shared_Report_GenerateError" xml:space="preserve">
+    <value>An error occurred while generating the report. Please try again. ({ErrorType})</value>
+    <comment>Shown when report generation throws. {ErrorType} = the exception type name.</comment>
+  </data>
+  <data name="Shared_Report_PdfError" xml:space="preserve">
+    <value>Unable to generate PDF. Please try again.</value>
+    <comment>Shown when rendering the report PDF fails.</comment>
+  </data>
+  <data name="Shared_Report_CsvError" xml:space="preserve">
+    <value>Unable to export CSV. Please try again.</value>
+    <comment>Shown when exporting the report CSV fails.</comment>
+  </data>
+  <data name="Shared_StartupError_Heading" xml:space="preserve"><value>Database Error</value><comment>Heading on the startup database-error page.</comment></data>
+  <data name="Shared_StartupError_Body" xml:space="preserve"><value>StageFright Community could not open its database. The file may be corrupted or inaccessible.</value><comment>Body text on the startup database-error page.</comment></data>
+  <data name="Shared_StartupError_DbLocationLabel" xml:space="preserve"><value>Database location:</value><comment>Label preceding the database file path on the startup error page.</comment></data>
+  <data name="Shared_StartupError_OpenFolderButton" xml:space="preserve"><value>Open File Location</value><comment>Button — open the folder containing the database file.</comment></data>
+  <data name="Shared_StartupError_RecreateButton" xml:space="preserve"><value>Create New Database</value><comment>Button — delete the corrupt database and start fresh.</comment></data>
+  <data name="Shared_StartupError_RecreatingText" xml:space="preserve"><value>Creating new database…</value><comment>Recreate button text while the new database is being created.</comment></data>
+  <data name="Shared_StartupError_OpenFolderError" xml:space="preserve"><value>Could not open folder: {Detail}</value><comment>Shown when opening the database folder fails. {Detail} = error detail.</comment></data>
+  <data name="Shared_StartupError_DeleteError" xml:space="preserve"><value>Could not delete the database file: {Detail}</value><comment>Shown when deleting the corrupt database fails. {Detail} = error detail.</comment></data>
+  <data name="Shared_ReportsPage_Title" xml:space="preserve"><value>Reports — StageFright Community</value><comment>Browser tab title — Reports page.</comment></data>
+  <data name="Shared_ReportsPage_Heading" xml:space="preserve"><value>Reports</value><comment>Reports page heading.</comment></data>
+  <data name="Shared_ReportsPage_NotFound" xml:space="preserve"><value>Report "{ReportId}" not found.</value><comment>Shown when a report id in the URL has no provider. {ReportId} = the id.</comment></data>
+  <data name="Shared_ReportsPage_SelectPrompt" xml:space="preserve"><value>Select a report from the navigation menu to generate it.</value><comment>Shown on the Reports page when no report is selected.</comment></data>
+  <data name="Shared_App_ErrorHeading" xml:space="preserve"><value>An error occurred</value><comment>Heading of the router error-boundary panel shown when a page throws.</comment></data>
+  <data name="Shared_App_ErrorDismissButton" xml:space="preserve"><value>Dismiss and retry</value><comment>Button on the router error-boundary panel — clears the error and re-renders the page.</comment></data>
+  <data name="Shared_App_NotFoundTitle" xml:space="preserve"><value>Not Found — StageFright Community</value><comment>Browser tab title for an unrouted URL.</comment></data>
+  <data name="Shared_App_NotFoundHeading" xml:space="preserve"><value>Page Not Found</value><comment>Heading shown when a URL matches no page.</comment></data>
+  <data name="Shared_App_NotFoundBody" xml:space="preserve"><value>The requested page could not be found.</value><comment>Body text on the "page not found" screen; followed by the return-to-dashboard link.</comment></data>
+  <data name="Shared_App_NotFoundReturnLink" xml:space="preserve"><value>Return to dashboard</value><comment>Hyperlink caption on the "page not found" screen — navigates to the dashboard.</comment></data>
+  <data name="Shared_StartupWarning_AuditPurgeFailed" xml:space="preserve"><value>The startup cleanup of expired audit-trail entries did not complete. Your records are intact; the cleanup will be retried the next time the app starts.</value><comment>Non-fatal dashboard banner shown when the startup audit-trail purge failed (spec 028, FR-025).</comment></data>
+  <data name="Shared_StartupWarning_DismissLabel" xml:space="preserve"><value>Dismiss</value><comment>Button that hides the non-fatal startup-warning banner for the current session.</comment></data>
+</root>
