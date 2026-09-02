@@ -1,0 +1,265 @@
+name: Publish Dev Debug Builds
+
+# Manually triggered only. Builds DEBUG-configuration packages of the `dev` branch for both
+# Windows (a self-signed MSIX) and macOS (an unsigned, universal Mac Catalyst .app), then
+# publishes them together as the single rolling "dev-debug-build" pre-release.
+# These are internal-testing artifacts, not a production release.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  APP_PROJECT: src/StageFright.App/StageFright.App.csproj
+  APP_PROJECT_DIR: src/StageFright.App
+  DEBUG_MSIX_NAME: StageFrightCommunity-dev-DEBUG.msix
+  DEBUG_MAC_ZIP_NAME: StageFrightCommunity-dev-DEBUG-mac.zip
+  RELEASE_TAG: dev-debug-build
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Windows: build + sign the Debug MSIX, then hand it to the publish job as a
+  # CI artifact (the release itself is created once, by publish-release, with
+  # both platforms' assets at the same time).
+  # ---------------------------------------------------------------------------
+  build-windows-msix:
+    name: Build debug MSIX (Windows, dev)
+    runs-on: windows-latest
+    outputs:
+      sha: ${{ steps.rev.outputs.sha }}
+    env:
+      TFM: net10.0-windows10.0.19041.0
+      RID: win-x64
+
+    steps:
+      - name: Checkout dev branch
+        uses: actions/checkout@v5
+        with:
+          ref: dev
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
+      - name: Restore (Windows target only)
+        run: dotnet restore ${{ env.APP_PROJECT }} -r ${{ env.RID }}
+
+      - name: Resolve dev commit for labeling
+        id: rev
+        shell: pwsh
+        run: |
+          $sha = (git rev-parse --short HEAD).Trim()
+          echo "sha=$sha" >> $env:GITHUB_OUTPUT
+
+      # Decodes the PFX and imports it into the runner's CurrentUser\My certificate store,
+      # then signs via PackageCertificateThumbprint rather than PackageCertificateKeyFile/
+      # PackageCertificatePassword (a raw PFX file reference). The latter was confirmed
+      # unreliable against this SDK/packaging-target version: a temporary diagnostic step
+      # proved the PFX imports perfectly via .NET's own Get-PfxCertificate (correct Subject,
+      # HasPrivateKey=True) with the exact same file/password that
+      # Microsoft.Windows.SDK.BuildTools.MSIX.Packaging.targets rejected as
+      # "cannot import key file" / "not valid for signing" (APPX0105/APPX0107) — i.e. the
+      # bug is in that target's own PFX-file import path, not the certificate or password.
+      # Importing into the store first and referencing by thumbprint sidesteps it, and
+      # matches the remedy the APPX0105 warning text itself suggests.
+      - name: Decode and import signing certificate
+        shell: pwsh
+        env:
+          MSIX_CERT_BASE64: ${{ secrets.MSIX_CERT_BASE64 }}
+          MSIX_CERT_PASSWORD: ${{ secrets.MSIX_CERT_PASSWORD }}
+        run: |
+          if ([string]::IsNullOrEmpty($env:MSIX_CERT_BASE64)) {
+            throw "Repo secret MSIX_CERT_BASE64 is not set. See .github/workflows/debug-pre-release.yml for setup instructions."
+          }
+          $certPath = Join-Path $env:RUNNER_TEMP "debug-signing.pfx"
+          [IO.File]::WriteAllBytes($certPath, [Convert]::FromBase64String($env:MSIX_CERT_BASE64))
+          echo "CERT_PATH=$certPath" >> $env:GITHUB_ENV
+
+          $securePw = ConvertTo-SecureString -String $env:MSIX_CERT_PASSWORD -AsPlainText -Force
+          $cert = Import-PfxCertificate -CertStoreLocation "Cert:\CurrentUser\My" -FilePath $certPath -Password $securePw
+          echo "CERT_THUMBPRINT=$($cert.Thumbprint)" >> $env:GITHUB_ENV
+
+      # Publishing (not building) with WindowsPackageType=MSIX produces a signed .msix under
+      # <APP_PROJECT_DIR>/AppPackages/ (a sibling of bin/, not nested inside it — confirmed
+      # from an actual run's output path). This mirrors the CLI steps documented at
+      # https://learn.microsoft.com/dotnet/maui/windows/deployment/publish-cli, but scoped to
+      # the Debug configuration for an internal test build. WindowsPackageType/signing are
+      # passed only here on the command line — the .csproj itself is untouched for Debug/local
+      # builds, which stay unpackaged (WindowsPackageType=None) exactly as before.
+      - name: Publish debug MSIX
+        shell: pwsh
+        run: |
+          dotnet publish ${{ env.APP_PROJECT }} `
+            -f ${{ env.TFM }} `
+            -c Debug `
+            -p:RuntimeIdentifierOverride=${{ env.RID }} `
+            -p:WindowsPackageType=MSIX `
+            -p:AppxPackageSigningEnabled=true `
+            -p:PackageCertificateThumbprint="$env:CERT_THUMBPRINT" `
+            -p:GenerateAppInstallerFile=false
+
+      - name: Remove signing certificate from disk and store
+        if: always()
+        shell: pwsh
+        run: |
+          Remove-Item -Path $env:CERT_PATH -ErrorAction SilentlyContinue
+          if ($env:CERT_THUMBPRINT) {
+            Remove-Item -Path "Cert:\CurrentUser\My\$env:CERT_THUMBPRINT" -DeleteKey -Force -ErrorAction SilentlyContinue
+          }
+
+      - name: Locate and rename debug package
+        id: package
+        shell: pwsh
+        run: |
+          # Exclude AppPackages\...\Dependencies\ — that's where Windows App SDK runtime
+          # redistributable .msix files live for a framework-dependent package, and it would be
+          # picked up by a plain "*.msix" search alongside the actual app package.
+          $msix = Get-ChildItem -Path "${{ env.APP_PROJECT_DIR }}/AppPackages" -Recurse -Filter *.msix |
+            Where-Object { $_.FullName -notmatch '\\Dependencies\\' } |
+            Select-Object -First 1
+          if (-not $msix) { throw "No .msix file was produced by the publish step." }
+          $destPath = Join-Path $msix.DirectoryName "${{ env.DEBUG_MSIX_NAME }}"
+          Copy-Item -Path $msix.FullName -Destination $destPath -Force
+          echo "path=$destPath" >> $env:GITHUB_OUTPUT
+
+      - name: Upload MSIX artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: debug-msix
+          path: ${{ steps.package.outputs.path }}
+          if-no-files-found: error
+          retention-days: 1
+
+  # ---------------------------------------------------------------------------
+  # macOS: build the UNSIGNED, universal (Apple Silicon + Intel) Mac Catalyst
+  # .app, zip it with ditto, and hand it to the publish job as a CI artifact.
+  # No signing secrets are used — an internal test build only needs the ad-hoc
+  # signature the toolchain applies automatically.
+  # ---------------------------------------------------------------------------
+  build-mac-app:
+    name: Build debug .app (macOS, dev)
+    runs-on: macos-latest
+    env:
+      TFM: net10.0-maccatalyst
+
+    steps:
+      - name: Checkout dev branch
+        uses: actions/checkout@v5
+        with:
+          ref: dev
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
+      - name: Restore (Mac Catalyst target only)
+        run: dotnet restore ${{ env.APP_PROJECT }}
+
+      # CreatePackage=false -> produce a .app bundle, not a .pkg installer.
+      # No CodesignKey/EnableCodeSigning -> the build applies only an ad-hoc signature
+      # (all an internal test build needs; testers still have to clear the Gatekeeper
+      # quarantine flag — see the release notes text in publish-release).
+      # Passing BOTH RIDs in a single RuntimeIdentifier value is how the .NET MAUI Mac
+      # Catalyst targets emit a universal (lipo'd x64 + arm64) binary. Release builds do
+      # this by default; a Debug build has to state it explicitly. See
+      # https://learn.microsoft.com/dotnet/maui/mac-catalyst/deployment/publish-unsigned
+      - name: Publish unsigned universal .app
+        run: >
+          dotnet publish ${{ env.APP_PROJECT }}
+          -f ${{ env.TFM }}
+          -c Debug
+          -p:CreatePackage=false
+          -p:RuntimeIdentifier="maccatalyst-x64;maccatalyst-arm64"
+
+      # `ditto` is Apple's supported way to archive an .app bundle for transport — it
+      # preserves the symlinks, permissions, and resource forks that a plain `zip`
+      # corrupts. A universal publish drops the bundle straight under bin/Debug/<TFM>/;
+      # a single-arch publish nests it one level deeper under .../<rid>/ — the search
+      # depth covers both. The bundle is named after <ApplicationTitle> ("StageFright
+      # Community.app"), so match on the extension rather than a hard-coded name.
+      - name: Zip the .app bundle
+        run: |
+          set -euo pipefail
+          APP_PATH=$(find "${APP_PROJECT_DIR}/bin/Debug/${TFM}" -maxdepth 3 -type d -name "*.app" -print -quit)
+          if [ -z "$APP_PATH" ]; then
+            echo "No .app bundle was produced by the publish step." >&2
+            exit 1
+          fi
+          echo "Archiving $APP_PATH"
+          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$RUNNER_TEMP/${DEBUG_MAC_ZIP_NAME}"
+
+      - name: Upload .app artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: debug-mac
+          path: ${{ runner.temp }}/${{ env.DEBUG_MAC_ZIP_NAME }}
+          if-no-files-found: error
+          retention-days: 1
+
+  # ---------------------------------------------------------------------------
+  # Delete + recreate the single rolling pre-release with BOTH platform assets.
+  # Runs only after both builds succeed, so a broken build on either platform
+  # leaves the existing release untouched rather than half-updated.
+  #
+  # Delete the whole release + tag and recreate it from scratch every run, rather than
+  # replacing/adding assets in place. GitHub "immutable releases" (GA Oct 2025) permanently
+  # block modifying or deleting an asset once a release is published (`gh release upload
+  # --clobber` fails with HTTP 422), but deleting an entire release is still allowed. A
+  # full delete + recreate keeps the rolling "dev-debug-build" tag and constant asset
+  # filenames working whether or not repo-level release immutability is enabled.
+  # `--cleanup-tag` removes the git tag too so `gh release create` re-points it at dev HEAD.
+  # ---------------------------------------------------------------------------
+  publish-release:
+    name: Publish rolling debug release
+    needs: [build-windows-msix, build-mac-app]
+    runs-on: windows-latest
+
+    steps:
+      - name: Download MSIX artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: debug-msix
+          path: dist
+
+      - name: Download .app artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: debug-mac
+          path: dist
+
+      - name: Publish / update rolling debug release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          DEV_SHA: ${{ needs.build-windows-msix.outputs.sha }}
+        run: |
+          $notes = @"
+          Automatically built **DEBUG** configuration packages from the ``dev`` branch (commit $env:DEV_SHA), built $(Get-Date -Format u) UTC by run #${{ github.run_number }}.
+
+          | Platform | Asset | Notes |
+          | --- | --- | --- |
+          | Windows | ``$env:DEBUG_MSIX_NAME`` | Self-signed MSIX. Install the test signing certificate before the package. |
+          | macOS | ``$env:DEBUG_MAC_ZIP_NAME`` | Unsigned universal (Apple Silicon + Intel) Mac Catalyst ``.app``. Gatekeeper blocks it until the quarantine flag is cleared: ``xattr -dr com.apple.quarantine "StageFright Community.app"``, or right-click the app in Finder and choose Open. |
+
+          This is an internal testing build, not a production release. The entire release is deleted and recreated on every run of this workflow.
+          "@
+
+          gh release delete $env:RELEASE_TAG --yes --cleanup-tag 2>$null
+
+          gh release create $env:RELEASE_TAG `
+            "dist/$env:DEBUG_MSIX_NAME" `
+            "dist/$env:DEBUG_MAC_ZIP_NAME" `
+            --title "Dev Debug Build (rolling)" `
+            --notes $notes `
+            --prerelease `
+            --target dev
