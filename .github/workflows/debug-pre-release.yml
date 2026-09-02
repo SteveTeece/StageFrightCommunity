@@ -172,13 +172,18 @@ jobs:
       # Catalyst targets emit a universal (lipo'd x64 + arm64) binary. Release builds do
       # this by default; a Debug build has to state it explicitly. See
       # https://learn.microsoft.com/dotnet/maui/mac-catalyst/deployment/publish-unsigned
+      # The two RIDs MUST be joined with the escaped `%3B`, never a literal `;`: MSBuild's
+      # own -p: switch parser treats `;` as a property-list delimiter (shell quoting only
+      # stops the *shell* from splitting, not MSBuild), so a literal `;` makes it read
+      # `maccatalyst-arm64` as a second, malformed property and fail the build with
+      # "MSB1006: Property is not valid. Switch: maccatalyst-arm64".
       - name: Publish unsigned universal .app
         run: >
           dotnet publish ${{ env.APP_PROJECT }}
           -f ${{ env.TFM }}
           -c Debug
           -p:CreatePackage=false
-          -p:RuntimeIdentifier="maccatalyst-x64;maccatalyst-arm64"
+          -p:RuntimeIdentifier=maccatalyst-x64%3Bmaccatalyst-arm64
 
       # `ditto` is Apple's supported way to archive an .app bundle for transport — it
       # preserves the symlinks, permissions, and resource forks that a plain `zip`
