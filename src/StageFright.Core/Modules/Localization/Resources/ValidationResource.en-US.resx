@@ -444,6 +444,10 @@
     <value>The fiscal year start day must be between 1 and 28.</value>
     <comment>Shown when first-run setup is submitted with a financial-year start day outside 1–28 (spec 028, FR-020).</comment>
   </data>
+  <data name="Validation_Setup_FinancialYearStartMonthRange" xml:space="preserve">
+    <value>The fiscal year start month must be between 1 and 12.</value>
+    <comment>Shown when first-run setup is submitted with a financial-year start month outside 1–12 (spec 028, FR-019).</comment>
+  </data>
   <data name="Validation_Settings_CurrencyImmutable" xml:space="preserve">
     <value>The organization currency is chosen during setup and cannot be changed afterwards.</value>
     <comment>Shown when a Settings save attempts to change CurrencyCode from its persisted value (spec 028, FR-002).</comment>

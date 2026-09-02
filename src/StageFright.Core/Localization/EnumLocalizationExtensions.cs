@@ -26,6 +26,13 @@ public static class EnumLocalizationExtensions
     public static void UseFactory(IStringLocalizerFactory factory) => _factory = factory;
 
     /// <summary>
+    /// The <c>EnumsResource</c> key for <paramref name="value"/>:
+    /// <c>Enum_&lt;TypeName&gt;_&lt;MemberName&gt;</c>. The one place this format is built — both
+    /// this extension and <see cref="Localizer.Enum"/> resolve through it.
+    /// </summary>
+    internal static string EnumResourceKey(System.Enum value) => $"Enum_{value.GetType().Name}_{value}";
+
+    /// <summary>
     /// Looks up <c>Enum_&lt;TypeName&gt;_&lt;MemberName&gt;</c> in <c>EnumsResource</c> through
     /// the missing-key logging decorator (FR-008/FR-009). Falls back to the raw enum name when
     /// <see cref="UseFactory"/> was never called (e.g. a test that renders an enum without
@@ -36,7 +43,6 @@ public static class EnumLocalizationExtensions
         if (_factory is null)
             return value.ToString();
 
-        var key = $"Enum_{value.GetType().Name}_{value}";
-        return _factory.Create(typeof(EnumsResource))[key];
+        return _factory.Create(typeof(EnumsResource))[EnumResourceKey(value)];
     }
 }

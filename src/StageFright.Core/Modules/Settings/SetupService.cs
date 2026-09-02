@@ -192,6 +192,9 @@ public class SetupService : ISetupService
         if (!CurrencyCatalog.TryGet(request.CurrencyCode, out _))
             throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Setup_CurrencyUnknown"), "Settings", nameof(InitializeAsync));
 
+        if (request.FinancialYearStartMonth < 1 || request.FinancialYearStartMonth > 12)
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Setup_FinancialYearStartMonthRange"), "Settings", nameof(InitializeAsync));
+
         if (request.FinancialYearStartDay < 1 || request.FinancialYearStartDay > 28)
             throw new ValidationException(_localizer.Get<ValidationResource>("Validation_Setup_FinancialYearStartDayRange"), "Settings", nameof(InitializeAsync));
     }

@@ -95,10 +95,14 @@ public sealed class SupportedLanguagesCatalog : ISupportedLanguagesCatalog
         if (string.IsNullOrEmpty(baseDir) || !Directory.Exists(baseDir))
             yield break;
 
-        IEnumerable<string> subDirs;
+        string[] subDirs;
         try
         {
-            subDirs = Directory.EnumerateDirectories(baseDir);
+            // Enumerate eagerly. A lazy EnumerateDirectories would defer an IO or permission
+            // failure into the foreach below — past these catch blocks, out of BuildCatalog, and
+            // into the Lazy<T> that caches it, permanently breaking the catalog. GetDirectories
+            // surfaces any such failure right here, where it degrades to the en-AU-only baseline.
+            subDirs = Directory.GetDirectories(baseDir);
         }
         catch (IOException)
         {

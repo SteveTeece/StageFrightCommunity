@@ -26,11 +26,6 @@ public partial class CultureProvider : ComponentBase
     /// </summary>
     public CultureInfo CurrentCulture { get; private set; } = CultureInfo.CurrentUICulture;
 
-    protected override void OnInitialized()
-    {
-        CurrentCulture = CultureInfo.CurrentUICulture;
-    }
-
     /// <summary>
     /// Switches the running session to <paramref name="culture"/> immediately: assigns it to the
     /// process-wide <see cref="CultureInfo.DefaultThreadCurrentCulture"/> /

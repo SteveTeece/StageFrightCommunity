@@ -36,7 +36,7 @@ public record SetupRequest(
     string CurrencyCode = "AUD",
     // FinancialYearStartMonth / FinancialYearStartDay: the (month, day) the financial year
     // opens on (spec 028, US7 / FR-019, FR-020). Chosen explicitly during first-run setup;
-    // defaults reproduce the Australian FY (1 July). Day is validated to 1..28.
+    // defaults reproduce the Australian FY (1 July). Month is validated to 1..12, day to 1..28.
     int FinancialYearStartMonth = 7,
     int FinancialYearStartDay = 1,
     // InceptionDate: optional date the organisation was founded (spec 028, FR-022 / issue #353).

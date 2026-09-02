@@ -48,6 +48,8 @@ compatibility. `CurrencyCode` defaults to `"AUD"`.
 * Reject the request (no `Settings` row created) when:
   * `CurrencyCode` is not one of `CurrencyCatalog.All` codes → `ValidationException`
     (`Validation_Setup_CurrencyUnknown`).
+  * `FinancialYearStartMonth` is outside `1..12` → `ValidationException`
+    (`Validation_Setup_FinancialYearStartMonthRange`).
   * `FinancialYearStartDay` is outside `1..28` → `ValidationException`
     (`Validation_Setup_FinancialYearStartDayRange`).
 * On success, persist `CurrencyCode`, `FinancialYearStartMonth`, `FinancialYearStartDay`,

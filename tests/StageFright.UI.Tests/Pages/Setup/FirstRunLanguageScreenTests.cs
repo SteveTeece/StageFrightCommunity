@@ -166,4 +166,31 @@ public class FirstRunLanguageScreenTests : LocalizedTestContext
         Assert.DoesNotContain("/dashboard", nav.Uri);
         await _setupService.Received(1).InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>());
     }
+
+    [Fact]
+    public async Task Confirm_AfterAFailedSeed_RetriesSeedingWithoutReinitialisingSetup()
+    {
+        using var _ = new CultureRestorer();
+        var debugSeeder = Substitute.For<IDebugDataSeeder>();
+        debugSeeder.SeedAsync(Arg.Any<IProgress<string>>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromException(new InvalidOperationException("boom")), Task.CompletedTask);
+        Services.AddSingleton(debugSeeder);
+
+        // First attempt: InitializeAsync completes, SeedAsync throws — the user stays on the screen.
+        var cut = RenderScreen();
+        cut.Find("[role=switch]").Click();
+        await cut.Find("#btn-confirm-language").ClickAsync(new MouseEventArgs());
+        await _setupService.Received(1).InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>());
+
+        // Setup is complete now, so a real ISetupService would reject a second InitializeAsync.
+        _setupService.IsSetupCompleteAsync(Arg.Any<CancellationToken>()).Returns(true);
+        _setupService.ClearReceivedCalls();
+
+        // Pressing Confirm again re-runs only the seed and reaches the dashboard on success.
+        await cut.Find("#btn-confirm-language").ClickAsync(new MouseEventArgs());
+
+        await _setupService.DidNotReceive().InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>());
+        var nav = Services.GetRequiredService<NavigationManager>();
+        Assert.EndsWith("/dashboard", nav.Uri);
+    }
 }

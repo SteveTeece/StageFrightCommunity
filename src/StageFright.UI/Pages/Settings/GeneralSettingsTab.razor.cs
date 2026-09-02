@@ -127,7 +127,7 @@ public partial class GeneralSettingsTab : ComponentBase
                 CultureProvider?.Switch(CultureInfo.GetCultureInfo(_selectedLanguageCode));
             }
 
-            _successMessage = L["Settings_Common_SaveSuccess"];
+            _successMessage = Loc.Get<SettingsResource>("Settings_Common_SaveSuccess");
         }
         catch (ValidationException ex)
         {

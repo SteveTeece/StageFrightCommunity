@@ -108,24 +108,31 @@ public partial class FirstRunLanguageScreen : ComponentBase
     {
         try
         {
-            // A placeholder request — DebugDataSeeder overwrites organisation name and fee
-            // schedule with its own generated values once it runs (see its own doc comment),
-            // so these figures only need to satisfy SetupRequest/Settings validation, not
-            // reflect anything real. Language and theme follow what was actually chosen here.
-            var request = new SetupRequest(
-                OrganizationName: L["Setup_FirstRun_SampleOrganizationPlaceholder"],
-                AnnualFee: 0,
-                AttendanceFee: 0,
-                MembershipRenewalMonth: 1,
-                IsTaxApplicable: false,
-                TaxRate: null,
-                AnnualFeeTaxCode: null,
-                AttendanceFeeTaxCode: null,
-                Theme: ThemeProvider?.CurrentTheme ?? Theme.Dark,
-                LanguageCode: _selectedLanguageCode,
-                CurrencyCode: "AUD");
+            // InitializeAsync marks setup complete and rejects a second call. If an earlier
+            // attempt got past it but SeedAsync then threw, setup is already done — skip straight
+            // to (re)seeding so re-pressing Confirm recovers, instead of dead-ending forever on
+            // "Setup has already been completed".
+            if (!await SetupService.IsSetupCompleteAsync())
+            {
+                // A placeholder request — DebugDataSeeder overwrites organisation name and fee
+                // schedule with its own generated values once it runs (see its own doc comment),
+                // so these figures only need to satisfy SetupRequest/Settings validation, not
+                // reflect anything real. Language and theme follow what was actually chosen here.
+                var request = new SetupRequest(
+                    OrganizationName: L["Setup_FirstRun_SampleOrganizationPlaceholder"],
+                    AnnualFee: 0,
+                    AttendanceFee: 0,
+                    MembershipRenewalMonth: 1,
+                    IsTaxApplicable: false,
+                    TaxRate: null,
+                    AnnualFeeTaxCode: null,
+                    AttendanceFeeTaxCode: null,
+                    Theme: ThemeProvider?.CurrentTheme ?? Theme.Dark,
+                    LanguageCode: _selectedLanguageCode,
+                    CurrencyCode: "AUD");
 
-            await SetupService.InitializeAsync(request);
+                await SetupService.InitializeAsync(request);
+            }
 
             _seedingInProgress = true;
             try

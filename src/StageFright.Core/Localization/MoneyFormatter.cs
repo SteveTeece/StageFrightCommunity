@@ -13,6 +13,15 @@ namespace StageFright.Core.Localization;
 /// <c>"{0:C}"</c> / <c>FormatString="{0:C}"</c> at a display site directly — that substitutes the
 /// active culture's own currency symbol (e.g. "€" under fr-FR), misrepresenting the amount.
 /// </summary>
+/// <remarks>
+/// The configured currency is process-wide static state, deliberately (plan.md Decision 5 — one
+/// currency per install, fixed after setup). Any test that calls <see cref="Configure"/> with a
+/// non-default currency MUST restore <see cref="CurrencyCatalog.Default"/> afterwards AND must not
+/// run in parallel with a test asserting default (AUD) output — see
+/// <c>MoneyFormatterStateCollection</c> in <c>StageFright.Integration.Tests</c> and the
+/// <c>Dispose</c> reset in <c>MoneyFormatterTests</c>. A new test assembly that formats money is
+/// subject to the same rule as the <see cref="CultureInfo"/> statics it sits alongside.
+/// </remarks>
 public static class MoneyFormatter
 {
     private static SupportedCurrency _currency = CurrencyCatalog.Default;

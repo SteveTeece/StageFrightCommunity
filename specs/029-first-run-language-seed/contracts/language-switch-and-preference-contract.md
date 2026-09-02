@@ -47,7 +47,7 @@ public void Switch(CultureInfo culture)
 - Reachable only via `App.razor.cs`'s startup redirect (see below) — no menu item, no link to it from anywhere else in the app (FR-005: it must never be shown again once a preference is recorded).
 - On confirm:
   - Always: `ILanguagePreferenceStore.Set(selectedCode)`, then `CultureProvider.Switch(...)`.
-  - If "Load sample data" was ticked (Debug builds only, `IDebugDataSeeder` resolved): `SetupService.InitializeAsync(placeholderRequest)` → `IDebugDataSeeder.SeedAsync(progress)` → `Nav.NavigateTo("/dashboard")` on success; on any failure, show the error and stay on `/language-select` (FR-015).
+  - If "Load sample data" was ticked (Debug builds only, `IDebugDataSeeder` resolved): `SetupService.InitializeAsync(placeholderRequest)` (guarded by `!IsSetupCompleteAsync()`, so it runs at most once) → `IDebugDataSeeder.SeedAsync(progress)` → `Nav.NavigateTo("/dashboard")` on success; on any failure, show the error and stay on `/language-select` (FR-015). Re-pressing Confirm after a failed seed retries `SeedAsync` only — `InitializeAsync` is skipped because setup is already complete.
   - Otherwise: `Nav.NavigateTo("/setup")`.
 
 ## Amended startup routing (`App.razor.cs`)
