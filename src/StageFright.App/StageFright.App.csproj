@@ -37,6 +37,21 @@
         <RuntimeIdentifier>$(RuntimeIdentifierOverride)</RuntimeIdentifier>
     </PropertyGroup>
 
+    <!-- Emits a universal (x64 + arm64) Mac Catalyst .app when the CI debug pre-release workflow
+         (.github/workflows/debug-pre-release.yml) passes -p:PublishMacUniversal=true. Inert otherwise:
+         a plain Debug/local maccatalyst build stays fast and single-arch (maccatalyst-x64), and
+         `dotnet run` is unaffected. This MUST be the plural <RuntimeIdentifiers>, set here in the
+         project rather than on the command line: the singular RuntimeIdentifier rejects a ';'-list
+         with NETSDK1083, and passing -p:RuntimeIdentifiers on the CLI makes it a global property
+         that leaks the ';'-list verbatim into every ProjectReference (the non-maccatalyst class
+         libraries), which then fail the same NETSDK1083. As a project property it is evaluated
+         locally and MAUI's Mac Catalyst targets fan out per-RID inner builds that pass a single
+         concrete RID to the referenced libraries. Mirrors dotnet/maui's own
+         Controls.TestCases.HostApp.csproj CI pattern. -->
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst' and '$(PublishMacUniversal)' == 'true'">
+        <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
+    </PropertyGroup>
+
     <ItemGroup>
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
         <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
