@@ -182,7 +182,11 @@ Priority order (P1 → P3) matches the spec. Each story is independently testabl
 * `MoneyFormatter` keeps its `Format` / `FormatWithCode` call surface (≈20 call sites unchanged) but
   gains `Configure(SupportedCurrency)`, called once in `MauiProgram` right after the display culture
   is resolved. It then formats with the configured symbol/code and the configured minor-unit digits,
-  while grouping and symbol placement continue to follow `CultureInfo.CurrentCulture` (FR-003).
+  while grouping and symbol placement continue to follow `CultureInfo.CurrentCulture` (FR-003). It
+  also pins `NumberFormatInfo.CurrencyNegativePattern` to the leading/trailing-minus form matching the
+  culture's symbol placement (never accounting parentheses), so a negative AUD figure is `-$42.10` on
+  every host — the invariant culture that CI hosts default to would otherwise emit `($42.10)` and
+  break the FR-006 / SC-004 zero-drift regression.
 * `StageFright.Reports` providers currently emit bare `ToString("F2")` money strings with no symbol.
   Each provider's private `FormatCurrency` is redirected through `MoneyFormatter` so printed/exported
   amounts carry the configured symbol and precision and never show a mismatched one (FR-003/FR-004).

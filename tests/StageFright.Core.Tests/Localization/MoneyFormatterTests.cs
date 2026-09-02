@@ -91,6 +91,29 @@ public sealed class MoneyFormatterTests : IDisposable
         Assert.Equal("$1,234.50", result);
     }
 
+    [Theory]
+    [InlineData("en-AU")]
+    [InlineData("en-US")]
+    [InlineData("")]          // invariant culture — the default on CI hosts; would otherwise give "($1,234.50)"
+    public void Should_RenderANegativeAmountWithALeadingMinus_NeverParentheses_ForAud(string cultureName)
+    {
+        var result = FormatUnder(cultureName, CurrencyCatalog.Default, -1234.5m);
+
+        Assert.Equal("-$1,234.50", result);
+    }
+
+    [Fact]
+    public void Should_KeepTheCultureSymbolPlacement_ForANegativeAmount_UnderAForeignCulture()
+    {
+        // fr-FR places the symbol after the amount; the negative form stays a leading minus, not "(…)".
+        var result = FormatUnder("fr-FR", CurrencyCatalog.Get("AUD"), -1234.5m);
+
+        Assert.StartsWith("-", result);
+        Assert.EndsWith("$", result);
+        Assert.DoesNotContain("(", result);
+        Assert.DoesNotContain(")", result);
+    }
+
     [Fact]
     public void Should_PrefixTheIsoCode_When_FormatWithCodeUsed()
     {

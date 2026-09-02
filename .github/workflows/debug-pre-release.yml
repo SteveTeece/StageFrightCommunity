@@ -168,28 +168,27 @@ jobs:
       # No CodesignKey/EnableCodeSigning -> the build applies only an ad-hoc signature
       # (all an internal test build needs; testers still have to clear the Gatekeeper
       # quarantine flag — see the release notes text in publish-release).
-      # A universal (lipo'd x64 + arm64) binary comes from the *plural* RuntimeIdentifiers
-      # property, NOT the singular RuntimeIdentifier: the .NET SDK validates a lone
-      # RuntimeIdentifier as ONE RID and rejects a `;`-list with
-      # "NETSDK1083: The specified RuntimeIdentifier 'maccatalyst-x64;maccatalyst-arm64'
-      # is not recognized". MAUI's Mac Catalyst targets only rewrite a `;`-list in the
-      # singular property into the plural one when it is set inside the .csproj (as MAUI
-      # does for Release builds); they can't touch it when it arrives as a command-line
-      # global property, so a Debug build has to pass RuntimeIdentifiers itself. See the
-      # dotnet/macios .NET 8 release notes ("set the RuntimeIdentifiers property
-      # (plural, don't confuse with RuntimeIdentifier)").
-      # The two RIDs MUST be joined with the escaped `%3B`, never a literal `;`: MSBuild's
-      # own -p: switch parser treats `;` as a property-list delimiter (shell quoting only
-      # stops the *shell* from splitting, not MSBuild), so a literal `;` makes it read
-      # `maccatalyst-arm64` as a second, malformed property and fail the build with
-      # "MSB1006: Property is not valid. Switch: maccatalyst-arm64".
+      # PublishMacUniversal=true flips a conditional PropertyGroup in StageFright.App.csproj
+      # that sets the *plural* <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</...>,
+      # which is what makes MAUI's Mac Catalyst targets emit a universal (lipo'd x64 + arm64)
+      # .app. It has to be set inside the .csproj, not passed here as -p:RuntimeIdentifier(s):
+      #  * the singular RuntimeIdentifier is validated by the .NET SDK as ONE RID and rejects
+      #    a `;`-list with "NETSDK1083: ... 'maccatalyst-x64;maccatalyst-arm64' is not
+      #    recognized";
+      #  * passing -p:RuntimeIdentifiers on the CLI makes it a global property that leaks the
+      #    `;`-list verbatim into every ProjectReference (the plain non-maccatalyst class
+      #    libraries), which then fail the same NETSDK1083.
+      # As a project property it is evaluated locally and MAUI fans out per-RID inner builds
+      # that hand a single concrete RID to the referenced libraries. Release builds get this
+      # universal RID set by MAUI automatically; a Debug build has to opt in. See the
+      # dotnet/macios .NET 8 release notes and dotnet/maui's Controls.TestCases.HostApp.csproj.
       - name: Publish unsigned universal .app
         run: >
           dotnet publish ${{ env.APP_PROJECT }}
           -f ${{ env.TFM }}
           -c Debug
           -p:CreatePackage=false
-          -p:RuntimeIdentifiers=maccatalyst-x64%3Bmaccatalyst-arm64
+          -p:PublishMacUniversal=true
 
       # `ditto` is Apple's supported way to archive an .app bundle for transport — it
       # preserves the symlinks, permissions, and resource forks that a plain `zip`
