@@ -321,16 +321,22 @@ public static class MauiProgram
         }
 
         // Apply the resolved display culture before the BlazorWebView first renders (spec 027,
-        // US3 / FR-023). LanguageProvider never throws; if anything here fails the process stays
-        // on its default culture and startup continues.
+        // US3 / FR-023). Set ONLY the two process-wide globals — deliberately NOT
+        // CultureInfo.CurrentCulture / CurrentUICulture. Those are AsyncLocal-backed per-execution-
+        // context overrides; one pinned on the startup thread shadows DefaultThreadCurrentUICulture
+        // on the renderer's execution context, so a later in-session CultureProvider.Switch (spec
+        // 029) updates the globals yet every render keeps reading the pinned startup value until a
+        // full process restart (spec 029, the T036 defect). With no override anywhere,
+        // CultureInfo.CurrentUICulture reads straight through to DefaultThreadCurrentUICulture on
+        // every render — and Switch sets only these same two globals, matching this.
+        // LanguageProvider never throws; if anything here fails the process stays on its default
+        // culture and startup continues.
         try
         {
             var languageProvider = scope.ServiceProvider.GetRequiredService<ILanguageProvider>();
             var culture = languageProvider.ResolveStartupCultureAsync().GetAwaiter().GetResult();
             CultureInfo.DefaultThreadCurrentCulture = culture;
             CultureInfo.DefaultThreadCurrentUICulture = culture;
-            CultureInfo.CurrentCulture = culture;
-            CultureInfo.CurrentUICulture = culture;
             Log.Information("Display culture resolved to {Culture}", culture.Name);
         }
         catch (Exception ex)

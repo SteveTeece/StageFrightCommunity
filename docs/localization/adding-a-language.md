@@ -231,9 +231,15 @@ treated as "no explicit choice" and re-resolved.
 **A language change applies live, in the running session — there is no "restart required" notice
 anywhere, and no next-launch delay** (spec 029, superseding spec 027's FR-021). Both entry points
 call `CultureProvider.Switch(CultureInfo)` (`src/StageFright.UI/Layout/CultureProvider.razor.cs`),
-which reassigns the process culture (`CultureInfo.DefaultThreadCurrent[UI]Culture` plus
-`CurrentCulture` / `CurrentUICulture`), updates its cascaded `CurrentCulture`, and re-renders the
-whole app tree it wraps:
+which reassigns the two **process-wide culture globals** — `CultureInfo.DefaultThreadCurrentCulture`
+and `DefaultThreadCurrentUICulture`, and *only* those. It deliberately does **not** touch the
+`AsyncLocal`-backed `CultureInfo.CurrentCulture` / `CurrentUICulture`: a per-execution-context value
+pinned there (as `MauiProgram` startup once did) shadows the globals on the Blazor renderer's own
+execution context, so every `@L["Key"]` / `MoneyFormatter.Format(...)` on later renders keeps
+reading the pre-switch culture until a full process restart — the spec 029 T036 defect.
+`MauiProgram.RunStartupSequence` is held to the same "globals only" rule, so nothing overrides
+them and every render reads `CurrentUICulture` straight through. `Switch` then updates its cascaded
+`CurrentCulture` and re-renders the whole app tree it wraps:
 
 * the first-run **`/language-select`** screen, shown before the setup wizard on a clean install
   with no recorded preference — on confirm it calls `ILanguagePreferenceStore.Set` then

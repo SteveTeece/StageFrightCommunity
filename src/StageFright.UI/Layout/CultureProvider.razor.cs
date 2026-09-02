@@ -32,19 +32,30 @@ public partial class CultureProvider : ComponentBase
     }
 
     /// <summary>
-    /// Switches the running session to <paramref name="culture"/> immediately: sets it on
-    /// <see cref="CultureInfo.DefaultThreadCurrentCulture"/>, <see cref="CultureInfo.DefaultThreadCurrentUICulture"/>,
-    /// <see cref="CultureInfo.CurrentCulture"/> and <see cref="CultureInfo.CurrentUICulture"/>,
-    /// updates <see cref="CurrentCulture"/>, then re-renders. Does not persist anything —
-    /// persistence is always the caller's job (<c>ILanguagePreferenceStore.Set</c> /
-    /// <c>SettingsService.SaveAsync</c>).
+    /// Switches the running session to <paramref name="culture"/> immediately: assigns it to the
+    /// process-wide <see cref="CultureInfo.DefaultThreadCurrentCulture"/> /
+    /// <see cref="CultureInfo.DefaultThreadCurrentUICulture"/> globals, updates
+    /// <see cref="CurrentCulture"/>, then re-renders. Does not persist anything — persistence is
+    /// always the caller's job (<c>ILanguagePreferenceStore.Set</c> / <c>SettingsService.SaveAsync</c>).
     /// </summary>
+    /// <remarks>
+    /// Deliberately sets <b>only</b> the two <c>DefaultThreadCurrent*</c> globals, never
+    /// <see cref="CultureInfo.CurrentCulture"/> / <see cref="CultureInfo.CurrentUICulture"/>. The
+    /// latter pair is <see cref="System.Threading.AsyncLocal{T}"/>-backed per-execution-context
+    /// state: a value set here (on an event-handler continuation's context) is unwound before the
+    /// next render batch runs, and any value pinned on the renderer's own execution context
+    /// <i>shadows</i> the globals — so every <c>IStringLocalizer["Key"]</c> and
+    /// <see cref="StageFright.Core.Localization.MoneyFormatter"/> call on later renders would keep
+    /// reading the pre-switch culture until a full process restart (spec 029, the T036 defect).
+    /// With no per-context override anywhere — <c>MauiProgram.RunStartupSequence</c> is matched to
+    /// set only these same two globals — every render reads
+    /// <see cref="CultureInfo.CurrentUICulture"/> straight through to
+    /// <see cref="CultureInfo.DefaultThreadCurrentUICulture"/> and the switch takes effect at once.
+    /// </remarks>
     public void Switch(CultureInfo culture)
     {
         CultureInfo.DefaultThreadCurrentCulture = culture;
         CultureInfo.DefaultThreadCurrentUICulture = culture;
-        CultureInfo.CurrentCulture = culture;
-        CultureInfo.CurrentUICulture = culture;
         CurrentCulture = culture;
         StateHasChanged();
     }
