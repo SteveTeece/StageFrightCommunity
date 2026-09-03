@@ -160,8 +160,8 @@ The application also applies pending migrations automatically on startup — see
 ### Reset the Database
 
 1. Close the application.
-2. Delete `stagefright.db` from the MAUI app-data directory (`FileSystem.AppDataDirectory`). On Windows (unpackaged head) that is `%LOCALAPPDATA%\StageFright Community\com.stagefright.community\Data\` — the repo-root `delete-database.cmd` script removes it (and its `-wal`/`-shm` sidecars) for you.
-3. Run the app again (or `dotnet ef database update`) — the schema and first-run `/setup` wizard both come back clean.
+2. Delete `stagefright.db` from the MAUI app-data directory (`FileSystem.AppDataDirectory`). On Windows (unpackaged head) that is `%LOCALAPPDATA%\StageFright Community\com.stagefright.community\Data\` — the repo-root `delete-database.cmd` script removes it (and its `-wal`/`-shm` sidecars) for you. The script also deletes the sibling `Settings\preferences.dat` (the MAUI `Preferences` store), which holds the recorded display-language choice outside the database — without that, `App.razor.cs` skips the spec 029 `/language-select` screen straight to `/setup` on the next launch.
+3. Run the app again (or `dotnet ef database update`) — the schema, the first-run `/language-select` screen and the `/setup` wizard all come back clean.
 
 ## Central Package Management
 

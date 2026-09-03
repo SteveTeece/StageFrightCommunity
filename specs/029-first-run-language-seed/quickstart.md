@@ -8,7 +8,7 @@ Validation scenarios proving the feature works end-to-end. Each maps to a spec u
 dotnet build
 ```
 
-A clean install has no `stagefright.db` and no recorded language preference. To reset to that state during manual verification, run `delete-database.cmd` (removes the MAUI app-data database) and clear the app's `Preferences` store by uninstalling/reinstalling, or by deleting the `ILanguagePreferenceStore` key directly if testing against a debug build with a known preference key.
+A clean install has no `stagefright.db` and no recorded language preference. To reset to that state during manual verification, run `delete-database.cmd` — it removes the MAUI app-data database **and** the sibling `Settings\preferences.dat` MAUI `Preferences` file that holds the `ILanguagePreferenceStore` (`DisplayLanguageCode`) key, so `/language-select` is shown again on the next launch. (On other platforms, or without the script, clear the `Preferences` store by uninstalling/reinstalling or by deleting that key directly.)
 
 ## Scenario 1 — First launch, choose a non-default language (US1, P1)
 
