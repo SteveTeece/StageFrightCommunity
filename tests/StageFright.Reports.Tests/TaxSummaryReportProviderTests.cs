@@ -2,6 +2,7 @@ using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Reports.Models;
 using StageFright.Reports.Providers;
@@ -37,7 +38,7 @@ public class TaxSummaryReportProviderTests
         _accounts.GetArchivedAsync(Arg.Any<CancellationToken>())
             .Returns(new List<Account>());
 
-        _sut = new TaxSummaryReportProvider(_gl, _accounts, _settings);
+        _sut = new TaxSummaryReportProvider(_gl, _accounts, _settings, RealLocalizer.Instance);
     }
 
     // --- Metadata ---
@@ -113,13 +114,13 @@ public class TaxSummaryReportProviderTests
         var result = await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         var rows = result.Sections.Single().Rows;
-        Assert.Equal("160.00", rows.Single(r => r.Cells[0] == "Total taxable sales").Cells[1]);   // 150 coded income + 10 tax on sales
-        Assert.Equal("50.00", rows.Single(r => r.Cells[0] == "Total tax-exempt sales").Cells[1]);  // tax-exempt sales only
-        Assert.Equal("10.00", rows.Single(r => r.Cells[0] == "Tax collected on sales").Cells[1]);
-        Assert.Equal("8.00", rows.Single(r => r.Cells[0] == "Tax paid on purchases").Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(160m), rows.Single(r => r.Cells[0] == "Total taxable sales").Cells[1]);   // 150 coded income + 10 tax on sales
+        Assert.Equal(MoneyFormatter.Format(50m), rows.Single(r => r.Cells[0] == "Total tax-exempt sales").Cells[1]);  // tax-exempt sales only
+        Assert.Equal(MoneyFormatter.Format(10m), rows.Single(r => r.Cells[0] == "Tax collected on sales").Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(8m), rows.Single(r => r.Cells[0] == "Tax paid on purchases").Cells[1]);
 
         Assert.NotNull(result.GrandTotal);
-        Assert.Equal("2.00", result.GrandTotal!.Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(2m), result.GrandTotal!.Cells[1]);
         Assert.Contains("payable", result.GrandTotal.Cells[0]);
     }
 
@@ -145,7 +146,7 @@ public class TaxSummaryReportProviderTests
 
         var result = await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
-        Assert.Equal("15.00", result.GrandTotal!.Cells[1]);
+        Assert.Equal(MoneyFormatter.Format(15m), result.GrandTotal!.Cells[1]);
         Assert.Contains("refundable", result.GrandTotal.Cells[0]);
     }
 

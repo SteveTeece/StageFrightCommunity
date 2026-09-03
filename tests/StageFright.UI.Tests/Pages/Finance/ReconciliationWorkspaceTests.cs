@@ -5,6 +5,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.UI.Pages.Finance;
 
@@ -15,7 +16,7 @@ namespace StageFright.UI.Tests.Pages.Finance;
 /// finalise gating, persistent checkbox ticks, finalised read-only state,
 /// draft deletion navigation, and error surfacing.
 /// </summary>
-public class ReconciliationWorkspaceTests : RadzenGridTestContext
+public class ReconciliationWorkspaceTests : LocalizedTestContext
 {
     private readonly IBankReconciliationService _service = Substitute.For<IBankReconciliationService>();
 
@@ -151,7 +152,7 @@ public class ReconciliationWorkspaceTests : RadzenGridTestContext
 
         var cut = RenderWorkspace();
 
-        Assert.Contains("Finalised", cut.Markup);
+        Assert.Contains(ReconciliationStatus.Finalised.LocalizeEnum(), cut.Markup);
         Assert.Empty(cut.FindAll("#finalise-button"));
         Assert.Empty(cut.FindAll("#delete-draft-button"));
         Assert.All(cut.FindAll(".reconciliation-tick"), t => Assert.True(t.HasAttribute("disabled")));

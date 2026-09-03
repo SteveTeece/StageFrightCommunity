@@ -1,8 +1,10 @@
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Providers;
 
@@ -16,19 +18,21 @@ namespace StageFright.Reports.Providers;
 public class ChartOfAccountsReportProvider : IReportProvider
 {
     private readonly IAccountBalanceService _balanceService;
+    private readonly ILocalizer _localizer;
 
-    public ChartOfAccountsReportProvider(IAccountBalanceService balanceService)
+    public ChartOfAccountsReportProvider(IAccountBalanceService balanceService, ILocalizer localizer)
     {
         _balanceService = balanceService;
+        _localizer = localizer;
     }
 
     public string ReportId => "chart-of-accounts";
-    public string ReportName => "Chart of Accounts";
+    public string ReportName => _localizer.Get<ReportsResource>("Reports_ChartOfAccounts_Name");
     public string ModuleName => "Finance";
     public int DisplayOrder => 15;
 
     public IReadOnlyList<ReportFilterDefinition> Filters =>
-        [new ReportFilterDefinition { Key = "includeBalances", Type = ReportFilterType.Boolean, Label = "Include Current Balances", DefaultValue = "false" }];
+        [new ReportFilterDefinition { Key = "includeBalances", Type = ReportFilterType.Boolean, Label = _localizer.Get<ReportsResource>("Reports_ChartOfAccounts_IncludeBalancesFilterLabel"), DefaultValue = "false" }];
 
     public async Task<ReportData> GenerateAsync(ReportFilterValues filters, CancellationToken ct = default)
     {
@@ -43,43 +47,46 @@ public class ChartOfAccountsReportProvider : IReportProvider
 
         return new ReportData
         {
-            Title = "Chart of Accounts",
+            Title = _localizer.Get<ReportsResource>("Reports_ChartOfAccounts_Name"),
             Columns = includeBalances
                 ?
                 [
-                    new ReportColumn { Header = "No." },
-                    new ReportColumn { Header = "Name" },
-                    new ReportColumn { Header = "Balance" }
+                    new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_ChartOfAccounts_NumberColumn") },
+                    new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_ChartOfAccounts_NameColumn") },
+                    new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Balance") }
                 ]
                 :
                 [
-                    new ReportColumn { Header = "No." },
-                    new ReportColumn { Header = "Name" }
+                    new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_ChartOfAccounts_NumberColumn") },
+                    new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_ChartOfAccounts_NameColumn") }
                 ],
             Sections =
             [
-                new ReportSection { Heading = "Assets", Rows = RowsFor(AccountType.Asset) },
-                new ReportSection { Heading = "Liabilities", Rows = RowsFor(AccountType.Liability) },
-                new ReportSection { Heading = "Equity", Rows = RowsFor(AccountType.Equity) },
-                new ReportSection { Heading = "Income", Rows = RowsFor(AccountType.Income) },
-                new ReportSection { Heading = "Expenses", Rows = RowsFor(AccountType.Expense) }
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Assets"), Rows = RowsFor(AccountType.Asset) },
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Liabilities"), Rows = RowsFor(AccountType.Liability) },
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Equity"), Rows = RowsFor(AccountType.Equity) },
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Income"), Rows = RowsFor(AccountType.Income) },
+                new ReportSection { Heading = _localizer.Get<ReportsResource>("Reports_Section_Expenses"), Rows = RowsFor(AccountType.Expense) }
             ],
             GrandTotal = null,
             SummaryColumns = null
         };
     }
 
-    private static IReadOnlyList<string> RowCells(AccountBalance a, bool includeBalances) => includeBalances
+    private IReadOnlyList<string> RowCells(AccountBalance a, bool includeBalances) => includeBalances
         ? [a.AccountNumber, FormatName(a), FormatBalance(a)]
         : [a.AccountNumber, FormatName(a)];
 
-    private static string FormatName(AccountBalance a)
+    private string FormatName(AccountBalance a)
     {
-        if (a.IsSystem && a.IsBankAccount) return $"{a.Name} (System, Bank)";
-        if (a.IsSystem) return $"{a.Name} (System)";
-        if (a.IsBankAccount) return $"{a.Name} (Bank)";
+        if (a.IsSystem && a.IsBankAccount) return _localizer.Get<ReportsResource>("Reports_ChartOfAccounts_NameSystemBank", a.Name);
+        if (a.IsSystem) return _localizer.Get<ReportsResource>("Reports_ChartOfAccounts_NameSystem", a.Name);
+        if (a.IsBankAccount) return _localizer.Get<ReportsResource>("Reports_ChartOfAccounts_NameBank", a.Name);
         return a.Name;
     }
 
-    private static string FormatBalance(AccountBalance a) => a.HasError ? "Error" : a.Balance?.ToString("F2") ?? "Error";
+    private string FormatBalance(AccountBalance a) =>
+        a.HasError || a.Balance is not { } balance
+            ? _localizer.Get<ReportsResource>("Reports_ChartOfAccounts_BalanceError")
+            : MoneyFormatter.Format(balance);
 }

@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+using StageFright.Core.Localization;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Setup.Tabs;
 
@@ -14,6 +17,9 @@ public partial class CommitteeTab : ComponentBase
     [Parameter, EditorRequired] public EventCallback<string> OnAdd { get; set; }
     [Parameter, EditorRequired] public EventCallback<string> OnRemove { get; set; }
 
+    [Inject] private IStringLocalizer<SetupResource> L { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
+
     private string _titleInput = string.Empty;
     private string? _error;
 
@@ -22,13 +28,13 @@ public partial class CommitteeTab : ComponentBase
         var trimmed = _titleInput.Trim();
         if (trimmed.Length == 0)
         {
-            _error = "Enter a title before adding.";
+            _error = L["Setup_Committee_ErrorBlank"];
             return;
         }
 
         if (QueuedTitles.Any(t => string.Equals(t, trimmed, StringComparison.OrdinalIgnoreCase)))
         {
-            _error = $"\"{trimmed}\" has already been added.";
+            _error = Loc.Get<SetupResource>("Setup_Committee_ErrorDuplicate", trimmed);
             return;
         }
 

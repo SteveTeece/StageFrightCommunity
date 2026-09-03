@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+using StageFright.Core.Enums;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Setup.Tabs;
 
@@ -9,6 +12,8 @@ public partial class SalesTaxTab : ComponentBase
 {
     [Parameter, EditorRequired] public SetupFormModel Model { get; set; } = null!;
 
+    [Inject] private IStringLocalizer<SetupResource> L { get; set; } = null!;
+
     private void HandleTaxToggleChanged()
     {
         if (!Model.IsTaxApplicable)
@@ -16,6 +21,7 @@ public partial class SalesTaxTab : ComponentBase
             Model.TaxRate = null;
             Model.AnnualFeeTaxCode = null;
             Model.AttendanceFeeTaxCode = null;
+            Model.TaxEntryMode = TaxEntryMode.Inclusive;
         }
     }
 }

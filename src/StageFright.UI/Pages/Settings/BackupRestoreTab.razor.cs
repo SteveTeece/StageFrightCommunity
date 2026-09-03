@@ -1,14 +1,20 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Settings.Backup;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Settings;
 
 public partial class BackupRestoreTab : ComponentBase
 {
     [Inject] private IBackupService BackupService { get; set; } = null!;
+    [Inject] private IStringLocalizer<SettingsResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private bool _busy;
     private string _operation = string.Empty;
@@ -36,15 +42,15 @@ public partial class BackupRestoreTab : ComponentBase
                 fileName);
 
             await BackupService.ExportAsync(filePath);
-            _successMessage = $"Backup created: {filePath}";
+            _successMessage = Loc.Get<SettingsResource>("Settings_Backup_Created", filePath);
         }
         catch (DataAccessException ex)
         {
-            _errorMessage = $"Backup failed: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Backup_Error", ex.Message);
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Backup failed: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Backup_Error", ex.Message);
         }
         finally
         {
@@ -80,7 +86,7 @@ public partial class BackupRestoreTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to read backup file: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Restore_ReadFileError", ex.Message);
             _manifest = null;
             CleanupTempFile();
         }
@@ -111,7 +117,7 @@ public partial class BackupRestoreTab : ComponentBase
         try
         {
             await BackupService.ImportAsync(_tempRestorePath);
-            _successMessage = "Restore completed successfully. Your data has been updated from the backup.";
+            _successMessage = L["Settings_Restore_Success"];
             _confirmed = false;
             _manifest = null;
             _selectedFile = null;
@@ -122,11 +128,11 @@ public partial class BackupRestoreTab : ComponentBase
         }
         catch (DataAccessException ex)
         {
-            _errorMessage = $"Restore failed; no changes were made. {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Restore_FailedNoChanges", ex.Message);
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Restore failed: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Restore_Error", ex.Message);
         }
         finally
         {

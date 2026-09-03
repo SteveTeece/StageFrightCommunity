@@ -40,6 +40,7 @@ public class SettingsRepository : ISettingsRepository
                 existing.Theme = settings.Theme;
                 existing.ShowParticipationGraphs = settings.ShowParticipationGraphs;
                 existing.FinancialYearStartMonth = settings.FinancialYearStartMonth;
+                existing.ClosedThroughDate = settings.ClosedThroughDate;
                 existing.IsTaxApplicable = settings.IsTaxApplicable;
                 existing.TaxRate = settings.TaxRate;
                 existing.AnnualFeeTaxCode = settings.AnnualFeeTaxCode;

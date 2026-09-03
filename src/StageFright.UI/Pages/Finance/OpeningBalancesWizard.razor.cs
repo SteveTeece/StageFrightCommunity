@@ -1,7 +1,12 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
+using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
+using StageFright.Core.Modules.Localization.Resources;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -9,6 +14,9 @@ public partial class OpeningBalancesWizard : ComponentBase
 {
     [Inject] private IOpeningBalanceService OpeningBalanceService { get; set; } = null!;
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
+    [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private IReadOnlyList<Account> _accounts = [];
     private int _step = 1;
@@ -17,6 +25,10 @@ public partial class OpeningBalancesWizard : ComponentBase
     private bool _loading = true;
     private string? _successMessage;
     private string? _errorMessage;
+
+    /// <summary>"Step N of 2" wizard progress caption.</summary>
+    private string StepText() =>
+        Loc.Get<FinanceResource>("Finance_OpeningBalances_StepOf", _step);
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,12 +40,13 @@ public partial class OpeningBalancesWizard : ComponentBase
 
             var settings = await SettingsService.GetAsync();
             var startMonth = settings?.FinancialYearStartMonth ?? FinancialYearCalculator.DefaultStartMonth;
-            var (fyStart, _) = FinancialYearCalculator.GetRange(DateTime.Today, startMonth);
+            var startDay = settings?.FinancialYearStartDay ?? FinancialYearCalculator.DefaultStartDay;
+            var (fyStart, _) = FinancialYearCalculator.GetRange(DateTime.Today, startMonth, startDay);
             _asAtDate = fyStart;
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load accounts: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_OpeningBalances_LoadError", ex.Message);
         }
         finally
         {
@@ -49,11 +62,16 @@ public partial class OpeningBalancesWizard : ComponentBase
         try
         {
             await OpeningBalanceService.RecordOpeningBalancesAsync(request);
-            _successMessage = $"Opening balances as at {request.AsAtDate:d MMMM yyyy} posted successfully.";
+            _successMessage = Loc.Get<FinanceResource>("Finance_OpeningBalances_SuccessMessage",
+                request.AsAtDate.ToString("d MMMM yyyy"));
+        }
+        catch (ClosedPeriodException)
+        {
+            _errorMessage = Loc.Get<ValidationResource>("Validation_ClosedPeriod_PostingRejected");
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to post opening balances: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_OpeningBalances_PostError", ex.Message);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace StageFright.UI.Tests.Modules.Finance;
 /// bUnit tests for CashFlowTile (design 3a) — six-month income/expense bar chart
 /// across loading, error, empty and populated states.
 /// </summary>
-public class CashFlowTileTests : BunitContext
+public class CashFlowTileTests : LocalizedTestContext
 {
     private readonly IFinanceSummaryService _summaryService = Substitute.For<IFinanceSummaryService>();
 

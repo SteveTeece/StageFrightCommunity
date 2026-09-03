@@ -70,6 +70,16 @@ public class CsvReportExporter : ICsvReportExporter
             csv.NextRecord();
         }
 
+        // FR-012: trailing basis-of-accounting note record on financial statements.
+        // The text is self-labelled ("Basis of accounting: …"); remaining columns are blank.
+        if (!string.IsNullOrEmpty(report.BasisOfAccounting))
+        {
+            csv.WriteField(report.BasisOfAccounting);
+            for (var i = 1; i < report.Columns.Count; i++)
+                csv.WriteField(string.Empty);
+            csv.NextRecord();
+        }
+
         return sb.ToString();
     }
 }

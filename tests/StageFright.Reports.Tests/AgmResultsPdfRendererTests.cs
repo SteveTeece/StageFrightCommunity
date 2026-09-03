@@ -9,7 +9,7 @@ namespace StageFright.Reports.Tests;
 /// </summary>
 public class AgmResultsPdfRendererTests
 {
-    private readonly IAgmResultsPdfRenderer _renderer = new AgmResultsPdfRenderer();
+    private readonly IAgmResultsPdfRenderer _renderer = new AgmResultsPdfRenderer(RealLocalizer.Instance);
 
     private static AgmResultsData MakeData(
         IReadOnlyList<AgmResultsPositionLine>? positionLines = null,

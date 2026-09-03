@@ -2,13 +2,14 @@
 @inject NavigationManager Nav
 @inject IEnumerable<IMenuItemProvider> MenuProviders
 
+<CultureProvider>
 <ThemeProvider @ref="_themeProvider">
     <div class="shell-container">
         <!-- Fixed vertical sidebar navigation -->
-        <nav class="shell-sidebar" role="navigation" aria-label="Main navigation">
+        <nav class="shell-sidebar" role="navigation" aria-label="@L["Nav_Sidebar_MainNavigationAriaLabel"]">
             <div class="sidebar-brand">
                 <div class="sidebar-logo" aria-hidden="true"></div>
-                <span class="sidebar-brand-text">StageFright</span>
+                <span class="sidebar-brand-text">@L["Nav_Sidebar_BrandText"]</span>
             </div>
             <ul class="sidebar-list" role="list">
                 @foreach (var provider in MenuProviders.OrderBy(p => p.DisplayOrder))
@@ -31,7 +32,7 @@
                                     </a>
                                     <button class="sidebar-chevron @(IsGroupExpanded(item) ? "expanded" : "")"
                                             type="button"
-                                            aria-label="@(IsGroupExpanded(item) ? $"Collapse {item.Title}" : $"Expand {item.Title}")"
+                                            aria-label="@GroupToggleAriaLabel(item)"
                                             aria-expanded="@(IsGroupExpanded(item) ? "true" : "false")"
                                             @onclick="() => ToggleGroup(item.Route)"
                                             @onclick:stopPropagation>
@@ -53,7 +54,7 @@
                                                     <span class="sidebar-label">@sub.Title</span>
                                                     @if (!string.IsNullOrEmpty(sub.BadgeText))
                                                     {
-                                                        <span class="sidebar-badge" role="status" aria-label="@sub.BadgeText items">@sub.BadgeText</span>
+                                                        <span class="sidebar-badge" role="status" aria-label="@BadgeItemsAriaLabel(sub.BadgeText)">@sub.BadgeText</span>
                                                     }
                                                 </a>
                                             </li>
@@ -76,7 +77,7 @@
                                     <span class="sidebar-label">@item.Title</span>
                                     @if (!string.IsNullOrEmpty(item.BadgeText))
                                     {
-                                        <span class="sidebar-badge" role="status" aria-label="@item.BadgeText items">@item.BadgeText</span>
+                                        <span class="sidebar-badge" role="status" aria-label="@BadgeItemsAriaLabel(item.BadgeText)">@item.BadgeText</span>
                                     }
                                 </a>
                             </li>
@@ -89,10 +90,10 @@
             @if (CurrentPath != "/setup")
             {
                 <div class="btn-theme-toggle"
-                     aria-label="@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? "Switch to dark mode" : "Switch to light mode")">
-                    <label for="themeToggleSwitch" class="btn-theme-toggle-label">Theme Selection</label>
+                     aria-label="@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? L["Nav_ThemeToggle_SwitchToDarkAriaLabel"] : L["Nav_ThemeToggle_SwitchToLightAriaLabel"])">
+                    <label for="themeToggleSwitch" class="btn-theme-toggle-label">@L["Nav_ThemeToggle_Label"]</label>
                     <span class="btn-theme-toggle-switch-group">
-                        <span>@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? "Light" : "Dark")</span>
+                        <span>@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Light ? Core.Enums.Theme.Light.LocalizeEnum() : Core.Enums.Theme.Dark.LocalizeEnum())</span>
                         <RadzenSwitch Name="themeToggleSwitch"
                                       Value="@(_themeProvider?.CurrentTheme == Core.Enums.Theme.Dark)"
                                       Change="@(async (bool _) => await ToggleThemeAsync())" />
@@ -107,3 +108,4 @@
         </main>
     </div>
 </ThemeProvider>
+</CultureProvider>

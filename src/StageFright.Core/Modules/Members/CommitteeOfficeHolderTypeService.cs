@@ -2,6 +2,8 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Members;
 
@@ -13,11 +15,13 @@ public class CommitteeOfficeHolderTypeService : ICommitteeOfficeHolderTypeServic
 {
     private readonly ICommitteeOfficeHolderTypeRepository _repo;
     private readonly IAuditTrailService _audit;
+    private readonly ILocalizer _localizer;
 
-    public CommitteeOfficeHolderTypeService(ICommitteeOfficeHolderTypeRepository repo, IAuditTrailService audit)
+    public CommitteeOfficeHolderTypeService(ICommitteeOfficeHolderTypeRepository repo, IAuditTrailService audit, ILocalizer localizer)
     {
         _repo = repo;
         _audit = audit;
+        _localizer = localizer;
     }
 
     public Task<IReadOnlyList<CommitteeOfficeHolderType>> GetActiveAsync(CancellationToken ct = default) =>
@@ -26,7 +30,7 @@ public class CommitteeOfficeHolderTypeService : ICommitteeOfficeHolderTypeServic
     public async Task<CommitteeOfficeHolderType> AddAsync(string name, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ValidationException("Office-holder title name is required.", nameof(CommitteeOfficeHolderType), nameof(AddAsync));
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_OfficeHolderType_NameRequired"), nameof(CommitteeOfficeHolderType), nameof(AddAsync));
 
         var maxCustomOrder = await _repo.GetMaxCustomDisplayOrderAsync(ct);
         var nextOrder = Math.Max(maxCustomOrder ?? 2, 2) + 1;
@@ -53,10 +57,10 @@ public class CommitteeOfficeHolderTypeService : ICommitteeOfficeHolderTypeServic
             ?? throw new EntityNotFoundException(nameof(CommitteeOfficeHolderType), id, nameof(RenameAsync));
 
         if (entity.IsBuiltIn)
-            throw new ValidationException("Built-in office-holder titles cannot be renamed.", nameof(CommitteeOfficeHolderType), nameof(RenameAsync), id);
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_OfficeHolderType_BuiltInCannotRename"), nameof(CommitteeOfficeHolderType), nameof(RenameAsync), id);
 
         if (string.IsNullOrWhiteSpace(newName))
-            throw new ValidationException("Office-holder title name is required.", nameof(CommitteeOfficeHolderType), nameof(RenameAsync), id);
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_OfficeHolderType_NameRequired"), nameof(CommitteeOfficeHolderType), nameof(RenameAsync), id);
 
         var oldName = entity.Name;
         entity.Name = newName.Trim();
@@ -74,7 +78,7 @@ public class CommitteeOfficeHolderTypeService : ICommitteeOfficeHolderTypeServic
                 ?? throw new EntityNotFoundException(nameof(CommitteeOfficeHolderType), id, nameof(ReorderAsync));
 
             if (entity.IsBuiltIn)
-                throw new ValidationException("Built-in office-holder titles cannot be reordered.", nameof(CommitteeOfficeHolderType), nameof(ReorderAsync), id);
+                throw new ValidationException(_localizer.Get<ValidationResource>("Validation_OfficeHolderType_BuiltInCannotReorder"), nameof(CommitteeOfficeHolderType), nameof(ReorderAsync), id);
 
             entity.DisplayOrder = displayOrder++;
             entity.UpdatedAt = DateTime.UtcNow;
@@ -90,7 +94,7 @@ public class CommitteeOfficeHolderTypeService : ICommitteeOfficeHolderTypeServic
             ?? throw new EntityNotFoundException(nameof(CommitteeOfficeHolderType), id, nameof(ArchiveAsync));
 
         if (entity.IsBuiltIn)
-            throw new ValidationException("Built-in office-holder titles cannot be archived.", nameof(CommitteeOfficeHolderType), nameof(ArchiveAsync), id);
+            throw new ValidationException(_localizer.Get<ValidationResource>("Validation_OfficeHolderType_BuiltInCannotArchive"), nameof(CommitteeOfficeHolderType), nameof(ArchiveAsync), id);
 
         await _repo.ArchiveAsync(id, deletedBy, ct);
         await _audit.LogAsync(nameof(CommitteeOfficeHolderType), id, AuditAction.Delete, oldValue: entity.Name, ct: ct);

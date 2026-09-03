@@ -1,11 +1,12 @@
 using StageFright.UI.Modules.Events;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Tests.Modules.Events;
 
 /// <summary>Unit tests for EventsDashboardTileProvider metadata and TileData.</summary>
 public class EventsDashboardTileProviderTests
 {
-    private readonly EventsDashboardTileProvider _provider = new();
+    private readonly EventsDashboardTileProvider _provider = new(RealStringLocalizer.For<EventsResource>());
 
     [Fact]
     public void Should_ExposeEventsTileMetadata_When_Constructed()

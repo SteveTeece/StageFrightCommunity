@@ -129,9 +129,9 @@ namespace StageFright.Data.Migrations
                             IsBankAccount = false,
                             IsDeleted = false,
                             IsSystem = true,
-                            Name = "Tax Paid",
+                            Name = "Tax Receivable",
                             SortOrder = 11,
-                            Type = "Liability",
+                            Type = "Asset",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -868,7 +868,10 @@ namespace StageFright.Data.Migrations
                     b.Property<int>("AuditRetentionYears")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
-                        .HasDefaultValue(1);
+                        .HasDefaultValue(5);
+
+                    b.Property<DateTime?>("ClosedThroughDate")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("CommitteeRenewalMonth")
                         .HasColumnType("INTEGER");
@@ -876,17 +879,32 @@ namespace StageFright.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("CurrencyCode")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(3)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("AUD");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DeletedBy")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("FinancialYearStartDay")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(1);
+
                     b.Property<int>("FinancialYearStartMonth")
                         .HasColumnType("INTEGER");
 
                     b.Property<int?>("GeneralCommitteeSeatCountTarget")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("InceptionDate")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
@@ -895,6 +913,10 @@ namespace StageFright.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(false);
+
+                    b.Property<string>("LanguageCode")
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("MaxAgeRangeYears")
                         .HasColumnType("INTEGER");
@@ -915,6 +937,12 @@ namespace StageFright.Data.Migrations
 
                     b.Property<bool>("ShowParticipationGraphs")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("TaxEntryMode")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("Inclusive");
 
                     b.Property<decimal?>("TaxRate")
                         .HasPrecision(5, 2)

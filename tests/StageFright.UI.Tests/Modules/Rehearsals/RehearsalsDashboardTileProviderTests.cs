@@ -1,11 +1,12 @@
 using StageFright.UI.Modules.Rehearsals;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Tests.Modules.Rehearsals;
 
 /// <summary>Unit tests for RehearsalsDashboardTileProvider metadata and TileData.</summary>
 public class RehearsalsDashboardTileProviderTests
 {
-    private readonly RehearsalsDashboardTileProvider _provider = new();
+    private readonly RehearsalsDashboardTileProvider _provider = new(RealStringLocalizer.For<RehearsalsResource>());
 
     [Fact]
     public void Should_ExposeRehearsalsTileMetadata_When_Constructed()

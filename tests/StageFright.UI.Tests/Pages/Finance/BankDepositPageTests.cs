@@ -18,7 +18,7 @@ namespace StageFright.UI.Tests.Pages.Finance;
 /// - Submit calls IBankDepositService.RecordDepositAsync
 /// - Success message displayed after save with Record Another option
 /// </summary>
-public class BankDepositPageTests : BunitContext
+public class BankDepositPageTests : LocalizedTestContext
 {
     private readonly IBankDepositService _bankDepositService = Substitute.For<IBankDepositService>();
     private readonly IAccountService _accountService = Substitute.For<IAccountService>();

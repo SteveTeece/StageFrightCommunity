@@ -2,6 +2,7 @@ using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Reports.Models;
 using StageFright.Reports.Providers;
@@ -27,7 +28,7 @@ public class MemberAccountSummaryReportProviderTests
 
     public MemberAccountSummaryReportProviderTests()
     {
-        _sut = new MemberAccountSummaryReportProvider(_gl, _members, _balances);
+        _sut = new MemberAccountSummaryReportProvider(_gl, _members, _balances, RealLocalizer.Instance);
     }
 
     [Fact]
@@ -138,9 +139,9 @@ public class MemberAccountSummaryReportProviderTests
         var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Partial Payer"));
-        Assert.Equal("Current: 0.00", section.SummaryRow!.Cells[1]);
-        Assert.Equal("90+ days: 40.00", section.SummaryRow.Cells[4]);
-        Assert.Equal("40.00", section.SummaryRow.Cells[5]);
+        Assert.Equal("Current: " + MoneyFormatter.Format(0m), section.SummaryRow!.Cells[1]);
+        Assert.Equal("90+ days: " + MoneyFormatter.Format(40m), section.SummaryRow.Cells[4]);
+        Assert.Equal(MoneyFormatter.Format(40m), section.SummaryRow.Cells[5]);
     }
 
     [Fact]
@@ -160,9 +161,9 @@ public class MemberAccountSummaryReportProviderTests
         var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Credit Holder"));
-        Assert.Equal("Current: 5.00", section.SummaryRow!.Cells[1]);
-        Assert.Equal("90+ days: 2.00", section.SummaryRow.Cells[4]);
-        Assert.Equal("7.00", section.SummaryRow.Cells[5]);
+        Assert.Equal("Current: " + MoneyFormatter.Format(5m), section.SummaryRow!.Cells[1]);
+        Assert.Equal("90+ days: " + MoneyFormatter.Format(2m), section.SummaryRow.Cells[4]);
+        Assert.Equal(MoneyFormatter.Format(7m), section.SummaryRow.Cells[5]);
     }
 
     [Fact]
@@ -181,11 +182,11 @@ public class MemberAccountSummaryReportProviderTests
         var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Bucket Tester"));
-        Assert.Equal("Current: 4.00", section.SummaryRow!.Cells[1]);
-        Assert.Equal("30 days: 6.00", section.SummaryRow.Cells[2]);
-        Assert.Equal("60 days: 5.00", section.SummaryRow.Cells[3]);
-        Assert.Equal("90+ days: 7.00", section.SummaryRow.Cells[4]);
-        Assert.Equal("22.00", section.SummaryRow.Cells[5]);
+        Assert.Equal("Current: " + MoneyFormatter.Format(4m), section.SummaryRow!.Cells[1]);
+        Assert.Equal("30 days: " + MoneyFormatter.Format(6m), section.SummaryRow.Cells[2]);
+        Assert.Equal("60 days: " + MoneyFormatter.Format(5m), section.SummaryRow.Cells[3]);
+        Assert.Equal("90+ days: " + MoneyFormatter.Format(7m), section.SummaryRow.Cells[4]);
+        Assert.Equal(MoneyFormatter.Format(22m), section.SummaryRow.Cells[5]);
     }
 
     [Fact]
@@ -204,7 +205,7 @@ public class MemberAccountSummaryReportProviderTests
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("New Debtor"));
         Assert.Equal("Opening Balance", section.Rows[0].Cells[0]);
-        Assert.Equal("0.00", section.Rows[0].Cells[4]);
+        Assert.Equal(MoneyFormatter.Format(0m), section.Rows[0].Cells[4]);
     }
 
     [Fact]
@@ -222,7 +223,7 @@ public class MemberAccountSummaryReportProviderTests
         var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Partial Settler"));
-        Assert.Equal("100.00", section.Rows[0].Cells[4]);
+        Assert.Equal(MoneyFormatter.Format(100m), section.Rows[0].Cells[4]);
     }
 
     [Fact]
@@ -285,9 +286,9 @@ public class MemberAccountSummaryReportProviderTests
 
         var section = result.Sections.Single(s => s.Heading != null && s.Heading.Contains("Reconciled Debtor"));
         Assert.Equal("Opening Balance", section.Rows[0].Cells[0]);
-        Assert.Equal("0.00", section.Rows[0].Cells[4]);
+        Assert.Equal(MoneyFormatter.Format(0m), section.Rows[0].Cells[4]);
         Assert.Equal("Closing Balance", section.Rows.Last(r => r.Cells[0] == "Closing Balance").Cells[0]);
-        Assert.Equal("30.00", section.Rows.Single(r => r.Cells[0] == "Closing Balance").Cells[4]);
+        Assert.Equal(MoneyFormatter.Format(30m), section.Rows.Single(r => r.Cells[0] == "Closing Balance").Cells[4]);
     }
 
     [Fact]

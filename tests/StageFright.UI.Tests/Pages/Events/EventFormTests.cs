@@ -11,7 +11,7 @@ namespace StageFright.UI.Tests.Pages.Events;
 /// <summary>
 /// bUnit tests for EventForm — field rendering, validation, submission.
 /// </summary>
-public class EventFormTests : BunitContext
+public class EventFormTests : LocalizedTestContext
 {
     private readonly IEventService _eventService = Substitute.For<IEventService>();
     private readonly IEventTypeService _eventTypeService = Substitute.For<IEventTypeService>();

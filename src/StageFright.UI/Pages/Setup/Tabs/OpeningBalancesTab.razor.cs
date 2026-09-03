@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Settings;
+using StageFright.UI.Resources.Strings;
 using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Setup.Tabs;
@@ -17,6 +19,7 @@ namespace StageFright.UI.Pages.Setup.Tabs;
 public partial class OpeningBalancesTab : ComponentBase
 {
     [Inject] private IOpeningBalanceService OpeningBalanceService { get; set; } = null!;
+    [Inject] private IStringLocalizer<SetupResource> L { get; set; } = null!;
 
     [Parameter, EditorRequired] public IReadOnlyList<QueuedAccountRequest> QueuedAccounts { get; set; } = Array.Empty<QueuedAccountRequest>();
     [Parameter, EditorRequired] public EventCallback<RecordOpeningBalancesRequest> OnSubmit { get; set; }

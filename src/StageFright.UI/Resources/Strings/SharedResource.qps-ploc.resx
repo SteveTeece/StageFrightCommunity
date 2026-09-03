@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Shared_Action_Save" xml:space="preserve"><value>⟦Sávé—⟧</value><comment>Generic Save button label.</comment></data>
+  <data name="Shared_Action_Saving" xml:space="preserve"><value>⟦Sávíñg…—⟧</value><comment>Generic Save button label while a save is in progress.</comment></data>
+  <data name="Shared_Action_Edit" xml:space="preserve"><value>⟦Édít—⟧</value><comment>Generic Edit button label.</comment></data>
+  <data name="Shared_Common_Loading" xml:space="preserve"><value>⟦Lóádíñg…—⟧</value><comment>Generic loading indicator text.</comment></data>
+  <data name="Shared_Table_ActionsColumn" xml:space="preserve"><value>⟦Áçtíóñs—⟧</value><comment>Generic grid column header for a row's action buttons.</comment></data>
+  <data name="Shared_Table_StatusColumn" xml:space="preserve"><value>⟦Státús—⟧</value><comment>Generic grid column / field label for a status value.</comment></data>
+  <data name="Shared_Error_Unexpected" xml:space="preserve"><value>⟦Áñ úñéxpéçtéd érrór óççúrréd. Pléásé trý ágáíñ.—⟧</value><comment>Generic fallback message shown when an operation fails unexpectedly.</comment></data>
+  <data name="Shared_Tile_LoadError" xml:space="preserve"><value>⟦Úñáblé tó lóád—⟧</value><comment>Generic dashboard-tile message shown when the tile's data fails to load.</comment></data>
+  <data name="Shared_Tile_LoadErrorFor" xml:space="preserve"><value>⟦Úñáblé tó lóád {TileTitle}—⟧</value><comment>Tile renderer error text. {TileTitle} = the failing tile's title.</comment></data>
+  <data name="Shared_Action_Close" xml:space="preserve"><value>⟦Çlósé—⟧</value><comment>Generic Close button / dialog-dismiss aria-label.</comment></data>
+  <data name="Shared_Action_Remove" xml:space="preserve"><value>⟦Rémóvé—⟧</value><comment>Generic Remove button label / aria-label (e.g. remove a row from a bordered list box).</comment></data>
+  <data name="Shared_Action_TryAgain" xml:space="preserve"><value>⟦Trý Ágáíñ—⟧</value><comment>Generic retry button label.</comment></data>
+  <data name="Shared_Action_Apply" xml:space="preserve"><value>⟦Ápplý—⟧</value><comment>Generic Apply button label (e.g. apply report filters).</comment></data>
+  <data name="Shared_ListBox_DefaultEmpty" xml:space="preserve"><value>⟦Ñóthíñg áddéd ýét.—⟧</value><comment>Default empty-state text for a bordered list box.</comment></data>
+  <data name="Shared_AddAccount_NamePlaceholder" xml:space="preserve"><value>⟦Áççóúñt ñámé—⟧</value><comment>Placeholder and aria-label for the account-name field in the shared add-account form.</comment></data>
+  <data name="Shared_AddAccount_TypeAriaLabel" xml:space="preserve"><value>⟦Áççóúñt týpé—⟧</value><comment>aria-label for the account-type select in the shared add-account form.</comment></data>
+  <data name="Shared_AddAccount_BankAccountLabel" xml:space="preserve"><value>⟦Báñk / çásh áççóúñt—⟧</value><comment>Checkbox label marking an asset account as a bank/cash account.</comment></data>
+  <data name="Shared_AddAccount_AddingText" xml:space="preserve"><value>⟦Áddíñg…—⟧</value><comment>Add-account submit button text while a create is in progress.</comment></data>
+  <data name="Shared_AddAccount_SubmitButton" xml:space="preserve"><value>⟦Ádd Áççóúñt—⟧</value><comment>Default submit button text for the shared add-account form.</comment></data>
+  <data name="Shared_AddAccount_DuplicateError" xml:space="preserve"><value>⟦Áñ áççóúñt ñáméd '{AccountName}' álréádý éxísts.—⟧</value><comment>Shown when the entered account name matches an existing one. {AccountName} = the entered name.</comment></data>
+  <data name="Shared_OpeningBalances_AlreadyPostedWarning" xml:space="preserve"><value>⟦Ópéñíñg báláñçés hávé álréádý bééñ póstéd. Póstíñg ágáíñ wíll ádd tó thé éxístíñg báláñçés ráthér tháñ répláçé thém.—⟧</value><comment>Warning shown above the opening-balances entry table when balances already exist.</comment></data>
+  <data name="Shared_OpeningBalances_Instruction" xml:space="preserve"><value>⟦Éñtér éáçh áççóúñt's báláñçé ás át {AsAtDate}. Léávé áççóúñts ýóú dóñ't ñééd át zéró. Áñý dífféréñçé ís póstéd tó Ópéñíñg Báláñçé Éqúítý áútómátíçállý.—⟧</value><comment>Instruction above the opening-balances entry table. {AsAtDate} = the as-at date, long form.</comment></data>
+  <data name="Shared_OpeningBalances_NumberColumn" xml:space="preserve"><value>⟦Ñúmbér—⟧</value><comment>Opening-balances table column header — account number.</comment></data>
+  <data name="Shared_OpeningBalances_AccountColumn" xml:space="preserve"><value>⟦Áççóúñt—⟧</value><comment>Opening-balances table column header — account name.</comment></data>
+  <data name="Shared_OpeningBalances_TypeColumn" xml:space="preserve"><value>⟦Týpé—⟧</value><comment>Opening-balances table column header — account type.</comment></data>
+  <data name="Shared_OpeningBalances_BalanceColumn" xml:space="preserve"><value>⟦Báláñçé—⟧</value><comment>Opening-balances table column header — the entered balance.</comment></data>
+  <data name="Shared_OpeningBalances_BalanceForAriaLabel" xml:space="preserve"><value>⟦Báláñçé fór {AccountName}—⟧</value><comment>aria-label on an opening-balance amount input. {AccountName} = the account name.</comment></data>
+  <data name="Shared_OpeningBalances_PlugRow" xml:space="preserve"><value>⟦Ópéñíñg Báláñçé Éqúítý plúg—⟧</value><comment>Opening-balances table footer row label for the balancing equity plug.</comment></data>
+  <data name="Shared_OpeningBalances_PostingText" xml:space="preserve"><value>⟦Póstíñg…—⟧</value><comment>Opening-balances submit button text while a post is in progress.</comment></data>
+  <data name="Shared_OpeningBalances_SubmitButton" xml:space="preserve"><value>⟦Póst Ópéñíñg Báláñçés—⟧</value><comment>Default submit button text for the shared opening-balances form.</comment></data>
+  <data name="Shared_Forgiveness_Title" xml:space="preserve"><value>⟦Réáçtívátíóñ Féé Fórgívéñéss—⟧</value><comment>Heading of the reactivation fee-forgiveness dialog.</comment></data>
+  <data name="Shared_Forgiveness_LoadingText" xml:space="preserve"><value>⟦Lóádíñg féés…—⟧</value><comment>Status text while the forgiveness dialog loads outstanding fees.</comment></data>
+  <data name="Shared_Forgiveness_NoFees" xml:space="preserve"><value>⟦Ñó óútstáñdíñg féés tó fórgívé fór thís mémbér.—⟧</value><comment>Shown when the member has no outstanding fees.</comment></data>
+  <data name="Shared_Forgiveness_Instruction" xml:space="preserve"><value>⟦Príór-ýéár féés áré pré-séléçtéd fór fórgívéñéss. Úñçhéçk áñý féés ýóú wísh tó rétáíñ.—⟧</value><comment>Instruction text in the forgiveness dialog.</comment></data>
+  <data name="Shared_Forgiveness_PriorYearBadge" xml:space="preserve"><value>⟦Príór ýéár—⟧</value><comment>Badge marking a fee as being from a prior year.</comment></data>
+  <data name="Shared_Forgiveness_FeeRow" xml:space="preserve"><value>⟦{FeeDate} — {Amount}—⟧</value><comment>A selectable fee row in the forgiveness dialog. {FeeDate} = fee date, {Amount} = fee amount as AUD.</comment></data>
+  <data name="Shared_Forgiveness_ApplyingText" xml:space="preserve"><value>⟦Ápplýíñg…—⟧</value><comment>Forgiveness submit button text while applying.</comment></data>
+  <data name="Shared_Forgiveness_ForgiveButton_One" xml:space="preserve"><value>⟦Fórgívé {Count} féé—⟧</value><comment>Forgiveness submit button label, singular. {Count} = number of selected fees.</comment></data>
+  <data name="Shared_Forgiveness_ForgiveButton_Other" xml:space="preserve"><value>⟦Fórgívé {Count} féés—⟧</value><comment>Forgiveness submit button label, plural. {Count} = number of selected fees.</comment></data>
+  <data name="Shared_Forgiveness_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád féés: {Detail}—⟧</value><comment>Shown when loading fees for forgiveness fails. {Detail} = the error detail.</comment></data>
+  <data name="Shared_Forgiveness_ApplyError" xml:space="preserve"><value>⟦Fáíléd tó ápplý fórgívéñéss: {Detail}—⟧</value><comment>Shown when applying forgiveness fails. {Detail} = the error detail.</comment></data>
+  <data name="Shared_Report_GeneratingText" xml:space="preserve"><value>⟦Géñérátíñg répórt...—⟧</value><comment>Status text while a report is being generated.</comment></data>
+  <data name="Shared_Report_GenerateFailedHeading" xml:space="preserve"><value>⟦Úñáblé tó géñéráté répórt.—⟧</value><comment>Bold lead-in of the report-generation error alert.</comment></data>
+  <data name="Shared_Report_GeneratedAt" xml:space="preserve"><value>⟦Géñérátéd: {Timestamp} ÚTÇ—⟧</value><comment>Report viewer — when the report was generated. {Timestamp} = date and time.</comment></data>
+  <data name="Shared_Report_ActionsAriaLabel" xml:space="preserve"><value>⟦Répórt áçtíóñs—⟧</value><comment>aria-label on the report action button group.</comment></data>
+  <data name="Shared_Report_PrintButton" xml:space="preserve"><value>⟦Príñt / PDF—⟧</value><comment>Report viewer button — print / save as PDF.</comment></data>
+  <data name="Shared_Report_ExportCsvButton" xml:space="preserve"><value>⟦Éxpórt ÇSV—⟧</value><comment>Report viewer button — export as CSV.</comment></data>
+  <data name="Shared_Report_RefreshButton" xml:space="preserve"><value>⟦Réfrésh—⟧</value><comment>Report viewer button — regenerate the report.</comment></data>
+  <data name="Shared_Report_RowsRange" xml:space="preserve"><value>⟦Róws {From}–{To} óf {Total}—⟧</value><comment>Report viewer paging summary. {From}/{To} = visible row range, {Total} = total rows.</comment></data>
+  <data name="Shared_Report_PrevPage" xml:space="preserve"><value>⟦‹ Prév—⟧</value><comment>Report viewer — previous page button.</comment></data>
+  <data name="Shared_Report_NextPage" xml:space="preserve"><value>⟦Ñéxt ›—⟧</value><comment>Report viewer — next page button.</comment></data>
+  <data name="Shared_Report_PrevPageAriaLabel" xml:space="preserve"><value>⟦Prévíóús págé—⟧</value><comment>aria-label on the report viewer previous-page button.</comment></data>
+  <data name="Shared_Report_NextPageAriaLabel" xml:space="preserve"><value>⟦Ñéxt págé—⟧</value><comment>aria-label on the report viewer next-page button.</comment></data>
+  <data name="Shared_Report_PageOf" xml:space="preserve"><value>⟦Págé {Current} óf {Total}—⟧</value><comment>Report viewer paging indicator. {Current} = current page, {Total} = total pages.</comment></data>
+  <data name="Shared_Report_PageNavAriaLabel" xml:space="preserve"><value>⟦Répórt págé ñávígátíóñ—⟧</value><comment>aria-label on the report viewer pagination nav.</comment></data>
+  <data name="Shared_Report_CancelledError" xml:space="preserve"><value>⟦Répórt géñérátíóñ wás çáñçélléd.—⟧</value><comment>Shown when report generation is cancelled by the user.</comment></data>
+  <data name="Shared_Report_GenerateError" xml:space="preserve"><value>⟦Áñ érrór óççúrréd whílé géñérátíñg thé répórt. Pléásé trý ágáíñ. ({ErrorType})—⟧</value><comment>Shown when report generation throws. {ErrorType} = the exception type name.</comment></data>
+  <data name="Shared_Report_PdfError" xml:space="preserve"><value>⟦Úñáblé tó géñéráté PDF. Pléásé trý ágáíñ.—⟧</value><comment>Shown when rendering the report PDF fails.</comment></data>
+  <data name="Shared_Report_CsvError" xml:space="preserve"><value>⟦Úñáblé tó éxpórt ÇSV. Pléásé trý ágáíñ.—⟧</value><comment>Shown when exporting the report CSV fails.</comment></data>
+  <data name="Shared_StartupError_Heading" xml:space="preserve"><value>⟦Dátábásé Érrór—⟧</value><comment>Heading on the startup database-error page.</comment></data>
+  <data name="Shared_StartupError_Body" xml:space="preserve"><value>⟦StágéFríght Çómmúñítý çóúld ñót ópéñ íts dátábásé. Thé fílé máý bé çórrúptéd ór íñáççéssíblé.—⟧</value><comment>Body text on the startup database-error page.</comment></data>
+  <data name="Shared_StartupError_DbLocationLabel" xml:space="preserve"><value>⟦Dátábásé lóçátíóñ:—⟧</value><comment>Label preceding the database file path on the startup error page.</comment></data>
+  <data name="Shared_StartupError_OpenFolderButton" xml:space="preserve"><value>⟦Ópéñ Fílé Lóçátíóñ—⟧</value><comment>Button — open the folder containing the database file.</comment></data>
+  <data name="Shared_StartupError_RecreateButton" xml:space="preserve"><value>⟦Çréáté Ñéw Dátábásé—⟧</value><comment>Button — delete the corrupt database and start fresh.</comment></data>
+  <data name="Shared_StartupError_RecreatingText" xml:space="preserve"><value>⟦Çréátíñg ñéw dátábásé…—⟧</value><comment>Recreate button text while the new database is being created.</comment></data>
+  <data name="Shared_StartupError_OpenFolderError" xml:space="preserve"><value>⟦Çóúld ñót ópéñ fóldér: {Detail}—⟧</value><comment>Shown when opening the database folder fails. {Detail} = error detail.</comment></data>
+  <data name="Shared_StartupError_DeleteError" xml:space="preserve"><value>⟦Çóúld ñót délété thé dátábásé fílé: {Detail}—⟧</value><comment>Shown when deleting the corrupt database fails. {Detail} = error detail.</comment></data>
+  <data name="Shared_ReportsPage_Title" xml:space="preserve"><value>⟦Répórts — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title — Reports page.</comment></data>
+  <data name="Shared_ReportsPage_Heading" xml:space="preserve"><value>⟦Répórts—⟧</value><comment>Reports page heading.</comment></data>
+  <data name="Shared_ReportsPage_NotFound" xml:space="preserve"><value>⟦Répórt "{ReportId}" ñót fóúñd.—⟧</value><comment>Shown when a report id in the URL has no provider. {ReportId} = the id.</comment></data>
+  <data name="Shared_ReportsPage_SelectPrompt" xml:space="preserve"><value>⟦Séléçt á répórt fróm thé ñávígátíóñ méñú tó géñéráté ít.—⟧</value><comment>Shown on the Reports page when no report is selected.</comment></data>
+  <data name="Shared_App_ErrorHeading" xml:space="preserve"><value>⟦Áñ érrór óççúrréd—⟧</value><comment>Heading of the router error-boundary panel shown when a page throws.</comment></data>
+  <data name="Shared_App_ErrorDismissButton" xml:space="preserve"><value>⟦Dísmíss áñd rétrý—⟧</value><comment>Button on the router error-boundary panel — clears the error and re-renders the page.</comment></data>
+  <data name="Shared_App_NotFoundTitle" xml:space="preserve"><value>⟦Ñót Fóúñd — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title for an unrouted URL.</comment></data>
+  <data name="Shared_App_NotFoundHeading" xml:space="preserve"><value>⟦Págé Ñót Fóúñd—⟧</value><comment>Heading shown when a URL matches no page.</comment></data>
+  <data name="Shared_App_NotFoundBody" xml:space="preserve"><value>⟦Thé réqúéstéd págé çóúld ñót bé fóúñd.—⟧</value><comment>Body text on the "page not found" screen; followed by the return-to-dashboard link.</comment></data>
+  <data name="Shared_App_NotFoundReturnLink" xml:space="preserve"><value>⟦Rétúrñ tó dáshbóárd—⟧</value><comment>Hyperlink caption on the "page not found" screen — navigates to the dashboard.</comment></data>
+  <data name="Shared_StartupWarning_AuditPurgeFailed" xml:space="preserve"><value>⟦Thé stártúp çléáñúp óf éxpíréd áúdít-tráíl éñtríés díd ñót çómplété. Ýóúr réçórds áré íñtáçt; thé çléáñúp wíll bé rétríéd thé ñéxt tímé thé ápp stárts.—⟧</value><comment>Non-fatal dashboard banner shown when the startup audit-trail purge failed (spec 028, FR-025).</comment></data>
+  <data name="Shared_StartupWarning_DismissLabel" xml:space="preserve"><value>⟦Dísmíss—⟧</value><comment>Button that hides the non-fatal startup-warning banner for the current session.</comment></data>
+</root>

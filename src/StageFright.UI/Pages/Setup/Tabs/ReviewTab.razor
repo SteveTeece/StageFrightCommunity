@@ -2,44 +2,40 @@
 @using StageFright.UI.Shared
 
 <div class="mb-3">
-    <h2 class="h6">Review</h2>
+    <h2 class="h6">@L["Setup_Review_Heading"]</h2>
     <dl class="row small mb-2">
-        <dt class="col-5">Organisation Name</dt><dd class="col-7">@Model.OrganizationName</dd>
-        <dt class="col-5">Theme</dt><dd class="col-7">@(ThemeProvider?.CurrentTheme == Core.Enums.Theme.Dark ? "Dark" : "Light")</dd>
-        <dt class="col-5">Annual Fee</dt><dd class="col-7">@Model.AnnualFee.ToString("C")</dd>
-        <dt class="col-5">Attendance Fee</dt><dd class="col-7">@Model.AttendanceFee.ToString("C")</dd>
-        <dt class="col-5">Membership Renewal Month</dt><dd class="col-7">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Model.MembershipRenewalMonth)</dd>
-        <dt class="col-5">Sales Tax Applies</dt><dd class="col-7">@(Model.IsTaxApplicable ? "Yes" : "No")</dd>
+        <dt class="col-5">@L["Setup_Review_OrgNameTerm"]</dt><dd class="col-7">@Model.OrganizationName</dd>
+        <dt class="col-5">@L["Setup_Review_ThemeTerm"]</dt><dd class="col-7">@ThemeText()</dd>
+        <dt class="col-5">@L["Setup_Review_AnnualFeeTerm"]</dt><dd class="col-7">@MoneyFormatter.Format(Model.AnnualFee)</dd>
+        <dt class="col-5">@L["Setup_Review_AttendanceFeeTerm"]</dt><dd class="col-7">@MoneyFormatter.Format(Model.AttendanceFee)</dd>
+        <dt class="col-5">@L["Setup_Review_RenewalMonthTerm"]</dt><dd class="col-7">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Model.MembershipRenewalMonth)</dd>
+        <dt class="col-5">@L["Setup_Review_SalesTaxAppliesTerm"]</dt><dd class="col-7">@YesNo(Model.IsTaxApplicable)</dd>
         @if (Model.IsTaxApplicable)
         {
-            <dt class="col-5">Tax Rate</dt><dd class="col-7">@(Model.TaxRate?.ToString("N2") ?? "")%</dd>
-            <dt class="col-5">Annual Fee Tax Treatment</dt><dd class="col-7">@(Model.AnnualFeeTaxCode?.ToString() ?? "Tax-exempt (default)")</dd>
-            <dt class="col-5">Attendance Fee Tax Treatment</dt><dd class="col-7">@(Model.AttendanceFeeTaxCode?.ToString() ?? "Tax-exempt (default)")</dd>
+            <dt class="col-5">@L["Setup_Review_TaxRateTerm"]</dt><dd class="col-7">@(Model.TaxRate?.ToString("N2") ?? "")%</dd>
+            <dt class="col-5">@L["Setup_Review_AnnualFeeTaxTerm"]</dt><dd class="col-7">@TaxCodeText(Model.AnnualFeeTaxCode)</dd>
+            <dt class="col-5">@L["Setup_Review_AttendanceFeeTaxTerm"]</dt><dd class="col-7">@TaxCodeText(Model.AttendanceFeeTaxCode)</dd>
         }
-        <dt class="col-5">AGM Month</dt><dd class="col-7">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Model.CommitteeRenewalMonth)</dd>
-        <dt class="col-5">Audit Trail Retention</dt><dd class="col-7">@Model.AuditRetentionYears year@(Model.AuditRetentionYears == 1 ? "" : "s")</dd>
-        <dt class="col-5">Seat Count Target</dt><dd class="col-7">@(Model.GeneralCommitteeSeatCountTarget?.ToString() ?? "Not set")</dd>
-        @if (DebugSeederAvailable)
-        {
-            <dt class="col-5">Load sample data</dt><dd class="col-7">@(SeedWithTestData ? "Yes" : "No")</dd>
-        }
+        <dt class="col-5">@L["Setup_Review_AgmMonthTerm"]</dt><dd class="col-7">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Model.CommitteeRenewalMonth)</dd>
+        <dt class="col-5">@L["Setup_Review_AuditRetentionTerm"]</dt><dd class="col-7">@AuditRetentionText()</dd>
+        <dt class="col-5">@L["Setup_Review_SeatTargetTerm"]</dt><dd class="col-7">@(Model.GeneralCommitteeSeatCountTarget?.ToString() ?? L["Setup_Review_NotSet"].Value)</dd>
     </dl>
 
     <div class="row g-3 mb-2">
         <div class="col-md-6">
-            <h3 class="h6 small fw-semibold mb-1">Additional Office-Holder Titles</h3>
-            <BorderedListBox TItem="string" Items="QueuedCommitteeTitles" EmptyText="None.">
+            <h3 class="h6 small fw-semibold mb-1">@L["Setup_Review_TitlesHeading"]</h3>
+            <BorderedListBox TItem="string" Items="QueuedCommitteeTitles" EmptyText="@L["Setup_Review_TitlesEmpty"]">
                 <RowTemplate Context="title"><span>@title</span></RowTemplate>
             </BorderedListBox>
         </div>
 
         <div class="col-md-6">
-            <h3 class="h6 small fw-semibold mb-1">Queued Chart of Accounts Entries</h3>
-            <BorderedListBox TItem="QueuedAccountRequest" Items="QueuedAccounts" EmptyText="None queued.">
+            <h3 class="h6 small fw-semibold mb-1">@L["Setup_Review_AccountsHeading"]</h3>
+            <BorderedListBox TItem="QueuedAccountRequest" Items="QueuedAccounts" EmptyText="@L["Setup_Review_AccountsEmpty"]">
                 <RowTemplate Context="account">
                     <span>@account.Name</span>
                     <span class="text-muted small ms-2">
-                        @account.Type@(account.IsBankAccount ? " · Bank/Cash" : string.Empty)
+                        @AccountTypeText(account)
                     </span>
                 </RowTemplate>
             </BorderedListBox>

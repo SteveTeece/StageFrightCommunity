@@ -1,9 +1,11 @@
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Providers;
 
@@ -13,23 +15,27 @@ namespace StageFright.Reports.Providers;
 /// date. Accumulated Surplus (3200) is never posted to directly — there is no year-end
 /// closing process — so its value is computed as inception-to-date net income (Income
 /// minus Expenses) and substituted for the account's own (always-zero) GL balance.
-/// This is what makes Assets = Liabilities + Equity hold.
+/// This is what makes Assets = Liabilities + Equity hold. If a corrupted ledger breaks
+/// that identity, an explicit out-of-balance line is appended and no clean statement is
+/// produced (FR-010).
 /// </summary>
 public class BalanceSheetReportProvider : IReportProvider
 {
     private readonly IGLRepository _gl;
     private readonly IAccountRepository _accounts;
     private readonly ISettingsRepository _settings;
+    private readonly ILocalizer _localizer;
 
-    public BalanceSheetReportProvider(IGLRepository gl, IAccountRepository accounts, ISettingsRepository settings)
+    public BalanceSheetReportProvider(IGLRepository gl, IAccountRepository accounts, ISettingsRepository settings, ILocalizer localizer)
     {
         _gl = gl;
         _accounts = accounts;
         _settings = settings;
+        _localizer = localizer;
     }
 
     public string ReportId => "balance-sheet";
-    public string ReportName => "Statement of Financial Position";
+    public string ReportName => _localizer.Get<ReportsResource>("Reports_BalanceSheet_Name");
     public string ModuleName => "Finance";
     public int DisplayOrder => 25;
 
@@ -40,14 +46,14 @@ public class BalanceSheetReportProvider : IReportProvider
             var (_, fyEnd) = FinancialYearCalculator.GetRange(DateTime.UtcNow, FinancialYearCalculator.DefaultStartMonth);
             return
             [
-                new ReportFilterDefinition { Key = "asAt", Type = ReportFilterType.Date, Label = "As at", DefaultValue = $"{fyEnd:yyyy-MM-dd}" }
+                new ReportFilterDefinition { Key = "asAt", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_BalanceSheet_AsAtFilterLabel"), DefaultValue = $"{fyEnd:yyyy-MM-dd}" }
             ];
         }
     }
 
     public async Task<ReportData> GenerateAsync(ReportFilterValues filters, CancellationToken ct = default)
     {
-        var asAt = await ParseAsAtAsync(filters, ct);
+        var (asAt, isPartYear) = await ParseAsAtAsync(filters, ct);
 
         var allAccounts = (await _accounts.GetAllAsync(ct))
             .Concat(await _accounts.GetArchivedAsync(ct))
@@ -58,43 +64,68 @@ public class BalanceSheetReportProvider : IReportProvider
         var (equityRows, totalEquity) = await SectionAsync(allAccounts, AccountType.Equity, creditNormal: true, asAt, ct);
 
         var accumulatedSurplus = await ComputeAccumulatedSurplusAsync(allAccounts, asAt, ct);
-        equityRows.Add(new ReportRow { Cells = ["Accumulated Surplus", FormatCurrency(accumulatedSurplus)] });
+        equityRows.Add(new ReportRow { Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_AccumulatedSurplus"), FormatCurrency(accumulatedSurplus)] });
         totalEquity += accumulatedSurplus;
+
+        var sections = new List<ReportSection>
+        {
+            new ReportSection
+            {
+                Heading = _localizer.Get<ReportsResource>("Reports_Section_Assets"),
+                Rows = assetRows,
+                Subtotal = new ReportRow { Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_TotalAssets"), FormatCurrency(totalAssets)], IsEmphasized = true }
+            },
+            new ReportSection
+            {
+                Heading = _localizer.Get<ReportsResource>("Reports_Section_Liabilities"),
+                Rows = liabilityRows,
+                Subtotal = new ReportRow { Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_TotalLiabilities"), FormatCurrency(totalLiabilities)], IsEmphasized = true }
+            },
+            new ReportSection
+            {
+                Heading = _localizer.Get<ReportsResource>("Reports_Section_Equity"),
+                Rows = equityRows,
+                Subtotal = new ReportRow { Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_TotalEquity"), FormatCurrency(totalEquity)], IsEmphasized = true }
+            }
+        };
+
+        // FR-010: the Balance Sheet balances by construction (Accumulated Surplus is computed net
+        // income), so a non-zero difference here means the ledger itself is corrupt. Append an
+        // explicit out-of-balance line rather than presenting a clean statement.
+        var outOfBalance = totalAssets - (totalLiabilities + totalEquity);
+        if (outOfBalance != 0m)
+        {
+            sections.Add(new ReportSection
+            {
+                Rows =
+                [
+                    new ReportRow
+                    {
+                        Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_OutOfBalance"), FormatCurrency(outOfBalance)],
+                        IsEmphasized = true
+                    }
+                ]
+            });
+        }
 
         return new ReportData
         {
-            Title = "Statement of Financial Position",
-            SubTitle = $"As at {asAt:d MMMM yyyy}",
+            Title = _localizer.Get<ReportsResource>("Reports_BalanceSheet_Name"),
+            SubTitle = PartYearSubtitle.Wrap(
+                _localizer,
+                _localizer.Get<ReportsResource>("Reports_BalanceSheet_SubTitle", asAt.ToString("d MMMM yyyy")),
+                isPartYear),
             GeneratedAt = DateTime.UtcNow,
+            BasisOfAccounting = _localizer.Get<ReportsResource>("Reports_Common_BasisOfAccounting"),
             Columns =
             [
-                new ReportColumn { Header = "Account", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Amount", Alignment = ReportColumnAlignment.Right }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Account"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Amount"), Alignment = ReportColumnAlignment.Right }
             ],
-            Sections =
-            [
-                new ReportSection
-                {
-                    Heading = "Assets",
-                    Rows = assetRows,
-                    Subtotal = new ReportRow { Cells = ["Total Assets", FormatCurrency(totalAssets)], IsEmphasized = true }
-                },
-                new ReportSection
-                {
-                    Heading = "Liabilities",
-                    Rows = liabilityRows,
-                    Subtotal = new ReportRow { Cells = ["Total Liabilities", FormatCurrency(totalLiabilities)], IsEmphasized = true }
-                },
-                new ReportSection
-                {
-                    Heading = "Equity",
-                    Rows = equityRows,
-                    Subtotal = new ReportRow { Cells = ["Total Equity", FormatCurrency(totalEquity)], IsEmphasized = true }
-                }
-            ],
+            Sections = sections,
             GrandTotal = new ReportRow
             {
-                Cells = ["Total Liabilities + Equity", FormatCurrency(totalLiabilities + totalEquity)],
+                Cells = [_localizer.Get<ReportsResource>("Reports_BalanceSheet_TotalLiabilitiesPlusEquity"), FormatCurrency(totalLiabilities + totalEquity)],
                 IsEmphasized = true
             }
         };
@@ -137,16 +168,22 @@ public class BalanceSheetReportProvider : IReportProvider
         return netIncome;
     }
 
-    private async Task<DateTime> ParseAsAtAsync(ReportFilterValues filters, CancellationToken ct)
+    private async Task<(DateTime AsAt, bool IsPartYear)> ParseAsAtAsync(ReportFilterValues filters, CancellationToken ct)
     {
         var settings = await _settings.GetAsync(ct);
         var startMonth = settings?.FinancialYearStartMonth ?? FinancialYearCalculator.DefaultStartMonth;
-        var (_, fyEnd) = FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth);
+        var startDay = settings?.FinancialYearStartDay ?? FinancialYearCalculator.DefaultStartDay;
+        var (_, fyEnd, isPartYear) = FinancialYearCalculator.GetRange(DateTime.UtcNow, startMonth, startDay, settings?.InceptionDate);
 
-        return DateTime.TryParse(filters.Get("asAt"), out var d)
+        var hasAsAt = DateTime.TryParse(filters.Get("asAt"), out var d);
+        var asAt = hasAsAt
             ? new DateTime(d.Year, d.Month, d.Day, 23, 59, 59, DateTimeKind.Utc)
             : fyEnd;
+
+        // The default as-at date is the financial-year end; the part-year note applies only then,
+        // not to a user-chosen as-at date. The date itself is unchanged either way.
+        return (asAt, isPartYear && !hasAsAt);
     }
 
-    private static string FormatCurrency(decimal amount) => amount.ToString("F2");
+    private static string FormatCurrency(decimal amount) => MoneyFormatter.Format(amount);
 }

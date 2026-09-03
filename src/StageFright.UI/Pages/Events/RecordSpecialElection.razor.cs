@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Agm;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Events;
 
@@ -18,6 +21,9 @@ public partial class RecordSpecialElection : ComponentBase
     [Inject] private ICommitteeService CommitteeService { get; set; } = null!;
     [Inject] private IMemberService MemberService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private IStringLocalizer<EventsResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private List<CommitteePositionRecord> _currentPositions = [];
     private List<Member> _activeMembers = [];
@@ -50,8 +56,10 @@ public partial class RecordSpecialElection : ComponentBase
     private void OnIncomingChanged(string? value) =>
         _selectedIncomingMemberId = string.IsNullOrEmpty(value) ? null : Guid.Parse(value);
 
-    private static string DescribePosition(CommitteePositionRecord record) =>
-        $"{record.OfficeHolderType?.Name ?? "General Committee Member"} — {record.Member.SortableFullName}";
+    private string DescribePosition(CommitteePositionRecord record) =>
+        Loc.Get<EventsResource>("Events_SpecialElection_PositionDescription",
+            record.OfficeHolderType?.Name ?? L["Events_SpecialElection_PositionFallback"].Value,
+            record.Member.SortableFullName);
 
     private async Task SaveAsync()
     {
@@ -59,7 +67,7 @@ public partial class RecordSpecialElection : ComponentBase
 
         if (_selectedOutgoingId is null || _selectedIncomingMemberId is null)
         {
-            _errorMessage = "Select the position being replaced and the incoming member.";
+            _errorMessage = L["Events_SpecialElection_ValidationSelectBoth"];
             return;
         }
 
@@ -82,7 +90,7 @@ public partial class RecordSpecialElection : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to record special election: {ex.Message}";
+            _errorMessage = Loc.Get<EventsResource>("Events_SpecialElection_SaveError", ex.Message);
         }
         finally
         {

@@ -15,7 +15,7 @@ namespace StageFright.UI.Tests.Pages.Events;
 /// bUnit tests for EventDetail — read-only detail rendering plus the Print Attendance Sheet
 /// action (issue #302). This page had no test file before this feature.
 /// </summary>
-public class EventDetailTests : RadzenGridTestContext
+public class EventDetailTests : LocalizedTestContext
 {
     private readonly IEventService _eventService = Substitute.For<IEventService>();
     private readonly IEventAttendanceSheetService _eventAttendanceSheetService = Substitute.For<IEventAttendanceSheetService>();

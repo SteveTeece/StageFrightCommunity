@@ -3,7 +3,7 @@
   "specName": "Member Details View — Compact Two-Column Layout",
   "branch": "025-member-details-layout",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -74,6 +74,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-26T09:21:32.192Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-30T06:57:05.718Z"
     }
   ],
   "telemetryInstanceId": "89ab4908-821d-4759-9d04-8ec61ac02015",

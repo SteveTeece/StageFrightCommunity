@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
+using StageFright.Core.Localization;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages;
 
@@ -7,6 +10,8 @@ public partial class StartupError : ComponentBase
 {
     [Inject] private IStartupDiagnosticService Diagnostics { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> L { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private string? _errorDetail;
     private string? _dbPath;
@@ -36,7 +41,7 @@ public partial class StartupError : ComponentBase
         }
         catch (Exception ex)
         {
-            _actionError = $"Could not open folder: {ex.Message}";
+            _actionError = Loc.Get<SharedResource>("Shared_StartupError_OpenFolderError", ex.Message);
         }
 
         return Task.CompletedTask;
@@ -60,7 +65,7 @@ public partial class StartupError : ComponentBase
         }
         catch (Exception ex)
         {
-            _actionError = $"Could not delete the database file: {ex.Message}";
+            _actionError = Loc.Get<SharedResource>("Shared_StartupError_DeleteError", ex.Message);
         }
         finally
         {

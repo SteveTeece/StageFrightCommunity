@@ -76,7 +76,7 @@ public sealed class V2_MemberManagementTests : IAsyncLifetime
     public async Task CreateMember_AgeIsCalculated_FromDob()
     {
         var svc = BuildMemberService();
-        var ageCalc = new AgeCalculationService();
+        var ageCalc = new AgeCalculationService(RealLocalizer.Instance);
 
         var dob = new DateTime(1990, 6, 1, 0, 0, 0, DateTimeKind.Utc);
         var member = await svc.CreateAsync(new CreateMemberRequest
@@ -369,8 +369,9 @@ public sealed class V2_MemberManagementTests : IAsyncLifetime
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(
             auditRepo, NullLogger<AuditTrailService>.Instance);
-        var ageCalc = new AgeCalculationService();
-        var validation = new MemberValidationService(ageCalc);
+        var ageCalc = new AgeCalculationService(RealLocalizer.Instance);
+        var validation = new MemberValidationService(
+            ageCalc, new StubStringLocalizer<StageFright.Core.Modules.Localization.Resources.ValidationResource>());
         var unitOfWork = new UnitOfWork(_db);
 
         return new MemberService(memberRepo, committeeRepo, validation, settingsRepo, auditSvc, unitOfWork);

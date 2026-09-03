@@ -6,13 +6,13 @@
 {
     <div class="d-flex align-items-center gap-2" role="status" aria-live="polite">
         <div class="spinner-border spinner-border-sm text-secondary" aria-hidden="true"></div>
-        <span class="text-muted small">Loading…</span>
+        <span class="text-muted small">@Shared["Shared_Common_Loading"]</span>
     </div>
 }
 else if (_result?.Error is not null)
 {
     <div class="text-danger small" role="alert">
-        <span>Unable to load @Provider.Title</span>
+        <span>@LoadErrorText()</span>
     </div>
 }
 else

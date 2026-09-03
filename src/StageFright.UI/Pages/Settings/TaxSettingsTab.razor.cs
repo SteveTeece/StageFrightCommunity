@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.UI.Resources.Strings;
 using AppSettings = StageFright.Core.Entities.Settings;
 
 namespace StageFright.UI.Pages.Settings;
@@ -10,6 +13,9 @@ public partial class TaxSettingsTab : ComponentBase
 {
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private ILogger<TaxSettingsTab> Logger { get; set; } = null!;
+    [Inject] private IStringLocalizer<SettingsResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private AppSettings? _settings;
 
@@ -30,7 +36,7 @@ public partial class TaxSettingsTab : ComponentBase
         catch (Exception ex)
         {
             Logger.LogError(ex, "TaxSettingsTab: SettingsService.GetAsync failed");
-            _errorMessage = $"Failed to load settings: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Common_LoadError", ex.Message);
         }
     }
 
@@ -83,7 +89,7 @@ public partial class TaxSettingsTab : ComponentBase
             }
 
             await SettingsService.SaveAsync(_settings);
-            _successMessage = "Settings saved successfully.";
+            _successMessage = L["Settings_Common_SaveSuccess"];
         }
         catch (ValidationException ex)
         {
@@ -91,7 +97,7 @@ public partial class TaxSettingsTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to save settings: {ex.Message}";
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Common_SaveError", ex.Message);
         }
         finally
         {

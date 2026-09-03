@@ -27,7 +27,9 @@ public interface IAccountBalanceService
 
 ## Consumer contract (`ChartOfAccountsPage`)
 
+> **Update (spec 027 — localization):** the `FormatString="{0:C}"` money columns described below were migrated to a `<Template>` calling `MoneyFormatter.Format(...)` so the `"$"` symbol stays fixed under any UI culture. `FormatString="{0:C}"` is no longer used anywhere for money display — see `docs/localization/adding-a-language.md` §5 and the CLAUDE.md *Localization* section.
+
 - Calls `GetActiveAccountBalancesAsync` and `GetArchivedAccountBalancesAsync` once in `OnInitializedAsync` (mirroring today's `LoadAccountsAsync` calling `AccountService.GetAllAsync`/`GetArchivedAsync`), replacing the two `List<Account>` fields with `List<AccountBalance>`.
-- Binds each `RadzenDataGrid` to the resulting `List<AccountBalance>` and adds a `Balance` column with `Property="Balance"` (enables `AllowSorting`, FR-006) and `FormatString="{0:C}"` (FR-003).
+- Binds each `RadzenDataGrid` to the resulting `List<AccountBalance>` and adds a `Balance` column with `Property="Balance"` (enables `AllowSorting`, FR-006); the amount is rendered via a `<Template>` calling `MoneyFormatter.Format(...)` (spec 027; originally `FormatString="{0:C}"`, FR-003).
 - Renders an inline error indicator (e.g. `—` with a title/tooltip) in the Balance cell wherever `HasError == true`, via a `<Template>` on that column, leaving every other cell in the row (account number, name, type, actions) rendering normally (FR-012).
 - Existing type-filter, rename, archive, and restore behavior is unaffected — those operate on the same underlying `Account` fields now reachable through `AccountBalance`.

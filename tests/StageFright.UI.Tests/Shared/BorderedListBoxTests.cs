@@ -11,7 +11,7 @@ namespace StageFright.UI.Tests.Shared;
 /// gives each row a remove affordance, and the container always carries the
 /// ".bordered-list-box" class app.css uses for the contained-scroll treatment.
 /// </summary>
-public class BorderedListBoxTests : BunitContext
+public class BorderedListBoxTests : LocalizedTestContext
 {
     private static readonly RenderFragment<string> RowTemplate =
         item => builder => builder.AddContent(0, item);

@@ -13,7 +13,7 @@ namespace StageFright.UI.Tests.Modules.Finance;
 /// bUnit tests for FinanceTile (design 3a) — current balance and month-to-date
 /// income/expense lines across loading, error and populated states.
 /// </summary>
-public class FinanceTileTests : BunitContext
+public class FinanceTileTests : LocalizedTestContext
 {
     private readonly IFinanceSummaryService _summaryService = Substitute.For<IFinanceSummaryService>();
 

@@ -1,4 +1,6 @@
 using StageFright.Core.Modules.Events;
+using StageFright.Core.Modules.Localization.Resources;
+using StageFright.Core.Tests.Fixtures;
 
 namespace StageFright.Core.Tests.Modules.Events;
 
@@ -8,7 +10,7 @@ namespace StageFright.Core.Tests.Modules.Events;
 /// </summary>
 public class EventsMenuItemProviderTests
 {
-    private readonly EventsMenuItemProvider _sut = new();
+    private readonly EventsMenuItemProvider _sut = new(RealStringLocalizer.For<NavigationResource>());
 
     [Fact]
     public void GetMenuItems_Includes_AllEvents_RoutingToEventsList()

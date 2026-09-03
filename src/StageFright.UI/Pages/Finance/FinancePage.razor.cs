@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -14,6 +16,7 @@ public partial class FinancePage : ComponentBase
     private Guid SelectedMemberId { get; set; }
 
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
 
     protected override void OnInitialized()
     {

@@ -14,7 +14,7 @@ namespace StageFright.UI.Tests.Modules.Finance;
 /// bUnit tests for OutstandingBalancesTile (design 4) — member count and per-fee-type
 /// outstanding totals across loading, error, zero-state, and populated states.
 /// </summary>
-public class OutstandingBalancesTileTests : BunitContext
+public class OutstandingBalancesTileTests : LocalizedTestContext
 {
     private readonly IMemberBalanceService _memberBalanceService = Substitute.For<IMemberBalanceService>();
     private readonly IFinanceSummaryService _summaryService = Substitute.For<IFinanceSummaryService>();

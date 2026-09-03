@@ -22,7 +22,7 @@ public class BackupServiceTests : TestBase
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
 
     private BackupService CreateService() =>
-        new(_backupRepo, _uow, _audit, NullLogger<BackupService>.Instance);
+        new(_backupRepo, _uow, _audit, NullLogger<BackupService>.Instance, RealLocalizer.Instance);
 
     // --- ExportAsync ---
 

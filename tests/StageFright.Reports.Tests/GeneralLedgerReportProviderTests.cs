@@ -2,6 +2,7 @@ using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Reports.Models;
 using StageFright.Reports.Providers;
 
@@ -22,7 +23,7 @@ public class GeneralLedgerReportProviderTests
 
     public GeneralLedgerReportProviderTests()
     {
-        _sut = new GeneralLedgerReportProvider(_gl, _accounts);
+        _sut = new GeneralLedgerReportProvider(_gl, _accounts, RealLocalizer.Instance);
         SetupAccounts();
         SetupTransactions();
     }
@@ -53,11 +54,11 @@ public class GeneralLedgerReportProviderTests
 
         var section = result.Sections.First(s => s.Heading != null && s.Heading.Contains("Cash on Hand"));
         Assert.Equal("Opening Balance", section.Rows[0].Cells[1]);
-        Assert.Equal("100.00", section.Rows[0].Cells[4]);
-        Assert.Equal("150.00", section.Rows[1].Cells[4]); // 100 + 50
-        Assert.Equal("130.00", section.Rows[2].Cells[4]); // 150 - 20
+        Assert.Equal(MoneyFormatter.Format(100m), section.Rows[0].Cells[4]);
+        Assert.Equal(MoneyFormatter.Format(150m), section.Rows[1].Cells[4]); // 100 + 50
+        Assert.Equal(MoneyFormatter.Format(130m), section.Rows[2].Cells[4]); // 150 - 20
         Assert.Equal("Closing Balance", section.Subtotal!.Cells[1]);
-        Assert.Equal("130.00", section.Subtotal.Cells[4]);
+        Assert.Equal(MoneyFormatter.Format(130m), section.Subtotal.Cells[4]);
     }
 
     [Fact]

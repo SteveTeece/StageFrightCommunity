@@ -1,8 +1,10 @@
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Providers;
 
@@ -17,23 +19,25 @@ public class GeneralLedgerReportProvider : IReportProvider
 {
     private readonly IGLRepository _gl;
     private readonly IAccountRepository _accounts;
+    private readonly ILocalizer _localizer;
 
-    public GeneralLedgerReportProvider(IGLRepository gl, IAccountRepository accounts)
+    public GeneralLedgerReportProvider(IGLRepository gl, IAccountRepository accounts, ILocalizer localizer)
     {
         _gl = gl;
         _accounts = accounts;
+        _localizer = localizer;
     }
 
     public string ReportId => "general-ledger";
-    public string ReportName => "General Ledger";
+    public string ReportName => _localizer.Get<ReportsResource>("Reports_GeneralLedger_Name");
     public string ModuleName => "Finance";
     public int DisplayOrder => 35;
 
     public IReadOnlyList<ReportFilterDefinition> Filters =>
     [
-        new ReportFilterDefinition { Key = "account", Type = ReportFilterType.Text, Label = "Account (number or name, blank = all)", DefaultValue = "" },
-        new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = "From", DefaultValue = $"{DateTime.UtcNow.Year}-01-01" },
-        new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = "To", DefaultValue = $"{DateTime.UtcNow.Year}-12-31" }
+        new ReportFilterDefinition { Key = "account", Type = ReportFilterType.Text, Label = _localizer.Get<ReportsResource>("Reports_Filter_AccountNumberOrName"), DefaultValue = "" },
+        new ReportFilterDefinition { Key = "dateFrom", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_Filter_From"), DefaultValue = $"{DateTime.UtcNow.Year}-01-01" },
+        new ReportFilterDefinition { Key = "dateTo", Type = ReportFilterType.Date, Label = _localizer.Get<ReportsResource>("Reports_Filter_To"), DefaultValue = $"{DateTime.UtcNow.Year}-12-31" }
     ];
 
     public async Task<ReportData> GenerateAsync(ReportFilterValues filters, CancellationToken ct = default)
@@ -63,7 +67,7 @@ public class GeneralLedgerReportProvider : IReportProvider
 
             var rows = new List<ReportRow>
             {
-                new() { Cells = ["", "Opening Balance", "", "", FormatCurrency(opening)] }
+                new() { Cells = ["", _localizer.Get<ReportsResource>("Reports_Common_OpeningBalance"), "", "", FormatCurrency(opening)] }
             };
 
             var runningBalance = opening;
@@ -87,22 +91,23 @@ public class GeneralLedgerReportProvider : IReportProvider
             {
                 Heading = $"{account.Name} ({account.AccountNumber})",
                 Rows = rows,
-                Subtotal = new ReportRow { Cells = ["", "Closing Balance", "", "", FormatCurrency(runningBalance)], IsEmphasized = true }
+                Subtotal = new ReportRow { Cells = ["", _localizer.Get<ReportsResource>("Reports_Common_ClosingBalance"), "", "", FormatCurrency(runningBalance)], IsEmphasized = true }
             });
         }
 
         return new ReportData
         {
-            Title = "General Ledger",
-            SubTitle = $"{from:d MMMM yyyy} – {to:d MMMM yyyy}",
+            Title = _localizer.Get<ReportsResource>("Reports_GeneralLedger_Name"),
+            SubTitle = _localizer.Get<ReportsResource>("Reports_Common_DateRangeSubtitle", from.ToString("d MMMM yyyy"), to.ToString("d MMMM yyyy")),
             GeneratedAt = DateTime.UtcNow,
+            BasisOfAccounting = _localizer.Get<ReportsResource>("Reports_Common_BasisOfAccounting"),
             Columns =
             [
-                new ReportColumn { Header = "Date", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Debit", Alignment = ReportColumnAlignment.Right },
-                new ReportColumn { Header = "Credit", Alignment = ReportColumnAlignment.Right },
-                new ReportColumn { Header = "Balance", Alignment = ReportColumnAlignment.Right }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Date"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Description"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Debit"), Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Credit"), Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Balance"), Alignment = ReportColumnAlignment.Right }
             ],
             Sections = sections
         };
@@ -120,5 +125,5 @@ public class GeneralLedgerReportProvider : IReportProvider
         return (from, to);
     }
 
-    private static string FormatCurrency(decimal amount) => amount.ToString("F2");
+    private static string FormatCurrency(decimal amount) => MoneyFormatter.Format(amount);
 }

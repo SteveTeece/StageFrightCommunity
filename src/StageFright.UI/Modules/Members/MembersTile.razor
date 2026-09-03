@@ -2,34 +2,34 @@
 
 @if (_loading)
 {
-    <span class="text-muted small">Loading...</span>
+    <span class="text-muted small">@Shared["Shared_Common_Loading"]</span>
 }
 else if (_error)
 {
-    <span class="text-danger small">Unable to load</span>
+    <span class="text-danger small">@L["Members_Tile_ErrorText"]</span>
 }
 else
 {
     <div class="tile-stats">
         <div>
             <div class="tile-stat-value">@_activeCount</div>
-            <div class="tile-stat-label">Active</div>
+            <div class="tile-stat-label">@MemberStatus.Active.LocalizeEnum()</div>
         </div>
         <div>
             <div class="tile-stat-value dim">@_inactiveCount</div>
-            <div class="tile-stat-label">Inactive</div>
+            <div class="tile-stat-label">@MemberStatus.Inactive.LocalizeEnum()</div>
         </div>
         <div>
             <div class="tile-stat-value">@(_activeCount + _inactiveCount)</div>
-            <div class="tile-stat-label">Total</div>
+            <div class="tile-stat-label">@L["Members_Tile_TotalLabel"]</div>
         </div>
     </div>
     @if (_outstandingCount > 0)
     {
-        <div class="tile-chip-alert">Outstanding fees · <b>@_outstandingCount @(_outstandingCount == 1 ? "member" : "members")</b></div>
+        <div class="tile-chip-alert">@OutstandingFeesText()</div>
     }
     else
     {
-        <div class="tile-note">No outstanding fees</div>
+        <div class="tile-note">@L["Members_Tile_NoOutstandingFees"]</div>
     }
 }

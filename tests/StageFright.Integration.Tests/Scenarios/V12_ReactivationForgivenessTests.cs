@@ -175,7 +175,7 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
     private ReactivationForgivenessService BuildForgivenessService()
     {
         var feeRepo = new FeeRepository(_db);
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var memberRepo = new MemberRepository(_db);
         var settingsRepo = new SettingsRepository(_db);
         var auditRepo = NSubstitute.Substitute.For<StageFright.Core.Contracts.IAuditTrailRepository>();
@@ -186,7 +186,7 @@ public sealed class V12_ReactivationForgivenessTests : IAsyncLifetime
 
     private async Task<decimal> GetBalanceAsync(Guid memberId)
     {
-        var glRepo = new GLRepository(_db);
+        var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         return await glRepo.GetMemberBalanceAsync(memberId);
     }
 

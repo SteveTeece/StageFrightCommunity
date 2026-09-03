@@ -43,6 +43,37 @@ public class Settings
     public int FinancialYearStartMonth { get; set; } = 7;
 
     /// <summary>
+    /// Day of <see cref="FinancialYearStartMonth"/> (1–28) the financial year starts on. Combined
+    /// with the month to bound every financial year and FY-preset report. Default: 1. The 28 upper
+    /// bound avoids month-length edge cases (spec 028, FR-019 / FR-020).
+    /// </summary>
+    public int FinancialYearStartDay { get; set; } = 1;
+
+    /// <summary>
+    /// ISO 4217 code of the currency the organisation keeps its books in (e.g. "AUD", "USD",
+    /// "JPY"). Chosen once at first-run setup and immutable afterward — SettingsService.SaveAsync
+    /// rejects a change. Drives the display symbol and minor-unit precision everywhere money is
+    /// shown; no stored amount changes with it. Default: "AUD" (spec 028, FR-001 / FR-002).
+    /// </summary>
+    public string CurrencyCode { get; set; } = "AUD";
+
+    /// <summary>
+    /// Inclusive date through which all financial periods are closed. Null (the default) means
+    /// nothing is closed. When set, any GL posting line dated on or before this date is rejected so
+    /// a reported prior year cannot be altered by a back-dated entry (spec 028, FR-016 / FR-017).
+    /// </summary>
+    public DateTime? ClosedThroughDate { get; set; }
+
+    /// <summary>
+    /// The date the organisation was founded. Optional — captured at first-run setup, null (the
+    /// default) for every dataset created before this was offered. When it falls after the
+    /// financial-year anchor (<see cref="FinancialYearStartMonth"/> / <see cref="FinancialYearStartDay"/>),
+    /// the first financial year runs from this date to the day before the next anchor and every
+    /// FY-preset report labels it a part-year; later years are unaffected (spec 028, FR-022 / issue #353).
+    /// </summary>
+    public DateTime? InceptionDate { get; set; }
+
+    /// <summary>
     /// True when sales tax applies to the organisation. When false all tax UI is
     /// hidden, postings are 2-line, and tax codes/rate stay null. Default: false.
     /// </summary>
@@ -68,6 +99,16 @@ public class Settings
     /// </summary>
     public TaxCode? AttendanceFeeTaxCode { get; set; }
 
+    /// <summary>
+    /// How a newly entered taxable amount is interpreted: <see cref="TaxEntryMode.Inclusive"/>
+    /// (the default) treats it as the tax-inclusive gross; <see cref="TaxEntryMode.Exclusive"/>
+    /// treats it as the net and adds tax on top. Chosen at first-run setup and on the Sales Tax
+    /// settings tab; only meaningful while <see cref="IsTaxApplicable"/> is true and forced back to
+    /// <see cref="TaxEntryMode.Inclusive"/> when tax is turned off. Every pre-#354 dataset reads
+    /// <see cref="TaxEntryMode.Inclusive"/> and is byte-identical (spec 028, issue #354).
+    /// </summary>
+    public TaxEntryMode TaxEntryMode { get; set; } = TaxEntryMode.Inclusive;
+
     /// <summary>Maximum member age accepted by the system (years). Default: 150.</summary>
     public int MaxAgeRangeYears { get; set; } = 150;
 
@@ -76,6 +117,14 @@ public class Settings
 
     /// <summary>Current UI colour theme preference. Default: Dark.</summary>
     public Theme Theme { get; set; } = Theme.Dark;
+
+    /// <summary>
+    /// Selected display language as a BCP-47 culture id (e.g. "en-AU", "en-US"). Null until the
+    /// user explicitly chooses one; null resolves at startup to the operating-system display
+    /// language when a matching resource set ships, otherwise Australian English (FR-023).
+    /// Presentation only — changing it never alters any other stored value or GL balance (FR-016).
+    /// </summary>
+    public string? LanguageCode { get; set; }
 
     /// <summary>
     /// When true, the Rehearsals and Events dashboard tiles display a year-to-date
@@ -89,9 +138,9 @@ public class Settings
 
     /// <summary>
     /// Number of years audit trail entries are retained before the startup purge hard-deletes
-    /// them. Range: 1–7. Default: 1 year.
+    /// them. Range: 1–7, still user-configurable. Default: 5 years (spec 028, FR-023).
     /// </summary>
-    public int AuditRetentionYears { get; set; } = 1;
+    public int AuditRetentionYears { get; set; } = 5;
 
     // --- Soft-delete fields (never set; singleton row) ---
 

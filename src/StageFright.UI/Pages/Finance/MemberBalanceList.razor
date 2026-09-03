@@ -2,7 +2,7 @@
 
 @if (_loading)
 {
-    <p role="status" aria-live="polite">Loading member balances…</p>
+    <p role="status" aria-live="polite">@L["Finance_Balances_LoadingText"]</p>
 }
 else if (!string.IsNullOrEmpty(_errorMessage))
 {
@@ -10,7 +10,7 @@ else if (!string.IsNullOrEmpty(_errorMessage))
 }
 else if (_balances.Count == 0)
 {
-    <p class="text-muted">No outstanding balances found.</p>
+    <p class="text-muted">@L["Finance_Balances_EmptyText"]</p>
 }
 else
 {
@@ -18,7 +18,7 @@ else
                     AllowSorting="true" AllowPaging="true" PageSize="15"
                     class="rz-shadow-0">
         <Columns>
-            <RadzenDataGridColumn TItem="MemberBalance" Property="Name" Title="Member" Width="200px">
+            <RadzenDataGridColumn TItem="MemberBalance" Property="Name" Title="@L["Finance_Balances_MemberColumn"]" Width="200px">
                 <Template Context="row">
                     <a href="#" @onclick:preventDefault @onclick="() => GoToPayment(row.MemberId)"
                        class="text-decoration-none fw-semibold">
@@ -26,8 +26,10 @@ else
                     </a>
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="MemberBalance" Property="Balance" Title="Outstanding" Width="120px" FormatString="{0:C}" />
-            <RadzenDataGridColumn TItem="MemberBalance" Title="Fee Breakdown" Sortable="false">
+            <RadzenDataGridColumn TItem="MemberBalance" Property="Balance" Title="@L["Finance_Balances_OutstandingColumn"]" Width="120px">
+                <Template Context="row">@MoneyFormatter.Format(row.Balance)</Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="MemberBalance" Title="@L["Finance_Balances_FeeBreakdownColumn"]" Sortable="false">
                 <Template Context="row">
                     @if (_expanded.Contains(row.MemberId))
                     {
@@ -35,26 +37,26 @@ else
                             @foreach (var fee in row.Fees)
                             {
                                 <div class="d-flex gap-3">
-                                    <span>@fee.FeeDate.Year @fee.FeeType</span>
-                                    <span>@fee.Amount.ToString("C")</span>
-                                    <span class="text-muted">due @fee.DueDate.ToString("d MMM yyyy")</span>
+                                    <span>@fee.FeeDate.Year @fee.FeeType.LocalizeEnum()</span>
+                                    <span>@MoneyFormatter.Format(fee.Amount)</span>
+                                    <span class="text-muted">@FeeDueText(fee.DueDate)</span>
                                 </div>
                             }
                         </div>
-                        <button class="btn btn-link btn-sm p-0" @onclick="() => ToggleExpand(row.MemberId)">Hide fees</button>
+                        <button class="btn btn-link btn-sm p-0" @onclick="() => ToggleExpand(row.MemberId)">@L["Finance_Balances_HideFeesButton"]</button>
                     }
                     else
                     {
                         <button class="btn btn-link btn-sm p-0" @onclick="() => ToggleExpand(row.MemberId)">
-                            Show @row.Fees.Count @(row.Fees.Count == 1 ? "fee" : "fees")
+                            @ShowFeesText(row.Fees.Count)
                         </button>
                     }
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="MemberBalance" Title="Actions" Width="210px" Sortable="false">
+            <RadzenDataGridColumn TItem="MemberBalance" Title="@Shared["Shared_Table_ActionsColumn"]" Width="210px" Sortable="false">
                 <Template Context="row">
                     <button class="btn btn-primary btn-sm" @onclick="() => GoToPayment(row.MemberId)">
-                        Record Member Payment
+                        @L["Finance_Balances_RecordPaymentButton"]
                     </button>
                 </Template>
             </RadzenDataGridColumn>

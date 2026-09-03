@@ -1,0 +1,2502 @@
+{
+  "workflow": "speckit",
+  "specName": "international accounting standards",
+  "branch": "028-international-accounting-standards",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-29T05:10:34.360Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T05:16:13.733Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-29T05:25:42.021Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T05:35:09.841Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T05:38:36.084Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T05:39:35.474Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-29T05:45:20.271Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T05:47:55.192Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T05:49:20.568Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-29T06:49:55.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-29T06:54:37.746Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:05:17.360Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:05:17.512Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:05:17.662Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:08:26.789Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:08:26.945Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:14:00.637Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:14:00.788Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:14:00.933Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:14:01.077Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:14:01.223Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:14:01.369Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:14:01.515Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:24:37.053Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:24:37.202Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:24:37.349Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:24:37.491Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:24:37.637Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:24:37.783Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:32:41.581Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:32:41.762Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014a",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T07:32:42.367Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:05.266Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:05.425Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:05.583Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:05.735Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032a",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:05.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:14.542Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:14.737Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:00:14.943Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:15:48.734Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:16:26.788Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037a",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:18:24.111Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:19:35.827Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:20:47.008Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:22:00.949Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:41:04.681Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:50:03.318Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041a",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:50:03.912Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:52:44.518Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:52:44.737Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:52:44.946Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:52:45.170Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T08:58:06.437Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:33:59.296Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:33:59.903Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049a",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:34:00.504Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T050",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:34:12.114Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:34:12.620Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T056",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:54:29.838Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T057",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:54:30.444Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T064",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:56:27.535Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T058",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:56:28.170Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T059",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:59:23.954Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T060",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:59:24.155Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T061",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T09:59:24.334Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T062",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:09:44.459Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T063",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:09:45.040Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:17:14.696Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T053",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:17:14.862Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T054",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:17:15.025Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T055",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:17:15.181Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T068",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:34:36.280Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T065",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:34:36.433Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T069",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:36:51.591Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T070",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:36:51.761Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T072",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:38:04.976Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T071",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:38:05.162Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T073",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:39:59.242Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T075",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:46:49.179Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T074",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:46:49.358Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T067",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:46:49.531Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T066",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T10:46:49.711Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T077",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:26:14.756Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T078",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:26:14.943Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T079",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:26:15.128Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T080",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:26:26.529Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T081",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:26:26.729Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T082",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:26:26.909Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T083",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:35:19.583Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T084",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:49:20.760Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T085",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:51:37.973Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T086",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:52:25.387Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T086a",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T22:52:58.383Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T087",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:02:39.273Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T089",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:04:25.175Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T090",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:27:52.975Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T091",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:27:53.168Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T091a",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:27:53.364Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T092",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:27:53.542Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T093",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:27:53.736Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T094",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:27:53.930Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T076",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:37:48.085Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T088",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:37:48.306Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-29T23:39:46.163Z"
+    }
+  ],
+  "telemetryInstanceId": "527a7469-9665-4240-b165-addc44766471",
+  "livingSpecs": {
+    "loaded": [
+      "audit-trail",
+      "finance",
+      "settings",
+      "app-host",
+      "domain-model",
+      "reports-pipeline",
+      "data-access"
+    ]
+  },
+  "coverage": {
+    "FR-001": {
+      "title": "First-run setup must require selecting the organisation currency (ISO 4217); default AUD",
+      "tasks": [
+        "T012",
+        "T014",
+        "T017",
+        "T018",
+        "T019",
+        "T021"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs::InitializeAsync_PersistsRequestedCurrency_Normalised",
+        "InitializeAsync_Throws_WhenCurrencyUnknown; tests/StageFright.UI.Tests/Pages/Setup/CurrencyPickerTests.cs"
+      ]
+    },
+    "FR-002": {
+      "title": "Selected currency is fixed for the dataset lifetime; no change, no multi-currency, no FX",
+      "tasks": [
+        "T012",
+        "T020",
+        "T021"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Settings/SettingsServiceTests.cs::SaveAsync_Throws_WhenCurrencyCodeDiffersFromPersisted",
+        "SaveAsync_Saves_WhenCurrencyCodeUnchanged"
+      ]
+    },
+    "FR-003": {
+      "title": "All money display/print/export uses the configured currency symbol and minor-unit precision, grouping per region",
+      "tasks": [
+        "T007",
+        "T010",
+        "T022",
+        "T023",
+        "T024",
+        "T025",
+        "T026",
+        "T027"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Localization/MoneyFormatterTests.cs; tests/StageFright.Integration.Tests/Scenarios/V28_CurrencyConfigurationTests.cs::ZeroDecimalCurrency_ShowsNoFractionalDigits_AndReconciles"
+      ]
+    },
+    "FR-004": {
+      "title": "No screen/report/PDF/CSV may show a currency symbol or code other than the configured one",
+      "tasks": [
+        "T010",
+        "T022",
+        "T023",
+        "T024",
+        "T025",
+        "T026",
+        "T027"
+      ],
+      "tests": [
+        "tests/StageFright.Localization.Tests/CurrencySymbolGuardTests.cs::Should_NotBakeInAMoneyFormat_When_ReportAndUiSurfaceScanned",
+        "Should_NotEmitAHardCodedCurrencySymbolOrCode_When_ReportAndUiSurfaceScanned",
+        "Should_RouteMoneyThroughMoneyFormatter_When_MoneyBearingProviderScanned"
+      ]
+    },
+    "FR-005": {
+      "title": "Apportioned amounts round to the currency minor unit and the parts re-sum to the total exactly",
+      "tasks": [
+        "T011",
+        "T015",
+        "T016"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Finance/TaxCalculatorTests.cs::SplitInclusive_NetPlusTax_AlwaysEqualsGross_AtAnyMinorUnitDigits",
+        "SplitInclusive_RoundsTaxToConfiguredMinorUnit"
+      ]
+    },
+    "FR-006": {
+      "title": "Existing AUD datasets show identical symbol, precision and stored values after the change",
+      "tasks": [
+        "T006",
+        "T007",
+        "T013"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs"
+      ]
+    },
+    "FR-007": {
+      "title": "Entering an amount stores the exact intended value regardless of regional number format",
+      "tasks": [
+        "T029",
+        "T030",
+        "T031",
+        "T033",
+        "T034",
+        "T035"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Localization/MoneyInputTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Finance/JournalEntryPageLocaleTests.cs",
+        "tests/StageFright.UI.Tests/Shared/OpeningBalanceEntryFormLocaleTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_LocaleSafeMoneyEntryTests.cs"
+      ]
+    },
+    "FR-008": {
+      "title": "Manual journal and opening-balance entry interpret typed amounts like every other money field",
+      "tasks": [
+        "T032",
+        "T033",
+        "T034",
+        "T035"
+      ],
+      "tests": [
+        "tests/StageFright.Localization.Tests/MoneyInputGuardTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Finance/JournalEntryPageLocaleTests.cs",
+        "tests/StageFright.UI.Tests/Shared/OpeningBalanceEntryFormLocaleTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_LocaleSafeMoneyEntryTests.cs"
+      ]
+    },
+    "FR-009": {
+      "title": "Comma-decimal / period-grouping regions must not scale or misread an entered amount",
+      "tasks": [
+        "T029",
+        "T030",
+        "T031",
+        "T033"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Localization/MoneyInputTests.cs::Should_NotReadThePeriodAsAGroupSeparator_UnderACommaDecimalCulture",
+        "tests/StageFright.UI.Tests/Pages/Finance/JournalEntryPageLocaleTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_LocaleSafeMoneyEntryTests.cs"
+      ]
+    },
+    "FR-010": {
+      "title": "Balance Sheet generation verifies assets equal liabilities plus equity or refuses a clean statement",
+      "tasks": [
+        "T037",
+        "T039",
+        "T040"
+      ],
+      "tests": [
+        "tests/StageFright.Reports.Tests/BalanceSheetReportProviderTests.cs::GenerateAsync_WhenAssetsDoNotEqualLiabilitiesPlusEquity_AppendsExplicitOutOfBalanceRow",
+        "GenerateAsync_WhenLedgerBalances_AppendsNoOutOfBalanceRow;tests/StageFright.Integration.Tests/Scenarios/V28_StatementIntegrityTests.cs::CorruptedLedger_BalanceSheet_ShowsExplicitOutOfBalanceLine_AndNeverACleanStatement",
+        "BalancedLedger_BalanceSheet_ProducesACleanStatement"
+      ]
+    },
+    "FR-011": {
+      "title": "Trial Balance treats any non-zero debit/credit difference as an error, with no tolerance",
+      "tasks": [
+        "T036",
+        "T038",
+        "T040"
+      ],
+      "tests": [
+        "tests/StageFright.Reports.Tests/TrialBalanceReportProviderTests.cs::GenerateAsync_WhenDebitsAndCreditsDifferByOneCent_ThrowsGLBalanceException",
+        "GenerateAsync_WhenExactlyBalanced_DoesNotThrow;tests/StageFright.Integration.Tests/Scenarios/V28_StatementIntegrityTests.cs::TrialBalance_WithAOneCentImbalance_StillFailsToGenerate",
+        "CorruptedLedger_TrialBalance_FailsToGenerate"
+      ]
+    },
+    "FR-012": {
+      "title": "Each financial statement states its basis of accounting accurately on its face",
+      "tasks": [
+        "T041",
+        "T042",
+        "T043",
+        "T044",
+        "T045",
+        "T046",
+        "T047"
+      ],
+      "tests": [
+        "tests/StageFright.Reports.Tests/BasisOfAccountingTests.cs",
+        "tests/StageFright.UI.Tests/Shared/ReportViewerBasisTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_BasisOfAccountingDisclosureTests.cs"
+      ]
+    },
+    "FR-013": {
+      "title": "Bank reconciliation report uses the conventional adjusted-balance form showing both balances",
+      "tasks": [
+        "T048",
+        "T050",
+        "T051"
+      ],
+      "tests": [
+        "tests/StageFright.Reports.Tests/BankReconciliationReportProviderTests.cs::GenerateAsync_ShowsBothBankStatementBalance_AndGeneralLedgerBalance",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_ConventionalBankReconciliationTests.cs::Report_ShowsBalancePerBankStatement_AndBalancePerGeneralLedger"
+      ]
+    },
+    "FR-014": {
+      "title": "Outstanding items are carried into the reconciliation arithmetic, not just listed",
+      "tasks": [
+        "T048",
+        "T050"
+      ],
+      "tests": [
+        "tests/StageFright.Reports.Tests/BankReconciliationReportProviderTests.cs::GenerateAsync_OutstandingItems_ListedAndCarriedIntoAdjustedBankBalance",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_ConventionalBankReconciliationTests.cs::OutstandingItems_AreListed_AndCarriedIntoTheAdjustedBankBalance"
+      ]
+    },
+    "FR-015": {
+      "title": "Finalising a reconciliation still requires it to balance; finalised recs stay immutable",
+      "tasks": [
+        "T049"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Finance/BankReconciliationServiceTests.cs::Should_RejectFinalise_When_DifferenceExceedsHalfCent_FR015",
+        "Should_RejectClearAndFinalise_When_ReconciliationIsFinalised_FR015;tests/StageFright.Integration.Tests/Scenarios/V28_ConventionalBankReconciliationTests.cs::FinalisedReconciliation_IsImmutable_AndFinalisationRequiredItToBalance"
+      ]
+    },
+    "FR-016": {
+      "title": "Organisation can mark all financial periods up to a chosen date as closed",
+      "tasks": [
+        "T055",
+        "T062"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Settings/ClosePeriodControlTests.cs"
+      ]
+    },
+    "FR-017": {
+      "title": "Any transaction dated on/before the closed-through date is rejected with no partial record",
+      "tasks": [
+        "T052",
+        "T053",
+        "T056",
+        "T057",
+        "T058",
+        "T059",
+        "T060",
+        "T063",
+        "T064"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Finance/ClosedPeriodGuardTests.cs",
+        "tests/StageFright.Integration.Tests/InternationalAccounting/ClosedPeriodLockTests.cs"
+      ]
+    },
+    "FR-018": {
+      "title": "Setup-time opening balances remain permitted regardless of a later closed-through date",
+      "tasks": [
+        "T054",
+        "T058"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs::InitializeAsync_PostsQueuedOpeningBalances_RegardlessOfClosedPeriod",
+        "tests/StageFright.Integration.Tests/InternationalAccounting/ClosedPeriodLockTests.cs::Should_PostAnyBackdatedEntry_When_NoPeriodIsClosed"
+      ]
+    },
+    "FR-019": {
+      "title": "Financial-year start is an explicit first-run setup choice, not a silent default",
+      "tasks": [
+        "T067",
+        "T071",
+        "T072",
+        "T073",
+        "T074"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FinancialYearStartPickerTests.cs",
+        "tests/StageFright.Integration.Tests/InternationalAccounting/FinancialYearStartTests.cs::Should_PersistANonFirstOfMonthFinancialYearStart_When_ChosenAtSetup",
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs::InitializeAsync_PersistsRequestedFinancialYearStart_MonthAndDay"
+      ]
+    },
+    "FR-020": {
+      "title": "System supports a financial year starting on a day other than the first of the month",
+      "tasks": [
+        "T065",
+        "T068",
+        "T071",
+        "T073"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Finance/FinancialYearCalculatorTests.cs",
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs::InitializeAsync_Throws_WhenFinancialYearStartDayOutOfRange"
+      ]
+    },
+    "FR-021": {
+      "title": "All FY-preset reports and dashboard figures honour the configured FY start (month and day)",
+      "tasks": [
+        "T066",
+        "T068",
+        "T069",
+        "T070"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/FinancialYearStartTests.cs::Should_BoundIncomeStatementAndTrialBalance_OnTheConfiguredAnchorDay",
+        "Should_BoundBalanceSheetAsAt_TheConfiguredYearEndDay",
+        "Should_BoundTaxSummaryQuarter_OnTheConfiguredAnchorDay",
+        "Should_LeaveAnAustralianDatasetsRangesUnchanged_When_StartIsJulyFirst"
+      ]
+    },
+    "FR-022": {
+      "title": "System should support a sub-twelve-month first financial year, labelled as a part-year",
+      "tasks": [
+        "T076"
+      ],
+      "tests": [
+        "FinancialYearCalculatorTests(part-year cases)",
+        "PartYearFirstFinancialYearTests",
+        "InceptionDatePickerTests"
+      ]
+    },
+    "FR-023": {
+      "title": "Default audit-trail retention on a new dataset is at least five years, still configurable",
+      "tasks": [
+        "T003",
+        "T005",
+        "T006",
+        "T077",
+        "T080"
+      ],
+      "tests": [
+        "tests/StageFright.Data.Tests/Migrations/AuditRetentionDefaultTests.cs::FreshDataset_DefaultsAuditRetentionYearsToFive_AfterMigration",
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs::InitializeAsync_PersistsDefaultAuditRetentionYears_WhenNotSpecified",
+        "tests/StageFright.Data.Tests/Settings/SetupServiceIntegrationTests.cs::InitializeAsync_PersistsDefaultAuditRetentionYears"
+      ]
+    },
+    "FR-024": {
+      "title": "An existing dataset's configured retention value is preserved through this change",
+      "tasks": [
+        "T006",
+        "T077"
+      ],
+      "tests": [
+        "tests/StageFright.Data.Tests/Migrations/AuditRetentionDefaultTests.cs::ExistingSettingsRow_KeepsItsConfiguredAuditRetentionYears_AfterMigration",
+        "tests/StageFright.Data.Tests/Migrations/AddAuditRetentionYearsToSettingsMigrationTests.cs::ExistingSettingsRow_BackfillsAuditRetentionYearsToOne_AfterMigration"
+      ]
+    },
+    "FR-025": {
+      "title": "A failed purge of expired audit entries is logged and surfaced, never silently discarded",
+      "tasks": [
+        "T079",
+        "T082",
+        "T083"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/PurgeFailureSurfacedTests.cs",
+        "tests/StageFright.Core.Tests/Modules/AuditTrail/AuditTrailServiceTests.cs::PurgeOlderThanAsync_PropagatesFailure_WhenRepositoryFails",
+        "tests/StageFright.UI.Tests/Pages/Dashboard/DashboardTests.cs::StartupWarningBanner_Rendered_WhenStartupWarningRecorded"
+      ]
+    },
+    "FR-026": {
+      "title": "Every financial posting path, incl. attendance-fee accruals, writes an audit-trail entry",
+      "tasks": [
+        "T078",
+        "T081"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Rehearsals/AttendanceServiceAuditTests.cs"
+      ]
+    },
+    "FR-027": {
+      "title": "Publish an accounting-policy document (basis, recognition, rounding, currency, immutability, retention, unaudited)",
+      "tasks": [
+        "T084"
+      ]
+    },
+    "FR-028": {
+      "title": "Finance living spec updated to the current tax model, no retired references, not draft",
+      "tasks": [
+        "T085",
+        "T086"
+      ]
+    },
+    "FR-029": {
+      "title": "Produce a written sales-tax internationalisation assessment covering four required points",
+      "tasks": [
+        "T087"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Finance/TaxCalculatorTests.cs",
+        "tests/StageFright.Integration.Tests/InternationalAccounting/TaxExclusiveEntryTests.cs",
+        "tests/StageFright.Data.Tests/Migrations/AddTaxEntryModeMigrationTests.cs"
+      ]
+    },
+    "FR-030": {
+      "title": "Assessment records an in/out-of-scope decision with sizing per point and spawns follow-on issues",
+      "tasks": [
+        "T087",
+        "T088"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Finance/FeeServiceTests.cs",
+        "tests/StageFright.Core.Tests/Modules/Finance/IncomeEntryServiceTests.cs",
+        "tests/StageFright.Core.Tests/Modules/Finance/ExpensePaymentServiceTests.cs",
+        "tests/StageFright.Core.Tests/Modules/Rehearsals/AttendanceServiceTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Settings/TaxSettingsTabTests.cs"
+      ]
+    },
+    "FR-031": {
+      "title": "No stored monetary amount, tax amount, or GL balance is altered; presentation/validation/config only",
+      "tasks": [
+        "T013",
+        "T089",
+        "T093"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_CurrencyConfigurationTests.cs::SameDataset_UnderAud_IsByteIdenticalToTheLegacyDollarString"
+      ]
+    },
+    "FR-032": {
+      "title": "Existing double-entry guarantees preserved (balanced atomic postings, GL truth, immutability, reversing corrections)",
+      "tasks": [
+        "T060",
+        "T093"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs::StoredTransactionValues_AreUntouched",
+        "TrialBalance_TiesAndShowsTheSameTotals"
+      ]
+    },
+    "FR-033": {
+      "title": "No change to existing tax posting mechanics or stored tax code values",
+      "tasks": [
+        "T089",
+        "T093"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs::StoredTransactionValues_AreUntouched",
+        "tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs::TaxCalculator_AtTwoMinorDigits_IsUnchanged",
+        "tests/StageFright.Integration.Tests/Scenarios/V28_CurrencyConfigurationTests.cs::SameDataset_UnderAud_IsByteIdenticalToTheLegacyDollarString"
+      ]
+    }
+  },
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 45,
+    "projectedTasks": 48,
+    "scopeSignal": "larger",
+    "verdict": "oversized"
+  },
+  "context": [
+    "source: GitHub issue #341 and sub-issues #342-#352 (international accounting-practice readiness)",
+    "living spec: finance (primary), reports-pipeline, settings, domain-model, data-access, app-host, audit-trail",
+    "area: src/StageFright.Core/Modules/Finance (MoneyFormatter, TaxCalculator, FinancialYearCalculator), src/StageFright.Reports/Providers, src/StageFright.Core/Entities/Settings.cs, src/StageFright.Data/Repositories/GLRepository.cs, src/StageFright.UI setup wizard + finance forms",
+    "constraint: preserve the double-entry guarantees (balanced atomic postings, GL as sole source of truth, immutable Fee/Payment/Transaction/JournalEntry, reversing-entry corrections)",
+    "constraint: no change to any stored monetary amount, tax amount, GL balance, or existing tax posting mechanics — presentation/validation/config only",
+    "constraint: single currency per organisation; no multi-currency or FX"
+  ],
+  "intent": "Make the finance module's accounting practices safe and portable for organisations outside Australia (configurable ISO 4217 currency, locale-safe money entry, Balance Sheet / Trial Balance integrity guards, disclosed basis of accounting, conventional bank reconciliation, closed-period lock, first-class financial-year-start setup, longer audit retention, and a written accounting-policy document) without changing any stored amount or the double-entry engine.",
+  "expectations": [
+    "Multi-currency, changing the organisation currency after setup, and foreign-exchange translation",
+    "52/53-week ('4-4-5') fiscal calendars",
+    "Implementing multi-jurisdiction or multiple simultaneous sales-tax rates (only a scoping assessment is in scope)",
+    "Producing formal IFRS/GAAP statutory financial statements",
+    "Any change to existing tax posting mechanics or stored tax code values"
+  ],
+  "approach": "Reuse spec 027's localization seams: currency becomes a fixed-after-setup Settings.CurrencyCode (ISO 4217, default AUD) with MoneyFormatter converted from hard-coded $ to a process-wide-configured helper backed by an internal CurrencyCatalog (no new NuGet). The money-entry bug is fixed by parsing the always-invariant <input type=number> value with InvariantCulture via one shared MoneyInput helper. Statement integrity, the basis-of-accounting disclosure and the conventional bank-reconciliation layout are changes inside StageFright.Reports providers plus one optional ReportData field; period locking is enforced at the single GLRepository choke point via a new ClosedPeriodException.",
+  "decisions": [
+    {
+      "decision": "Convert MoneyFormatter to a process-wide configured static (Configure() at startup) rather than an injected IMoneyFormatter service",
+      "why": "Single currency per dataset makes process-wide state correct; mirrors the existing startup-culture pattern in MauiProgram; ~20 call sites stay unchanged",
+      "rejected": "Injecting IMoneyFormatter everywhere and refactoring the static report-provider helpers"
+    },
+    {
+      "decision": "Ship ISO 4217 symbol/minor-unit metadata as an internal curated CurrencyCatalog",
+      "why": ".NET has no currency-code-keyed lookup of symbol+minor-units; a curated list mirrors SupportedLanguagesCatalog and adds no dependency",
+      "rejected": "Adding a money library (NodaMoney) or embedding the full ~180-entry ISO 4217 table"
+    },
+    {
+      "decision": "Keep money inputs as <input type=number> and parse their value with InvariantCulture",
+      "why": "A number input always serialises its value invariant regardless of page locale; parsing invariant removes the thousands-separator ambiguity FR-009 forbids and matches how Blazor @bind already handles decimals",
+      "rejected": "Switching to type=text with CurrentCulture parsing, or a custom grouping-stripping parser"
+    },
+    {
+      "decision": "Enforce the closed-period lock at the GLRepository.AddBalancedSetAsync/AddPairAsync choke point via an IClosedPeriodGuard",
+      "why": "Every financial mutation funnels through these two methods inside the UoW transaction, so a rejection guarantees no partial record; the repo already enforces the GL-balance invariant pre-persistence",
+      "rejected": "Checking in each of the 7+ posting services (fragile, a future path could bypass it) or an EF SaveChanges interceptor"
+    },
+    {
+      "decision": "Balance Sheet appends an explicit out-of-balance line; Trial Balance throws with the 0.01 tolerance removed",
+      "why": "FR-010 allows either outcome; the Balance Sheet balances by construction so the out-of-balance amount is the useful diagnostic, while the Trial Balance already has a throw/retry path wired through the viewer",
+      "rejected": "Making the Balance Sheet also throw (hides the magnitude) or the Trial Balance render a line (diverges from tested viewer behaviour)"
+    },
+    {
+      "decision": "Deliver the basis-of-accounting disclosure as one optional ReportData.BasisOfAccounting field set by financial-statement providers from a single shared localized string",
+      "why": "Matches the pipeline design (one renderer-agnostic model, no provider-specific branching); one string keeps wording consistent and translatable and lets non-financial reports leave it null",
+      "rejected": "A per-provider section row (repeats text, pollutes the table) or renderer-hard-coded text (renderer must not know which reports are statements)"
+    },
+    {
+      "decision": "Raise the AuditRetentionYears default 1->5 with a column-default-only migration (no UpdateData)",
+      "why": "FR-024 requires an existing datasets configured value to be preserved; the single Settings row already has a value, so touching only the schema default changes behaviour for new datasets only",
+      "rejected": "UpdateData to set existing rows to 5, or making the field nullable with a computed default"
+    },
+    {
+      "decision": "Defer FR-022 (sub-twelve-month first financial year) to a follow-on issue",
+      "why": "Spec Assumptions explicitly permit this; a part-year needs its own storage and every-FY-report labelling decisions that would widen an already-large feature",
+      "rejected": "Building a minimal stub-year now"
+    },
+    {
+      "decision": "Surface a failed startup audit purge by recording it into the existing startup-diagnostic state, not a new mechanism",
+      "why": "The Settings capability already retains startup failures (e.g. DB init) for the UI to display; FR-025 needs logged AND surfaced, and reusing that holder adds no plumbing while startup still proceeds",
+      "rejected": "A dedicated purge-failure banner service, or blocking startup on purge failure"
+    },
+    {
+      "decision": "Source the bank reconciliation book balance from the existing IGLRepository.GetAccountBalanceAsync(accountId, statementDate)",
+      "why": "It already exists and is keyed on AccountId (not the denormalized GLAccount string), so the report inherits the aggregate-by-identity rule with no new repository method",
+      "rejected": "Recomputing the ledger balance in the provider from raw transactions"
+    },
+    {
+      "decision": "Route every StageFright.Reports provider FormatCurrency helper (and TaxSummary/ChartOfAccounts inline money) through the static MoneyFormatter.Format",
+      "why": "FR-003/FR-004 need the configured symbol+precision on printed/exported amounts; providers previously emitted bare ToString(F2) with no symbol",
+      "rejected": "Injecting an IMoneyFormatter into every provider (churns ~10 static helpers for no behavioural gain under single-currency-per-dataset)"
+    },
+    {
+      "decision": "Update the ~30 pre-existing report/UI/integration money assertions to compare against MoneyFormatter.Format(<decimal>m) rather than hard-coded \"$x.xx\"",
+      "why": "Keeps those tests correct under the configured currency and robust to the host culture grouping, matching how production formats",
+      "rejected": "Hard-coding the en-AU dollar literal (brittle if the CI host culture changes)"
+    },
+    {
+      "decision": "Serialise MoneyFormatter-sensitive integration tests via a DisableParallelization xUnit collection (V6, V16, V28, AudZeroDrift)",
+      "why": "MoneyFormatter.Configure sets process-wide static state; a JPY config in V28 could race the AUD assertions now in V6/V16",
+      "rejected": "Disabling parallelization for the whole Integration.Tests assembly"
+    },
+    {
+      "decision": "MoneyInput.Parse uses NumberStyles.AllowDecimalPoint | AllowLeadingSign only (no AllowThousands, no AllowWhite)",
+      "why": "an <input type=number> value is always browser-serialised invariant (period point, no grouping, optional leading -); rejecting grouped/whitespace input and falling back to 0m matches the pre-existing empty-field=0 behaviour and FR-009 (no digit read as a thousands separator)",
+      "rejected": "NumberStyles.Number|Currency with InvariantCulture (would silently accept 1,234.50 and mask a malformed value)"
+    },
+    {
+      "decision": "V28_LocaleSafeMoneyEntry drives the real GeneralJournalService/OpeningBalanceService feeding amounts through MoneyInput.Parse directly, rather than rendering the razor components",
+      "why": "StageFright.Integration.Tests has no bUnit reference; calling MoneyInput.Parse under fr-FR/de-DE then posting through the real services over SQLite+migrations still proves known input -> exact stored ledger value end to end (US2 AC-1..AC-3)",
+      "rejected": "reflectively invoking the private ParseAmount/SetAmount, or adding bUnit to Integration.Tests"
+    },
+    {
+      "decision": "Balance Sheet out-of-balance line is a trailing null-heading ReportSection with one emphasized [label, MoneyFormatter.Format(difference)] row",
+      "why": "ReportData has a single GrandTotal slot, so a second emphasized row must be a section; a null heading renders the row cleanly in PDF/CSV/viewer (verified). Difference = totalAssets - (totalLiabilities + totalEquity)",
+      "rejected": "Adding the row inside the Equity section (distorts the equity subtotal semantics) or a new ReportData field"
+    },
+    {
+      "decision": "T040 reword also drops the literal $ prefix from Reports_TrialBalance_GLImbalanceError ({Debits}/{Credits} now carry the MoneyFormatter symbol)",
+      "why": "Since T024 routed the args through MoneyFormatter the template produced a doubled $$1,000.00 under AUD; dropping the literal prefix is the correct fix and is the natural place to also drop the tolerance implication",
+      "rejected": "Leaving the literal $ (doubled symbol) or switching args back to bare F2"
+    },
+    {
+      "decision": "CSV basis-of-accounting note is one self-labelled record in column 0 (remaining columns blank), not a separate label column",
+      "why": "CsvReportExporter has no ILocalizer and T046 delivers a single key; the label lives inside the Reports_Common_BasisOfAccounting sentence (\"Basis of accounting: ...\"), mirroring the section-heading write pattern already in the file",
+      "rejected": "Injecting ILocalizer into CsvReportExporter to emit a separate localized label column (churns the ctor + DI registration + every call site for one label)"
+    },
+    {
+      "decision": "Reports_Common_BasisOfAccounting en-US value is identical to the neutral en-AU baseline",
+      "why": "follows the T040 Reports_TrialBalance_GLImbalanceError precedent where a full-sentence en-US entry mirrors neutral verbatim",
+      "rejected": "an Americanised recognize/recognized spelling variant (inconsistent with the established resx pattern)"
+    },
+    {
+      "decision": "TaxSummaryReportProvider sets the basis line on BOTH return paths (tax-not-applicable early return and the main summary)",
+      "why": "the not-applicable view is still a financial statement and T041 asserts uniform coverage across every financial report",
+      "rejected": "setting it only on the main path"
+    },
+    {
+      "decision": "Bank reconciliation rewritten as one ReportSection per account with the adjusted-balance row sequence: balance per bank statement -> itemised outstanding deposits -> Add: outstanding deposits (sum, Deposit column) -> itemised outstanding payments -> Less: outstanding payments (sum) -> adjusted bank balance -> balance per general ledger -> Reconciled residual",
+      "why": "FR-013 needs both balances on the face; FR-014 needs the outstanding sums carried into the adjusted-balance arithmetic (adjusted = statement + deposits - payments), not merely listed; keeps the existing 4-column Date/Description/Deposit/Payment shape and label/amount-row convention",
+      "rejected": "keeping the four cleared/summary sub-sections (never showed the ledger balance, proved the tie a non-standard way)"
+    },
+    {
+      "decision": "Reconciled row shows MoneyFormatter.Format(adjustedBankBalance - ledgerBalance) (0.00 when tied) rather than an in-agreement phrase; Balance-per-general-ledger label carries no {Date} placeholder",
+      "why": "a zero residual between the two explicitly shown balances is itself the demonstration of agreement (SC-008) and mirrors the reports prior Difference idiom; the as-at-statement-date context already lives on the section header, so a date placeholder would be redundant and harder to assert",
+      "rejected": "a separate localized in agreement / out by string, and a {Date}-parameterised ledger-balance label"
+    },
+    {
+      "decision": "Removed the 10 now-dead Reports_BankReconciliation keys (SubHeader*, TotalCleared*, StatementClosingBalance, OpeningBalance, ClearedMovement, Difference) from neutral/en-US/fr-FR/qps-ploc rather than leaving them",
+      "why": "the provider was their only consumer (repo-wide grep) and it was fully rewritten; the orphan-key localization guard also forbids a satellite key with no neutral entry",
+      "rejected": "leaving them as harmless dead entries"
+    },
+    {
+      "decision": "ClosedPeriodGuard throws a plain-message ClosedPeriodException (no ILocalizer dependency)",
+      "why": "matches the existing GL-layer convention — GLRepository/GLBalanceException use literal diagnostic strings; the localized Validation_ClosedPeriod_PostingRejected text is applied at the UI catch sites (T063). Also keeps the guard trivial to construct in the ~25 test files that build GLRepository directly.",
+      "rejected": "Injecting ILocalizer into the guard and resolving the resource key inside it"
+    },
+    {
+      "decision": "GLRepository takes a required IClosedPeriodGuard constructor param; all 57 test construction sites updated to pass a real ClosedPeriodGuard(new SettingsRepository(db))",
+      "why": "keeps the codebase-wide required-constructor-injection DA style (no nullable/optional dependency, which csharp-reviewer/silent-failure-hunter would flag). The real guard provably no-ops in those tests (no Settings row or null ClosedThroughDate).",
+      "rejected": "Optional nullable param defaulting to null/no-op; a second convenience constructor"
+    },
+    {
+      "decision": "The guard is called once per balanced set on the earliest line date, in AddBalancedSetAsync only; AddPairAsync inherits the check by delegation",
+      "why": "the contract explicitly permits \"or once for the earliest line date\"; a closed period covers every date <= ClosedThroughDate so the min date is sufficient. Avoids N identical Settings reads per posting and a redundant read for every pair.",
+      "rejected": "EnsureOpen per line, and an explicit second call inside AddPairAsync"
+    },
+    {
+      "decision": "FinancialYearCalculator.GetRange/GetPreviousRange take startDay as an OPTIONAL param (= DefaultStartDay), with a new DefaultStartDay const mirroring DefaultStartMonth",
+      "why": "keeps every existing 2-arg caller (4 report providers, OpeningBalancesWizard, ~3 report-provider test files) and its behaviour byte-identical; startDay==1 reduces the (month,day) pivot back to date.Month>=startMonth",
+      "rejected": "a required startDay param forcing an edit to every call site and test"
+    },
+    {
+      "decision": "Added the FY-start DAY picker to GeneralSettingsTab (post-setup edit path) as well as the setup wizard",
+      "why": "the FY-start MONTH was already editable there, so a setup-only day control would leave the day permanently un-fixable post-setup; T075 already provisions the SettingsResource label",
+      "rejected": "setup-wizard-only day picker"
+    },
+    {
+      "decision": "Phase 9 executed implementation-before-tests (calculator -> providers -> setup plumbing -> service -> UI, then integration/bUnit tests)",
+      "why": "the repo PostToolUse build-on-edit hook fails the per-file dotnet build when a test references an API added later in the wave; the wave dependency map in tasks.md is unchanged",
+      "rejected": "strict test-first ordering (each new test file would hard-fail the hook and block subsequent edits)"
+    },
+    {
+      "decision": "Add a non-fatal warning channel (HasStartupWarning/StartupWarning/RecordWarning) to the existing IStartupDiagnosticService rather than a new service, and stop AuditTrailService.PurgeOlderThanAsync swallowing purge failures",
+      "why": "FR-025 requires the failure logged AND surfaced; the swallow was the silent discard. Reusing the holder keeps MauiPrograms existing catch as the single surfacing point; a warning (vs RecordError) never routes to the blocking /startup-error page so startup still completes",
+      "rejected": "A dedicated purge-failure banner service (plan Decision 8 rejects it); or leaving the service swallow and returning a result code"
+    },
+    {
+      "decision": "Surface the purge-failure warning as a dismissible banner on the Dashboard page, not the shell layout or App.razor",
+      "why": "Dashboard is the post-startup landing page and an explicit T083 target; lowest blast radius (only DashboardTests needs the new DI registration); dismissal is session-local and never clears the underlying diagnostic state",
+      "rejected": "ShellLayout/App.razor banner (touches every page and many test contexts); GeneralSettingsTab-only (less visible at startup)"
+    },
+    {
+      "decision": "T085 scope widened past the literal task text to also fix line-40 \"net of GST\" and line-118 \"GST clearing accounts\" so the finance living spec has zero retired-model references (FR-028); T086a recorded as a spec.md Assumptions bullet rather than a filed GitHub issue",
+      "why": "FR-028 demands NO reference to the retired model, not just the named identifiers; the task explicitly permits \"Assumptions or a tracking issue\" and issue creation is blocked on this machine (same wall as T076)",
+      "rejected": "Leaving the two stray GST phrases as out-of-scope; opening a GitHub issue for the settings-spec follow-up now"
+    },
+    {
+      "decision": "US10 assessment scopes 2 of 4 points IN (tax-exclusive entry M; recoverable-tax 2310/2320 balance-sheet classification S-M) and 2 OUT (rate history L; multi-jurisdiction XL)",
+      "why": "the two IN points are real, bounded gaps for tax-exclusive jurisdictions and net-refundable orgs; the two OUT points need a new model dimension disproportionate to community/amateur-theatre need and are the separate body of work the spec explicitly carves out",
+      "rejected": "scoping all four out to avoid the issue-creation blocker - dishonest; or all four in - overcommits to an XL multi-jurisdiction redesign"
+    },
+    {
+      "decision": "T091a CurrencySymbolGuardTests is a new dedicated file, not an extension of Us2LocalizationGuardTests",
+      "why": "Us2 guards the C format repo-wide but not hard-coded $/AUD string literals, ToString(F2), or a positive providers-route-through-MoneyFormatter assertion; tasks.md T091a names this exact new path",
+      "rejected": "Adding the checks as extra [Fact]s inside Us2LocalizationGuardTests"
+    },
+    {
+      "decision": "T092 finalised only specs/027 spec.md FR-015 lines with Superseded-by-spec-028 notes; left plan.md/research.md historical",
+      "why": "Matches the T028 precedent (commit 19ab79f annotated spec.md + data-model.md only); plan.md/research.md are point-in-time design records",
+      "rejected": "Rewriting every fixed-$/AUD sentence across plan.md and research.md Decision 11"
+    },
+    {
+      "decision": "explicit optional Settings.InceptionDate captured at setup, not derived from first opening-balance date",
+      "why": "simplest/predictable per CLAUDE.md simple-over-clever; null => unchanged behaviour for every pre-existing dataset",
+      "rejected": "deriving inception from the earliest GL transaction date (needs a query per report, less predictable)"
+    },
+    {
+      "decision": "Added TaxCalculator.Split(entered, mode, rate, digits) -> (gross,net,tax) dispatcher alongside the issue-requested SplitExclusive, so all four posting services share one uniform call site",
+      "why": "a literal per-service if/else would duplicate ~12 lines x4 and each service also needs the gross for its primary line; one dispatch point is simpler and safer",
+      "rejected": "inline mode branch in every service"
+    },
+    {
+      "decision": "ReactivationForgivenessService left unchanged despite the issue listing it in the mode-branch scope",
+      "why": "it reverses a stored gross Fee.Amount; SplitInclusive of an exact gross re-sums by construction so the write-off stays balanced in either mode and no historical figure is reinterpreted",
+      "rejected": "adding a TaxEntryMode branch to forgiveness"
+    },
+    {
+      "decision": "In Exclusive mode Fee.Amount / Payment.Amount / the receivable line store the GROSS (net+tax), not the entered net",
+      "why": "keeps the member receivable == amount owed, keeps the paid-at-creation payment pair and later forgiveness balanced, and matches issue #354 acceptance (net 100 @ 8% -> gross 108 owed)",
+      "rejected": "storing the net on Fee.Amount"
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Planned issue #341 international accounting readiness (oversized): 10 user stories / 33 FRs delivered as presentation, input-validation and config changes with zero ledger-engine or stored-amount change.",
+      "key_finding": "The whole feature pivots on two seams: MoneyFormatter (hard-coded $/AUD, static) becomes process-wide-configured like the startup culture, and the GLRepository AddBalancedSetAsync/AddPairAsync choke point is where both the GL-balance invariant and the new closed-period lock are enforced pre-persistence."
+    },
+    "tasks": {
+      "summary": "94 tasks across 13 phases (Setup, Foundational, one per US1-US10, Polish); wave-grouped with explicit joins; oversized budget, full per-story Goal/Independent Test/Checkpoint."
+    },
+    "implement": {
+      "summary": "Phase 15 / issue #354: Settings.TaxEntryMode (Inclusive default / Exclusive) + TaxCalculator.SplitExclusive/Split; mode branch in the 4 accrual services; setup + Sales Tax settings selector; mode-aware entry-form hints; migration AddTaxEntryMode; +33 tests; full suite 2053 green"
+    },
+    "specify": {
+      "summary": "Phase 9 / US7: financial-year start is now an explicit (month+day) setup choice — FinancialYearCalculator + 4 FY-preset report providers + OpeningBalancesWizard honour the day; SetupRequest/SetupFormModel/SetupService carry & validate it (1..28); mandatory pickers on the setup General tab and a matching day picker on Settings; T065-T075 done, T076 spec-note done but its GitHub issue is blocked."
+    }
+  },
+  "currentTask": "T088",
+  "task_summaries": {
+    "T015": {
+      "status": "DONE",
+      "did": "SplitInclusive gains optional int minorUnitDigits=2 param used for rounding; net=gross-tax remainder unchanged",
+      "files": [
+        "src/StageFright.Core/Modules/Finance/TaxCalculator.cs"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Every SplitInclusive caller now passes CurrencyCatalog.Get(settings.CurrencyCode).MinorUnitDigits",
+      "files": [
+        "src/StageFright.Core/Modules/Rehearsals/AttendanceService.cs",
+        "src/StageFright.Core/Modules/Finance/FeeService.cs",
+        "src/StageFright.Core/Modules/Finance/IncomeEntryService.cs",
+        "src/StageFright.Core/Modules/Finance/ExpensePaymentService.cs",
+        "src/StageFright.Core/Modules/Finance/ReactivationForgivenessService.cs",
+        "src/StageFright.UI/Pages/Finance/RecordIncome.razor.cs",
+        "src/StageFright.UI/Pages/Finance/ExpensePaymentPage.razor.cs",
+        "src/StageFright.App/Seeding/DebugDataSeeder.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "TaxCalculatorTests: added 0/2/3 minor-digit re-sum theory + rounding table + default-2 guard",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Finance/TaxCalculatorTests.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "New CurrencyCatalogTests: 0/2/3-decimal coverage, Get throws on unknown, TryGet returns false+Default, case-insensitive",
+      "files": [
+        "tests/StageFright.Core.Tests/Localization/CurrencyCatalogTests.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "New MoneyFormatterTests: en-AU/en-US/fr-FR/de-DE + JPY config — symbol, digit count, grouping, code prefix, null fallback",
+      "files": [
+        "tests/StageFright.Core.Tests/Localization/MoneyFormatterTests.cs"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "SetupFormModel gains [Required] string CurrencyCode = \"AUD\"",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupFormModel.cs"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "SetupRequest gains trailing string CurrencyCode = \"AUD\"",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/SetupRequest.cs"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "SetupService validates CurrencyCode against CurrencyCatalog (Validation_Setup_CurrencyUnknown) + persists normalised code to Settings.CurrencyCode",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/SetupService.cs",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.en-US.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.fr-FR.resx"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "SettingsService.SaveAsync rejects a CurrencyCode change vs persisted (Validation_Settings_CurrencyImmutable)",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/SettingsService.cs"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "GeneralAppearanceTab: mandatory #setup-currency select from CurrencyCatalog.All bound to SetupFormModel.CurrencyCode; wired into SetupWizard request; Setup_General_Currency{Label,Help} keys",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor.cs",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs",
+        "src/StageFright.UI/Resources/Strings/SetupResource.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.en-US.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.fr-FR.resx"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "SetupServiceTests + SettingsServiceTests: non-AUD persist + normalise, unknown-currency throw, post-setup currency-change rejection",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs",
+        "tests/StageFright.Core.Tests/Modules/Settings/SettingsServiceTests.cs"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "CurrencyPickerTests (bUnit): option-per-catalog-entry, defaults AUD, binds model",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/CurrencyPickerTests.cs"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "IncomeStatementReportProvider.FormatCurrency -> MoneyFormatter.Format",
+      "files": [
+        "src/StageFright.Reports/Providers/IncomeStatementReportProvider.cs"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "BalanceSheetReportProvider.FormatCurrency -> MoneyFormatter.Format",
+      "files": [
+        "src/StageFright.Reports/Providers/BalanceSheetReportProvider.cs"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "TrialBalanceReportProvider.FormatCurrency -> MoneyFormatter.Format (incl. imbalance message args)",
+      "files": [
+        "src/StageFright.Reports/Providers/TrialBalanceReportProvider.cs"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "TaxSummaryReportProvider money cells route through new FormatCurrency -> MoneyFormatter.Format",
+      "files": [
+        "src/StageFright.Reports/Providers/TaxSummaryReportProvider.cs"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "AccountRegister/GeneralLedger/ChartOfAccounts/MemberAccountSummary money -> MoneyFormatter.Format (Committee/MemberList show no money)",
+      "files": [
+        "src/StageFright.Reports/Providers/AccountRegisterReportProvider.cs",
+        "src/StageFright.Reports/Providers/GeneralLedgerReportProvider.cs",
+        "src/StageFright.Reports/Providers/ChartOfAccountsReportProvider.cs",
+        "src/StageFright.Reports/Providers/MemberAccountSummaryReportProvider.cs"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "JournalEntryPage totals row ToString(N2) -> MoneyFormatter.Format",
+      "files": [
+        "src/StageFright.UI/Pages/Finance/JournalEntryPage.razor"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "Corrected stale fixed-$/AUD prose: CLAUDE.md Localization note + spec 027 spec.md/data-model.md/contracts superseding notes (MoneyFormatter XML doc already current from T007)",
+      "files": [
+        "CLAUDE.md",
+        "specs/027-localization-support/spec.md",
+        "specs/027-localization-support/data-model.md",
+        "specs/027-localization-support/contracts/localization-contracts.md",
+        "specs/027-localization-support/contracts/resource-key-catalog.md"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "AudZeroDriftTests: AUD MoneyFormatter == legacy $ string, TaxCalculator 2-digit unchanged, IncomeStatement/TrialBalance figures + stored Transaction values byte-identical",
+      "files": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs",
+        "tests/StageFright.Integration.Tests/MoneyFormatterStateCollection.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V6_AccountingReportsTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V16_GenericSalesTaxTests.cs"
+      ]
+    },
+    "T014a": {
+      "status": "DONE",
+      "did": "V28_CurrencyConfigurationTests: US1 AC-1..AC-4 end to end — JPY reports carry ¥ never $/AUD, zero-decimal reconciles, fr-FR grouping keeps ¥, AUD byte-identical",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V28_CurrencyConfigurationTests.cs"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "MoneyInputTests: Parse under fr-FR/de-DE/en-AU for 1.5/1.50/1000.5/-3.2 exact, period never a group separator, null/blank/garbage/1.2.3 -> 0m, same value every culture",
+      "files": [
+        "tests/StageFright.Core.Tests/Localization/MoneyInputTests.cs"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "JournalEntryPageLocaleTests (bUnit): fr-FR/de-DE debit+credit entry of 1.50/1234.50/1.5 -> running total equals the typed amount, never the x100 misread",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Finance/JournalEntryPageLocaleTests.cs"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "OpeningBalanceEntryFormLocaleTests (bUnit): de-DE/fr-FR entry -> OnSubmit request carries the exact typed amount (1234.50/1.50/-150.00), identical across en-AU/de-DE/fr-FR",
+      "files": [
+        "tests/StageFright.UI.Tests/Shared/OpeningBalanceEntryFormLocaleTests.cs"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "MoneyInputGuardTests: repo-wide scan asserts no src/StageFright.UI *.cs parses input with CultureInfo.CurrentCulture, and both hand-rolled money-entry handlers call MoneyInput.Parse",
+      "files": [
+        "tests/StageFright.Localization.Tests/MoneyInputGuardTests.cs"
+      ]
+    },
+    "T032a": {
+      "status": "DONE",
+      "did": "V28_LocaleSafeMoneyEntryTests (integration acceptance): real GeneralJournalService/OpeningBalanceService over SQLite+migrations; fr-FR/de-DE input stored exact to the cent, identical to en-AU, no thousands-separator misread",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V28_LocaleSafeMoneyEntryTests.cs"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "MoneyInput.Parse(string?): invariant decimal.TryParse with AllowDecimalPoint|AllowLeadingSign, 0m for null/blank/unparseable; the one shared money-entry parse helper",
+      "files": [
+        "src/StageFright.Core/Localization/MoneyInput.cs"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "JournalEntryPage.ParseAmount now delegates to MoneyInput.Parse(value?.ToString()); removed the NumberStyles.Number + CultureInfo.CurrentCulture parse and the now-unused System.Globalization using",
+      "files": [
+        "src/StageFright.UI/Pages/Finance/JournalEntryPage.razor.cs"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "OpeningBalanceEntryForm.SetAmount now delegates to MoneyInput.Parse(args.Value?.ToString()); removed the CurrentCulture parse and the now-unused System.Globalization using",
+      "files": [
+        "src/StageFright.UI/Shared/OpeningBalanceEntryForm.razor.cs"
+      ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "TrialBalanceReportProviderTests: added one-cent-difference throws GLBalanceException test; renamed the misnamed tolerance test to _WhenExactlyBalanced; dropped stale FR-034 refs",
+      "files": [
+        "tests/StageFright.Reports.Tests/TrialBalanceReportProviderTests.cs"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "BalanceSheetReportProviderTests: added unbalanced-ledger test asserting an explicit emphasized out-of-balance row + totals visibly disagree, and a balanced-ledger test asserting no such row",
+      "files": [
+        "tests/StageFright.Reports.Tests/BalanceSheetReportProviderTests.cs"
+      ]
+    },
+    "T037a": {
+      "status": "DONE",
+      "did": "V28_StatementIntegrityTests (integration acceptance): balanced ledger -> Trial Balance ties + Balance Sheet clean; corrupted ledger -> Trial Balance throws GLBalanceException + Balance Sheet shows an explicit emphasized out-of-balance row; one-cent imbalance still fails (no tolerance)",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V28_StatementIntegrityTests.cs"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "TrialBalanceReportProvider: imbalance check is now totalDebits != totalCredits (was Math.Abs(...) > 0.01m); class doc-comment reworded to 'no tolerance band (FR-011)', dropping the stale FR-034 reference",
+      "files": [
+        "src/StageFright.Reports/Providers/TrialBalanceReportProvider.cs"
+      ]
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "BalanceSheetReportProvider: after building the three sections, if totalAssets != totalLiabilities + totalEquity append a bold null-heading section with a Reports_BalanceSheet_OutOfBalance row (label + MoneyFormatter.Format(difference)); class doc-comment notes the FR-010 behaviour",
+      "files": [
+        "src/StageFright.Reports/Providers/BalanceSheetReportProvider.cs"
+      ]
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "ReportsResource (neutral + en-US + fr-FR): reworded Reports_TrialBalance_GLImbalanceError to drop the tolerance implication and the doubled literal $ (args now carry the MoneyFormatter symbol), kept {Debits}/{Credits}; added Reports_BalanceSheet_OutOfBalance",
+      "files": [
+        "src/StageFright.Reports/Resources/ReportsResource.resx",
+        "src/StageFright.Reports/Resources/ReportsResource.en-US.resx",
+        "src/StageFright.Reports/Resources/ReportsResource.fr-FR.resx"
+      ]
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "(reconfirm) ReportData.BasisOfAccounting string? init property",
+      "files": [
+        "src/StageFright.Reports/Models/ReportData.cs"
+      ]
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "BasisOfAccountingTests (Reports.Tests): 8 financial providers set the shared Reports_Common_BasisOfAccounting string, MemberList/Committee leave it null, PDF renders + CSV appends a trailing basis record (absent when null); ReportViewerBasisTests (UI.Tests bUnit): viewer shows the basis line beneath the subtitle, none when null — all fail-first",
+      "files": [
+        "tests/StageFright.Reports.Tests/BasisOfAccountingTests.cs",
+        "tests/StageFright.UI.Tests/Shared/ReportViewerBasisTests.cs"
+      ]
+    },
+    "T041a": {
+      "status": "DONE",
+      "did": "V28_BasisOfAccountingDisclosureTests (integration acceptance): real SQLite+migrations; Income Statement/Balance Sheet/Tax Summary each carry the basis line on screen, in CSV (trailing record), and render to PDF; shared wording names both the accrual (member fees) and cash (other activity) treatments — fail-first",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V28_BasisOfAccountingDisclosureTests.cs"
+      ]
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "PdfReportRenderer: renders report.BasisOfAccounting as a grey FontSize(9) line directly below the Generated: line when non-empty",
+      "files": [
+        "src/StageFright.Reports/Rendering/PdfReportRenderer.cs"
+      ]
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "CsvReportExporter: appends report.BasisOfAccounting as a trailing self-labelled note record (field 0 = text, remaining columns blank) after the grand total when non-null",
+      "files": [
+        "src/StageFright.Reports/Rendering/CsvReportExporter.cs"
+      ]
+    },
+    "T045": {
+      "status": "DONE",
+      "did": "ReportViewer.razor: renders _report.BasisOfAccounting in a <p class='text-muted small mb-0'> directly beneath the subtitle when non-empty (no code-behind change needed)",
+      "files": [
+        "src/StageFright.UI/Shared/ReportViewer.razor"
+      ]
+    },
+    "T046": {
+      "status": "DONE",
+      "did": "ReportsResource neutral/en-US/fr-FR: added Reports_Common_BasisOfAccounting — hybrid wording naming both member-fee accrual and cash treatment of other activity (never a blanket basis)",
+      "files": [
+        "src/StageFright.Reports/Resources/ReportsResource.resx",
+        "src/StageFright.Reports/Resources/ReportsResource.en-US.resx",
+        "src/StageFright.Reports/Resources/ReportsResource.fr-FR.resx"
+      ]
+    },
+    "T047": {
+      "status": "DONE",
+      "did": "All 8 financial-statement providers set BasisOfAccounting = _localizer.Get<ReportsResource>(Reports_Common_BasisOfAccounting) on their returned ReportData (TaxSummary both the tax-not-applicable and main returns); Member List / Committee unchanged (null). Also synced reports-contract.md CSV rendering row.",
+      "files": [
+        "src/StageFright.Reports/Providers/IncomeStatementReportProvider.cs",
+        "src/StageFright.Reports/Providers/BalanceSheetReportProvider.cs",
+        "src/StageFright.Reports/Providers/TrialBalanceReportProvider.cs",
+        "src/StageFright.Reports/Providers/TaxSummaryReportProvider.cs",
+        "src/StageFright.Reports/Providers/AccountRegisterReportProvider.cs",
+        "src/StageFright.Reports/Providers/GeneralLedgerReportProvider.cs",
+        "src/StageFright.Reports/Providers/BankReconciliationReportProvider.cs",
+        "src/StageFright.Reports/Providers/MemberAccountSummaryReportProvider.cs",
+        "specs/028-international-accounting-standards/contracts/reports-contract.md"
+      ]
+    },
+    "T048": {
+      "status": "DONE",
+      "did": "Rewrote BankReconciliationReportProviderTests for the conventional adjusted-balance layout — one section/account, both balances shown, outstanding items carried into the adjusted-bank-balance arithmetic, zero reconciled residual, with/without outstanding items, account filter; money via MoneyFormatter",
+      "files": [
+        "tests/StageFright.Reports.Tests/BankReconciliationReportProviderTests.cs"
+      ]
+    },
+    "T049": {
+      "status": "DONE",
+      "did": "Added two FR-015 tests to BankReconciliationServiceTests: finalise rejected when the difference exceeds the half-cent tolerance (no state change), and a finalised reconciliation rejects toggle-clear and re-finalise; updated the class doc-comment",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Finance/BankReconciliationServiceTests.cs"
+      ]
+    },
+    "T049a": {
+      "status": "DONE",
+      "did": "New V28_ConventionalBankReconciliationTests (integration acceptance, real SQLite+migrations): report shows balance per bank statement + balance per general ledger, lists+carries outstanding deposits/payments into the adjusted bank balance, the two sides agree (residual 0), works with no outstanding items, and a finalised reconciliation is immutable while finalisation still required balancing",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V28_ConventionalBankReconciliationTests.cs"
+      ]
+    },
+    "T050": {
+      "status": "DONE",
+      "did": "Rewrote BankReconciliationReportProvider.BuildAccountSectionsAsync to the conventional adjusted-balance form: one section/account — balance per bank statement, + outstanding deposits (listed+summed), − outstanding payments (listed+summed), adjusted bank balance, balance per general ledger (GetAccountBalanceAsync at the statement date), reconciled residual; all money via MoneyFormatter.Format",
+      "files": [
+        "src/StageFright.Reports/Providers/BankReconciliationReportProvider.cs"
+      ]
+    },
+    "T051": {
+      "status": "DONE",
+      "did": "ReportsResource neutral/en-US/fr-FR: added Reports_BankReconciliation_{BalancePerBankStatement,AddOutstandingDeposits,LessOutstandingPayments,AdjustedBankBalance,BalancePerGeneralLedger,Reconciled}; removed the 10 now-dead cleared/summary/difference keys; synced reports-contract.md",
+      "files": [
+        "src/StageFright.Reports/Resources/ReportsResource.resx",
+        "src/StageFright.Reports/Resources/ReportsResource.en-US.resx",
+        "src/StageFright.Reports/Resources/ReportsResource.fr-FR.resx",
+        "specs/028-international-accounting-standards/contracts/reports-contract.md"
+      ]
+    },
+    "T056": {
+      "status": "DONE",
+      "did": "New sealed ClosedPeriodException (Constitution §5.2 five-member shape); distinct signal, not a GLBalanceException subclass",
+      "files": [
+        "src/StageFright.Core/Exceptions/ClosedPeriodException.cs"
+      ]
+    },
+    "T057": {
+      "status": "DONE",
+      "did": "New IClosedPeriodGuard contract — Task EnsureOpen(DateTime postingDate, CancellationToken)",
+      "files": [
+        "src/StageFright.Core/Contracts/IClosedPeriodGuard.cs"
+      ]
+    },
+    "T064": {
+      "status": "DONE",
+      "did": "Added Validation_ClosedPeriod_PostingRejected to ValidationResource (neutral/en-US/fr-FR)",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.en-US.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.fr-FR.resx"
+      ]
+    },
+    "T058": {
+      "status": "DONE",
+      "did": "New ClosedPeriodGuard : IClosedPeriodGuard — reads Settings singleton; no-op on null settings/null date; throws ClosedPeriodException when postingDate.Date <= ClosedThroughDate.Date",
+      "files": [
+        "src/StageFright.Core/Modules/Finance/ClosedPeriodGuard.cs"
+      ]
+    },
+    "T059": {
+      "status": "DONE",
+      "did": "GLRepository injects IClosedPeriodGuard; AddBalancedSetAsync calls EnsureOpen on the earliest line date before the write (AddPairAsync covered via delegation); updated 57 test call sites to pass a real ClosedPeriodGuard",
+      "files": [
+        "src/StageFright.Data/Repositories/GLRepository.cs",
+        "tests/**/*.cs"
+      ]
+    },
+    "T060": {
+      "status": "DONE",
+      "did": "UnitOfWork.ExecuteInTransactionAsync passes ClosedPeriodException through unwrapped (rollback + rethrow), same as GLBalanceException",
+      "files": [
+        "src/StageFright.Data/UnitOfWork.cs"
+      ]
+    },
+    "T061": {
+      "status": "DONE",
+      "did": "Registered IClosedPeriodGuard -> ClosedPeriodGuard (scoped) in MauiProgram.RegisterCoreServices",
+      "files": [
+        "src/StageFright.App/MauiProgram.cs"
+      ]
+    },
+    "T062": {
+      "status": "DONE",
+      "did": "GeneralSettingsTab gains a close-period date control (#settings-close-through-date) + confirmation checkbox (#settings-close-through-confirm); HandleSaveAsync advances Settings.ClosedThroughDate only when confirmed; SettingsRepository.SaveAsync now maps ClosedThroughDate; 3 SettingsResource keys x3 locales",
+      "files": [
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor",
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor.cs",
+        "src/StageFright.Data/Repositories/SettingsRepository.cs",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.en-US.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.fr-FR.resx"
+      ]
+    },
+    "T063": {
+      "status": "DONE",
+      "did": "All 7 finance posting forms catch ClosedPeriodException before the generic catch and show Validation_ClosedPeriod_PostingRejected, leaving the form re-submittable",
+      "files": [
+        "src/StageFright.UI/Pages/Finance/JournalEntryPage.razor.cs",
+        "src/StageFright.UI/Pages/Finance/PaymentForm.razor.cs",
+        "src/StageFright.UI/Pages/Finance/ExpensePaymentPage.razor.cs",
+        "src/StageFright.UI/Pages/Finance/RecordIncome.razor.cs",
+        "src/StageFright.UI/Pages/Finance/BankDepositPage.razor.cs",
+        "src/StageFright.UI/Pages/Finance/OpeningBalancesWizard.razor.cs",
+        "src/StageFright.UI/Shared/ReactivationForgivenessDialog.razor.cs"
+      ]
+    },
+    "T052": {
+      "status": "DONE",
+      "did": "New ClosedPeriodGuardTests — null settings, null date, before/exactly-on/after boundary, date-only comparison",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Finance/ClosedPeriodGuardTests.cs"
+      ]
+    },
+    "T053": {
+      "status": "DONE",
+      "did": "New ClosedPeriodLockTests integration — journal/expense/income/deposit/payment/fee-accrual/forgiveness all reject a posting dated in the closed period leaving no JournalEntry/Transaction/Payment/Fee row; later-dated postings succeed",
+      "files": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/ClosedPeriodLockTests.cs"
+      ]
+    },
+    "T054": {
+      "status": "DONE",
+      "did": "SetupServiceTests: added InitializeAsync_PostsQueuedOpeningBalances_RegardlessOfClosedPeriod (FR-018)",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs"
+      ]
+    },
+    "T055": {
+      "status": "DONE",
+      "did": "New ClosePeriodControlTests bUnit — control renders, sets ClosedThroughDate only when date+confirm both given, seeds from persisted value",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Settings/ClosePeriodControlTests.cs"
+      ]
+    },
+    "T068": {
+      "status": "DONE",
+      "did": "FinancialYearCalculator.GetRange/GetPreviousRange gain optional startDay=1; year pivots on (month,day); range = start..start.AddYears(1).AddDays(-1)",
+      "files": [
+        "src/StageFright.Core/Modules/Finance/FinancialYearCalculator.cs"
+      ]
+    },
+    "T065": {
+      "status": "DONE",
+      "did": "FinancialYearCalculatorTests: non-first-of-month and February start-day boundaries, UTC end-of-day range, GetPreviousRange, startDay defaults-to-1 equivalence, out-of-range clamp",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Finance/FinancialYearCalculatorTests.cs"
+      ]
+    },
+    "T069": {
+      "status": "DONE",
+      "did": "TrialBalance/BalanceSheet/IncomeStatement/TaxSummary providers now read settings.FinancialYearStartDay and pass it through ResolvePeriod/ParseDateRange/ParseAsAt/GetCurrentQuarterRange to FinancialYearCalculator",
+      "files": [
+        "src/StageFright.Reports/Providers/IncomeStatementReportProvider.cs",
+        "src/StageFright.Reports/Providers/TrialBalanceReportProvider.cs",
+        "src/StageFright.Reports/Providers/BalanceSheetReportProvider.cs",
+        "src/StageFright.Reports/Providers/TaxSummaryReportProvider.cs"
+      ]
+    },
+    "T070": {
+      "status": "DONE",
+      "did": "OpeningBalancesWizard.OnInitializedAsync passes settings.FinancialYearStartDay to FinancialYearCalculator.GetRange when seeding the as-at date",
+      "files": [
+        "src/StageFright.UI/Pages/Finance/OpeningBalancesWizard.razor.cs"
+      ]
+    },
+    "T072": {
+      "status": "DONE",
+      "did": "SetupRequest gains trailing int FinancialYearStartMonth=7, int FinancialYearStartDay=1",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/SetupRequest.cs"
+      ]
+    },
+    "T071": {
+      "status": "DONE",
+      "did": "SetupFormModel gains FinancialYearStartMonth [Range(1,12)] default 7 and FinancialYearStartDay [Range(1,28)] default 1; SetupWizard maps both into SetupRequest",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupFormModel.cs",
+        "src/StageFright.UI/Pages/Setup/SetupWizard.razor.cs"
+      ]
+    },
+    "T073": {
+      "status": "DONE",
+      "did": "SetupService.InitializeAsync persists FinancialYearStartMonth/Day and validates day 1..28 via Validation_Setup_FinancialYearStartDayRange (added to neutral/en-US/fr-FR); SetupServiceTests cover default, month+day persist, and out-of-range reject",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/SetupService.cs",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.en-US.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.fr-FR.resx",
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs"
+      ]
+    },
+    "T075": {
+      "status": "DONE",
+      "did": "Added Setup_General_FinancialYearStartMonthLabel/DayLabel/Help to SetupResource and Settings_General_FinancialYearStartDayLabel to SettingsResource (neutral/en-US/fr-FR); reworded shared FY-start help",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SetupResource.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.en-US.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.fr-FR.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.en-US.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.fr-FR.resx"
+      ]
+    },
+    "T074": {
+      "status": "DONE",
+      "did": "GeneralAppearanceTab gains mandatory #setup-fy-start-month (12 opts) + #setup-fy-start-day (28 opts) InputSelects bound to the model; matching day picker added to GeneralSettingsTab beside the existing month picker; tab doc-comment updated",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor",
+        "src/StageFright.UI/Pages/Setup/Tabs/GeneralAppearanceTab.razor.cs",
+        "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor"
+      ]
+    },
+    "T067": {
+      "status": "DONE",
+      "did": "FinancialYearStartPickerTests (bUnit): 12/28 option counts, July-day-1 defaults, month+day model binding, both pickers rendered and required-marked",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FinancialYearStartPickerTests.cs"
+      ]
+    },
+    "T066": {
+      "status": "DONE",
+      "did": "FinancialYearStartTests (integration, SQLite+migrations): setup persists non-first-of-month start; IncomeStatement/TrialBalance/BalanceSheet/TaxSummary default ranges honour the (month,day) anchor; AU July-1 dataset unchanged",
+      "files": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/FinancialYearStartTests.cs"
+      ]
+    },
+    "T077": {
+      "status": "DONE",
+      "did": "Migration test: fresh dataset defaults AuditRetentionYears to 5; a pre-028 configured value survives AddInternationalAccountingSettings",
+      "files": [
+        "tests/StageFright.Data.Tests/Migrations/AuditRetentionDefaultTests.cs"
+      ]
+    },
+    "T078": {
+      "status": "DONE",
+      "did": "AttendanceService audit test: fee accrual + auto-payment each write an AuditTrailEntry (paid); only the accrual when marked unpaid; inside the UoW transaction",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Rehearsals/AttendanceServiceAuditTests.cs"
+      ]
+    },
+    "T079": {
+      "status": "DONE",
+      "did": "Integration test: a failed purge propagates as DataAccessException and is recorded into StartupDiagnosticService as a non-fatal warning (HasStartupWarning, not HasStartupError); ClearError clears it",
+      "files": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/PurgeFailureSurfacedTests.cs"
+      ]
+    },
+    "T080": {
+      "status": "DONE",
+      "did": "Raised audit-retention default 1->5 at the remaining sites: SetupFormModel, SetupRequest; updated the SetupService default-flow test to expect 5",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/SetupFormModel.cs",
+        "src/StageFright.Core/Modules/Settings/SetupRequest.cs",
+        "tests/StageFright.Core.Tests/Modules/Settings/SetupServiceTests.cs"
+      ]
+    },
+    "T081": {
+      "status": "DONE",
+      "did": "AttendanceService.RecordBatchAsync now writes IAuditTrailService.LogAsync entries for the fee accrual and (when paid at creation) the auto-payment, inside the existing UoW transaction (FR-026)",
+      "files": [
+        "src/StageFright.Core/Modules/Rehearsals/AttendanceService.cs"
+      ]
+    },
+    "T082": {
+      "status": "DONE",
+      "did": "Purge failure now surfaced: AuditTrailService.PurgeOlderThanAsync stops swallowing; IStartupDiagnosticService gains a non-fatal warning channel (HasStartupWarning/StartupWarning/RecordWarning); MauiProgram's purge catch records the warning + Log.Error, retention fallback 1->5; reconciled AuditTrailServiceTests",
+      "files": [
+        "src/StageFright.Core/Contracts/IStartupDiagnosticService.cs",
+        "src/StageFright.Core/Modules/Settings/StartupDiagnosticService.cs",
+        "src/StageFright.Core/Modules/AuditTrail/AuditTrailService.cs",
+        "src/StageFright.App/MauiProgram.cs",
+        "tests/StageFright.Core.Tests/Modules/AuditTrail/AuditTrailServiceTests.cs"
+      ]
+    },
+    "T083": {
+      "status": "DONE",
+      "did": "Dashboard dismissible warning banner surfaces the non-fatal startup purge-failure diagnostic (Shared_StartupWarning_* in neutral/en-US/fr-FR); DashboardTests gains the IStartupDiagnosticService registration + 3 banner tests; data-model.md section 10 updated",
+      "files": [
+        "src/StageFright.UI/Pages/Dashboard/Dashboard.razor",
+        "src/StageFright.UI/Pages/Dashboard/Dashboard.razor.cs",
+        "src/StageFright.UI/Resources/Strings/SharedResource.resx",
+        "src/StageFright.UI/Resources/Strings/SharedResource.en-US.resx",
+        "src/StageFright.UI/Resources/Strings/SharedResource.fr-FR.resx",
+        "tests/StageFright.UI.Tests/Pages/Dashboard/DashboardTests.cs",
+        "specs/028-international-accounting-standards/data-model.md"
+      ]
+    },
+    "T084": {
+      "status": "DONE",
+      "did": "New docs/accounting-policies.md — basis, revenue recognition, rounding, currency, immutability+reversing corrections, period lock, FY, audit retention; states reports are unaudited management accounts (FR-027)",
+      "files": [
+        "docs/accounting-policies.md"
+      ]
+    },
+    "T085": {
+      "status": "DONE",
+      "did": "Finance living spec de-drafted; retired IsGstRegistered/GstCode/gross÷11/GST-clearing wording rewritten to spec-016 IsTaxApplicable/TaxRate/TaxCode(Taxable,TaxExempt,Excluded) model, Tax Collected 2310 (FR-028)",
+      "files": [
+        "capabilities/finance/spec.md"
+      ]
+    },
+    "T086": {
+      "status": "DONE",
+      "did": "Audit-trail living spec: retention figure updated from fixed 12 months to configurable 1-7yr / default 5yr on new datasets, existing values preserved (spec 028 T003/T005/T006)",
+      "files": [
+        "capabilities/audit-trail/spec.md"
+      ]
+    },
+    "T086a": {
+      "status": "DONE",
+      "did": "spec.md Assumptions: noted capabilities/settings/spec.md retired ABN/GST wording (stale since spec 016) as a carried-forward follow-up outside FR-028's finance-only scope",
+      "files": [
+        "specs/028-international-accounting-standards/spec.md"
+      ]
+    },
+    "T087": {
+      "status": "DONE",
+      "did": "New docs/assessments/sales-tax-internationalisation.md: in-scope/out-of-scope decision + rough size for all 4 FR-029 points (rate history OUT/L, tax-exclusive entry IN/M, 2310-2320 balance-sheet classification IN/S-M, multi-jurisdiction OUT/XL)",
+      "files": [
+        "docs/assessments/sales-tax-internationalisation.md"
+      ]
+    },
+    "T089": {
+      "status": "DONE",
+      "did": "FR-033 verification: git diff master...HEAD of all tax-adjacent files confirms the only tax-path change is TaxCalculator.SplitInclusive's optional minorUnitDigits param (default 2 = byte-identical for AUD); TaxCode enum, 2310/2320 accounts, GL line structure, tax-inclusive entry model and Tax Summary net arithmetic all unchanged. AUD regression stored-value assertions (AudZeroDriftTests.StoredTransactionValues_AreUntouched, V28 byte-identical) hold. Recorded in spec.md Assumptions.",
+      "files": [
+        "specs/028-international-accounting-standards/spec.md"
+      ]
+    },
+    "T090": {
+      "status": "DONE",
+      "did": "Full dotnet build -t:Rebuild (0W/0E) + full dotnet test (2002 pass, 0 fail: Core 714, Localization 28, Reports 236, UI 624, Data 156, Integration 244)",
+      "files": [
+        "StageFrightCommunity.slnx"
+      ]
+    },
+    "T091": {
+      "status": "DONE",
+      "did": "StageFright.Localization.Tests green (28/28) incl. new currency guard; every spec-028 user-facing string localized neutral/en-US/fr-FR, no literal regressions",
+      "files": [
+        "tests/StageFright.Localization.Tests/"
+      ]
+    },
+    "T091a": {
+      "status": "DONE",
+      "did": "New CurrencySymbolGuardTests: repo-wide guard that no Reports provider / UI money site hard-codes $ or AUD literal or formats money with ToString(C)/{0:C}/ToString(F2); 9 money-bearing providers route through MoneyFormatter (FR-004, SC-002)",
+      "files": [
+        "tests/StageFright.Localization.Tests/CurrencySymbolGuardTests.cs"
+      ]
+    },
+    "T092": {
+      "status": "DONE",
+      "did": "CLAUDE.md Reports-pipeline money note added (MoneyFormatter for every provider/renderer/exporter amount + CurrencySymbolGuardTests ref); finalised remaining stale specs/027 spec.md FR-015 lines (Clarifications, Edge case, FR-015) with 'Superseded by spec 028' notes matching T028 precedent",
+      "files": [
+        "CLAUDE.md",
+        "specs/027-localization-support/spec.md"
+      ]
+    },
+    "T093": {
+      "status": "DONE",
+      "did": "Re-ran AUD zero-drift regression against final build: AudZeroDriftTests + V28_CurrencyConfigurationTests 9/9 pass - identical report figures and stored monetary/tax/GL values (SC-004, FR-031, FR-032)",
+      "files": [
+        "tests/StageFright.Integration.Tests/InternationalAccounting/AudZeroDriftTests.cs"
+      ]
+    },
+    "T094": {
+      "status": "DONE",
+      "did": "Walked SC-001..SC-013: all covered by V28_* acceptance scenarios + InternationalAccounting suite (52/52 pass) against a non-AUD non-first-of-month org end to end; recorded sc-verification-evidence.md",
+      "files": [
+        "specs/028-international-accounting-standards/sc-verification-evidence.md"
+      ]
+    },
+    "T076": {
+      "status": "DONE",
+      "did": "Filed GitHub issue #353 (FR-022 sub-twelve-month first financial year / part-year label) against parent #341; recorded #353 in spec.md Assumptions",
+      "files": [
+        "specs/028-international-accounting-standards/spec.md"
+      ]
+    },
+    "T088": {
+      "status": "DONE",
+      "did": "Filed GitHub issues #354 (tax-exclusive entry) and #355 (recoverable input tax 2320 classification) against parent #341 / spike #350; linked both from docs/assessments/sales-tax-internationalisation.md and spec.md Assumptions",
+      "files": [
+        "docs/assessments/sales-tax-internationalisation.md",
+        "specs/028-international-accounting-standards/spec.md"
+      ]
+    }
+  },
+  "verified": [
+    {
+      "what": "full solution rebuild",
+      "command": "dotnet build StageFrightCommunity.slnx -t:Rebuild",
+      "result": "Build succeeded, 0 warnings, 0 errors",
+      "warnings": []
+    },
+    {
+      "what": "full test suite (no --no-build)",
+      "command": "dotnet test StageFrightCommunity.slnx",
+      "result": "1868 passed, 0 failed, 0 skipped (Core 671, Reports 217, Localization 23, UI 602, Data 154, Integration 201); baseline was 1805",
+      "warnings": [
+        "updated ~30 pre-existing report/UI/integration assertions from bare F2 strings to MoneyFormatter.Format(...) — expected consequence of routing report money through the configured formatter"
+      ]
+    },
+    {
+      "what": "full solution build",
+      "command": "dotnet build StageFrightCommunity.slnx",
+      "result": "Build succeeded, 0 warnings, 0 errors",
+      "warnings": []
+    },
+    {
+      "what": "US3 tests fail-first then green",
+      "command": "dotnet test --filter DifferByOneCent|OutOfBalanceRow",
+      "result": "red before T038/T039 (no exception / null row), green after; V28_StatementIntegrity 5/5 pass",
+      "warnings": []
+    },
+    {
+      "what": "full solution build after US4",
+      "command": "dotnet build StageFrightCommunity.slnx",
+      "result": "Build succeeded, 0 warnings, 0 errors",
+      "warnings": []
+    },
+    {
+      "what": "US4 tests fail-first then green",
+      "command": "dotnet test --filter BasisOfAccountingTests|ReportViewerBasisTests|V28_BasisOfAccountingDisclosureTests",
+      "result": "red before T043-T047 (BasisOfAccounting null / no basis text in CSV+viewer), green after: BasisOfAccountingTests 15/15, ReportViewerBasisTests 2/2, V28_BasisOfAccountingDisclosureTests 4/4",
+      "warnings": []
+    },
+    {
+      "what": "regression suites for the four touched test projects (no --no-build)",
+      "command": "dotnet test Reports.Tests + Localization.Tests + UI.Tests + Integration.Tests",
+      "result": "Reports 235 pass, Localization 25 pass, UI 613 pass, Integration 215 pass",
+      "warnings": []
+    },
+    {
+      "what": "US5 tests fail-first then green",
+      "command": "dotnet test --filter BankReconciliation|V28_ConventionalBankReconciliation",
+      "result": "red before T050/T051 (provider emitted 4 cleared/summary sections per account, no balance-per-bank-statement/ledger rows); green after — BankReconciliationReportProviderTests 12/12, BankReconciliationServiceTests +2 FR-015, V28_ConventionalBankReconciliationTests 5/5",
+      "warnings": []
+    },
+    {
+      "what": "full test suite (no --no-build skipped: ran --no-build after clean build)",
+      "command": "dotnet test StageFrightCommunity.slnx --no-build",
+      "result": "Core 691, Reports 236, UI 616 (+1 known GUID-substring flake, passes 5/5 on re-run), Data 154, Localization 25, Integration 235 — all green; +71 Core, +43 Integration vs baseline",
+      "warnings": [
+        "StageFright.UI.Tests EventListTests.DoesNotShow_FeeColumns_InEventList — documented random-hex-GUID contains-\"fee\" flake, unrelated to this diff (no Events/ParticipationGrid/EventForm change); confirmed passing 5/5 in isolation"
+      ]
+    },
+    {
+      "what": "full test suite after Phase 9 (US7 financial-year start)",
+      "command": "dotnet test StageFrightCommunity.slnx --no-build",
+      "result": "1986 passed, 0 failed, 0 skipped (Core 710, UI 621, Integration 240, Reports 236, Data 154, Localization 25)",
+      "warnings": []
+    },
+    {
+      "what": "Full solution build + entire test suite after Phase 10 (US8)",
+      "command": "dotnet build StageFrightCommunity.slnx && dotnet test StageFrightCommunity.slnx --no-build",
+      "result": "build 0W/0E; 1999 tests pass (Reports 236, Localization 25, Core 714, UI 624, Data 156, Integration 244)",
+      "warnings": [
+        "one full-run flake in StageFright.UI.Tests (documented fee-substring GUID false-positive; untouched area; green on isolated re-run)"
+      ]
+    },
+    {
+      "what": "Finance + audit-trail living specs carry no retired GST/ABN/DRAFT wording after rewrite; accounting-policy doc statements cross-checked against source (TaxCalculator, Settings fields, SystemAccounts 2310/2320, Reports_Common_BasisOfAccounting, immutability rules)",
+      "command": "grep -nE \"GST|Gst|DRAFT|12 months|fixed retention|÷ 11\" capabilities/finance/spec.md capabilities/audit-trail/spec.md",
+      "result": "clean — no matches; Phase 11 is Markdown-only so no dotnet build/test (deferred to Phase 13 T090/T091)",
+      "warnings": []
+    },
+    {
+      "what": "T089 FR-033 no-tax-change verification: git diff master...HEAD over every tax-adjacent file (TaxCalculator, FeeService, IncomeEntryService, ExpensePaymentService, ReactivationForgivenessService, TaxSummaryReportProvider, Settings, TaxSettingsTab, SalesTaxTab, TaxCode)",
+      "command": "git diff master...HEAD -- <tax-adjacent files>",
+      "result": "PASS - only tax-path change is the optional minorUnitDigits param on SplitInclusive (default 2 = AUD byte-identical); TaxCode enum unchanged; 2310/2320 accounts, GL line structure, TaxCode stamping, tax-inclusive entry model and Tax Summary net arithmetic all unchanged; rest is localization + MoneyFormatter routing",
+      "warnings": []
+    },
+    {
+      "what": "Full rebuild + full test suite (Phase 13 T090)",
+      "command": "dotnet build -t:Rebuild -c Debug ; dotnet test -c Debug",
+      "result": "build 0 warnings / 0 errors; 2002 tests pass, 0 fail, 0 skip (Core 714, Localization 28, Reports 236, UI 624, Data 156, Integration 244)",
+      "warnings": []
+    },
+    {
+      "what": "AUD zero-drift regression re-run against final build (T093)",
+      "command": "dotnet test tests/StageFright.Integration.Tests --filter FullyQualifiedName~AudZeroDrift|FullyQualifiedName~V28_CurrencyConfiguration",
+      "result": "9/9 pass - identical report figures and stored monetary/tax/GL values for an AUD dataset",
+      "warnings": []
+    },
+    {
+      "what": "SC-001..SC-013 walk via acceptance + integration suites (T094)",
+      "command": "dotnet test tests/StageFright.Integration.Tests --filter FullyQualifiedName~V28_|FullyQualifiedName~InternationalAccounting",
+      "result": "52/52 pass; every SC mapped to a green V28_* scenario or InternationalAccounting test in specs/028-international-accounting-standards/sc-verification-evidence.md",
+      "warnings": [
+        "no hand-driven CDP MAUI walkthrough performed - acceptance suite drives the identical non-AUD non-first-of-month code paths incl. PDF/CSV"
+      ]
+    },
+    {
+      "what": "Follow-on GitHub issues filed and parent + sub-issues closed (T076, T088)",
+      "command": "gh issue create x4 ; gh issue close 341-352",
+      "result": "filed #353 (FR-022), #354 (tax-exclusive entry), #355 (recoverable input tax 2320), #356 (settings living spec); closed #341 + #342-#352 with per-issue delivery comments",
+      "warnings": []
+    },
+    {
+      "what": "full rebuild + full test suite for issue #353 / FR-022 part-year first financial year",
+      "command": "dotnet build -t:Rebuild && dotnet test StageFrightCommunity.slnx",
+      "result": "0 warnings, 0 errors; 2019 tests pass (Core 722, Reports 236, Localization 28, Data 156, Integration 249, UI 628); AudZeroDriftTests still green",
+      "warnings": [
+        "stale qps-ploc pseudo-locale (test-only fixture) regenerated by scripts/generate-pseudo-locale.py — pre-existing spec-028 drift, now a clean no-op"
+      ]
+    },
+    {
+      "what": "full rebuild + full test suite (dotnet build -t:Rebuild; dotnet test --no-build)",
+      "command": "dotnet test StageFrightCommunity.slnx",
+      "result": "0 warnings, 0 errors; 2053 passed / 0 failed / 0 skipped incl. AudZeroDriftTests zero-drift and AddTaxEntryModeMigrationTests backfill",
+      "warnings": [
+        "one xUnit1051 in a new test surfaced only on full Rebuild, fixed before final run"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "note": "T028 left specs/027-localization-support/research.md and plan.md decision-log lines still asserting a fixed $/AUD; the load-bearing current-reading docs (spec.md, data-model.md, both contracts) now carry a superseding note. T092 (Polish) is the designated final pass for the remaining 027 lines.",
+      "step": "implement"
+    },
+    {
+      "note": "PostToolUse dotnet-build-on-edit hook blocks any edit that leaves a project non-compiling, so the strict test-first order (all ### Tests, then ### Implementation) was adapted: T033 MoneyInput.cs was created before the test files so the tree compiles. Fail-first still held — T030/T031/T032 assert the buggy CurrentCulture behaviour and were red until T034/T035 changed the call sites.",
+      "step": "implement"
+    },
+    {
+      "note": "T032a (V28_LocaleSafeMoneyEntry) calls MoneyInput.Parse directly rather than rendering the razor code-behind (Integration.Tests has no bUnit), so it goes green on T033 rather than fail-first on T034/T035. The call-site regression guard is carried by T032 (repo scan) + T030/T031 (bUnit).",
+      "step": "implement"
+    },
+    {
+      "note": "OpeningBalanceEntryForm.razor plug row still renders @Plug.ToString(\"N2\") — a money DISPLAY site not routed through MoneyFormatter (would show 2 decimals under a 0-decimal org like JPY). Out of US2 scope (entry, not display); US1 T027 routed JournalEntryPage totals but not this sibling. Fold into Polish T091a or a US1 follow-up.",
+      "step": "implement"
+    },
+    {
+      "note": "tasks.md paths for T036/T037 name a tests/StageFright.Reports.Tests/Providers/ subfolder that does not exist; the repo keeps provider tests flat in tests/StageFright.Reports.Tests/. Edited the existing flat files (TrialBalanceReportProviderTests.cs, BalanceSheetReportProviderTests.cs) instead of creating a Providers/ folder.",
+      "step": "implement"
+    },
+    {
+      "note": "The Balance Sheet out-of-balance line renders after the Equity section but before the GrandTotal row (sections render, then GrandTotal), not immediately under Total Liabilities + Equity. Still an explicit, emphasized, never-clean line; a strictly-after-grand-total position would need a ReportData model change.",
+      "step": "implement"
+    },
+    {
+      "note": "T042 (ReportData.BasisOfAccounting) was authored before the T041/T041a test files that reference it — same compile-safety adaptation already recorded for T033 (PostToolUse dotnet-build-on-edit hook blocks non-compiling edits). Fail-first still held: 12/15 BasisOfAccountingTests plus all ReportViewerBasisTests/V28_BasisOfAccountingDisclosureTests were red until T043-T047.",
+      "step": "implement"
+    },
+    {
+      "note": "reports-contract.md originally specified the CSV basis note as label-in-column-0 + text-in-column-1; shipped as a single self-labelled column-0 record (CsvReportExporter has no localizer). Contract doc updated in the same task (T047) to match.",
+      "step": "implement"
+    },
+    {
+      "note": "BasisOfAccountingTests and V28_BasisOfAccountingDisclosureTests assert English tokens (accrual, cash, member) in the resolved Reports_Common_BasisOfAccounting string, so they are host-culture-dependent (green under en-*, would fail under a forced fr-FR test culture). Consistent with the existing integration suite English-literal assertions (e.g. V28_StatementIntegrityTests asserts s.Heading == Assets).",
+      "step": "implement"
+    },
+    {
+      "note": "V28_ConventionalBankReconciliationTests.FinalisedReconciliation_IsImmutable_AndFinalisationRequiredItToBalance (AC-3) passes immediately rather than fail-first — it exercises pre-existing BankReconciliationRepository/Service guards (FR-015 is presentation-neutral), consistent with the T032a/T037a acceptance-test pattern already recorded. The four report-shape tests were red before T050/T051.",
+      "step": "implement"
+    },
+    {
+      "note": "T051 also touched two files beyond the three in tasks.md: ReportsResource.qps-ploc.resx (prune the 10 orphaned pseudo-locale keys, required by the orphan-key guard) and contracts/reports-contract.md (sync the bank-reconciliation ASCII sketch + notes to the shipped row layout / no-placeholder ledger label / residual Reconciled row).",
+      "step": "implement"
+    },
+    {
+      "note": "SettingsRepository.SaveAsync did not map ClosedThroughDate (nor LanguageCode/AuditRetentionYears/CurrencyCode/FinancialYearStartDay) on the detached-update path — real app relies on EF change-tracking. Added ClosedThroughDate to the copy list so T062 save-path works detached; the other unmapped fields are pre-existing and out of scope here.",
+      "step": "implement"
+    },
+    {
+      "note": "T063 catch was added only to the 7 posting forms named in the task. ReactivationForgivenessDialog uses _applyError; the others _errorMessage. No new bUnit test asserts the friendly message renders (T055 covers the settings control only) — the catch paths are exercised by ClosedPeriodLockTests at the service layer, not the UI layer.",
+      "step": "implement"
+    },
+    {
+      "note": "T076: gh issue create for the FR-022 (sub-twelve-month first financial year) follow-on was blocked by the environment action classifier. spec.md Assumptions now records the deferral by issue title, but the GitHub issue itself still needs to be created by the user.",
+      "step": "implement"
+    },
+    {
+      "note": "Two follow-ups need GitHub issues that could not be filed from here: FR-022 short-first-FY (T076) and the capabilities/settings/spec.md retired-ABN/GST wording (T086a). Both are noted in spec.md Assumptions. Phase 12 T088 will hit the same constraint.",
+      "step": "implement"
+    },
+    {
+      "note": "T088 left unchecked: gh issue create is blocked by the environment action classifier (same as T076). The two in-scope follow-on issues (tax-exclusive entry; recoverable input tax 2320 classification) are specified verbatim in docs/assessments/sales-tax-internationalisation.md Follow-on issues section and noted in spec.md Assumptions, for the maintainer to file against parent #341.",
+      "step": "implement"
+    },
+    {
+      "note": "T076 and T088 stay unchecked: gh issue create is blocked by the Claude Code auto-mode classifier. All three follow-on issue specs (FR-022 part-year FY; tax-exclusive entry; recoverable input tax 2320 classification) are written in full in spec.md Assumptions + docs/assessments/sales-tax-internationalisation.md for the maintainer to file. Plus the pre-existing stale capabilities/settings/spec.md tax wording (T086a) noted there too.",
+      "step": "implement"
+    }
+  ],
+  "last_action": "Phase 15 (#354) complete — T114-T140 done, full rebuild 0W/0E, 2053 tests pass; closing issue #354"
+}

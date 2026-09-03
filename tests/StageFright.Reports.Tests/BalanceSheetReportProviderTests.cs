@@ -2,9 +2,11 @@ using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Reports.Models;
 using StageFright.Reports.Providers;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Tests;
 
@@ -26,7 +28,7 @@ public class BalanceSheetReportProviderTests
 
     public BalanceSheetReportProviderTests()
     {
-        _sut = new BalanceSheetReportProvider(_gl, _accounts, _settings);
+        _sut = new BalanceSheetReportProvider(_gl, _accounts, _settings, RealLocalizer.Instance);
         _settings.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
     }
 
@@ -62,7 +64,7 @@ public class BalanceSheetReportProviderTests
         var result = await _sut.GenerateAsync(AsAtFilters(), TestContext.Current.CancellationToken);
 
         var assets = result.Sections.First(s => s.Heading == "Assets");
-        Assert.Contains(assets.Rows, r => r.Cells[0].Contains("Cash on Hand") && r.Cells[1] == "1000.00");
+        Assert.Contains(assets.Rows, r => r.Cells[0].Contains("Cash on Hand") && r.Cells[1] == MoneyFormatter.Format(1000m));
     }
 
     [Fact]
@@ -75,8 +77,8 @@ public class BalanceSheetReportProviderTests
         var result = await _sut.GenerateAsync(AsAtFilters(), TestContext.Current.CancellationToken);
 
         var liabilities = result.Sections.First(s => s.Heading == "Liabilities");
-        Assert.Contains(liabilities.Rows, r => r.Cells[1] == "200.00");
-        Assert.Equal("200.00", liabilities.Subtotal!.Cells[1]);
+        Assert.Contains(liabilities.Rows, r => r.Cells[1] == MoneyFormatter.Format(200m));
+        Assert.Equal(MoneyFormatter.Format(200m), liabilities.Subtotal!.Cells[1]);
     }
 
     [Fact]
@@ -93,7 +95,7 @@ public class BalanceSheetReportProviderTests
         var result = await _sut.GenerateAsync(AsAtFilters(), TestContext.Current.CancellationToken);
 
         var equity = result.Sections.First(s => s.Heading == "Equity");
-        Assert.Contains(equity.Rows, r => r.Cells[0] == "Accumulated Surplus" && r.Cells[1] == "200.00");
+        Assert.Contains(equity.Rows, r => r.Cells[0] == "Accumulated Surplus" && r.Cells[1] == MoneyFormatter.Format(200m));
     }
 
     [Fact]
@@ -151,8 +153,8 @@ public class BalanceSheetReportProviderTests
         var totalAssets = result.Sections.First(s => s.Heading == "Assets").Subtotal!.Cells[1];
         var totalLiabPlusEquity = result.GrandTotal!.Cells[1];
 
-        Assert.Equal("1000.00", totalAssets);
-        Assert.Equal("1000.00", totalLiabPlusEquity);
+        Assert.Equal(MoneyFormatter.Format(1000m), totalAssets);
+        Assert.Equal(MoneyFormatter.Format(1000m), totalLiabPlusEquity);
     }
 
     [Fact]
@@ -171,6 +173,48 @@ public class BalanceSheetReportProviderTests
             cashId,
             new DateTime(2026, 6, 30, 23, 59, 59, DateTimeKind.Utc),
             Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task GenerateAsync_WhenLedgerBalances_AppendsNoOutOfBalanceRow()
+    {
+        var cashId = Guid.NewGuid();
+        var incomeId = Guid.NewGuid();
+        SetupAccounts(
+            MakeAccount(cashId, "Cash", AccountType.Asset, "1100"),
+            MakeAccount(incomeId, "Dues", AccountType.Income, "4000"));
+        SetupBalance(cashId, 500m);    // asset net debit 500
+        SetupBalance(incomeId, -500m); // income net credit 500 → accumulated surplus 500
+
+        var result = await _sut.GenerateAsync(AsAtFilters(), TestContext.Current.CancellationToken);
+
+        var outOfBalanceLabel = RealLocalizer.Instance.Get<ReportsResource>("Reports_BalanceSheet_OutOfBalance");
+        Assert.DoesNotContain(
+            result.Sections.SelectMany(s => s.Rows),
+            r => r.Cells.Count > 0 && r.Cells[0] == outOfBalanceLabel);
+        Assert.Equal(3, result.Sections.Count);
+    }
+
+    [Fact]
+    public async Task GenerateAsync_WhenAssetsDoNotEqualLiabilitiesPlusEquity_AppendsExplicitOutOfBalanceRow()
+    {
+        var cashId = Guid.NewGuid();
+        SetupAccounts(MakeAccount(cashId, "Cash", AccountType.Asset, "1100"));
+        SetupBalance(cashId, 1000m); // assets 1000, nothing else → liabilities + equity 0
+
+        var result = await _sut.GenerateAsync(AsAtFilters(), TestContext.Current.CancellationToken);
+
+        var outOfBalanceLabel = RealLocalizer.Instance.Get<ReportsResource>("Reports_BalanceSheet_OutOfBalance");
+        var flagged = result.Sections.SelectMany(s => s.Rows)
+            .SingleOrDefault(r => r.Cells.Count > 0 && r.Cells[0] == outOfBalanceLabel);
+
+        Assert.NotNull(flagged);
+        Assert.True(flagged!.IsEmphasized);
+        Assert.Equal(MoneyFormatter.Format(1000m), flagged.Cells[1]);
+
+        // Never a clean statement: total assets and total liabilities + equity visibly disagree.
+        var totalAssets = result.Sections.First(s => s.Heading == "Assets").Subtotal!.Cells[1];
+        Assert.NotEqual(totalAssets, result.GrandTotal!.Cells[1]);
     }
 
     // --- Helpers ---

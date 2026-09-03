@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Data;
 using StageFright.Data.Repositories;
@@ -16,6 +17,7 @@ namespace StageFright.Integration.Tests.Scenarios;
 /// Verifies all 4 report providers, PDF non-empty, CSV escaping, Trial Balance imbalance detection,
 /// Account Register running balance, and Member Account Summary aging.
 /// </summary>
+[Collection("MoneyFormatterState")]
 public sealed class V6_AccountingReportsTests : IAsyncLifetime
 {
     private StageFrightDbContext _db = null!;
@@ -226,18 +228,18 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
             r.Cells[0] == "2026-05-01"
             && r.Cells[1] == "Historical transfer to savings"
             && r.Cells[2] == "Savings"
-            && r.Cells[3] == "150.00");
+            && r.Cells[3] == MoneyFormatter.Format(150m));
         Assert.Contains(registerRows, r =>
             r.Cells[0] == "2026-05-01"
             && r.Cells[1] == "Historical transfer to savings"
-            && r.Cells[4] == "150.00");
+            && r.Cells[4] == MoneyFormatter.Format(150m));
 
         // New BankDeposit entry appears correctly alongside it.
         Assert.Contains(registerRows, r =>
             r.Cells[0] == "2026-05-02"
             && r.Cells[1] == "Bank deposit — Savings"
             && r.Cells[2] == "Savings"
-            && r.Cells[3] == "80.00");
+            && r.Cells[3] == MoneyFormatter.Format(80m));
 
         // Trial Balance still balances across both entry types together (no GLBalanceException).
         var trialBalanceResult = await BuildTrialBalanceProvider().GenerateAsync(filters, TestContext.Current.CancellationToken);
@@ -251,7 +253,7 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
     {
         var sut = BuildIncomeStatementProvider();
         var report = await sut.GenerateAsync(CurrentYearCustomPeriodFilters(), TestContext.Current.CancellationToken);
-        var renderer = new PdfReportRenderer();
+        var renderer = new PdfReportRenderer(RealLocalizer.Instance);
 
         var bytes = renderer.Render(report);
 
@@ -300,31 +302,31 @@ public sealed class V6_AccountingReportsTests : IAsyncLifetime
 
     private IncomeStatementReportProvider BuildIncomeStatementProvider()
     {
-        var gl = new GLRepository(_db);
+        var gl = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var cat = new AccountRepository(_db);
-        return new IncomeStatementReportProvider(gl, cat, new SettingsRepository(_db));
+        return new IncomeStatementReportProvider(gl, cat, new SettingsRepository(_db), RealLocalizer.Instance);
     }
 
     private TrialBalanceReportProvider BuildTrialBalanceProvider()
     {
-        var gl = new GLRepository(_db);
+        var gl = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var cat = new AccountRepository(_db);
-        return new TrialBalanceReportProvider(gl, cat, new SettingsRepository(_db));
+        return new TrialBalanceReportProvider(gl, cat, new SettingsRepository(_db), RealLocalizer.Instance);
     }
 
     private AccountRegisterReportProvider BuildAccountRegisterProvider()
     {
-        var gl = new GLRepository(_db);
+        var gl = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var cat = new AccountRepository(_db);
-        return new AccountRegisterReportProvider(gl, cat);
+        return new AccountRegisterReportProvider(gl, cat, RealLocalizer.Instance);
     }
 
     private MemberAccountSummaryReportProvider BuildMemberAccountSummaryProvider()
     {
-        var gl = new GLRepository(_db);
+        var gl = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var members = new MemberRepository(_db);
         var fees = new FeeRepository(_db);
-        return new MemberAccountSummaryReportProvider(gl, members, new MemberBalanceService(members, fees, gl));
+        return new MemberAccountSummaryReportProvider(gl, members, new MemberBalanceService(members, fees, gl), RealLocalizer.Instance);
     }
 
     private static ReportFilterValues CurrentYearFilters()

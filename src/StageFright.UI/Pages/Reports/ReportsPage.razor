@@ -1,10 +1,10 @@
 @page "/reports"
 @page "/reports/{ReportId?}"
 
-<PageTitle>Reports — StageFright Community</PageTitle>
+<PageTitle>@L["Shared_ReportsPage_Title"]</PageTitle>
 
 <div class="page-header mb-2">
-    <h1 class="h3 mb-0">Reports</h1>
+    <h1 class="h3 mb-0">@L["Shared_ReportsPage_Heading"]</h1>
 </div>
 
 @if (_currentProvider != null)
@@ -14,10 +14,10 @@
 else if (!string.IsNullOrEmpty(ReportId))
 {
     <div class="alert alert-warning py-1 mb-2 small" role="alert">
-        Report "@ReportId" not found.
+        @NotFoundText()
     </div>
 }
 else
 {
-    <p class="text-muted small mt-1">Select a report from the navigation menu to generate it.</p>
+    <p class="text-muted small mt-1">@L["Shared_ReportsPage_SelectPrompt"]</p>
 }

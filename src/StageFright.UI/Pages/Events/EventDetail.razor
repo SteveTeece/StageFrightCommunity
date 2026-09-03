@@ -1,15 +1,15 @@
 @page "/events/{Id:guid}"
 
-<PageTitle>@(_event is not null ? _event.Date.ToString("d MMM yyyy") : "Event") — StageFright Community</PageTitle>
+<PageTitle>@PageTitleText()</PageTitle>
 
 @if (_loading)
 {
-    <p role="status" aria-live="polite">Loading…</p>
+    <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
 }
 else if (!string.IsNullOrEmpty(_errorMessage))
 {
     <div class="alert alert-warning py-1 mb-2 small">@_errorMessage</div>
-    <a href="/events" class="btn btn-outline-secondary btn-sm mt-2">Back to Events</a>
+    <a href="/events" class="btn btn-outline-secondary btn-sm mt-2">@L["Events_Detail_BackButton"]</a>
 }
 else if (_event is not null)
 {
@@ -18,10 +18,10 @@ else if (_event is not null)
         <div class="d-flex gap-1">
             <button class="btn btn-outline-secondary btn-sm"
                     @onclick="PrintAttendanceSheet"
-                    aria-label="Print attendance sheet">
-                Print Attendance Sheet
+                    aria-label="@L["Events_Detail_PrintSheetAriaLabel"]">
+                @L["Events_Detail_PrintSheetButton"]
             </button>
-            <a href="/events" class="btn btn-outline-secondary btn-sm">Back to Events</a>
+            <a href="/events" class="btn btn-outline-secondary btn-sm">@L["Events_Detail_BackButton"]</a>
         </div>
     </div>
 
@@ -33,16 +33,16 @@ else if (_event is not null)
     <div class="row g-2 mb-2">
         <div class="col-md-6">
             <dl class="row mb-0 small">
-                <dt class="col-sm-5">Event Type</dt>
+                <dt class="col-sm-5">@L["Events_Detail_EventTypeLabel"]</dt>
                 <dd class="col-sm-7">@(_event.EventType?.Name ?? "—")</dd>
 
                 @if (!string.IsNullOrEmpty(_event.Notes))
                 {
-                    <dt class="col-sm-5">Notes</dt>
+                    <dt class="col-sm-5">@L["Events_Detail_NotesLabel"]</dt>
                     <dd class="col-sm-7">@_event.Notes</dd>
                 }
 
-                <dt class="col-sm-5">Participation Rate</dt>
+                <dt class="col-sm-5">@L["Events_Detail_ParticipationRateLabel"]</dt>
                 <dd class="col-sm-7">
                     @if (_event.StoredParticipationRate.HasValue)
                     {
@@ -50,7 +50,7 @@ else if (_event is not null)
                     }
                     else
                     {
-                        <span class="text-muted">Not recorded</span>
+                        <span class="text-muted">@L["Events_Status_NotRecorded"]</span>
                     }
                 </dd>
             </dl>
@@ -59,27 +59,27 @@ else if (_event is not null)
 
     @if (_event.ParticipationRecords.Any())
     {
-        <section aria-label="Attendance">
-            <h2 class="h6 mb-1">Attendance</h2>
+        <section aria-label="@L["Events_Detail_AttendanceSection"]">
+            <h2 class="h6 mb-1">@L["Events_Detail_AttendanceSection"]</h2>
             <RadzenDataGrid Data="@_event.ParticipationRecords.OrderBy(p => p.Member?.SortableFullName)" TItem="ParticipationRecord"
                             AllowSorting="true" AllowPaging="true" PageSize="15"
                             class="rz-shadow-0">
                 <Columns>
-                    <RadzenDataGridColumn TItem="ParticipationRecord" Title="Member">
+                    <RadzenDataGridColumn TItem="ParticipationRecord" Title="@L["Events_Detail_MemberColumn"]">
                         <Template Context="record">
                             @(record.Member?.SortableFullName ?? "—")
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="ParticipationRecord" Title="Participated" Width="140px" Sortable="false">
+                    <RadzenDataGridColumn TItem="ParticipationRecord" Title="@L["Events_Detail_ParticipatedColumn"]" Width="140px" Sortable="false">
                         <Template Context="record">
                             <div class="text-center">
                                 @if (record.Participated)
                                 {
-                                    <span class="badge bg-success" aria-label="Participated">Yes</span>
+                                    <span class="badge bg-success" aria-label="@L["Events_Detail_ParticipatedYesAriaLabel"]">@L["Events_Detail_ParticipatedYes"]</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-secondary" aria-label="Did not participate">No</span>
+                                    <span class="badge bg-secondary" aria-label="@L["Events_Detail_ParticipatedNoAriaLabel"]">@L["Events_Detail_ParticipatedNo"]</span>
                                 }
                             </div>
                         </Template>
@@ -90,11 +90,11 @@ else if (_event is not null)
     }
     else if (_event.StoredParticipationRate.HasValue)
     {
-        <p class="text-muted small">No attendance records found.</p>
+        <p class="text-muted small">@L["Events_Detail_NoAttendanceRecords"]</p>
     }
     else
     {
-        <p class="text-muted small">Participation has not yet been recorded for this event.</p>
-        <a href="/events/@_event.Id/participation" class="btn btn-primary btn-sm">Record Participation</a>
+        <p class="text-muted small">@L["Events_Detail_ParticipationNotRecorded"]</p>
+        <a href="/events/@_event.Id/participation" class="btn btn-primary btn-sm">@L["Events_Detail_RecordParticipationButton"]</a>
     }
 }

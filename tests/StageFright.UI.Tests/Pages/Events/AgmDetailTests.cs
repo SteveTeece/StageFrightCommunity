@@ -18,7 +18,7 @@ namespace StageFright.UI.Tests.Pages.Events;
 /// US5), the Print Attendance Report action (issue #302), the general-committee list box, and
 /// the Print AGM Results action (issue #307).
 /// </summary>
-public class AgmDetailTests : BunitContext
+public class AgmDetailTests : LocalizedTestContext
 {
     private readonly IAgmService _agmService = Substitute.For<IAgmService>();
     private readonly ICommitteeService _committeeService = Substitute.For<ICommitteeService>();

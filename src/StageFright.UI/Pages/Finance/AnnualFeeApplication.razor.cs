@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -9,6 +12,9 @@ public partial class AnnualFeeApplication
     [Inject] private IFeeService FeeService { get; set; } = null!;
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
 
     private bool _loading = true;
     private bool _confirmed;
@@ -18,6 +24,10 @@ public partial class AnnualFeeApplication
     private List<Guid> _eligibleMemberIds = new();
     private string? _errorMessage;
     private string? _successMessage;
+
+    /// <summary>"N active member(s) are eligible…" — count-dependent wording.</summary>
+    private string EligibleSummaryText() =>
+        Loc.Plural<FinanceResource>("Finance_AnnualFees_EligibleSummary", _eligibleCount);
 
     protected override async Task OnInitializedAsync()
     {
@@ -32,7 +42,7 @@ public partial class AnnualFeeApplication
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to load eligible members: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_AnnualFees_LoadError", ex.Message);
         }
         finally
         {
@@ -49,7 +59,7 @@ public partial class AnnualFeeApplication
         {
             var count = await FeeService.ApplyAnnualFeesAsync(_eligibleMemberIds);
             _confirmed = true;
-            _successMessage = $"Annual fees applied successfully to {count} {(count == 1 ? "member" : "members")}.";
+            _successMessage = Loc.Plural<FinanceResource>("Finance_AnnualFees_SuccessMessage", count);
         }
         catch (ValidationException ex)
         {
@@ -57,7 +67,7 @@ public partial class AnnualFeeApplication
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to apply annual fees: {ex.Message}";
+            _errorMessage = Loc.Get<FinanceResource>("Finance_AnnualFees_ApplyError", ex.Message);
         }
         finally
         {

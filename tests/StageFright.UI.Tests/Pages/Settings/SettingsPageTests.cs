@@ -17,7 +17,7 @@ namespace StageFright.UI.Tests.Pages.Settings;
 /// reflection, since [SupplyParameterFromQuery] binding requires the full Router pipeline
 /// that bUnit doesn't host for a bare component render.
 /// </summary>
-public class SettingsPageTests : BunitContext
+public class SettingsPageTests : LocalizedTestContext
 {
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
 

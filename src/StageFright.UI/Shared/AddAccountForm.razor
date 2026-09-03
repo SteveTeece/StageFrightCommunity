@@ -6,8 +6,8 @@
         <div class="col">
             <InputText id="account-name" class="form-control form-control-sm"
                        @bind-Value="_model.Name"
-                       placeholder="Account name"
-                       aria-label="Account name" />
+                       placeholder="@Shared["Shared_AddAccount_NamePlaceholder"]"
+                       aria-label="@Shared["Shared_AddAccount_NamePlaceholder"]" />
             <ValidationMessage For="() => _model.Name" class="text-danger small" />
             @if (_duplicateError is not null)
             {
@@ -17,12 +17,12 @@
         <div class="col-auto">
             <InputSelect id="account-type" class="form-select form-select-sm"
                          @bind-Value="_model.Type"
-                         aria-label="Account type">
-                <option value="@AccountType.Asset">Asset</option>
-                <option value="@AccountType.Liability">Liability</option>
-                <option value="@AccountType.Equity">Equity</option>
-                <option value="@AccountType.Income">Income</option>
-                <option value="@AccountType.Expense">Expense</option>
+                         aria-label="@Shared["Shared_AddAccount_TypeAriaLabel"]">
+                <option value="@AccountType.Asset">@AccountType.Asset.LocalizeEnum()</option>
+                <option value="@AccountType.Liability">@AccountType.Liability.LocalizeEnum()</option>
+                <option value="@AccountType.Equity">@AccountType.Equity.LocalizeEnum()</option>
+                <option value="@AccountType.Income">@AccountType.Income.LocalizeEnum()</option>
+                <option value="@AccountType.Expense">@AccountType.Expense.LocalizeEnum()</option>
             </InputSelect>
         </div>
         @if (_model.Type == AccountType.Asset)
@@ -31,13 +31,13 @@
                 <div class="form-check form-check-sm mb-0">
                     <InputCheckbox id="account-is-bank" class="form-check-input"
                                    @bind-Value="_model.IsBankAccount" />
-                    <label class="form-check-label small" for="account-is-bank">Bank / cash account</label>
+                    <label class="form-check-label small" for="account-is-bank">@Shared["Shared_AddAccount_BankAccountLabel"]</label>
                 </div>
             </div>
         }
         <div class="col-auto">
             <button type="submit" class="btn btn-primary btn-sm" disabled="@_submitting">
-                @(_submitting ? "Adding…" : SubmitButtonText)
+                @(_submitting ? AddingText : (SubmitButtonText ?? DefaultSubmitText))
             </button>
         </div>
     </div>

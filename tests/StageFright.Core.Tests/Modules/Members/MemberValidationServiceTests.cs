@@ -1,4 +1,5 @@
 using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Localization.Resources;
 using StageFright.Core.Modules.Members;
 using StageFright.Core.Tests.Fixtures;
 using SettingsEntity = StageFright.Core.Entities.Settings;
@@ -11,7 +12,8 @@ namespace StageFright.Core.Tests.Modules.Members;
 /// </summary>
 public class MemberValidationServiceTests : TestBase
 {
-    private readonly MemberValidationService _svc = new(new AgeCalculationService());
+    private readonly MemberValidationService _svc =
+        new(new AgeCalculationService(RealLocalizer.Instance), new StubStringLocalizer<ValidationResource>());
 
     private static SettingsEntity MakeSettings(int maxAgeRangeYears = 150, int minimumMemberAge = 0) => new()
     {

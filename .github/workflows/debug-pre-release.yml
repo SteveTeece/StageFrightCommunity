@@ -168,17 +168,27 @@ jobs:
       # No CodesignKey/EnableCodeSigning -> the build applies only an ad-hoc signature
       # (all an internal test build needs; testers still have to clear the Gatekeeper
       # quarantine flag — see the release notes text in publish-release).
-      # Passing BOTH RIDs in a single RuntimeIdentifier value is how the .NET MAUI Mac
-      # Catalyst targets emit a universal (lipo'd x64 + arm64) binary. Release builds do
-      # this by default; a Debug build has to state it explicitly. See
-      # https://learn.microsoft.com/dotnet/maui/mac-catalyst/deployment/publish-unsigned
+      # PublishMacUniversal=true flips a conditional PropertyGroup in StageFright.App.csproj
+      # that sets the *plural* <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</...>,
+      # which is what makes MAUI's Mac Catalyst targets emit a universal (lipo'd x64 + arm64)
+      # .app. It has to be set inside the .csproj, not passed here as -p:RuntimeIdentifier(s):
+      #  * the singular RuntimeIdentifier is validated by the .NET SDK as ONE RID and rejects
+      #    a `;`-list with "NETSDK1083: ... 'maccatalyst-x64;maccatalyst-arm64' is not
+      #    recognized";
+      #  * passing -p:RuntimeIdentifiers on the CLI makes it a global property that leaks the
+      #    `;`-list verbatim into every ProjectReference (the plain non-maccatalyst class
+      #    libraries), which then fail the same NETSDK1083.
+      # As a project property it is evaluated locally and MAUI fans out per-RID inner builds
+      # that hand a single concrete RID to the referenced libraries. Release builds get this
+      # universal RID set by MAUI automatically; a Debug build has to opt in. See the
+      # dotnet/macios .NET 8 release notes and dotnet/maui's Controls.TestCases.HostApp.csproj.
       - name: Publish unsigned universal .app
         run: >
           dotnet publish ${{ env.APP_PROJECT }}
           -f ${{ env.TFM }}
           -c Debug
           -p:CreatePackage=false
-          -p:RuntimeIdentifier="maccatalyst-x64;maccatalyst-arm64"
+          -p:PublishMacUniversal=true
 
       # `ditto` is Apple's supported way to archive an .app bundle for transport — it
       # preserves the symlinks, permissions, and resource forks that a plain `zip`

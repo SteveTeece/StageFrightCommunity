@@ -44,7 +44,7 @@ public class AccountServiceTests : TestBase
         _repo.AddAsync(Arg.Any<Account>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.ArgAt<Account>(0));
 
-        _sut = new AccountService(_repo, _glAssignment, _audit, _reconciliationRepo);
+        _sut = new AccountService(_repo, _glAssignment, _audit, _reconciliationRepo, RealLocalizer.Instance);
     }
 
     // --- CreateAsync ---

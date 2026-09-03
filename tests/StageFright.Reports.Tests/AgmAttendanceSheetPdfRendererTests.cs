@@ -9,7 +9,7 @@ namespace StageFright.Reports.Tests;
 /// </summary>
 public class AgmAttendanceSheetPdfRendererTests
 {
-    private readonly IAgmAttendanceSheetPdfRenderer _renderer = new AgmAttendanceSheetPdfRenderer();
+    private readonly IAgmAttendanceSheetPdfRenderer _renderer = new AgmAttendanceSheetPdfRenderer(RealLocalizer.Instance);
 
     private static AgmAttendanceSheetData MakeSheet(params AgmAttendanceSheetMember[] members) => new()
     {

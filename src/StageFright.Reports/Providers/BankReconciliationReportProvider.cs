@@ -1,35 +1,44 @@
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Reports.Models;
 using StageFright.Reports.Registry;
+using StageFright.Reports.Resources;
 
 namespace StageFright.Reports.Providers;
 
 /// <summary>
-/// Generates the Bank Reconciliation report: for each bank/cash account's most recent
-/// reconciliation — cleared deposits, cleared payments, unpresented items up to the
-/// statement date, and a summary with the difference. An optional account filter
-/// narrows the report to one account (matched by number or name).
+/// Generates the Bank Reconciliation report in the conventional adjusted-balance form
+/// (spec 028 US5, FR-013…FR-015): for each bank/cash account's most recent reconciliation,
+/// at its statement date — balance per bank statement, adjusted by outstanding deposits
+/// (added) and outstanding payments (deducted) to an adjusted bank balance, reconciled to
+/// the balance per the general ledger as at the statement date. Both balances are shown and
+/// the reconciled residual demonstrates they agree. Outstanding items are carried into the
+/// arithmetic, not merely listed. An optional account filter narrows the report to one
+/// account (matched by number or name).
 /// </summary>
 public class BankReconciliationReportProvider : IReportProvider
 {
     private readonly IBankReconciliationRepository _reconciliations;
     private readonly IAccountRepository _accounts;
     private readonly IGLRepository _gl;
+    private readonly ILocalizer _localizer;
 
     public BankReconciliationReportProvider(
         IBankReconciliationRepository reconciliations,
         IAccountRepository accounts,
-        IGLRepository gl)
+        IGLRepository gl,
+        ILocalizer localizer)
     {
         _reconciliations = reconciliations;
         _accounts = accounts;
         _gl = gl;
+        _localizer = localizer;
     }
 
     public string ReportId => "bank-reconciliation";
-    public string ReportName => "Bank Reconciliation";
+    public string ReportName => _localizer.Get<ReportsResource>("Reports_BankReconciliation_Name");
     public string ModuleName => "Finance";
     public int DisplayOrder => 50;
 
@@ -39,7 +48,7 @@ public class BankReconciliationReportProvider : IReportProvider
         {
             Key = "account",
             Type = ReportFilterType.Text,
-            Label = "Account (number or name, blank = all)",
+            Label = _localizer.Get<ReportsResource>("Reports_Filter_AccountNumberOrName"),
             DefaultValue = ""
         }
     ];
@@ -69,17 +78,18 @@ public class BankReconciliationReportProvider : IReportProvider
 
         return new ReportData
         {
-            Title = "Bank Reconciliation",
+            Title = _localizer.Get<ReportsResource>("Reports_BankReconciliation_Name"),
             SubTitle = sections.Count == 0
-                ? "No reconciliations have been recorded."
-                : $"Most recent reconciliation per account, generated {DateTime.UtcNow:d MMMM yyyy}",
+                ? _localizer.Get<ReportsResource>("Reports_BankReconciliation_SubTitleNone")
+                : _localizer.Get<ReportsResource>("Reports_BankReconciliation_SubTitle", DateTime.UtcNow.ToString("d MMMM yyyy")),
             GeneratedAt = DateTime.UtcNow,
+            BasisOfAccounting = _localizer.Get<ReportsResource>("Reports_Common_BasisOfAccounting"),
             Columns =
             [
-                new ReportColumn { Header = "Date", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Description", Alignment = ReportColumnAlignment.Left },
-                new ReportColumn { Header = "Deposit", Alignment = ReportColumnAlignment.Right },
-                new ReportColumn { Header = "Payment", Alignment = ReportColumnAlignment.Right }
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Date"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_Column_Description"), Alignment = ReportColumnAlignment.Left },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_BankReconciliation_DepositColumn"), Alignment = ReportColumnAlignment.Right },
+                new ReportColumn { Header = _localizer.Get<ReportsResource>("Reports_BankReconciliation_PaymentColumn"), Alignment = ReportColumnAlignment.Right }
             ],
             Sections = sections
         };
@@ -93,79 +103,77 @@ public class BankReconciliationReportProvider : IReportProvider
         if (reconciliation is null)
             return Array.Empty<ReportSection>();
 
-        var header = $"{account.Name} ({account.AccountNumber}) — statement to {reconciliation.StatementDate:d MMMM yyyy} [{reconciliation.Status}]";
+        var header = _localizer.Get<ReportsResource>(
+            "Reports_BankReconciliation_AccountHeader",
+            account.Name,
+            account.AccountNumber,
+            reconciliation.StatementDate.ToString("d MMMM yyyy"),
+            _localizer.Enum(reconciliation.Status));
 
-        var cleared = reconciliation.Lines
-            .Where(l => l.Transaction is not null)
-            .Select(l => l.Transaction!)
-            .OrderBy(t => t.Date)
-            .ThenBy(t => t.CreatedAt)
-            .ToList();
+        // Outstanding = GL transactions on this account, up to the statement date, not yet
+        // cleared by any non-deleted reconciliation. Bank-account debits are deposits in
+        // transit; credits are unpresented payments.
+        var outstanding = await _gl.GetUnreconciledByAccountAsync(account.Id, reconciliation.StatementDate, ct);
+        var outstandingDeposits = outstanding.Where(t => t.DebitAmount != 0m).ToList();
+        var outstandingPayments = outstanding.Where(t => t.CreditAmount != 0m).ToList();
 
-        var deposits = cleared.Where(t => t.DebitAmount != 0m).ToList();
-        var payments = cleared.Where(t => t.CreditAmount != 0m).ToList();
-        var unpresented = await _gl.GetUnreconciledByAccountAsync(account.Id, reconciliation.StatementDate, ct);
+        var depositsTotal = outstandingDeposits.Sum(t => t.DebitAmount);
+        var paymentsTotal = outstandingPayments.Sum(t => t.CreditAmount);
 
-        var clearedTotal = cleared.Sum(t => t.DebitAmount) - cleared.Sum(t => t.CreditAmount);
-        var difference = reconciliation.StatementClosingBalance - (reconciliation.OpeningBalance + clearedTotal);
+        var statementBalance = reconciliation.StatementClosingBalance;
+        var adjustedBankBalance = statementBalance + depositsTotal - paymentsTotal;
+        var ledgerBalance = await _gl.GetAccountBalanceAsync(account.Id, reconciliation.StatementDate, ct);
+        var residual = adjustedBankBalance - ledgerBalance;
 
-        return
-        [
-            new ReportSection
-            {
-                Heading = $"{header} — Cleared Deposits",
-                Rows = deposits.Select(t => TransactionRow(t)).ToList(),
-                Subtotal = SummaryRow("Total cleared deposits", deposits.Sum(t => t.DebitAmount), depositColumn: true)
-            },
-            new ReportSection
-            {
-                Heading = $"{header} — Cleared Payments",
-                Rows = payments.Select(t => TransactionRow(t)).ToList(),
-                Subtotal = SummaryRow("Total cleared payments", payments.Sum(t => t.CreditAmount), depositColumn: false)
-            },
-            new ReportSection
-            {
-                Heading = $"{header} — Unpresented Items",
-                Rows = unpresented.Select(t => TransactionRow(t)).ToList()
-            },
-            new ReportSection
-            {
-                Heading = $"{header} — Summary",
-                Rows =
-                [
-                    LabelAmountRow("Statement closing balance", reconciliation.StatementClosingBalance),
-                    LabelAmountRow("Opening balance", reconciliation.OpeningBalance),
-                    LabelAmountRow("Cleared movement", clearedTotal),
-                    LabelAmountRow("Difference", difference)
-                ]
-            }
-        ];
+        var rows = new List<ReportRow>
+        {
+            BalanceRow("Reports_BankReconciliation_BalancePerBankStatement", statementBalance)
+        };
+        rows.AddRange(outstandingDeposits.Select(DepositDetailRow));
+        rows.Add(DepositSubtotalRow("Reports_BankReconciliation_AddOutstandingDeposits", depositsTotal));
+        rows.AddRange(outstandingPayments.Select(PaymentDetailRow));
+        rows.Add(BalanceRow("Reports_BankReconciliation_LessOutstandingPayments", paymentsTotal));
+        rows.Add(BalanceRow("Reports_BankReconciliation_AdjustedBankBalance", adjustedBankBalance));
+        rows.Add(BalanceRow("Reports_BankReconciliation_BalancePerGeneralLedger", ledgerBalance));
+        rows.Add(BalanceRow("Reports_BankReconciliation_Reconciled", residual));
+
+        return [new ReportSection { Heading = header, Rows = rows }];
     }
 
-    private static ReportRow TransactionRow(Transaction txn) => new()
+    // Label/amount summary line — amount in the Payment (last) column, matching this report's
+    // existing label-row convention.
+    private ReportRow BalanceRow(string labelKey, decimal amount) => new()
+    {
+        Cells = [string.Empty, _localizer.Get<ReportsResource>(labelKey), string.Empty, MoneyFormatter.Format(amount)],
+        IsEmphasized = true
+    };
+
+    // Outstanding-deposit subtotal — amount in the Deposit column, above the itemised deposits.
+    private ReportRow DepositSubtotalRow(string labelKey, decimal amount) => new()
+    {
+        Cells = [string.Empty, _localizer.Get<ReportsResource>(labelKey), MoneyFormatter.Format(amount), string.Empty],
+        IsEmphasized = true
+    };
+
+    private static ReportRow DepositDetailRow(Transaction txn) => new()
     {
         Cells =
         [
             txn.Date.ToString("yyyy-MM-dd"),
             txn.Description ?? string.Empty,
-            txn.DebitAmount != 0m ? txn.DebitAmount.ToString("F2") : string.Empty,
-            txn.CreditAmount != 0m ? txn.CreditAmount.ToString("F2") : string.Empty
+            MoneyFormatter.Format(txn.DebitAmount),
+            string.Empty
         ]
     };
 
-    private static ReportRow SummaryRow(string label, decimal amount, bool depositColumn) => new()
+    private static ReportRow PaymentDetailRow(Transaction txn) => new()
     {
         Cells =
         [
+            txn.Date.ToString("yyyy-MM-dd"),
+            txn.Description ?? string.Empty,
             string.Empty,
-            label,
-            depositColumn ? amount.ToString("F2") : string.Empty,
-            depositColumn ? string.Empty : amount.ToString("F2")
+            MoneyFormatter.Format(txn.CreditAmount)
         ]
-    };
-
-    private static ReportRow LabelAmountRow(string label, decimal amount) => new()
-    {
-        Cells = [string.Empty, label, string.Empty, amount.ToString("F2")]
     };
 }

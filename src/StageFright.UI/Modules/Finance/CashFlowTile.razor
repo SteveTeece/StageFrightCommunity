@@ -2,15 +2,15 @@
 
 @if (_loading)
 {
-    <span class="text-muted small">Loading...</span>
+    <span class="text-muted small">@Shared["Shared_Common_Loading"]</span>
 }
 else if (_error)
 {
-    <span class="text-danger small">Unable to load</span>
+    <span class="text-danger small">@Shared["Shared_Tile_LoadError"]</span>
 }
 else if (!_hasData)
 {
-    <span class="text-muted small">No transactions in the last 6 months</span>
+    <span class="text-muted small">@L["Finance_CashFlowTile_Empty"]</span>
 }
 else
 {

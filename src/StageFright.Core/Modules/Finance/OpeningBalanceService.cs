@@ -2,6 +2,8 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Finance;
 
@@ -25,19 +27,22 @@ public class OpeningBalanceService : IOpeningBalanceService
     private readonly IJournalEntryRepository _journalRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILocalizer _localizer;
 
     public OpeningBalanceService(
         IAccountRepository accountRepo,
         IGLRepository glRepo,
         IJournalEntryRepository journalRepo,
         IAuditTrailService audit,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILocalizer localizer)
     {
         _accountRepo = accountRepo;
         _glRepo = glRepo;
         _journalRepo = journalRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
+        _localizer = localizer;
     }
 
     public async Task<IReadOnlyList<Account>> GetOpeningBalanceAccountsAsync(CancellationToken ct = default)
@@ -75,12 +80,12 @@ public class OpeningBalanceService : IOpeningBalanceService
         var entries = request.Entries.Where(e => e.Amount != 0m).ToList();
         if (entries.Count == 0)
             throw new ValidationException(
-                "At least one non-zero opening balance is required.",
+                _localizer.Get<ValidationResource>("Validation_OpeningBalance_AtLeastOneNonZero"),
                 nameof(JournalEntry), nameof(RecordOpeningBalancesAsync));
 
         if (entries.GroupBy(e => e.AccountId).Any(g => g.Count() > 1))
             throw new ValidationException(
-                "Each account may only appear once in the opening balances.",
+                _localizer.Get<ValidationResource>("Validation_OpeningBalance_AccountOncePerBatch"),
                 nameof(JournalEntry), nameof(RecordOpeningBalancesAsync));
 
         var eligible = await GetOpeningBalanceAccountsAsync(ct);
@@ -90,7 +95,7 @@ public class OpeningBalanceService : IOpeningBalanceService
         {
             if (!accountsById.ContainsKey(entry.AccountId))
                 throw new ValidationException(
-                    "One or more accounts are not eligible for opening balances.",
+                    _localizer.Get<ValidationResource>("Validation_OpeningBalance_AccountNotEligible"),
                     nameof(Account), nameof(RecordOpeningBalancesAsync), entry.AccountId);
         }
 

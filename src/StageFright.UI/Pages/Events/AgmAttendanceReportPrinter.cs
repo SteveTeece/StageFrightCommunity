@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Reports.Rendering;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Events;
 
@@ -20,7 +22,8 @@ public static class AgmAttendanceReportPrinter
         IAgmAttendanceSheetService sheetService,
         IAgmAttendanceSheetPdfRenderer pdfRenderer,
         ISettingsService settingsService,
-        ILogger logger)
+        ILogger logger,
+        IStringLocalizer<EventsResource> localizer)
     {
         try
         {
@@ -28,7 +31,7 @@ public static class AgmAttendanceReportPrinter
 
             if (sheetData.Members.Count == 0)
             {
-                return "No attendance records found — nothing to print.";
+                return localizer["Events_Agm_PrintNoRecords"];
             }
 
             var settings = await settingsService.GetAsync();
@@ -44,7 +47,7 @@ public static class AgmAttendanceReportPrinter
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to print attendance report for AGM {AgmId}", agmId);
-            return "Unable to print attendance report. Please try again.";
+            return localizer["Events_Agm_PrintError"];
         }
     }
 }

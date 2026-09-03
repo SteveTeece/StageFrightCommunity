@@ -1,12 +1,13 @@
 using StageFright.Plugins.Contracts;
 using StageFright.UI.Modules.Finance;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Tests.Modules.Finance;
 
 /// <summary>Unit tests for OutstandingBalancesDashboardTileProvider metadata and TileData.</summary>
 public class OutstandingBalancesDashboardTileProviderTests
 {
-    private readonly IDashboardTileProvider _provider = new OutstandingBalancesDashboardTileProvider();
+    private readonly IDashboardTileProvider _provider = new OutstandingBalancesDashboardTileProvider(RealStringLocalizer.For<FinanceResource>());
 
     [Fact]
     public void Should_ExposeOutstandingBalancesTileMetadata_When_Constructed()

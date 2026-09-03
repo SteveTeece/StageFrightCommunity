@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+using StageFright.Core.Localization;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Shared;
 
@@ -14,11 +17,19 @@ namespace StageFright.UI.Shared;
 public partial class AddAccountForm : ComponentBase
 {
     [Parameter, EditorRequired] public EventCallback<NewAccountModel> OnSubmit { get; set; }
-    [Parameter] public string SubmitButtonText { get; set; } = "Add Account";
+
+    /// <summary>Submit button text; when unset, falls back to the shared default (spec 027).</summary>
+    [Parameter] public string? SubmitButtonText { get; set; }
 
     /// <summary>Case-insensitive duplicate-check set. The standalone page passes real
     /// account names; the wizard tab passes real names union already-queued names.</summary>
     [Parameter] public IReadOnlyList<string> ExistingNames { get; set; } = Array.Empty<string>();
+
+    [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
+
+    private string AddingText => Shared["Shared_AddAccount_AddingText"];
+    private string DefaultSubmitText => Shared["Shared_AddAccount_SubmitButton"];
 
     private NewAccountModel _model = new();
     private string? _duplicateError;
@@ -31,7 +42,7 @@ public partial class AddAccountForm : ComponentBase
 
         if (ExistingNames.Any(n => string.Equals(n, trimmedName, StringComparison.OrdinalIgnoreCase)))
         {
-            _duplicateError = $"An account named '{trimmedName}' already exists.";
+            _duplicateError = Loc.Get<SharedResource>("Shared_AddAccount_DuplicateError", trimmedName);
             return;
         }
 

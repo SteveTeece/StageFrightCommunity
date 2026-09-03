@@ -258,12 +258,18 @@ public sealed class V8_DashboardPluginTests
     {
         var providers = new List<IDashboardTileProvider>
         {
-            new MembersDashboardTileProvider(),
-            new RehearsalsDashboardTileProvider(),
-            new EventsDashboardTileProvider(),
-            new FinanceDashboardTileProvider(),
-            new CashFlowDashboardTileProvider(),
-            new AttendanceTrendDashboardTileProvider()
+            new MembersDashboardTileProvider(
+                new StubStringLocalizer<StageFright.UI.Resources.Strings.MembersResource>()),
+            new RehearsalsDashboardTileProvider(
+                new StubStringLocalizer<StageFright.UI.Resources.Strings.RehearsalsResource>()),
+            new EventsDashboardTileProvider(
+                new StubStringLocalizer<StageFright.UI.Resources.Strings.EventsResource>()),
+            new FinanceDashboardTileProvider(
+                new StubStringLocalizer<StageFright.UI.Resources.Strings.FinanceResource>()),
+            new CashFlowDashboardTileProvider(
+                new StubStringLocalizer<StageFright.UI.Resources.Strings.FinanceResource>()),
+            new AttendanceTrendDashboardTileProvider(
+                new StubStringLocalizer<StageFright.UI.Resources.Strings.RehearsalsResource>())
         };
 
         if (extraProviders is not null)

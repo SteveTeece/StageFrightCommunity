@@ -43,7 +43,7 @@ public sealed class BankReconciliationRepositoryTests : IAsyncLifetime
         await _db.SaveChangesAsync();
 
         _sut = new BankReconciliationRepository(_db);
-        _glRepo = new GLRepository(_db);
+        _glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
     }
 
     public async ValueTask DisposeAsync()

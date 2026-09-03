@@ -2,6 +2,8 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
+using StageFright.Core.Modules.Localization.Resources;
 
 namespace StageFright.Core.Modules.Finance;
 
@@ -17,17 +19,20 @@ public class AccountService : IAccountService
     private readonly AccountNumberAssignmentService _numberAssignment;
     private readonly IAuditTrailService _audit;
     private readonly IBankReconciliationRepository _reconciliationRepo;
+    private readonly ILocalizer _localizer;
 
     public AccountService(
         IAccountRepository repo,
         AccountNumberAssignmentService numberAssignment,
         IAuditTrailService audit,
-        IBankReconciliationRepository reconciliationRepo)
+        IBankReconciliationRepository reconciliationRepo,
+        ILocalizer localizer)
     {
         _repo = repo;
         _numberAssignment = numberAssignment;
         _audit = audit;
         _reconciliationRepo = reconciliationRepo;
+        _localizer = localizer;
     }
 
     public Task<IReadOnlyList<Account>> GetAllAsync(CancellationToken ct = default) =>
@@ -48,11 +53,13 @@ public class AccountService : IAccountService
     public async Task<Account> CreateAsync(string name, AccountType type, bool isBankAccount = false, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ValidationException("Account name is required.", nameof(Account), nameof(CreateAsync));
+            throw new ValidationException(
+                _localizer.Get<ValidationResource>("Validation_Account_NameRequired"),
+                nameof(Account), nameof(CreateAsync));
 
         if (isBankAccount && type != AccountType.Asset)
             throw new ValidationException(
-                "The bank/cash flag can only be set on Asset accounts.",
+                _localizer.Get<ValidationResource>("Validation_Account_BankFlagAssetOnly"),
                 nameof(Account), nameof(CreateAsync));
 
         var trimmed = name.Trim();
@@ -83,14 +90,16 @@ public class AccountService : IAccountService
     public async Task UpdateAsync(Guid id, string name, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ValidationException("Account name is required.", nameof(Account), nameof(UpdateAsync), id);
+            throw new ValidationException(
+                _localizer.Get<ValidationResource>("Validation_Account_NameRequired"),
+                nameof(Account), nameof(UpdateAsync), id);
 
         var account = await _repo.GetByIdAsync(id, ct)
             ?? throw new EntityNotFoundException(nameof(Account), id, nameof(UpdateAsync));
 
         if (account.IsSystem)
             throw new ValidationException(
-                "System accounts cannot be edited.",
+                _localizer.Get<ValidationResource>("Validation_Account_SystemCannotEdit"),
                 nameof(Account), nameof(UpdateAsync), id);
 
         var trimmed = name.Trim();
@@ -112,17 +121,17 @@ public class AccountService : IAccountService
 
         if (account.IsSystem)
             throw new ValidationException(
-                "System accounts cannot be archived.",
+                _localizer.Get<ValidationResource>("Validation_Account_SystemCannotArchive"),
                 nameof(Account), nameof(ArchiveAsync), id);
 
         if (await _repo.IsReferencedByTransactionsAsync(id, ct))
             throw new ValidationException(
-                "This account cannot be archived because it is referenced by one or more transactions.",
+                _localizer.Get<ValidationResource>("Validation_Account_ReferencedCannotArchive"),
                 nameof(Account), nameof(ArchiveAsync), id);
 
         if (account.IsBankAccount && await _reconciliationRepo.GetDraftForAccountAsync(id, ct) is not null)
             throw new ValidationException(
-                "This bank account cannot be archived while it has a draft reconciliation in progress.",
+                _localizer.Get<ValidationResource>("Validation_Account_DraftReconciliationCannotArchive"),
                 nameof(Account), nameof(ArchiveAsync), id);
 
         await _repo.ArchiveAsync(id, "system", ct);
@@ -145,7 +154,7 @@ public class AccountService : IAccountService
         var existing = await _repo.GetAllAsync(ct);
         if (existing.Any(a => a.Id != excludeId && string.Equals(a.Name, name, StringComparison.OrdinalIgnoreCase)))
             throw new ValidationException(
-                $"An account named '{name}' already exists.",
+                _localizer.Get<ValidationResource>("Validation_Account_NameDuplicate", name),
                 nameof(Account), operation);
     }
 }

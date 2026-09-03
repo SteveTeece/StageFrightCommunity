@@ -21,7 +21,7 @@ namespace StageFright.UI.Tests.Pages.Finance;
 /// - Success message displayed after save with Record Another option
 /// - Account pre-selected when only one account exists
 /// </summary>
-public class RecordIncomeTests : BunitContext
+public class RecordIncomeTests : LocalizedTestContext
 {
     private readonly IIncomeEntryService _incomeService = Substitute.For<IIncomeEntryService>();
     private readonly IAccountService _accountService = Substitute.For<IAccountService>();

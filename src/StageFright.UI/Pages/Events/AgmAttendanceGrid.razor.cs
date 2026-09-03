@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using StageFright.Core.Entities;
+using StageFright.Core.Localization;
+using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Events;
 
@@ -13,8 +16,14 @@ public partial class AgmAttendanceGrid : ComponentBase
 {
     [Parameter] public IReadOnlyList<Member> Members { get; set; } = [];
 
+    [Inject] private IStringLocalizer<EventsResource> L { get; set; } = null!;
+    [Inject] private ILocalizer Loc { get; set; } = null!;
+
     private List<AttendanceRow> _rows = [];
     private IReadOnlyList<Member> _lastMembers = [];
+
+    private string RowAriaLabel(string memberName) =>
+        Loc.Get<EventsResource>("Events_AgmAttendance_RowAriaLabel", memberName);
 
     protected override void OnParametersSet()
     {
