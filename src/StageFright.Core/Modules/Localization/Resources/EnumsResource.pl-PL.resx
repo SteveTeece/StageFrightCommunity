@@ -2,19 +2,39 @@
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
-  <data name="Enum_MemberStatus_Active"><value>Aktywny</value></data>
-  <data name="Enum_MemberStatus_Inactive"><value>Nieaktywny</value></data>
-  <data name="Enum_Theme_Light"><value>Jasny</value></data>
-  <data name="Enum_Theme_Dark"><value>Ciemny</value></data>
-  <data name="Enum_FeeType_Annual"><value>Roczna</value></data>
-  <data name="Enum_FeeType_Attendance"><value>Za obecność</value></data>
-  <data name="Enum_FeeType_Other"><value>Inna</value></data>
-  <data name="Enum_PaymentMethod_Cash"><value>Gotówka</value></data>
-  <data name="Enum_PaymentMethod_Check"><value>Czek</value></data>
-  <data name="Enum_PaymentMethod_Card"><value>Karta</value></data>
-  <data name="Enum_PaymentMethod_ElectronicTransfer"><value>Przelew elektroniczny</value></data>
-  <data name="Enum_PaymentMethod_Other"><value>Inna</value></data>
-  <data name="Enum_TaxCode_Taxable"><value>Opodatkowane</value></data>
-  <data name="Enum_TaxCode_TaxExempt"><value>Zwolnione z podatku</value></data>
-  <data name="Enum_TaxCode_Excluded"><value>Wyłączone</value></data>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Enum_MemberStatus_Active" xml:space="preserve"><value>Aktywny</value><comment>MemberStatus.Active display text.</comment></data>
+  <data name="Enum_MemberStatus_Inactive" xml:space="preserve"><value>Nieaktywny</value><comment>MemberStatus.Inactive display text.</comment></data>
+  <data name="Enum_Theme_Light" xml:space="preserve"><value>Jasny</value><comment>Theme.Light display text.</comment></data>
+  <data name="Enum_Theme_Dark" xml:space="preserve"><value>Ciemny</value><comment>Theme.Dark display text.</comment></data>
+  <data name="Enum_FeeType_Annual" xml:space="preserve"><value>Roczna</value><comment>FeeType enum — Annual membership fee.</comment></data>
+  <data name="Enum_FeeType_Attendance" xml:space="preserve"><value>Za obecność</value><comment>FeeType enum — per-rehearsal attendance fee.</comment></data>
+  <data name="Enum_FeeType_Other" xml:space="preserve"><value>Inna</value><comment>FeeType enum — other / ad-hoc fee.</comment></data>
+  <data name="Enum_PaymentMethod_Cash" xml:space="preserve"><value>Gotówka</value><comment>PaymentMethod enum — cash.</comment></data>
+  <data name="Enum_PaymentMethod_Check" xml:space="preserve"><value>Czek</value><comment>PaymentMethod enum — cheque payment (enum member name is "Check").</comment></data>
+  <data name="Enum_PaymentMethod_Card" xml:space="preserve"><value>Karta</value><comment>PaymentMethod enum — debit/credit card.</comment></data>
+  <data name="Enum_PaymentMethod_ElectronicTransfer" xml:space="preserve"><value>Przelew elektroniczny</value><comment>PaymentMethod enum — electronic bank transfer.</comment></data>
+  <data name="Enum_PaymentMethod_Other" xml:space="preserve"><value>Inna</value><comment>PaymentMethod enum — other method.</comment></data>
+  <data name="Enum_PaymentType_Annual" xml:space="preserve"><value>Roczna</value><comment>PaymentType enum — payment against an annual fee.</comment></data>
+  <data name="Enum_PaymentType_Attendance" xml:space="preserve"><value>Za obecność</value><comment>PaymentType enum — payment against an attendance fee.</comment></data>
+  <data name="Enum_PaymentType_Other" xml:space="preserve"><value>Inna</value><comment>PaymentType enum — payment against an other/ad-hoc fee.</comment></data>
+  <data name="Enum_AccountType_Income" xml:space="preserve"><value>Przychody</value><comment>AccountType enum — income account.</comment></data>
+  <data name="Enum_AccountType_Expense" xml:space="preserve"><value>Koszty</value><comment>AccountType enum — expense account.</comment></data>
+  <data name="Enum_AccountType_Asset" xml:space="preserve"><value>Aktywa</value><comment>AccountType enum — asset account.</comment></data>
+  <data name="Enum_AccountType_Liability" xml:space="preserve"><value>Zobowiązania</value><comment>AccountType enum — liability account.</comment></data>
+  <data name="Enum_AccountType_Equity" xml:space="preserve"><value>Kapitał własny</value><comment>AccountType enum — equity account.</comment></data>
+  <data name="Enum_TaxCode_Taxable" xml:space="preserve"><value>Opodatkowane</value><comment>TaxCode enum — taxable supply.</comment></data>
+  <data name="Enum_TaxCode_TaxExempt" xml:space="preserve"><value>Zwolnione z podatku</value><comment>TaxCode enum — tax-exempt supply.</comment></data>
+  <data name="Enum_TaxCode_Excluded" xml:space="preserve"><value>Wyłączone</value><comment>TaxCode enum — excluded from tax reporting.</comment></data>
+  <data name="Enum_TaxEntryMode_Inclusive" xml:space="preserve"><value>Podatek wliczony</value><comment>TaxEntryMode enum — the entered amount is the tax-inclusive gross.</comment></data>
+  <data name="Enum_TaxEntryMode_Exclusive" xml:space="preserve"><value>Podatek niewliczony</value><comment>TaxEntryMode enum — the entered amount is the net; tax is added on top.</comment></data>
+  <data name="Enum_ReconciliationStatus_Draft" xml:space="preserve"><value>Robocza</value><comment>ReconciliationStatus enum — draft (in progress).</comment></data>
+  <data name="Enum_ReconciliationStatus_Finalised" xml:space="preserve"><value>Sfinalizowana</value><comment>ReconciliationStatus enum — finalised (locked).</comment></data>
+  <data name="Enum_JournalEntryType_Income" xml:space="preserve"><value>Przychód</value><comment>JournalEntryType enum — income receipt.</comment></data>
+  <data name="Enum_JournalEntryType_ExpensePayment" xml:space="preserve"><value>Płatność wydatku</value><comment>JournalEntryType enum — expense payment.</comment></data>
+  <data name="Enum_JournalEntryType_Transfer" xml:space="preserve"><value>Przelew</value><comment>JournalEntryType enum — inter-account transfer.</comment></data>
+  <data name="Enum_JournalEntryType_BankDeposit" xml:space="preserve"><value>Wpłata bankowa</value><comment>JournalEntryType enum — bank deposit.</comment></data>
+  <data name="Enum_JournalEntryType_GeneralJournal" xml:space="preserve"><value>Zapis dziennika ogólnego</value><comment>JournalEntryType enum — general journal entry.</comment></data>
+  <data name="Enum_JournalEntryType_OpeningBalance" xml:space="preserve"><value>Saldo otwarcia</value><comment>JournalEntryType enum — opening balance entry.</comment></data>
 </root>

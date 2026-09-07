@@ -1,27 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <data name="Enum_MemberStatus_Active"><value>Attivo</value></data>
-  <data name="Enum_MemberStatus_Inactive"><value>Inattivo</value></data>
-  <data name="Enum_Theme_Light"><value>Chiaro</value></data>
-  <data name="Enum_Theme_Dark"><value>Scuro</value></data>
-  <data name="Enum_FeeType_Annual"><value>Annuale</value></data>
-  <data name="Enum_FeeType_Attendance"><value>Presenza</value></data>
-  <data name="Enum_FeeType_Other"><value>Altro</value></data>
-  <data name="Enum_PaymentMethod_Cash"><value>Contanti</value></data>
-  <data name="Enum_PaymentMethod_Check"><value>Assegno</value></data>
-  <data name="Enum_PaymentMethod_Card"><value>Carta</value></data>
-  <data name="Enum_PaymentMethod_ElectronicTransfer"><value>Bonifico elettronico</value></data>
-  <data name="Enum_PaymentMethod_Other"><value>Altro</value></data>
-  <data name="Enum_AccountType_Income"><value>Ricavi</value></data>
-  <data name="Enum_AccountType_Expense"><value>Costi</value></data>
-  <data name="Enum_AccountType_Asset"><value>Attività</value></data>
-  <data name="Enum_AccountType_Liability"><value>Passività</value></data>
-  <data name="Enum_AccountType_Equity"><value>Patrimonio netto</value></data>
-  <data name="Enum_TaxCode_Taxable"><value>Imponibile</value></data>
-  <data name="Enum_TaxCode_TaxExempt"><value>Esente da imposte</value></data>
-  <data name="Enum_TaxCode_Excluded"><value>Escluso</value></data>
-  <data name="Enum_TaxEntryMode_Inclusive"><value>Imposta inclusa</value></data>
-  <data name="Enum_TaxEntryMode_Exclusive"><value>Imposta esclusa</value></data>
-  <data name="Enum_ReconciliationStatus_Draft"><value>Bozza</value></data>
-  <data name="Enum_ReconciliationStatus_Finalised"><value>Finalizzato</value></data>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Enum_MemberStatus_Active" xml:space="preserve"><value>Attivo</value><comment>MemberStatus.Active display text.</comment></data>
+  <data name="Enum_MemberStatus_Inactive" xml:space="preserve"><value>Inattivo</value><comment>MemberStatus.Inactive display text.</comment></data>
+  <data name="Enum_Theme_Light" xml:space="preserve"><value>Chiaro</value><comment>Theme.Light display text.</comment></data>
+  <data name="Enum_Theme_Dark" xml:space="preserve"><value>Scuro</value><comment>Theme.Dark display text.</comment></data>
+  <data name="Enum_FeeType_Annual" xml:space="preserve"><value>Annuale</value><comment>FeeType enum — Annual membership fee.</comment></data>
+  <data name="Enum_FeeType_Attendance" xml:space="preserve"><value>Presenza</value><comment>FeeType enum — per-rehearsal attendance fee.</comment></data>
+  <data name="Enum_FeeType_Other" xml:space="preserve"><value>Altro</value><comment>FeeType enum — other / ad-hoc fee.</comment></data>
+  <data name="Enum_PaymentMethod_Cash" xml:space="preserve"><value>Contanti</value><comment>PaymentMethod enum — cash.</comment></data>
+  <data name="Enum_PaymentMethod_Check" xml:space="preserve"><value>Assegno</value><comment>PaymentMethod enum — cheque payment (enum member name is "Check").</comment></data>
+  <data name="Enum_PaymentMethod_Card" xml:space="preserve"><value>Carta</value><comment>PaymentMethod enum — debit/credit card.</comment></data>
+  <data name="Enum_PaymentMethod_ElectronicTransfer" xml:space="preserve"><value>Bonifico elettronico</value><comment>PaymentMethod enum — electronic bank transfer.</comment></data>
+  <data name="Enum_PaymentMethod_Other" xml:space="preserve"><value>Altro</value><comment>PaymentMethod enum — other method.</comment></data>
+  <data name="Enum_PaymentType_Annual" xml:space="preserve"><value>Annuale</value><comment>PaymentType enum — payment against an annual fee.</comment></data>
+  <data name="Enum_PaymentType_Attendance" xml:space="preserve"><value>Presenza</value><comment>PaymentType enum — payment against an attendance fee.</comment></data>
+  <data name="Enum_PaymentType_Other" xml:space="preserve"><value>Altro</value><comment>PaymentType enum — payment against an other/ad-hoc fee.</comment></data>
+  <data name="Enum_AccountType_Income" xml:space="preserve"><value>Ricavi</value><comment>AccountType enum — income account.</comment></data>
+  <data name="Enum_AccountType_Expense" xml:space="preserve"><value>Costi</value><comment>AccountType enum — expense account.</comment></data>
+  <data name="Enum_AccountType_Asset" xml:space="preserve"><value>Attività</value><comment>AccountType enum — asset account.</comment></data>
+  <data name="Enum_AccountType_Liability" xml:space="preserve"><value>Passività</value><comment>AccountType enum — liability account.</comment></data>
+  <data name="Enum_AccountType_Equity" xml:space="preserve"><value>Patrimonio netto</value><comment>AccountType enum — equity account.</comment></data>
+  <data name="Enum_TaxCode_Taxable" xml:space="preserve"><value>Imponibile</value><comment>TaxCode enum — taxable supply.</comment></data>
+  <data name="Enum_TaxCode_TaxExempt" xml:space="preserve"><value>Esente da imposte</value><comment>TaxCode enum — tax-exempt supply.</comment></data>
+  <data name="Enum_TaxCode_Excluded" xml:space="preserve"><value>Escluso</value><comment>TaxCode enum — excluded from tax reporting.</comment></data>
+  <data name="Enum_TaxEntryMode_Inclusive" xml:space="preserve"><value>Imposta inclusa</value><comment>TaxEntryMode enum — the entered amount is the tax-inclusive gross.</comment></data>
+  <data name="Enum_TaxEntryMode_Exclusive" xml:space="preserve"><value>Imposta esclusa</value><comment>TaxEntryMode enum — the entered amount is the net; tax is added on top.</comment></data>
+  <data name="Enum_ReconciliationStatus_Draft" xml:space="preserve"><value>Bozza</value><comment>ReconciliationStatus enum — draft (in progress).</comment></data>
+  <data name="Enum_ReconciliationStatus_Finalised" xml:space="preserve"><value>Finalizzato</value><comment>ReconciliationStatus enum — finalised (locked).</comment></data>
+  <data name="Enum_JournalEntryType_Income" xml:space="preserve"><value>Ricavo</value><comment>JournalEntryType enum — income receipt.</comment></data>
+  <data name="Enum_JournalEntryType_ExpensePayment" xml:space="preserve"><value>Pagamento spesa</value><comment>JournalEntryType enum — expense payment.</comment></data>
+  <data name="Enum_JournalEntryType_Transfer" xml:space="preserve"><value>Trasferimento</value><comment>JournalEntryType enum — inter-account transfer.</comment></data>
+  <data name="Enum_JournalEntryType_BankDeposit" xml:space="preserve"><value>Versamento bancario</value><comment>JournalEntryType enum — bank deposit.</comment></data>
+  <data name="Enum_JournalEntryType_GeneralJournal" xml:space="preserve"><value>Registrazione generale</value><comment>JournalEntryType enum — general journal entry.</comment></data>
+  <data name="Enum_JournalEntryType_OpeningBalance" xml:space="preserve"><value>Saldo iniziale</value><comment>JournalEntryType enum — opening balance entry.</comment></data>
 </root>
