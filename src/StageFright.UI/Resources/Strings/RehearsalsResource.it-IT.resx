@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Rehearsals_List_PageTitle"><value>Prove — StageFright Community</value></data>
+  <data name="Rehearsals_List_Heading"><value>Prove</value></data>
+  <data name="Rehearsals_List_ScheduleButton"><value>Programma prova</value></data>
+  <data name="Rehearsals_List_SearchPlaceholder"><value>Cerca prove…</value></data>
+  <data name="Rehearsals_List_SearchAriaLabel"><value>Cerca prove</value></data>
+  <data name="Rehearsals_List_LoadingText"><value>Caricamento prove…</value></data>
+  <data name="Rehearsals_List_EmptyNone"><value>Nessuna prova programmata.</value></data>
+  <data name="Rehearsals_List_DateColumn"><value>Data</value></data>
+  <data name="Rehearsals_List_TimeColumn"><value>Ora</value></data>
+  <data name="Rehearsals_List_AttendanceColumn"><value>Presenze</value></data>
+  <data name="Rehearsals_List_NotesColumn"><value>Note</value></data>
+  <data name="Rehearsals_Form_PageTitle"><value>Programma prova — StageFright Community</value></data>
+  <data name="Rehearsals_Form_Heading"><value>Programma prova</value></data>
+  <data name="Rehearsals_Form_DateLabel"><value>Data</value></data>
+  <data name="Rehearsals_Form_TimeLabel"><value>Ora</value></data>
+  <data name="Rehearsals_Form_NotesLabel"><value>Note</value></data>
+  <data name="Rehearsals_Form_ScheduleButton"><value>Programma</value></data>
+  <data name="Rehearsals_Attendance_HeadingView"><value>Presenze</value></data>
+  <data name="Rehearsals_Attendance_HeadingRecord"><value>Registra presenze</value></data>
+  <data name="Rehearsals_Attendance_BackButton"><value>Torna alle prove</value></data>
+  <data name="Rehearsals_Attendance_AttendedColumn"><value>Presente</value></data>
+  <data name="Rehearsals_Attendance_PaidColumn"><value>Pagato</value></data>
+  <data name="Rehearsals_Attendance_MemberColumn"><value>Iscritto</value></data>
+  <data name="Rehearsals_Attendance_FeeColumn"><value>Quota</value></data>
+  <data name="Rehearsals_Attendance_SaveButton"><value>Salva presenze</value></data>
+</root>

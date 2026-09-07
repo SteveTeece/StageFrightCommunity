@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Shared_Action_Save"><value>Salva</value></data>
+  <data name="Shared_Action_Saving"><value>Salvataggio…</value></data>
+  <data name="Shared_Action_Cancel"><value>Annulla</value></data>
+  <data name="Shared_Action_Edit"><value>Modifica</value></data>
+  <data name="Shared_Common_Loading"><value>Caricamento…</value></data>
+  <data name="Shared_Table_ActionsColumn"><value>Azioni</value></data>
+  <data name="Shared_Table_StatusColumn"><value>Stato</value></data>
+  <data name="Shared_Error_Unexpected"><value>Si è verificato un errore imprevisto. Riprova.</value></data>
+  <data name="Shared_Tile_LoadError"><value>Impossibile caricare</value></data>
+  <data name="Shared_Tile_LoadErrorFor"><value>Impossibile caricare {TileTitle}</value></data>
+  <data name="Shared_Action_Close"><value>Chiudi</value></data>
+  <data name="Shared_Action_Remove"><value>Rimuovi</value></data>
+  <data name="Shared_Action_TryAgain"><value>Riprova</value></data>
+  <data name="Shared_Action_Apply"><value>Applica</value></data>
+  <data name="Shared_ListBox_DefaultEmpty"><value>Non è stato ancora aggiunto nulla.</value></data>
+  <data name="Shared_AddAccount_NamePlaceholder"><value>Nome del conto</value></data>
+  <data name="Shared_AddAccount_TypeAriaLabel"><value>Tipo di conto</value></data>
+  <data name="Shared_AddAccount_BankAccountLabel"><value>Conto bancario o cassa</value></data>
+  <data name="Shared_AddAccount_AddingText"><value>Aggiunta…</value></data>
+  <data name="Shared_AddAccount_SubmitButton"><value>Aggiungi conto</value></data>
+  <data name="Shared_AddAccount_DuplicateError"><value>Esiste già un conto denominato '{AccountName}'.</value></data>
+  <data name="Shared_OpeningBalances_NumberColumn"><value>Numero</value></data>
+  <data name="Shared_OpeningBalances_AccountColumn"><value>Conto</value></data>
+  <data name="Shared_OpeningBalances_TypeColumn"><value>Tipo</value></data>
+  <data name="Shared_OpeningBalances_BalanceColumn"><value>Saldo</value></data>
+  <data name="Shared_OpeningBalances_BalanceForAriaLabel"><value>Saldo di {AccountName}</value></data>
+  <data name="Shared_OpeningBalances_PostingText"><value>Registrazione…</value></data>
+  <data name="Shared_OpeningBalances_SubmitButton"><value>Registra saldi iniziali</value></data>
+</root>

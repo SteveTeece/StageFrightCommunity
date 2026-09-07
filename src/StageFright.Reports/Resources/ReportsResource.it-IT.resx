@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Reports_Column_Account"><value>Conto</value></data>
+  <data name="Reports_Column_Amount"><value>Importo</value></data>
+  <data name="Reports_Column_Debit"><value>Dare</value></data>
+  <data name="Reports_Column_Credit"><value>Avere</value></data>
+  <data name="Reports_Column_Date"><value>Data</value></data>
+  <data name="Reports_Column_Description"><value>Descrizione</value></data>
+  <data name="Reports_Column_Balance"><value>Saldo</value></data>
+  <data name="Reports_Section_Assets"><value>Attività</value></data>
+  <data name="Reports_Section_Liabilities"><value>Passività</value></data>
+  <data name="Reports_Section_Equity"><value>Patrimonio netto</value></data>
+  <data name="Reports_Section_Income"><value>Ricavi</value></data>
+  <data name="Reports_Section_Expenses"><value>Costi</value></data>
+  <data name="Reports_Filter_From"><value>Da</value></data>
+  <data name="Reports_Filter_To"><value>A</value></data>
+  <data name="Reports_Filter_OptionAll"><value>Tutti</value></data>
+  <data name="Reports_Filter_OptionArchived"><value>Archiviati</value></data>
+  <data name="Reports_Filter_OptionActiveOnly"><value>Solo attivi</value></data>
+  <data name="Reports_Filter_OptionArchivedOnly"><value>Solo archiviati</value></data>
+  <data name="Reports_Filter_OptionCustom"><value>Personalizzato</value></data>
+  <data name="Reports_Common_OpeningBalance"><value>Saldo iniziale</value></data>
+  <data name="Reports_Common_ClosingBalance"><value>Saldo finale</value></data>
+  <data name="Reports_MemberList_Name"><value>Elenco iscritti</value></data>
+  <data name="Reports_MemberList_StatusFilterLabel"><value>Stato</value></data>
+  <data name="Reports_MemberList_NameColumn"><value>Nome</value></data>
+  <data name="Reports_MemberList_AddressColumn"><value>Indirizzo</value></data>
+  <data name="Reports_MemberList_PhoneColumn"><value>Telefono</value></data>
+  <data name="Reports_MemberList_EmailColumn"><value>Email</value></data>
+  <data name="Reports_MemberList_JoinDateColumn"><value>Data di iscrizione</value></data>
+  <data name="Reports_MemberList_AgeColumn"><value>Età</value></data>
+  <data name="Reports_MemberList_StatusColumn"><value>Stato</value></data>
+  <data name="Reports_Committee_Name"><value>Report del comitato</value></data>
+  <data name="Reports_IncomeStatement_Name"><value>Prospetto dei ricavi e dei costi</value></data>
+  <data name="Reports_TrialBalance_Name"><value>Bilancio di verifica</value></data>
+  <data name="Reports_AccountRegister_Name"><value>Registro conti</value></data>
+  <data name="Reports_BalanceSheet_Name"><value>Stato patrimoniale</value></data>
+</root>

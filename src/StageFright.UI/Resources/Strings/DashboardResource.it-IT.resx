@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Dashboard_Page_Title"><value>Dashboard — StageFright Community</value></data>
+  <data name="Dashboard_LoadingText"><value>Caricamento…</value></data>
+  <data name="Dashboard_Heading"><value>Dashboard</value></data>
+  <data name="Dashboard_CoreMetricsHeading"><value>Metriche principali</value></data>
+  <data name="Dashboard_ExtensionsHeading"><value>Estensioni</value></data>
+</root>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Finance_Tile_Title"><value>Finanze</value></data>
+  <data name="Finance_Page_PageTitle"><value>Finanze — StageFright Community</value></data>
+  <data name="Finance_Page_Heading"><value>Finanze</value></data>
+  <data name="Finance_Page_TabOutstanding"><value>In sospeso</value></data>
+  <data name="Finance_Page_TabRecordIncome"><value>Registra ricavi</value></data>
+  <data name="Finance_Page_TabRecordExpense"><value>Registra costi</value></data>
+  <data name="Finance_Page_TabAnnualFees"><value>Applica quote annuali</value></data>
+  <data name="Finance_Common_ClearButton"><value>Cancella</value></data>
+  <data name="Finance_Common_DateLabel"><value>Data</value></data>
+  <data name="Finance_Common_AmountLabel"><value>Importo</value></data>
+  <data name="Finance_Common_DescriptionLabel"><value>Descrizione</value></data>
+  <data name="Finance_Common_TaxTreatmentLabel"><value>Trattamento fiscale</value></data>
+  <data name="Finance_Common_TaxExemptDefaultOption"><value>Esente da imposte (predefinito)</value></data>
+  <data name="Finance_RecordIncome_AccountLabel"><value>Conto</value></data>
+  <data name="Finance_RecordIncome_DepositToLabel"><value>Deposita su</value></data>
+  <data name="Finance_RecordIncome_SubmitButton"><value>Registra ricavi</value></data>
+  <data name="Finance_Balances_LoadingText"><value>Caricamento saldi degli iscritti…</value></data>
+  <data name="Finance_Balances_EmptyText"><value>Nessun saldo in sospeso trovato.</value></data>
+  <data name="Finance_Balances_MemberColumn"><value>Iscritto</value></data>
+  <data name="Finance_Balances_OutstandingColumn"><value>In sospeso</value></data>
+  <data name="Finance_Payment_MethodLabel"><value>Metodo di pagamento</value></data>
+  <data name="Finance_Payment_NotesLabel"><value>Note</value></data>
+  <data name="Finance_Payment_SubmitButton"><value>Registra pagamento iscritto</value></data>
+</root>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Enum_MemberStatus_Active"><value>Attivo</value></data>
+  <data name="Enum_MemberStatus_Inactive"><value>Inattivo</value></data>
+  <data name="Enum_Theme_Light"><value>Chiaro</value></data>
+  <data name="Enum_Theme_Dark"><value>Scuro</value></data>
+  <data name="Enum_FeeType_Annual"><value>Annuale</value></data>
+  <data name="Enum_FeeType_Attendance"><value>Presenza</value></data>
+  <data name="Enum_FeeType_Other"><value>Altro</value></data>
+  <data name="Enum_PaymentMethod_Cash"><value>Contanti</value></data>
+  <data name="Enum_PaymentMethod_Check"><value>Assegno</value></data>
+  <data name="Enum_PaymentMethod_Card"><value>Carta</value></data>
+  <data name="Enum_PaymentMethod_ElectronicTransfer"><value>Bonifico elettronico</value></data>
+  <data name="Enum_PaymentMethod_Other"><value>Altro</value></data>
+  <data name="Enum_AccountType_Income"><value>Ricavi</value></data>
+  <data name="Enum_AccountType_Expense"><value>Costi</value></data>
+  <data name="Enum_AccountType_Asset"><value>Attività</value></data>
+  <data name="Enum_AccountType_Liability"><value>Passività</value></data>
+  <data name="Enum_AccountType_Equity"><value>Patrimonio netto</value></data>
+  <data name="Enum_TaxCode_Taxable"><value>Imponibile</value></data>
+  <data name="Enum_TaxCode_TaxExempt"><value>Esente da imposte</value></data>
+  <data name="Enum_TaxCode_Excluded"><value>Escluso</value></data>
+  <data name="Enum_TaxEntryMode_Inclusive"><value>Imposta inclusa</value></data>
+  <data name="Enum_TaxEntryMode_Exclusive"><value>Imposta esclusa</value></data>
+  <data name="Enum_ReconciliationStatus_Draft"><value>Bozza</value></data>
+  <data name="Enum_ReconciliationStatus_Finalised"><value>Finalizzato</value></data>
+</root>
