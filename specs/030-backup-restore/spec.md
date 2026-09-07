@@ -151,6 +151,7 @@ A treasurer whose organisation uses a non-default currency, a non-English displa
 - **FR-022**: From the read-back file, the system MUST compute the same summary statistics shown to confirm a restore (per-record-type counts, creation date, originating application version) and MUST verify every record-type count against the live database as captured for that backup, archived records included, and against the counts the file records for itself.
 - **FR-023**: The system MUST report the backup as failed — and tell the user the file must not be relied upon — if the file cannot be read back, if the statistics it records are internally inconsistent, or if any record-type count does not match the source data.
 - **FR-024**: The system MUST report a backup as successful only after the read-back and verification in FR-021–FR-023 have passed.
+- **FR-025**: Every user-facing string this feature introduces or rewords MUST ship with a real translation in every language the application distributes — `de-DE`, `en-US`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `pl-PL` — alongside the `en-AU` neutral baseline, delivered in the same change. No added or changed string may be left neutral-only or rely on the English key-by-key fallback to stand in for a missing translation. (Project-wide rule — see `CLAUDE.md` → Localization and `docs/localization/adding-a-language.md` §3.2.)
 
 ### Key Entities *(include if feature involves data)*
 
@@ -173,6 +174,7 @@ A treasurer whose organisation uses a non-default currency, a non-English displa
 - **SC-007**: After a successful restore, the restart advisory is shown 100% of the time and no user reaches the dashboard on pre-restore data.
 - **SC-008**: The three record types and the organisation settings currently missing from the backup format are all present in every new backup, verified by an automated completeness check covering every entity and every settings field.
 - **SC-009**: Every backup reported as successful has been read back from disk with its per-record-type statistics verified against the source data; a backup whose file is unreadable, internally inconsistent, or whose counts do not match the live data is never reported as successful.
+- **SC-010**: For every language the application ships, launching the delivered feature produces no `Missing localization key` warning for any string it added or reworded — each such string is presented in that language, not the English fallback.
 
 ## Assumptions
 

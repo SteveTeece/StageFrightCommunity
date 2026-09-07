@@ -45,7 +45,7 @@ Shared contracts, value types, platform seams, and the version-check swap that e
 **Wave 3 — wire-up + version swap (different files):**
 
 - [ ] **T010** [P] Register `IRecoveryCopyStore`→`MauiRecoveryCopyStore` and `IBackupDestinationPicker`→`MauiBackupDestinationPicker` as singletons in `MauiProgram.RegisterCoreServices` (beside the existing backup-service block) · `src/StageFright.App/MauiProgram.cs`
-- [ ] **T011** [P] Swap `BackupService.ValidateVersion` to call `BackupSchema.IsRestorable`; remove `SupportedMajorVersion`; reword `Validation_Backup_UnsupportedSchemaVersion` to the "update the application and retry" message; empty/unparseable still rejected; update the `IBackupService.ImportAsync` XML doc comment ("major-version check" → "full semantic-version check") (FR-004, FR-019) · `src/StageFright.Core/Contracts/IBackupService.cs`, `src/StageFright.Core/Modules/Settings/BackupService.cs`, `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx`
+- [ ] **T011** [P] Swap `BackupService.ValidateVersion` to call `BackupSchema.IsRestorable`; remove `SupportedMajorVersion`; reword `Validation_Backup_UnsupportedSchemaVersion` to the "update the application and retry" message **and re-translate that key across all seven shipped culture sets, not just the neutral file** (FR-025); empty/unparseable still rejected; update the `IBackupService.ImportAsync` XML doc comment ("major-version check" → "full semantic-version check") (FR-004, FR-019, FR-025) · `src/StageFright.Core/Contracts/IBackupService.cs`, `src/StageFright.Core/Modules/Settings/BackupService.cs`, `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx`, `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.{de-DE,en-US,es-ES,fr-FR,it-IT,ja-JP,pl-PL}.resx`
 
 **⟶ Wait for Wave 3 to finish, then:**
 
@@ -76,7 +76,7 @@ Shared contracts, value types, platform seams, and the version-check swap that e
 **Wave 1 — independent (different new files):**
 
 - [ ] **T016** [P] [US1] `BlankLayout` + `RestartRequiredScreen` + `RestartRequiredScreenTests` — (1) `BlankLayout.razor` + `.razor.cs` in `src/StageFright.UI/Layout/`: a `LayoutComponentBase` that wraps `@Body` in the same `<CultureProvider><ThemeProvider>` chrome as `ShellLayout` but renders **no** `<nav class="shell-sidebar">`, no sidebar links, and no theme toggle — a deliberately chrome-free shell so a terminal screen has no navigation surface (FR-007); paired code-behind, no `@code` block. (2) `RestartRequiredScreen.razor` + `.razor.cs`: `@page "/restart-required"`, `@layout BlankLayout`, `.restart-required` root, a single "close and reopen the application" instruction, and **no** continue / go-to-dashboard / retry control of its own; paired code-behind, no `@code` block. (3) `RestartRequiredScreenTests` (bUnit): renders `RestartRequiredScreen` and asserts the instruction is present and **no** `<a>` / `<button>` / `NavLink` routes to `/dashboard`, `/setup`, or `/first-run-restore`; a companion test renders `BlankLayout` with a stub `Body` fragment and asserts it emits no `.shell-sidebar` and no sidebar `NavLink`s (FR-007) · `src/StageFright.UI/Layout/BlankLayout.razor`, `src/StageFright.UI/Layout/BlankLayout.razor.cs`, `src/StageFright.UI/Pages/Setup/RestartRequiredScreen.razor`, `src/StageFright.UI/Pages/Setup/RestartRequiredScreen.razor.cs`, `tests/StageFright.UI.Tests/Pages/Setup/RestartRequiredScreenTests.cs`
-- [ ] **T017** [P] [US1] Add first-run-restore + restart-screen keys to the **neutral** `SetupResource.resx` (other cultures fall back key-by-key): checkbox label, file-pick prompt, summary field labels, confirm/cancel/continue captions, error text, advancing-progress text, restart instruction · `src/StageFright.UI/Resources/Strings/SetupResource.resx`
+- [ ] **T017** [P] [US1] Add first-run-restore + restart-screen keys — checkbox label, file-pick prompt, summary field labels, confirm/cancel/continue captions, error text, advancing-progress text, restart instruction — to the neutral `SetupResource.resx` **and, fully translated, to every shipped culture set** (`SetupResource.{de-DE,en-US,es-ES,fr-FR,it-IT,ja-JP,pl-PL}.resx`); no key left neutral-only or on the English fallback (FR-025) · `src/StageFright.UI/Resources/Strings/SetupResource.resx`, `src/StageFright.UI/Resources/Strings/SetupResource.{de-DE,en-US,es-ES,fr-FR,it-IT,ja-JP,pl-PL}.resx`
 
 **⟶ Wait for Wave 1 to finish, then:**
 
@@ -122,7 +122,7 @@ Shared contracts, value types, platform seams, and the version-check swap that e
 **Wave 2 — Settings UI (different files):**
 
 - [ ] **T026** [P] [US2] `BackupRestoreTab.razor` + `.razor.cs` — Create button calls `CreateBackupAsync` (native Save dialog + default filename; user-cancel = silent no-op, not an error); `.backup-unencrypted-notice` alert near Create (FR-020); `.backup-verify-result` renders the `BackupVerificationResult`; a successful **restore** now `Nav.NavigateTo("/restart-required")` instead of the inline success message (FR-007, FR-018) · `src/StageFright.UI/Pages/Settings/BackupRestoreTab.razor`, `src/StageFright.UI/Pages/Settings/BackupRestoreTab.razor.cs`
-- [ ] **T027** [P] [US2] Add the unencrypted-file notice text and the verified / "failed — do not rely on this file" text to the **neutral** `SettingsResource.resx` (FR-020) · `src/StageFright.UI/Resources/Strings/SettingsResource.resx`
+- [ ] **T027** [P] [US2] Add the unencrypted-file notice text and the verified / "failed — do not rely on this file" text to the neutral `SettingsResource.resx` **and, fully translated, to every shipped culture set** (`SettingsResource.{de-DE,en-US,es-ES,fr-FR,it-IT,ja-JP,pl-PL}.resx`); no key left neutral-only or on the English fallback (FR-020, FR-025) · `src/StageFright.UI/Resources/Strings/SettingsResource.resx`, `src/StageFright.UI/Resources/Strings/SettingsResource.{de-DE,en-US,es-ES,fr-FR,it-IT,ja-JP,pl-PL}.resx`
 
 **Checkpoint:** US2 works — a verified, self-checked backup written to a user-chosen location and name, audited, with the unencrypted notice; Settings restore adopts the mandatory-restart screen. Backup + restore behaviour is now consistent across first-run and Settings (FR-018).
 
@@ -190,7 +190,7 @@ Cross-cutting docs and a full-suite validation against the Success Criteria. Doc
 
 **Wave 2 — single task:**
 
-- [ ] **T039** Full-rebuild validation — `dotnet build -t:Rebuild` (judge warnings from a full rebuild, not incremental) then `dotnet test` (no `--no-build`); confirm 0 warnings / 0 failures and walk SC-001…SC-009 against the delivered behaviour; report build + test results · repo root
+- [ ] **T039** Full-rebuild validation — `dotnet build -t:Rebuild` (judge warnings from a full rebuild, not incremental) then `dotnet test` (no `--no-build`); confirm 0 warnings / 0 failures and walk SC-001…SC-010 against the delivered behaviour — including launching each shipped language and confirming no `Missing localization key` warning for any string T011/T017/T027 added or reworded (SC-010, FR-025); report build + test results · repo root
 
 ---
 
@@ -203,8 +203,8 @@ Setup and Foundational block every story. Stories are independently testable onc
 
 - **Phase 1 — Setup:** T001 alone.
 - **Phase 2 — Foundational:** Wave 1 `T002–T007` (independent new files) ⟶ Wave 2 `T008, T009` (MAUI impls, need the Wave-1 contracts) ⟶ Wave 3 `T010, T011` (DI in `MauiProgram`; version swap in `BackupService` — different files) ⟶ Wave 4 `T012` (same file as T011).
-- **Phase 3 — US1:** Tests `T013, T014, T015` (independent) ⟶ Impl Wave 1 `T016, T017` (new screen file pair; resx) ⟶ Wave 2 `T018` (`FirstRunRestoreScreen` — needs the `/restart-required` route + resx keys) ⟶ Wave 3 `T019, T020` (route into it; `App.razor.cs` and `FirstRunLanguageScreen` — different files).
-- **Phase 4 — US2:** Tests `T021, T022, T023, T024, T040` (independent) ⟶ Impl Wave 1 `T025` (`BackupService` + `IBackupService`) ⟶ Wave 2 `T026, T027` (`BackupRestoreTab` pair; `SettingsResource.resx` — different files).
+- **Phase 3 — US1:** Tests `T013, T014, T015` (independent) ⟶ Impl Wave 1 `T016, T017` (new screen file pair; `SetupResource` neutral + 7 culture resx) ⟶ Wave 2 `T018` (`FirstRunRestoreScreen` — needs the `/restart-required` route + resx keys) ⟶ Wave 3 `T019, T020` (route into it; `App.razor.cs` and `FirstRunLanguageScreen` — different files).
+- **Phase 4 — US2:** Tests `T021, T022, T023, T024, T040` (independent) ⟶ Impl Wave 1 `T025` (`BackupService` + `IBackupService`) ⟶ Wave 2 `T026, T027` (`BackupRestoreTab` pair; `SettingsResource` neutral + 7 culture resx — different files).
 - **Phase 5 — US3:** `T028` alone; no production task unless it fails.
 - **Phase 6 — US4:** `T029–T034` already complete (`7d2cc93`) ⟶ `T035` alone.
 - **Phase 7 — Polish:** Wave 1 `T036, T037, T038, T041` (three doc files + the SC-001 walk-through) ⟶ Wave 2 `T039` (full build + test, last).
@@ -239,6 +239,7 @@ Setup and Foundational block every story. Stories are independently testable onc
 | FR-022 | T023, T025, T040 |
 | FR-023 | T003, T023, T025, T040 |
 | FR-024 | T023, T025, T026, T040 |
+| FR-025 | T011, T017, T027 |
 
 ## Success Criteria → Task Map
 
@@ -253,3 +254,4 @@ Setup and Foundational block every story. Stories are independently testable onc
 | SC-007 | T013, T016, T018, T024 | restart advisory shown; no dashboard on pre-restore data |
 | SC-008 | T033 (done `7d2cc93`) | reflection parity guard over every persisted entity + `SettingsBackupDto` |
 | SC-009 | T023, T025 | every "successful" backup was read back and its counts verified |
+| SC-010 | T017, T027, T039 | every added/reworded string shown in every shipped language, never the English fallback |

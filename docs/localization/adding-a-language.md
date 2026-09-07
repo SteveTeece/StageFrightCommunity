@@ -79,13 +79,16 @@ That is the whole process. There is no supported-languages list, no registration
 screen or business-logic code to touch (**SC-003**). A maintainer's only involvement is code
 review of the `.resx` files in the pull request.
 
-### 3.2 Partial languages are fine
+### 3.2 A shipped language set must be complete
 
-A `<culture>.resx` set does **not** have to be complete to ship. Any key you leave out (or leave
-as the English value) resolves — for that one key — to the Australian English baseline, and the
-fallback is written to the log as a `Warning` (`Missing localization key …`) so gaps are easy to
-find and fill later (**FR-008 / FR-009 / SC-004**). A partial set still counts as "the app ships
-this language" for the purpose of matching the operating-system language on first run.
+Every `<culture>.resx` set the app ships **must** carry a real translation for **every** neutral
+key. Every new or reworded neutral key is translated into all shipped culture sets **in the same
+change** — never neutral-only, never left as the English value (see `CLAUDE.md` → Localization).
+The key-by-key fallback to the Australian English baseline, and its `Warning`
+(`Missing localization key …`) in the log, exist to catch a *regression* — a key that slipped
+past review — not as licence to ship a language with gaps (**FR-008 / FR-009 / SC-004**). A set
+still counts as "the app ships this language" for operating-system-language matching on first run
+even if a regression has briefly opened a gap, but that gap is a bug to close, not a normal state.
 
 ### 3.3 What a *complete* language means — checklist
 
@@ -201,6 +204,10 @@ guard (`Us2LocalizationGuardTests`) explicitly exempts them and nothing else.
   currency symbol**; use `MoneyFormatter`;
 * a deliberately-omitted `qps-ploc` key does not fall back to `en-AU` with a logged `Warning` —
   **missing-key logging**.
+
+Translation **completeness** — every shipped `<culture>.resx` carrying a real value for every
+neutral key, and every new or reworded key translated across all shipped sets in the same change
+(§3.2) — is not yet a build-breaking test; it is a mandatory review gate on the `.resx` diff.
 
 ---
 

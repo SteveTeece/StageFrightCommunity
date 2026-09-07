@@ -28,7 +28,7 @@ The work extends the existing `BackupService` / `BackupRepository` / `BackupEnve
 
 **Constraints**: Existing `.sfbak` files must still load (append-only protobuf field numbers; new collections absent → treated as empty, never a completeness failure). No change to GL double-entry structure, the `2310`/`2320` tax accounts, `TaxCode`, or money formatting. The application never relaunches itself — the user is advised to restart. Backups stay unencrypted (FR-020).
 
-**Scale/Scope**: 20 members in the `BackupSnapshot` (17 today — 16 collections plus the `Settings` singleton — plus 3 new: `JournalEntry`, `BankReconciliation`, `ReconciliationLine`); 20 `*BackupDto` types; ~30 files touched; one new NuGet dependency; two new first-run screens plus a chrome-free `BlankLayout`; one new Core exception; one new Core file-dialog seam.
+**Scale/Scope**: 20 members in the `BackupSnapshot` (17 today — 16 collections plus the `Settings` singleton — plus 3 new: `JournalEntry`, `BankReconciliation`, `ReconciliationLine`); 20 `*BackupDto` types; ~50 files touched (the new / reworded localization keys land in all seven shipped culture `.resx` sets — 21 satellite files — as well as the three neutral ones); one new NuGet dependency; two new first-run screens plus a chrome-free `BlankLayout`; one new Core exception; one new Core file-dialog seam.
 
 ## Constitution Check
 
@@ -48,6 +48,7 @@ The work extends the existing `BackupService` / `BackupRepository` / `BackupEnve
 | §7.1 Technology Stack / §7.2 permitted libraries | **PASS with a note** — `CommunityToolkit.Maui` is a new dependency. It is the standard, .NET-team-maintained MAUI answer for a native Save dialog on Windows + Mac Catalyst and is added centrally via `Directory.Packages.props` + a `<PackageReference>` in `StageFright.App.csproj` per the CLAUDE.md package rule, plus `.UseMauiCommunityToolkit()` in `MauiProgram`. No Complexity Tracking entry is required — this is a permitted-library addition, not a principle violation. |
 | §7.3 Prohibited (no custom JS) | **PASS** — all logic is C#/Blazor; `<InputFile>` (restore selection) and `FileSaver` (backup destination) are framework/package features, not hand-written JS. |
 | §11 Testing Standards (coverage NON-NEGOTIABLE) | **PASS** — every reachable path is covered: first-run restore happy path, cancel-at-summary, corrupt file, newer-version rejection (incl. newer same-major build), older-version acceptance, verification-failure on a truncated/corrupted file, cross-platform + cross-culture/timezone round trip, and an entity↔DTO field-parity guard test (SC-008). |
+| Localization completeness (spec 027 / 029; `CLAUDE.md` → Localization) | **PASS** — the new `SetupResource` first-run-restore / restart keys (T017), the new `SettingsResource` unencrypted-notice / verification keys (T027), and the reworded `Validation_Backup_UnsupportedSchemaVersion` (T011) are each written to the neutral `.resx` **and** translated into all seven shipped culture sets (`de-DE`, `en-US`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `pl-PL`) in the same task — no string left neutral-only or on the English fallback (FR-025 / SC-010). |
 
 No violations → **Complexity Tracking omitted.**
 
