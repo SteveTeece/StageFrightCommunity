@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Settings_Page_Title"><value>Ustawienia</value></data>
+  <data name="Settings_Page_Heading"><value>Ustawienia</value></data>
+  <data name="Settings_Tab_General"><value>Ogólne</value></data>
+  <data name="Settings_Tab_SalesTax"><value>Podatek od sprzedaży</value></data>
+  <data name="Settings_Tab_EventTypes"><value>Typy wydarzeń</value></data>
+  <data name="Settings_Tab_BackupRestore"><value>Kopia zapasowa i przywracanie</value></data>
+  <data name="Settings_Tab_Committee"><value>Komitet</value></data>
+  <data name="Settings_Common_LoadingText"><value>Ładowanie...</value></data>
+  <data name="Settings_Common_SaveButton"><value>Zapisz</value></data>
+  <data name="Settings_Common_SaveSuccess"><value>Ustawienia zapisano.</value></data>
+  <data name="Settings_General_OrganisationNameLabel"><value>Nazwa organizacji</value></data>
+  <data name="Settings_General_AnnualFeeLabel"><value>Roczna składka członkowska</value></data>
+  <data name="Settings_General_AttendanceFeeLabel"><value>Opłata za obecność</value></data>
+</root>

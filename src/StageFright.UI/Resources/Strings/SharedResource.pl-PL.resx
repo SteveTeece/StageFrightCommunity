@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Shared_Action_Save"><value>Zapisz</value></data>
+  <data name="Shared_Action_Cancel"><value>Anuluj</value></data>
+  <data name="Shared_Action_Close"><value>Zamknij</value></data>
+  <data name="Shared_Action_Edit"><value>Edytuj</value></data>
+  <data name="Shared_Common_Loading"><value>Ładowanie...</value></data>
+  <data name="Shared_Table_ActionsColumn"><value>Akcje</value></data>
+  <data name="Shared_Table_StatusColumn"><value>Status</value></data>
+  <data name="Shared_Action_Close"><value>Zamknij</value></data>
+  <data name="Shared_Action_Remove"><value>Usuń</value></data>
+</root>

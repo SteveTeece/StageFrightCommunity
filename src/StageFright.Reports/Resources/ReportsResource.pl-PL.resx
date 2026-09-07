@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Reports_Column_Account"><value>Konto</value></data>
+  <data name="Reports_Column_Amount"><value>Kwota</value></data>
+  <data name="Reports_Column_Debit"><value>Debet</value></data>
+  <data name="Reports_Column_Credit"><value>Kredyt</value></data>
+  <data name="Reports_Column_Date"><value>Data</value></data>
+  <data name="Reports_Column_Description"><value>Opis</value></data>
+  <data name="Reports_Column_Balance"><value>Saldo</value></data>
+  <data name="Reports_Filter_From"><value>Od</value></data>
+  <data name="Reports_Filter_To"><value>Do</value></data>
+  <data name="Reports_Filter_OptionAll"><value>Wszystkie</value></data>
+  <data name="Reports_Filter_OptionArchived"><value>Zarchiwizowane</value></data>
+  <data name="Reports_Common_OpeningBalance"><value>Saldo początkowe</value></data>
+  <data name="Reports_Common_ClosingBalance"><value>Saldo końcowe</value></data>
+  <data name="Reports_MemberList_Name"><value>Lista członków</value></data>
+  <data name="Reports_Committee_Name"><value>Raport komitetu</value></data>
+</root>

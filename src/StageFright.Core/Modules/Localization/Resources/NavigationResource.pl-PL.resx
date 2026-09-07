@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Nav_Members_Title"><value>Członkowie</value></data>
+  <data name="Nav_Dashboard_Title"><value>Pulpit</value></data>
+  <data name="Nav_Rehearsals_Title"><value>Próby</value></data>
+  <data name="Nav_Events_Title"><value>Wydarzenia</value></data>
+  <data name="Nav_Finance_Title"><value>Finanse</value></data>
+  <data name="Nav_Reports_Title"><value>Raporty</value></data>
+  <data name="Nav_Settings_Title"><value>Ustawienia</value></data>
+  <data name="Nav_Sidebar_MainNavigationAriaLabel"><value>Główna nawigacja</value></data>
+  <data name="Nav_ThemeToggle_Label"><value>Wybór motywu</value></data>
+  <data name="Nav_ThemeToggle_SwitchToDarkAriaLabel"><value>Przełącz na tryb ciemny</value></data>
+  <data name="Nav_ThemeToggle_SwitchToLightAriaLabel"><value>Przełącz na tryb jasny</value></data>
+</root>

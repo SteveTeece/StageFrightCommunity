@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Finance_Tile_Title"><value>Finanse</value></data>
+  <data name="Finance_Tile_ActionText"><value>Otwórz finanse</value></data>
+  <data name="Finance_Tile_CurrentBalanceLabel"><value>Bieżące saldo</value></data>
+  <data name="Finance_Page_PageTitle"><value>Finanse</value></data>
+  <data name="Finance_Page_Heading"><value>Przegląd finansów</value></data>
+  <data name="Finance_CashFlowTile_Title"><value>Przepływy pieniężne</value></data>
+  <data name="Finance_CashFlowTile_Empty"><value>Brak danych o przepływach pieniężnych.</value></data>
+  <data name="Finance_OutstandingTile_Title"><value>Należności</value></data>
+  <data name="Finance_OutstandingTile_Empty"><value>Brak zaległych należności.</value></data>
+</root>

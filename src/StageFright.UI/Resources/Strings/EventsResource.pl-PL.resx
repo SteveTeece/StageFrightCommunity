@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Events_Tile_Title"><value>Wydarzenia</value></data>
+  <data name="Events_Tile_ActionText"><value>Otwórz wydarzenia</value></data>
+  <data name="Events_List_PageTitle"><value>Wydarzenia</value></data>
+  <data name="Events_List_Heading"><value>Wszystkie wydarzenia</value></data>
+  <data name="Events_List_ScheduleButton"><value>Zaplanuj wydarzenie</value></data>
+  <data name="Events_List_SearchPlaceholder"><value>Szukaj wydarzeń</value></data>
+  <data name="Events_List_LoadingText"><value>Ładowanie wydarzeń...</value></data>
+  <data name="Events_List_EmptyNone"><value>Brak wydarzeń.</value></data>
+  <data name="Events_Status_Recorded"><value>Zarejestrowane</value></data>
+  <data name="Events_Status_Scheduled"><value>Zaplanowane</value></data>
+</root>

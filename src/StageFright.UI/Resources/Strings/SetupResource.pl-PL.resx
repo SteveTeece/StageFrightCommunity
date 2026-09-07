@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Setup_Page_Title"><value>Konfiguracja</value></data>
+  <data name="Setup_FirstRun_PageTitle"><value>Wybierz język</value></data>
+  <data name="Setup_FirstRun_Heading"><value>Wybierz język wyświetlania</value></data>
+  <data name="Setup_FirstRun_Subheading"><value>Wybierz język używany przez aplikację.</value></data>
+  <data name="Setup_FirstRun_ConfirmButton"><value>Kontynuuj</value></data>
+  <data name="Setup_Wizard_Heading"><value>Konfiguracja StageFright</value></data>
+  <data name="Setup_Wizard_Subheading"><value>Skonfiguruj organizację, konta i komitet.</value></data>
+  <data name="Setup_Tab_OrganisationSettings"><value>Ustawienia organizacji</value></data>
+  <data name="Setup_Tab_ChartOfAccounts"><value>Plan kont</value></data>
+  <data name="Setup_Tab_OpeningBalances"><value>Salda początkowe</value></data>
+  <data name="Setup_Tab_Committee"><value>Komitet</value></data>
+  <data name="Setup_Tab_Review"><value>Przegląd</value></data>
+  <data name="Setup_Nav_NextButton"><value>Dalej</value></data>
+  <data name="Setup_Nav_FinishButton"><value>Zakończ</value></data>
+</root>

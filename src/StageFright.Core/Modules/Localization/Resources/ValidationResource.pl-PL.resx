@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Validation_Member_FirstNameRequired"><value>Imię jest wymagane.</value></data>
+  <data name="Validation_Member_LastNameRequired"><value>Nazwisko jest wymagane.</value></data>
+  <data name="Validation_Member_EmailInvalid"><value>Nieprawidłowy format adresu e-mail.</value></data>
+  <data name="Validation_Member_DateOfBirthInPast"><value>Data urodzenia musi przypadać w przeszłości.</value></data>
+  <data name="Validation_Event_ParticipationBeforeEventDate"><value>Nie można zarejestrować udziału przed datą wydarzenia.</value></data>
+  <data name="Validation_Attendance_BeforeRehearsalDate"><value>Nie można zarejestrować obecności przed datą próby.</value></data>
+  <data name="Validation_Settings_NotConfigured"><value>Ustawienia aplikacji nie są skonfigurowane.</value></data>
+</root>

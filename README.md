@@ -83,6 +83,7 @@ See [SETUP.md](docs/SETUP.md) for full developer setup, database/migration comma
 | 🇫🇷 | French | `fr-FR` |
 | 🇪🇸 | Spanish | `es-ES` |
 | 🇮🇹 | Italian | `it-IT` |
+| 🇵🇱 | Polish | `pl-PL` |
 
 ## Architecture
 

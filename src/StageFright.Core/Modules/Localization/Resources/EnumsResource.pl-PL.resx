@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Enum_MemberStatus_Active"><value>Aktywny</value></data>
+  <data name="Enum_MemberStatus_Inactive"><value>Nieaktywny</value></data>
+  <data name="Enum_Theme_Light"><value>Jasny</value></data>
+  <data name="Enum_Theme_Dark"><value>Ciemny</value></data>
+  <data name="Enum_FeeType_Annual"><value>Roczna</value></data>
+  <data name="Enum_FeeType_Attendance"><value>Za obecność</value></data>
+  <data name="Enum_FeeType_Other"><value>Inna</value></data>
+  <data name="Enum_PaymentMethod_Cash"><value>Gotówka</value></data>
+  <data name="Enum_PaymentMethod_Check"><value>Czek</value></data>
+  <data name="Enum_PaymentMethod_Card"><value>Karta</value></data>
+  <data name="Enum_PaymentMethod_ElectronicTransfer"><value>Przelew elektroniczny</value></data>
+  <data name="Enum_PaymentMethod_Other"><value>Inna</value></data>
+  <data name="Enum_TaxCode_Taxable"><value>Opodatkowane</value></data>
+  <data name="Enum_TaxCode_TaxExempt"><value>Zwolnione z podatku</value></data>
+  <data name="Enum_TaxCode_Excluded"><value>Wyłączone</value></data>
+</root>

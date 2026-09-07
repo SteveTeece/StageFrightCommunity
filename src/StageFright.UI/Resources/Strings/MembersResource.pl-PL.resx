@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Members_List_PageTitle"><value>Członkowie</value></data>
+  <data name="Members_List_Heading"><value>Lista członków</value></data>
+  <data name="Members_List_AddButton"><value>Dodaj członka</value></data>
+  <data name="Members_List_SearchPlaceholder"><value>Szukaj członków</value></data>
+  <data name="Members_List_LoadingText"><value>Ładowanie...</value></data>
+  <data name="Members_List_NameColumn"><value>Imię i nazwisko</value></data>
+  <data name="Members_List_EmailColumn"><value>E-mail</value></data>
+  <data name="Members_List_PhoneColumn"><value>Telefon</value></data>
+</root>
