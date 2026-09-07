@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Restore From Backup During First-Run Setup",
   "branch": "030-backup-restore",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,34 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-09-07T11:06:13.264Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-07T11:43:23.458Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-07T11:53:02.413Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-07T11:56:14.310Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-07T11:57:12.621Z"
     }
   ],
   "telemetryInstanceId": "0fc9ad3e-9084-48e2-bb58-11acb578e9c6",
@@ -121,5 +149,39 @@
     "The application does not self-relaunch; the user is advised to restart manually",
     "No change to the underlying .sfbak serialization technology or to GL/tax structures",
     "Backup encryption/password-protection is not decided here (deferred to clarify, FR-020)"
-  ]
+  ],
+  "approach": "Extend the existing BackupService/BackupRepository/BackupEnvelope .sfbak pipeline rather than replacing it. Add a dedicated pre-wizard screen /first-run-restore (after /language-select, before /setup) with the FR-001 checkbox, reusing Blazor <InputFile> for file selection and a terminal /restart-required screen for FR-007. Bring the backup format up to the data model (3 finance record types + 12 Settings fields + Fee.TaxCode / Transaction.TaxCode / Transaction.JournalEntryId) via append-only protobuf members, schema 1.1.0 to 1.2.0, keeping older files restorable. Add post-write read-back verification (FR-021-024) throwing BackupVerificationException, a full semver version comparison (reject newer incl. same-major), a native Save dialog via CommunityToolkit.Maui FileSaver behind IBackupDestinationPicker, a stable recovery-copy location via IRecoveryCopyStore, and a cross-platform/cross-locale round-trip test.",
+  "decisions": [
+    {
+      "decision": "Add CommunityToolkit.Maui and use FileSaver behind a Core IBackupDestinationPicker seam for the native Save dialog",
+      "why": "The app has no save-dialog mechanism today (backups dump to My Documents); MAUI Essentials has no save picker; FileSaver is the standard cross-platform (Windows+MacCatalyst) answer and pre-fills the dialog name, matching FR-010",
+      "rejected": "Hand-rolled per-platform pickers (WinRT FileSavePicker HWND interop + Mac UIDocumentPickerViewController) - more code, more #if branching, no extra capability"
+    },
+    {
+      "decision": "New /first-run-restore is always the first-run gateway to /setup; App.razor.cs targets /language-select or /first-run-restore, never /setup directly",
+      "why": "Spec Assumptions require a dedicated pre-wizard restore screen matching spec 029s pattern; routing through it on every first run keeps the restore option reachable even on a relaunch that chose a language but never finished setup",
+      "rejected": "Putting the checkbox on FirstRunLanguageScreen - mixes two unrelated decisions and tangles that screens debug-seed branch"
+    },
+    {
+      "decision": "New protobuf members are append-only (envelope 24/25/26; SettingsBackupDto 10,19-29; Fee 10; Transaction 12/13); schema 1.1.0 to 1.2.0; the 3 new collection keys are NOT added to the completeness gate",
+      "why": "Older .sfbak files must still restore (FR-019 older-version-accepted); absent collections already normalise to empty and settings fall back to entity defaults",
+      "rejected": "Adding new keys to ValidateCompleteness - would make every existing backup fail to restore"
+    },
+    {
+      "decision": "BackupService does the FR-021-024 read-back verification itself right after write, throwing BackupVerificationException on any count/readability failure and leaving the file on disk",
+      "why": "One code path computes the restore-confirmation counts and the post-write-check counts, so the numbers a treasurer sees at handover are provably what a restore will show; exception matches the ImportException idiom",
+      "rejected": "File hashing - proves byte-stability but not semantic count correctness or that the file is readable as a backup"
+    },
+    {
+      "decision": "Version check becomes a full semver comparison against a compiled BackupSchema.CurrentSchemaVersion constant; reject any file newer on any component (incl. newer same-major build), accept equal-or-older",
+      "why": "Clarification widened rejection to newer same-major builds; a compiled constant keeps the check deterministic and host-independent (FR-013/14) and unit-testable without a MAUI runtime",
+      "rejected": "Comparing marketing ApplicationVersion (a hardcoded display placeholder) or keeping the major-only check (fails clarified FR-019)"
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Plan + research + data-model + 4 contracts written for first-run restore, verified backup with native Save dialog, and .sfbak completeness/portability (schema 1.2.0); Constitution Check all PASS",
+      "key_finding": "The .sfbak format has drifted further than the spec Background states: beyond the 3 finance record types and 12 Settings fields, Fee.TaxCode, Transaction.TaxCode and Transaction.JournalEntryId are also missing from their backup DTOs - silent financial data loss on every current restore, so the plan adds a reflection-based entity-vs-DTO field-parity guard test (SC-008)"
+    }
+  }
 }
