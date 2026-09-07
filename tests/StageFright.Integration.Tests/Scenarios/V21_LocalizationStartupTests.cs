@@ -48,7 +48,7 @@ public sealed class V21_LocalizationStartupTests : IAsyncLifetime
     public async Task Should_ResolveToThePersistedLanguage_When_SettingsHasAnExplicitChoice_Integration()
     {
         await SeedSettingsAsync(languageCode: "en-AU");
-        _systemCulture.GetUiCulture().Returns(CultureInfo.GetCultureInfo("de-DE")); // unrelated OS language
+        _systemCulture.GetUiCulture().Returns(CultureInfo.GetCultureInfo("ja-JP")); // unrelated OS language, no shipped set
 
         var culture = await BuildLanguageProvider().ResolveStartupCultureAsync(TestContext.Current.CancellationToken);
 
@@ -59,7 +59,7 @@ public sealed class V21_LocalizationStartupTests : IAsyncLifetime
     public async Task Should_ResolveToEnAu_When_NoExplicitChoiceAndTheOsLanguageShipsNoSet_Integration()
     {
         await SeedSettingsAsync(languageCode: null);
-        _systemCulture.GetUiCulture().Returns(CultureInfo.GetCultureInfo("de-DE"));
+        _systemCulture.GetUiCulture().Returns(CultureInfo.GetCultureInfo("ja-JP"));
 
         var culture = await BuildLanguageProvider().ResolveStartupCultureAsync(TestContext.Current.CancellationToken);
 
