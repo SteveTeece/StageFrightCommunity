@@ -38,7 +38,7 @@ Routing changes:
 
 ## D3 — Enforcing the mandatory restart (FR-007)
 
-**Decision**: On a successful restore (first-run or Settings), navigate to a terminal `RestartRequiredScreen` at `@page "/restart-required"` that renders outside the shell nav and offers **no** "Continue" / "Go to dashboard" action — only "Close and reopen the application". The app does not relaunch itself.
+**Decision**: On a successful restore (first-run or Settings), navigate to a terminal `RestartRequiredScreen` at `@page "/restart-required"`. It uses the standard `ShellLayout` (consistent with `/setup` and `/startup-error` — the app has one layout) but renders **no** "Continue" / "Go to dashboard" / retry control of its own; the only forward action it offers is "Close and reopen the application". A bUnit test (`RestartRequiredScreenTests`) asserts no route-away control is present in its markup. The app does not relaunch itself.
 
 **Rationale**: After a restore, cached configuration, the resolved culture, `MoneyFormatter`'s configured currency, the first-run-complete flag, and `ILanguagePreferenceStore` are all pre-restore in-memory state (spec Edge Cases). A blocking terminal screen is the simplest way to guarantee the user cannot "keep clicking" into a half-restored mixture. On the next launch `App.razor.cs` sees a `Settings` row (restored) → `IsSetupCompleteAsync()` is true → normal routing to `/dashboard`; `LanguageProvider`'s ladder (explicit `Settings.LanguageCode` first) makes the restored language win with no extra code (spec Edge Case "Language recorded outside the database").
 
@@ -132,7 +132,7 @@ Routing changes:
 
 ## Documentation impact (per CLAUDE.md Spec & Docs Workflow)
 
-- `docs/ARCHITECTURE.md` — the backup paragraph ("`BackupRepository` … entity-specific query shapes") and the entity-count wording ("all 13 entity types") go stale → update to 16 and note first-run reachability.
+- `docs/ARCHITECTURE.md` — the backup paragraph ("`BackupRepository` … entity-specific query shapes") and the entity-count wording ("all 13 entity types") go stale → correct to the real `BackupSnapshot` member count (currently 20: 19 collections + the `Settings` singleton — confirm against `BackupSnapshot.cs` before writing a figure) and note first-run reachability.
 - `docs/SETUP.md` — the first-run description ("first-run detection redirects the UI to the `/setup` wizard") must mention the `/first-run-restore` screen and the restore-then-restart path; the "start over" section may note that a recovery copy is written under `FileSystem.AppDataDirectory/recovery`.
 - The living spec drafts `capabilities/app-host/spec.md` and `capabilities/data-access/spec.md` describe first-run routing and `BackupRepository` behaviour; they are `[DRAFT]` and out of the stock spec-kit doc set — not updated here, but the routing/upsert changes are noted for a future living-spec sync.
 - No `specs/016`, `028`, or `029` behaviour is changed; their mentions of `.sfbak` remain accurate.

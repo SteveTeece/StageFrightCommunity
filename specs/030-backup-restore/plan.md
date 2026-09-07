@@ -28,7 +28,7 @@ The work extends the existing `BackupService` / `BackupRepository` / `BackupEnve
 
 **Constraints**: Existing `.sfbak` files must still load (append-only protobuf field numbers; new collections absent → treated as empty, never a completeness failure). No change to GL double-entry structure, the `2310`/`2320` tax accounts, `TaxCode`, or money formatting. The application never relaunches itself — the user is advised to restart. Backups stay unencrypted (FR-020).
 
-**Scale/Scope**: ~16 entity types in the snapshot (13 today + 3 new); ~30 files touched; one new NuGet dependency; two new first-run screens; one new Core exception; one new Core file-dialog seam.
+**Scale/Scope**: 20 members in the `BackupSnapshot` (17 today — 16 collections plus the `Settings` singleton — plus 3 new: `JournalEntry`, `BankReconciliation`, `ReconciliationLine`); 20 `*BackupDto` types; ~30 files touched; one new NuGet dependency; two new first-run screens; one new Core exception; one new Core file-dialog seam.
 
 ## Constitution Check
 

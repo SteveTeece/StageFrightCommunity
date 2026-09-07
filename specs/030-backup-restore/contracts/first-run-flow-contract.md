@@ -10,7 +10,7 @@ State machine: `data-model.md` §8. This file pins the strings and identifiers c
 |---|---|---|---|
 | `/language-select` | `FirstRunLanguageScreen` (existing) | `ShellLayout` | unchanged; Confirm now goes to `/first-run-restore` |
 | `/first-run-restore` | `FirstRunRestoreScreen` (**new**) | `ShellLayout` | the FR-001 pre-wizard restore choice |
-| `/restart-required` | `RestartRequiredScreen` (**new**) | `ShellLayout` | terminal; no navigation away except closing the app |
+| `/restart-required` | `RestartRequiredScreen` (**new**) | `ShellLayout` | terminal — the screen renders no navigation control of its own; the only forward action is relaunching the app (FR-007) |
 | `/setup` | `SetupWizard` (existing) | `ShellLayout` | unchanged |
 
 ## `App.razor.cs` routing rule (changed)
@@ -36,7 +36,7 @@ So the restore option is reachable both on a first launch (via `/language-select
 |---|---|---|
 | `#restore-from-backup` | `<input type="checkbox">` | **must be a checkbox**, not `RadzenSwitch` (Verbatim Constraint). Unchecked by default. |
 | `#restore-file` | `<InputFile accept=".sfbak">` | shown only while the checkbox is checked; copies the pick to a temp `.sfbak`, then `GetManifestAsync` |
-| `.first-run-restore-summary` | container | shown once a manifest is read: per-record-type counts (`> 0` only), `GeneratedAt` (local), originating `ApplicationVersion` |
+| `.first-run-restore-summary` | container | shown once a manifest is read: per-record-type counts (record types with a zero count MAY be omitted from the display — spec FR-003), `GeneratedAt` (local), originating `ApplicationVersion` |
 | `#confirm-restore` | button | visible after the summary; runs `ImportAsync` on `Task.Run` with a `Progress<string>` indicator |
 | `#cancel-restore` | button | clears the manifest + file, checkbox returns to unchecked-equivalent state, nothing changed |
 | `#continue-setup` | button | enabled when the checkbox is unchecked; `Nav.NavigateTo("/setup")` |
@@ -51,6 +51,7 @@ On `ImportAsync` success → `Nav.NavigateTo("/restart-required")`. On failure �
 |---|---|
 | `.restart-required` | root container; renders a single instruction to close and reopen the application |
 | (none) | **no** "Continue" / "Go to dashboard" / retry control — the only way forward is relaunching (FR-007) |
+| (asserted absent) | `RestartRequiredScreenTests` asserts no `<a>` / `<button>` / `NavLink` routing to `/dashboard`, `/setup`, or `/first-run-restore` is present (FR-007) |
 
 ## `BackupRestoreTab` (Settings) — additions
 

@@ -42,7 +42,7 @@ Notes:
 ```csharp
 public interface IBackupRepository
 {
-    /// Now reads 16 entity types (was 13): adds JournalEntries (no query filter),
+    /// Now also reads the three added collections — JournalEntries (no query filter),
     /// BankReconciliations and ReconciliationLines (both IgnoreQueryFilters — archived
     /// drafts included).
     Task<BackupSnapshot> GetFullSnapshotAsync(CancellationToken ct = default);

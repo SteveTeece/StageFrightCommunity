@@ -28,7 +28,7 @@ Shared contracts, value types, platform seams, and the version-check swap that e
 
 - [ ] **T002** [P] `BackupSchema` static class — `const string CurrentSchemaVersion = "1.2.0"`; `bool IsRestorable(string? fileVersion)` = `false` when null/empty/unparseable **or** strictly greater than `CurrentSchemaVersion` on any semver component (a newer same-major build included), `true` when equal or older (FR-019) · `src/StageFright.Core/BackupSchema.cs`
 - [ ] **T003** [P] `BackupVerificationException` — `IReadOnlyList<string> Discrepancies`, `string FilePath`, `DateTime Timestamp`, `Guid CorrelationId`; ctor shape mirrors `ImportException` (FR-023) · `src/StageFright.Core/Exceptions/BackupVerificationException.cs`
-- [ ] **T004** [P] `BackupVerificationResult` — `sealed record (bool Passed, IReadOnlyList<string> Discrepancies, string FilePath)` (data-model §6) · `src/StageFright.Core/Modules/Settings/Backup/BackupVerificationResult.cs`
+- [ ] **T004** [P] `BackupVerificationResult` — `sealed record (bool Passed, IReadOnlyList<string> Discrepancies, string FilePath)` (data-model §6). Note `CreateBackupAsync` only ever returns this with `Passed = true` (verification failure throws `BackupVerificationException`), so the UI's failure state is driven by the caught exception's `Discrepancies`, not by a `Passed = false` result · `src/StageFright.Core/Modules/Settings/Backup/BackupVerificationResult.cs`
 - [ ] **T005** [P] `IRecoveryCopyStore` contract — `string GetRecoveryDirectory()`, never-throw shape like `ILanguagePreferenceStore` (FR-015) · `src/StageFright.Core/Contracts/IRecoveryCopyStore.cs`
 - [ ] **T006** [P] `IBackupDestinationPicker` contract — `Task<BackupDestinationResult> SaveAsync(string suggestedFileName, Stream content, CancellationToken)`; plus `BackupDestinationResult` record (`Cancelled` / `Saved(path)` factories) in its own file (FR-009) · `src/StageFright.Core/Contracts/IBackupDestinationPicker.cs`, `src/StageFright.Core/Contracts/BackupDestinationResult.cs`
 - [ ] **T007** [P] `BackupFileNameBuilder` static — `const string FallbackBaseName = "StageFright"`; `string Build(string? organisationName, DateOnly date)` → `"<sanitised org> backup <yyyy-MM-dd>.sfbak"`, literal word `backup` always present (Verbatim Constraint), `Path.GetInvalidFileNameChars()` stripped, whitespace runs collapsed + trimmed, blank/whitespace org → fallback, date formatted `InvariantCulture "yyyy-MM-dd"` (FR-010) · `src/StageFright.Core/Modules/Settings/BackupFileNameBuilder.cs`
@@ -45,13 +45,13 @@ Shared contracts, value types, platform seams, and the version-check swap that e
 **Wave 3 — wire-up + version swap (different files):**
 
 - [ ] **T010** [P] Register `IRecoveryCopyStore`→`MauiRecoveryCopyStore` and `IBackupDestinationPicker`→`MauiBackupDestinationPicker` as singletons in `MauiProgram.RegisterCoreServices` (beside the existing backup-service block) · `src/StageFright.App/MauiProgram.cs`
-- [ ] **T011** [P] Swap `BackupService.ValidateVersion` to call `BackupSchema.IsRestorable`; remove `SupportedMajorVersion`; reword `Validation_Backup_UnsupportedSchemaVersion` to the "update the application and retry" message; empty/unparseable still rejected (FR-004, FR-019) · `src/StageFright.Core/Modules/Settings/BackupService.cs`, `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx`
+- [ ] **T011** [P] Swap `BackupService.ValidateVersion` to call `BackupSchema.IsRestorable`; remove `SupportedMajorVersion`; reword `Validation_Backup_UnsupportedSchemaVersion` to the "update the application and retry" message; empty/unparseable still rejected; update the `IBackupService.ImportAsync` XML doc comment ("major-version check" → "full semantic-version check") (FR-004, FR-019) · `src/StageFright.Core/Contracts/IBackupService.cs`, `src/StageFright.Core/Modules/Settings/BackupService.cs`, `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx`
 
 **⟶ Wait for Wave 3 to finish, then:**
 
 **Wave 4 — single task (same file as T011):**
 
-- [ ] **T012** `BackupService.ImportAsync` — inject `IRecoveryCopyStore`; write the pre-restore recovery copy (`StageFright-Recovery-<yyyyMMdd-HHmmss>.sfbak`) into `GetRecoveryDirectory()` via the existing `ExportAsync` path on **every** restore (first-run included), replacing `GenerateCheckpointPath` (FR-015) · `src/StageFright.Core/Modules/Settings/BackupService.cs`
+- [ ] **T012** `BackupService.ImportAsync` — inject `IRecoveryCopyStore`; write the pre-restore recovery copy (`StageFright-Recovery-<yyyyMMdd-HHmmss>.sfbak`) into `GetRecoveryDirectory()` via the existing `ExportAsync` path on **every** restore (first-run included), replacing `GenerateCheckpointPath`; standardise the term to "pre-restore recovery copy" in code comments and update the `IBackupService` interface XML doc ("pre-import checkpoint" → "pre-restore recovery copy") (FR-015) · `src/StageFright.Core/Contracts/IBackupService.cs`, `src/StageFright.Core/Modules/Settings/BackupService.cs`
 
 **Checkpoint:** Foundational plumbing exists and is registered; the version check rejects newer files; restores write a durable recovery copy. No user-visible behaviour yet.
 
@@ -75,7 +75,7 @@ Shared contracts, value types, platform seams, and the version-check swap that e
 
 **Wave 1 — independent (different new files):**
 
-- [ ] **T016** [P] [US1] `RestartRequiredScreen.razor` + `.razor.cs` — `@page "/restart-required"`, `ShellLayout`, `.restart-required` root, a single "close and reopen the application" instruction, **no** continue / go-to-dashboard / retry control; paired code-behind, no `@code` block (FR-007) · `src/StageFright.UI/Pages/Setup/RestartRequiredScreen.razor`, `src/StageFright.UI/Pages/Setup/RestartRequiredScreen.razor.cs`
+- [ ] **T016** [P] [US1] `RestartRequiredScreen.razor` + `.razor.cs` + `RestartRequiredScreenTests` — `@page "/restart-required"`, default `ShellLayout` (consistent with `/setup` and `/startup-error` — the app has one layout; no bespoke layout is introduced), `.restart-required` root, a single "close and reopen the application" instruction, and **no** continue / go-to-dashboard / retry / navigation control of its own; paired code-behind, no `@code` block. The bUnit test renders the component and asserts the instruction is present and that **no** `<a>`, `<button>`, or `NavLink` routing to `/dashboard`, `/setup`, or `/first-run-restore` exists in its markup (FR-007) · `src/StageFright.UI/Pages/Setup/RestartRequiredScreen.razor`, `src/StageFright.UI/Pages/Setup/RestartRequiredScreen.razor.cs`, `tests/StageFright.UI.Tests/Pages/Setup/RestartRequiredScreenTests.cs`
 - [ ] **T017** [P] [US1] Add first-run-restore + restart-screen keys to the **neutral** `SetupResource.resx` (other cultures fall back key-by-key): checkbox label, file-pick prompt, summary field labels, confirm/cancel/continue captions, error text, advancing-progress text, restart instruction · `src/StageFright.UI/Resources/Strings/SetupResource.resx`
 
 **⟶ Wait for Wave 1 to finish, then:**
@@ -108,13 +108,14 @@ Shared contracts, value types, platform seams, and the version-check swap that e
 - [ ] **T021** [P] [US2] `BackupFileNameBuilderTests` — exact format, literal word `backup` always present, invalid-char removal, whitespace collapse, blank/whitespace org → `StageFright backup <date>.sfbak`, `yyyy-MM-dd` even under a comma-decimal / non-Gregorian `CultureInfo` (restore ambient culture in `finally`) (FR-010, SC-006) · `tests/StageFright.Core.Tests/Modules/Settings/BackupFileNameBuilderTests.cs`
 - [ ] **T022** [P] [US2] `BackupSchemaTests` — equal & older versions restorable; newer major / newer minor / newer patch / newer same-major build all rejected; null / empty / `"x.y"` / non-numeric rejected (FR-019, SC-005) · `tests/StageFright.Core.Tests/Modules/Settings/BackupSchemaTests.cs`
 - [ ] **T023** [P] [US2] `BackupServiceTests` additions — `CreateBackupAsync` happy path returns `Passed` + writes an `AuditAction.Export` entry; read-back count mismatch / internally-inconsistent counts / unreadable file → `BackupVerificationException` carrying discrepancies, file left on disk, **not** reported successful; user cancels the Save dialog → `OperationCanceledException`, no file, no audit; write/IO failure → `DataAccessException`, no partial/empty file; restore-confirmation counts and post-write-check counts come from one shared helper (FR-009, FR-017, FR-021–FR-024, SC-009) · `tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs`
-- [ ] **T024** [P] [US2] `BackupRestoreTabTests` (bUnit) — `.backup-unencrypted-notice` rendered; Create button calls `IBackupService.CreateBackupAsync` and a user cancel is a silent no-op; `.backup-verify-result` shows "verified" on `Passed` and "failed — do not rely on this file" + `Discrepancies` otherwise; successful restore navigates to `/restart-required` (FR-007, FR-018, FR-020) · `tests/StageFright.UI.Tests/Pages/Settings/BackupRestoreTabTests.cs`
+- [ ] **T024** [P] [US2] `BackupRestoreTabTests` (bUnit) — `.backup-unencrypted-notice` rendered; Create button calls `IBackupService.CreateBackupAsync` and a user cancel is a silent no-op; `.backup-verify-result` shows "verified" when `CreateBackupAsync` returns `Passed`, and "failed — do not rely on this file" + the caught `BackupVerificationException.Discrepancies` when it throws; successful restore navigates to `/restart-required` (FR-007, FR-018, FR-020) · `tests/StageFright.UI.Tests/Pages/Settings/BackupRestoreTabTests.cs`
+- [ ] **T040** [P] [US2] `SettingsBackupJourneyTests` (integration, `_Integration` suffix) — drive `BackupRestoreTab` with a fake `IBackupDestinationPicker` and a real `BackupService` + real SQLite: Create → file written to the fake path with the `BackupFileNameBuilder` default name → read back → `BackupVerificationResult.Passed`, an `AuditAction.Export` row exists; then truncate the written file and re-run → `.backup-verify-result` shows the failure state; then a Settings-path restore of a valid file → navigation to `/restart-required`. Covers the US2 user journey end-to-end per constitution §11.2/§11.4/§11.5 (FR-007, FR-009, FR-017, FR-018, FR-021–FR-024) · `tests/StageFright.Integration.Tests/Scenarios/SettingsBackupJourneyTests.cs`
 
 ### Implementation
 
 **Wave 1 — single task (the service; one file pair):**
 
-- [ ] **T025** [US2] `BackupService` + `IBackupService` — add `Task<BackupVerificationResult> CreateBackupAsync(CancellationToken)`: serialise the snapshot to a stream, hand it to `IBackupDestinationPicker.SaveAsync` with the `BackupFileNameBuilder.Build(orgName, DateOnly.FromDateTime(DateTime.Now))` suggested name, re-open the written file from disk, recompute per-record-type counts and assert three ways (re-read collection lengths == re-read `EntityCounts`; re-read `EntityCounts` == counts of the snapshot captured for this backup, archived rows included; `GeneratedAt` + originating version parse & present), write an `AuditAction.Export` audit entry on pass, throw `BackupVerificationException` (message: the file must not be relied upon) on any failure with the file left on disk, else return `BackupVerificationResult { Passed = true }`; `ExportAsync` also runs the same read-back check so a recovery copy is never silently bad; factor the count computation into one helper shared with `GetManifestAsync` (FR-009, FR-010, FR-017, FR-021–FR-024) · `src/StageFright.Core/Modules/Settings/BackupService.cs`, `src/StageFright.Core/Contracts/IBackupService.cs`
+- [ ] **T025** [US2] `BackupService` + `IBackupService` — add `Task<BackupVerificationResult> CreateBackupAsync(CancellationToken)`: serialise the snapshot to a stream, hand it to `IBackupDestinationPicker.SaveAsync` with the `BackupFileNameBuilder.Build(orgName, DateOnly.FromDateTime(DateTime.Now))` suggested name, re-open the written file from disk, recompute per-record-type counts and assert three ways (re-read collection lengths == re-read `EntityCounts`; re-read `EntityCounts` == counts of the snapshot captured for this backup, archived rows included; `GeneratedAt` + originating version parse & present), write an `AuditAction.Export` audit entry on pass, throw `BackupVerificationException` (message: the file must not be relied upon) on any failure with the file left on disk, else return `BackupVerificationResult { Passed = true }`; `ExportAsync` also runs the same read-back check so a recovery copy is never silently bad; factor the count computation into one helper shared with `GetManifestAsync`; refresh the `IBackupService` XML doc comments to describe `CreateBackupAsync`, the retained internal `ExportAsync`, and the read-back verification (FR-009, FR-010, FR-017, FR-021–FR-024) · `src/StageFright.Core/Modules/Settings/BackupService.cs`, `src/StageFright.Core/Contracts/IBackupService.cs`
 
 **⟶ Wait for Wave 1 to finish, then:**
 
@@ -168,7 +169,7 @@ Shared contracts, value types, platform seams, and the version-check swap that e
 
 **Wave 2 — outstanding:**
 
-- [ ] **T035** [P] [US4] Extend `V9_BackupRestoreTests` — restore a pre-`1.2.0` `.sfbak` and assert the next startup's schema/version check accepts the restored DB (or migrates it forward) rather than routing to first-run; and restore a `1.2.0` file with non-default currency / language / FY-start / tax config + `TaxEntryMode` + journal entries + a finalised reconciliation and assert every one is present and identical after restart (FR-012 acceptance 4, FR-019 older-version-accepted, FR-016) · `tests/StageFright.Integration.Tests/Scenarios/V9_BackupRestoreTests.cs`
+- [ ] **T035** [P] [US4] Extend `V9_BackupRestoreTests` — (a) build a synthetic pre-`1.2.0` envelope in-test (`new BackupEnvelope { SchemaVersion = "1.1.0", … }` with the three new collections omitted; the create path can no longer emit an old version), serialise it, restore it, and assert `ImportAsync` succeeds, the three new collections come back empty, the new `Settings` fields take their entity defaults, and the next `App` routing decision (a restored `Settings` row is present) targets `/dashboard`, not first-run; (b) restore a current `1.2.0` file with non-default currency / language / FY-start / tax config + `TaxEntryMode` + journal entries + a finalised reconciliation and assert every one is present and identical after a simulated restart (FR-012 acceptance 4, FR-019 older-version-accepted, FR-016) · `tests/StageFright.Integration.Tests/Scenarios/V9_BackupRestoreTests.cs`
 
 **Checkpoint:** The backup format is complete and stays complete (parity guard), older files restore and are accepted by startup, and every configured setting survives a round trip.
 
@@ -180,9 +181,10 @@ Cross-cutting docs and a full-suite validation against the Success Criteria. Doc
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T036** [P] `docs/ARCHITECTURE.md` — backup paragraph: entity-count wording "all 13 entity types" → 16 (add `JournalEntry`, `BankReconciliation`, `ReconciliationLine`); note first-run reachability via `/first-run-restore` and the post-write read-back verification · `docs/ARCHITECTURE.md`
+- [ ] **T036** [P] `docs/ARCHITECTURE.md` — backup paragraph: correct the entity-count wording to the real `BackupSnapshot` member count after adding `JournalEntry`, `BankReconciliation`, `ReconciliationLine` (confirm the exact figure against `BackupSnapshot.cs` / `BackupRepository.GetFullSnapshotAsync` — currently 20 members: 19 collections plus the `Settings` singleton — do **not** copy a number from `plan.md` without checking); note first-run reachability via `/first-run-restore` and the post-write read-back verification · `docs/ARCHITECTURE.md`
 - [ ] **T037** [P] `docs/SETUP.md` — first-run description now mentions the `/first-run-restore` screen and the restore-then-restart path; the pre-restore recovery copy is written under `FileSystem.AppDataDirectory/recovery` · `docs/SETUP.md`
 - [ ] **T038** [P] `CLAUDE.md` — Navigation section: first-run detection reaches `/setup` **via** `/first-run-restore`, not directly; add `CommunityToolkit.Maui` (`FileSaver`) to the tech-stack notes; record the first-run restore checkbox as a second sanctioned exception to the RadzenSwitch toggle rule (alongside the wizard's Light/Dark `<select>`) · `CLAUDE.md`
+- [ ] **T041** [P] SC-001 acceptance walk-through — on a clean install, a scripted or manually-timed run of language → tick restore → pick file → confirm → restart → dashboard, asserting the interaction completes in under 2 minutes with no reference to documentation, and recording the elapsed interaction time in the test / PR notes (SC-001) · `tests/StageFright.Integration.Tests/Scenarios/FirstRunRestoreJourneyTests.cs` (assertion + timing note)
 
 **⟶ Wait for Wave 1 to finish, then:**
 
@@ -194,7 +196,7 @@ Cross-cutting docs and a full-suite validation against the Success Criteria. Doc
 
 ## Dependencies & Execution Order
 
-**Phase order:** Setup (P1) → Foundational (P2) → US1 (P3) → US2 (P4) → US3 (P5) → US4 (P6) → Polish (P7).
+**Phase order:** Phase 1 Setup → Phase 2 Foundational → Phase 3 (US1) → Phase 4 (US2) → Phase 5 (US3) → Phase 6 (US4) → Phase 7 Polish.
 Setup and Foundational block every story. Stories are independently testable once Foundational is done; US1 is the MVP. US3 and US4 depend only on Foundational (and the format work already in `7d2cc93`), so they can be built in parallel with US1/US2 by a fan-out host. Polish waits for whichever stories are in scope for the release.
 
 **Within phases:**
@@ -202,10 +204,10 @@ Setup and Foundational block every story. Stories are independently testable onc
 - **Phase 1 — Setup:** T001 alone.
 - **Phase 2 — Foundational:** Wave 1 `T002–T007` (independent new files) ⟶ Wave 2 `T008, T009` (MAUI impls, need the Wave-1 contracts) ⟶ Wave 3 `T010, T011` (DI in `MauiProgram`; version swap in `BackupService` — different files) ⟶ Wave 4 `T012` (same file as T011).
 - **Phase 3 — US1:** Tests `T013, T014, T015` (independent) ⟶ Impl Wave 1 `T016, T017` (new screen file pair; resx) ⟶ Wave 2 `T018` (`FirstRunRestoreScreen` — needs the `/restart-required` route + resx keys) ⟶ Wave 3 `T019, T020` (route into it; `App.razor.cs` and `FirstRunLanguageScreen` — different files).
-- **Phase 4 — US2:** Tests `T021, T022, T023, T024` (independent) ⟶ Impl Wave 1 `T025` (`BackupService` + `IBackupService`) ⟶ Wave 2 `T026, T027` (`BackupRestoreTab` pair; `SettingsResource.resx` — different files).
+- **Phase 4 — US2:** Tests `T021, T022, T023, T024, T040` (independent) ⟶ Impl Wave 1 `T025` (`BackupService` + `IBackupService`) ⟶ Wave 2 `T026, T027` (`BackupRestoreTab` pair; `SettingsResource.resx` — different files).
 - **Phase 5 — US3:** `T028` alone; no production task unless it fails.
 - **Phase 6 — US4:** `T029–T034` already complete (`7d2cc93`) ⟶ `T035` alone.
-- **Phase 7 — Polish:** Wave 1 `T036, T037, T038` (three different doc files) ⟶ Wave 2 `T039` (full build + test, last).
+- **Phase 7 — Polish:** Wave 1 `T036, T037, T038, T041` (three doc files + the SC-001 walk-through) ⟶ Wave 2 `T039` (full build + test, last).
 
 **Parallel opportunities:** Foundational Wave 1 is six-way parallel; Wave 2 two-way. Each story's Tests wave is fully parallel. US1 impl Wave 3, US2 impl Wave 2, and Polish Wave 1 are each parallel across their listed files. Across stories, US3 (`T028`) and US4 (`T035`) can run alongside US1/US2 once Foundational is done.
 
@@ -219,9 +221,9 @@ Setup and Foundational block every story. Stories are independently testable onc
 | FR-004 | T011, T013, T022, T023 |
 | FR-005 | T015, T018 |
 | FR-006 | T014, T015, T019 |
-| FR-007 | T013, T016, T018, T024, T026 |
+| FR-007 | T013, T016, T018, T024, T026, T040 |
 | FR-008 | T013, T018 |
-| FR-009 | T009, T023, T025 |
+| FR-009 | T009, T023, T025, T040 |
 | FR-010 | T007, T021, T025 |
 | FR-011 | T029, T030, T031, T032, T033, T034 |
 | FR-012 | T031, T034, T035 |
@@ -229,11 +231,25 @@ Setup and Foundational block every story. Stories are independently testable onc
 | FR-014 | T021, T028 |
 | FR-015 | T005, T008, T012 |
 | FR-016 | T028, T032, T034, T035 |
-| FR-017 | T023, T025 |
-| FR-018 | T024, T026 |
+| FR-017 | T023, T025, T040 |
+| FR-018 | T024, T026, T040 |
 | FR-019 | T002, T011, T022, T030, T035 |
 | FR-020 | T024, T026, T027 |
-| FR-021 | T023, T025 |
-| FR-022 | T023, T025 |
-| FR-023 | T003, T023, T025 |
-| FR-024 | T023, T025, T026 |
+| FR-021 | T023, T025, T040 |
+| FR-022 | T023, T025, T040 |
+| FR-023 | T003, T023, T025, T040 |
+| FR-024 | T023, T025, T026, T040 |
+
+## Success Criteria → Task Map
+
+| SC | Tasks | Notes |
+|---|---|---|
+| SC-001 | T013, T015, T041 | T041 is the explicit "under 2 minutes, unaided" acceptance check |
+| SC-002 | T028, T034, T035 | full-fidelity round trip |
+| SC-003 | T028 | cross-OS / cross-culture / cross-timezone round trip |
+| SC-004 | T013, T015, T023 | cancel or failure leaves the DB unchanged |
+| SC-005 | T011, T022, T023 | invalid / corrupt / incompatible detected before any DB change |
+| SC-006 | T007, T021 | default filename identifies org + date, always valid |
+| SC-007 | T013, T016, T018, T024 | restart advisory shown; no dashboard on pre-restore data |
+| SC-008 | T033 (done `7d2cc93`) | reflection parity guard over every persisted entity + `SettingsBackupDto` |
+| SC-009 | T023, T025 | every "successful" backup was read back and its counts verified |
