@@ -2,13 +2,245 @@
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
-  <data name="Finance_Tile_Title"><value>Finanse</value></data>
-  <data name="Finance_Tile_ActionText"><value>Otwórz finanse</value></data>
-  <data name="Finance_Tile_CurrentBalanceLabel"><value>Bieżące saldo</value></data>
-  <data name="Finance_Page_PageTitle"><value>Finanse</value></data>
-  <data name="Finance_Page_Heading"><value>Przegląd finansów</value></data>
-  <data name="Finance_CashFlowTile_Title"><value>Przepływy pieniężne</value></data>
-  <data name="Finance_CashFlowTile_Empty"><value>Brak danych o przepływach pieniężnych.</value></data>
-  <data name="Finance_OutstandingTile_Title"><value>Należności</value></data>
-  <data name="Finance_OutstandingTile_Empty"><value>Brak zaległych należności.</value></data>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Finance_Tile_Title" xml:space="preserve"><value>Finanse</value><comment>Dashboard tile heading for the Finance module.</comment></data>
+  <data name="Finance_Tile_ActionText" xml:space="preserve"><value>Otwórz finanse</value><comment>Action link on the Finance dashboard tile.</comment></data>
+  <data name="Finance_Tile_CurrentBalanceLabel" xml:space="preserve"><value>Bieżące saldo</value><comment>Finance tile label under the current organisation balance.</comment></data>
+  <data name="Finance_Tile_MonthIncome" xml:space="preserve"><value>Przychody z {Month} +{Amount}</value><comment>Finance tile month-to-date income. {Month} = current month name, {Amount} = income formatted as AUD.</comment></data>
+  <data name="Finance_Tile_MonthExpenses" xml:space="preserve"><value>wydatki −{Amount}</value><comment>Finance tile month-to-date expenses. {Amount} = expenses formatted as AUD. The leading "−" is a minus sign.</comment></data>
+  <data name="Finance_CashFlowTile_Title" xml:space="preserve"><value>Przepływy pieniężne</value><comment>Dashboard tile heading for the six-month cash-flow chart.</comment></data>
+  <data name="Finance_CashFlowTile_Empty" xml:space="preserve"><value>Brak danych o przepływach pieniężnych.</value><comment>Cash-flow tile message shown when there are no transactions to chart.</comment></data>
+  <data name="Finance_CashFlowTile_IncomeSeries" xml:space="preserve"><value>Przychody</value><comment>Cash-flow chart legend label for the monthly income bars.</comment></data>
+  <data name="Finance_CashFlowTile_ExpensesSeries" xml:space="preserve"><value>Wydatki</value><comment>Cash-flow chart legend label for the monthly expense bars.</comment></data>
+  <data name="Finance_OutstandingTile_Title" xml:space="preserve"><value>Należności</value><comment>Dashboard tile heading for outstanding member fee balances.</comment></data>
+  <data name="Finance_OutstandingTile_ActionText" xml:space="preserve"><value>Zobacz członków</value><comment>Action link on the Outstanding Balances dashboard tile.</comment></data>
+  <data name="Finance_OutstandingTile_MembersOwingLabel" xml:space="preserve"><value>Członkowie zalegający</value><comment>Outstanding Balances tile stat label — count of members with a balance owing.</comment></data>
+  <data name="Finance_OutstandingTile_AttendanceLabel" xml:space="preserve"><value>Za obecność</value><comment>Outstanding Balances tile stat label — outstanding attendance fees total.</comment></data>
+  <data name="Finance_OutstandingTile_AnnualLabel" xml:space="preserve"><value>Roczna</value><comment>Outstanding Balances tile stat label — outstanding annual fees total.</comment></data>
+  <data name="Finance_OutstandingTile_Empty" xml:space="preserve"><value>Brak zaległych należności.</value><comment>Outstanding Balances tile message shown when there is no trend data to chart.</comment></data>
+  <data name="Finance_OutstandingTile_TotalOwedSeries" xml:space="preserve"><value>Łączna należność</value><comment>Outstanding Balances chart legend label for the combined total owed line.</comment></data>
+  <data name="Finance_OutstandingTile_AttendanceSeries" xml:space="preserve"><value>Za obecność</value><comment>Outstanding Balances chart legend label for the outstanding attendance fees line.</comment></data>
+  <data name="Finance_OutstandingTile_AnnualSeries" xml:space="preserve"><value>Roczna</value><comment>Outstanding Balances chart legend label for the outstanding annual fees line.</comment></data>
+  <data name="Finance_Page_PageTitle" xml:space="preserve"><value>Finanse</value><comment>Browser tab title — Finance page.</comment></data>
+  <data name="Finance_Page_Heading" xml:space="preserve"><value>Przegląd finansów</value><comment>Finance page heading.</comment></data>
+  <data name="Finance_Page_TabOutstanding" xml:space="preserve"><value>Zaległości</value><comment>Finance tab — outstanding member balances.</comment></data>
+  <data name="Finance_Page_TabRecordIncome" xml:space="preserve"><value>Zarejestruj przychód</value><comment>Finance tab — record income.</comment></data>
+  <data name="Finance_Page_TabRecordExpense" xml:space="preserve"><value>Zarejestruj wydatek</value><comment>Finance tab — record expense.</comment></data>
+  <data name="Finance_Page_TabAnnualFees" xml:space="preserve"><value>Nalicz opłaty roczne</value><comment>Finance tab — apply annual fees.</comment></data>
+  <data name="Finance_Page_AnnualFeesLink" xml:space="preserve"><value>Przejdź do naliczania opłat rocznych</value><comment>Link inside the Apply Annual Fees tab.</comment></data>
+  <data name="Finance_Common_RecordAnotherButton" xml:space="preserve"><value>Zarejestruj kolejny</value><comment>Button shown after a successful entry to start another.</comment></data>
+  <data name="Finance_Common_ClearButton" xml:space="preserve"><value>Wyczyść</value><comment>Button that resets a Finance form in place.</comment></data>
+  <data name="Finance_Common_SelectOption" xml:space="preserve"><value>— wybierz —</value><comment>Placeholder option in a Finance account/select dropdown.</comment></data>
+  <data name="Finance_Common_DateLabel" xml:space="preserve"><value>Data</value><comment>Finance form field label — date.</comment></data>
+  <data name="Finance_Common_AmountLabel" xml:space="preserve"><value>Kwota</value><comment>Finance form field label — amount.</comment></data>
+  <data name="Finance_Common_DescriptionLabel" xml:space="preserve"><value>Opis</value><comment>Finance form field label — description.</comment></data>
+  <data name="Finance_Common_TaxTreatmentLabel" xml:space="preserve"><value>Traktowanie podatkowe</value><comment>Finance form field label — tax treatment.</comment></data>
+  <data name="Finance_Common_TaxExemptDefaultOption" xml:space="preserve"><value>Zwolnione z podatku (domyślnie)</value><comment>Default option in a tax-treatment dropdown.</comment></data>
+  <data name="Finance_Common_TaxInclusiveHint" xml:space="preserve"><value>Zawiera podatek {Amount}</value><comment>Hint under a taxable amount. {Amount} = tax portion formatted as AUD.</comment></data>
+  <data name="Finance_Common_TaxExclusiveHint" xml:space="preserve"><value>Plus podatek {Amount} — łącznie {Total}</value><comment>Hint under a taxable amount in tax-exclusive entry mode. {Amount} = tax added on top, {Total} = gross, both formatted for the configured currency.</comment></data>
+  <data name="Finance_Common_AmountLabelTaxInclusive" xml:space="preserve"><value>Kwota (z podatkiem)</value><comment>Finance amount field label when the organisation enters tax-inclusive amounts.</comment></data>
+  <data name="Finance_Common_AmountLabelTaxExclusive" xml:space="preserve"><value>Kwota (bez podatku)</value><comment>Finance amount field label when the organisation enters tax-exclusive (net) amounts.</comment></data>
+  <data name="Finance_Common_AmountPositiveError" xml:space="preserve"><value>Kwota musi być większa od zera.</value><comment>Validation error when a Finance amount is zero or negative.</comment></data>
+  <data name="Finance_RecordIncome_NoAccountsHtml" xml:space="preserve"><value>Nie skonfigurowano żadnych kont przychodów. Dodaj konto przychodów w &lt;a href="/finance/accounts"&gt;Planie kont&lt;/a&gt; przed zarejestrowaniem przychodu.</value><comment>Warning (contains a link to the Chart of Accounts) shown when no income accounts exist.</comment></data>
+  <data name="Finance_RecordIncome_AccountLabel" xml:space="preserve"><value>Konto</value><comment>Record Income — account field label.</comment></data>
+  <data name="Finance_RecordIncome_DepositToLabel" xml:space="preserve"><value>Wpłać na</value><comment>Record Income — deposit-account field label.</comment></data>
+  <data name="Finance_RecordIncome_DescriptionPlaceholder" xml:space="preserve"><value>np. loteria świąteczna, coroczna zbiórka…</value><comment>Record Income — description placeholder.</comment></data>
+  <data name="Finance_RecordIncome_SubmitButton" xml:space="preserve"><value>Zarejestruj przychód</value><comment>Record Income — submit button.</comment></data>
+  <data name="Finance_RecordIncome_AccountRequiredError" xml:space="preserve"><value>Wybierz konto.</value><comment>Record Income — validation error when no account is chosen.</comment></data>
+  <data name="Finance_RecordIncome_LoadAccountsError" xml:space="preserve"><value>Nie udało się załadować kont: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_RecordIncome_SuccessMessage" xml:space="preserve"><value>Przychód {Amount} zarejestrowano pomyślnie.</value><comment>{Amount} = income amount formatted as AUD.</comment></data>
+  <data name="Finance_RecordIncome_RecordError" xml:space="preserve"><value>Nie udało się zarejestrować przychodu: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Balances_LoadingText" xml:space="preserve"><value>Ładowanie sald członków…</value><comment>Status text while member balances load.</comment></data>
+  <data name="Finance_Balances_EmptyText" xml:space="preserve"><value>Nie znaleziono zaległych należności.</value><comment>Shown when no members have an outstanding balance.</comment></data>
+  <data name="Finance_Balances_MemberColumn" xml:space="preserve"><value>Członek</value><comment>Balances grid column — member name.</comment></data>
+  <data name="Finance_Balances_OutstandingColumn" xml:space="preserve"><value>Zaległość</value><comment>Balances grid column — outstanding amount.</comment></data>
+  <data name="Finance_Balances_FeeBreakdownColumn" xml:space="preserve"><value>Rozbicie opłat</value><comment>Balances grid column — per-fee breakdown.</comment></data>
+  <data name="Finance_Balances_FeeDue" xml:space="preserve"><value>termin {Date}</value><comment>Fee breakdown — due date prefix. {Date} = formatted due date.</comment></data>
+  <data name="Finance_Balances_HideFeesButton" xml:space="preserve"><value>Ukryj opłaty</value><comment>Button that collapses the per-fee breakdown.</comment></data>
+  <data name="Finance_Balances_ShowFeesButton_One" xml:space="preserve"><value>Pokaż {Count} opłatę</value><comment>Button that expands one fee. {Count} = 1.</comment></data>
+  <data name="Finance_Balances_ShowFeesButton_Other" xml:space="preserve"><value>Pokaż opłaty: {Count}</value><comment>Button that expands the fee breakdown. {Count} = number of fees.</comment></data>
+  <data name="Finance_Balances_RecordPaymentButton" xml:space="preserve"><value>Zarejestruj płatność członka</value><comment>Button opening the payment form for a member.</comment></data>
+  <data name="Finance_Balances_LoadError" xml:space="preserve"><value>Nie udało się załadować sald: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Payment_MemberLabel" xml:space="preserve"><value>Członek:</value><comment>Label preceding the member name on the payment form.</comment></data>
+  <data name="Finance_Payment_MethodLabel" xml:space="preserve"><value>Metoda płatności</value><comment>Payment form — payment method field label.</comment></data>
+  <data name="Finance_Payment_TypeLabel" xml:space="preserve"><value>Typ płatności</value><comment>Payment form — payment type field label.</comment></data>
+  <data name="Finance_Payment_NotesLabel" xml:space="preserve"><value>Notatki</value><comment>Payment form — notes field label.</comment></data>
+  <data name="Finance_Payment_SubmitButton" xml:space="preserve"><value>Zarejestruj płatność członka</value><comment>Payment form — submit button.</comment></data>
+  <data name="Finance_Payment_UpdateNotesButton" xml:space="preserve"><value>Zaktualizuj notatki</value><comment>Payment form — button to save an edited note after the payment is recorded.</comment></data>
+  <data name="Finance_Payment_BackToBalancesButton" xml:space="preserve"><value>Powrót do sald</value><comment>Payment form — button returning to the balances list after recording.</comment></data>
+  <data name="Finance_Payment_LoadError" xml:space="preserve"><value>Nie udało się załadować członka: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Payment_NoFeeSelectedError" xml:space="preserve"><value>Należy wybrać co najmniej jedną zaległą opłatę.</value><comment>Payment form validation — no fee selected.</comment></data>
+  <data name="Finance_Payment_AmountExceedsError" xml:space="preserve"><value>Kwota przekracza pozostałą sumę wybranych opłat.</value><comment>Payment form validation — amount too large.</comment></data>
+  <data name="Finance_Payment_SuccessMessage" xml:space="preserve"><value>Płatność {Amount} zarejestrowano pomyślnie.</value><comment>{Amount} = payment amount formatted as AUD.</comment></data>
+  <data name="Finance_Payment_RecordError" xml:space="preserve"><value>Nie udało się zarejestrować płatności: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Payment_NotesUpdated" xml:space="preserve"><value>Notatki zaktualizowano.</value><comment>Confirmation after editing a recorded payment's note.</comment></data>
+  <data name="Finance_Payment_UpdateNotesError" xml:space="preserve"><value>Nie udało się zaktualizować notatek: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_FeeSelection_EmptyText" xml:space="preserve"><value>Ten członek nie ma zaległych opłat.</value><comment>Shown when the member has no outstanding fees to pay.</comment></data>
+  <data name="Finance_FeeSelection_SelectColumn" xml:space="preserve"><value>Wybór</value><comment>Fee-selection grid column — row select checkbox.</comment></data>
+  <data name="Finance_FeeSelection_SelectAllLabel" xml:space="preserve"><value>Wszystkie</value><comment>Label beside the select-all checkbox.</comment></data>
+  <data name="Finance_FeeSelection_SelectAllAriaLabel" xml:space="preserve"><value>Zaznacz wszystkie zaległe opłaty</value><comment>aria-label for the select-all checkbox.</comment></data>
+  <data name="Finance_FeeSelection_SelectRowAriaLabel" xml:space="preserve"><value>Zaznacz opłatę {FeeType} z dnia {Date}</value><comment>aria-label for a fee row checkbox. {FeeType} = localised fee type, {Date} = fee date.</comment></data>
+  <data name="Finance_FeeSelection_FeeTypeColumn" xml:space="preserve"><value>Typ opłaty</value><comment>Fee-selection grid column — fee type.</comment></data>
+  <data name="Finance_FeeSelection_FeeDateColumn" xml:space="preserve"><value>Data opłaty</value><comment>Fee-selection grid column — fee date.</comment></data>
+  <data name="Finance_FeeSelection_DueDateColumn" xml:space="preserve"><value>Termin płatności</value><comment>Fee-selection grid column — due date.</comment></data>
+  <data name="Finance_FeeSelection_RemainingColumn" xml:space="preserve"><value>Pozostała kwota</value><comment>Fee-selection grid column — remaining amount owed.</comment></data>
+  <data name="Finance_AnnualFees_PageTitle" xml:space="preserve"><value>Nalicz opłaty roczne — StageFright Community</value><comment>Browser tab title — Apply Annual Fees page.</comment></data>
+  <data name="Finance_AnnualFees_Heading" xml:space="preserve"><value>Nalicz roczne opłaty członkowskie</value><comment>Apply Annual Fees page heading.</comment></data>
+  <data name="Finance_AnnualFees_Intro" xml:space="preserve"><value>Nalicz opłatę roczną za bieżący rok wszystkim kwalifikującym się aktywnym członkom.</value><comment>Intro text under the Apply Annual Fees heading.</comment></data>
+  <data name="Finance_AnnualFees_LoadingText" xml:space="preserve"><value>Ładowanie kwalifikujących się członków…</value><comment>Status text while eligible members load.</comment></data>
+  <data name="Finance_AnnualFees_BackToFinanceButton" xml:space="preserve"><value>Powrót do finansów</value><comment>Link returning to the Finance page.</comment></data>
+  <data name="Finance_AnnualFees_ConfirmationHeading" xml:space="preserve"><value>Potwierdzenie</value><comment>Card heading for the apply-annual-fees confirmation step.</comment></data>
+  <data name="Finance_AnnualFees_EligibleSummary_One" xml:space="preserve"><value>{Count} aktywny członek kwalifikuje się do opłaty rocznej w tym roku.</value><comment>{Count} = 1.</comment></data>
+  <data name="Finance_AnnualFees_EligibleSummary_Other" xml:space="preserve"><value>Liczba aktywnych członków kwalifikujących się do opłaty rocznej w tym roku: {Count}.</value><comment>{Count} = number of eligible members.</comment></data>
+  <data name="Finance_AnnualFees_NoneEligible" xml:space="preserve"><value>Nie znaleziono kwalifikujących się członków. Albo wszyscy aktywni członkowie mają już opłatę roczną za bieżący rok, albo nie ma aktywnych członków.</value><comment>Shown when nobody is eligible.</comment></data>
+  <data name="Finance_AnnualFees_FeeAmountLabel" xml:space="preserve"><value>Kwota opłaty rocznej:</value><comment>Label preceding the configured annual fee amount.</comment></data>
+  <data name="Finance_AnnualFees_ApplyButton" xml:space="preserve"><value>Nalicz opłaty roczne</value><comment>Button that applies the annual fee to all eligible members.</comment></data>
+  <data name="Finance_AnnualFees_LoadError" xml:space="preserve"><value>Nie udało się załadować kwalifikujących się członków: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_AnnualFees_SuccessMessage_One" xml:space="preserve"><value>Opłaty roczne naliczono pomyślnie {Count} członkowi.</value><comment>{Count} = 1.</comment></data>
+  <data name="Finance_AnnualFees_SuccessMessage_Other" xml:space="preserve"><value>Opłaty roczne naliczono pomyślnie – liczba członków: {Count}.</value><comment>{Count} = number of members charged.</comment></data>
+  <data name="Finance_AnnualFees_ApplyError" xml:space="preserve"><value>Nie udało się naliczyć opłat rocznych: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_BankDeposit_PageTitle" xml:space="preserve"><value>Zarejestruj wpłatę bankową</value><comment>Browser tab title — Record Bank Deposit page.</comment></data>
+  <data name="Finance_BankDeposit_Heading" xml:space="preserve"><value>Zarejestruj wpłatę bankową</value><comment>Record Bank Deposit page heading.</comment></data>
+  <data name="Finance_BankDeposit_NoAccountsHtml" xml:space="preserve"><value>Wpłaty bankowe wymagają co najmniej jednego konta bankowego innego niż Gotówka w kasie. Najpierw dodaj konto bankowe w &lt;a href="/finance/accounts"&gt;Planie kont&lt;/a&gt;.</value><comment>Warning (contains a link to the Chart of Accounts) shown when no destination bank account exists.</comment></data>
+  <data name="Finance_BankDeposit_FromLabel" xml:space="preserve"><value>Z</value><comment>Record Bank Deposit — source account label.</comment></data>
+  <data name="Finance_BankDeposit_FromValue" xml:space="preserve"><value>Gotówka w kasie</value><comment>Record Bank Deposit — fixed source account shown as a disabled field.</comment></data>
+  <data name="Finance_BankDeposit_ToLabel" xml:space="preserve"><value>Na</value><comment>Record Bank Deposit — destination account label.</comment></data>
+  <data name="Finance_BankDeposit_DescriptionPlaceholder" xml:space="preserve"><value>np. wpłata opłat za obecność na próbach…</value><comment>Record Bank Deposit — description placeholder.</comment></data>
+  <data name="Finance_BankDeposit_SubmitButton" xml:space="preserve"><value>Zarejestruj wpłatę</value><comment>Record Bank Deposit — submit button.</comment></data>
+  <data name="Finance_BankDeposit_LoadError" xml:space="preserve"><value>Nie udało się załadować kont: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_BankDeposit_ToAccountRequiredError" xml:space="preserve"><value>Wybierz konto docelowe.</value><comment>Validation error when no destination account is chosen.</comment></data>
+  <data name="Finance_BankDeposit_SuccessMessage" xml:space="preserve"><value>Wpłatę {Amount} zarejestrowano pomyślnie.</value><comment>{Amount} = deposit amount formatted as AUD.</comment></data>
+  <data name="Finance_BankDeposit_RecordError" xml:space="preserve"><value>Nie udało się zarejestrować wpłaty: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Coa_PageTitle" xml:space="preserve"><value>Plan kont</value><comment>Browser tab title — Chart of Accounts page.</comment></data>
+  <data name="Finance_Coa_Heading" xml:space="preserve"><value>Plan kont</value><comment>Chart of Accounts page heading.</comment></data>
+  <data name="Finance_Coa_LoadingText" xml:space="preserve"><value>Ładowanie kont…</value><comment>Status text while accounts load.</comment></data>
+  <data name="Finance_Coa_AddAccountHeading" xml:space="preserve"><value>Dodaj konto</value><comment>Card heading for the add-account form.</comment></data>
+  <data name="Finance_Coa_ShowLabel" xml:space="preserve"><value>Pokaż:</value><comment>Label before the account-type filter.</comment></data>
+  <data name="Finance_Coa_FilterAriaLabel" xml:space="preserve"><value>Filtruj według typu konta</value><comment>aria-label on the account-type filter.</comment></data>
+  <data name="Finance_Coa_AllTypesOption" xml:space="preserve"><value>Wszystkie typy</value><comment>Account-type filter — show all types.</comment></data>
+  <data name="Finance_Coa_FilterAssets" xml:space="preserve"><value>Aktywa</value><comment>Account-type filter label — asset accounts.</comment></data>
+  <data name="Finance_Coa_FilterLiabilities" xml:space="preserve"><value>Zobowiązania</value><comment>Account-type filter label — liability accounts.</comment></data>
+  <data name="Finance_Coa_FilterEquity" xml:space="preserve"><value>Kapitał własny</value><comment>Account-type filter label — equity accounts.</comment></data>
+  <data name="Finance_Coa_FilterIncome" xml:space="preserve"><value>Przychody</value><comment>Account-type filter label — income accounts.</comment></data>
+  <data name="Finance_Coa_FilterExpenses" xml:space="preserve"><value>Koszty</value><comment>Account-type filter label — expense accounts.</comment></data>
+  <data name="Finance_Coa_IncludeBalancesLabel" xml:space="preserve"><value>Uwzględnij bieżące salda</value><comment>Toggle label — include balances when printing.</comment></data>
+  <data name="Finance_Coa_PrintButton" xml:space="preserve"><value>Drukuj plan kont</value><comment>Button that prints the chart of accounts.</comment></data>
+  <data name="Finance_Coa_ActiveAccountsHeading" xml:space="preserve"><value>Aktywne konta</value><comment>Section heading — active accounts.</comment></data>
+  <data name="Finance_Coa_NoMatch" xml:space="preserve"><value>Żadne konto nie pasuje do bieżącego filtra.</value><comment>Shown when the filter excludes every account.</comment></data>
+  <data name="Finance_Coa_NumberColumn" xml:space="preserve"><value>Nr</value><comment>Accounts grid column — account number.</comment></data>
+  <data name="Finance_Coa_NameColumn" xml:space="preserve"><value>Nazwa</value><comment>Accounts grid column — account name.</comment></data>
+  <data name="Finance_Coa_RenameAriaLabel" xml:space="preserve"><value>Nowa nazwa dla {Name}</value><comment>aria-label on the inline rename field. {Name} = current account name.</comment></data>
+  <data name="Finance_Coa_SystemBadge" xml:space="preserve"><value>Systemowe</value><comment>Badge marking a system account.</comment></data>
+  <data name="Finance_Coa_SystemBadgeTitle" xml:space="preserve"><value>Konto systemowe</value><comment>Tooltip on the System badge.</comment></data>
+  <data name="Finance_Coa_BankBadge" xml:space="preserve"><value>Bank</value><comment>Badge marking a bank/cash account.</comment></data>
+  <data name="Finance_Coa_BankBadgeTitle" xml:space="preserve"><value>Konto bankowe / gotówkowe</value><comment>Tooltip on the Bank badge.</comment></data>
+  <data name="Finance_Coa_TypeColumn" xml:space="preserve"><value>Typ</value><comment>Accounts grid column — account type.</comment></data>
+  <data name="Finance_Coa_BalanceColumn" xml:space="preserve"><value>Saldo</value><comment>Accounts grid column — current balance.</comment></data>
+  <data name="Finance_Coa_BalanceErrorTitle" xml:space="preserve"><value>Nie udało się obliczyć salda tego konta</value><comment>Tooltip shown when an account balance failed to compute.</comment></data>
+  <data name="Finance_Coa_RenameButton" xml:space="preserve"><value>Zmień nazwę</value><comment>Button that starts renaming an account.</comment></data>
+  <data name="Finance_Coa_ArchiveButton" xml:space="preserve"><value>Archiwizuj</value><comment>Button that archives an account.</comment></data>
+  <data name="Finance_Coa_ReadOnlyText" xml:space="preserve"><value>Tylko do odczytu</value><comment>Shown instead of actions for a system account.</comment></data>
+  <data name="Finance_Coa_ArchivedAccountsHeading" xml:space="preserve"><value>Zarchiwizowane konta</value><comment>Section heading — archived accounts.</comment></data>
+  <data name="Finance_Coa_RestoreButton" xml:space="preserve"><value>Przywróć</value><comment>Button that restores an archived account.</comment></data>
+  <data name="Finance_Coa_LoadError" xml:space="preserve"><value>Nie udało się załadować kont: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Coa_CreatedMessage" xml:space="preserve"><value>Konto '{Name}' utworzono z numerem {Number}.</value><comment>{Name} = new account name, {Number} = assigned account number.</comment></data>
+  <data name="Finance_Coa_CreateError" xml:space="preserve"><value>Nie udało się utworzyć konta: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Coa_RenamedMessage" xml:space="preserve"><value>Nazwę konta zmieniono.</value><comment>Confirmation after renaming an account.</comment></data>
+  <data name="Finance_Coa_RenameError" xml:space="preserve"><value>Nie udało się zmienić nazwy konta: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Coa_ArchivedMessage" xml:space="preserve"><value>Konto zarchiwizowano.</value><comment>Confirmation after archiving an account.</comment></data>
+  <data name="Finance_Coa_ArchiveError" xml:space="preserve"><value>Nie udało się zarchiwizować konta: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Coa_RestoredMessage" xml:space="preserve"><value>Konto przywrócono.</value><comment>Confirmation after restoring an account.</comment></data>
+  <data name="Finance_Coa_RestoreError" xml:space="preserve"><value>Nie udało się przywrócić konta: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Coa_PrintError" xml:space="preserve"><value>Nie można wydrukować. Spróbuj ponownie.</value><comment>Shown when printing the chart of accounts fails.</comment></data>
+  <data name="Finance_Expense_PageTitle" xml:space="preserve"><value>Zarejestruj wydatek</value><comment>Browser tab title — Record Expense page.</comment></data>
+  <data name="Finance_Expense_Heading" xml:space="preserve"><value>Zarejestruj wydatek</value><comment>Record Expense page heading.</comment></data>
+  <data name="Finance_Expense_NoAccountsHtml" xml:space="preserve"><value>Nie skonfigurowano żadnych kont kosztów. Dodaj konto kosztów w &lt;a href="/finance/accounts"&gt;Planie kont&lt;/a&gt; przed zarejestrowaniem wydatku.</value><comment>Warning (contains a link to the Chart of Accounts) shown when no expense accounts exist.</comment></data>
+  <data name="Finance_Expense_PaidFromLabel" xml:space="preserve"><value>Zapłacono z</value><comment>Record Expense — bank account field label.</comment></data>
+  <data name="Finance_Expense_ExpenseAccountLabel" xml:space="preserve"><value>Konto kosztów</value><comment>Record Expense — expense account field label.</comment></data>
+  <data name="Finance_Expense_PayeeLabel" xml:space="preserve"><value>Odbiorca płatności</value><comment>Record Expense — payee field label.</comment></data>
+  <data name="Finance_Expense_PayeePlaceholder" xml:space="preserve"><value>Komu zapłacono, np. Fundacja Sali Harcerskiej</value><comment>Record Expense — payee placeholder.</comment></data>
+  <data name="Finance_Expense_DescriptionPlaceholder" xml:space="preserve"><value>np. wynajem sali na próby w marcu…</value><comment>Record Expense — description placeholder.</comment></data>
+  <data name="Finance_Expense_SubmitButton" xml:space="preserve"><value>Zarejestruj wydatek</value><comment>Record Expense — submit button.</comment></data>
+  <data name="Finance_Expense_LoadError" xml:space="preserve"><value>Nie udało się załadować kont: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Expense_BankAccountRequiredError" xml:space="preserve"><value>Wybierz konto, z którego zapłacono wydatek.</value><comment>Validation error when no paying account is chosen.</comment></data>
+  <data name="Finance_Expense_ExpenseAccountRequiredError" xml:space="preserve"><value>Wybierz konto kosztów.</value><comment>Validation error when no expense account is chosen.</comment></data>
+  <data name="Finance_Expense_SuccessMessage" xml:space="preserve"><value>Wydatek {Amount} zarejestrowano pomyślnie.</value><comment>{Amount} = expense amount formatted as AUD.</comment></data>
+  <data name="Finance_Expense_RecordError" xml:space="preserve"><value>Nie udało się zarejestrować wydatku: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Journal_PageTitle" xml:space="preserve"><value>Zapis księgowy</value><comment>Browser tab title — Journal Entry page.</comment></data>
+  <data name="Finance_Journal_Heading" xml:space="preserve"><value>Zapis księgowy</value><comment>Journal Entry page heading.</comment></data>
+  <data name="Finance_Journal_DescriptionPlaceholder" xml:space="preserve"><value>Dlaczego księgowany jest ten zapis</value><comment>Journal Entry — description placeholder.</comment></data>
+  <data name="Finance_Journal_AccountColumn" xml:space="preserve"><value>Konto</value><comment>Journal lines table column — account.</comment></data>
+  <data name="Finance_Journal_DebitColumn" xml:space="preserve"><value>Debet</value><comment>Journal lines table column — debit amount.</comment></data>
+  <data name="Finance_Journal_CreditColumn" xml:space="preserve"><value>Kredyt</value><comment>Journal lines table column — credit amount.</comment></data>
+  <data name="Finance_Journal_AccountAriaLabel" xml:space="preserve"><value>Konto</value><comment>aria-label on a journal line's account select.</comment></data>
+  <data name="Finance_Journal_DebitAriaLabel" xml:space="preserve"><value>Kwota debetu</value><comment>aria-label on a journal line's debit input.</comment></data>
+  <data name="Finance_Journal_CreditAriaLabel" xml:space="preserve"><value>Kwota kredytu</value><comment>aria-label on a journal line's credit input.</comment></data>
+  <data name="Finance_Journal_RemoveLineAriaLabel" xml:space="preserve"><value>Usuń wiersz</value><comment>aria-label on a journal line's remove button.</comment></data>
+  <data name="Finance_Journal_TotalsLabel" xml:space="preserve"><value>Sumy</value><comment>Journal lines table footer — totals row label.</comment></data>
+  <data name="Finance_Journal_AddLineButton" xml:space="preserve"><value>Dodaj wiersz</value><comment>Button that adds a journal line.</comment></data>
+  <data name="Finance_Journal_BalancedBadge" xml:space="preserve"><value>Zbilansowany</value><comment>Badge shown when debits equal credits.</comment></data>
+  <data name="Finance_Journal_OutOfBalanceBadge" xml:space="preserve"><value>Niezbilansowanie o {Amount}</value><comment>Badge shown when the journal does not balance. {Amount} = difference formatted as AUD.</comment></data>
+  <data name="Finance_Journal_PostingText" xml:space="preserve"><value>Księgowanie…</value><comment>Save button text while the journal posts.</comment></data>
+  <data name="Finance_Journal_PostButton" xml:space="preserve"><value>Zaksięguj zapis</value><comment>Button that posts the journal.</comment></data>
+  <data name="Finance_Journal_LoadError" xml:space="preserve"><value>Nie udało się załadować kont: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Journal_SuccessMessage" xml:space="preserve"><value>Zapis na {Amount} zaksięgowano pomyślnie.</value><comment>{Amount} = journal total formatted as AUD.</comment></data>
+  <data name="Finance_Journal_PostError" xml:space="preserve"><value>Nie udało się zaksięgować zapisu: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_OpeningBalances_PageTitle" xml:space="preserve"><value>Salda otwarcia</value><comment>Browser tab title — Opening Balances wizard.</comment></data>
+  <data name="Finance_OpeningBalances_Heading" xml:space="preserve"><value>Salda otwarcia</value><comment>Opening Balances wizard heading.</comment></data>
+  <data name="Finance_OpeningBalances_StepOf" xml:space="preserve"><value>Krok {Step} z 2</value><comment>Wizard progress. {Step} = current step number.</comment></data>
+  <data name="Finance_OpeningBalances_Step1Heading" xml:space="preserve"><value>Krok 1 — Data odniesienia</value><comment>Opening Balances wizard — step 1 heading.</comment></data>
+  <data name="Finance_OpeningBalances_Step1Intro" xml:space="preserve"><value>Wybierz datę, od której obowiązują salda otwarcia — zwykle pierwszy dzień roku obrotowego.</value><comment>Opening Balances wizard — step 1 explanation.</comment></data>
+  <data name="Finance_OpeningBalances_AsAtLabel" xml:space="preserve"><value>Na dzień</value><comment>Opening Balances wizard — as-at date field label.</comment></data>
+  <data name="Finance_OpeningBalances_NextButton" xml:space="preserve"><value>Dalej</value><comment>Opening Balances wizard — advance to step 2.</comment></data>
+  <data name="Finance_OpeningBalances_Step2Heading" xml:space="preserve"><value>Krok 2 — Wprowadź salda</value><comment>Opening Balances wizard — step 2 heading.</comment></data>
+  <data name="Finance_OpeningBalances_BackButton" xml:space="preserve"><value>Wstecz</value><comment>Opening Balances wizard — return to step 1.</comment></data>
+  <data name="Finance_OpeningBalances_LoadError" xml:space="preserve"><value>Nie udało się załadować kont: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_OpeningBalances_SuccessMessage" xml:space="preserve"><value>Salda otwarcia na dzień {Date} zaksięgowano pomyślnie.</value><comment>{Date} = as-at date, long format.</comment></data>
+  <data name="Finance_OpeningBalances_PostError" xml:space="preserve"><value>Nie udało się zaksięgować sald otwarcia: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Reconciliation_ListPageTitle" xml:space="preserve"><value>Uzgodnienie bankowe</value><comment>Browser tab title — Bank Reconciliation list.</comment></data>
+  <data name="Finance_Reconciliation_ListHeading" xml:space="preserve"><value>Uzgodnienie bankowe</value><comment>Bank Reconciliation list heading.</comment></data>
+  <data name="Finance_Reconciliation_NoAccountsHtml" xml:space="preserve"><value>Nie istnieją jeszcze żadne konta bankowe ani gotówkowe. Najpierw utwórz jedno na stronie &lt;a href="/finance/accounts"&gt;Plan kont&lt;/a&gt;.</value><comment>Warning (contains a link to the Chart of Accounts) shown when no bank/cash account exists.</comment></data>
+  <data name="Finance_Reconciliation_AccountLabel" xml:space="preserve"><value>Konto:</value><comment>Label before the reconcile-account picker.</comment></data>
+  <data name="Finance_Reconciliation_AccountAriaLabel" xml:space="preserve"><value>Konto bankowe do uzgodnienia</value><comment>aria-label on the reconcile-account picker.</comment></data>
+  <data name="Finance_Reconciliation_SelectAccountOption" xml:space="preserve"><value>Wybierz konto…</value><comment>Placeholder option in the reconcile-account picker.</comment></data>
+  <data name="Finance_Reconciliation_DraftInProgress" xml:space="preserve"><value>Trwa robocze uzgodnienie do {Date}.</value><comment>{Date} = draft statement date.</comment></data>
+  <data name="Finance_Reconciliation_ResumeDraftButton" xml:space="preserve"><value>Wznów wersję roboczą</value><comment>Button that opens the in-progress draft reconciliation.</comment></data>
+  <data name="Finance_Reconciliation_NewHeading" xml:space="preserve"><value>Nowe uzgodnienie</value><comment>Card heading for starting a new reconciliation.</comment></data>
+  <data name="Finance_Reconciliation_StatementDateLabel" xml:space="preserve"><value>Data wyciągu</value><comment>New reconciliation — statement date field label.</comment></data>
+  <data name="Finance_Reconciliation_ClosingBalanceLabel" xml:space="preserve"><value>Saldo końcowe wyciągu</value><comment>Reconciliation — statement closing balance label.</comment></data>
+  <data name="Finance_Reconciliation_NotesLabel" xml:space="preserve"><value>Notatki (opcjonalnie)</value><comment>New reconciliation — notes field label.</comment></data>
+  <data name="Finance_Reconciliation_StartingText" xml:space="preserve"><value>Rozpoczynanie…</value><comment>Start button text while the reconciliation is being created.</comment></data>
+  <data name="Finance_Reconciliation_StartButton" xml:space="preserve"><value>Rozpocznij uzgodnienie</value><comment>Button that starts a new reconciliation.</comment></data>
+  <data name="Finance_Reconciliation_HistoryHeading" xml:space="preserve"><value>Historia</value><comment>Section heading — past reconciliations for the account.</comment></data>
+  <data name="Finance_Reconciliation_HistoryEmpty" xml:space="preserve"><value>Brak uzgodnień dla tego konta.</value><comment>Shown when the account has no reconciliation history.</comment></data>
+  <data name="Finance_Reconciliation_StatementDateColumn" xml:space="preserve"><value>Data wyciągu</value><comment>History grid column — statement date.</comment></data>
+  <data name="Finance_Reconciliation_OpeningColumn" xml:space="preserve"><value>Otwarcie</value><comment>History grid column — opening balance.</comment></data>
+  <data name="Finance_Reconciliation_ClosingColumn" xml:space="preserve"><value>Zamknięcie</value><comment>History grid column — statement closing balance.</comment></data>
+  <data name="Finance_Reconciliation_ResumeButton" xml:space="preserve"><value>Wznów</value><comment>History grid — resume a draft reconciliation.</comment></data>
+  <data name="Finance_Reconciliation_ViewButton" xml:space="preserve"><value>Wyświetl</value><comment>History grid — view a finalised reconciliation.</comment></data>
+  <data name="Finance_Reconciliation_LoadAccountsError" xml:space="preserve"><value>Nie udało się załadować kont bankowych: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Reconciliation_LoadError" xml:space="preserve"><value>Nie udało się załadować uzgodnień: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Reconciliation_StartError" xml:space="preserve"><value>Nie udało się rozpocząć uzgodnienia: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Reconciliation_WorkspacePageTitle" xml:space="preserve"><value>Uzgodnij konto</value><comment>Browser tab title — reconciliation workspace.</comment></data>
+  <data name="Finance_Reconciliation_WorkspaceLoadingText" xml:space="preserve"><value>Ładowanie uzgodnienia…</value><comment>Status text while the reconciliation workspace loads.</comment></data>
+  <data name="Finance_Reconciliation_NotFoundHtml" xml:space="preserve"><value>Nie znaleziono uzgodnienia. &lt;a href="/finance/reconciliation"&gt;Powrót do uzgodnień&lt;/a&gt;.</value><comment>Shown (with a link back) when the reconciliation id is unknown.</comment></data>
+  <data name="Finance_Reconciliation_ReconcilePrefix" xml:space="preserve"><value>Uzgodnij — </value><comment>Heading prefix before the account name in the workspace.</comment></data>
+  <data name="Finance_Reconciliation_ToDate" xml:space="preserve"><value>do {Date}</value><comment>Workspace heading suffix. {Date} = statement date.</comment></data>
+  <data name="Finance_Reconciliation_OpeningBalanceLabel" xml:space="preserve"><value>Saldo otwarcia</value><comment>Workspace summary card — opening balance.</comment></data>
+  <data name="Finance_Reconciliation_ClearedLabel" xml:space="preserve"><value>Rozliczone</value><comment>Workspace summary card — cleared total.</comment></data>
+  <data name="Finance_Reconciliation_DifferenceLabel" xml:space="preserve"><value>Różnica</value><comment>Workspace summary card — difference.</comment></data>
+  <data name="Finance_Reconciliation_ClearedColumn" xml:space="preserve"><value>Rozliczone</value><comment>Workspace grid column — cleared checkbox.</comment></data>
+  <data name="Finance_Reconciliation_ClearedAriaLabel" xml:space="preserve"><value>Rozliczone</value><comment>aria-label on a transaction's cleared checkbox.</comment></data>
+  <data name="Finance_Reconciliation_DateColumn" xml:space="preserve"><value>Data</value><comment>Workspace grid column — transaction date.</comment></data>
+  <data name="Finance_Reconciliation_DepositColumn" xml:space="preserve"><value>Wpłata</value><comment>Workspace grid column — deposit amount.</comment></data>
+  <data name="Finance_Reconciliation_PaymentColumn" xml:space="preserve"><value>Płatność</value><comment>Workspace grid column — payment amount.</comment></data>
+  <data name="Finance_Reconciliation_NoTransactions" xml:space="preserve"><value>Brak transakcji na tym koncie do daty wyciągu.</value><comment>Shown when there are no transactions to reconcile.</comment></data>
+  <data name="Finance_Reconciliation_FinaliseButton" xml:space="preserve"><value>Sfinalizuj</value><comment>Button that finalises a balanced reconciliation.</comment></data>
+  <data name="Finance_Reconciliation_DeleteDraftButton" xml:space="preserve"><value>Usuń wersję roboczą</value><comment>Button that deletes the draft reconciliation.</comment></data>
+  <data name="Finance_Reconciliation_BackButton" xml:space="preserve"><value>Wstecz</value><comment>Link back to the reconciliation list.</comment></data>
+  <data name="Finance_Reconciliation_WorkspaceLoadError" xml:space="preserve"><value>Nie udało się załadować uzgodnienia: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Reconciliation_ToggleError" xml:space="preserve"><value>Nie udało się zaktualizować stanu rozliczenia: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Reconciliation_FinaliseError" xml:space="preserve"><value>Nie udało się sfinalizować: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Reconciliation_DeleteError" xml:space="preserve"><value>Nie udało się usunąć wersji roboczej: {Detail}</value><comment>{Detail} = error detail.</comment></data>
 </root>
