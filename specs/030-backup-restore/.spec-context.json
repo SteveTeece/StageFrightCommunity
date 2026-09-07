@@ -1,0 +1,125 @@
+{
+  "workflow": "speckit",
+  "specName": "Restore From Backup During First-Run Setup",
+  "branch": "030-backup-restore",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-07T11:00:15.236Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-07T11:06:13.264Z"
+    }
+  ],
+  "telemetryInstanceId": "0fc9ad3e-9084-48e2-bb58-11acb578e9c6",
+  "last_action": "living specs evaluated - skipped (not configured)",
+  "livingSpecs": {
+    "loaded": [
+      "app-host"
+    ]
+  },
+  "coverage": {
+    "FR-001": {
+      "title": "First-run flow presents a checkbox to restore from backup instead of manual setup, before any data entry"
+    },
+    "FR-002": {
+      "title": "User can choose a backup file from a location of their choosing"
+    },
+    "FR-003": {
+      "title": "Validate the file and show a contents summary (counts, date, app version) with confirm/cancel before any DB change"
+    },
+    "FR-004": {
+      "title": "Reject unreadable/corrupt/incompatible backups with a clear message and no DB change"
+    },
+    "FR-005": {
+      "title": "Confirmed first-run restore replaces DB contents all-or-nothing; partial failure leaves pre-restore state"
+    },
+    "FR-006": {
+      "title": "After a successful first-run restore, setup is treated as complete with no further config required"
+    },
+    "FR-007": {
+      "title": "After restore, advise a restart is needed and do not continue on pre-restore in-memory state"
+    },
+    "FR-008": {
+      "title": "On cancel or failure, the normal setup wizard is available with no data changed"
+    },
+    "FR-009": {
+      "title": "Users can create a backup choosing both destination location and filename"
+    },
+    "FR-010": {
+      "title": "Default backup filename = organisation name + the word backup + backup date, always a valid filename"
+    },
+    "FR-011": {
+      "title": "Backup contains all data needed to reconstruct current state incl. journal entries, bank reconciliations/lines, and archived rows"
+    },
+    "FR-012": {
+      "title": "Backup captures every configured setting incl. currency, language, FY start, tax applicability/rate/codes, tax-entry mode"
+    },
+    "FR-013": {
+      "title": "Backup file is OS-independent: created on any supported platform restores identically on any other"
+    },
+    "FR-014": {
+      "title": "Backup/restore independent of host locale, culture, separators, calendar, time zone"
+    },
+    "FR-015": {
+      "title": "Restoring over a populated DB first retains a pre-restore recovery copy"
+    },
+    "FR-016": {
+      "title": "Restore reproduces the source dataset exactly (records, values, archived state, counts)"
+    },
+    "FR-017": {
+      "title": "Creating and restoring a backup are each recorded in the audit trail"
+    },
+    "FR-018": {
+      "title": "Settings backup/restore screen uses the same default-filename rule and restart advice as the first-run flow"
+    },
+    "FR-019": {
+      "title": "Older backups migrate forward on restore; newer incompatible backups are rejected outright"
+    },
+    "FR-020": {
+      "title": "[NEEDS CLARIFICATION] whether the backup file must be encrypted / password-protected"
+    },
+    "FR-021": {
+      "title": "Immediately after writing a backup file, read it back from disk before reporting success"
+    },
+    "FR-022": {
+      "title": "Recompute the restore-confirmation statistics from the read-back file and verify counts against live data (archived included) and the file's own counts"
+    },
+    "FR-023": {
+      "title": "Report the backup as failed and warn the user if the file is unreadable, internally inconsistent, or its counts do not match the source"
+    },
+    "FR-024": {
+      "title": "Report a backup as successful only after read-back and verification pass"
+    }
+  },
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 30,
+    "projectedTasks": 35,
+    "scopeSignal": "none",
+    "verdict": "oversized"
+  },
+  "context": [
+    "living spec: app-host (first-run routing, setup wizard, startup-error priority)",
+    "living spec: data-access (BackupRepository, IgnoreQueryFilters snapshot, PK-upsert restore)",
+    "area: existing backup feature — BackupService/.sfbak protobuf envelope, BackupRestoreTab in Settings",
+    "constraint: extend the existing capability, do not replace it; restore-in-first-run only while setup incomplete",
+    "refinement: post-backup self-check — read the written file back and verify its restore-confirmation stats against live data (FR-021..FR-024, SC-009)"
+  ],
+  "intent": "Let a fresh install be populated from a backup during first-run setup, with a complete, OS-agnostic backup and a user-chosen backup file name/location",
+  "expectations": [
+    "Restoring over an already-configured database stays a Settings-only action (not added to first-run)",
+    "The application does not self-relaunch; the user is advised to restart manually",
+    "No change to the underlying .sfbak serialization technology or to GL/tax structures",
+    "Backup encryption/password-protection is not decided here (deferred to clarify, FR-020)"
+  ]
+}
