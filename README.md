@@ -84,6 +84,7 @@ See [SETUP.md](docs/SETUP.md) for full developer setup, database/migration comma
 | 🇪🇸 | Spanish | `es-ES` |
 | 🇮🇹 | Italian | `it-IT` |
 | 🇵🇱 | Polish | `pl-PL` |
+| 🇯🇵 | Japanese | `ja-JP` |
 
 ## Architecture
 
