@@ -14,31 +14,32 @@ namespace StageFright.Core.Modules.Settings;
 
 /// <summary>
 /// Backup and restore service. Export writes all entity data (including soft-deleted) to a
-/// protobuf binary .sfbak file. Import validates, checkpoints current data, then atomically
-/// upserts every record from the backup file.
+/// protobuf binary .sfbak file. Import validates, writes a pre-restore recovery copy of the
+/// current data, then atomically upserts every record from the backup file.
 /// </summary>
 public class BackupService : IBackupService
 {
-    private const string SupportedMajorVersion = "1";
-
     private readonly IBackupRepository _backupRepo;
     private readonly IUnitOfWork _uow;
     private readonly IAuditTrailService _audit;
     private readonly ILogger<BackupService> _logger;
     private readonly ILocalizer _localizer;
+    private readonly IRecoveryCopyStore _recoveryCopyStore;
 
     public BackupService(
         IBackupRepository backupRepo,
         IUnitOfWork uow,
         IAuditTrailService audit,
         ILogger<BackupService> logger,
-        ILocalizer localizer)
+        ILocalizer localizer,
+        IRecoveryCopyStore recoveryCopyStore)
     {
         _backupRepo = backupRepo;
         _uow = uow;
         _audit = audit;
         _logger = logger;
         _localizer = localizer;
+        _recoveryCopyStore = recoveryCopyStore;
     }
 
     public async Task ExportAsync(string filePath, CancellationToken ct = default)
@@ -66,10 +67,12 @@ public class BackupService : IBackupService
     {
         var envelope = DeserializeAndValidate(filePath);
 
-        // Pre-import checkpoint: export current DB before any write
-        var checkpointPath = GenerateCheckpointPath(filePath);
-        await ExportAsync(checkpointPath, ct);
-        _logger.LogInformation("Pre-import checkpoint saved to {CheckpointPath}", checkpointPath);
+        // Pre-restore recovery copy: export the current DB to a durable app-data location before
+        // any write, so an accidental or unwanted restore can be recovered from. Written on every
+        // restore, first-run included (FR-015).
+        var recoveryCopyPath = GenerateRecoveryCopyPath();
+        await ExportAsync(recoveryCopyPath, ct);
+        _logger.LogInformation("Pre-restore recovery copy saved to {RecoveryCopyPath}", recoveryCopyPath);
 
         var snapshot = MapToSnapshot(envelope);
 
@@ -82,13 +85,13 @@ public class BackupService : IBackupService
             entityType: "Backup",
             entityId: Guid.Empty,
             action: AuditAction.Import,
-            newValue: $"Imported from {Path.GetFileName(filePath)}; checkpoint: {checkpointPath}",
+            newValue: $"Imported from {Path.GetFileName(filePath)}; pre-restore recovery copy: {recoveryCopyPath}",
             ct: ct);
 
         _logger.LogInformation(
-            "Import completed from {FilePath}. Checkpoint at {CheckpointPath}. Counts: {Counts}",
+            "Import completed from {FilePath}. Pre-restore recovery copy at {RecoveryCopyPath}. Counts: {Counts}",
             filePath,
-            checkpointPath,
+            recoveryCopyPath,
             string.Join(", ", envelope.EntityCounts.Select(kv => $"{kv.Key}={kv.Value}")));
     }
 
@@ -156,10 +159,12 @@ public class BackupService : IBackupService
                 _localizer.Get<ValidationResource>("Validation_Backup_MissingSchemaVersion"),
                 operationContext: "VersionCheck");
 
-        var majorStr = schemaVersion.Split('.')[0];
-        if (majorStr != SupportedMajorVersion)
+        // Full semantic-version check: a file newer than this build on any component — including a
+        // newer build of the same major version — is rejected outright; an older or equal file is
+        // accepted and EF Core startup migration brings it forward (FR-019).
+        if (!BackupSchema.IsRestorable(schemaVersion))
             throw new ImportException(
-                _localizer.Get<ValidationResource>("Validation_Backup_UnsupportedSchemaVersion", schemaVersion, SupportedMajorVersion),
+                _localizer.Get<ValidationResource>("Validation_Backup_UnsupportedSchemaVersion", schemaVersion),
                 operationContext: "VersionCheck");
     }
 
@@ -190,13 +195,11 @@ public class BackupService : IBackupService
                 operationContext: "CompletenessCheck");
     }
 
-    private static string GenerateCheckpointPath(string importFilePath)
+    private string GenerateRecoveryCopyPath()
     {
-        var dir = Path.GetDirectoryName(importFilePath);
-        if (string.IsNullOrEmpty(dir))
-            dir = Path.GetTempPath();
+        var dir = _recoveryCopyStore.GetRecoveryDirectory();
         var timestamp = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
-        return Path.Combine(dir, $"StageFright-Checkpoint-{timestamp}.sfbak");
+        return Path.Combine(dir, $"StageFright-Recovery-{timestamp}.sfbak");
     }
 
     private static BackupEnvelope MapToEnvelope(BackupSnapshot snapshot)

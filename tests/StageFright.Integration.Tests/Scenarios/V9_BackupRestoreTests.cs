@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
@@ -137,7 +138,7 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Import_UnsupportedMajorVersion_ThrowsImportException_WithUpgradeGuidance()
+    public async Task Import_NewerSchemaVersion_ThrowsImportException_WithUpdateGuidance()
     {
         var svc = BuildService();
         var path = TempPath();
@@ -151,7 +152,7 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
 
             var ex = await Assert.ThrowsAsync<ImportException>(() => svc.ImportAsync(path, TestContext.Current.CancellationToken));
             Assert.Contains("99.0.0", ex.Message);
-            Assert.Contains("upgrade", ex.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("update", ex.Message, StringComparison.OrdinalIgnoreCase);
         }
         finally
         {
@@ -172,7 +173,7 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
 
             await svc.ImportAsync(path, TestContext.Current.CancellationToken);
 
-            var checkpoints = Directory.GetFiles(dir, "StageFright-Checkpoint-*.sfbak");
+            var checkpoints = Directory.GetFiles(dir, "StageFright-Recovery-*.sfbak");
             Assert.NotEmpty(checkpoints);
         }
         finally
@@ -370,7 +371,13 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
         var uow = new UnitOfWork(_db);
         var auditRepo = new AuditTrailRepository(_db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        return new BackupService(backupRepo, uow, auditSvc, NullLogger<BackupService>.Instance, RealLocalizer.Instance);
+        return new BackupService(backupRepo, uow, auditSvc, NullLogger<BackupService>.Instance, RealLocalizer.Instance, new TempRecoveryCopyStore());
+    }
+
+    /// <summary>Writes the pre-restore recovery copy into the system temp directory for the test.</summary>
+    private sealed class TempRecoveryCopyStore : IRecoveryCopyStore
+    {
+        public string GetRecoveryDirectory() => Path.GetTempPath();
     }
 
     private static Member SeedMember(string name, bool active, bool deleted = false)
@@ -411,7 +418,7 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
     {
         if (File.Exists(primaryPath)) File.Delete(primaryPath);
         var dir = Path.GetDirectoryName(primaryPath) ?? Path.GetTempPath();
-        foreach (var f in Directory.GetFiles(dir, "StageFright-Checkpoint-*.sfbak"))
+        foreach (var f in Directory.GetFiles(dir, "StageFright-Recovery-*.sfbak"))
             try { File.Delete(f); } catch { /* best-effort */ }
     }
 }

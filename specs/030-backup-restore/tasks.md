@@ -6,7 +6,9 @@
 Line format: `- [ ] **T###** [P?] [US#] Description · exact/file/path`
 `[P]` = independent of the other tasks in its wave (different file, no incomplete dependency). `[US#]` maps to a user story.
 
-> **Already delivered ahead of task generation** — commit `7d2cc93` ("fix(030): close the .sfbak backup format drift") implemented the bulk of **User Story 4** (the `.sfbak` format completeness pass). Those tasks (T029–T034) are retained for traceability and are checked off with the commit noted. All of US1, US2, US3, the FR-019 full-semver check, and docs remain to do.
+> **Already delivered ahead of task generation** — commit `7d2cc93` ("fix(030): close the .sfbak backup format drift") implemented the bulk of **User Story 4** (the `.sfbak` format completeness pass). Those tasks (T029–T034) are retained for traceability and are checked off with the commit noted.
+>
+> **Phase 1 (Setup) and Phase 2 (Foundational) delivered** — T001–T012 complete: `CommunityToolkit.Maui` added; `BackupSchema` / `BackupVerificationException` / `BackupVerificationResult` / `IRecoveryCopyStore` / `IBackupDestinationPicker` / `BackupFileNameBuilder` in place; `MauiRecoveryCopyStore` / `MauiBackupDestinationPicker` wired in `MauiProgram`; the FR-019 full-semver version check is live in `BackupService` (with `Validation_Backup_UnsupportedSchemaVersion` reworded + re-translated across all seven shipped cultures and `qps-ploc` regenerated); and every restore now writes a durable pre-restore recovery copy. US1, US2, US3, and docs remain to do.
 
 ---
 
@@ -16,7 +18,7 @@ Shared tooling prerequisite for the native Save dialog (US2). No baseline "build
 
 **Wave 1 — single task:**
 
-- [ ] **T001** Add the `CommunityToolkit.Maui` dependency: `<PackageVersion Include="CommunityToolkit.Maui" Version="…" />` in `Directory.Packages.props`, `<PackageReference Include="CommunityToolkit.Maui" />` in `src/StageFright.App/StageFright.App.csproj` (no `Version` attr — central management), and `builder.UseMauiCommunityToolkit()` in `MauiProgram.CreateMauiApp` · `Directory.Packages.props`, `src/StageFright.App/StageFright.App.csproj`, `src/StageFright.App/MauiProgram.cs`
+- [x] **T001** Add the `CommunityToolkit.Maui` dependency: `<PackageVersion Include="CommunityToolkit.Maui" Version="…" />` in `Directory.Packages.props`, `<PackageReference Include="CommunityToolkit.Maui" />` in `src/StageFright.App/StageFright.App.csproj` (no `Version` attr — central management), and `builder.UseMauiCommunityToolkit()` in `MauiProgram.CreateMauiApp` · `Directory.Packages.props`, `src/StageFright.App/StageFright.App.csproj`, `src/StageFright.App/MauiProgram.cs`
 
 ---
 
@@ -26,32 +28,32 @@ Shared contracts, value types, platform seams, and the version-check swap that e
 
 **Wave 1 — independent (different new files):**
 
-- [ ] **T002** [P] `BackupSchema` static class — `const string CurrentSchemaVersion = "1.2.0"`; `bool IsRestorable(string? fileVersion)` = `false` when null/empty/unparseable **or** strictly greater than `CurrentSchemaVersion` on any semver component (a newer same-major build included), `true` when equal or older (FR-019) · `src/StageFright.Core/BackupSchema.cs`
-- [ ] **T003** [P] `BackupVerificationException` — `IReadOnlyList<string> Discrepancies`, `string FilePath`, `DateTime Timestamp`, `Guid CorrelationId`; ctor shape mirrors `ImportException` (FR-023) · `src/StageFright.Core/Exceptions/BackupVerificationException.cs`
-- [ ] **T004** [P] `BackupVerificationResult` — `sealed record (bool Passed, IReadOnlyList<string> Discrepancies, string FilePath)` (data-model §6). Note `CreateBackupAsync` only ever returns this with `Passed = true` (verification failure throws `BackupVerificationException`), so the UI's failure state is driven by the caught exception's `Discrepancies`, not by a `Passed = false` result · `src/StageFright.Core/Modules/Settings/Backup/BackupVerificationResult.cs`
-- [ ] **T005** [P] `IRecoveryCopyStore` contract — `string GetRecoveryDirectory()`, never-throw shape like `ILanguagePreferenceStore` (FR-015) · `src/StageFright.Core/Contracts/IRecoveryCopyStore.cs`
-- [ ] **T006** [P] `IBackupDestinationPicker` contract — `Task<BackupDestinationResult> SaveAsync(string suggestedFileName, Stream content, CancellationToken)`; plus `BackupDestinationResult` record (`Cancelled` / `Saved(path)` factories) in its own file (FR-009) · `src/StageFright.Core/Contracts/IBackupDestinationPicker.cs`, `src/StageFright.Core/Contracts/BackupDestinationResult.cs`
-- [ ] **T007** [P] `BackupFileNameBuilder` static — `const string FallbackBaseName = "StageFright"`; `string Build(string? organisationName, DateOnly date)` → `"<sanitised org> backup <yyyy-MM-dd>.sfbak"`, literal word `backup` always present (Verbatim Constraint), `Path.GetInvalidFileNameChars()` stripped, whitespace runs collapsed + trimmed, blank/whitespace org → fallback, date formatted `InvariantCulture "yyyy-MM-dd"` (FR-010) · `src/StageFright.Core/Modules/Settings/BackupFileNameBuilder.cs`
+- [x] **T002** [P] `BackupSchema` static class — `const string CurrentSchemaVersion = "1.2.0"`; `bool IsRestorable(string? fileVersion)` = `false` when null/empty/unparseable **or** strictly greater than `CurrentSchemaVersion` on any semver component (a newer same-major build included), `true` when equal or older (FR-019) · `src/StageFright.Core/BackupSchema.cs`
+- [x] **T003** [P] `BackupVerificationException` — `IReadOnlyList<string> Discrepancies`, `string FilePath`, `DateTime Timestamp`, `Guid CorrelationId`; ctor shape mirrors `ImportException` (FR-023) · `src/StageFright.Core/Exceptions/BackupVerificationException.cs`
+- [x] **T004** [P] `BackupVerificationResult` — `sealed record (bool Passed, IReadOnlyList<string> Discrepancies, string FilePath)` (data-model §6). Note `CreateBackupAsync` only ever returns this with `Passed = true` (verification failure throws `BackupVerificationException`), so the UI's failure state is driven by the caught exception's `Discrepancies`, not by a `Passed = false` result · `src/StageFright.Core/Modules/Settings/Backup/BackupVerificationResult.cs`
+- [x] **T005** [P] `IRecoveryCopyStore` contract — `string GetRecoveryDirectory()`, never-throw shape like `ILanguagePreferenceStore` (FR-015) · `src/StageFright.Core/Contracts/IRecoveryCopyStore.cs`
+- [x] **T006** [P] `IBackupDestinationPicker` contract — `Task<BackupDestinationResult> SaveAsync(string suggestedFileName, Stream content, CancellationToken)`; plus `BackupDestinationResult` record (`Cancelled` / `Saved(path)` factories) in its own file (FR-009) · `src/StageFright.Core/Contracts/IBackupDestinationPicker.cs`, `src/StageFright.Core/Contracts/BackupDestinationResult.cs`
+- [x] **T007** [P] `BackupFileNameBuilder` static — `const string FallbackBaseName = "StageFright"`; `string Build(string? organisationName, DateOnly date)` → `"<sanitised org> backup <yyyy-MM-dd>.sfbak"`, literal word `backup` always present (Verbatim Constraint), `Path.GetInvalidFileNameChars()` stripped, whitespace runs collapsed + trimmed, blank/whitespace org → fallback, date formatted `InvariantCulture "yyyy-MM-dd"` (FR-010) · `src/StageFright.Core/Modules/Settings/BackupFileNameBuilder.cs`
 
 **⟶ Wait for Wave 1 to finish, then:**
 
 **Wave 2 — MAUI seam implementations (independent; each depends on a Wave-1 contract):**
 
-- [ ] **T008** [P] `MauiRecoveryCopyStore : IRecoveryCopyStore` — returns `Path.Combine(FileSystem.AppDataDirectory, "recovery")`, directory created on demand · `src/StageFright.App/MauiRecoveryCopyStore.cs`
-- [ ] **T009** [P] `MauiBackupDestinationPicker : IBackupDestinationPicker` — delegates to `CommunityToolkit.Maui.Storage.FileSaver.Default.SaveAsync(...)`; `IsSuccessful` → `Saved(result.FilePath)`, user dismiss → `Cancelled`, platform error wrapped as `DataAccessException` before returning into Core · `src/StageFright.App/MauiBackupDestinationPicker.cs`
+- [x] **T008** [P] `MauiRecoveryCopyStore : IRecoveryCopyStore` — returns `Path.Combine(FileSystem.AppDataDirectory, "recovery")`, directory created on demand · `src/StageFright.App/MauiRecoveryCopyStore.cs`
+- [x] **T009** [P] `MauiBackupDestinationPicker : IBackupDestinationPicker` — delegates to `CommunityToolkit.Maui.Storage.FileSaver.Default.SaveAsync(...)`; `IsSuccessful` → `Saved(result.FilePath)`, user dismiss → `Cancelled`, platform error wrapped as `DataAccessException` before returning into Core · `src/StageFright.App/MauiBackupDestinationPicker.cs`
 
 **⟶ Wait for Wave 2 to finish, then:**
 
 **Wave 3 — wire-up + version swap (different files):**
 
-- [ ] **T010** [P] Register `IRecoveryCopyStore`→`MauiRecoveryCopyStore` and `IBackupDestinationPicker`→`MauiBackupDestinationPicker` as singletons in `MauiProgram.RegisterCoreServices` (beside the existing backup-service block) · `src/StageFright.App/MauiProgram.cs`
-- [ ] **T011** [P] Swap `BackupService.ValidateVersion` to call `BackupSchema.IsRestorable`; remove `SupportedMajorVersion`; reword `Validation_Backup_UnsupportedSchemaVersion` to the "update the application and retry" message **and re-translate that key across all seven shipped culture sets, not just the neutral file** (FR-025); empty/unparseable still rejected; update the `IBackupService.ImportAsync` XML doc comment ("major-version check" → "full semantic-version check") (FR-004, FR-019, FR-025) · `src/StageFright.Core/Contracts/IBackupService.cs`, `src/StageFright.Core/Modules/Settings/BackupService.cs`, `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx`, `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.{de-DE,en-US,es-ES,fr-FR,it-IT,ja-JP,pl-PL}.resx`
+- [x] **T010** [P] Register `IRecoveryCopyStore`→`MauiRecoveryCopyStore` and `IBackupDestinationPicker`→`MauiBackupDestinationPicker` as singletons in `MauiProgram.RegisterCoreServices` (beside the existing backup-service block) · `src/StageFright.App/MauiProgram.cs`
+- [x] **T011** [P] Swap `BackupService.ValidateVersion` to call `BackupSchema.IsRestorable`; remove `SupportedMajorVersion`; reword `Validation_Backup_UnsupportedSchemaVersion` to the "update the application and retry" message **and re-translate that key across all seven shipped culture sets, not just the neutral file** (FR-025); empty/unparseable still rejected; update the `IBackupService.ImportAsync` XML doc comment ("major-version check" → "full semantic-version check") (FR-004, FR-019, FR-025) · `src/StageFright.Core/Contracts/IBackupService.cs`, `src/StageFright.Core/Modules/Settings/BackupService.cs`, `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx`, `src/StageFright.Core/Modules/Localization/Resources/ValidationResource.{de-DE,en-US,es-ES,fr-FR,it-IT,ja-JP,pl-PL}.resx`
 
 **⟶ Wait for Wave 3 to finish, then:**
 
 **Wave 4 — single task (same file as T011):**
 
-- [ ] **T012** `BackupService.ImportAsync` — inject `IRecoveryCopyStore`; write the pre-restore recovery copy (`StageFright-Recovery-<yyyyMMdd-HHmmss>.sfbak`) into `GetRecoveryDirectory()` via the existing `ExportAsync` path on **every** restore (first-run included), replacing `GenerateCheckpointPath`; standardise the term to "pre-restore recovery copy" in code comments and update the `IBackupService` interface XML doc ("pre-import checkpoint" → "pre-restore recovery copy") (FR-015) · `src/StageFright.Core/Contracts/IBackupService.cs`, `src/StageFright.Core/Modules/Settings/BackupService.cs`
+- [x] **T012** `BackupService.ImportAsync` — inject `IRecoveryCopyStore`; write the pre-restore recovery copy (`StageFright-Recovery-<yyyyMMdd-HHmmss>.sfbak`) into `GetRecoveryDirectory()` via the existing `ExportAsync` path on **every** restore (first-run included), replacing `GenerateCheckpointPath`; standardise the term to "pre-restore recovery copy" in code comments and update the `IBackupService` interface XML doc ("pre-import checkpoint" → "pre-restore recovery copy") (FR-015) · `src/StageFright.Core/Contracts/IBackupService.cs`, `src/StageFright.Core/Modules/Settings/BackupService.cs`
 
 **Checkpoint:** Foundational plumbing exists and is registered; the version check rejects newer files; restores write a durable recovery copy. No user-visible behaviour yet.
 

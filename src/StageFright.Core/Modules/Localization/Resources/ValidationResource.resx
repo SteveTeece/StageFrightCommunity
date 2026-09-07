@@ -264,8 +264,8 @@
     <comment>Shown when a backup file has no schema version recorded.</comment>
   </data>
   <data name="Validation_Backup_UnsupportedSchemaVersion" xml:space="preserve">
-    <value>This backup uses schema version {SchemaVersion}; this application supports major version {SupportedMajorVersion}. Please upgrade the application to restore this backup.</value>
-    <comment>Shown when a backup file's major schema version is not supported. {SchemaVersion} = the file's version; {SupportedMajorVersion} = the major version this build supports.</comment>
+    <value>This backup was created by a newer version of the application (backup format {SchemaVersion}). Update the application and try again to restore it.</value>
+    <comment>Shown when a backup file's schema version is newer than this build supports (a newer build of the same major version included). {SchemaVersion} = the file's recorded backup-format version.</comment>
   </data>
   <data name="Validation_Backup_ImportIncomplete" xml:space="preserve">
     <value>Import file incomplete: missing {EntityType}. Restore from complete backup.</value>

@@ -22,7 +22,13 @@ public class BackupServiceTests : TestBase
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
 
     private BackupService CreateService() =>
-        new(_backupRepo, _uow, _audit, NullLogger<BackupService>.Instance, RealLocalizer.Instance);
+        new(_backupRepo, _uow, _audit, NullLogger<BackupService>.Instance, RealLocalizer.Instance, new TempRecoveryCopyStore());
+
+    /// <summary>Writes the pre-restore recovery copy into the system temp directory for the test.</summary>
+    private sealed class TempRecoveryCopyStore : IRecoveryCopyStore
+    {
+        public string GetRecoveryDirectory() => Path.GetTempPath();
+    }
 
     // --- ExportAsync ---
 
@@ -270,7 +276,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -340,7 +346,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -375,7 +381,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -501,7 +507,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -544,7 +550,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -671,7 +677,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -720,7 +726,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -776,7 +782,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -817,7 +823,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }

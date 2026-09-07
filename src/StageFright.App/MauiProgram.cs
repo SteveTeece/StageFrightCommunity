@@ -1,5 +1,6 @@
 ﻿using System.Data.Common;
 using System.Globalization;
+using CommunityToolkit.Maui;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -51,6 +52,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -269,6 +271,10 @@ public static class MauiProgram
         // Backup service (Phase 13)
         services.AddScoped<IBackupRepository, BackupRepository>();
         services.AddScoped<IBackupService, BackupService>();
+        // Backup destination + recovery-copy seams (spec 030) — platform-backed, registered as
+        // singletons like ILanguagePreferenceStore / IDeviceThemePreferenceProvider.
+        services.AddSingleton<IRecoveryCopyStore, MauiRecoveryCopyStore>();
+        services.AddSingleton<IBackupDestinationPicker, MauiBackupDestinationPicker>();
 
         // Reports module (Phase 10 + 11)
         services.AddScoped<IReportProvider, IncomeStatementReportProvider>();

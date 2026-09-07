@@ -71,8 +71,9 @@ public interface IBackupDestinationPicker
     Task<BackupDestinationResult> SaveAsync(string suggestedFileName, Stream content, CancellationToken ct = default);
 }
 
-/// One class per file.
-public sealed record BackupDestinationResult(bool Cancelled, string? FilePath)
+/// One class per file. The positional flag is `WasCancelled`, not `Cancelled`, so it does not
+/// collide with the static `Cancelled` factory property (CS0102).
+public sealed record BackupDestinationResult(bool WasCancelled, string? FilePath)
 {
     public static BackupDestinationResult Cancelled { get; } = new(true, null);
     public static BackupDestinationResult Saved(string path) => new(false, path);

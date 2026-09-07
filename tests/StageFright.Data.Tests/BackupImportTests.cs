@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
@@ -39,7 +40,7 @@ public class BackupImportTests_Integration : IDisposable
             await svc.ImportAsync(exportPath, TestContext.Current.CancellationToken);
 
             // At least one checkpoint file should exist in the same directory
-            var checkpoints = Directory.GetFiles(dir, "StageFright-Checkpoint-*.sfbak");
+            var checkpoints = Directory.GetFiles(dir, "StageFright-Recovery-*.sfbak");
             Assert.NotEmpty(checkpoints);
         }
         finally
@@ -399,7 +400,13 @@ public class BackupImportTests_Integration : IDisposable
         var uow = new UnitOfWork(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        return new BackupService(backupRepo, uow, auditService, NullLogger<BackupService>.Instance, RealLocalizer.Instance);
+        return new BackupService(backupRepo, uow, auditService, NullLogger<BackupService>.Instance, RealLocalizer.Instance, new TempRecoveryCopyStore());
+    }
+
+    /// <summary>Writes the pre-restore recovery copy into the system temp directory for the test.</summary>
+    private sealed class TempRecoveryCopyStore : IRecoveryCopyStore
+    {
+        public string GetRecoveryDirectory() => Path.GetTempPath();
     }
 
     private static string TempFile() =>
@@ -409,7 +416,7 @@ public class BackupImportTests_Integration : IDisposable
     {
         if (File.Exists(primaryPath)) File.Delete(primaryPath);
         var dir = Path.GetDirectoryName(primaryPath) ?? Path.GetTempPath();
-        foreach (var f in Directory.GetFiles(dir, "StageFright-Checkpoint-*.sfbak"))
+        foreach (var f in Directory.GetFiles(dir, "StageFright-Recovery-*.sfbak"))
             try { File.Delete(f); } catch { /* best-effort */ }
     }
 
