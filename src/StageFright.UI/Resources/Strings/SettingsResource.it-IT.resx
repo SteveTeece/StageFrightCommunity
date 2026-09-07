@@ -1,50 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <data name="Settings_Page_Title"><value>Impostazioni — StageFright Community</value></data>
-  <data name="Settings_Page_Heading"><value>Impostazioni</value></data>
-  <data name="Settings_Tab_General"><value>Generale</value></data>
-  <data name="Settings_Tab_SalesTax"><value>Imposta sulle vendite</value></data>
-  <data name="Settings_Tab_EventTypes"><value>Tipi di evento</value></data>
-  <data name="Settings_Tab_BackupRestore"><value>Backup e ripristino</value></data>
-  <data name="Settings_Tab_Committee"><value>Comitato</value></data>
-  <data name="Settings_Tab_LoadFailed"><value>Impossibile caricare questa scheda.</value></data>
-  <data name="Settings_Common_LoadingText"><value>Caricamento impostazioni…</value></data>
-  <data name="Settings_Common_SaveButton"><value>Salva impostazioni</value></data>
-  <data name="Settings_Common_SaveSuccess"><value>Impostazioni salvate correttamente.</value></data>
-  <data name="Settings_Common_LoadError"><value>Impossibile caricare le impostazioni: {Detail}</value></data>
-  <data name="Settings_Common_SaveError"><value>Impossibile salvare le impostazioni: {Detail}</value></data>
-  <data name="Settings_General_OrganisationNameLabel"><value>Nome dell'organizzazione</value></data>
-  <data name="Settings_General_AnnualFeeLabel"><value>Quota annuale di iscrizione</value></data>
-  <data name="Settings_General_AttendanceFeeLabel"><value>Quota di presenza</value></data>
-  <data name="Settings_General_MembershipRenewalMonthLabel"><value>Mese di rinnovo dell'iscrizione</value></data>
-  <data name="Settings_General_AgmMonthLabel"><value>Mese dell'assemblea generale</value></data>
-  <data name="Settings_General_LanguageLabel"><value>Lingua di visualizzazione</value></data>
-  <data name="Settings_General_LanguageHelp"><value>Imposta la lingua e la formattazione regionale dell'intera applicazione.</value></data>
-  <data name="Settings_General_ThemeLabel"><value>Tema</value></data>
-  <data name="Settings_General_ThemeCurrent"><value>Attuale: {Theme}</value></data>
-  <data name="Settings_Tax_SalesTaxLabel"><value>Imposta sulle vendite</value></data>
-  <data name="Settings_Tax_AppliesLabel"><value>L'imposta sulle vendite si applica a questa organizzazione</value></data>
-  <data name="Settings_Tax_ConfirmButton"><value>Conferma</value></data>
-  <data name="Settings_Tax_RateLabel"><value>Aliquota fiscale (%)</value></data>
-  <data name="Settings_Tax_TaxExemptDefaultOption"><value>Esente da imposte (predefinito)</value></data>
-  <data name="Settings_Committee_LoadingText"><value>Caricamento impostazioni del comitato…</value></data>
-  <data name="Settings_Committee_AddTitleButton"><value>Aggiungi incarico</value></data>
-  <data name="Settings_Committee_CreatingText"><value>Creazione…</value></data>
-  <data name="Settings_Committee_NameColumn"><value>Nome</value></data>
-  <data name="Settings_Committee_ArchiveButton"><value>Archivia</value></data>
-  <data name="Settings_Committee_ReadOnlyText"><value>Solo lettura</value></data>
-  <data name="Settings_EventTypes_AddHeading"><value>Aggiungi tipo di evento</value></data>
-  <data name="Settings_EventTypes_AddButton"><value>Aggiungi tipo di evento</value></data>
-  <data name="Settings_EventTypes_CreatingText"><value>Creazione…</value></data>
-  <data name="Settings_EventTypes_NameColumn"><value>Nome</value></data>
-  <data name="Settings_EventTypes_ArchiveButton"><value>Archivia</value></data>
-  <data name="Settings_EventTypes_RestoreButton"><value>Ripristina</value></data>
-  <data name="Settings_Backup_Heading"><value>Backup</value></data>
-  <data name="Settings_Backup_CreateButton"><value>Crea backup</value></data>
-  <data name="Settings_Backup_CreatingText"><value>Creazione backup…</value></data>
-  <data name="Settings_Restore_Heading"><value>Ripristino</value></data>
-  <data name="Settings_Restore_SelectFileLabel"><value>Seleziona file di backup</value></data>
-  <data name="Settings_Restore_ConfirmButton"><value>Conferma ripristino</value></data>
-  <data name="Settings_Restore_RestoringText"><value>Ripristino…</value></data>
-  <data name="Settings_Restore_Success"><value>Ripristino completato correttamente.</value></data>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Settings_Page_Title" xml:space="preserve"><value>Impostazioni — StageFright Community</value><comment>Browser tab title — Settings.</comment></data>
+  <data name="Settings_Page_Heading" xml:space="preserve"><value>Impostazioni</value><comment>Settings page heading.</comment></data>
+  <data name="Settings_Tab_General" xml:space="preserve"><value>Generale</value><comment>Settings tab title.</comment></data>
+  <data name="Settings_Tab_SalesTax" xml:space="preserve"><value>Imposta sulle vendite</value><comment>Settings tab title.</comment></data>
+  <data name="Settings_Tab_EventTypes" xml:space="preserve"><value>Tipi di evento</value><comment>Settings tab title.</comment></data>
+  <data name="Settings_Tab_BackupRestore" xml:space="preserve"><value>Backup e ripristino</value><comment>Settings tab title.</comment></data>
+  <data name="Settings_Tab_Committee" xml:space="preserve"><value>Comitato</value><comment>Settings tab title.</comment></data>
+  <data name="Settings_Tab_LoadFailed" xml:space="preserve"><value>Impossibile caricare questa scheda.</value><comment>Shown when a core settings tab throws.</comment></data>
+  <data name="Settings_Tab_PluginLoadFailed" xml:space="preserve"><value>Impossibile caricare questa scheda delle impostazioni.</value><comment>Shown when a plugin settings tab throws.</comment></data>
+  <data name="Settings_Common_LoadingText" xml:space="preserve"><value>Caricamento impostazioni…</value><comment>Status text while a settings tab loads.</comment></data>
+  <data name="Settings_Common_SaveButton" xml:space="preserve"><value>Salva impostazioni</value><comment>Settings form submit button.</comment></data>
+  <data name="Settings_Common_SaveSuccess" xml:space="preserve"><value>Impostazioni salvate correttamente.</value><comment>Shown after a successful settings save.</comment></data>
+  <data name="Settings_Common_LoadError" xml:space="preserve"><value>Impossibile caricare le impostazioni: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Common_SaveError" xml:space="preserve"><value>Impossibile salvare le impostazioni: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_General_OrganisationNameLabel" xml:space="preserve"><value>Nome dell'organizzazione</value><comment>General tab field label.</comment></data>
+  <data name="Settings_General_AnnualFeeLabel" xml:space="preserve"><value>Quota annuale di iscrizione</value><comment>General tab field label.</comment></data>
+  <data name="Settings_General_AttendanceFeeLabel" xml:space="preserve"><value>Quota di presenza</value><comment>General tab field label.</comment></data>
+  <data name="Settings_General_MembershipRenewalMonthLabel" xml:space="preserve"><value>Mese di rinnovo dell'iscrizione</value><comment>General tab field label.</comment></data>
+  <data name="Settings_General_AgmMonthLabel" xml:space="preserve"><value>Mese dell'assemblea generale</value><comment>General tab field label.</comment></data>
+  <data name="Settings_General_FinancialYearStartMonthLabel" xml:space="preserve"><value>Mese di inizio dell'esercizio finanziario</value><comment>General tab field label.</comment></data>
+  <data name="Settings_General_FinancialYearStartDayLabel" xml:space="preserve"><value>Giorno di inizio dell'esercizio finanziario</value><comment>General tab field label — day of the start month the financial year opens on (spec 028, FR-020).</comment></data>
+  <data name="Settings_General_FinancialYearStartHelp" xml:space="preserve"><value>Predefinito: 1 luglio (esercizio finanziario australiano).</value><comment>Help text under the financial-year-start fields.</comment></data>
+  <data name="Settings_General_AuditRetentionLabel" xml:space="preserve"><value>Conservazione del registro di controllo (anni)</value><comment>General tab field label.</comment></data>
+  <data name="Settings_General_AuditRetentionHelp" xml:space="preserve"><value>Per quanto tempo viene conservata la cronologia del registro di controllo prima che la pulizia all'avvio la rimuova.</value><comment>Help text under the audit-retention field.</comment></data>
+  <data name="Settings_General_ClosePeriodLabel" xml:space="preserve"><value>Chiudi i periodi finanziari fino al</value><comment>General tab — label for the closed-through date control (spec 028, FR-016).</comment></data>
+  <data name="Settings_General_ClosePeriodHelp" xml:space="preserve"><value>Una volta impostata, qualsiasi transazione finanziaria con data pari o precedente a questa viene rifiutata. Spunta la casella sottostante per confermare la modifica.</value><comment>Help text under the close-period date control.</comment></data>
+  <data name="Settings_General_ClosePeriodConfirm" xml:space="preserve"><value>Ho capito: chiudi tutti i periodi finanziari fino alla data indicata sopra</value><comment>Confirmation checkbox label required before the closed-through date is saved.</comment></data>
+  <data name="Settings_General_AuditRetentionYears_One" xml:space="preserve"><value>{Count} anno</value><comment>Audit-retention select option, singular.</comment></data>
+  <data name="Settings_General_AuditRetentionYears_Other" xml:space="preserve"><value>{Count} anni</value><comment>Audit-retention select option, plural.</comment></data>
+  <data name="Settings_General_MaxAgeLabel" xml:space="preserve"><value>Età massima dell'iscritto (anni)</value><comment>General tab field label.</comment></data>
+  <data name="Settings_General_MinAgeLabel" xml:space="preserve"><value>Età minima dell'iscritto (anni)</value><comment>General tab field label.</comment></data>
+  <data name="Settings_General_ThemeLabel" xml:space="preserve"><value>Tema</value><comment>General tab — theme toggle label.</comment></data>
+  <data name="Settings_General_ThemeCurrent" xml:space="preserve"><value>Attuale: {Theme}</value><comment>Shows the active theme. {Theme} = localized theme name.</comment></data>
+  <data name="Settings_General_DashboardLabel" xml:space="preserve"><value>Dashboard</value><comment>General tab — dashboard options label.</comment></data>
+  <data name="Settings_General_ShowGraphsLabel" xml:space="preserve"><value>Mostra i grafici di partecipazione dall'inizio dell'anno sui riquadri Prove ed Eventi</value><comment>Checkbox label — show participation graphs.</comment></data>
+  <data name="Settings_General_LanguageLabel" xml:space="preserve"><value>Lingua di visualizzazione</value><comment>General tab — language picker label (spec 027, US3).</comment></data>
+  <data name="Settings_General_LanguageHelp" xml:space="preserve"><value>Imposta la lingua e la formattazione regionale dell'intera applicazione.</value><comment>Help text under the language picker.</comment></data>
+  <data name="Settings_Tax_SalesTaxLabel" xml:space="preserve"><value>Imposta sulle vendite</value><comment>Sales Tax tab — section label.</comment></data>
+  <data name="Settings_Tax_AppliesLabel" xml:space="preserve"><value>L'imposta sulle vendite si applica a questa organizzazione</value><comment>Toggle label — sales tax applicability.</comment></data>
+  <data name="Settings_Tax_ConfirmEnable" xml:space="preserve"><value>Conferma: le future registrazioni di ricavi e costi separeranno l'imposta sulle vendite e la reportistica fiscale verrà abilitata.</value><comment>Confirmation prompt when turning sales tax on. Rendered after a bold "Confirm:" lead-in.</comment></data>
+  <data name="Settings_Tax_ConfirmDisable" xml:space="preserve"><value>Conferma: i campi fiscali verranno nascosti e le future registrazioni non porteranno più un codice fiscale.</value><comment>Confirmation prompt when turning sales tax off. Rendered after a bold "Confirm:" lead-in.</comment></data>
+  <data name="Settings_Tax_ConfirmButton" xml:space="preserve"><value>Conferma</value><comment>Confirm button for the sales-tax toggle.</comment></data>
+  <data name="Settings_Tax_RateLabel" xml:space="preserve"><value>Aliquota fiscale (%)</value><comment>Sales Tax tab — tax rate field label.</comment></data>
+  <data name="Settings_Tax_EntryModeLabel" xml:space="preserve"><value>Inserimento dell'importo</value><comment>Sales Tax tab — label for the tax-inclusive / tax-exclusive amount-entry mode selector.</comment></data>
+  <data name="Settings_Tax_AnnualFeeTreatmentLabel" xml:space="preserve"><value>Trattamento fiscale della quota annuale</value><comment>Sales Tax tab — annual fee tax-code field label.</comment></data>
+  <data name="Settings_Tax_AttendanceFeeTreatmentLabel" xml:space="preserve"><value>Trattamento fiscale della quota di presenza</value><comment>Sales Tax tab — attendance fee tax-code field label.</comment></data>
+  <data name="Settings_Tax_TaxExemptDefaultOption" xml:space="preserve"><value>Esente da imposte (predefinito)</value><comment>Tax-treatment select — the unset/default option.</comment></data>
+  <data name="Settings_Committee_LoadingText" xml:space="preserve"><value>Caricamento impostazioni del comitato…</value><comment>Status text while the Committee tab loads.</comment></data>
+  <data name="Settings_Committee_SeatTargetHeading" xml:space="preserve"><value>Numero obiettivo di seggi del comitato generale</value><comment>Committee tab — seat-target card heading.</comment></data>
+  <data name="Settings_Committee_TargetSeatsLabel" xml:space="preserve"><value>Seggi obiettivo</value><comment>Committee tab — target-seats field label.</comment></data>
+  <data name="Settings_Committee_SeatTargetHelp" xml:space="preserve"><value>Solo indicativo: non viene applicato alcun limite rigido durante la registrazione di un'assemblea generale.</value><comment>Help text under the seat-target field.</comment></data>
+  <data name="Settings_Committee_AddTitleHeading" xml:space="preserve"><value>Aggiungi incarico</value><comment>Committee tab — add-title card heading.</comment></data>
+  <data name="Settings_Committee_TitleNamePlaceholder" xml:space="preserve"><value>Nome dell'incarico</value><comment>Placeholder / aria-label for the office-holder title name field.</comment></data>
+  <data name="Settings_Committee_AddTitleButton" xml:space="preserve"><value>Aggiungi incarico</value><comment>Committee tab — add-title submit button.</comment></data>
+  <data name="Settings_Committee_CreatingText" xml:space="preserve"><value>Creazione…</value><comment>Add-title button text while creating.</comment></data>
+  <data name="Settings_Committee_TitlesHeading" xml:space="preserve"><value>Incarichi</value><comment>Committee tab — titles list heading.</comment></data>
+  <data name="Settings_Committee_NoTitles" xml:space="preserve"><value>Nessun incarico ancora definito.</value><comment>Shown when there are no office-holder titles.</comment></data>
+  <data name="Settings_Committee_NameColumn" xml:space="preserve"><value>Nome</value><comment>Committee titles grid — name column.</comment></data>
+  <data name="Settings_Committee_BuiltInBadge" xml:space="preserve"><value>Predefinito</value><comment>Badge / title marking a built-in office-holder title.</comment></data>
+  <data name="Settings_Committee_ArchiveButton" xml:space="preserve"><value>Archivia</value><comment>Button — archive an office-holder title.</comment></data>
+  <data name="Settings_Committee_ArchiveAriaLabel" xml:space="preserve"><value>Archivia {Name}</value><comment>aria-label on an archive button. {Name} = title name.</comment></data>
+  <data name="Settings_Committee_ReadOnlyText" xml:space="preserve"><value>Solo lettura</value><comment>Shown instead of an archive button for a built-in title.</comment></data>
+  <data name="Settings_Committee_SeatTargetSaved" xml:space="preserve"><value>Numero obiettivo di seggi salvato.</value><comment>Shown after saving the seat-count target.</comment></data>
+  <data name="Settings_Committee_TitleCreated" xml:space="preserve"><value>Incarico '{Name}' creato.</value><comment>Shown after creating a title. {Name} = title name.</comment></data>
+  <data name="Settings_Committee_TitleArchived" xml:space="preserve"><value>Incarico archiviato.</value><comment>Shown after archiving a title.</comment></data>
+  <data name="Settings_Committee_LoadError" xml:space="preserve"><value>Impossibile caricare le impostazioni del comitato: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Committee_CreateError" xml:space="preserve"><value>Impossibile creare l'incarico: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Committee_ArchiveError" xml:space="preserve"><value>Impossibile archiviare l'incarico: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Committee_SeatTargetError" xml:space="preserve"><value>Impossibile salvare il numero obiettivo di seggi: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_EventTypes_LoadingText" xml:space="preserve"><value>Caricamento tipi di evento…</value><comment>Status text while the Event Types tab loads.</comment></data>
+  <data name="Settings_EventTypes_AddHeading" xml:space="preserve"><value>Aggiungi tipo di evento</value><comment>Event Types tab — add card heading.</comment></data>
+  <data name="Settings_EventTypes_NamePlaceholder" xml:space="preserve"><value>Nome del tipo di evento</value><comment>Placeholder / aria-label for the event-type name field.</comment></data>
+  <data name="Settings_EventTypes_AddButton" xml:space="preserve"><value>Aggiungi tipo di evento</value><comment>Event Types tab — add submit button.</comment></data>
+  <data name="Settings_EventTypes_CreatingText" xml:space="preserve"><value>Creazione…</value><comment>Add-event-type button text while creating.</comment></data>
+  <data name="Settings_EventTypes_ActiveHeading" xml:space="preserve"><value>Tipi di evento</value><comment>Event Types tab — active list heading.</comment></data>
+  <data name="Settings_EventTypes_NoneDefined" xml:space="preserve"><value>Nessun tipo di evento ancora definito.</value><comment>Shown when there are no event types.</comment></data>
+  <data name="Settings_EventTypes_NameColumn" xml:space="preserve"><value>Nome</value><comment>Event types grid — name column.</comment></data>
+  <data name="Settings_EventTypes_SystemBadge" xml:space="preserve"><value>Sistema</value><comment>Badge / title marking a system-default event type.</comment></data>
+  <data name="Settings_EventTypes_ArchiveButton" xml:space="preserve"><value>Archivia</value><comment>Button — archive an event type.</comment></data>
+  <data name="Settings_EventTypes_ArchiveAriaLabel" xml:space="preserve"><value>Archivia {Name}</value><comment>aria-label on an archive button. {Name} = event type name.</comment></data>
+  <data name="Settings_EventTypes_ReadOnlyText" xml:space="preserve"><value>Solo lettura</value><comment>Shown instead of an archive button for a system default.</comment></data>
+  <data name="Settings_EventTypes_ArchivedHeading" xml:space="preserve"><value>Tipi di evento archiviati</value><comment>Event Types tab — archived list heading.</comment></data>
+  <data name="Settings_EventTypes_RestoreButton" xml:space="preserve"><value>Ripristina</value><comment>Button — restore an archived event type.</comment></data>
+  <data name="Settings_EventTypes_RestoreAriaLabel" xml:space="preserve"><value>Ripristina {Name}</value><comment>aria-label on a restore button. {Name} = event type name.</comment></data>
+  <data name="Settings_EventTypes_Created" xml:space="preserve"><value>Tipo di evento '{Name}' creato.</value><comment>Shown after creating an event type. {Name} = name.</comment></data>
+  <data name="Settings_EventTypes_Archived" xml:space="preserve"><value>Tipo di evento archiviato.</value><comment>Shown after archiving an event type.</comment></data>
+  <data name="Settings_EventTypes_Restored" xml:space="preserve"><value>Tipo di evento ripristinato.</value><comment>Shown after restoring an event type.</comment></data>
+  <data name="Settings_EventTypes_LoadError" xml:space="preserve"><value>Impossibile caricare i tipi di evento: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_EventTypes_CreateError" xml:space="preserve"><value>Impossibile creare il tipo di evento: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_EventTypes_ArchiveError" xml:space="preserve"><value>Impossibile archiviare il tipo di evento: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_EventTypes_RestoreError" xml:space="preserve"><value>Impossibile ripristinare il tipo di evento: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Backup_Heading" xml:space="preserve"><value>Backup</value><comment>Backup &amp; Restore tab — backup section heading.</comment></data>
+  <data name="Settings_Backup_Description" xml:space="preserve"><value>Crea un backup completo di tutti i dati (compresi i record archiviati) in un file .sfbak.</value><comment>Backup section description. ".sfbak" is a file extension, kept as-is.</comment></data>
+  <data name="Settings_Backup_CreateButton" xml:space="preserve"><value>Crea backup</value><comment>Button — create a backup.</comment></data>
+  <data name="Settings_Backup_CreatingText" xml:space="preserve"><value>Creazione backup…</value><comment>Backup button text while a backup is in progress.</comment></data>
+  <data name="Settings_Backup_Created" xml:space="preserve"><value>Backup creato: {Path}</value><comment>Shown after a backup. {Path} = file path.</comment></data>
+  <data name="Settings_Backup_Error" xml:space="preserve"><value>Backup non riuscito: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Restore_Heading" xml:space="preserve"><value>Ripristino</value><comment>Backup &amp; Restore tab — restore section heading.</comment></data>
+  <data name="Settings_Restore_Description" xml:space="preserve"><value>Ripristina i dati da un file .sfbak. Prima di qualsiasi modifica ai dati viene creato automaticamente un checkpoint del database corrente.</value><comment>Restore section description.</comment></data>
+  <data name="Settings_Restore_SelectFileLabel" xml:space="preserve"><value>Seleziona file di backup</value><comment>Label for the restore file input.</comment></data>
+  <data name="Settings_Restore_DetailsHeading" xml:space="preserve"><value>Dettagli del backup</value><comment>Card heading for the selected backup's details.</comment></data>
+  <data name="Settings_Restore_GeneratedTerm" xml:space="preserve"><value>Generato</value><comment>Backup details — generated-at term.</comment></data>
+  <data name="Settings_Restore_SchemaVersionTerm" xml:space="preserve"><value>Versione dello schema</value><comment>Backup details — schema version term.</comment></data>
+  <data name="Settings_Restore_Warning" xml:space="preserve"><value>Attenzione: il ripristino sovrascriverà i dati con i record del backup. Prima di qualsiasi modifica verrà salvato un checkpoint del database corrente nella stessa cartella.</value><comment>Restore confirmation warning. Rendered after a bold "Warning:" lead-in.</comment></data>
+  <data name="Settings_Restore_UnderstandButton" xml:space="preserve"><value>Ho capito: ripristina da questo backup</value><comment>First-step restore confirmation button.</comment></data>
+  <data name="Settings_Restore_ConfirmButton" xml:space="preserve"><value>Conferma ripristino</value><comment>Second-step restore confirmation button.</comment></data>
+  <data name="Settings_Restore_RestoringText" xml:space="preserve"><value>Ripristino…</value><comment>Restore button text while a restore is in progress.</comment></data>
+  <data name="Settings_Restore_Success" xml:space="preserve"><value>Ripristino completato correttamente.</value><comment>Shown after a successful restore.</comment></data>
+  <data name="Settings_Restore_ReadFileError" xml:space="preserve"><value>Impossibile leggere il file di backup: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Restore_FailedNoChanges" xml:space="preserve"><value>Ripristino non riuscito; nessuna modifica effettuata. {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Restore_Error" xml:space="preserve"><value>Ripristino non riuscito: {Detail}</value><comment>{Detail} = error detail.</comment></data>
 </root>
