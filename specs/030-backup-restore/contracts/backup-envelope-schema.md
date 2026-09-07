@@ -33,7 +33,7 @@ Existing members `1–3`, `10–23`, `30` are untouched. Member 30 `EntityCounts
 | `FeeBackupDto` (existing 1–9) | `10` — `TaxCode` |
 | `TransactionBackupDto` (existing 1–11) | `12` — `TaxCode`; `13` — `JournalEntryId` |
 
-`DateTime` / `DateTime?` on the **new** members use `[ProtoMember(n, DataFormat = DataFormat.WellKnown)]` (UTC `google.protobuf.Timestamp`). `DateTime` members on **existing** DTOs keep their current default wire format — changing them would break older-file reads; the `CrossPlatformRoundTripTests` guard proves the existing format round-trips losslessly across time zones.
+`DateTime` / `DateTime?` on the **new** members use the plain `[ProtoMember(n)]` default — the same wire form as every `DateTime` member on the existing 20 `*BackupDto` types (protobuf-net's default BCL tick+kind representation, not host-locale text). The `CrossPlatformRoundTripTests` guard proves this round-trips losslessly across time zones and locales.
 
 ## Old-file compatibility rules
 

@@ -574,6 +574,272 @@ public class BackupServiceTests : TestBase
         }
     }
 
+    // --- .sfbak drift fix (spec 030): finance record types, tax fields, expanded settings ---
+
+    [Fact]
+    public async Task ExportAsync_WritesSchemaVersion120()
+    {
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(BuildMinimalSnapshot());
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_schema_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+            var manifest = await svc.GetManifestAsync(path, Ct);
+            Assert.Equal("1.2.0", manifest.SchemaVersion);
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public async Task ExportAsync_IncludesFinanceEntities_InEntityCounts()
+    {
+        var je = BuildJournalEntry();
+        var recon = BuildBankReconciliation();
+        var line = BuildReconciliationLine(recon.Id, Guid.NewGuid());
+        var snapshot = new BackupSnapshot
+        {
+            JournalEntries = [je],
+            BankReconciliations = [recon],
+            ReconciliationLines = [line]
+        };
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_fin_counts_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+            var manifest = await svc.GetManifestAsync(path, Ct);
+            Assert.Equal(1, manifest.EntityCounts["JournalEntries"]);
+            Assert.Equal(1, manifest.EntityCounts["BankReconciliations"]);
+            Assert.Equal(1, manifest.EntityCounts["ReconciliationLines"]);
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public async Task ImportAsync_RoundTripsFinanceEntities()
+    {
+        var je = BuildJournalEntry();
+        var recon = BuildBankReconciliation();
+        recon.Status = ReconciliationStatus.Finalised;
+        recon.FinalisedAt = DateTime.UtcNow;
+        var txId = Guid.NewGuid();
+        var line = BuildReconciliationLine(recon.Id, txId);
+        var snapshot = new BackupSnapshot
+        {
+            JournalEntries = [je],
+            BankReconciliations = [recon],
+            ReconciliationLines = [line]
+        };
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
+        _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0]!)(Ct));
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_fin_rt_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+
+            BackupSnapshot? upserted = null;
+            _backupRepo.UpsertSnapshotAsync(Arg.Do<BackupSnapshot>(s => upserted = s), Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask);
+
+            await svc.ImportAsync(path, Ct);
+
+            var restoredJe = Assert.Single(upserted!.JournalEntries);
+            Assert.Equal(je.Id, restoredJe.Id);
+            Assert.Equal(je.Type, restoredJe.Type);
+
+            var restoredRecon = Assert.Single(upserted.BankReconciliations);
+            Assert.Equal(ReconciliationStatus.Finalised, restoredRecon.Status);
+            Assert.Equal(recon.StatementClosingBalance, restoredRecon.StatementClosingBalance);
+
+            var restoredLine = Assert.Single(upserted.ReconciliationLines);
+            Assert.Equal(recon.Id, restoredLine.ReconciliationId);
+            Assert.Equal(txId, restoredLine.TransactionId);
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+                File.Delete(f);
+        }
+    }
+
+    [Fact]
+    public async Task ExportThenImport_RoundTripsFeeAndTransactionTaxAndJournalLink()
+    {
+        var je = BuildJournalEntry();
+        var fee = new Fee
+        {
+            Id = Guid.NewGuid(), MemberId = Guid.NewGuid(), FeeType = FeeType.Annual, Amount = 110m,
+            FeeDate = DateTime.UtcNow, DueDate = DateTime.UtcNow.AddDays(30), PaidAtCreation = false,
+            TaxCode = TaxCode.Taxable, CreatedAt = DateTime.UtcNow
+        };
+        var tx = new Transaction
+        {
+            Id = Guid.NewGuid(), Date = DateTime.UtcNow, AccountId = Guid.NewGuid(),
+            DebitAmount = 110m, CreditAmount = 0m, GLAccount = "1200",
+            FeeId = fee.Id, JournalEntryId = je.Id, TaxCode = TaxCode.Taxable,
+            Description = "Annual fee", CreatedAt = DateTime.UtcNow
+        };
+        var snapshot = new BackupSnapshot { JournalEntries = [je], Fees = [fee], Transactions = [tx] };
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
+        _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0]!)(Ct));
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_tax_rt_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+
+            BackupSnapshot? upserted = null;
+            _backupRepo.UpsertSnapshotAsync(Arg.Do<BackupSnapshot>(s => upserted = s), Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask);
+
+            await svc.ImportAsync(path, Ct);
+
+            var restoredFee = Assert.Single(upserted!.Fees);
+            Assert.Equal(TaxCode.Taxable, restoredFee.TaxCode);
+
+            var restoredTx = Assert.Single(upserted.Transactions);
+            Assert.Equal(TaxCode.Taxable, restoredTx.TaxCode);
+            Assert.Equal(je.Id, restoredTx.JournalEntryId);
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+                File.Delete(f);
+        }
+    }
+
+    [Fact]
+    public async Task ImportAsync_RoundTripsExpandedSettingsFields()
+    {
+        var closedThrough = new DateTime(2025, 6, 30, 0, 0, 0, DateTimeKind.Utc);
+        var inception = new DateTime(2019, 3, 1, 0, 0, 0, DateTimeKind.Utc);
+        var settings = new Settings
+        {
+            Id = Guid.NewGuid(), OrganizationName = "Global Choir", AnnualFee = 90m, AttendanceFee = 4m,
+            MembershipRenewalMonth = 1, AuditRetentionYears = 3,
+            FinancialYearStartMonth = 1, FinancialYearStartDay = 6,
+            CurrencyCode = "USD", ClosedThroughDate = closedThrough, InceptionDate = inception,
+            IsTaxApplicable = true, TaxRate = 8.25m,
+            AnnualFeeTaxCode = TaxCode.Taxable, AttendanceFeeTaxCode = TaxCode.TaxExempt,
+            TaxEntryMode = TaxEntryMode.Exclusive, LanguageCode = "es-ES",
+            ShowParticipationGraphs = false,
+            SchemaVersion = "1.1.0", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        var snapshot = new BackupSnapshot { Settings = settings };
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
+        _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0]!)(Ct));
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_settings_rt_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+
+            BackupSnapshot? upserted = null;
+            _backupRepo.UpsertSnapshotAsync(Arg.Do<BackupSnapshot>(s => upserted = s), Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask);
+
+            await svc.ImportAsync(path, Ct);
+
+            var r = upserted!.Settings!;
+            Assert.Equal(1, r.FinancialYearStartMonth);
+            Assert.Equal(6, r.FinancialYearStartDay);
+            Assert.Equal("USD", r.CurrencyCode);
+            Assert.Equal(closedThrough, r.ClosedThroughDate);
+            Assert.Equal(inception, r.InceptionDate);
+            Assert.True(r.IsTaxApplicable);
+            Assert.Equal(8.25m, r.TaxRate);
+            Assert.Equal(TaxCode.Taxable, r.AnnualFeeTaxCode);
+            Assert.Equal(TaxCode.TaxExempt, r.AttendanceFeeTaxCode);
+            Assert.Equal(TaxEntryMode.Exclusive, r.TaxEntryMode);
+            Assert.Equal("es-ES", r.LanguageCode);
+            Assert.False(r.ShowParticipationGraphs);
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+                File.Delete(f);
+        }
+    }
+
+    [Fact]
+    public async Task ImportAsync_OlderBackupWithoutFinanceCollections_RestoresSuccessfully()
+    {
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(BuildMinimalSnapshot());
+        _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0]!)(Ct));
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_old_file_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+
+            // Simulate a pre-1.2.0 file: no finance collections, no finance count keys.
+            var envelope = ReadEnvelope(path);
+            envelope.JournalEntries = null;
+            envelope.BankReconciliations = null;
+            envelope.ReconciliationLines = null;
+            envelope.EntityCounts.Remove("JournalEntries");
+            envelope.EntityCounts.Remove("BankReconciliations");
+            envelope.EntityCounts.Remove("ReconciliationLines");
+            WriteEnvelope(path, envelope);
+
+            BackupSnapshot? upserted = null;
+            _backupRepo.UpsertSnapshotAsync(Arg.Do<BackupSnapshot>(s => upserted = s), Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask);
+
+            await svc.ImportAsync(path, Ct);
+
+            Assert.Empty(upserted!.JournalEntries);
+            Assert.Empty(upserted.BankReconciliations);
+            Assert.Empty(upserted.ReconciliationLines);
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Checkpoint-*.sfbak"))
+                File.Delete(f);
+        }
+    }
+
+    private static JournalEntry BuildJournalEntry() => new()
+    {
+        Id = Guid.NewGuid(), Type = JournalEntryType.GeneralJournal, Date = DateTime.UtcNow.Date,
+        Description = "Test journal", CreatedAt = DateTime.UtcNow
+    };
+
+    private static BankReconciliation BuildBankReconciliation() => new()
+    {
+        Id = Guid.NewGuid(), AccountId = Guid.NewGuid(), StatementDate = DateTime.UtcNow.Date,
+        StatementClosingBalance = 1234.56m, OpeningBalance = 1000m, Status = ReconciliationStatus.Draft,
+        CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+    };
+
+    private static ReconciliationLine BuildReconciliationLine(Guid reconId, Guid txId) => new()
+    {
+        Id = Guid.NewGuid(), ReconciliationId = reconId, TransactionId = txId, CreatedAt = DateTime.UtcNow
+    };
+
     private static BackupEnvelope ReadEnvelope(string path)
     {
         using var fs = File.OpenRead(path);
@@ -604,6 +870,9 @@ public class BackupServiceTests : TestBase
         Fees = [],
         Payments = [],
         Transactions = [],
+        JournalEntries = [],
+        BankReconciliations = [],
+        ReconciliationLines = [],
         Accounts = [],
         Settings = null,
         AuditTrailEntries = []

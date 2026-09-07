@@ -1,4 +1,5 @@
 using ProtoBuf;
+using StageFright.Core.Enums;
 
 namespace StageFright.Core.Modules.Settings.Backup;
 
@@ -17,4 +18,6 @@ public class TransactionBackupDto
     [ProtoMember(9)] public Guid? FeeId { get; set; }
     [ProtoMember(10)] public string? Description { get; set; }
     [ProtoMember(11)] public DateTime CreatedAt { get; set; }
+    [ProtoMember(12)] public TaxCode? TaxCode { get; set; }
+    [ProtoMember(13)] public Guid? JournalEntryId { get; set; }
 }

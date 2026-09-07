@@ -55,7 +55,7 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
 
             // Verify manifest
             var manifest = await svc.GetManifestAsync(path, TestContext.Current.CancellationToken);
-            Assert.Equal("1.1.0", manifest.SchemaVersion);
+            Assert.Equal("1.2.0", manifest.SchemaVersion);
             Assert.Equal(2, manifest.EntityCounts["Members"]);
 
             // Clear active members (simulate fresh restore target)
@@ -264,6 +264,97 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
             await svc.ExportAsync(path, TestContext.Current.CancellationToken);
             var manifest = await svc.GetManifestAsync(path, TestContext.Current.CancellationToken);
             Assert.Equal(2, manifest.EntityCounts["Members"]);
+        }
+        finally
+        {
+            CleanupFiles(path);
+        }
+    }
+
+    // --- .sfbak drift fix (spec 030): finance record types + expanded settings ---
+
+    [Fact]
+    public async Task Backup_RoundTripsFinanceEntitiesAndExpandedSettings_Integration()
+    {
+        var cashAccountId = new Guid("00000000-0000-0000-0000-000000000001");
+        var now = DateTime.UtcNow;
+
+        var je = new JournalEntry
+        {
+            Id = Guid.NewGuid(), Type = JournalEntryType.GeneralJournal, Date = now.Date,
+            Description = "Opening journal", CreatedAt = now
+        };
+        var tx = new Transaction
+        {
+            Id = Guid.NewGuid(), Date = now.Date, AccountId = cashAccountId,
+            DebitAmount = 50m, CreditAmount = 0m, GLAccount = "1100",
+            JournalEntryId = je.Id, TaxCode = TaxCode.Taxable, Description = "Journal line", CreatedAt = now
+        };
+        var recon = new BankReconciliation
+        {
+            Id = Guid.NewGuid(), AccountId = cashAccountId, StatementDate = now.Date,
+            StatementClosingBalance = 50m, OpeningBalance = 0m, Status = ReconciliationStatus.Finalised,
+            FinalisedAt = now, CreatedAt = now, UpdatedAt = now
+        };
+        var line = new ReconciliationLine
+        {
+            Id = Guid.NewGuid(), ReconciliationId = recon.Id, TransactionId = tx.Id, CreatedAt = now
+        };
+        var settings = new Settings
+        {
+            Id = Guid.NewGuid(), OrganizationName = "Round Trip Choir", AnnualFee = 80m, AttendanceFee = 3m,
+            MembershipRenewalMonth = 1, CommitteeRenewalMonth = 1, AuditRetentionYears = 2,
+            FinancialYearStartMonth = 1, FinancialYearStartDay = 6, CurrencyCode = "USD",
+            InceptionDate = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            IsTaxApplicable = true, TaxRate = 8.25m, AnnualFeeTaxCode = TaxCode.Taxable,
+            TaxEntryMode = TaxEntryMode.Exclusive, LanguageCode = "es-ES", ShowParticipationGraphs = false,
+            SchemaVersion = "1.1.0", CreatedAt = now, UpdatedAt = now
+        };
+        _db.JournalEntries.Add(je);
+        _db.Transactions.Add(tx);
+        _db.BankReconciliations.Add(recon);
+        _db.ReconciliationLines.Add(line);
+        _db.Settings.Add(settings);
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var svc = BuildService();
+        var path = TempPath();
+
+        try
+        {
+            await svc.ExportAsync(path, TestContext.Current.CancellationToken);
+
+            var manifest = await svc.GetManifestAsync(path, TestContext.Current.CancellationToken);
+            Assert.Equal(1, manifest.EntityCounts["JournalEntries"]);
+            Assert.Equal(1, manifest.EntityCounts["BankReconciliations"]);
+            Assert.Equal(1, manifest.EntityCounts["ReconciliationLines"]);
+
+            // Mutate settings after export, then restore from the backup.
+            var tracked = await _db.Settings.SingleAsync(cancellationToken: TestContext.Current.CancellationToken);
+            tracked.CurrencyCode = "AUD";
+            tracked.ShowParticipationGraphs = true;
+            tracked.LanguageCode = "en-AU";
+            await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            await svc.ImportAsync(path, TestContext.Current.CancellationToken);
+            _db.ChangeTracker.Clear();
+
+            var restoredSettings = await _db.Settings.SingleAsync(cancellationToken: TestContext.Current.CancellationToken);
+            Assert.Equal("USD", restoredSettings.CurrencyCode);
+            Assert.Equal(6, restoredSettings.FinancialYearStartDay);
+            Assert.Equal(TaxEntryMode.Exclusive, restoredSettings.TaxEntryMode);
+            Assert.Equal("es-ES", restoredSettings.LanguageCode);
+            Assert.False(restoredSettings.ShowParticipationGraphs);
+
+            var restoredTx = await _db.Transactions.SingleAsync(t => t.Id == tx.Id, TestContext.Current.CancellationToken);
+            Assert.Equal(je.Id, restoredTx.JournalEntryId);
+            Assert.Equal(TaxCode.Taxable, restoredTx.TaxCode);
+
+            Assert.True(await _db.JournalEntries.AnyAsync(j => j.Id == je.Id, TestContext.Current.CancellationToken));
+            Assert.True(await _db.BankReconciliations.IgnoreQueryFilters()
+                .AnyAsync(r => r.Id == recon.Id && r.Status == ReconciliationStatus.Finalised, TestContext.Current.CancellationToken));
+            Assert.True(await _db.ReconciliationLines.IgnoreQueryFilters()
+                .AnyAsync(l => l.Id == line.Id && l.TransactionId == tx.Id, TestContext.Current.CancellationToken));
         }
         finally
         {

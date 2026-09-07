@@ -137,6 +137,11 @@ public class BackupService : IBackupService
         envelope.AgmAttendanceRecords ??= [];
         envelope.CommitteeOfficeHolderTypes ??= [];
         envelope.CommitteeTerms ??= [];
+        // Added in schema 1.2.0 — absent (null) in every older file, so normalise to empty
+        // and never gate completeness on them (see ValidateCompleteness).
+        envelope.JournalEntries ??= [];
+        envelope.BankReconciliations ??= [];
+        envelope.ReconciliationLines ??= [];
         envelope.EntityCounts ??= new Dictionary<string, int>();
 
         ValidateVersion(envelope.SchemaVersion);
@@ -212,6 +217,9 @@ public class BackupService : IBackupService
         var agmAttendance = snapshot.AgmAttendanceRecords.Select(MapAgmAttendance).ToList();
         var officeHolderTypes = snapshot.CommitteeOfficeHolderTypes.Select(MapOfficeHolderType).ToList();
         var committeeTerms = snapshot.CommitteeTerms.Select(MapCommitteeTerm).ToList();
+        var journalEntries = snapshot.JournalEntries.Select(MapJournalEntry).ToList();
+        var bankReconciliations = snapshot.BankReconciliations.Select(MapBankReconciliation).ToList();
+        var reconciliationLines = snapshot.ReconciliationLines.Select(MapReconciliationLine).ToList();
 
         var counts = new Dictionary<string, int>
         {
@@ -231,12 +239,15 @@ public class BackupService : IBackupService
             ["AnnualGeneralMeetings"] = agms.Count,
             ["AgmAttendanceRecords"] = agmAttendance.Count,
             ["CommitteeOfficeHolderTypes"] = officeHolderTypes.Count,
-            ["CommitteeTerms"] = committeeTerms.Count
+            ["CommitteeTerms"] = committeeTerms.Count,
+            ["JournalEntries"] = journalEntries.Count,
+            ["BankReconciliations"] = bankReconciliations.Count,
+            ["ReconciliationLines"] = reconciliationLines.Count
         };
 
         return new BackupEnvelope
         {
-            SchemaVersion = "1.1.0",
+            SchemaVersion = "1.2.0",
             GeneratedAt = DateTime.UtcNow,
             ApplicationVersion = "1.0.0",
             Members = members,
@@ -253,6 +264,9 @@ public class BackupService : IBackupService
             AgmAttendanceRecords = agmAttendance,
             CommitteeOfficeHolderTypes = officeHolderTypes,
             CommitteeTerms = committeeTerms,
+            JournalEntries = journalEntries,
+            BankReconciliations = bankReconciliations,
+            ReconciliationLines = reconciliationLines,
             EntityCounts = counts
         };
     }
@@ -292,7 +306,10 @@ public class BackupService : IBackupService
             AnnualGeneralMeetings = env.AnnualGeneralMeetings!.Select(MapAgmFromDto).ToList(),
             AgmAttendanceRecords = env.AgmAttendanceRecords!.Select(MapAgmAttendanceFromDto).ToList(),
             CommitteeOfficeHolderTypes = env.CommitteeOfficeHolderTypes!.Select(MapOfficeHolderTypeFromDto).ToList(),
-            CommitteeTerms = env.CommitteeTerms!.Select(MapCommitteeTermFromDto).ToList()
+            CommitteeTerms = env.CommitteeTerms!.Select(MapCommitteeTermFromDto).ToList(),
+            JournalEntries = env.JournalEntries!.Select(MapJournalEntryFromDto).ToList(),
+            BankReconciliations = env.BankReconciliations!.Select(MapBankReconciliationFromDto).ToList(),
+            ReconciliationLines = env.ReconciliationLines!.Select(MapReconciliationLineFromDto).ToList()
         };
     }
 
@@ -393,7 +410,7 @@ public class BackupService : IBackupService
     {
         Id = f.Id, MemberId = f.MemberId, FeeType = f.FeeType, Amount = f.Amount,
         FeeDate = f.FeeDate, DueDate = f.DueDate, PaidAtCreation = f.PaidAtCreation,
-        RehearsalId = f.RehearsalId, CreatedAt = f.CreatedAt
+        RehearsalId = f.RehearsalId, CreatedAt = f.CreatedAt, TaxCode = f.TaxCode
     };
 
     private static PaymentBackupDto MapPayment(Payment p) => new()
@@ -408,7 +425,27 @@ public class BackupService : IBackupService
         Id = t.Id, Date = t.Date, AccountId = t.AccountId,
         DebitAmount = t.DebitAmount, CreditAmount = t.CreditAmount,
         GLAccount = t.GLAccount, MemberId = t.MemberId, PaymentId = t.PaymentId,
-        FeeId = t.FeeId, Description = t.Description, CreatedAt = t.CreatedAt
+        FeeId = t.FeeId, Description = t.Description, CreatedAt = t.CreatedAt,
+        TaxCode = t.TaxCode, JournalEntryId = t.JournalEntryId
+    };
+
+    private static JournalEntryBackupDto MapJournalEntry(JournalEntry j) => new()
+    {
+        Id = j.Id, Type = j.Type, Date = j.Date, Description = j.Description, CreatedAt = j.CreatedAt
+    };
+
+    private static BankReconciliationBackupDto MapBankReconciliation(BankReconciliation r) => new()
+    {
+        Id = r.Id, AccountId = r.AccountId, StatementDate = r.StatementDate,
+        StatementClosingBalance = r.StatementClosingBalance, OpeningBalance = r.OpeningBalance,
+        Status = r.Status, FinalisedAt = r.FinalisedAt, Notes = r.Notes,
+        IsDeleted = r.IsDeleted, DeletedAt = r.DeletedAt, DeletedBy = r.DeletedBy,
+        CreatedAt = r.CreatedAt, UpdatedAt = r.UpdatedAt
+    };
+
+    private static ReconciliationLineBackupDto MapReconciliationLine(ReconciliationLine l) => new()
+    {
+        Id = l.Id, ReconciliationId = l.ReconciliationId, TransactionId = l.TransactionId, CreatedAt = l.CreatedAt
     };
 
     private static AccountBackupDto MapAccount(Account c) => new()
@@ -428,6 +465,12 @@ public class BackupService : IBackupService
         MaxAgeRangeYears = s.MaxAgeRangeYears, MinimumMemberAge = s.MinimumMemberAge,
         Theme = s.Theme, GeneralCommitteeSeatCountTarget = s.GeneralCommitteeSeatCountTarget,
         SchemaVersion = s.SchemaVersion, AuditRetentionYears = s.AuditRetentionYears,
+        FinancialYearStartMonth = s.FinancialYearStartMonth, FinancialYearStartDay = s.FinancialYearStartDay,
+        CurrencyCode = s.CurrencyCode, ClosedThroughDate = s.ClosedThroughDate, InceptionDate = s.InceptionDate,
+        IsTaxApplicable = s.IsTaxApplicable, TaxRate = s.TaxRate,
+        AnnualFeeTaxCode = s.AnnualFeeTaxCode, AttendanceFeeTaxCode = s.AttendanceFeeTaxCode,
+        TaxEntryMode = s.TaxEntryMode, LanguageCode = s.LanguageCode,
+        ShowParticipationGraphs = s.ShowParticipationGraphs,
         IsDeleted = s.IsDeleted, DeletedAt = s.DeletedAt, DeletedBy = s.DeletedBy,
         CreatedAt = s.CreatedAt, UpdatedAt = s.UpdatedAt
     };
@@ -538,7 +581,7 @@ public class BackupService : IBackupService
     {
         Id = d.Id, MemberId = d.MemberId, FeeType = d.FeeType, Amount = d.Amount,
         FeeDate = d.FeeDate, DueDate = d.DueDate, PaidAtCreation = d.PaidAtCreation,
-        RehearsalId = d.RehearsalId, CreatedAt = d.CreatedAt
+        RehearsalId = d.RehearsalId, CreatedAt = d.CreatedAt, TaxCode = d.TaxCode
     };
 
     private static Payment MapPaymentFromDto(PaymentBackupDto d) => new()
@@ -553,7 +596,27 @@ public class BackupService : IBackupService
         Id = d.Id, Date = d.Date, AccountId = d.AccountId,
         DebitAmount = d.DebitAmount, CreditAmount = d.CreditAmount,
         GLAccount = d.GLAccount, MemberId = d.MemberId, PaymentId = d.PaymentId,
-        FeeId = d.FeeId, Description = d.Description, CreatedAt = d.CreatedAt
+        FeeId = d.FeeId, Description = d.Description, CreatedAt = d.CreatedAt,
+        TaxCode = d.TaxCode, JournalEntryId = d.JournalEntryId
+    };
+
+    private static JournalEntry MapJournalEntryFromDto(JournalEntryBackupDto d) => new()
+    {
+        Id = d.Id, Type = d.Type, Date = d.Date, Description = d.Description, CreatedAt = d.CreatedAt
+    };
+
+    private static BankReconciliation MapBankReconciliationFromDto(BankReconciliationBackupDto d) => new()
+    {
+        Id = d.Id, AccountId = d.AccountId, StatementDate = d.StatementDate,
+        StatementClosingBalance = d.StatementClosingBalance, OpeningBalance = d.OpeningBalance,
+        Status = d.Status, FinalisedAt = d.FinalisedAt, Notes = d.Notes,
+        IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy,
+        CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
+    };
+
+    private static ReconciliationLine MapReconciliationLineFromDto(ReconciliationLineBackupDto d) => new()
+    {
+        Id = d.Id, ReconciliationId = d.ReconciliationId, TransactionId = d.TransactionId, CreatedAt = d.CreatedAt
     };
 
     private static Account MapAccountFromDto(AccountBackupDto d) => new()
@@ -573,6 +636,12 @@ public class BackupService : IBackupService
         MaxAgeRangeYears = d.MaxAgeRangeYears, MinimumMemberAge = d.MinimumMemberAge,
         Theme = d.Theme, GeneralCommitteeSeatCountTarget = d.GeneralCommitteeSeatCountTarget,
         SchemaVersion = d.SchemaVersion, AuditRetentionYears = d.AuditRetentionYears,
+        FinancialYearStartMonth = d.FinancialYearStartMonth, FinancialYearStartDay = d.FinancialYearStartDay,
+        CurrencyCode = d.CurrencyCode, ClosedThroughDate = d.ClosedThroughDate, InceptionDate = d.InceptionDate,
+        IsTaxApplicable = d.IsTaxApplicable, TaxRate = d.TaxRate,
+        AnnualFeeTaxCode = d.AnnualFeeTaxCode, AttendanceFeeTaxCode = d.AttendanceFeeTaxCode,
+        TaxEntryMode = d.TaxEntryMode, LanguageCode = d.LanguageCode,
+        ShowParticipationGraphs = d.ShowParticipationGraphs,
         IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy,
         CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
     };

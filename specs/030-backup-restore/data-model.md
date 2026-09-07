@@ -14,9 +14,9 @@ No EF Core entity changes and **no migration**. Everything below is the `.sfbak`
 |---|---|---|---|
 | 1 | `Id` | `Guid` | PK |
 | 2 | `Type` | `JournalEntryType` (enum) | stored by name via protobuf enum |
-| 3 | `Date` | `DateTime` | `DataFormat.WellKnown` (UTC) |
+| 3 | `Date` | `DateTime` | plain `[ProtoMember]` (protobuf-net default) |
 | 4 | `Description` | `string?` | |
-| 5 | `CreatedAt` | `DateTime` | `DataFormat.WellKnown` |
+| 5 | `CreatedAt` | `DateTime` | plain `[ProtoMember]` (protobuf-net default) |
 
 No soft-delete fields (immutable GL header — financial exemption). `Transactions` navigation is **not** copied here; the link is carried by `TransactionBackupDto.JournalEntryId` (see §3).
 
@@ -26,17 +26,17 @@ No soft-delete fields (immutable GL header — financial exemption). `Transactio
 |---|---|---|---|
 | 1 | `Id` | `Guid` | PK |
 | 2 | `AccountId` | `Guid` | FK → `Account` |
-| 3 | `StatementDate` | `DateTime` | `DataFormat.WellKnown` |
+| 3 | `StatementDate` | `DateTime` | plain `[ProtoMember]` (protobuf-net default) |
 | 4 | `StatementClosingBalance` | `decimal` | |
 | 5 | `OpeningBalance` | `decimal` | |
 | 6 | `Status` | `ReconciliationStatus` (enum) | Draft / Finalised |
-| 7 | `FinalisedAt` | `DateTime?` | `DataFormat.WellKnown` |
+| 7 | `FinalisedAt` | `DateTime?` | plain `[ProtoMember]` (protobuf-net default) |
 | 8 | `Notes` | `string?` | |
 | 9 | `IsDeleted` | `bool` | drafts only |
-| 10 | `DeletedAt` | `DateTime?` | `DataFormat.WellKnown` |
+| 10 | `DeletedAt` | `DateTime?` | plain `[ProtoMember]` (protobuf-net default) |
 | 11 | `DeletedBy` | `string?` | |
-| 12 | `CreatedAt` | `DateTime` | `DataFormat.WellKnown` |
-| 13 | `UpdatedAt` | `DateTime` | `DataFormat.WellKnown` |
+| 12 | `CreatedAt` | `DateTime` | plain `[ProtoMember]` (protobuf-net default) |
+| 13 | `UpdatedAt` | `DateTime` | plain `[ProtoMember]` (protobuf-net default) |
 
 `Lines` navigation not copied here — carried as its own collection.
 
@@ -47,7 +47,7 @@ No soft-delete fields (immutable GL header — financial exemption). `Transactio
 | 1 | `Id` | `Guid` | PK |
 | 2 | `ReconciliationId` | `Guid` | FK → `BankReconciliation` |
 | 3 | `TransactionId` | `Guid` | FK → `Transaction` |
-| 4 | `CreatedAt` | `DateTime` | `DataFormat.WellKnown` |
+| 4 | `CreatedAt` | `DateTime` | plain `[ProtoMember]` (protobuf-net default) |
 
 No soft-delete fields (hard-removed while its parent is a draft; implicitly hidden once the parent is soft-deleted).
 
@@ -72,7 +72,7 @@ Existing members `1–9, 11–18` unchanged. New members at previously-free numb
 | 28 | `LanguageCode` | `string?` | `LanguageCode` | `null` |
 | 29 | `ShowParticipationGraphs` | `bool` | `ShowParticipationGraphs` | `true` |
 
-`DateTime?` members use `DataFormat.WellKnown`. Restore maps every field straight onto the `Settings` entity; the defaults above are the entity's own property initialisers, so an older `.sfbak` produces exactly the same `Settings` row it does today (spec Edge Case "Older backup missing newer data").
+All members use the plain `[ProtoMember]` default, matching the existing 20 `*BackupDto` types (protobuf-net's default `DateTime` form is a BCL tick+kind representation, already culture- and endian-independent). Restore maps every field straight onto the `Settings` entity; the defaults above are the entity's own property initialisers, so an older `.sfbak` produces exactly the same `Settings` row it does today (spec Edge Case "Older backup missing newer data").
 
 ---
 
