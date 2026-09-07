@@ -28,7 +28,7 @@ The work extends the existing `BackupService` / `BackupRepository` / `BackupEnve
 
 **Constraints**: Existing `.sfbak` files must still load (append-only protobuf field numbers; new collections absent → treated as empty, never a completeness failure). No change to GL double-entry structure, the `2310`/`2320` tax accounts, `TaxCode`, or money formatting. The application never relaunches itself — the user is advised to restart. Backups stay unencrypted (FR-020).
 
-**Scale/Scope**: 20 members in the `BackupSnapshot` (17 today — 16 collections plus the `Settings` singleton — plus 3 new: `JournalEntry`, `BankReconciliation`, `ReconciliationLine`); 20 `*BackupDto` types; ~30 files touched; one new NuGet dependency; two new first-run screens; one new Core exception; one new Core file-dialog seam.
+**Scale/Scope**: 20 members in the `BackupSnapshot` (17 today — 16 collections plus the `Settings` singleton — plus 3 new: `JournalEntry`, `BankReconciliation`, `ReconciliationLine`); 20 `*BackupDto` types; ~30 files touched; one new NuGet dependency; two new first-run screens plus a chrome-free `BlankLayout`; one new Core exception; one new Core file-dialog seam.
 
 ## Constitution Check
 
@@ -41,8 +41,8 @@ The work extends the existing `BackupService` / `BackupRepository` / `BackupEnve
 | §3.4 Soft-delete pattern | **PASS** — export reads with `IgnoreQueryFilters()` (archived rows included, FR-011/FR-016); restore is PK-upsert, never a delete. |
 | §3.5 Member & financial data preservation / §3.6 financial corrections | **PASS** — `Fee` / `Payment` / `Transaction` / `JournalEntry` remain immutable and undeleted; restore only inserts/updates by PK inside one transaction; adding `Fee.TaxCode` / `Transaction.TaxCode` / `Transaction.JournalEntryId` to the DTOs *stops* silent financial data loss. |
 | §4.3 Settings System | **PASS** — the existing **Backup & Restore** built-in tab in `SettingsPage.razor` is reused; the first-run restore screen follows the established pre-wizard screen pattern (spec 029's `/language-select`). |
-| §4.7.1 Code-behind (MANDATORY) | **PASS** — new screens (`FirstRunRestoreScreen`, `RestartRequiredScreen`) ship as paired `.razor` + `.razor.cs`; no `@code` blocks. |
-| §4.7.2 CSS isolation | **PASS** — no component-scoped styling expected; the overlay/blocking styles reuse existing global classes (`setup-seeding-overlay` pattern). |
+| §4.7.1 Code-behind (MANDATORY) | **PASS** — new screens (`FirstRunRestoreScreen`, `RestartRequiredScreen`) and the new chrome-free `BlankLayout` (used only by `/restart-required`) all ship as paired `.razor` + `.razor.cs`; no `@code` blocks. |
+| §4.7.2 CSS isolation | **PASS** — no component-scoped styling expected; the overlay/blocking styles and `BlankLayout`'s minimal shell reuse existing global classes (`setup-seeding-overlay` pattern). |
 | §5.2 Custom exceptions / §5.3 exception-boundary translation | **PASS** — new `BackupVerificationException` in `StageFright.Core/Exceptions/`; file-I/O and picker failures are caught and re-thrown as project exceptions (`DataAccessException` / `ImportException` / `BackupVerificationException`) before crossing a layer boundary, matching the existing `ExportAsync` catch. |
 | §6 Logging / OpenTelemetry | **PASS** — the existing `ILogger<BackupService>` structured-logging calls are extended; backup creation and restore each write an `AuditTrailEntry` (FR-017) using the already-defined `AuditAction.Export` / `AuditAction.Import`. |
 | §7.1 Technology Stack / §7.2 permitted libraries | **PASS with a note** — `CommunityToolkit.Maui` is a new dependency. It is the standard, .NET-team-maintained MAUI answer for a native Save dialog on Windows + Mac Catalyst and is added centrally via `Directory.Packages.props` + a `<PackageReference>` in `StageFright.App.csproj` per the CLAUDE.md package rule, plus `.UseMauiCommunityToolkit()` in `MauiProgram`. No Complexity Tracking entry is required — this is a permitted-library addition, not a principle violation. |
@@ -75,7 +75,7 @@ specs/030-backup-restore/
 src/StageFright.Core/
 ├── Contracts/
 │   ├── IBackupService.cs              # CHANGED — verification semantics; new CreateBackupAsync overload / result
-│   ├── IBackupRepository.cs           # CHANGED — snapshot now covers 16 entity types; upsert ordering contract
+│   ├── IBackupRepository.cs           # CHANGED — snapshot now covers all 20 BackupSnapshot members (+3 finance types); upsert ordering contract
 │   ├── IBackupDestinationPicker.cs    # NEW — native Save-As seam (suggested filename + stream → chosen path | cancelled)
 │   └── IRecoveryCopyStore.cs          # NEW — stable location for the pre-restore recovery copy
 ├── Exceptions/
@@ -106,11 +106,14 @@ src/StageFright.App/
 └── StageFright.App.csproj             # CHANGED — <PackageReference Include="CommunityToolkit.Maui" />
 src/StageFright.UI/
 ├── App.razor.cs                       # CHANGED — first-run target: /language-select | /first-run-restore (never /setup direct)
+├── Layout/
+│   ├── BlankLayout.razor              # NEW — chrome-free layout (no sidebar/nav/theme toggle) used only by /restart-required (FR-007)
+│   └── BlankLayout.razor.cs           # NEW
 ├── Pages/Setup/
 │   ├── FirstRunLanguageScreen.razor.cs   # CHANGED — Confirm now navigates to /first-run-restore (seed path unchanged)
 │   ├── FirstRunRestoreScreen.razor       # NEW — @page "/first-run-restore" — checkbox + <InputFile> + summary + confirm
 │   ├── FirstRunRestoreScreen.razor.cs    # NEW
-│   ├── RestartRequiredScreen.razor       # NEW — @page "/restart-required" — terminal, no continue path (FR-007)
+│   ├── RestartRequiredScreen.razor       # NEW — @page "/restart-required" + @layout BlankLayout — terminal, no continue path (FR-007)
 │   └── RestartRequiredScreen.razor.cs    # NEW
 └── Pages/Settings/
     ├── BackupRestoreTab.razor            # CHANGED — native Save dialog, unencrypted notice, verified/failed result,
@@ -128,7 +131,8 @@ tests/
 │   ├── V9_BackupRestoreTests.cs       # CHANGED — settings-field completeness, archived-row fidelity
 │   └── CrossPlatformRoundTripTests.cs # NEW — culture + TimeZoneInfo swap across the restore half; field-for-field equality
 └── StageFright.UI.Tests/Pages/Setup/
-    └── FirstRunRestoreScreenTests.cs  # NEW — checkbox, file→summary→confirm, cancel path, restart-required routing
+    ├── FirstRunRestoreScreenTests.cs  # NEW — checkbox, file→summary→confirm, cancel path, restart-required routing
+    └── RestartRequiredScreenTests.cs  # NEW — no escape control on the screen; BlankLayout emits no sidebar (FR-007)
 ```
 
 **Structure Decision**: Single layered desktop app — no new project. All backup logic stays in the `Settings` module of `StageFright.Core` with data access centralised in `StageFright.Data/Repositories/BackupRepository.cs` (the FR-042 deviation already in force); the two platform seams (`IBackupDestinationPicker`, `IRecoveryCopyStore`) are Core contracts with MAUI implementations in `StageFright.App`, matching how `ILanguagePreferenceStore` / `IDeviceThemePreferenceProvider` are wired. First-run screens live under `src/StageFright.UI/Pages/Setup/` beside `FirstRunLanguageScreen`.

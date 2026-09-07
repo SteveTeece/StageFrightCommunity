@@ -10,7 +10,7 @@ State machine: `data-model.md` §8. This file pins the strings and identifiers c
 |---|---|---|---|
 | `/language-select` | `FirstRunLanguageScreen` (existing) | `ShellLayout` | unchanged; Confirm now goes to `/first-run-restore` |
 | `/first-run-restore` | `FirstRunRestoreScreen` (**new**) | `ShellLayout` | the FR-001 pre-wizard restore choice |
-| `/restart-required` | `RestartRequiredScreen` (**new**) | `ShellLayout` | terminal — the screen renders no navigation control of its own; the only forward action is relaunching the app (FR-007) |
+| `/restart-required` | `RestartRequiredScreen` (**new**) | `BlankLayout` (**new**) | terminal — chrome-free layout: no sidebar, no nav, and the screen renders no control of its own; the only forward action is relaunching the app (FR-007) |
 | `/setup` | `SetupWizard` (existing) | `ShellLayout` | unchanged |
 
 ## `App.razor.cs` routing rule (changed)
@@ -51,7 +51,7 @@ On `ImportAsync` success → `Nav.NavigateTo("/restart-required")`. On failure �
 |---|---|
 | `.restart-required` | root container; renders a single instruction to close and reopen the application |
 | (none) | **no** "Continue" / "Go to dashboard" / retry control — the only way forward is relaunching (FR-007) |
-| (asserted absent) | `RestartRequiredScreenTests` asserts no `<a>` / `<button>` / `NavLink` routing to `/dashboard`, `/setup`, or `/first-run-restore` is present (FR-007) |
+| (asserted absent) | `RestartRequiredScreenTests` asserts no `<a>` / `<button>` / `NavLink` routing to `/dashboard`, `/setup`, or `/first-run-restore` is present; a companion test asserts `BlankLayout` emits no `.shell-sidebar` and no sidebar `NavLink`s (FR-007) |
 
 ## `BackupRestoreTab` (Settings) — additions
 
