@@ -17,8 +17,10 @@ user-facing string lives and how the pieces fit.
   **No code changes, no list to edit.** The app discovers the new set at runtime and offers it
   in Settings → General and on the first-run language screen (`/language-select`), listed by the
   language's own name.
-* Anything you don't translate falls back, key by key, to the Australian English value — never a
-  blank, never a raw key.
+* A key you have not translated *yet* falls back, key by key, to the Australian English value —
+  never a blank, never a raw key — but a language the app **ships** must not rely on that: every
+  shipped `<culture>.resx` is complete, and a new key is translated everywhere in the same change
+  (§3.2, build-enforced — §8).
 
 ---
 
@@ -203,11 +205,15 @@ guard (`Us2LocalizationGuardTests`) explicitly exempts them and nothing else.
 * a money amount is formatted with `"C"` / `{0:C}` / `FormatString="{0:C}"` — **no culture
   currency symbol**; use `MoneyFormatter`;
 * a deliberately-omitted `qps-ploc` key does not fall back to `en-AU` with a logged `Warning` —
-  **missing-key logging**.
+  **missing-key logging**;
+* a shipped `<culture>.resx` (every satellite but `qps-ploc`) is missing — or leaves blank — a key
+  its neutral file defines — **translation completeness**
+  (`Us2LocalizationGuardTests.Should_TranslateEveryNeutralKey_When_ShippedCultureResxScanned`,
+  FR-025 / SC-010).
 
-Translation **completeness** — every shipped `<culture>.resx` carrying a real value for every
-neutral key, and every new or reworded key translated across all shipped sets in the same change
-(§3.2) — is not yet a build-breaking test; it is a mandatory review gate on the `.resx` diff.
+Translation completeness is now build-enforced (bullet above). Reviewers still check the softer
+half the test cannot: that a translated `<value>` is a real translation, not the English string
+copied across.
 
 ---
 

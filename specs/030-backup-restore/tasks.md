@@ -185,6 +185,7 @@ Cross-cutting docs and a full-suite validation against the Success Criteria. Doc
 - [ ] **T037** [P] `docs/SETUP.md` — first-run description now mentions the `/first-run-restore` screen and the restore-then-restart path; the pre-restore recovery copy is written under `FileSystem.AppDataDirectory/recovery` · `docs/SETUP.md`
 - [ ] **T038** [P] `CLAUDE.md` — Navigation section: first-run detection reaches `/setup` **via** `/first-run-restore`, not directly, and `/restart-required` renders under a new chrome-free `BlankLayout` (no sidebar/nav) rather than `ShellLayout`, so a post-restore user has no navigation surface (FR-007); add `CommunityToolkit.Maui` (`FileSaver`) to the tech-stack notes; record the first-run restore checkbox as a second sanctioned exception to the RadzenSwitch toggle rule (alongside the wizard's Light/Dark `<select>`) · `CLAUDE.md`
 - [ ] **T041** [P] SC-001 acceptance walk-through — on a clean install, a scripted or manually-timed run of language → tick restore → pick file → confirm → restart → dashboard, asserting the interaction completes in under 2 minutes with no reference to documentation, and recording the elapsed interaction time in the test / PR notes (SC-001) · `tests/StageFright.Integration.Tests/Scenarios/FirstRunRestoreJourneyTests.cs` (assertion + timing note)
+- [x] **T042** [P] Static half of SC-010 — `Us2LocalizationGuardTests.Should_TranslateEveryNeutralKey_When_ShippedCultureResxScanned`: every shipped `.<culture>.resx` (all satellites but `qps-ploc`) carries a non-blank value for every neutral key, so the T017/T027/T011 keys — and every future key — cannot regress to the English fallback (FR-025, SC-010) · `tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs` — *delivered with the FR-025 localization-guard change (also strips the stray VS `.resx`-template `Name1`/`Color1`/`Bitmap1`/`Icon1` examples from the 12 neutral files)*
 
 **⟶ Wait for Wave 1 to finish, then:**
 
@@ -207,7 +208,7 @@ Setup and Foundational block every story. Stories are independently testable onc
 - **Phase 4 — US2:** Tests `T021, T022, T023, T024, T040` (independent) ⟶ Impl Wave 1 `T025` (`BackupService` + `IBackupService`) ⟶ Wave 2 `T026, T027` (`BackupRestoreTab` pair; `SettingsResource` neutral + 7 culture resx — different files).
 - **Phase 5 — US3:** `T028` alone; no production task unless it fails.
 - **Phase 6 — US4:** `T029–T034` already complete (`7d2cc93`) ⟶ `T035` alone.
-- **Phase 7 — Polish:** Wave 1 `T036, T037, T038, T041` (three doc files + the SC-001 walk-through) ⟶ Wave 2 `T039` (full build + test, last).
+- **Phase 7 — Polish:** Wave 1 `T036, T037, T038, T041` (three doc files + the SC-001 walk-through) — plus `T042` (localization completeness guard), already delivered — ⟶ Wave 2 `T039` (full build + test, last).
 
 **Parallel opportunities:** Foundational Wave 1 is six-way parallel; Wave 2 two-way. Each story's Tests wave is fully parallel. US1 impl Wave 3, US2 impl Wave 2, and Polish Wave 1 are each parallel across their listed files. Across stories, US3 (`T028`) and US4 (`T035`) can run alongside US1/US2 once Foundational is done.
 
@@ -254,4 +255,4 @@ Setup and Foundational block every story. Stories are independently testable onc
 | SC-007 | T013, T016, T018, T024 | restart advisory shown; no dashboard on pre-restore data |
 | SC-008 | T033 (done `7d2cc93`) | reflection parity guard over every persisted entity + `SettingsBackupDto` |
 | SC-009 | T023, T025 | every "successful" backup was read back and its counts verified |
-| SC-010 | T017, T027, T039 | every added/reworded string shown in every shipped language, never the English fallback |
+| SC-010 | T017, T027, T039, T042 | every added/reworded string shown in every shipped language, never the English fallback; T042 is the static guard, T039 the runtime check |
