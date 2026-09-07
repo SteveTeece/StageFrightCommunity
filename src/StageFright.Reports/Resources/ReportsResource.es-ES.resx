@@ -1,38 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <data name="Reports_Column_Account"><value>Cuenta</value></data>
-  <data name="Reports_Column_Amount"><value>Importe</value></data>
-  <data name="Reports_Column_Debit"><value>Debe</value></data>
-  <data name="Reports_Column_Credit"><value>Haber</value></data>
-  <data name="Reports_Column_Date"><value>Fecha</value></data>
-  <data name="Reports_Column_Description"><value>Descripción</value></data>
-  <data name="Reports_Column_Balance"><value>Saldo</value></data>
-  <data name="Reports_Section_Assets"><value>Activos</value></data>
-  <data name="Reports_Section_Liabilities"><value>Pasivos</value></data>
-  <data name="Reports_Section_Equity"><value>Patrimonio</value></data>
-  <data name="Reports_Section_Income"><value>Ingresos</value></data>
-  <data name="Reports_Section_Expenses"><value>Gastos</value></data>
-  <data name="Reports_Filter_From"><value>Desde</value></data>
-  <data name="Reports_Filter_To"><value>Hasta</value></data>
-  <data name="Reports_Filter_OptionAll"><value>Todos</value></data>
-  <data name="Reports_Filter_OptionArchived"><value>Archivados</value></data>
-  <data name="Reports_Filter_OptionActiveOnly"><value>Solo activos</value></data>
-  <data name="Reports_Filter_OptionArchivedOnly"><value>Solo archivados</value></data>
-  <data name="Reports_Filter_OptionCustom"><value>Personalizado</value></data>
-  <data name="Reports_Common_OpeningBalance"><value>Saldo inicial</value></data>
-  <data name="Reports_Common_ClosingBalance"><value>Saldo final</value></data>
-  <data name="Reports_MemberList_Name"><value>Lista de miembros</value></data>
-  <data name="Reports_MemberList_StatusFilterLabel"><value>Estado</value></data>
-  <data name="Reports_MemberList_NameColumn"><value>Nombre</value></data>
-  <data name="Reports_MemberList_AddressColumn"><value>Dirección</value></data>
-  <data name="Reports_MemberList_PhoneColumn"><value>Teléfono</value></data>
-  <data name="Reports_MemberList_EmailColumn"><value>Correo electrónico</value></data>
-  <data name="Reports_MemberList_JoinDateColumn"><value>Fecha de incorporación</value></data>
-  <data name="Reports_MemberList_AgeColumn"><value>Edad</value></data>
-  <data name="Reports_MemberList_StatusColumn"><value>Estado</value></data>
-  <data name="Reports_Committee_Name"><value>Informe del comité</value></data>
-  <data name="Reports_IncomeStatement_Name"><value>Estado de ingresos y gastos</value></data>
-  <data name="Reports_TrialBalance_Name"><value>Balance de comprobación</value></data>
-  <data name="Reports_AccountRegister_Name"><value>Registro de cuentas</value></data>
-  <data name="Reports_BalanceSheet_Name"><value>Estado de situación financiera</value></data>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Reports_Column_Account" xml:space="preserve"><value>Cuenta</value></data>
+  <data name="Reports_Column_Amount" xml:space="preserve"><value>Importe</value></data>
+  <data name="Reports_Column_Debit" xml:space="preserve"><value>Debe</value></data>
+  <data name="Reports_Column_Credit" xml:space="preserve"><value>Haber</value></data>
+  <data name="Reports_Column_Date" xml:space="preserve"><value>Fecha</value></data>
+  <data name="Reports_Column_Description" xml:space="preserve"><value>Descripción</value></data>
+  <data name="Reports_Column_Balance" xml:space="preserve"><value>Saldo</value></data>
+  <data name="Reports_Section_Assets" xml:space="preserve"><value>Activos</value></data>
+  <data name="Reports_Section_Liabilities" xml:space="preserve"><value>Pasivos</value></data>
+  <data name="Reports_Section_Equity" xml:space="preserve"><value>Patrimonio</value></data>
+  <data name="Reports_Section_Income" xml:space="preserve"><value>Ingresos</value></data>
+  <data name="Reports_Section_Expenses" xml:space="preserve"><value>Gastos</value></data>
+  <data name="Reports_Filter_From" xml:space="preserve"><value>Desde</value></data>
+  <data name="Reports_Filter_To" xml:space="preserve"><value>Hasta</value></data>
+  <data name="Reports_Filter_AccountNumberOrName" xml:space="preserve"><value>Cuenta (número o nombre, en blanco = todas)</value></data>
+  <data name="Reports_Filter_OptionAll" xml:space="preserve"><value>Todos</value><comment>Synthetic report-filter option label; the option value stays the invariant token "All".</comment></data>
+  <data name="Reports_Filter_OptionArchived" xml:space="preserve"><value>Archivados</value><comment>Report-filter option label for archived members; option value stays the invariant token "Archived".</comment></data>
+  <data name="Reports_Filter_OptionActiveOnly" xml:space="preserve"><value>Solo activos</value><comment>Committee-report filter option label; option value stays the invariant token "Active Only".</comment></data>
+  <data name="Reports_Filter_OptionArchivedOnly" xml:space="preserve"><value>Solo archivados</value><comment>Committee-report filter option label; option value stays the invariant token "Archived Only".</comment></data>
+  <data name="Reports_Filter_OptionThisFy" xml:space="preserve"><value>Este año fiscal</value><comment>Income-statement period filter option label; option value stays the invariant token "This FY".</comment></data>
+  <data name="Reports_Filter_OptionLastFy" xml:space="preserve"><value>Año fiscal anterior</value><comment>Income-statement period filter option label; option value stays the invariant token "Last FY".</comment></data>
+  <data name="Reports_Filter_OptionCustom" xml:space="preserve"><value>Personalizado</value><comment>Income-statement period filter option label; option value stays the invariant token "Custom".</comment></data>
+  <data name="Reports_Common_DateRangeSubtitle" xml:space="preserve"><value>{DateFrom} – {DateTo}</value><comment>{DateFrom} range start, {DateTo} range end — both already formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_Common_PartYearSubtitle" xml:space="preserve"><value>{Period} (año parcial: primer ejercicio financiero)</value><comment>Wraps a financial-statement subtitle when the default FY-preset period is an organisation's sub-twelve-month first financial year (FR-022 / issue #353). {Period} is the already-formatted date-range or as-at subtitle.</comment></data>
+  <data name="Reports_Common_OpeningBalance" xml:space="preserve"><value>Saldo inicial</value></data>
+  <data name="Reports_Common_ClosingBalance" xml:space="preserve"><value>Saldo final</value></data>
+  <data name="Reports_Common_BasisOfAccounting" xml:space="preserve"><value>Base contable: las cuotas de los miembros se reconocen cuando se devengan (base de devengo); el resto de ingresos y gastos se reconoce cuando se cobra o se paga (base de caja).</value><comment>Hybrid basis-of-accounting disclosure shown on every financial statement (FR-012). Must name both the accrual treatment of member fees and the cash treatment of other activity — never a single blanket basis.</comment></data>
+  <data name="Reports_MemberList_Name" xml:space="preserve"><value>Lista de miembros</value></data>
+  <data name="Reports_MemberList_StatusFilterLabel" xml:space="preserve"><value>Estado</value></data>
+  <data name="Reports_MemberList_SubTitle" xml:space="preserve"><value>Estado: {Status} — {Date}</value><comment>{Status} selected status-filter value, {Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_MemberList_NameColumn" xml:space="preserve"><value>Nombre</value></data>
+  <data name="Reports_MemberList_AddressColumn" xml:space="preserve"><value>Dirección</value></data>
+  <data name="Reports_MemberList_PhoneColumn" xml:space="preserve"><value>Teléfono</value></data>
+  <data name="Reports_MemberList_EmailColumn" xml:space="preserve"><value>Correo electrónico</value></data>
+  <data name="Reports_MemberList_JoinDateColumn" xml:space="preserve"><value>Fecha de incorporación</value></data>
+  <data name="Reports_MemberList_AgeColumn" xml:space="preserve"><value>Edad</value></data>
+  <data name="Reports_MemberList_StatusColumn" xml:space="preserve"><value>Estado</value></data>
+  <data name="Reports_Committee_Name" xml:space="preserve"><value>Informe del comité</value></data>
+  <data name="Reports_Committee_MemberStatusFilterLabel" xml:space="preserve"><value>Estado del miembro</value></data>
+  <data name="Reports_Committee_SubTitle" xml:space="preserve"><value>Filtro: {Filter} — {Date}</value><comment>{Filter} selected member-status filter value, {Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_Committee_YearColumn" xml:space="preserve"><value>Año</value></data>
+  <data name="Reports_Committee_PositionColumn" xml:space="preserve"><value>Cargo</value></data>
+  <data name="Reports_Committee_MembersColumn" xml:space="preserve"><value>Miembro(s)</value></data>
+  <data name="Reports_Committee_PositionsRecordedColumn" xml:space="preserve"><value>Cargos registrados</value></data>
+  <data name="Reports_Committee_RolePresident" xml:space="preserve"><value>Presidente</value></data>
+  <data name="Reports_Committee_RoleSecretary" xml:space="preserve"><value>Secretario</value></data>
+  <data name="Reports_Committee_RoleTreasurer" xml:space="preserve"><value>Tesorero</value></data>
+  <data name="Reports_Committee_Vacant" xml:space="preserve"><value>Vacante</value></data>
+  <data name="Reports_Committee_GeneralCommitteeMembers" xml:space="preserve"><value>Vocales del comité</value></data>
+  <data name="Reports_Committee_Present" xml:space="preserve"><value>actualidad</value><comment>Shown as the end date for a currently-serving committee member in a dated holder list.</comment></data>
+  <data name="Reports_IncomeStatement_Name" xml:space="preserve"><value>Estado de ingresos y gastos</value></data>
+  <data name="Reports_IncomeStatement_PeriodFilterLabel" xml:space="preserve"><value>Período</value></data>
+  <data name="Reports_IncomeStatement_DateFromFilterLabel" xml:space="preserve"><value>Desde (período personalizado)</value></data>
+  <data name="Reports_IncomeStatement_DateToFilterLabel" xml:space="preserve"><value>Hasta (período personalizado)</value></data>
+  <data name="Reports_IncomeStatement_CompareFilterLabel" xml:space="preserve"><value>Mostrar comparación con el año anterior</value></data>
+  <data name="Reports_IncomeStatement_SubTitleCompare" xml:space="preserve"><value>{DateFrom} – {DateTo} (comparado con {PriorFrom} – {PriorTo})</value><comment>All four tokens are dates already formatted 'd MMMM yyyy': current range start/end, then prior range start/end.</comment></data>
+  <data name="Reports_IncomeStatement_CurrentPeriodColumn" xml:space="preserve"><value>Período actual</value></data>
+  <data name="Reports_IncomeStatement_PriorPeriodColumn" xml:space="preserve"><value>Período anterior</value></data>
+  <data name="Reports_IncomeStatement_TotalIncome" xml:space="preserve"><value>Total de ingresos</value></data>
+  <data name="Reports_IncomeStatement_TotalExpenses" xml:space="preserve"><value>Total de gastos</value></data>
+  <data name="Reports_IncomeStatement_Surplus" xml:space="preserve"><value>Superávit</value></data>
+  <data name="Reports_IncomeStatement_Deficit" xml:space="preserve"><value>(Déficit)</value></data>
+  <data name="Reports_TrialBalance_Name" xml:space="preserve"><value>Balance de comprobación</value></data>
+  <data name="Reports_TrialBalance_TotalsRow" xml:space="preserve"><value>Totales</value></data>
+  <data name="Reports_TrialBalance_GLImbalanceError" xml:space="preserve"><value>Error en la verificación del saldo del libro mayor: el total del debe ({Debits}) no coincide con el total del haber ({Credits}). Cualquier diferencia es un error: el balance de comprobación no se puede generar mientras el libro mayor esté descuadrado.</value><comment>{Debits}/{Credits} are the GL totals pre-formatted through MoneyFormatter and already carry the configured currency symbol.</comment></data>
+  <data name="Reports_AccountRegister_Name" xml:space="preserve"><value>Registro de cuentas</value></data>
+  <data name="Reports_AccountRegister_RunningBalanceColumn" xml:space="preserve"><value>Saldo acumulado</value></data>
+  <data name="Reports_BalanceSheet_Name" xml:space="preserve"><value>Estado de situación financiera</value></data>
+  <data name="Reports_BalanceSheet_AsAtFilterLabel" xml:space="preserve"><value>A fecha de</value></data>
+  <data name="Reports_BalanceSheet_SubTitle" xml:space="preserve"><value>A fecha de {Date}</value><comment>{Date} report date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_BalanceSheet_TotalAssets" xml:space="preserve"><value>Total de activos</value></data>
+  <data name="Reports_BalanceSheet_TotalLiabilities" xml:space="preserve"><value>Total de pasivos</value></data>
+  <data name="Reports_BalanceSheet_TotalEquity" xml:space="preserve"><value>Total del patrimonio</value></data>
+  <data name="Reports_BalanceSheet_AccumulatedSurplus" xml:space="preserve"><value>Superávit acumulado</value></data>
+  <data name="Reports_BalanceSheet_TotalLiabilitiesPlusEquity" xml:space="preserve"><value>Total de pasivos + patrimonio</value></data>
+  <data name="Reports_BalanceSheet_OutOfBalance" xml:space="preserve"><value>Descuadre de</value><comment>Label on the explicit out-of-balance line appended when total assets do not equal total liabilities plus equity (FR-010). The adjacent cell shows the signed difference.</comment></data>
+  <data name="Reports_BankReconciliation_Name" xml:space="preserve"><value>Conciliación bancaria</value></data>
+  <data name="Reports_BankReconciliation_SubTitle" xml:space="preserve"><value>Conciliación más reciente por cuenta, generada el {Date}</value><comment>{Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_BankReconciliation_SubTitleNone" xml:space="preserve"><value>No se ha registrado ninguna conciliación.</value></data>
+  <data name="Reports_BankReconciliation_DepositColumn" xml:space="preserve"><value>Depósito</value></data>
+  <data name="Reports_BankReconciliation_PaymentColumn" xml:space="preserve"><value>Pago</value></data>
+  <data name="Reports_BankReconciliation_AccountHeader" xml:space="preserve"><value>{Account} ({Number}) — extracto hasta {StatementDate} [{Status}]</value><comment>{Account} account name, {Number} account number, {StatementDate} formatted 'd MMMM yyyy', {Status} localised reconciliation status.</comment></data>
+  <data name="Reports_BankReconciliation_BalancePerBankStatement" xml:space="preserve"><value>Saldo según el extracto bancario</value><comment>First line of the conventional adjusted-balance reconciliation — the closing balance printed on the bank statement (FR-013).</comment></data>
+  <data name="Reports_BankReconciliation_AddOutstandingDeposits" xml:space="preserve"><value>Más: depósitos pendientes</value><comment>Subtotal label for deposits recorded in the ledger but not yet on the bank statement; the amount is added to the statement balance (FR-014).</comment></data>
+  <data name="Reports_BankReconciliation_LessOutstandingPayments" xml:space="preserve"><value>Menos: pagos pendientes</value><comment>Subtotal label for payments recorded in the ledger but not yet cleared by the bank; the amount is deducted from the statement balance (FR-014).</comment></data>
+  <data name="Reports_BankReconciliation_AdjustedBankBalance" xml:space="preserve"><value>Saldo bancario ajustado</value><comment>Statement balance plus outstanding deposits less outstanding payments.</comment></data>
+  <data name="Reports_BankReconciliation_BalancePerGeneralLedger" xml:space="preserve"><value>Saldo según el libro mayor</value><comment>The account's net general-ledger balance as at the statement date (FR-013).</comment></data>
+  <data name="Reports_BankReconciliation_Reconciled" xml:space="preserve"><value>Conciliado (saldo bancario ajustado menos saldo según el libro mayor)</value><comment>Residual between the adjusted bank balance and the general-ledger balance; zero on a reconciled statement (SC-008).</comment></data>
+  <data name="Reports_ChartOfAccounts_Name" xml:space="preserve"><value>Plan de cuentas</value></data>
+  <data name="Reports_ChartOfAccounts_IncludeBalancesFilterLabel" xml:space="preserve"><value>Incluir saldos actuales</value></data>
+  <data name="Reports_ChartOfAccounts_NumberColumn" xml:space="preserve"><value>N.º</value></data>
+  <data name="Reports_ChartOfAccounts_NameColumn" xml:space="preserve"><value>Nombre</value></data>
+  <data name="Reports_ChartOfAccounts_NameSystemBank" xml:space="preserve"><value>{Name} (Sistema, banco)</value><comment>{Name} account name; the parenthetical marks a system bank account.</comment></data>
+  <data name="Reports_ChartOfAccounts_NameSystem" xml:space="preserve"><value>{Name} (Sistema)</value><comment>{Name} account name; the parenthetical marks a system account.</comment></data>
+  <data name="Reports_ChartOfAccounts_NameBank" xml:space="preserve"><value>{Name} (Banco)</value><comment>{Name} account name; the parenthetical marks a bank account.</comment></data>
+  <data name="Reports_ChartOfAccounts_BalanceError" xml:space="preserve"><value>Error</value><comment>Shown in the Balance column when an account balance could not be computed.</comment></data>
+  <data name="Reports_GeneralLedger_Name" xml:space="preserve"><value>Libro mayor</value></data>
+  <data name="Reports_MemberAccountSummary_Name" xml:space="preserve"><value>Resumen de cuenta de miembros</value></data>
+  <data name="Reports_MemberAccountSummary_IncludeArchivedFilterLabel" xml:space="preserve"><value>Mostrar miembros archivados</value></data>
+  <data name="Reports_MemberAccountSummary_DateItemColumn" xml:space="preserve"><value>Fecha / concepto</value></data>
+  <data name="Reports_MemberAccountSummary_MemberColumn" xml:space="preserve"><value>Miembro</value></data>
+  <data name="Reports_MemberAccountSummary_CurrentColumn" xml:space="preserve"><value>Corriente</value></data>
+  <data name="Reports_MemberAccountSummary_ThirtyDaysColumn" xml:space="preserve"><value>30 días</value></data>
+  <data name="Reports_MemberAccountSummary_SixtyDaysColumn" xml:space="preserve"><value>60 días</value></data>
+  <data name="Reports_MemberAccountSummary_NinetyPlusDaysColumn" xml:space="preserve"><value>Más de 90 días</value></data>
+  <data name="Reports_MemberAccountSummary_AgingCurrent" xml:space="preserve"><value>Corriente: {Amount}</value><comment>{Amount} aging bucket total formatted 'F2'.</comment></data>
+  <data name="Reports_MemberAccountSummary_Aging30" xml:space="preserve"><value>30 días: {Amount}</value><comment>{Amount} aging bucket total formatted 'F2'.</comment></data>
+  <data name="Reports_MemberAccountSummary_Aging60" xml:space="preserve"><value>60 días: {Amount}</value><comment>{Amount} aging bucket total formatted 'F2'.</comment></data>
+  <data name="Reports_MemberAccountSummary_Aging90Plus" xml:space="preserve"><value>Más de 90 días: {Amount}</value><comment>{Amount} aging bucket total formatted 'F2'.</comment></data>
+  <data name="Reports_MemberAccountSummary_ArchivedSuffix" xml:space="preserve"><value>{Name} (Archivado)</value><comment>{Name} member's sortable full name; suffix marks an archived member.</comment></data>
+  <data name="Reports_TaxSummary_Name" xml:space="preserve"><value>Resumen de impuestos</value></data>
+  <data name="Reports_TaxSummary_SubTitle" xml:space="preserve"><value>Base de devengo — {DateFrom} – {DateTo}</value><comment>{DateFrom}/{DateTo} range start/end formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_TaxSummary_SubTitleNotApplicable" xml:space="preserve"><value>El impuesto sobre ventas no se aplica a esta organización. Habilita el impuesto sobre ventas en Configuración para generar un resumen de impuestos.</value></data>
+  <data name="Reports_TaxSummary_TotalTaxableSales" xml:space="preserve"><value>Total de ventas gravables</value></data>
+  <data name="Reports_TaxSummary_TotalTaxExemptSales" xml:space="preserve"><value>Total de ventas exentas de impuestos</value></data>
+  <data name="Reports_TaxSummary_TaxCollectedOnSales" xml:space="preserve"><value>Impuesto recaudado sobre ventas</value></data>
+  <data name="Reports_TaxSummary_TaxPaidOnPurchases" xml:space="preserve"><value>Impuesto pagado sobre compras</value></data>
+  <data name="Reports_TaxSummary_NetTaxPayable" xml:space="preserve"><value>Impuesto neto a pagar</value></data>
+  <data name="Reports_TaxSummary_NetTaxRefundable" xml:space="preserve"><value>Impuesto neto a devolver</value></data>
+  <data name="Reports_Render_GeneratedAt" xml:space="preserve"><value>Generado: {DateTime} UTC</value><comment>{DateTime} generation timestamp already formatted 'd MMMM yyyy HH:mm'.</comment></data>
+  <data name="Reports_Render_PagePrefix" xml:space="preserve"><value>Página </value><comment>PDF footer — precedes the current page number; the trailing space is significant.</comment></data>
+  <data name="Reports_Render_PageSeparator" xml:space="preserve"><value> de </value><comment>PDF footer — sits between the current page number and the total page count; the surrounding spaces are significant.</comment></data>
+  <data name="Reports_AttendanceRoll_Title" xml:space="preserve"><value>Lista de asistencia</value></data>
+  <data name="Reports_AttendanceRoll_DateLine" xml:space="preserve"><value>Ensayo: {Date} a las {Time}</value><comment>{Date} rehearsal date formatted 'd MMMM yyyy', {Time} rehearsal start time formatted 'hh\:mm'.</comment></data>
+  <data name="Reports_AttendanceRoll_NameColumn" xml:space="preserve"><value>Nombre</value></data>
+  <data name="Reports_AttendanceRoll_PresentColumn" xml:space="preserve"><value>Presente</value></data>
+  <data name="Reports_AttendanceRoll_FeePaidColumn" xml:space="preserve"><value>Pg</value><comment>Short column heading for the rehearsal-fee-paid checkbox — an abbreviation of "Paid", not a dollar amount.</comment></data>
+  <data name="Reports_AgmResults_Title" xml:space="preserve"><value>Resultados de la asamblea general</value></data>
+  <data name="Reports_AgmResults_MeetingDateLine" xml:space="preserve"><value>Asamblea general: {Date}</value><comment>{Date} AGM date formatted 'd MMMM yyyy'. Shared by the AGM Results sheet and the AGM Attendance Report sheet.</comment></data>
+  <data name="Reports_AgmResults_AttendanceLine" xml:space="preserve"><value>Asistencia: asistieron {Attended} de {Total} miembros</value><comment>{Attended} number of members who attended, {Total} total member count.</comment></data>
+  <data name="Reports_AgmResults_ElectedPositionsHeading" xml:space="preserve"><value>Cargos electos</value></data>
+  <data name="Reports_AgmResults_NoPositions" xml:space="preserve"><value>No se registró ningún cargo.</value></data>
+  <data name="Reports_AgmResults_PositionLabel" xml:space="preserve"><value>{Label}: </value><comment>{Label} elected position title; this segment renders bold and is immediately followed by the elected member name(s). Trailing space is significant.</comment></data>
+  <data name="Reports_AgmResults_GeneralCommitteeMemberLabel" xml:space="preserve"><value>Vocal del comité:</value></data>
+  <data name="Reports_Sheet_NameColumn" xml:space="preserve"><value>Nombre</value></data>
+  <data name="Reports_EventSheet_Title" xml:space="preserve"><value>Hoja de asistencia al evento</value></data>
+  <data name="Reports_EventSheet_DateLine" xml:space="preserve"><value>{EventType}: {Date}</value><comment>{EventType} event type name (user data), {Date} event date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_EventSheet_ParticipatedColumn" xml:space="preserve"><value>Participó</value></data>
+  <data name="Reports_AgmSheet_Title" xml:space="preserve"><value>Informe de asistencia a la asamblea general</value></data>
+  <data name="Reports_AgmSheet_AttendedColumn" xml:space="preserve"><value>Asistió</value></data>
 </root>
