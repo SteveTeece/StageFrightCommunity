@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Restore From Backup During First-Run Setup",
   "branch": "030-backup-restore",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -46,6 +46,27 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-09-07T11:57:12.621Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-07T12:33:56.676Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-07T12:41:32.832Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-07T12:42:31.013Z"
     }
   ],
   "telemetryInstanceId": "0fc9ad3e-9084-48e2-bb58-11acb578e9c6",
@@ -57,76 +78,196 @@
   },
   "coverage": {
     "FR-001": {
-      "title": "First-run flow presents a checkbox to restore from backup instead of manual setup, before any data entry"
+      "title": "First-run flow presents a checkbox to restore from backup instead of manual setup, before any data entry",
+      "tasks": [
+        "T013",
+        "T018",
+        "T019",
+        "T020"
+      ]
     },
     "FR-002": {
-      "title": "User can choose a backup file from a location of their choosing"
+      "title": "User can choose a backup file from a location of their choosing",
+      "tasks": [
+        "T013",
+        "T018"
+      ]
     },
     "FR-003": {
-      "title": "Validate the file and show a contents summary (counts, date, app version) with confirm/cancel before any DB change"
+      "title": "Validate the file and show a contents summary (counts, date, app version) with confirm/cancel before any DB change",
+      "tasks": [
+        "T013",
+        "T018",
+        "T025"
+      ]
     },
     "FR-004": {
-      "title": "Reject unreadable/corrupt/incompatible backups with a clear message and no DB change"
+      "title": "Reject unreadable/corrupt/incompatible backups with a clear message and no DB change",
+      "tasks": [
+        "T011",
+        "T013",
+        "T022",
+        "T023"
+      ]
     },
     "FR-005": {
-      "title": "Confirmed first-run restore replaces DB contents all-or-nothing; partial failure leaves pre-restore state"
+      "title": "Confirmed first-run restore replaces DB contents all-or-nothing; partial failure leaves pre-restore state",
+      "tasks": [
+        "T015",
+        "T018"
+      ]
     },
     "FR-006": {
-      "title": "After a successful first-run restore, setup is treated as complete with no further config required"
+      "title": "After a successful first-run restore, setup is treated as complete with no further config required",
+      "tasks": [
+        "T014",
+        "T015",
+        "T019"
+      ]
     },
     "FR-007": {
-      "title": "After restore, advise a restart is needed and do not continue on pre-restore in-memory state"
+      "title": "After restore, advise a restart is needed and do not continue on pre-restore in-memory state",
+      "tasks": [
+        "T013",
+        "T016",
+        "T018",
+        "T024",
+        "T026"
+      ]
     },
     "FR-008": {
-      "title": "On cancel or failure, the normal setup wizard is available with no data changed"
+      "title": "On cancel or failure, the normal setup wizard is available with no data changed",
+      "tasks": [
+        "T013",
+        "T018"
+      ]
     },
     "FR-009": {
-      "title": "Users can create a backup choosing both destination location and filename"
+      "title": "Users can create a backup choosing both destination location and filename",
+      "tasks": [
+        "T009",
+        "T023",
+        "T025"
+      ]
     },
     "FR-010": {
-      "title": "Default backup filename = organisation name + the word backup + backup date, always a valid filename"
+      "title": "Default backup filename = organisation name + the word backup + backup date, always a valid filename",
+      "tasks": [
+        "T007",
+        "T021",
+        "T025"
+      ]
     },
     "FR-011": {
-      "title": "Backup contains all data needed to reconstruct current state incl. journal entries, bank reconciliations/lines, and archived rows"
+      "title": "Backup contains all data needed to reconstruct current state incl. journal entries, bank reconciliations/lines, and archived rows",
+      "tasks": [
+        "T029",
+        "T030",
+        "T031",
+        "T032",
+        "T033",
+        "T034"
+      ]
     },
     "FR-012": {
-      "title": "Backup captures every configured setting incl. currency, language, FY start, tax applicability/rate/codes, tax-entry mode"
+      "title": "Backup captures every configured setting incl. currency, language, FY start, tax applicability/rate/codes, tax-entry mode",
+      "tasks": [
+        "T031",
+        "T034",
+        "T035"
+      ]
     },
     "FR-013": {
-      "title": "Backup file is OS-independent: created on any supported platform restores identically on any other"
+      "title": "Backup file is OS-independent: created on any supported platform restores identically on any other",
+      "tasks": [
+        "T028"
+      ]
     },
     "FR-014": {
-      "title": "Backup/restore independent of host locale, culture, separators, calendar, time zone"
+      "title": "Backup/restore independent of host locale, culture, separators, calendar, time zone",
+      "tasks": [
+        "T021",
+        "T028"
+      ]
     },
     "FR-015": {
-      "title": "Restoring over a populated DB first retains a pre-restore recovery copy"
+      "title": "Every restore first retains a pre-restore recovery copy (first-run: of the seeded default DB)",
+      "tasks": [
+        "T005",
+        "T008",
+        "T012"
+      ]
     },
     "FR-016": {
-      "title": "Restore reproduces the source dataset exactly (records, values, archived state, counts)"
+      "title": "Restore reproduces the source dataset exactly (records, values, archived state, counts)",
+      "tasks": [
+        "T028",
+        "T032",
+        "T034",
+        "T035"
+      ]
     },
     "FR-017": {
-      "title": "Creating and restoring a backup are each recorded in the audit trail"
+      "title": "Creating and restoring a backup are each recorded in the audit trail",
+      "tasks": [
+        "T023",
+        "T025"
+      ]
     },
     "FR-018": {
-      "title": "Settings backup/restore screen uses the same default-filename rule and restart advice as the first-run flow"
+      "title": "Settings backup/restore screen uses the same default-filename rule, restart advice and post-backup verification as the first-run flow",
+      "tasks": [
+        "T024",
+        "T026"
+      ]
     },
     "FR-019": {
-      "title": "Older backups migrate forward on restore; newer incompatible backups are rejected outright"
+      "title": "Older backups migrate forward on restore; newer incompatible backups (incl. newer same-major build) are rejected outright",
+      "tasks": [
+        "T002",
+        "T011",
+        "T022",
+        "T030",
+        "T035"
+      ]
     },
     "FR-020": {
-      "title": "[NEEDS CLARIFICATION] whether the backup file must be encrypted / password-protected"
+      "title": "Backup file is unencrypted and never password-protected; user is shown a notice it holds personal + financial data",
+      "tasks": [
+        "T024",
+        "T026",
+        "T027"
+      ]
     },
     "FR-021": {
-      "title": "Immediately after writing a backup file, read it back from disk before reporting success"
+      "title": "Immediately after writing a backup file, read it back from disk before reporting success",
+      "tasks": [
+        "T023",
+        "T025"
+      ]
     },
     "FR-022": {
-      "title": "Recompute the restore-confirmation statistics from the read-back file and verify counts against live data (archived included) and the file's own counts"
+      "title": "Recompute the restore-confirmation statistics from the read-back file and verify counts against live data (archived included) and the file's own counts",
+      "tasks": [
+        "T023",
+        "T025"
+      ]
     },
     "FR-023": {
-      "title": "Report the backup as failed and warn the user if the file is unreadable, internally inconsistent, or its counts do not match the source"
+      "title": "Report the backup as failed and warn the user if the file is unreadable, internally inconsistent, or its counts do not match the source",
+      "tasks": [
+        "T003",
+        "T023",
+        "T025"
+      ]
     },
     "FR-024": {
-      "title": "Report a backup as successful only after read-back and verification pass"
+      "title": "Report a backup as successful only after read-back and verification pass",
+      "tasks": [
+        "T023",
+        "T025",
+        "T026"
+      ]
     }
   },
   "size": "oversized",
@@ -182,6 +323,9 @@
     "plan": {
       "summary": "Plan + research + data-model + 4 contracts written for first-run restore, verified backup with native Save dialog, and .sfbak completeness/portability (schema 1.2.0); Constitution Check all PASS",
       "key_finding": "The .sfbak format has drifted further than the spec Background states: beyond the 3 finance record types and 12 Settings fields, Fee.TaxCode, Transaction.TaxCode and Transaction.JournalEntryId are also missing from their backup DTOs - silent financial data loss on every current restore, so the plan adds a reflection-based entity-vs-DTO field-parity guard test (SC-008)"
+    },
+    "tasks": {
+      "summary": "39 tasks across 7 phases (Setup, Foundational, US1 first-run restore [P1/MVP], US2 verified backup + native Save dialog [P2], US3 cross-platform round trip [P2], US4 format completeness [P3 — T029-T034 already delivered in 7d2cc93], Polish); waves with explicit join points; requirement->task map covers all 24 FRs"
     }
   }
 }
