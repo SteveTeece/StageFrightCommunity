@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Enum_MemberStatus_Active"><value>Activo</value></data>
+  <data name="Enum_MemberStatus_Inactive"><value>Inactivo</value></data>
+  <data name="Enum_Theme_Light"><value>Claro</value></data>
+  <data name="Enum_Theme_Dark"><value>Oscuro</value></data>
+  <data name="Enum_FeeType_Annual"><value>Anual</value></data>
+  <data name="Enum_FeeType_Attendance"><value>Asistencia</value></data>
+  <data name="Enum_FeeType_Other"><value>Otro</value></data>
+  <data name="Enum_PaymentMethod_Cash"><value>Efectivo</value></data>
+  <data name="Enum_PaymentMethod_Check"><value>Cheque</value></data>
+  <data name="Enum_PaymentMethod_Card"><value>Tarjeta</value></data>
+  <data name="Enum_PaymentMethod_ElectronicTransfer"><value>Transferencia electrónica</value></data>
+  <data name="Enum_PaymentMethod_Other"><value>Otro</value></data>
+  <data name="Enum_AccountType_Income"><value>Ingresos</value></data>
+  <data name="Enum_AccountType_Expense"><value>Gastos</value></data>
+  <data name="Enum_AccountType_Asset"><value>Activo</value></data>
+  <data name="Enum_AccountType_Liability"><value>Pasivo</value></data>
+  <data name="Enum_AccountType_Equity"><value>Patrimonio</value></data>
+  <data name="Enum_TaxCode_Taxable"><value>Gravable</value></data>
+  <data name="Enum_TaxCode_TaxExempt"><value>Exento de impuestos</value></data>
+  <data name="Enum_TaxCode_Excluded"><value>Excluido</value></data>
+  <data name="Enum_TaxEntryMode_Inclusive"><value>Impuesto incluido</value></data>
+  <data name="Enum_TaxEntryMode_Exclusive"><value>Impuesto no incluido</value></data>
+  <data name="Enum_ReconciliationStatus_Draft"><value>Borrador</value></data>
+  <data name="Enum_ReconciliationStatus_Finalised"><value>Finalizado</value></data>
+</root>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Validation_Member_FirstNameRequired"><value>El nombre es obligatorio.</value></data>
+  <data name="Validation_Member_LastNameRequired"><value>El apellido es obligatorio.</value></data>
+  <data name="Validation_Member_FirstNameMaxLength"><value>El nombre es demasiado largo.</value></data>
+  <data name="Validation_Member_LastNameMaxLength"><value>El apellido es demasiado largo.</value></data>
+  <data name="Validation_Member_StreetAddressRequired"><value>La dirección es obligatoria.</value></data>
+  <data name="Validation_Member_EmailInvalid"><value>Introduce una dirección de correo válida.</value></data>
+  <data name="Validation_Member_DateOfBirthInPast"><value>La fecha de nacimiento debe estar en el pasado.</value></data>
+  <data name="Validation_Settings_NotConfigured"><value>La configuración aún no se ha completado.</value></data>
+  <data name="Validation_Settings_TaxRateRequired"><value>El tipo impositivo es obligatorio.</value></data>
+  <data name="Validation_Setup_OrganisationNameRequired"><value>El nombre de la organización es obligatorio.</value></data>
+  <data name="Validation_Setup_AnnualFeeNegative"><value>La cuota anual no puede ser negativa.</value></data>
+  <data name="Validation_Setup_AttendanceFeeNegative"><value>La cuota de asistencia no puede ser negativa.</value></data>
+  <data name="Validation_Setup_CurrencyUnknown"><value>La moneda seleccionada no es válida.</value></data>
+  <data name="Validation_Setup_FinancialYearStartDayRange"><value>El día de inicio del ejercicio financiero no es válido.</value></data>
+  <data name="Validation_Setup_FinancialYearStartMonthRange"><value>El mes de inicio del ejercicio financiero no es válido.</value></data>
+</root>

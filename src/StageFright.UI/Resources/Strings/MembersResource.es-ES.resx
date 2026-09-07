@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Members_List_PageTitle"><value>Miembros — StageFright Community</value></data>
+  <data name="Members_List_Heading"><value>Miembros</value></data>
+  <data name="Members_List_AddButton"><value>Añadir miembro</value></data>
+  <data name="Members_List_SearchPlaceholder"><value>Buscar miembros…</value></data>
+  <data name="Members_List_SearchAriaLabel"><value>Buscar miembros</value></data>
+  <data name="Members_List_ShowInactiveLabel"><value>Mostrar inactivos</value></data>
+  <data name="Members_List_LoadingText"><value>Cargando miembros…</value></data>
+  <data name="Members_List_EmptyAll"><value>No hay miembros.</value></data>
+  <data name="Members_List_EmptyActive"><value>No hay miembros activos.</value></data>
+  <data name="Members_List_NameColumn"><value>Nombre</value></data>
+  <data name="Members_List_AddressColumn"><value>Dirección</value></data>
+  <data name="Members_List_PhoneColumn"><value>Teléfono</value></data>
+  <data name="Members_List_EmailColumn"><value>Correo electrónico</value></data>
+  <data name="Members_List_AgeColumn"><value>Edad</value></data>
+  <data name="Members_Detail_AddressLabel"><value>Dirección</value></data>
+  <data name="Members_Detail_PhoneLabel"><value>Teléfono</value></data>
+  <data name="Members_Detail_EmailLabel"><value>Correo electrónico</value></data>
+  <data name="Members_Form_FirstNameLabel"><value>Nombre</value></data>
+  <data name="Members_Form_LastNameLabel"><value>Apellido</value></data>
+  <data name="Members_Form_StreetAddressLabel"><value>Dirección</value></data>
+  <data name="Members_Form_PhoneLabel"><value>Teléfono</value></data>
+  <data name="Members_Form_EmailLabel"><value>Correo electrónico</value></data>
+  <data name="Members_Form_JoinDateLabel"><value>Fecha de incorporación</value></data>
+</root>

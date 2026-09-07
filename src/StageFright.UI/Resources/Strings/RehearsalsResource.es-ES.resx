@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Rehearsals_List_PageTitle"><value>Ensayos — StageFright Community</value></data>
+  <data name="Rehearsals_List_Heading"><value>Ensayos</value></data>
+  <data name="Rehearsals_List_ScheduleButton"><value>Programar ensayo</value></data>
+  <data name="Rehearsals_List_SearchPlaceholder"><value>Buscar ensayos…</value></data>
+  <data name="Rehearsals_List_SearchAriaLabel"><value>Buscar ensayos</value></data>
+  <data name="Rehearsals_List_LoadingText"><value>Cargando ensayos…</value></data>
+  <data name="Rehearsals_List_EmptyNone"><value>Aún no hay ensayos programados.</value></data>
+  <data name="Rehearsals_List_DateColumn"><value>Fecha</value></data>
+  <data name="Rehearsals_List_TimeColumn"><value>Hora</value></data>
+  <data name="Rehearsals_List_AttendanceColumn"><value>Asistencia</value></data>
+  <data name="Rehearsals_List_NotesColumn"><value>Notas</value></data>
+  <data name="Rehearsals_Form_PageTitle"><value>Programar ensayo — StageFright Community</value></data>
+  <data name="Rehearsals_Form_Heading"><value>Programar ensayo</value></data>
+  <data name="Rehearsals_Form_DateLabel"><value>Fecha</value></data>
+  <data name="Rehearsals_Form_TimeLabel"><value>Hora</value></data>
+  <data name="Rehearsals_Form_NotesLabel"><value>Notas</value></data>
+  <data name="Rehearsals_Form_ScheduleButton"><value>Programar</value></data>
+  <data name="Rehearsals_Attendance_HeadingView"><value>Asistencia</value></data>
+  <data name="Rehearsals_Attendance_HeadingRecord"><value>Registrar asistencia</value></data>
+  <data name="Rehearsals_Attendance_BackButton"><value>Volver a ensayos</value></data>
+  <data name="Rehearsals_Attendance_AttendedColumn"><value>Asistió</value></data>
+  <data name="Rehearsals_Attendance_PaidColumn"><value>Pagado</value></data>
+  <data name="Rehearsals_Attendance_MemberColumn"><value>Miembro</value></data>
+  <data name="Rehearsals_Attendance_FeeColumn"><value>Cuota</value></data>
+  <data name="Rehearsals_Attendance_SaveButton"><value>Guardar asistencia</value></data>
+</root>

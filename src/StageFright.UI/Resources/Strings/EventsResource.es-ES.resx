@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Events_Tile_Title"><value>Eventos</value></data>
+  <data name="Events_Tile_ActionText"><value>Ver eventos</value></data>
+  <data name="Events_Status_Recorded"><value>Registrado</value></data>
+  <data name="Events_Status_Scheduled"><value>Programado</value></data>
+  <data name="Events_Status_NotRecorded"><value>No registrado</value></data>
+  <data name="Events_List_PageTitle"><value>Eventos — StageFright Community</value></data>
+  <data name="Events_List_Heading"><value>Eventos</value></data>
+  <data name="Events_List_ScheduleButton"><value>Programar evento</value></data>
+  <data name="Events_List_SearchPlaceholder"><value>Buscar por fecha, tipo o notas…</value></data>
+  <data name="Events_List_SearchAriaLabel"><value>Buscar eventos</value></data>
+  <data name="Events_List_LoadingText"><value>Cargando eventos…</value></data>
+  <data name="Events_List_EmptyNone"><value>Aún no hay eventos programados.</value></data>
+  <data name="Events_List_DateColumn"><value>Fecha</value></data>
+  <data name="Events_List_EventTypeColumn"><value>Tipo de evento</value></data>
+  <data name="Events_List_NotesColumn"><value>Notas</value></data>
+  <data name="Events_Form_PageTitle"><value>Programar evento — StageFright Community</value></data>
+  <data name="Events_Form_Heading"><value>Programar evento</value></data>
+  <data name="Events_Form_DateLabel"><value>Fecha</value></data>
+  <data name="Events_Form_EventTypeLabel"><value>Tipo de evento</value></data>
+  <data name="Events_Form_NotesLabel"><value>Notas</value></data>
+  <data name="Events_Form_SubmitButton"><value>Programar</value></data>
+  <data name="Events_Participation_Heading"><value>Registrar participación</value></data>
+  <data name="Events_Participation_SaveButton"><value>Guardar participación</value></data>
+</root>

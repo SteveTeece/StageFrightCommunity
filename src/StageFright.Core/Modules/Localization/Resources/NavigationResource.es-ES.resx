@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Nav_Members_Title"><value>Miembros</value></data>
+  <data name="Nav_Members_ShortLabel"><value>MIEM</value></data>
+  <data name="Nav_Sidebar_MainNavigationAriaLabel"><value>Navegación principal</value></data>
+  <data name="Nav_Sidebar_CollapseGroupAriaLabel"><value>Contraer {GroupName}</value></data>
+  <data name="Nav_Sidebar_ExpandGroupAriaLabel"><value>Expandir {GroupName}</value></data>
+  <data name="Nav_Sidebar_BadgeItemsAriaLabel"><value>{BadgeText} elementos</value></data>
+  <data name="Nav_ThemeToggle_Label"><value>Selección de tema</value></data>
+  <data name="Nav_ThemeToggle_SwitchToDarkAriaLabel"><value>Cambiar al modo oscuro</value></data>
+  <data name="Nav_ThemeToggle_SwitchToLightAriaLabel"><value>Cambiar al modo claro</value></data>
+  <data name="Nav_Dashboard_Title"><value>Panel</value></data>
+  <data name="Nav_Rehearsals_Title"><value>Ensayos</value></data>
+  <data name="Nav_Events_Title"><value>Eventos</value></data>
+  <data name="Nav_Events_AllEvents"><value>Todos los eventos</value></data>
+  <data name="Nav_Events_ScheduleAgm"><value>Programar asamblea general</value></data>
+  <data name="Nav_Events_Agms"><value>Asambleas generales</value></data>
+  <data name="Nav_Finance_Title"><value>Finanzas</value></data>
+  <data name="Nav_Finance_Overview"><value>Resumen</value></data>
+  <data name="Nav_Finance_ChartOfAccounts"><value>Plan de cuentas</value></data>
+  <data name="Nav_Finance_JournalEntries"><value>Asientos contables</value></data>
+  <data name="Nav_Finance_Reconciliation"><value>Conciliación</value></data>
+  <data name="Nav_Reports_Title"><value>Informes</value></data>
+  <data name="Nav_Settings_Title"><value>Configuración</value></data>
+</root>

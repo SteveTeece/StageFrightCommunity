@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Setup_Page_Title"><value>Configuración inicial — StageFright Community</value></data>
+  <data name="Setup_FirstRun_PageTitle"><value>Bienvenido — StageFright Community</value></data>
+  <data name="Setup_FirstRun_Heading"><value>Bienvenido a StageFright Community</value></data>
+  <data name="Setup_FirstRun_Subheading"><value>Elige tu idioma de visualización para comenzar.</value></data>
+  <data name="Setup_FirstRun_ConfirmButton"><value>Continuar</value></data>
+  <data name="Setup_FirstRun_SeedingError"><value>Algo salió mal al cargar los datos de ejemplo. Inténtalo de nuevo.</value></data>
+  <data name="Setup_Wizard_Heading"><value>Asistente de configuración de StageFright Community</value></data>
+  <data name="Setup_Wizard_Subheading"><value>Completa la configuración para comenzar.</value></data>
+  <data name="Setup_Tab_OrganisationSettings"><value>Configuración de la organización</value></data>
+  <data name="Setup_Tab_ChartOfAccounts"><value>Plan de cuentas</value></data>
+  <data name="Setup_Tab_OpeningBalances"><value>Saldos iniciales</value></data>
+  <data name="Setup_Tab_Committee"><value>Comité</value></data>
+  <data name="Setup_Tab_Review"><value>Revisión</value></data>
+  <data name="Setup_Tab_LoadFailed"><value>No se pudo cargar esta pestaña.</value></data>
+  <data name="Setup_Nav_NextButton"><value>Siguiente</value></data>
+  <data name="Setup_Nav_FinishButton"><value>Finalizar</value></data>
+  <data name="Setup_Error_Unexpected"><value>Se produjo un error inesperado. Inténtalo de nuevo.</value></data>
+  <data name="Setup_General_OrgNameLabel"><value>Nombre de la organización</value></data>
+  <data name="Setup_General_CurrencyLabel"><value>Moneda</value></data>
+  <data name="Setup_General_FinancialYearStartMonthLabel"><value>Mes de inicio del ejercicio financiero</value></data>
+  <data name="Setup_General_FinancialYearStartDayLabel"><value>Día de inicio del ejercicio financiero</value></data>
+  <data name="Setup_Fees_AnnualFeeLabel"><value>Cuota anual</value></data>
+  <data name="Setup_Fees_AttendanceFeeLabel"><value>Cuota de asistencia</value></data>
+  <data name="Setup_Theme_Label"><value>Tema:</value></data>
+  <data name="Setup_Language_Label"><value>Idioma:</value></data>
+  <data name="Setup_Language_HelpText"><value>Puedes cambiarlo más tarde en Configuración.</value></data>
+  <data name="Setup_Tax_AppliesLabel"><value>Se aplica el impuesto sobre ventas a esta organización</value></data>
+  <data name="Setup_Tax_RateLabel"><value>Tipo impositivo (%)</value></data>
+  <data name="Setup_Tax_TaxExemptDefaultOption"><value>Exento de impuestos (predeterminado)</value></data>
+  <data name="Setup_Review_Heading"><value>Revisión</value></data>
+  <data name="Setup_Review_Yes"><value>Sí</value></data>
+  <data name="Setup_Review_No"><value>No</value></data>
+  <data name="Setup_Review_NotSet"><value>No establecido</value></data>
+</root>

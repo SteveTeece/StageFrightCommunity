@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Finance_Tile_Title"><value>Finanzas</value></data>
+  <data name="Finance_Page_PageTitle"><value>Finanzas — StageFright Community</value></data>
+  <data name="Finance_Page_Heading"><value>Finanzas</value></data>
+  <data name="Finance_Page_TabOutstanding"><value>Pendiente</value></data>
+  <data name="Finance_Page_TabRecordIncome"><value>Registrar ingresos</value></data>
+  <data name="Finance_Page_TabRecordExpense"><value>Registrar gastos</value></data>
+  <data name="Finance_Page_TabAnnualFees"><value>Aplicar cuotas anuales</value></data>
+  <data name="Finance_Common_ClearButton"><value>Limpiar</value></data>
+  <data name="Finance_Common_DateLabel"><value>Fecha</value></data>
+  <data name="Finance_Common_AmountLabel"><value>Importe</value></data>
+  <data name="Finance_Common_DescriptionLabel"><value>Descripción</value></data>
+  <data name="Finance_Common_TaxTreatmentLabel"><value>Tratamiento fiscal</value></data>
+  <data name="Finance_Common_TaxExemptDefaultOption"><value>Exento de impuestos (predeterminado)</value></data>
+  <data name="Finance_RecordIncome_AccountLabel"><value>Cuenta</value></data>
+  <data name="Finance_RecordIncome_DepositToLabel"><value>Depositar en</value></data>
+  <data name="Finance_RecordIncome_SubmitButton"><value>Registrar ingresos</value></data>
+  <data name="Finance_Balances_LoadingText"><value>Cargando saldos de miembros…</value></data>
+  <data name="Finance_Balances_EmptyText"><value>No se encontraron saldos pendientes.</value></data>
+  <data name="Finance_Balances_MemberColumn"><value>Miembro</value></data>
+  <data name="Finance_Balances_OutstandingColumn"><value>Pendiente</value></data>
+  <data name="Finance_Payment_MethodLabel"><value>Método de pago</value></data>
+  <data name="Finance_Payment_NotesLabel"><value>Notas</value></data>
+  <data name="Finance_Payment_SubmitButton"><value>Registrar pago del miembro</value></data>
+</root>
