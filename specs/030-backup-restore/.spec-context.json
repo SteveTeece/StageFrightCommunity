@@ -715,7 +715,7 @@
       "summary": "US1 first-run restore MVP and US2 verified backup (native Save dialog + FR-010 default filename, post-write read-back count verification, AuditAction.Export, unencrypted notice, Settings restore adopts /restart-required) both shipped; sfbak schema 1.2.0 unchanged"
     }
   },
-  "currentTask": "T040",
+  "currentTask": "T028",
   "task_summaries": {
     "T013": {
       "status": "DONE",
