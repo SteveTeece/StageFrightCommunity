@@ -290,10 +290,74 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-09-08T08:46:18.862Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T09:12:28.866Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T09:12:29.151Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T09:12:29.432Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T09:12:29.691Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T09:25:33.078Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T09:25:33.375Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T09:25:33.654Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T09:25:33.969Z"
     }
   ],
   "telemetryInstanceId": "0fc9ad3e-9084-48e2-bb58-11acb578e9c6",
-  "last_action": "Phase 3 (US1 / MVP) complete — T013-T020 done, full rebuild 0 warnings, 2103 tests pass; Phases 4-7 (US2/US3/US4/Polish) remain",
+  "last_action": "Phase 4 US2 complete - T021-T027 + T040 done; full rebuild 0 warnings, 2155 tests pass; Phases 5 6 7 remain",
   "livingSpecs": {
     "loaded": [
       "app-host"
@@ -397,6 +461,10 @@
         "T009",
         "T023",
         "T025"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs::CreateBackupAsync_WritesVerifiedFile_AndRecordsAnExportAuditEntry",
+        "tests/StageFright.Integration.Tests/Scenarios/SettingsBackupJourneyTests.cs"
       ]
     },
     "FR-010": {
@@ -405,6 +473,10 @@
         "T007",
         "T021",
         "T025"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupFileNameBuilderTests.cs",
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs::CreateBackupAsync_WritesVerifiedFile_AndRecordsAnExportAuditEntry"
       ]
     },
     "FR-011": {
@@ -461,6 +533,10 @@
       "tasks": [
         "T023",
         "T025"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs::CreateBackupAsync_WritesVerifiedFile_AndRecordsAnExportAuditEntry",
+        "tests/StageFright.Integration.Tests/Scenarios/SettingsBackupJourneyTests.cs::CreateBackup_WritesAVerifiedFileToTheChosenPath_AndAuditsAnExport_Integration"
       ]
     },
     "FR-018": {
@@ -468,6 +544,10 @@
       "tasks": [
         "T024",
         "T026"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Settings/BackupRestoreTabTests.cs::SuccessfulRestore_NavigatesToRestartRequired",
+        "tests/StageFright.Integration.Tests/Scenarios/SettingsBackupJourneyTests.cs::SettingsPathRestore_OfAValidBackup_RestoresTheData_Integration"
       ]
     },
     "FR-019": {
@@ -478,6 +558,9 @@
         "T022",
         "T030",
         "T035"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupSchemaTests.cs"
       ]
     },
     "FR-020": {
@@ -486,6 +569,9 @@
         "T024",
         "T026",
         "T027"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Settings/BackupRestoreTabTests.cs::UnencryptedNotice_IsRendered"
       ]
     },
     "FR-021": {
@@ -493,6 +579,9 @@
       "tasks": [
         "T023",
         "T025"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs::CreateBackupAsync_Throws_WhenTheWrittenFileCannotBeReadBack"
       ]
     },
     "FR-022": {
@@ -500,6 +589,9 @@
       "tasks": [
         "T023",
         "T025"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs::CreateBackupAsync_VerifiesAgainstTheSameCounts_GetManifestAsyncWouldReport"
       ]
     },
     "FR-023": {
@@ -508,6 +600,10 @@
         "T003",
         "T023",
         "T025"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs::CreateBackupAsync_Throws_AndLeavesTheFileOnDisk_WhenReadBackCountsDoNotMatchTheSource",
+        "tests/StageFright.UI.Tests/Pages/Settings/BackupRestoreTabTests.cs::CreateBackup_WhenVerificationFails_ShowsTheFailureAndTheDiscrepancies"
       ]
     },
     "FR-024": {
@@ -516,6 +612,15 @@
         "T023",
         "T025",
         "T026"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Settings/BackupRestoreTabTests.cs::CreateBackup_WhenVerified_ShowsTheVerifiedResult",
+        "tests/StageFright.Integration.Tests/Scenarios/SettingsBackupJourneyTests.cs::CreateBackup_WhenTheWrittenFileIsCorrupted_ReportsFailureWithDiscrepancies_Integration"
+      ]
+    },
+    "FR-025": {
+      "tests": [
+        "tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs::Should_TranslateEveryNeutralKey_When_ShippedCultureResxScanned"
       ]
     }
   },
@@ -581,6 +686,21 @@
       "decision": "T015 asserts the routing signal via SettingsRepository.GetAsync(...) is not null rather than building the full SetupService graph",
       "why": "that null-check is the exact test ISetupService.IsSetupCompleteAsync and App.razor.cs perform; SetupService has 8 constructor deps",
       "rejected": "wiring the whole SetupService object graph for one boolean"
+    },
+    {
+      "decision": "VerifyWrittenFile is one helper shared by CreateBackupAsync and ExportAsync; the file-vs-actual recompute check covers only the 17 top-level serialised collections, not the 3 nested/derived EntityCounts keys",
+      "why": "An EventType with no events is not serialised into the sfbak (only embedded inside an EventBackupDto), so recomputing EventTypes from the read-back would legitimately differ from the stored count and fail an otherwise-valid backup. Source-vs-file still compares every key.",
+      "rejected": "Recomputing every EntityCounts key on read-back - false verification failures for orgs with an orphan event type"
+    },
+    {
+      "decision": "BackupVerificationException.Message is a plain English diagnostic string, not routed through ILocalizer",
+      "why": "The UI never renders ex.Message (it renders Settings_Backup_VerifyFailed + ex.Discrepancies); discrepancy strings follow the established English-diagnostic detail pattern; the Us2 literal-exception guard regex does not cover BackupVerificationException",
+      "rejected": "A ValidationResource key + 7 culture translations for a message no user sees"
+    },
+    {
+      "decision": "T040 SettingsBackupJourneyTests is a service+DB integration test (real BackupService + real SQLite + fake IBackupDestinationPicker), not a bUnit component render",
+      "why": "Integration.Tests has no bUnit dependency and its journey tests are service-level by convention; the .backup-verify-result markup and /restart-required navigation are covered by the bUnit T024 BackupRestoreTabTests",
+      "rejected": "Adding bUnit to the previously bUnit-free Integration.Tests project for one test"
     }
   ],
   "step_summaries": {
@@ -592,10 +712,10 @@
       "summary": "39 tasks across 7 phases (Setup, Foundational, US1 first-run restore [P1/MVP], US2 verified backup + native Save dialog [P2], US3 cross-platform round trip [P2], US4 format completeness [P3 — T029-T034 already delivered in 7d2cc93], Polish); waves with explicit join points; requirement->task map covers all 24 FRs"
     },
     "implement": {
-      "summary": "Phase 3 / US1 (MVP): fresh installs can restore from a .sfbak during first-run via a new /first-run-restore pre-wizard screen (checkbox -> file pick -> contents summary -> confirm -> restore -> terminal chrome-free /restart-required under BlankLayout); cancel/failure falls back to /setup with no data changed; App.razor.cs + FirstRunLanguageScreen route through it; 16 keys fully translated across all 7 shipped cultures"
+      "summary": "US1 first-run restore MVP and US2 verified backup (native Save dialog + FR-010 default filename, post-write read-back count verification, AuditAction.Export, unencrypted notice, Settings restore adopts /restart-required) both shipped; sfbak schema 1.2.0 unchanged"
     }
   },
-  "currentTask": "T021",
+  "currentTask": "T040",
   "task_summaries": {
     "T013": {
       "status": "DONE",
@@ -667,6 +787,75 @@
         "src/StageFright.UI/Pages/Setup/FirstRunLanguageScreen.razor.cs",
         "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs"
       ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "BackupFileNameBuilderTests: exact format, literal word 'backup', invalid-char strip, whitespace collapse, blank/all-invalid org -> StageFright fallback, ISO yyyy-MM-dd under fr-FR/de-DE/th-TH/ar-SA cultures (restored in finally)",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupFileNameBuilderTests.cs"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "BackupSchemaTests: equal/older versions restorable; newer major/minor/patch/same-major build rejected; null/empty/1.2/1.2.0.0/non-numeric/prerelease rejected; CurrentSchemaVersion==1.2.0",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupSchemaTests.cs"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "BackupServiceTests additions: CreateBackupAsync happy path returns Passed + writes AuditAction.Export + FR-010 suggested name; read-back count mismatch / unreadable file -> BackupVerificationException with discrepancies, file left on disk, no audit; user cancel -> OperationCanceledException no file/no audit; save-dialog DataAccessException propagates, no audit; shared count helper matches GetManifestAsync. Added FakeBackupDestinationPicker seam.",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "BackupService.CreateBackupAsync: serialise snapshot -> IBackupDestinationPicker.SaveAsync (FR-010 default name from BackupFileNameBuilder + org name) -> read file back -> VerifyWrittenFile (source-vs-file counts, file-vs-actual top-level counts, GeneratedAt+version present) -> AuditAction.Export on pass, BackupVerificationException on fail (file kept), OperationCanceledException on dialog cancel, DataAccessException propagated. ExportAsync now also runs VerifyWrittenFile. IBackupService doc-comments refreshed; ctor gains IBackupDestinationPicker (DI already registers it); 3 non-phase-4 test factories updated.",
+      "files": [
+        "src/StageFright.Core/Contracts/IBackupService.cs",
+        "src/StageFright.Core/Modules/Settings/BackupService.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/V9_BackupRestoreTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/FirstRunRestoreJourneyTests.cs",
+        "tests/StageFright.Data.Tests/BackupImportTests.cs"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "BackupRestoreTabTests (bUnit): .backup-unencrypted-notice rendered; #create-backup invokes CreateBackupAsync; OperationCanceledException = silent no-op (no verify-result, no error alert); .backup-verify-result shows 'verified' + path on Passed and 'do not rely on this file' + discrepancy list on BackupVerificationException; successful restore (understand -> confirm) navigates to /restart-required",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Settings/BackupRestoreTabTests.cs"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "BackupRestoreTab.razor/.razor.cs: Create button -> IBackupService.CreateBackupAsync (native Save dialog + FR-010 default name); user-cancel = silent no-op; .backup-unencrypted-notice alert near Create (FR-020); .backup-verify-result renders BackupVerificationResult (verified + path) / caught BackupVerificationException (failed + discrepancy <ul>); successful restore now Nav.NavigateTo('/restart-required') instead of the inline success message; added #create-backup/#understand-restore/#confirm-restore/#cancel-restore ids; dropped unused _successMessage",
+      "files": [
+        "src/StageFright.UI/Pages/Settings/BackupRestoreTab.razor",
+        "src/StageFright.UI/Pages/Settings/BackupRestoreTab.razor.cs"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "Added Settings_Backup_UnencryptedNotice / Settings_Backup_Verified / Settings_Backup_VerifyFailed to neutral SettingsResource.resx and, fully translated, to all seven shipped culture sets (de-DE,en-US,es-ES,fr-FR,it-IT,ja-JP,pl-PL); regenerated SettingsResource.qps-ploc.resx via scripts/generate-pseudo-locale.py; Us2LocalizationGuardTests translation-completeness green",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SettingsResource.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.de-DE.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.en-US.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.es-ES.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.fr-FR.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.it-IT.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.ja-JP.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.pl-PL.resx",
+        "src/StageFright.UI/Resources/Strings/SettingsResource.qps-ploc.resx"
+      ]
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "SettingsBackupJourneyTests (integration, _Integration): real BackupService + real SQLite + fake IBackupDestinationPicker — CreateBackupAsync writes a verified file to the chosen path under the BackupFileNameBuilder default name and writes one AuditAction.Export row; a corrupted written file -> BackupVerificationException with Members discrepancy, file left on disk, no Export audit; a valid .sfbak restores into a fresh DB (Settings + Members present). .backup-verify-result markup / /restart-required nav covered by T024.",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/SettingsBackupJourneyTests.cs"
+      ]
     }
   },
   "verified": [
@@ -681,11 +870,31 @@
       "command": "dotnet test StageFrightCommunity.slnx --no-build",
       "result": "2103 passed, 0 failed, 0 skipped (Reports 236, Localization 29, Core 769, UI 647, Data 159, Integration 263); Us2LocalizationGuardTests.Should_TranslateEveryNeutralKey green — all 16 new keys translated in every shipped culture",
       "warnings": []
+    },
+    {
+      "what": "Full solution rebuild (warnings judged from a clean rebuild)",
+      "command": "dotnet build StageFrightCommunity.slnx -t:Rebuild",
+      "result": "Build succeeded - 0 Warning(s), 0 Error(s)",
+      "warnings": []
+    },
+    {
+      "what": "Full test suite incl. Us2LocalizationGuardTests translation-completeness (FR-025)",
+      "command": "dotnet test StageFrightCommunity.slnx",
+      "result": "2155 passed, 0 failed, 0 skipped (Reports 236, Core 812, Data 159, Integration 266, Localization 29, UI 653)",
+      "warnings": []
     }
   ],
   "concerns": [
     {
       "note": "tasks.md did not list updating FirstRunLanguageScreenTests, but the T020 change (Confirm -> /first-run-restore) invalidated its Confirm_Navigates_ToSetup_WhenSampleDataNotOffered assertion; updated + renamed it as part of T020 to keep the suite green",
+      "step": "implement"
+    },
+    {
+      "note": "ExportAsync now deserialises+validates the file it just wrote after every export, including the pre-restore recovery copy inside ImportAsync - doubles the parse cost of a large recovery copy on the restore path. No spec timing target (clarified) so acceptable, but note if restore latency is measured.",
+      "step": "implement"
+    },
+    {
+      "note": "Settings_Restore_Success neutral key + its 8 satellite entries are now unreferenced (Settings restore navigates to /restart-required instead of an inline message). Left in place - no unused-neutral-key guard - a future cleanup could drop all 9.",
       "step": "implement"
     }
   ]

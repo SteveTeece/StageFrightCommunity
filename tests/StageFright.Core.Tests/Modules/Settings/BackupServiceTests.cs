@@ -20,14 +20,46 @@ public class BackupServiceTests : TestBase
     private readonly IBackupRepository _backupRepo = Substitute.For<IBackupRepository>();
     private readonly IUnitOfWork _uow = Substitute.For<IUnitOfWork>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
+    private readonly FakeBackupDestinationPicker _picker = new();
 
     private BackupService CreateService() =>
-        new(_backupRepo, _uow, _audit, NullLogger<BackupService>.Instance, RealLocalizer.Instance, new TempRecoveryCopyStore());
+        new(_backupRepo, _uow, _audit, NullLogger<BackupService>.Instance, RealLocalizer.Instance,
+            new TempRecoveryCopyStore(), _picker);
 
     /// <summary>Writes the pre-restore recovery copy into the system temp directory for the test.</summary>
     private sealed class TempRecoveryCopyStore : IRecoveryCopyStore
     {
         public string GetRecoveryDirectory() => Path.GetTempPath();
+    }
+
+    /// <summary>
+    /// Stand-in for the OS-native Save dialog. By default it writes the stream to a temp file and
+    /// reports <see cref="BackupDestinationResult.Saved"/>; <see cref="CancelDialog"/> simulates the
+    /// user dismissing it, <see cref="SaveFailure"/> a wrapped platform error, and
+    /// <see cref="Corrupt"/> lets a test tamper with the bytes that actually land on disk.
+    /// </summary>
+    private sealed class FakeBackupDestinationPicker : IBackupDestinationPicker
+    {
+        public bool CancelDialog { get; set; }
+        public Exception? SaveFailure { get; set; }
+        public Func<byte[], byte[]>? Corrupt { get; set; }
+        public string? SavedPath { get; private set; }
+        public string? SuggestedFileName { get; private set; }
+
+        public async Task<BackupDestinationResult> SaveAsync(string suggestedFileName, Stream content, CancellationToken ct = default)
+        {
+            SuggestedFileName = suggestedFileName;
+            if (SaveFailure is not null) throw SaveFailure;
+            if (CancelDialog) return BackupDestinationResult.Cancelled;
+
+            using var ms = new MemoryStream();
+            await content.CopyToAsync(ms, ct);
+            var bytes = Corrupt is null ? ms.ToArray() : Corrupt(ms.ToArray());
+
+            SavedPath = Path.Combine(Path.GetTempPath(), $"sf_create_{Guid.NewGuid()}.sfbak");
+            await File.WriteAllBytesAsync(SavedPath, bytes, ct);
+            return BackupDestinationResult.Saved(SavedPath);
+        }
     }
 
     // --- ExportAsync ---
@@ -826,6 +858,157 @@ public class BackupServiceTests : TestBase
             foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
+    }
+
+    // --- CreateBackupAsync: verified backup to a chosen location (spec 030, US2) ---
+
+    [Fact]
+    public async Task CreateBackupAsync_WritesVerifiedFile_AndRecordsAnExportAuditEntry()
+    {
+        var snapshot = new BackupSnapshot
+        {
+            Members = [BuildMember(), BuildMember()],
+            Settings = new Settings
+            {
+                Id = Guid.NewGuid(), OrganizationName = "Cool Choir", AnnualFee = 60m, AttendanceFee = 5m,
+                MembershipRenewalMonth = 1, SchemaVersion = "1.1.0",
+                CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+            }
+        };
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
+        var svc = CreateService();
+
+        try
+        {
+            var result = await svc.CreateBackupAsync(Ct);
+
+            Assert.True(result.Passed);
+            Assert.Empty(result.Discrepancies);
+            Assert.Equal(_picker.SavedPath, result.FilePath);
+            Assert.True(File.Exists(result.FilePath));
+
+            // FR-010: the suggested name carries the organisation, the literal word "backup", the date.
+            var name = _picker.SuggestedFileName;
+            Assert.NotNull(name);
+            Assert.StartsWith("Cool Choir ", name);
+            Assert.Contains(" backup ", name);
+            Assert.EndsWith(".sfbak", name);
+
+            // FR-017: a verified backup is audited as AuditAction.Export.
+            await _audit.Received(1).LogAsync(
+                "Backup", Guid.Empty, AuditAction.Export,
+                Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        }
+        finally
+        {
+            if (_picker.SavedPath is not null && File.Exists(_picker.SavedPath)) File.Delete(_picker.SavedPath);
+        }
+    }
+
+    [Fact]
+    public async Task CreateBackupAsync_VerifiesAgainstTheSameCounts_GetManifestAsyncWouldReport()
+    {
+        var snapshot = new BackupSnapshot { Members = [BuildMember(), BuildMember(), BuildMember()], Accounts = [BuildAccount()] };
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
+        var svc = CreateService();
+
+        try
+        {
+            var result = await svc.CreateBackupAsync(Ct);
+            var manifest = await svc.GetManifestAsync(result.FilePath, Ct);
+
+            Assert.Equal(3, manifest.EntityCounts["Members"]);
+            Assert.Equal(1, manifest.EntityCounts["Accounts"]);
+        }
+        finally
+        {
+            if (_picker.SavedPath is not null && File.Exists(_picker.SavedPath)) File.Delete(_picker.SavedPath);
+        }
+    }
+
+    [Fact]
+    public async Task CreateBackupAsync_Throws_AndLeavesTheFileOnDisk_WhenReadBackCountsDoNotMatchTheSource()
+    {
+        var snapshot = new BackupSnapshot { Members = [BuildMember(), BuildMember()] };
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
+        _picker.Corrupt = bytes =>
+        {
+            using var inMs = new MemoryStream(bytes);
+            var env = Serializer.Deserialize<BackupEnvelope>(inMs);
+            env.EntityCounts["Members"] = 99;       // the file now records a count nothing else agrees with
+            using var outMs = new MemoryStream();
+            Serializer.Serialize(outMs, env);
+            return outMs.ToArray();
+        };
+        var svc = CreateService();
+
+        try
+        {
+            var ex = await Assert.ThrowsAsync<BackupVerificationException>(() => svc.CreateBackupAsync(Ct));
+
+            Assert.NotEmpty(ex.Discrepancies);
+            Assert.Contains(ex.Discrepancies, d => d!.Contains("Members"));
+            Assert.Equal(_picker.SavedPath, ex.FilePath);
+            Assert.True(File.Exists(ex.FilePath));   // kept for diagnosis
+            await _audit.DidNotReceive().LogAsync(
+                Arg.Any<string>(), Arg.Any<Guid>(), AuditAction.Export,
+                Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        }
+        finally
+        {
+            if (_picker.SavedPath is not null && File.Exists(_picker.SavedPath)) File.Delete(_picker.SavedPath);
+        }
+    }
+
+    [Fact]
+    public async Task CreateBackupAsync_Throws_WhenTheWrittenFileCannotBeReadBack()
+    {
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(BuildMinimalSnapshot());
+        _picker.Corrupt = _ => [0xDE, 0xAD, 0xBE, 0xEF];
+        var svc = CreateService();
+
+        try
+        {
+            var ex = await Assert.ThrowsAsync<BackupVerificationException>(() => svc.CreateBackupAsync(Ct));
+            Assert.NotEmpty(ex.Discrepancies);
+            await _audit.DidNotReceive().LogAsync(
+                Arg.Any<string>(), Arg.Any<Guid>(), AuditAction.Export,
+                Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        }
+        finally
+        {
+            if (_picker.SavedPath is not null && File.Exists(_picker.SavedPath)) File.Delete(_picker.SavedPath);
+        }
+    }
+
+    [Fact]
+    public async Task CreateBackupAsync_ThrowsOperationCanceled_AndWritesNoFileOrAudit_WhenTheUserDismissesTheSaveDialog()
+    {
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(BuildMinimalSnapshot());
+        _picker.CancelDialog = true;
+        var svc = CreateService();
+
+        await Assert.ThrowsAsync<OperationCanceledException>(() => svc.CreateBackupAsync(Ct));
+
+        Assert.Null(_picker.SavedPath);
+        await _audit.DidNotReceive().LogAsync(
+            Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<AuditAction>(),
+            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task CreateBackupAsync_PropagatesDataAccessException_AndWritesNoAudit_WhenTheSaveDialogFails()
+    {
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(BuildMinimalSnapshot());
+        _picker.SaveFailure = new DataAccessException("The native save dialog failed", "Backup", "SaveAsync");
+        var svc = CreateService();
+
+        await Assert.ThrowsAsync<DataAccessException>(() => svc.CreateBackupAsync(Ct));
+
+        Assert.Null(_picker.SavedPath);
+        await _audit.DidNotReceive().LogAsync(
+            Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<AuditAction>(),
+            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     private static JournalEntry BuildJournalEntry() => new()

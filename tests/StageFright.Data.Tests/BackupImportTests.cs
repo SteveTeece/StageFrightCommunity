@@ -400,13 +400,26 @@ public class BackupImportTests_Integration : IDisposable
         var uow = new UnitOfWork(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        return new BackupService(backupRepo, uow, auditService, NullLogger<BackupService>.Instance, RealLocalizer.Instance, new TempRecoveryCopyStore());
+        return new BackupService(backupRepo, uow, auditService, NullLogger<BackupService>.Instance, RealLocalizer.Instance,
+            new TempRecoveryCopyStore(), new TempBackupDestinationPicker());
     }
 
     /// <summary>Writes the pre-restore recovery copy into the system temp directory for the test.</summary>
     private sealed class TempRecoveryCopyStore : IRecoveryCopyStore
     {
         public string GetRecoveryDirectory() => Path.GetTempPath();
+    }
+
+    /// <summary>Stands in for the native Save dialog — writes the backup straight to the temp directory.</summary>
+    private sealed class TempBackupDestinationPicker : IBackupDestinationPicker
+    {
+        public async Task<BackupDestinationResult> SaveAsync(string suggestedFileName, Stream content, CancellationToken ct = default)
+        {
+            var path = Path.Combine(Path.GetTempPath(), $"sf_dest_{Guid.NewGuid()}.sfbak");
+            await using var dest = File.Create(path);
+            await content.CopyToAsync(dest, ct);
+            return BackupDestinationResult.Saved(path);
+        }
     }
 
     private static string TempFile() =>

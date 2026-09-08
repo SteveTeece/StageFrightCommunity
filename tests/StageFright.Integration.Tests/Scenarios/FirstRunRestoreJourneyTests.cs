@@ -145,7 +145,8 @@ public sealed class FirstRunRestoreJourneyTests : IAsyncLifetime
 
     private static BackupService BuildService(StageFrightDbContext db) =>
         new(new BackupRepository(db), new UnitOfWork(db), BuildAudit(db),
-            NullLogger<BackupService>.Instance, RealLocalizer.Instance, new TempRecoveryCopyStore());
+            NullLogger<BackupService>.Instance, RealLocalizer.Instance, new TempRecoveryCopyStore(),
+            new TempBackupDestinationPicker());
 
     private static AuditTrailService BuildAudit(StageFrightDbContext db) =>
         new(new AuditTrailRepository(db), NullLogger<AuditTrailService>.Instance);
@@ -154,6 +155,18 @@ public sealed class FirstRunRestoreJourneyTests : IAsyncLifetime
     private sealed class TempRecoveryCopyStore : IRecoveryCopyStore
     {
         public string GetRecoveryDirectory() => Path.GetTempPath();
+    }
+
+    /// <summary>Stands in for the native Save dialog — writes the backup straight to the temp directory.</summary>
+    private sealed class TempBackupDestinationPicker : IBackupDestinationPicker
+    {
+        public async Task<BackupDestinationResult> SaveAsync(string suggestedFileName, Stream content, CancellationToken ct = default)
+        {
+            var path = Path.Combine(Path.GetTempPath(), $"sf_dest_{Guid.NewGuid()}.sfbak");
+            await using var dest = File.Create(path);
+            await content.CopyToAsync(dest, ct);
+            return BackupDestinationResult.Saved(path);
+        }
     }
 
     private static Settings NewSettings(string languageCode, string currencyCode)

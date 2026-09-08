@@ -13,9 +13,13 @@ using SettingsEntity = StageFright.Core.Entities.Settings;
 namespace StageFright.Core.Modules.Settings;
 
 /// <summary>
-/// Backup and restore service. Export writes all entity data (including soft-deleted) to a
-/// protobuf binary .sfbak file. Import validates, writes a pre-restore recovery copy of the
-/// current data, then atomically upserts every record from the backup file.
+/// Backup and restore service. <see cref="CreateBackupAsync"/> serialises all entity data
+/// (soft-deleted included) to a protobuf binary <c>.sfbak</c> file via the native Save dialog,
+/// then reads it back and verifies its record counts before reporting success.
+/// <see cref="ExportAsync"/> is the lower-level write-to-a-path variant (used for the pre-restore
+/// recovery copy) and applies the same read-back consistency check. Import validates, writes a
+/// pre-restore recovery copy of the current data, then atomically upserts every record from the
+/// backup file.
 /// </summary>
 public class BackupService : IBackupService
 {
@@ -25,6 +29,7 @@ public class BackupService : IBackupService
     private readonly ILogger<BackupService> _logger;
     private readonly ILocalizer _localizer;
     private readonly IRecoveryCopyStore _recoveryCopyStore;
+    private readonly IBackupDestinationPicker _destinationPicker;
 
     public BackupService(
         IBackupRepository backupRepo,
@@ -32,7 +37,8 @@ public class BackupService : IBackupService
         IAuditTrailService audit,
         ILogger<BackupService> logger,
         ILocalizer localizer,
-        IRecoveryCopyStore recoveryCopyStore)
+        IRecoveryCopyStore recoveryCopyStore,
+        IBackupDestinationPicker destinationPicker)
     {
         _backupRepo = backupRepo;
         _uow = uow;
@@ -40,6 +46,50 @@ public class BackupService : IBackupService
         _logger = logger;
         _localizer = localizer;
         _recoveryCopyStore = recoveryCopyStore;
+        _destinationPicker = destinationPicker;
+    }
+
+    public async Task<BackupVerificationResult> CreateBackupAsync(CancellationToken ct = default)
+    {
+        // Capture the snapshot once — every count the treasurer sees at handover, and every count
+        // the post-write check verifies, is derived from this exact capture (FR-022).
+        var snapshot = await _backupRepo.GetFullSnapshotAsync(ct);
+        var envelope = MapToEnvelope(snapshot);
+
+        using var buffer = new MemoryStream();
+        Serializer.Serialize(buffer, envelope);
+        buffer.Position = 0;
+
+        var suggestedName = BackupFileNameBuilder.Build(
+            snapshot.Settings?.OrganizationName,
+            DateOnly.FromDateTime(DateTime.Now));
+
+        // The picker never throws for a user cancel (it returns Cancelled); a genuine platform
+        // failure is already wrapped as DataAccessException before it returns here (FR-009).
+        var destination = await _destinationPicker.SaveAsync(suggestedName, buffer, ct);
+        if (destination.WasCancelled || string.IsNullOrEmpty(destination.FilePath))
+            throw new OperationCanceledException("The backup Save dialog was cancelled; no file was written.");
+
+        var filePath = destination.FilePath;
+
+        // FR-021–FR-024: read the file back from disk and verify its per-record-type counts against
+        // the just-captured live data and the file's own recorded counts. Throws
+        // BackupVerificationException (file left on disk) on any mismatch or unreadable file.
+        VerifyWrittenFile(filePath, envelope.EntityCounts);
+
+        await _audit.LogAsync(
+            entityType: "Backup",
+            entityId: Guid.Empty,
+            action: AuditAction.Export,
+            newValue: $"Backup created and verified: {Path.GetFileName(filePath)}",
+            ct: ct);
+
+        _logger.LogInformation(
+            "Backup created and verified at {FilePath}. Counts: {Counts}",
+            filePath,
+            string.Join(", ", envelope.EntityCounts.Select(kv => $"{kv.Key}={kv.Value}")));
+
+        return new BackupVerificationResult(true, [], filePath);
     }
 
     public async Task ExportAsync(string filePath, CancellationToken ct = default)
@@ -52,10 +102,14 @@ public class BackupService : IBackupService
             using var stream = File.Create(filePath);
             Serializer.Serialize(stream, envelope);
         }
-        catch (Exception ex) when (ex is not ImportException)
+        catch (Exception ex) when (ex is not ImportException and not BackupVerificationException)
         {
             throw new DataAccessException($"Failed to write backup file: {ex.Message}", "Backup", nameof(ExportAsync), null, ex);
         }
+
+        // Read the just-written file back and check its recorded counts are internally consistent,
+        // so a recovery copy (or any export) is never silently truncated or corrupt.
+        VerifyWrittenFile(filePath, envelope.EntityCounts);
 
         _logger.LogInformation(
             "Backup exported to {FilePath}. Counts: {Counts}",
@@ -201,6 +255,91 @@ public class BackupService : IBackupService
         var timestamp = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
         return Path.Combine(dir, $"StageFright-Recovery-{timestamp}.sfbak");
     }
+
+    /// <summary>
+    /// Reads <paramref name="filePath"/> back from disk and verifies it against
+    /// <paramref name="sourceCounts"/> (the per-record-type counts of the snapshot captured for this
+    /// backup) and against its own recorded counts (FR-021–FR-024). Throws
+    /// <see cref="BackupVerificationException"/> — the file is left on disk for diagnosis — if it
+    /// cannot be read back, its recorded counts are internally inconsistent, a count does not match
+    /// the source, or it does not record when it was generated / which build produced it.
+    /// </summary>
+    private void VerifyWrittenFile(string filePath, IReadOnlyDictionary<string, int> sourceCounts)
+    {
+        BackupEnvelope readBack;
+        try
+        {
+            readBack = DeserializeAndValidate(filePath);
+        }
+        catch (Exception ex)
+        {
+            throw new BackupVerificationException(
+                "The backup file failed its post-write verification and must not be relied upon.",
+                filePath,
+                [$"The backup file could not be read back from disk: {ex.Message}"],
+                ex);
+        }
+
+        var discrepancies = new List<string>();
+
+        // (1) Every count the file records for itself must match the live data captured for this
+        //     backup, archived rows included.
+        foreach (var (key, sourceCount) in sourceCounts.OrderBy(kv => kv.Key, StringComparer.Ordinal))
+        {
+            var recorded = readBack.EntityCounts.TryGetValue(key, out var v) ? v : -1;
+            if (recorded != sourceCount)
+                discrepancies.Add($"{key}: the file records {recorded} but the backup captured {sourceCount}.");
+        }
+
+        // (2) The counts the file records must match the file's actual contents (a truncated or
+        //     corrupt file can lose collection entries while its scalar count map survives).
+        foreach (var (key, actual) in CountTopLevelCollections(readBack).OrderBy(kv => kv.Key, StringComparer.Ordinal))
+        {
+            var recorded = readBack.EntityCounts.TryGetValue(key, out var v) ? v : -1;
+            if (recorded != actual)
+                discrepancies.Add($"{key}: the file's recorded count ({recorded}) does not match its actual contents ({actual}).");
+        }
+
+        // (3) The summary the file would present at restore time must be complete.
+        if (readBack.GeneratedAt == default)
+            discrepancies.Add("The backup file does not record when it was generated.");
+        if (string.IsNullOrWhiteSpace(readBack.ApplicationVersion))
+            discrepancies.Add("The backup file does not record the originating application version.");
+
+        if (discrepancies.Count > 0)
+            throw new BackupVerificationException(
+                "The backup file failed its post-write verification and must not be relied upon.",
+                filePath,
+                discrepancies);
+    }
+
+    /// <summary>
+    /// Counts of each collection serialised as its own protobuf member, computed straight from the
+    /// deserialised <paramref name="e"/>. Keys match the <c>EntityCounts</c> keys
+    /// <see cref="MapToEnvelope"/> writes for those same collections (the derived nested keys —
+    /// <c>AttendanceRecords</c>, <c>EventTypes</c>, <c>ParticipationRecords</c> — are covered by the
+    /// source-vs-file check instead).
+    /// </summary>
+    private static Dictionary<string, int> CountTopLevelCollections(BackupEnvelope e) => new()
+    {
+        ["Members"] = e.Members?.Count ?? 0,
+        ["CommitteePositionRecords"] = e.CommitteePositionRecords?.Count ?? 0,
+        ["Rehearsals"] = e.Rehearsals?.Count ?? 0,
+        ["Events"] = e.Events?.Count ?? 0,
+        ["Fees"] = e.Fees?.Count ?? 0,
+        ["Payments"] = e.Payments?.Count ?? 0,
+        ["Transactions"] = e.Transactions?.Count ?? 0,
+        ["Accounts"] = e.Accounts?.Count ?? 0,
+        ["Settings"] = e.Settings is null ? 0 : 1,
+        ["AuditTrailEntries"] = e.AuditTrailEntries?.Count ?? 0,
+        ["AnnualGeneralMeetings"] = e.AnnualGeneralMeetings?.Count ?? 0,
+        ["AgmAttendanceRecords"] = e.AgmAttendanceRecords?.Count ?? 0,
+        ["CommitteeOfficeHolderTypes"] = e.CommitteeOfficeHolderTypes?.Count ?? 0,
+        ["CommitteeTerms"] = e.CommitteeTerms?.Count ?? 0,
+        ["JournalEntries"] = e.JournalEntries?.Count ?? 0,
+        ["BankReconciliations"] = e.BankReconciliations?.Count ?? 0,
+        ["ReconciliationLines"] = e.ReconciliationLines?.Count ?? 0,
+    };
 
     private static BackupEnvelope MapToEnvelope(BackupSnapshot snapshot)
     {
