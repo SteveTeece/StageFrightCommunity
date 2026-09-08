@@ -747,7 +747,7 @@
       "summary": "Phase 5 (US3): CrossPlatformRoundTripTests added — a ~4k-row multi-year dataset survives ExportAsync -> ImportAsync into a fresh SQLite DB under a swapped de-DE locale, field-for-field with per-type counts, DateTime instants and archived flags intact; no production code needed (round trip already faithful)"
     }
   },
-  "currentTask": "T028",
+  "currentTask": "T035",
   "task_summaries": {
     "T013": {
       "status": "DONE",
