@@ -37,11 +37,11 @@ So the restore option is reachable both on a first launch (via `/language-select
 | `#restore-from-backup` | `<input type="checkbox">` | **must be a checkbox**, not `RadzenSwitch` (Verbatim Constraint). Unchecked by default. |
 | `#restore-file` | `<InputFile accept=".sfbak">` | shown only while the checkbox is checked; copies the pick to a temp `.sfbak`, then `GetManifestAsync` |
 | `.first-run-restore-summary` | container | shown once a manifest is read: per-record-type counts (record types with a zero count MAY be omitted from the display — spec FR-003), `GeneratedAt` (local), originating `ApplicationVersion` |
-| `#confirm-restore` | button | visible after the summary; runs `ImportAsync` on `Task.Run` with a `Progress<string>` indicator |
+| `#confirm-restore` | button | visible after the summary; runs `ImportAsync` on `Task.Run` behind the blocking `.first-run-restore-progress` overlay |
 | `#cancel-restore` | button | clears the manifest + file, checkbox returns to unchecked-equivalent state, nothing changed |
 | `#continue-setup` | button | enabled when the checkbox is unchecked; `Nav.NavigateTo("/setup")` |
 | `.first-run-restore-error` | alert | validation / corrupt-file / newer-version message; DB untouched; screen stays put |
-| `.first-run-restore-progress` | status region | advancing progress text during `ImportAsync` (mirrors `setup-seeding-overlay`) |
+| `.first-run-restore-progress` | status region | blocking overlay shown for the duration of `ImportAsync` — spinner + a fixed "restoring…" message, mirroring `setup-seeding-overlay`. `IBackupService.ImportAsync` exposes no progress callback, so the overlay itself is the indicator (no per-step `Progress<string>` text). |
 
 On `ImportAsync` success → `Nav.NavigateTo("/restart-required")`. On failure → `.first-run-restore-error`, `#continue-setup` still available.
 
