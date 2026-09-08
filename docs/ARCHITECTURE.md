@@ -140,7 +140,7 @@ Core providers register explicitly in `MauiProgram.RegisterCoreServices`. Extern
 
 ## Navigation
 
-Blazor Router owns **all** navigation — `App.razor`'s `<Router AppAssembly>` wraps every route in an `ErrorBoundary`, defaults to `Layout.ShellLayout`, and shows a `NotFound` page linking back to `/dashboard`. Every screen has a `@page` directive; `NavigationManager.NavigateTo` is the only way to transition between pages. MAUI Shell routing is disabled — MAUI is a platform-only container (a single `BlazorWebView` in `MainPage.xaml`). First-run detection redirects to `/setup` before the dashboard loads.
+Blazor Router owns **all** navigation — `App.razor`'s `<Router AppAssembly>` wraps every route in an `ErrorBoundary`, defaults to `Layout.ShellLayout`, and shows a `NotFound` page linking back to `/dashboard`. Every screen has a `@page` directive; `NavigationManager.NavigateTo` is the only way to transition between pages. MAUI Shell routing is disabled — MAUI is a platform-only container (a single `BlazorWebView` in `MainPage.xaml`). While first-run setup is incomplete, `App.razor.cs` redirects — before the dashboard loads — to `/language-select` when no display-language preference has been recorded yet (spec 029), otherwise to `/first-run-restore` (spec 030), the pre-wizard screen that offers a backup restore or *Continue* → `/setup`. `/setup` is never the direct first-run target; it is always reached through `/first-run-restore`.
 
 The shell itself (`Layout/ShellLayout.razor`) is a **fixed vertical sidebar**, not a top nav bar: it injects `IEnumerable<IMenuItemProvider>`, orders providers by `DisplayOrder`, and renders each provider's `MenuItem`s (with expandable sub-item groups that auto-expand while a child route is active, and badge counts). A `RadzenSwitch` in the top bar toggles light/dark theme app-wide (hidden on `/setup`, which has its own theme control per FR-022 of spec 017).
 
@@ -168,6 +168,16 @@ Tile providers live in `StageFright.UI/Modules/<ModuleName>/` (e.g. `MembersDash
 The Settings page (`/settings`) is a tabbed core feature. Unlike the plugin-oriented tab contract might suggest, the **built-in tabs are not routed through `ISettingsTabProvider`** — `SettingsPage.razor` hosts them directly (General, Tax, Committee, Event Types, Backup & Restore), and separately resolves `IEnumerable<ISettingsTabProvider>` to append any plugin-contributed tabs after them, skipping duplicate `TabKey`s with a warning log. Deep-linking uses `/settings?tab={TabKey}`.
 
 See [Known Gotchas in `CLAUDE.md`](../CLAUDE.md#known-gotchas) for the MAUI WebView quirks around Settings tab rendering (Bootstrap JS bundle requirement, lazy-render/`StateHasChanged` handling to avoid concurrent `DbContext` access).
+
+---
+
+## Backup & Restore
+
+`BackupService` serialises a full `BackupSnapshot` to a protobuf binary `.sfbak` file. The snapshot has **20 members** — 19 entity collections (member, committee, AGM, rehearsal/attendance, event/event-type/participation, account, fee, payment, GL transaction, GL journal entry, bank reconciliation, reconciliation line, audit-trail) plus the `Settings` singleton — so it carries every persisted record type, soft-deleted rows included. Completeness is guarded entity-by-entity by `BackupDtoFieldParityTests`, not by that enumeration.
+
+- **Create** — `CreateBackupAsync` writes through the OS-native Save dialog (`IBackupDestinationPicker` → `CommunityToolkit.Maui` `FileSaver`), then **reads the written file back from disk** and verifies its per-record-type counts against the just-captured live data and the file's own recorded counts (`VerifyWrittenFile`); a mismatch throws `BackupVerificationException` and the file is reported as unreliable. A successful create writes an `AuditAction.Export` entry. The lower-level `ExportAsync(path)` (used for the pre-restore recovery copy) runs the same read-back check.
+- **Restore** — `ImportAsync` validates the file (full semantic-version check via `BackupSchema.IsRestorable` — an older or equal schema is accepted, a newer one rejected), writes a durable **pre-restore recovery copy** of the current database under `IRecoveryCopyStore.GetRecoveryDirectory()` (`FileSystem.AppDataDirectory/recovery`) on every restore, then upserts every record inside one atomic transaction.
+- **Reachability** — restore is available both from Settings → Backup & Restore and, on a clean install, from the first-run `/first-run-restore` screen (before any organisation/fee/tax entry). Both entry points share the same code paths; a successful restore routes to `/restart-required`.
 
 ---
 

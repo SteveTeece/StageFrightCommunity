@@ -13,32 +13,83 @@ using SettingsEntity = StageFright.Core.Entities.Settings;
 namespace StageFright.Core.Modules.Settings;
 
 /// <summary>
-/// Backup and restore service. Export writes all entity data (including soft-deleted) to a
-/// protobuf binary .sfbak file. Import validates, checkpoints current data, then atomically
-/// upserts every record from the backup file.
+/// Backup and restore service. <see cref="CreateBackupAsync"/> serialises all entity data
+/// (soft-deleted included) to a protobuf binary <c>.sfbak</c> file via the native Save dialog,
+/// then reads it back and verifies its record counts before reporting success.
+/// <see cref="ExportAsync"/> is the lower-level write-to-a-path variant (used for the pre-restore
+/// recovery copy) and applies the same read-back consistency check. Import validates, writes a
+/// pre-restore recovery copy of the current data, then atomically upserts every record from the
+/// backup file.
 /// </summary>
 public class BackupService : IBackupService
 {
-    private const string SupportedMajorVersion = "1";
-
     private readonly IBackupRepository _backupRepo;
     private readonly IUnitOfWork _uow;
     private readonly IAuditTrailService _audit;
     private readonly ILogger<BackupService> _logger;
     private readonly ILocalizer _localizer;
+    private readonly IRecoveryCopyStore _recoveryCopyStore;
+    private readonly IBackupDestinationPicker _destinationPicker;
 
     public BackupService(
         IBackupRepository backupRepo,
         IUnitOfWork uow,
         IAuditTrailService audit,
         ILogger<BackupService> logger,
-        ILocalizer localizer)
+        ILocalizer localizer,
+        IRecoveryCopyStore recoveryCopyStore,
+        IBackupDestinationPicker destinationPicker)
     {
         _backupRepo = backupRepo;
         _uow = uow;
         _audit = audit;
         _logger = logger;
         _localizer = localizer;
+        _recoveryCopyStore = recoveryCopyStore;
+        _destinationPicker = destinationPicker;
+    }
+
+    public async Task<BackupVerificationResult> CreateBackupAsync(CancellationToken ct = default)
+    {
+        // Capture the snapshot once — every count the treasurer sees at handover, and every count
+        // the post-write check verifies, is derived from this exact capture (FR-022).
+        var snapshot = await _backupRepo.GetFullSnapshotAsync(ct);
+        var envelope = MapToEnvelope(snapshot);
+
+        using var buffer = new MemoryStream();
+        Serializer.Serialize(buffer, envelope);
+        buffer.Position = 0;
+
+        var suggestedName = BackupFileNameBuilder.Build(
+            snapshot.Settings?.OrganizationName,
+            DateOnly.FromDateTime(DateTime.Now));
+
+        // The picker never throws for a user cancel (it returns Cancelled); a genuine platform
+        // failure is already wrapped as DataAccessException before it returns here (FR-009).
+        var destination = await _destinationPicker.SaveAsync(suggestedName, buffer, ct);
+        if (destination.WasCancelled || string.IsNullOrEmpty(destination.FilePath))
+            throw new OperationCanceledException("The backup Save dialog was cancelled; no file was written.");
+
+        var filePath = destination.FilePath;
+
+        // FR-021–FR-024: read the file back from disk and verify its per-record-type counts against
+        // the just-captured live data and the file's own recorded counts. Throws
+        // BackupVerificationException (file left on disk) on any mismatch or unreadable file.
+        VerifyWrittenFile(filePath, envelope.EntityCounts);
+
+        await _audit.LogAsync(
+            entityType: "Backup",
+            entityId: Guid.Empty,
+            action: AuditAction.Export,
+            newValue: $"Backup created and verified: {Path.GetFileName(filePath)}",
+            ct: ct);
+
+        _logger.LogInformation(
+            "Backup created and verified at {FilePath}. Counts: {Counts}",
+            filePath,
+            string.Join(", ", envelope.EntityCounts.Select(kv => $"{kv.Key}={kv.Value}")));
+
+        return new BackupVerificationResult(true, [], filePath);
     }
 
     public async Task ExportAsync(string filePath, CancellationToken ct = default)
@@ -51,10 +102,14 @@ public class BackupService : IBackupService
             using var stream = File.Create(filePath);
             Serializer.Serialize(stream, envelope);
         }
-        catch (Exception ex) when (ex is not ImportException)
+        catch (Exception ex) when (ex is not ImportException and not BackupVerificationException)
         {
             throw new DataAccessException($"Failed to write backup file: {ex.Message}", "Backup", nameof(ExportAsync), null, ex);
         }
+
+        // Read the just-written file back and check its recorded counts are internally consistent,
+        // so a recovery copy (or any export) is never silently truncated or corrupt.
+        VerifyWrittenFile(filePath, envelope.EntityCounts);
 
         _logger.LogInformation(
             "Backup exported to {FilePath}. Counts: {Counts}",
@@ -66,10 +121,12 @@ public class BackupService : IBackupService
     {
         var envelope = DeserializeAndValidate(filePath);
 
-        // Pre-import checkpoint: export current DB before any write
-        var checkpointPath = GenerateCheckpointPath(filePath);
-        await ExportAsync(checkpointPath, ct);
-        _logger.LogInformation("Pre-import checkpoint saved to {CheckpointPath}", checkpointPath);
+        // Pre-restore recovery copy: export the current DB to a durable app-data location before
+        // any write, so an accidental or unwanted restore can be recovered from. Written on every
+        // restore, first-run included (FR-015).
+        var recoveryCopyPath = GenerateRecoveryCopyPath();
+        await ExportAsync(recoveryCopyPath, ct);
+        _logger.LogInformation("Pre-restore recovery copy saved to {RecoveryCopyPath}", recoveryCopyPath);
 
         var snapshot = MapToSnapshot(envelope);
 
@@ -82,13 +139,13 @@ public class BackupService : IBackupService
             entityType: "Backup",
             entityId: Guid.Empty,
             action: AuditAction.Import,
-            newValue: $"Imported from {Path.GetFileName(filePath)}; checkpoint: {checkpointPath}",
+            newValue: $"Imported from {Path.GetFileName(filePath)}; pre-restore recovery copy: {recoveryCopyPath}",
             ct: ct);
 
         _logger.LogInformation(
-            "Import completed from {FilePath}. Checkpoint at {CheckpointPath}. Counts: {Counts}",
+            "Import completed from {FilePath}. Pre-restore recovery copy at {RecoveryCopyPath}. Counts: {Counts}",
             filePath,
-            checkpointPath,
+            recoveryCopyPath,
             string.Join(", ", envelope.EntityCounts.Select(kv => $"{kv.Key}={kv.Value}")));
     }
 
@@ -137,6 +194,11 @@ public class BackupService : IBackupService
         envelope.AgmAttendanceRecords ??= [];
         envelope.CommitteeOfficeHolderTypes ??= [];
         envelope.CommitteeTerms ??= [];
+        // Added in schema 1.2.0 — absent (null) in every older file, so normalise to empty
+        // and never gate completeness on them (see ValidateCompleteness).
+        envelope.JournalEntries ??= [];
+        envelope.BankReconciliations ??= [];
+        envelope.ReconciliationLines ??= [];
         envelope.EntityCounts ??= new Dictionary<string, int>();
 
         ValidateVersion(envelope.SchemaVersion);
@@ -151,10 +213,12 @@ public class BackupService : IBackupService
                 _localizer.Get<ValidationResource>("Validation_Backup_MissingSchemaVersion"),
                 operationContext: "VersionCheck");
 
-        var majorStr = schemaVersion.Split('.')[0];
-        if (majorStr != SupportedMajorVersion)
+        // Full semantic-version check: a file newer than this build on any component — including a
+        // newer build of the same major version — is rejected outright; an older or equal file is
+        // accepted and EF Core startup migration brings it forward (FR-019).
+        if (!BackupSchema.IsRestorable(schemaVersion))
             throw new ImportException(
-                _localizer.Get<ValidationResource>("Validation_Backup_UnsupportedSchemaVersion", schemaVersion, SupportedMajorVersion),
+                _localizer.Get<ValidationResource>("Validation_Backup_UnsupportedSchemaVersion", schemaVersion),
                 operationContext: "VersionCheck");
     }
 
@@ -185,14 +249,97 @@ public class BackupService : IBackupService
                 operationContext: "CompletenessCheck");
     }
 
-    private static string GenerateCheckpointPath(string importFilePath)
+    private string GenerateRecoveryCopyPath()
     {
-        var dir = Path.GetDirectoryName(importFilePath);
-        if (string.IsNullOrEmpty(dir))
-            dir = Path.GetTempPath();
+        var dir = _recoveryCopyStore.GetRecoveryDirectory();
         var timestamp = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
-        return Path.Combine(dir, $"StageFright-Checkpoint-{timestamp}.sfbak");
+        return Path.Combine(dir, $"StageFright-Recovery-{timestamp}.sfbak");
     }
+
+    /// <summary>
+    /// Reads <paramref name="filePath"/> back from disk and verifies it against
+    /// <paramref name="sourceCounts"/> (the per-record-type counts of the snapshot captured for this
+    /// backup) and against its own recorded counts (FR-021–FR-024). Throws
+    /// <see cref="BackupVerificationException"/> — the file is left on disk for diagnosis — if it
+    /// cannot be read back, its recorded counts are internally inconsistent, a count does not match
+    /// the source, or it does not record when it was generated / which build produced it.
+    /// </summary>
+    private void VerifyWrittenFile(string filePath, IReadOnlyDictionary<string, int> sourceCounts)
+    {
+        BackupEnvelope readBack;
+        try
+        {
+            readBack = DeserializeAndValidate(filePath);
+        }
+        catch (Exception ex)
+        {
+            throw new BackupVerificationException(
+                "The backup file failed its post-write verification and must not be relied upon.",
+                filePath,
+                [$"The backup file could not be read back from disk: {ex.Message}"],
+                ex);
+        }
+
+        var discrepancies = new List<string>();
+
+        // (1) Every count the file records for itself must match the live data captured for this
+        //     backup, archived rows included.
+        foreach (var (key, sourceCount) in sourceCounts.OrderBy(kv => kv.Key, StringComparer.Ordinal))
+        {
+            var recorded = readBack.EntityCounts.TryGetValue(key, out var v) ? v : -1;
+            if (recorded != sourceCount)
+                discrepancies.Add($"{key}: the file records {recorded} but the backup captured {sourceCount}.");
+        }
+
+        // (2) The counts the file records must match the file's actual contents (a truncated or
+        //     corrupt file can lose collection entries while its scalar count map survives).
+        foreach (var (key, actual) in CountTopLevelCollections(readBack).OrderBy(kv => kv.Key, StringComparer.Ordinal))
+        {
+            var recorded = readBack.EntityCounts.TryGetValue(key, out var v) ? v : -1;
+            if (recorded != actual)
+                discrepancies.Add($"{key}: the file's recorded count ({recorded}) does not match its actual contents ({actual}).");
+        }
+
+        // (3) The summary the file would present at restore time must be complete.
+        if (readBack.GeneratedAt == default)
+            discrepancies.Add("The backup file does not record when it was generated.");
+        if (string.IsNullOrWhiteSpace(readBack.ApplicationVersion))
+            discrepancies.Add("The backup file does not record the originating application version.");
+
+        if (discrepancies.Count > 0)
+            throw new BackupVerificationException(
+                "The backup file failed its post-write verification and must not be relied upon.",
+                filePath,
+                discrepancies);
+    }
+
+    /// <summary>
+    /// Counts of each collection serialised as its own protobuf member, computed straight from the
+    /// deserialised <paramref name="e"/>. Keys match the <c>EntityCounts</c> keys
+    /// <see cref="MapToEnvelope"/> writes for those same collections (the derived nested keys —
+    /// <c>AttendanceRecords</c>, <c>EventTypes</c>, <c>ParticipationRecords</c> — are covered by the
+    /// source-vs-file check instead).
+    /// </summary>
+    private static Dictionary<string, int> CountTopLevelCollections(BackupEnvelope e) => new()
+    {
+        ["Members"] = e.Members?.Count ?? 0,
+        ["CommitteePositionRecords"] = e.CommitteePositionRecords?.Count ?? 0,
+        ["Rehearsals"] = e.Rehearsals?.Count ?? 0,
+        ["Events"] = e.Events?.Count ?? 0,
+        ["Fees"] = e.Fees?.Count ?? 0,
+        ["Payments"] = e.Payments?.Count ?? 0,
+        ["Transactions"] = e.Transactions?.Count ?? 0,
+        ["Accounts"] = e.Accounts?.Count ?? 0,
+        ["Settings"] = e.Settings is null ? 0 : 1,
+        ["AuditTrailEntries"] = e.AuditTrailEntries?.Count ?? 0,
+        ["AnnualGeneralMeetings"] = e.AnnualGeneralMeetings?.Count ?? 0,
+        ["AgmAttendanceRecords"] = e.AgmAttendanceRecords?.Count ?? 0,
+        ["CommitteeOfficeHolderTypes"] = e.CommitteeOfficeHolderTypes?.Count ?? 0,
+        ["CommitteeTerms"] = e.CommitteeTerms?.Count ?? 0,
+        ["JournalEntries"] = e.JournalEntries?.Count ?? 0,
+        ["BankReconciliations"] = e.BankReconciliations?.Count ?? 0,
+        ["ReconciliationLines"] = e.ReconciliationLines?.Count ?? 0,
+    };
 
     private static BackupEnvelope MapToEnvelope(BackupSnapshot snapshot)
     {
@@ -212,6 +359,9 @@ public class BackupService : IBackupService
         var agmAttendance = snapshot.AgmAttendanceRecords.Select(MapAgmAttendance).ToList();
         var officeHolderTypes = snapshot.CommitteeOfficeHolderTypes.Select(MapOfficeHolderType).ToList();
         var committeeTerms = snapshot.CommitteeTerms.Select(MapCommitteeTerm).ToList();
+        var journalEntries = snapshot.JournalEntries.Select(MapJournalEntry).ToList();
+        var bankReconciliations = snapshot.BankReconciliations.Select(MapBankReconciliation).ToList();
+        var reconciliationLines = snapshot.ReconciliationLines.Select(MapReconciliationLine).ToList();
 
         var counts = new Dictionary<string, int>
         {
@@ -231,12 +381,15 @@ public class BackupService : IBackupService
             ["AnnualGeneralMeetings"] = agms.Count,
             ["AgmAttendanceRecords"] = agmAttendance.Count,
             ["CommitteeOfficeHolderTypes"] = officeHolderTypes.Count,
-            ["CommitteeTerms"] = committeeTerms.Count
+            ["CommitteeTerms"] = committeeTerms.Count,
+            ["JournalEntries"] = journalEntries.Count,
+            ["BankReconciliations"] = bankReconciliations.Count,
+            ["ReconciliationLines"] = reconciliationLines.Count
         };
 
         return new BackupEnvelope
         {
-            SchemaVersion = "1.1.0",
+            SchemaVersion = "1.2.0",
             GeneratedAt = DateTime.UtcNow,
             ApplicationVersion = "1.0.0",
             Members = members,
@@ -253,6 +406,9 @@ public class BackupService : IBackupService
             AgmAttendanceRecords = agmAttendance,
             CommitteeOfficeHolderTypes = officeHolderTypes,
             CommitteeTerms = committeeTerms,
+            JournalEntries = journalEntries,
+            BankReconciliations = bankReconciliations,
+            ReconciliationLines = reconciliationLines,
             EntityCounts = counts
         };
     }
@@ -292,7 +448,10 @@ public class BackupService : IBackupService
             AnnualGeneralMeetings = env.AnnualGeneralMeetings!.Select(MapAgmFromDto).ToList(),
             AgmAttendanceRecords = env.AgmAttendanceRecords!.Select(MapAgmAttendanceFromDto).ToList(),
             CommitteeOfficeHolderTypes = env.CommitteeOfficeHolderTypes!.Select(MapOfficeHolderTypeFromDto).ToList(),
-            CommitteeTerms = env.CommitteeTerms!.Select(MapCommitteeTermFromDto).ToList()
+            CommitteeTerms = env.CommitteeTerms!.Select(MapCommitteeTermFromDto).ToList(),
+            JournalEntries = env.JournalEntries!.Select(MapJournalEntryFromDto).ToList(),
+            BankReconciliations = env.BankReconciliations!.Select(MapBankReconciliationFromDto).ToList(),
+            ReconciliationLines = env.ReconciliationLines!.Select(MapReconciliationLineFromDto).ToList()
         };
     }
 
@@ -393,7 +552,7 @@ public class BackupService : IBackupService
     {
         Id = f.Id, MemberId = f.MemberId, FeeType = f.FeeType, Amount = f.Amount,
         FeeDate = f.FeeDate, DueDate = f.DueDate, PaidAtCreation = f.PaidAtCreation,
-        RehearsalId = f.RehearsalId, CreatedAt = f.CreatedAt
+        RehearsalId = f.RehearsalId, CreatedAt = f.CreatedAt, TaxCode = f.TaxCode
     };
 
     private static PaymentBackupDto MapPayment(Payment p) => new()
@@ -408,7 +567,27 @@ public class BackupService : IBackupService
         Id = t.Id, Date = t.Date, AccountId = t.AccountId,
         DebitAmount = t.DebitAmount, CreditAmount = t.CreditAmount,
         GLAccount = t.GLAccount, MemberId = t.MemberId, PaymentId = t.PaymentId,
-        FeeId = t.FeeId, Description = t.Description, CreatedAt = t.CreatedAt
+        FeeId = t.FeeId, Description = t.Description, CreatedAt = t.CreatedAt,
+        TaxCode = t.TaxCode, JournalEntryId = t.JournalEntryId
+    };
+
+    private static JournalEntryBackupDto MapJournalEntry(JournalEntry j) => new()
+    {
+        Id = j.Id, Type = j.Type, Date = j.Date, Description = j.Description, CreatedAt = j.CreatedAt
+    };
+
+    private static BankReconciliationBackupDto MapBankReconciliation(BankReconciliation r) => new()
+    {
+        Id = r.Id, AccountId = r.AccountId, StatementDate = r.StatementDate,
+        StatementClosingBalance = r.StatementClosingBalance, OpeningBalance = r.OpeningBalance,
+        Status = r.Status, FinalisedAt = r.FinalisedAt, Notes = r.Notes,
+        IsDeleted = r.IsDeleted, DeletedAt = r.DeletedAt, DeletedBy = r.DeletedBy,
+        CreatedAt = r.CreatedAt, UpdatedAt = r.UpdatedAt
+    };
+
+    private static ReconciliationLineBackupDto MapReconciliationLine(ReconciliationLine l) => new()
+    {
+        Id = l.Id, ReconciliationId = l.ReconciliationId, TransactionId = l.TransactionId, CreatedAt = l.CreatedAt
     };
 
     private static AccountBackupDto MapAccount(Account c) => new()
@@ -428,6 +607,12 @@ public class BackupService : IBackupService
         MaxAgeRangeYears = s.MaxAgeRangeYears, MinimumMemberAge = s.MinimumMemberAge,
         Theme = s.Theme, GeneralCommitteeSeatCountTarget = s.GeneralCommitteeSeatCountTarget,
         SchemaVersion = s.SchemaVersion, AuditRetentionYears = s.AuditRetentionYears,
+        FinancialYearStartMonth = s.FinancialYearStartMonth, FinancialYearStartDay = s.FinancialYearStartDay,
+        CurrencyCode = s.CurrencyCode, ClosedThroughDate = s.ClosedThroughDate, InceptionDate = s.InceptionDate,
+        IsTaxApplicable = s.IsTaxApplicable, TaxRate = s.TaxRate,
+        AnnualFeeTaxCode = s.AnnualFeeTaxCode, AttendanceFeeTaxCode = s.AttendanceFeeTaxCode,
+        TaxEntryMode = s.TaxEntryMode, LanguageCode = s.LanguageCode,
+        ShowParticipationGraphs = s.ShowParticipationGraphs,
         IsDeleted = s.IsDeleted, DeletedAt = s.DeletedAt, DeletedBy = s.DeletedBy,
         CreatedAt = s.CreatedAt, UpdatedAt = s.UpdatedAt
     };
@@ -538,7 +723,7 @@ public class BackupService : IBackupService
     {
         Id = d.Id, MemberId = d.MemberId, FeeType = d.FeeType, Amount = d.Amount,
         FeeDate = d.FeeDate, DueDate = d.DueDate, PaidAtCreation = d.PaidAtCreation,
-        RehearsalId = d.RehearsalId, CreatedAt = d.CreatedAt
+        RehearsalId = d.RehearsalId, CreatedAt = d.CreatedAt, TaxCode = d.TaxCode
     };
 
     private static Payment MapPaymentFromDto(PaymentBackupDto d) => new()
@@ -553,7 +738,27 @@ public class BackupService : IBackupService
         Id = d.Id, Date = d.Date, AccountId = d.AccountId,
         DebitAmount = d.DebitAmount, CreditAmount = d.CreditAmount,
         GLAccount = d.GLAccount, MemberId = d.MemberId, PaymentId = d.PaymentId,
-        FeeId = d.FeeId, Description = d.Description, CreatedAt = d.CreatedAt
+        FeeId = d.FeeId, Description = d.Description, CreatedAt = d.CreatedAt,
+        TaxCode = d.TaxCode, JournalEntryId = d.JournalEntryId
+    };
+
+    private static JournalEntry MapJournalEntryFromDto(JournalEntryBackupDto d) => new()
+    {
+        Id = d.Id, Type = d.Type, Date = d.Date, Description = d.Description, CreatedAt = d.CreatedAt
+    };
+
+    private static BankReconciliation MapBankReconciliationFromDto(BankReconciliationBackupDto d) => new()
+    {
+        Id = d.Id, AccountId = d.AccountId, StatementDate = d.StatementDate,
+        StatementClosingBalance = d.StatementClosingBalance, OpeningBalance = d.OpeningBalance,
+        Status = d.Status, FinalisedAt = d.FinalisedAt, Notes = d.Notes,
+        IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy,
+        CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
+    };
+
+    private static ReconciliationLine MapReconciliationLineFromDto(ReconciliationLineBackupDto d) => new()
+    {
+        Id = d.Id, ReconciliationId = d.ReconciliationId, TransactionId = d.TransactionId, CreatedAt = d.CreatedAt
     };
 
     private static Account MapAccountFromDto(AccountBackupDto d) => new()
@@ -573,6 +778,12 @@ public class BackupService : IBackupService
         MaxAgeRangeYears = d.MaxAgeRangeYears, MinimumMemberAge = d.MinimumMemberAge,
         Theme = d.Theme, GeneralCommitteeSeatCountTarget = d.GeneralCommitteeSeatCountTarget,
         SchemaVersion = d.SchemaVersion, AuditRetentionYears = d.AuditRetentionYears,
+        FinancialYearStartMonth = d.FinancialYearStartMonth, FinancialYearStartDay = d.FinancialYearStartDay,
+        CurrencyCode = d.CurrencyCode, ClosedThroughDate = d.ClosedThroughDate, InceptionDate = d.InceptionDate,
+        IsTaxApplicable = d.IsTaxApplicable, TaxRate = d.TaxRate,
+        AnnualFeeTaxCode = d.AnnualFeeTaxCode, AttendanceFeeTaxCode = d.AttendanceFeeTaxCode,
+        TaxEntryMode = d.TaxEntryMode, LanguageCode = d.LanguageCode,
+        ShowParticipationGraphs = d.ShowParticipationGraphs,
         IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy,
         CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
     };

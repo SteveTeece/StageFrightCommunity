@@ -17,8 +17,10 @@ user-facing string lives and how the pieces fit.
   **No code changes, no list to edit.** The app discovers the new set at runtime and offers it
   in Settings → General and on the first-run language screen (`/language-select`), listed by the
   language's own name.
-* Anything you don't translate falls back, key by key, to the Australian English value — never a
-  blank, never a raw key.
+* A key you have not translated *yet* falls back, key by key, to the Australian English value —
+  never a blank, never a raw key — but a language the app **ships** must not rely on that: every
+  shipped `<culture>.resx` is complete, and a new key is translated everywhere in the same change
+  (§3.2, build-enforced — §8).
 
 ---
 
@@ -79,13 +81,16 @@ That is the whole process. There is no supported-languages list, no registration
 screen or business-logic code to touch (**SC-003**). A maintainer's only involvement is code
 review of the `.resx` files in the pull request.
 
-### 3.2 Partial languages are fine
+### 3.2 A shipped language set must be complete
 
-A `<culture>.resx` set does **not** have to be complete to ship. Any key you leave out (or leave
-as the English value) resolves — for that one key — to the Australian English baseline, and the
-fallback is written to the log as a `Warning` (`Missing localization key …`) so gaps are easy to
-find and fill later (**FR-008 / FR-009 / SC-004**). A partial set still counts as "the app ships
-this language" for the purpose of matching the operating-system language on first run.
+Every `<culture>.resx` set the app ships **must** carry a real translation for **every** neutral
+key. Every new or reworded neutral key is translated into all shipped culture sets **in the same
+change** — never neutral-only, never left as the English value (see `CLAUDE.md` → Localization).
+The key-by-key fallback to the Australian English baseline, and its `Warning`
+(`Missing localization key …`) in the log, exist to catch a *regression* — a key that slipped
+past review — not as licence to ship a language with gaps (**FR-008 / FR-009 / SC-004**). A set
+still counts as "the app ships this language" for operating-system-language matching on first run
+even if a regression has briefly opened a gap, but that gap is a bug to close, not a normal state.
 
 ### 3.3 What a *complete* language means — checklist
 
@@ -200,7 +205,15 @@ guard (`Us2LocalizationGuardTests`) explicitly exempts them and nothing else.
 * a money amount is formatted with `"C"` / `{0:C}` / `FormatString="{0:C}"` — **no culture
   currency symbol**; use `MoneyFormatter`;
 * a deliberately-omitted `qps-ploc` key does not fall back to `en-AU` with a logged `Warning` —
-  **missing-key logging**.
+  **missing-key logging**;
+* a shipped `<culture>.resx` (every satellite but `qps-ploc`) is missing — or leaves blank — a key
+  its neutral file defines — **translation completeness**
+  (`Us2LocalizationGuardTests.Should_TranslateEveryNeutralKey_When_ShippedCultureResxScanned`,
+  FR-025 / SC-010).
+
+Translation completeness is now build-enforced (bullet above). Reviewers still check the softer
+half the test cannot: that a translated `<value>` is a real translation, not the English string
+copied across.
 
 ---
 

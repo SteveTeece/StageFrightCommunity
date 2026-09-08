@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
@@ -39,7 +40,7 @@ public class BackupImportTests_Integration : IDisposable
             await svc.ImportAsync(exportPath, TestContext.Current.CancellationToken);
 
             // At least one checkpoint file should exist in the same directory
-            var checkpoints = Directory.GetFiles(dir, "StageFright-Checkpoint-*.sfbak");
+            var checkpoints = Directory.GetFiles(dir, "StageFright-Recovery-*.sfbak");
             Assert.NotEmpty(checkpoints);
         }
         finally
@@ -269,6 +270,91 @@ public class BackupImportTests_Integration : IDisposable
         }
     }
 
+    // --- .sfbak drift fix (spec 030): finance record types across a fresh restore ---
+
+    [Fact]
+    public async Task ExportThenImport_RestoresFinanceEntities_IncludingArchivedDraftReconciliation_Integration()
+    {
+        var cashAccountId = new Guid("00000000-0000-0000-0000-000000000001");
+        var now = DateTime.UtcNow;
+
+        using var sourceFactory = new DbContextFactory();
+        using var sourceDb = sourceFactory.CreateContext();
+
+        var je = new JournalEntry
+        {
+            Id = Guid.NewGuid(), Type = JournalEntryType.OpeningBalance, Date = now.Date,
+            Description = "Opening", CreatedAt = now
+        };
+        var txFinal = new Transaction
+        {
+            Id = Guid.NewGuid(), Date = now.Date, AccountId = cashAccountId, DebitAmount = 100m, CreditAmount = 0m,
+            GLAccount = "1100", JournalEntryId = je.Id, TaxCode = TaxCode.Excluded, Description = "cleared", CreatedAt = now
+        };
+        var txDraft = new Transaction
+        {
+            Id = Guid.NewGuid(), Date = now.Date, AccountId = cashAccountId, DebitAmount = 0m, CreditAmount = 25m,
+            GLAccount = "1100", Description = "uncleared", CreatedAt = now
+        };
+        var finalisedRecon = new BankReconciliation
+        {
+            Id = Guid.NewGuid(), AccountId = cashAccountId, StatementDate = now.Date, StatementClosingBalance = 100m,
+            OpeningBalance = 0m, Status = ReconciliationStatus.Finalised, FinalisedAt = now, CreatedAt = now, UpdatedAt = now
+        };
+        var archivedDraftRecon = new BankReconciliation
+        {
+            Id = Guid.NewGuid(), AccountId = cashAccountId, StatementDate = now.Date, StatementClosingBalance = 75m,
+            OpeningBalance = 0m, Status = ReconciliationStatus.Draft, CreatedAt = now, UpdatedAt = now,
+            IsDeleted = true, DeletedAt = now, DeletedBy = "system"
+        };
+        var finalisedLine = new ReconciliationLine
+        {
+            Id = Guid.NewGuid(), ReconciliationId = finalisedRecon.Id, TransactionId = txFinal.Id, CreatedAt = now
+        };
+        var archivedLine = new ReconciliationLine
+        {
+            Id = Guid.NewGuid(), ReconciliationId = archivedDraftRecon.Id, TransactionId = txDraft.Id, CreatedAt = now
+        };
+        sourceDb.JournalEntries.Add(je);
+        sourceDb.Transactions.AddRange(txFinal, txDraft);
+        sourceDb.BankReconciliations.AddRange(finalisedRecon, archivedDraftRecon);
+        sourceDb.ReconciliationLines.AddRange(finalisedLine, archivedLine);
+        await sourceDb.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var sourceSvc = BuildBackupService(sourceDb);
+        var backupPath = TempFile();
+
+        try
+        {
+            await sourceSvc.ExportAsync(backupPath, TestContext.Current.CancellationToken);
+
+            using var targetFactory = new DbContextFactory();
+            using var targetDb = targetFactory.CreateContext();
+            await BuildBackupService(targetDb).ImportAsync(backupPath, TestContext.Current.CancellationToken);
+            targetDb.ChangeTracker.Clear();
+
+            Assert.True(await targetDb.JournalEntries.AnyAsync(j => j.Id == je.Id, TestContext.Current.CancellationToken));
+
+            var restoredTx = await targetDb.Transactions.SingleAsync(t => t.Id == txFinal.Id, TestContext.Current.CancellationToken);
+            Assert.Equal(je.Id, restoredTx.JournalEntryId);
+            Assert.Equal(TaxCode.Excluded, restoredTx.TaxCode);
+
+            var recons = await targetDb.BankReconciliations.IgnoreQueryFilters()
+                .ToListAsync(TestContext.Current.CancellationToken);
+            Assert.Contains(recons, r => r.Id == finalisedRecon.Id && r.Status == ReconciliationStatus.Finalised && !r.IsDeleted);
+            Assert.Contains(recons, r => r.Id == archivedDraftRecon.Id && r.IsDeleted);
+
+            var lines = await targetDb.ReconciliationLines.IgnoreQueryFilters()
+                .ToListAsync(TestContext.Current.CancellationToken);
+            Assert.Contains(lines, l => l.Id == finalisedLine.Id);
+            Assert.Contains(lines, l => l.Id == archivedLine.Id);
+        }
+        finally
+        {
+            CleanupTempFiles(backupPath);
+        }
+    }
+
     [Fact]
     public async Task Export_IncludesSoftDeletedMember_IntegrationPath()
     {
@@ -314,7 +400,26 @@ public class BackupImportTests_Integration : IDisposable
         var uow = new UnitOfWork(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
-        return new BackupService(backupRepo, uow, auditService, NullLogger<BackupService>.Instance, RealLocalizer.Instance);
+        return new BackupService(backupRepo, uow, auditService, NullLogger<BackupService>.Instance, RealLocalizer.Instance,
+            new TempRecoveryCopyStore(), new TempBackupDestinationPicker());
+    }
+
+    /// <summary>Writes the pre-restore recovery copy into the system temp directory for the test.</summary>
+    private sealed class TempRecoveryCopyStore : IRecoveryCopyStore
+    {
+        public string GetRecoveryDirectory() => Path.GetTempPath();
+    }
+
+    /// <summary>Stands in for the native Save dialog — writes the backup straight to the temp directory.</summary>
+    private sealed class TempBackupDestinationPicker : IBackupDestinationPicker
+    {
+        public async Task<BackupDestinationResult> SaveAsync(string suggestedFileName, Stream content, CancellationToken ct = default)
+        {
+            var path = Path.Combine(Path.GetTempPath(), $"sf_dest_{Guid.NewGuid()}.sfbak");
+            await using var dest = File.Create(path);
+            await content.CopyToAsync(dest, ct);
+            return BackupDestinationResult.Saved(path);
+        }
     }
 
     private static string TempFile() =>
@@ -324,7 +429,7 @@ public class BackupImportTests_Integration : IDisposable
     {
         if (File.Exists(primaryPath)) File.Delete(primaryPath);
         var dir = Path.GetDirectoryName(primaryPath) ?? Path.GetTempPath();
-        foreach (var f in Directory.GetFiles(dir, "StageFright-Checkpoint-*.sfbak"))
+        foreach (var f in Directory.GetFiles(dir, "StageFright-Recovery-*.sfbak"))
             try { File.Delete(f); } catch { /* best-effort */ }
     }
 

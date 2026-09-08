@@ -213,6 +213,9 @@
   <data name="Settings_Backup_CreatingText" xml:space="preserve"><value>Creating backup…</value><comment>Backup button text while a backup is in progress.</comment></data>
   <data name="Settings_Backup_Created" xml:space="preserve"><value>Backup created: {Path}</value><comment>Shown after a backup. {Path} = file path.</comment></data>
   <data name="Settings_Backup_Error" xml:space="preserve"><value>Backup failed: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Backup_UnencryptedNotice" xml:space="preserve"><value>This backup file is not encrypted. It holds members' personal details and the full financial history—store and share it with care.</value><comment>Notice shown next to the Create Backup button (FR-020).</comment></data>
+  <data name="Settings_Backup_Verified" xml:space="preserve"><value>Backup verified—read back from disk with every record count matching.</value><comment>Shown after a backup passes its post-write self-check (FR-024).</comment></data>
+  <data name="Settings_Backup_VerifyFailed" xml:space="preserve"><value>Backup failed—do not rely on this file.</value><comment>Shown when a backup fails its post-write self-check; the discrepancy list follows (FR-023).</comment></data>
   <data name="Settings_Restore_Heading" xml:space="preserve"><value>Restore</value><comment>Backup &amp; Restore tab — restore section heading.</comment></data>
   <data name="Settings_Restore_Description" xml:space="preserve"><value>Restores data from a .sfbak file. A checkpoint of the current database is created automatically before any data is changed.</value><comment>Restore section description.</comment></data>
   <data name="Settings_Restore_SelectFileLabel" xml:space="preserve"><value>Select backup file</value><comment>Label for the restore file input.</comment></data>

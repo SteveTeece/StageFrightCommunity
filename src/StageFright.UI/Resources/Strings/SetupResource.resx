@@ -17,15 +17,6 @@
     <resheader name="version">2.0</resheader>
     <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
     <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
 
     There are any number of "resheader" rows that contain simple
     name/value pairs.
@@ -211,4 +202,20 @@
   <data name="Setup_Review_AuditRetentionYears_One" xml:space="preserve"><value>{Count} year</value><comment>Review tab audit-retention value, singular.</comment></data>
   <data name="Setup_Review_AuditRetentionYears_Other" xml:space="preserve"><value>{Count} years</value><comment>Review tab audit-retention value, plural.</comment></data>
   <data name="Setup_Review_BankCashSuffix" xml:space="preserve"><value> · Bank/Cash</value><comment>Suffix appended to a bank/cash account's type in the review list.</comment></data>
+  <data name="Setup_FirstRunRestore_PageTitle" xml:space="preserve"><value>Restore From Backup — StageFright Community</value><comment>Browser tab title — first-run restore-from-backup screen (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_Heading" xml:space="preserve"><value>Restore from a backup</value><comment>First-run restore screen heading (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_Subheading" xml:space="preserve"><value>Load an existing backup file instead of setting the organisation up by hand.</value><comment>Sub-heading under the first-run restore screen title (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_CheckboxLabel" xml:space="preserve"><value>Restore from a backup file instead of completing setup manually</value><comment>First-run restore screen — the FR-001 checkbox label (spec 030, US1). Verbatim Constraint: a plain checkbox.</comment></data>
+  <data name="Setup_FirstRunRestore_FilePickLabel" xml:space="preserve"><value>Choose a backup file (.sfbak)</value><comment>First-run restore screen — file-picker label, shown once the checkbox is ticked (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_SummaryHeading" xml:space="preserve"><value>Backup contents</value><comment>First-run restore screen — heading over the chosen file's contents summary (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_GeneratedTerm" xml:space="preserve"><value>Created</value><comment>First-run restore summary — term for the date the backup was taken (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_VersionTerm" xml:space="preserve"><value>Created by version</value><comment>First-run restore summary — term for the originating application version (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_ConfirmButton" xml:space="preserve"><value>Restore this backup</value><comment>First-run restore screen — confirm button, shown after the summary (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_CancelButton" xml:space="preserve"><value>Choose a different file</value><comment>First-run restore screen — cancel button, clears the chosen file and summary (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_ContinueButton" xml:space="preserve"><value>Set up manually instead</value><comment>First-run restore screen — continue-to-wizard button, available whenever no backup is loaded (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_ReadFileError" xml:space="preserve"><value>The backup file could not be read: {Detail}</value><comment>First-run restore screen — shown when the chosen file cannot be read or restored. {Detail} = error detail.</comment></data>
+  <data name="Setup_FirstRunRestore_ProgressMessage" xml:space="preserve"><value>Restoring your data — please don't close the app.</value><comment>First-run restore screen — blocking-overlay message while the restore runs (spec 030, US1).</comment></data>
+  <data name="Setup_RestartRequired_PageTitle" xml:space="preserve"><value>Restart Required — StageFright Community</value><comment>Browser tab title — terminal post-restore restart screen (spec 030, US1 / FR-007).</comment></data>
+  <data name="Setup_RestartRequired_Heading" xml:space="preserve"><value>Almost there — please restart</value><comment>Restart-required screen heading (spec 030, US1 / FR-007).</comment></data>
+  <data name="Setup_RestartRequired_Instruction" xml:space="preserve"><value>Your backup has been restored. Close the application and open it again to start using the restored data.</value><comment>Restart-required screen — the single close-and-reopen instruction; the screen has no continue control (spec 030, FR-007).</comment></data>
 </root>

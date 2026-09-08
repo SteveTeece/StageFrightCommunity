@@ -49,10 +49,18 @@ The Blazor shell MUST check for a recorded startup error before it checks whethe
 
 ### First-run detection redirects to setup before any operational page loads
 
-The app shell MUST ask a setup-completion service whether initial configuration has happened, and if not, redirect to the setup wizard before the dashboard or any other page is reachable.
+While first-run setup is incomplete and no startup error is recorded, the app shell MUST route through the pre-wizard screens before any operational page loads: to the display-language screen when no language preference has been recorded, otherwise to the restore-from-backup screen. The setup wizard MUST NOT be the direct first-run target — it is reachable only via the restore-from-backup screen's *Continue* action. A completed setup with no startup error still leaves the requested route untouched.
 
-#### Scenario: app is launched for the first time
-- **WHEN** no startup error is recorded and setup has not been completed
+#### Scenario: app is launched for the first time with no recorded language preference
+- **WHEN** no startup error is recorded, setup has not been completed, and no display-language preference has been recorded
+- **THEN** the shell navigates to `/language-select`
+
+#### Scenario: app is launched for the first time with a language preference already recorded
+- **WHEN** no startup error is recorded, setup has not been completed, and a display-language preference has been recorded
+- **THEN** the shell navigates to `/first-run-restore`, not to `/setup`
+
+#### Scenario: user declines the restore and continues to setup
+- **WHEN** the user chooses *Continue* on `/first-run-restore` without restoring
 - **THEN** the shell navigates to `/setup`
 
 #### Scenario: app has already been configured
@@ -181,3 +189,16 @@ The debug data seeder SHALL suppress audit trail logging for its entire run, so 
 - **WHEN** the debug data seeder runs (via the opt-in setup-wizard checkbox)
 - **THEN** no audit trail entry is created for any member, rehearsal, attendance, fee, payment, event, AGM, expense, income, deposit, or account record it creates
 - **AND** audit trail logging for actions taken after seeding finishes is unaffected
+
+### A completed restore routes to a chrome-free restart screen with no navigation surface
+
+After a restore completes successfully — from the first-run flow or from Settings → Backup & Restore — the shell MUST navigate to `/restart-required`, and that screen MUST render under a layout that has no sidebar, no navigation links, and no theme toggle, so a user sitting on pre-restore in-memory state cannot reach the dashboard or any operational page without restarting the application.
+
+#### Scenario: a first-run or Settings restore finishes successfully
+- **WHEN** `ImportAsync` completes without error
+- **THEN** the shell navigates to `/restart-required`
+- **AND** the screen offers only an instruction to close and reopen the application — no continue, dashboard, retry, or navigation control
+
+#### Scenario: the restart screen is rendered
+- **WHEN** `/restart-required` is displayed
+- **THEN** it renders under the chrome-free `BlankLayout` (no `shell-sidebar`, no menu-item links, no theme switch), not `ShellLayout`

@@ -130,7 +130,7 @@ dotnet test --filter "FullyQualifiedName~MemberServiceTests"
 dotnet run --project src/StageFright.App/
 ```
 
-The database auto-migrates on first run, and first-run detection redirects the UI to the `/setup` wizard before the dashboard loads.
+The database auto-migrates on first run. First-run detection then redirects the UI — before the dashboard loads — to `/language-select` (until a display-language preference is recorded), then to `/first-run-restore`, the pre-wizard screen that lets an incoming treasurer restore from a `.sfbak` backup instead of configuring the organisation by hand. Choosing *Continue* there goes on to the `/setup` wizard; confirming a restore instead loads the backup and routes to `/restart-required` — the app must be closed and reopened to run on the restored data.
 
 ## Database Setup
 
@@ -139,6 +139,7 @@ There is no `appsettings.json` connection-string configuration — the database 
 - **Database file**: `FileSystem.AppDataDirectory/stagefright.db`, auto-created on first run — the MAUI app-data directory, not the repo.
 - **Logs**: rolling daily files (`stagefright-YYYYMMDD.log`, 7-day retention) under `FileSystem.AppDataDirectory/logs/`.
 - **Plugins**: loaded from `FileSystem.AppDataDirectory/Plugins/`, auto-created if missing.
+- **Pre-restore recovery copies**: `FileSystem.AppDataDirectory/recovery/` (`MauiRecoveryCopyStore`), auto-created. `BackupService.ImportAsync` writes a `StageFright-Recovery-<yyyyMMdd-HHmmss>.sfbak` snapshot of the current database here before **every** restore — first-run included, where the copy is of the freshly-seeded default database — so an unwanted restore can be undone.
 
 ### Apply / Create / Remove Migrations
 
@@ -160,8 +161,8 @@ The application also applies pending migrations automatically on startup — see
 ### Reset the Database
 
 1. Close the application.
-2. Delete `stagefright.db` from the MAUI app-data directory (`FileSystem.AppDataDirectory`). On Windows (unpackaged head) that is `%LOCALAPPDATA%\StageFright Community\com.stagefright.community\Data\` — the repo-root `delete-database.cmd` script removes it (and its `-wal`/`-shm` sidecars) for you. The script also deletes the sibling `Settings\preferences.dat` (the MAUI `Preferences` store), which holds the recorded display-language choice outside the database — without that, `App.razor.cs` skips the spec 029 `/language-select` screen straight to `/setup` on the next launch.
-3. Run the app again (or `dotnet ef database update`) — the schema, the first-run `/language-select` screen and the `/setup` wizard all come back clean.
+2. Delete `stagefright.db` from the MAUI app-data directory (`FileSystem.AppDataDirectory`). On Windows (unpackaged head) that is `%LOCALAPPDATA%\StageFright Community\com.stagefright.community\Data\` — the repo-root `delete-database.cmd` script removes it (and its `-wal`/`-shm` sidecars) for you. The script also deletes the sibling `Settings\preferences.dat` (the MAUI `Preferences` store), which holds the recorded display-language choice outside the database — without that, `App.razor.cs` skips the spec 029 `/language-select` screen straight to `/first-run-restore` on the next launch.
+3. Run the app again (or `dotnet ef database update`) — the schema, the first-run `/language-select` screen, the `/first-run-restore` screen and the `/setup` wizard all come back clean.
 
 ## Central Package Management
 
