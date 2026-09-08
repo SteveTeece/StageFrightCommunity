@@ -354,10 +354,18 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-09-08T09:25:33.969Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T09:51:02.122Z"
     }
   ],
   "telemetryInstanceId": "0fc9ad3e-9084-48e2-bb58-11acb578e9c6",
-  "last_action": "Phase 4 US2 complete - T021-T027 + T040 done; full rebuild 0 warnings, 2155 tests pass; Phases 5 6 7 remain",
+  "last_action": "Phase 5 (US3) complete — T028 CrossPlatformRoundTripTests green; full rebuild 0 warnings, 2156 tests pass; Phases 6 (T035) and 7 (T036-T039, T041) remain",
   "livingSpecs": {
     "loaded": [
       "app-host"
@@ -502,6 +510,9 @@
       "title": "Backup file is OS-independent: created on any supported platform restores identically on any other",
       "tasks": [
         "T028"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/CrossPlatformRoundTripTests.cs::CreateThenRestore_UnderASwappedLocaleAndTimeZone_ReproducesTheSourceExactly_Integration"
       ]
     },
     "FR-014": {
@@ -509,6 +520,9 @@
       "tasks": [
         "T021",
         "T028"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/CrossPlatformRoundTripTests.cs::CreateThenRestore_UnderASwappedLocaleAndTimeZone_ReproducesTheSourceExactly_Integration"
       ]
     },
     "FR-015": {
@@ -526,6 +540,9 @@
         "T032",
         "T034",
         "T035"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/CrossPlatformRoundTripTests.cs::CreateThenRestore_UnderASwappedLocaleAndTimeZone_ReproducesTheSourceExactly_Integration"
       ]
     },
     "FR-017": {
@@ -701,6 +718,21 @@
       "decision": "T040 SettingsBackupJourneyTests is a service+DB integration test (real BackupService + real SQLite + fake IBackupDestinationPicker), not a bUnit component render",
       "why": "Integration.Tests has no bUnit dependency and its journey tests are service-level by convention; the .backup-verify-result markup and /restart-required navigation are covered by the bUnit T024 BackupRestoreTabTests",
       "rejected": "Adding bUnit to the previously bUnit-free Integration.Tests project for one test"
+    },
+    {
+      "decision": "T028 proves the time-zone dimension structurally (identical Ticks + Kind, same ToUniversalTime instant, matching TimeZoneInfo.ConvertTime into a far-from-UTC FarZone) rather than by mutating the ambient zone",
+      "why": "TimeZoneInfo.Local has no public setter and EF Core SQLite reads every DateTime back as Unspecified anyway; protobuf-net bcl.DateTime (scaled ticks + kind) never consults the ambient zone, so tick-and-kind identity after a round trip through a foreign culture is the substantive proof",
+      "rejected": "Reflection hacks to swap TimeZoneInfo._cachedData._localTimeZone (brittle, host-dependent, would flake on the CI Windows box)"
+    },
+    {
+      "decision": "Field-for-field fidelity is asserted by comparing per-record-type JSON snapshots of the exact *BackupDto-carried fields (ordered by Id, with explicit Kind siblings on primary timestamps), read straight from the source and restored databases",
+      "why": "one readable assertion per record type pinpoints a wire-form regression to the offending type; STJ round-trip DateTime format also encodes Kind, and JSON is culture-invariant so the swapped de-DE restore snapshot stays comparable",
+      "rejected": "hand-comparing every scalar per entity (hundreds of lines) or re-exporting the target and diffing envelopes (misses import-only DTO->entity drops)"
+    },
+    {
+      "decision": "CrossPlatformRoundTripTests joins the [Collection(\"MoneyFormatterState\")] non-parallel collection and restores CultureInfo in DisposeAsync",
+      "why": "it is the established Integration.Tests serialization gate for process-global format state (V28_CurrencyConfigurationTests / V28_LocaleSafeMoneyEntryTests use it purely for CultureInfo swaps); DisableParallelization=true stops the mid-test culture swap racing any parallel test",
+      "rejected": "the PluginTextNonEnglishCultureTests dedicated-thread pattern — awkward for a large async EF workload"
     }
   ],
   "step_summaries": {
@@ -712,7 +744,7 @@
       "summary": "39 tasks across 7 phases (Setup, Foundational, US1 first-run restore [P1/MVP], US2 verified backup + native Save dialog [P2], US3 cross-platform round trip [P2], US4 format completeness [P3 — T029-T034 already delivered in 7d2cc93], Polish); waves with explicit join points; requirement->task map covers all 24 FRs"
     },
     "implement": {
-      "summary": "US1 first-run restore MVP and US2 verified backup (native Save dialog + FR-010 default filename, post-write read-back count verification, AuditAction.Export, unencrypted notice, Settings restore adopts /restart-required) both shipped; sfbak schema 1.2.0 unchanged"
+      "summary": "Phase 5 (US3): CrossPlatformRoundTripTests added — a ~4k-row multi-year dataset survives ExportAsync -> ImportAsync into a fresh SQLite DB under a swapped de-DE locale, field-for-field with per-type counts, DateTime instants and archived flags intact; no production code needed (round trip already faithful)"
     }
   },
   "currentTask": "T028",
@@ -856,6 +888,13 @@
       "files": [
         "tests/StageFright.Integration.Tests/Scenarios/SettingsBackupJourneyTests.cs"
       ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "CrossPlatformRoundTripTests (integration): representative multi-year dataset (200 members incl. archived, ~700 fees, ~500 payments, 2000 GL transactions, 30 journal entries, finalised + archived-draft bank reconciliation with lines, non-default currency/language/FY-start/tax config + TaxEntryMode) ExportAsync -> ImportAsync into a fresh SQLite connection with CultureInfo.CurrentCulture/CurrentUICulture swapped to de-DE for the restore half; asserts field-for-field JSON-snapshot equality per record type incl. per-type counts + DateTime Kind, audit-trail parity plus the one restore Import entry (FR-017), and DateTime instant/day preservation via ticks+kind+ToUniversalTime+TimeZoneInfo cross-check (FarZone). No timing assertion. No production code needed - round trip already faithful.",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/CrossPlatformRoundTripTests.cs"
+      ]
     }
   },
   "verified": [
@@ -882,6 +921,18 @@
       "command": "dotnet test StageFrightCommunity.slnx",
       "result": "2155 passed, 0 failed, 0 skipped (Reports 236, Core 812, Data 159, Integration 266, Localization 29, UI 653)",
       "warnings": []
+    },
+    {
+      "what": "Isolated T028 CrossPlatformRoundTripTests run",
+      "command": "dotnet test tests/StageFright.Integration.Tests --filter FullyQualifiedName~CrossPlatformRoundTripTests",
+      "result": "1 passed (7s) — .sfbak export->import under a de-DE culture swap reproduces the source dataset field-for-field; no production defect found",
+      "warnings": []
+    },
+    {
+      "what": "Full test suite (no --no-build)",
+      "command": "dotnet test StageFrightCommunity.slnx",
+      "result": "2156 passed, 0 failed, 0 skipped (Core 812, Reports 236, Localization 29, Data 159, UI 653, Integration 267 — +1 for T028)",
+      "warnings": []
     }
   ],
   "concerns": [
@@ -895,6 +946,14 @@
     },
     {
       "note": "Settings_Restore_Success neutral key + its 8 satellite entries are now unreferenced (Settings restore navigates to /restart-required instead of an inline message). Left in place - no unused-neutral-key guard - a future cleanup could drop all 9.",
+      "step": "implement"
+    },
+    {
+      "note": "T028 seeds ~4k rows and runs ~7s standalone; the per-row AnyAsync in BackupRepository.UpsertSnapshotAsync is the main cost. Well within Integration.Tests norms and the spec sets no timing target, but it is the heaviest single test in the suite.",
+      "step": "implement"
+    },
+    {
+      "note": "EF Core SQLite has no global DateTime value converter, so every DateTime column round-trips as DateTimeKind.Unspecified on both sides. T028 still proves tick + kind identity through the .sfbak wire form under a foreign culture, but a Utc-vs-Unspecified distinction is not preserved by the storage layer to begin with — out of scope for this feature.",
       "step": "implement"
     }
   ]
