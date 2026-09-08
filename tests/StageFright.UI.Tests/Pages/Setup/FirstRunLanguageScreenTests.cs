@@ -95,8 +95,9 @@ public class FirstRunLanguageScreenTests : LocalizedTestContext
     }
 
     [Fact]
-    public void Confirm_Navigates_ToSetup_WhenSampleDataNotOffered()
+    public void Confirm_Navigates_ToFirstRunRestore_WhenSampleDataNotOffered()
     {
+        // spec 030 FR-001: Confirm now lands on the pre-wizard restore choice, not /setup directly.
         using var _ = new CultureRestorer();
         var cut = RenderScreen();
         cut.Find("#languageSelect").Change("fr-FR");
@@ -104,7 +105,7 @@ public class FirstRunLanguageScreenTests : LocalizedTestContext
         cut.Find("#btn-confirm-language").Click();
 
         var nav = Services.GetRequiredService<NavigationManager>();
-        Assert.EndsWith("/setup", nav.Uri);
+        Assert.EndsWith("/first-run-restore", nav.Uri);
     }
 
     [Fact]

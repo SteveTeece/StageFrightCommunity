@@ -1,0 +1,79 @@
+@page "/first-run-restore"
+@inherits ComponentBase
+
+<PageTitle>@L["Setup_FirstRunRestore_PageTitle"]</PageTitle>
+
+<div class="mt-3">
+    <h1 class="mb-1">@L["Setup_FirstRunRestore_Heading"]</h1>
+    <p class="text-muted mb-3 small">@L["Setup_FirstRunRestore_Subheading"]</p>
+
+    @if (_errorMessage is not null)
+    {
+        <div class="first-run-restore-error alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+    }
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="restore-from-backup"
+               checked="@_restoreFromBackup" @onchange="HandleRestoreToggled" disabled="@_restoring" />
+        <label class="form-check-label small" for="restore-from-backup">@L["Setup_FirstRunRestore_CheckboxLabel"]</label>
+    </div>
+
+    @if (_restoreFromBackup)
+    {
+        <div class="mb-3">
+            <label for="restore-file" class="form-label small">@L["Setup_FirstRunRestore_FilePickLabel"]</label>
+            <InputFile id="restore-file" class="form-control form-control-sm" OnChange="OnFileSelectedAsync"
+                       accept=".sfbak" disabled="@_restoring" />
+        </div>
+    }
+
+    @if (_manifest is not null)
+    {
+        <div class="first-run-restore-summary card mb-3">
+            <div class="card-body py-2">
+                <h6 class="card-title mb-2">@L["Setup_FirstRunRestore_SummaryHeading"]</h6>
+                <dl class="row mb-0 small">
+                    <dt class="col-sm-5">@L["Setup_FirstRunRestore_GeneratedTerm"]</dt>
+                    <dd class="col-sm-7">@_manifest.GeneratedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</dd>
+                    <dt class="col-sm-5">@L["Setup_FirstRunRestore_VersionTerm"]</dt>
+                    <dd class="col-sm-7"><code>@_manifest.ApplicationVersion</code></dd>
+                    @foreach (var kv in _manifest.EntityCounts.Where(kv => kv.Value > 0))
+                    {
+                        <dt class="col-sm-5">@kv.Key</dt>
+                        <dd class="col-sm-7">@kv.Value</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="button" id="confirm-restore" class="btn btn-primary btn-sm"
+                    disabled="@_restoring" @onclick="HandleConfirmRestoreAsync">
+                @L["Setup_FirstRunRestore_ConfirmButton"]
+            </button>
+            <button type="button" id="cancel-restore" class="btn btn-secondary btn-sm"
+                    disabled="@_restoring" @onclick="HandleCancelRestore">
+                @L["Setup_FirstRunRestore_CancelButton"]
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex gap-2">
+            <button type="button" id="continue-setup" class="btn btn-primary btn-sm"
+                    disabled="@_restoring" @onclick="HandleContinueSetup">
+                @L["Setup_FirstRunRestore_ContinueButton"]
+            </button>
+        </div>
+    }
+</div>
+
+@if (_restoring)
+{
+    <div class="first-run-restore-progress setup-seeding-overlay" role="status" aria-live="polite" aria-atomic="true">
+        <div class="setup-seeding-overlay-card text-center">
+            <div class="spinner-border text-primary mb-2" role="status" aria-hidden="true"></div>
+            <p class="mb-0">@L["Setup_FirstRunRestore_ProgressMessage"]</p>
+        </div>
+    </div>
+}

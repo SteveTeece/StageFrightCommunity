@@ -219,10 +219,81 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-09-07T14:25:34.023Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-08T08:21:16.261Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T08:45:31.893Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T08:45:35.185Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T08:45:40.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T08:45:47.195Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T08:45:59.930Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T08:46:06.320Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T08:46:12.749Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T08:46:18.862Z"
     }
   ],
   "telemetryInstanceId": "0fc9ad3e-9084-48e2-bb58-11acb578e9c6",
-  "last_action": "living specs evaluated - skipped (not configured)",
+  "last_action": "Phase 3 (US1 / MVP) complete — T013-T020 done, full rebuild 0 warnings, 2103 tests pass; Phases 4-7 (US2/US3/US4/Polish) remain",
   "livingSpecs": {
     "loaded": [
       "app-host"
@@ -236,6 +307,11 @@
         "T018",
         "T019",
         "T020"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunRestoreScreenTests.cs",
+        "tests/StageFright.UI.Tests/AppRoutingTests.cs::NavigatesToFirstRunRestore_When_SetupIncomplete_AndPreferenceRecorded",
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs::Confirm_Navigates_ToFirstRunRestore_WhenSampleDataNotOffered"
       ]
     },
     "FR-002": {
@@ -243,6 +319,9 @@
       "tasks": [
         "T013",
         "T018"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunRestoreScreenTests.cs::FileInput_IsShown_OnlyWhileTheCheckboxIsChecked"
       ]
     },
     "FR-003": {
@@ -251,6 +330,9 @@
         "T013",
         "T018",
         "T025"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunRestoreScreenTests.cs::ValidFile_RendersTheContentsSummary"
       ]
     },
     "FR-004": {
@@ -267,6 +349,9 @@
       "tasks": [
         "T015",
         "T018"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/FirstRunRestoreJourneyTests.cs::FailedFirstRunRestore_LeavesTheFreshDatabaseExactlyAsSeeded_Integration"
       ]
     },
     "FR-006": {
@@ -275,6 +360,10 @@
         "T014",
         "T015",
         "T019"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/FirstRunRestoreJourneyTests.cs::ConfirmedFirstRunRestore_MakesSetupComplete_AndRestoredLanguageWins_Integration",
+        "tests/StageFright.UI.Tests/AppRoutingTests.cs::DoesNotRedirect_When_SetupAlreadyComplete"
       ]
     },
     "FR-007": {
@@ -285,6 +374,10 @@
         "T018",
         "T024",
         "T026"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/RestartRequiredScreenTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunRestoreScreenTests.cs::ConfirmRestore_OnSuccess_RoutesToRestartRequired"
       ]
     },
     "FR-008": {
@@ -292,6 +385,10 @@
       "tasks": [
         "T013",
         "T018"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunRestoreScreenTests.cs::CancelRestore_ClearsTheSelection_AndChangesNothing",
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunRestoreScreenTests.cs::InvalidFile_ShowsAnError_LeavesTheDatabaseUntouched_AndKeepsContinueAvailable"
       ]
     },
     "FR-009": {
@@ -469,6 +566,21 @@
       "decision": "Version check becomes a full semver comparison against a compiled BackupSchema.CurrentSchemaVersion constant; reject any file newer on any component (incl. newer same-major build), accept equal-or-older",
       "why": "Clarification widened rejection to newer same-major builds; a compiled constant keeps the check deterministic and host-independent (FR-013/14) and unit-testable without a MAUI runtime",
       "rejected": "Comparing marketing ApplicationVersion (a hardcoded display placeholder) or keeping the major-only check (fails clarified FR-019)"
+    },
+    {
+      "decision": "FirstRunRestoreScreen renders #continue-setup whenever no manifest is loaded (checkbox off, or on with no/errored file) and swaps it for #confirm-restore/#cancel-restore only once a valid manifest is read",
+      "why": "keeps the manual path available after a corrupt/newer-version error (T018 \"still available\") without duplicating the button markup",
+      "rejected": "rendering #continue-setup only in the checkbox-off branch — hides it on the error path"
+    },
+    {
+      "decision": ".first-run-restore-progress is a plain spinner + static message, not a Progress<string> feed",
+      "why": "IBackupService.ImportAsync exposes no progress callback and T018 is scoped to the two screen files (no interface change); it mirrors the setup-seeding-overlay structure",
+      "rejected": "adding an IProgress<string> overload to ImportAsync — out of scope, touches the interface and every implementer/test"
+    },
+    {
+      "decision": "T015 asserts the routing signal via SettingsRepository.GetAsync(...) is not null rather than building the full SetupService graph",
+      "why": "that null-check is the exact test ISetupService.IsSetupCompleteAsync and App.razor.cs perform; SetupService has 8 constructor deps",
+      "rejected": "wiring the whole SetupService object graph for one boolean"
     }
   ],
   "step_summaries": {
@@ -478,7 +590,103 @@
     },
     "tasks": {
       "summary": "39 tasks across 7 phases (Setup, Foundational, US1 first-run restore [P1/MVP], US2 verified backup + native Save dialog [P2], US3 cross-platform round trip [P2], US4 format completeness [P3 — T029-T034 already delivered in 7d2cc93], Polish); waves with explicit join points; requirement->task map covers all 24 FRs"
+    },
+    "implement": {
+      "summary": "Phase 3 / US1 (MVP): fresh installs can restore from a .sfbak during first-run via a new /first-run-restore pre-wizard screen (checkbox -> file pick -> contents summary -> confirm -> restore -> terminal chrome-free /restart-required under BlankLayout); cancel/failure falls back to /setup with no data changed; App.razor.cs + FirstRunLanguageScreen route through it; 16 keys fully translated across all 7 shipped cultures"
     }
   },
-  "currentTask": "T013"
+  "currentTask": "T021",
+  "task_summaries": {
+    "T013": {
+      "status": "DONE",
+      "did": "FirstRunRestoreScreenTests (bUnit): plain checkbox unchecked by default, file input gated on it, valid file -> .first-run-restore-summary, #confirm-restore -> /restart-required, #cancel-restore clears selection, #continue-setup -> /setup, corrupt/newer-version file -> .first-run-restore-error with DB untouched",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunRestoreScreenTests.cs"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Extended AppRoutingTests: setup-incomplete + recorded language preference now routes to /first-run-restore (never /setup directly); registered a substitute IBackupService for the new redirect target; language-select and setup-complete cases unchanged",
+      "files": [
+        "tests/StageFright.UI.Tests/AppRoutingTests.cs"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "FirstRunRestoreJourneyTests (integration, real BackupService + SQLite): confirmed first-run restore makes a Settings row exist (IsSetupCompleteAsync/App routing signal -> /dashboard), archived rows survive, restored Settings.LanguageCode outranks the no-database preference; a validation-failed restore leaves the fresh DB byte-identical and setup still incomplete",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/FirstRunRestoreJourneyTests.cs"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "BlankLayout (chrome-free layout: CultureProvider/ThemeProvider cascade, no nav/sidebar/theme-toggle) + RestartRequiredScreen (@page /restart-required, @layout BlankLayout, single close-and-reopen instruction, no continue control) + RestartRequiredScreenTests + app.css .blank-layout/.restart-required block",
+      "files": [
+        "src/StageFright.UI/Layout/BlankLayout.razor",
+        "src/StageFright.UI/Layout/BlankLayout.razor.cs",
+        "src/StageFright.UI/Pages/Setup/RestartRequiredScreen.razor",
+        "src/StageFright.UI/Pages/Setup/RestartRequiredScreen.razor.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/RestartRequiredScreenTests.cs",
+        "src/StageFright.App/wwwroot/app.css"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "Added 16 first-run-restore + restart-screen keys (Setup_FirstRunRestore_*, Setup_RestartRequired_*) to neutral SetupResource.resx and, fully translated, to all seven shipped culture sets (de-DE,en-US,es-ES,fr-FR,it-IT,ja-JP,pl-PL); regenerated SetupResource.qps-ploc.resx via scripts/generate-pseudo-locale.py",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/SetupResource.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.de-DE.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.en-US.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.es-ES.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.fr-FR.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.it-IT.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.ja-JP.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.pl-PL.resx",
+        "src/StageFright.UI/Resources/Strings/SetupResource.qps-ploc.resx"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "FirstRunRestoreScreen.razor/.razor.cs (@page /first-run-restore, ShellLayout): plain #restore-from-backup checkbox, checkbox-gated <InputFile accept=.sfbak> copied to temp then GetManifestAsync, .first-run-restore-summary (counts/GeneratedAt/ApplicationVersion), #confirm-restore runs ImportAsync on Task.Run behind a blocking .first-run-restore-progress overlay -> /restart-required, #cancel-restore, #continue-setup -> /setup, .first-run-restore-error on invalid/corrupt/newer file with DB untouched; all text via IStringLocalizer<SetupResource>",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/FirstRunRestoreScreen.razor",
+        "src/StageFright.UI/Pages/Setup/FirstRunRestoreScreen.razor.cs"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "App.razor.cs OnInitializedAsync: first-run target when a language preference is already recorded is now /first-run-restore instead of /setup (setup is never the direct first-run target); comment updated",
+      "files": [
+        "src/StageFright.UI/App.razor.cs"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "FirstRunLanguageScreen.razor.cs HandleConfirmAsync non-seed branch now navigates to /first-run-restore instead of /setup (debug seed branch -> /dashboard unchanged); class summary reworded; updated the consequent FirstRunLanguageScreenTests assertion",
+      "files": [
+        "src/StageFright.UI/Pages/Setup/FirstRunLanguageScreen.razor.cs",
+        "tests/StageFright.UI.Tests/Pages/Setup/FirstRunLanguageScreenTests.cs"
+      ]
+    }
+  },
+  "verified": [
+    {
+      "what": "Full solution rebuild (warnings judged from a clean rebuild, not incremental)",
+      "command": "dotnet build StageFrightCommunity.slnx -t:Rebuild",
+      "result": "Build succeeded — 0 Warning(s), 0 Error(s)",
+      "warnings": []
+    },
+    {
+      "what": "Full test suite incl. the FR-025 localization completeness guard",
+      "command": "dotnet test StageFrightCommunity.slnx --no-build",
+      "result": "2103 passed, 0 failed, 0 skipped (Reports 236, Localization 29, Core 769, UI 647, Data 159, Integration 263); Us2LocalizationGuardTests.Should_TranslateEveryNeutralKey green — all 16 new keys translated in every shipped culture",
+      "warnings": []
+    }
+  ],
+  "concerns": [
+    {
+      "note": "tasks.md did not list updating FirstRunLanguageScreenTests, but the T020 change (Confirm -> /first-run-restore) invalidated its Confirm_Navigates_ToSetup_WhenSampleDataNotOffered assertion; updated + renamed it as part of T020 to keep the suite green",
+      "step": "implement"
+    }
+  ]
 }

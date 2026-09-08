@@ -30,10 +30,12 @@ public partial class App : ComponentBase
         if (!await SetupService.IsSetupCompleteAsync())
         {
             // First run with no recorded language preference yet (spec 029, FR-001/FR-005):
-            // show /language-select before the wizard. A preference already recorded — e.g. a
-            // prior launch that chose a language but didn't finish setup — skips straight to
-            // /setup, exactly as before this feature.
-            var target = string.IsNullOrWhiteSpace(LanguagePreferenceStore.Get()) ? "/language-select" : "/setup";
+            // show /language-select first. Once a preference is recorded — e.g. a prior launch
+            // that chose a language but didn't finish setup — go to /first-run-restore (spec 030,
+            // FR-001), the pre-wizard screen that offers a backup restore or Continue → /setup.
+            // /setup is never the direct first-run target any more; it is always reached through
+            // /first-run-restore.
+            var target = string.IsNullOrWhiteSpace(LanguagePreferenceStore.Get()) ? "/language-select" : "/first-run-restore";
             Nav.NavigateTo(target, forceLoad: false);
         }
     }

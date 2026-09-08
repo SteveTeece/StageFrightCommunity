@@ -1178,6 +1178,29 @@ a {
     max-width: 360px;
 }
 
+/* --- Chrome-free BlankLayout + terminal restart-required screen (spec 030, FR-007) --- */
+.blank-layout {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.blank-layout-content {
+    width: 100%;
+    max-width: 480px;
+}
+
+.restart-required {
+    background: var(--sf-panel);
+    color: var(--sf-text);
+    border: 1px solid var(--sf-line);
+    border-radius: .5rem;
+    padding: 1.5rem 2rem;
+    text-align: center;
+}
+
 /* --- Bordered list box: app-wide list-box convention (spec 017, FR-007) --- */
 .bordered-list-box {
     border: 1px solid var(--sf-line);

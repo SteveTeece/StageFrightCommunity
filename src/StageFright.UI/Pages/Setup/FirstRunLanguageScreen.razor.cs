@@ -14,10 +14,11 @@ namespace StageFright.UI.Pages.Setup;
 /// clean install (routed here by <c>App.razor.cs</c> whenever setup is incomplete and no
 /// language preference has been recorded yet). Confirming records the choice via
 /// <see cref="ILanguagePreferenceStore"/>, applies it to the running session immediately via
-/// <see cref="CultureProvider.Switch"/> (no restart), then continues into the setup wizard. In
-/// Debug builds (US3), a "Load sample data" option is shown instead — ticking it seeds the
-/// database with the full sample dataset and opens straight on the dashboard, skipping the
-/// wizard entirely.
+/// <see cref="CultureProvider.Switch"/> (no restart), then continues to the first-run restore
+/// choice (spec 030, <c>/first-run-restore</c>) — the pre-wizard screen that offers a backup
+/// restore or Continue → <c>/setup</c>. In Debug builds (US3), a "Load sample data" option is
+/// shown instead — ticking it seeds the database with the full sample dataset and opens straight
+/// on the dashboard, skipping both screens entirely.
 /// </summary>
 public partial class FirstRunLanguageScreen : ComponentBase
 {
@@ -95,7 +96,8 @@ public partial class FirstRunLanguageScreen : ComponentBase
             }
             else
             {
-                Nav.NavigateTo("/setup");
+                // spec 030 FR-001: the first-run restore choice sits between here and the wizard.
+                Nav.NavigateTo("/first-run-restore");
             }
         }
         finally

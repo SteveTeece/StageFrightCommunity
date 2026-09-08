@@ -9,11 +9,11 @@ using StageFright.Core.Enums;
 namespace StageFright.UI.Tests;
 
 /// <summary>
-/// bUnit tests for <see cref="App"/>'s startup routing decision (spec 029, US1): a startup error
-/// takes priority over everything; while setup is incomplete, a missing recorded language
-/// preference routes to <c>/language-select</c> and a recorded one routes straight to
-/// <c>/setup</c> (unchanged target, new guard); once setup is complete there is no redirect to
-/// either, regardless of what the preference store holds.
+/// bUnit tests for <see cref="App"/>'s startup routing decision (spec 029, US1; spec 030, US1): a
+/// startup error takes priority over everything; while setup is incomplete, a missing recorded
+/// language preference routes to <c>/language-select</c> and a recorded one routes to
+/// <c>/first-run-restore</c> — the pre-wizard restore choice — never to <c>/setup</c> directly;
+/// once setup is complete there is no redirect, regardless of what the preference store holds.
 /// </summary>
 public class AppRoutingTests : LocalizedTestContext
 {
@@ -22,6 +22,7 @@ public class AppRoutingTests : LocalizedTestContext
     private readonly ILanguagePreferenceStore _preferenceStore = Substitute.For<ILanguagePreferenceStore>();
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
     private readonly IDeviceThemePreferenceProvider _deviceThemeProvider = Substitute.For<IDeviceThemePreferenceProvider>();
+    private readonly IBackupService _backupService = Substitute.For<IBackupService>();
 
     public AppRoutingTests()
     {
@@ -30,12 +31,13 @@ public class AppRoutingTests : LocalizedTestContext
         Services.AddSingleton(_preferenceStore);
         Services.AddSingleton(_settingsService);
         Services.AddSingleton(_deviceThemeProvider);
+        Services.AddSingleton(_backupService); // FirstRunRestoreScreen (the /first-run-restore redirect target) injects it
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         _deviceThemeProvider.GetPreference().Returns(PlatformThemePreference.Dark);
         _diagnostics.HasStartupError.Returns(false);
 
-        // The /setup redirect target mounts SetupWizard, which hosts a BlazorBootstrap <Tabs> —
-        // same JS-interop stubbing SetupWizardTests/SetupWizardThemeTests already need.
+        // Kept defensively: harmless if a redirect target ever mounts a BlazorBootstrap <Tabs>
+        // (the current first-run targets — /language-select, /first-run-restore — do not).
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.initialize", _ => true);
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.show", _ => true);
         JSInterop.SetupVoid("window.blazorBootstrap.tabs.dispose", _ => true);
@@ -67,7 +69,7 @@ public class AppRoutingTests : LocalizedTestContext
     }
 
     [Fact]
-    public void NavigatesStraightToSetup_When_SetupIncomplete_AndPreferenceRecorded()
+    public void NavigatesToFirstRunRestore_When_SetupIncomplete_AndPreferenceRecorded()
     {
         _setupService.IsSetupCompleteAsync(Arg.Any<CancellationToken>()).Returns(false);
         _preferenceStore.Get().Returns("fr-FR");
@@ -75,7 +77,8 @@ public class AppRoutingTests : LocalizedTestContext
         Render<App>();
 
         var nav = Services.GetRequiredService<NavigationManager>();
-        Assert.EndsWith("/setup", nav.Uri);
+        Assert.EndsWith("/first-run-restore", nav.Uri); // spec 030 FR-001 — the pre-wizard restore choice
+        Assert.DoesNotContain("/setup", nav.Uri);       // /setup is never the direct first-run target
     }
 
     [Theory]
