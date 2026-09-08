@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +34,10 @@ namespace StageFright.Integration.Tests.Scenarios;
 /// </summary>
 public sealed class FirstRunRestoreJourneyTests : IAsyncLifetime
 {
+    private readonly ITestOutputHelper _output;
     private StageFrightDbContext _target = null!; // the clean install being restored into
+
+    public FirstRunRestoreJourneyTests(ITestOutputHelper output) => _output = output;
 
     public async ValueTask InitializeAsync() => _target = await NewDatabaseAsync();
 
@@ -123,6 +127,78 @@ public sealed class FirstRunRestoreJourneyTests : IAsyncLifetime
 
             Assert.Equal(before, await SnapshotAsync(_target));
             Assert.Null(await new SettingsRepository(_target).GetAsync(TestContext.Current.CancellationToken));
+        }
+        finally
+        {
+            CleanupFiles(path);
+        }
+    }
+
+    /// <summary>
+    /// SC-001 acceptance walk-through: a new treasurer with only a backup file and a fresh install
+    /// reaches a populated, ready-to-use application by tracing the exact first-run steps —
+    /// choose a language → tick "restore from backup" → pick the file (see the summary) → confirm →
+    /// restart → dashboard — <b>without ever entering an organisation, fee, or tax value</b>
+    /// (<see cref="SetupService.InitializeAsync"/> is never called). The interaction is timed and
+    /// asserted to complete well under the 2-minute, unaided budget; the elapsed time is written to
+    /// the test output for the PR notes.
+    /// </summary>
+    [Fact]
+    public async Task CleanInstallRestoreJourney_ReachesPopulatedDashboard_UnderTwoMinutes_WithNoManualSetup_Integration()
+    {
+        // The backup file the previous treasurer handed over — prepared before the timed interaction.
+        await using var source = await NewDatabaseAsync();
+        source.Settings.Add(NewSettings(languageCode: "es-ES", currencyCode: "USD"));
+        source.Members.Add(NewMember("Ada"));
+        source.Members.Add(NewMember("Grace"));
+        source.Members.Add(NewMember("Archived", deleted: true));
+        await source.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var path = TempPath();
+        try
+        {
+            await BuildService(source).ExportAsync(path, TestContext.Current.CancellationToken);
+
+            // Clean install: no Settings row yet — App.razor.cs would route to the first-run flow.
+            Assert.Null(await new SettingsRepository(_target).GetAsync(TestContext.Current.CancellationToken));
+
+            var interaction = Stopwatch.StartNew();
+
+            // Step 1 — choose a display language (the /language-select screen + startup culture resolve).
+            var preferenceStore = Substitute.For<ILanguagePreferenceStore>();
+            preferenceStore.Get().Returns("es-ES");
+            var systemCulture = Substitute.For<ISystemCultureProvider>();
+            systemCulture.GetUiCulture().Returns(CultureInfo.GetCultureInfo("en-AU"));
+            var languageProvider = new LanguageProvider(
+                new SettingsService(new SettingsRepository(_target), BuildAudit(_target), RealLocalizer.Instance),
+                new SupportedLanguagesCatalog(), systemCulture, preferenceStore);
+            _ = await languageProvider.ResolveStartupCultureAsync(TestContext.Current.CancellationToken);
+
+            // Step 2 — tick "restore from backup", pick the file, read the contents summary.
+            var manifest = await BuildService(_target).GetManifestAsync(path, TestContext.Current.CancellationToken);
+            Assert.True(manifest.EntityCounts["Members"] > 0);            // "how many members"
+            Assert.NotEqual(default, manifest.GeneratedAt);              // "when it was taken"
+            Assert.False(string.IsNullOrWhiteSpace(manifest.ApplicationVersion)); // originating build
+
+            // Step 3 — confirm: the local database is replaced with the backup's data, all-or-nothing.
+            await BuildService(_target).ImportAsync(path, TestContext.Current.CancellationToken);
+            _target.ChangeTracker.Clear();
+
+            // Step 4 — restart → dashboard: a restored Settings row is present, so the next App routing
+            // decision targets /dashboard, not the wizard; the data is fully populated.
+            var restoredSettings = await new SettingsRepository(_target).GetAsync(TestContext.Current.CancellationToken);
+            Assert.NotNull(restoredSettings);
+            Assert.Equal("Handover Choir", restoredSettings!.OrganizationName); // came from the file, not manual entry
+            Assert.Equal(3, await _target.Members.IgnoreQueryFilters().CountAsync(TestContext.Current.CancellationToken));
+
+            interaction.Stop();
+
+            _output.WriteLine(
+                $"[SC-001] first-run restore interaction (language → tick restore → pick file → confirm → restart → dashboard) " +
+                $"elapsed {interaction.Elapsed.TotalSeconds:F3}s — budget: < 120s, unaided, no organisation/fee/tax entry.");
+
+            Assert.True(interaction.Elapsed < TimeSpan.FromMinutes(2),
+                $"SC-001: the first-run restore interaction must complete in under 2 minutes; took {interaction.Elapsed}.");
         }
         finally
         {

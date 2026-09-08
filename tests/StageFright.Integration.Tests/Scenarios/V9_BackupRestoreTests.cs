@@ -363,16 +363,212 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
         }
     }
 
+    // --- spec 030 US4 / T035: older files restore and are accepted by startup;
+    //     a current file round-trips every configured setting across a restart ---
+
+    [Fact]
+    public async Task Import_SyntheticPre120Envelope_Succeeds_NewCollectionsEmpty_SettingsTakeEntityDefaults_AndRoutesToDashboard_Integration()
+    {
+        // A real pre-1.2.0 .sfbak carries no JournalEntries / BankReconciliations / ReconciliationLines
+        // members and none of the schema-1.2.0 Settings fields. The create path can no longer emit an
+        // old version, so build the envelope by hand (FR-019 — an older file must still restore).
+        var now = DateTime.UtcNow;
+        var envelope = new BackupEnvelope
+        {
+            SchemaVersion = "1.1.0",
+            GeneratedAt = now,
+            ApplicationVersion = "0.9.0",
+            Members = [],
+            CommitteePositionRecords = [],
+            Rehearsals = [],
+            Events = [],
+            Fees = [],
+            Payments = [],
+            Transactions = [],
+            Accounts = [],
+            AuditTrailEntries = [],
+            AnnualGeneralMeetings = [],
+            AgmAttendanceRecords = [],
+            CommitteeOfficeHolderTypes = [],
+            CommitteeTerms = [],
+            // JournalEntries / BankReconciliations / ReconciliationLines intentionally omitted.
+            Settings = new SettingsBackupDto
+            {
+                Id = Guid.NewGuid(), OrganizationName = "Legacy Choir",
+                AnnualFee = 40m, AttendanceFee = 2m,
+                MembershipRenewalMonth = 1, CommitteeRenewalMonth = 1,
+                MaxAgeRangeYears = 150, MinimumMemberAge = 0, Theme = Theme.Dark,
+                SchemaVersion = "1.1.0", CreatedAt = now, UpdatedAt = now
+                // FinancialYearStartDay / CurrencyCode / TaxEntryMode / LanguageCode /
+                // ShowParticipationGraphs / IsTaxApplicable left unset — a pre-1.2.0 file carries none.
+            },
+            EntityCounts = new Dictionary<string, int>
+            {
+                ["Members"] = 0, ["CommitteePositionRecords"] = 0, ["Rehearsals"] = 0,
+                ["AnnualGeneralMeetings"] = 0, ["CommitteeOfficeHolderTypes"] = 0, ["CommitteeTerms"] = 0,
+                ["Events"] = 0, ["Fees"] = 0, ["Payments"] = 0, ["Transactions"] = 0,
+                ["Accounts"] = 0, ["AuditTrailEntries"] = 0, ["Settings"] = 1
+            }
+        };
+
+        var svc = BuildService();
+        var path = TempPath();
+
+        try
+        {
+            WriteEnvelope(path, envelope);
+
+            // (a) An older file restores without error.
+            await svc.ImportAsync(path, TestContext.Current.CancellationToken);
+            _db.ChangeTracker.Clear();
+
+            // The three schema-1.2.0 collections come back empty.
+            Assert.Equal(0, await _db.JournalEntries.CountAsync(TestContext.Current.CancellationToken));
+            Assert.Equal(0, await _db.BankReconciliations.IgnoreQueryFilters().CountAsync(TestContext.Current.CancellationToken));
+            Assert.Equal(0, await _db.ReconciliationLines.CountAsync(TestContext.Current.CancellationToken));
+
+            // The schema-1.2.0 Settings fields take their entity defaults.
+            var restored = await _db.Settings.SingleAsync(cancellationToken: TestContext.Current.CancellationToken);
+            Assert.Equal(1, restored.FinancialYearStartDay);
+            Assert.Equal("AUD", restored.CurrencyCode);
+            Assert.Equal(TaxEntryMode.Inclusive, restored.TaxEntryMode);
+            Assert.Null(restored.LanguageCode);
+            Assert.True(restored.ShowParticipationGraphs);
+            Assert.False(restored.IsTaxApplicable);
+
+            // FR-012 acceptance 4 / FR-019: a restored Settings row is present, so the next App
+            // routing decision (App.razor.cs -> ISetupService.IsSetupCompleteAsync) targets /dashboard,
+            // not the first-run flow.
+            Assert.NotNull(await new SettingsRepository(_db).GetAsync(TestContext.Current.CancellationToken));
+        }
+        finally
+        {
+            CleanupFiles(path);
+        }
+    }
+
+    [Fact]
+    public async Task Import_Current120File_WithNonDefaultConfig_AllPresentAfterSimulatedRestart_Integration()
+    {
+        var cashAccountId = new Guid("00000000-0000-0000-0000-000000000001"); // migration-seeded Cash
+        var now = DateTime.UtcNow;
+
+        var je = new JournalEntry
+        {
+            Id = Guid.NewGuid(), Type = JournalEntryType.GeneralJournal, Date = now.Date,
+            Description = "Opening journal", CreatedAt = now
+        };
+        var tx = new Transaction
+        {
+            Id = Guid.NewGuid(), Date = now.Date, AccountId = cashAccountId,
+            DebitAmount = 125m, CreditAmount = 0m, GLAccount = "1100",
+            JournalEntryId = je.Id, TaxCode = TaxCode.Taxable, Description = "Journal line", CreatedAt = now
+        };
+        var recon = new BankReconciliation
+        {
+            Id = Guid.NewGuid(), AccountId = cashAccountId, StatementDate = now.Date,
+            StatementClosingBalance = 125m, OpeningBalance = 0m, Status = ReconciliationStatus.Finalised,
+            FinalisedAt = now, CreatedAt = now, UpdatedAt = now
+        };
+        var line = new ReconciliationLine
+        {
+            Id = Guid.NewGuid(), ReconciliationId = recon.Id, TransactionId = tx.Id, CreatedAt = now
+        };
+        var settings = new Settings
+        {
+            Id = Guid.NewGuid(), OrganizationName = "Cross-Version Choir", AnnualFee = 90m, AttendanceFee = 4m,
+            MembershipRenewalMonth = 1, CommitteeRenewalMonth = 1,
+            FinancialYearStartMonth = 3, FinancialYearStartDay = 15, CurrencyCode = "USD",
+            IsTaxApplicable = true, TaxRate = 8.25m, AnnualFeeTaxCode = TaxCode.Taxable,
+            TaxEntryMode = TaxEntryMode.Exclusive, LanguageCode = "es-ES",
+            SchemaVersion = "1.1.0", CreatedAt = now, UpdatedAt = now
+        };
+        _db.JournalEntries.Add(je);
+        _db.Transactions.Add(tx);
+        _db.BankReconciliations.Add(recon);
+        _db.ReconciliationLines.Add(line);
+        _db.Settings.Add(settings);
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var path = TempPath();
+        StageFrightDbContext? target = null;
+
+        try
+        {
+            await BuildService().ExportAsync(path, TestContext.Current.CancellationToken);
+
+            var manifest = await BuildService().GetManifestAsync(path, TestContext.Current.CancellationToken);
+            Assert.Equal("1.2.0", manifest.SchemaVersion); // the create path always writes the current schema
+
+            // Restore into a fresh database, then clear the change tracker to simulate an app restart.
+            target = await NewDatabaseAsync();
+            await BuildService(target).ImportAsync(path, TestContext.Current.CancellationToken);
+            target.ChangeTracker.Clear();
+
+            // FR-012 acceptance 1 & 4: every configured setting is reproduced exactly, and the presence
+            // of the restored Settings row routes startup to /dashboard rather than the first-run flow.
+            var restored = await new SettingsRepository(target).GetAsync(TestContext.Current.CancellationToken);
+            Assert.NotNull(restored);
+            Assert.Equal("USD", restored!.CurrencyCode);
+            Assert.Equal("es-ES", restored.LanguageCode);
+            Assert.Equal(3, restored.FinancialYearStartMonth);
+            Assert.Equal(15, restored.FinancialYearStartDay);
+            Assert.True(restored.IsTaxApplicable);
+            Assert.Equal(8.25m, restored.TaxRate);
+            Assert.Equal(TaxCode.Taxable, restored.AnnualFeeTaxCode);
+            Assert.Equal(TaxEntryMode.Exclusive, restored.TaxEntryMode);
+
+            // FR-016: journal entries and a finalised reconciliation (with its line) come back identical.
+            var restoredJe = await target.JournalEntries.SingleAsync(j => j.Id == je.Id, TestContext.Current.CancellationToken);
+            Assert.Equal(JournalEntryType.GeneralJournal, restoredJe.Type);
+            Assert.Equal("Opening journal", restoredJe.Description);
+
+            var restoredTx = await target.Transactions.SingleAsync(t => t.Id == tx.Id, TestContext.Current.CancellationToken);
+            Assert.Equal(je.Id, restoredTx.JournalEntryId);
+            Assert.Equal(TaxCode.Taxable, restoredTx.TaxCode);
+
+            var restoredRecon = await target.BankReconciliations.IgnoreQueryFilters()
+                .SingleAsync(r => r.Id == recon.Id, TestContext.Current.CancellationToken);
+            Assert.Equal(ReconciliationStatus.Finalised, restoredRecon.Status);
+            Assert.NotNull(restoredRecon.FinalisedAt);
+
+            Assert.True(await target.ReconciliationLines.IgnoreQueryFilters()
+                .AnyAsync(l => l.Id == line.Id && l.TransactionId == tx.Id, TestContext.Current.CancellationToken));
+        }
+        finally
+        {
+            if (target is not null)
+            {
+                await target.Database.CloseConnectionAsync();
+                await target.DisposeAsync();
+            }
+            CleanupFiles(path);
+        }
+    }
+
     // --- Helpers ---
 
-    private BackupService BuildService()
+    private BackupService BuildService() => BuildService(_db);
+
+    private static BackupService BuildService(StageFrightDbContext db)
     {
-        var backupRepo = new BackupRepository(_db);
-        var uow = new UnitOfWork(_db);
-        var auditRepo = new AuditTrailRepository(_db);
+        var backupRepo = new BackupRepository(db);
+        var uow = new UnitOfWork(db);
+        var auditRepo = new AuditTrailRepository(db);
         var auditSvc = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         return new BackupService(backupRepo, uow, auditSvc, NullLogger<BackupService>.Instance, RealLocalizer.Instance,
             new TempRecoveryCopyStore(), new TempBackupDestinationPicker());
+    }
+
+    private static async Task<StageFrightDbContext> NewDatabaseAsync()
+    {
+        var options = new DbContextOptionsBuilder<StageFrightDbContext>()
+            .UseSqlite("Data Source=:memory:")
+            .Options;
+        var db = new StageFrightDbContext(options);
+        await db.Database.OpenConnectionAsync();
+        await db.Database.MigrateAsync();
+        return db;
     }
 
     /// <summary>Writes the pre-restore recovery copy into the system temp directory for the test.</summary>

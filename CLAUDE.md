@@ -83,7 +83,7 @@ During development the SQLite database is written to `FileSystem.AppDataDirector
 
 ### Navigation
 
-Blazor Router owns **all** navigation. Every screen has a `@page` directive. `NavigationManager.NavigateTo` is the only way to transition between pages. MAUI Shell routing is disabled — MAUI is a platform-only container. First-run detection redirects to `/language-select` (spec 029's pre-wizard display-language screen) when setup is incomplete and no language preference has been recorded yet, otherwise straight to `/setup`, before the dashboard loads.
+Blazor Router owns **all** navigation. Every screen has a `@page` directive. `NavigationManager.NavigateTo` is the only way to transition between pages. MAUI Shell routing is disabled — MAUI is a platform-only container. First-run detection redirects to `/language-select` (spec 029's pre-wizard display-language screen) when setup is incomplete and no language preference has been recorded yet, otherwise to `/first-run-restore` (spec 030's pre-wizard restore-from-backup screen), before the dashboard loads. `/setup` is reached **via** `/first-run-restore` (its *Continue* action), never as the direct first-run target. After a confirmed restore — from first-run or from Settings → Backup & Restore — the app routes to `/restart-required`, which renders under a chrome-free `BlankLayout` (`src/StageFright.UI/Layout/`: same `CultureProvider`/`ThemeProvider` chrome as `ShellLayout` but **no** `shell-sidebar`, nav links, or theme toggle) instead of `ShellLayout`, so a user sitting on pre-restore in-memory state has no navigation surface (spec 030 FR-007).
 
 ### Module structure inside `StageFright.Core`
 
@@ -121,7 +121,7 @@ All bordered list boxes (queued items, role lists, read-only summaries) use `Bor
 
 ### Toggle control standards
 
-Every on/off toggle uses `<RadzenSwitch>` (`@bind-Value` + a `Change` callback, not `@bind:after`), never a hand-rolled Bootstrap `form-check form-switch` checkbox — see the Members List "show inactive" switch or the Settings page's theme toggle. `RadzenSwitch` renders no native `onchange`-wired `<input>`; drive it in bUnit via `cut.Find("[role=switch]").Click()` and assert state via `GetAttribute("aria-checked")`, not `.Change(bool)`/`HasAttribute("checked")`. The Setup Wizard's own theme control is a deliberate, spec-mandated exception (FR-022 of spec 017) — a Light/Dark `<select>` dropdown, not a switch — because the wizard's screen-shell had no cascaded state to toggle live the way Settings does; don't take it as a new default over `RadzenSwitch`.
+Every on/off toggle uses `<RadzenSwitch>` (`@bind-Value` + a `Change` callback, not `@bind:after`), never a hand-rolled Bootstrap `form-check form-switch` checkbox — see the Members List "show inactive" switch or the Settings page's theme toggle. `RadzenSwitch` renders no native `onchange`-wired `<input>`; drive it in bUnit via `cut.Find("[role=switch]").Click()` and assert state via `GetAttribute("aria-checked")`, not `.Change(bool)`/`HasAttribute("checked")`. The Setup Wizard's own theme control is a deliberate, spec-mandated exception (FR-022 of spec 017) — a Light/Dark `<select>` dropdown, not a switch — because the wizard's screen-shell had no cascaded state to toggle live the way Settings does; don't take it as a new default over `RadzenSwitch`. Spec 030's first-run `#restore-from-backup` control on `/first-run-restore` (`FirstRunRestoreScreen.razor`) is the **second** sanctioned exception — a plain `<input type="checkbox">`, not a switch, because a Verbatim Constraint in spec 030 pins it as a checkbox.
 
 ### Dashboard tile sizing
 
@@ -170,7 +170,7 @@ Display language resolves at startup via `LanguageProvider` (explicit `Settings.
 
 ## Tech Stack & Conventions
 
-This is a MAUI Blazor project using BlazorBootstrap and Radzen for charts/UI controls and double-entry accounting for finances; prefer existing patterns (e.g. month-name dropdowns, BlazorBootstrap charts) over custom SVG.
+This is a MAUI Blazor project using BlazorBootstrap and Radzen for charts/UI controls and double-entry accounting for finances; prefer existing patterns (e.g. month-name dropdowns, BlazorBootstrap charts) over custom SVG. The OS-native "Save as" dialog for exporting a backup file comes from `CommunityToolkit.Maui` (`FileSaver`, via `MauiBackupDestinationPicker`; `builder.UseMauiCommunityToolkit()` in `MauiProgram`) — the one place a platform file dialog is used.
 
 When summing financial amounts, only sum payment-related credit entries, not all GL credit entries, to avoid double-counting in double-entry accounting.
 

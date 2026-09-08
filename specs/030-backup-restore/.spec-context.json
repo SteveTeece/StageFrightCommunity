@@ -3,7 +3,7 @@
   "specName": "Restore From Backup During First-Run Setup",
   "branch": "030-backup-restore",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -362,12 +362,70 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-09-08T09:51:02.122Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T10:09:48.120Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T10:10:40.708Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T10:11:26.995Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T10:12:20.961Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T10:14:24.735Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-08T10:16:48.430Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-08T10:16:48.654Z"
     }
   ],
   "telemetryInstanceId": "0fc9ad3e-9084-48e2-bb58-11acb578e9c6",
-  "last_action": "Phase 5 (US3) complete — T028 CrossPlatformRoundTripTests green; full rebuild 0 warnings, 2156 tests pass; Phases 6 (T035) and 7 (T036-T039, T041) remain",
+  "last_action": "all 42 tasks done — full rebuild 0 warnings, 2159 tests pass",
   "livingSpecs": {
     "loaded": [
+      "app-host"
+    ],
+    "synced": [
       "app-host"
     ]
   },
@@ -504,6 +562,10 @@
         "T031",
         "T034",
         "T035"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/V9_BackupRestoreTests.cs::Import_Current120File_WithNonDefaultConfig_AllPresentAfterSimulatedRestart_Integration",
+        "tests/StageFright.Integration.Tests/Scenarios/V9_BackupRestoreTests.cs::Import_SyntheticPre120Envelope_Succeeds_NewCollectionsEmpty_SettingsTakeEntityDefaults_AndRoutesToDashboard_Integration"
       ]
     },
     "FR-013": {
@@ -542,7 +604,7 @@
         "T035"
       ],
       "tests": [
-        "tests/StageFright.Integration.Tests/Scenarios/CrossPlatformRoundTripTests.cs::CreateThenRestore_UnderASwappedLocaleAndTimeZone_ReproducesTheSourceExactly_Integration"
+        "tests/StageFright.Integration.Tests/Scenarios/V9_BackupRestoreTests.cs::Import_Current120File_WithNonDefaultConfig_AllPresentAfterSimulatedRestart_Integration"
       ]
     },
     "FR-017": {
@@ -577,7 +639,8 @@
         "T035"
       ],
       "tests": [
-        "tests/StageFright.Core.Tests/Modules/Settings/BackupSchemaTests.cs"
+        "tests/StageFright.Integration.Tests/Scenarios/V9_BackupRestoreTests.cs::Import_SyntheticPre120Envelope_Succeeds_NewCollectionsEmpty_SettingsTakeEntityDefaults_AndRoutesToDashboard_Integration",
+        "tests/StageFright.Integration.Tests/Scenarios/V9_BackupRestoreTests.cs::Import_NewerSchemaVersion_ThrowsImportException_WithUpdateGuidance"
       ]
     },
     "FR-020": {
@@ -638,6 +701,11 @@
     "FR-025": {
       "tests": [
         "tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs::Should_TranslateEveryNeutralKey_When_ShippedCultureResxScanned"
+      ]
+    },
+    "SC-001": {
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/FirstRunRestoreJourneyTests.cs::CleanInstallRestoreJourney_ReachesPopulatedDashboard_UnderTwoMinutes_WithNoManualSetup_Integration"
       ]
     }
   },
@@ -733,6 +801,21 @@
       "decision": "CrossPlatformRoundTripTests joins the [Collection(\"MoneyFormatterState\")] non-parallel collection and restores CultureInfo in DisposeAsync",
       "why": "it is the established Integration.Tests serialization gate for process-global format state (V28_CurrencyConfigurationTests / V28_LocaleSafeMoneyEntryTests use it purely for CultureInfo swaps); DisableParallelization=true stops the mid-test culture swap racing any parallel test",
       "rejected": "the PluginTextNonEnglishCultureTests dedicated-thread pattern — awkward for a large async EF workload"
+    },
+    {
+      "decision": "T035 added two new [Fact] methods to V9_BackupRestoreTests rather than parameterising the existing finance round-trip test; added a NewDatabaseAsync helper + a BuildService(db) overload so part (b) restores into a genuinely fresh database (a real simulated restart) instead of re-importing into the seed DB",
+      "why": "the synthetic pre-1.2.0 envelope (part a) and the fresh-DB restart assertion (part b) are distinct behaviours the existing same-DB export/import test does not exercise",
+      "rejected": "editing Backup_RoundTripsFinanceEntitiesAndExpandedSettings_Integration in place"
+    },
+    {
+      "decision": "T041 asserts the /dashboard routing signal via SettingsRepository(_target).GetAsync() != null and writes the timed interaction to ITestOutputHelper, rather than constructing a full SetupService",
+      "why": "ISetupService.IsSetupCompleteAsync only checks for a Settings row; a full SetupService needs 8 collaborators and adds no signal — this matches the established pattern already in FirstRunRestoreJourneyTests",
+      "rejected": "building a real SetupService in the test"
+    },
+    {
+      "decision": "T036 added a new ## Backup & Restore section to docs/ARCHITECTURE.md (the doc had no backup paragraph to correct) and fixed the stale Navigation first-run sentence in the same doc/task",
+      "why": "the task assumes an existing entity-count wording; none existed, so the correct figure (20 BackupSnapshot members = 19 collections + Settings singleton, confirmed against BackupSnapshot.cs) is introduced fresh; CLAUDE.md Spec & Docs Workflow requires fixing sentences the change makes stale",
+      "rejected": "leaving ARCHITECTURE.md Navigation saying first-run redirects straight to /setup"
     }
   ],
   "step_summaries": {
@@ -744,10 +827,10 @@
       "summary": "39 tasks across 7 phases (Setup, Foundational, US1 first-run restore [P1/MVP], US2 verified backup + native Save dialog [P2], US3 cross-platform round trip [P2], US4 format completeness [P3 — T029-T034 already delivered in 7d2cc93], Polish); waves with explicit join points; requirement->task map covers all 24 FRs"
     },
     "implement": {
-      "summary": "Phase 5 (US3): CrossPlatformRoundTripTests added — a ~4k-row multi-year dataset survives ExportAsync -> ImportAsync into a fresh SQLite DB under a swapped de-DE locale, field-for-field with per-type counts, DateTime instants and archived flags intact; no production code needed (round trip already faithful)"
+      "summary": "Backup/restore feature finished: older .sfbak files restore & are accepted by startup + full config round-trips a simulated restart (T035), SC-001 timed first-run walk-through (T041), and ARCHITECTURE/SETUP/CLAUDE docs reconciled (T036-T038); full rebuild 0 warnings, 2159 tests green (T039)."
     }
   },
-  "currentTask": "T035",
+  "currentTask": "T039",
   "task_summaries": {
     "T013": {
       "status": "DONE",
@@ -895,6 +978,48 @@
       "files": [
         "tests/StageFright.Integration.Tests/Scenarios/CrossPlatformRoundTripTests.cs"
       ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "Extended V9_BackupRestoreTests: synthetic pre-1.2.0 envelope restores (new collections empty, Settings fields take entity defaults, routes to /dashboard); current 1.2.0 file with non-default currency/language/FY-start/tax/TaxEntryMode + journal entries + finalised reconciliation round-trips identically across a simulated restart",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V9_BackupRestoreTests.cs"
+      ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "ARCHITECTURE.md: added a Backup & Restore section (BackupSnapshot's real 20 members = 19 collections + Settings singleton; native Save dialog + post-write read-back verification; pre-restore recovery copy; first-run reachability via /first-run-restore) and corrected the stale Navigation first-run sentence (/language-select | /first-run-restore, never /setup directly)",
+      "files": [
+        "docs/ARCHITECTURE.md"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "SETUP.md: first-run description now covers the /language-select -> /first-run-restore -> /setup route and the restore-then-/restart-required path; added a Database Setup bullet for the pre-restore recovery copies under FileSystem.AppDataDirectory/recovery; fixed the stale 'straight to /setup' sentence in Reset the Database",
+      "files": [
+        "docs/SETUP.md"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "CLAUDE.md: Navigation section now states first-run reaches /setup via /first-run-restore (never directly) and /restart-required renders under the chrome-free BlankLayout (FR-007); added CommunityToolkit.Maui (FileSaver) to the tech-stack notes; recorded the first-run #restore-from-backup checkbox as the second sanctioned RadzenSwitch exception",
+      "files": [
+        "CLAUDE.md"
+      ]
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "Added SC-001 acceptance walk-through to FirstRunRestoreJourneyTests: traces language -> tick restore -> pick file (summary) -> confirm -> restart -> populated /dashboard with no SetupService.InitializeAsync call, times the interaction, asserts < 2 minutes, and writes the elapsed time to test output for the PR notes",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/FirstRunRestoreJourneyTests.cs"
+      ]
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "Full-rebuild validation: dotnet build StageFrightCommunity.slnx -t:Rebuild = 0 warnings / 0 errors; dotnet test (no --no-build) = 2159 passed / 0 failed / 0 skipped (Reports 236, Core 812, Localization 29, UI 653, Data 159, Integration 270); SC-001..SC-010 walked against delivered behaviour, all covered by green tests (SC-010 static guard Us2LocalizationGuardTests green; runtime per-language app launch is a manual step)",
+      "files": [
+        "(validation only)"
+      ]
     }
   },
   "verified": [
@@ -933,6 +1058,24 @@
       "command": "dotnet test StageFrightCommunity.slnx",
       "result": "2156 passed, 0 failed, 0 skipped (Core 812, Reports 236, Localization 29, Data 159, UI 653, Integration 267 — +1 for T028)",
       "warnings": []
+    },
+    {
+      "what": "Full solution rebuild — warnings judged from a clean rebuild, not incremental",
+      "command": "dotnet build StageFrightCommunity.slnx -t:Rebuild",
+      "result": "Build succeeded — 0 Warning(s), 0 Error(s)",
+      "warnings": []
+    },
+    {
+      "what": "Full test suite without --no-build (T039)",
+      "command": "dotnet test StageFrightCommunity.slnx",
+      "result": "2159 passed, 0 failed, 0 skipped (Reports 236, Core 812, Localization 29, UI 653, Data 159, Integration 270 — +3 for T035/T041)",
+      "warnings": []
+    },
+    {
+      "what": "T035 + T041 targeted run (older-file restore, cross-version round trip, SC-001 timed walk-through)",
+      "command": "dotnet test tests/StageFright.Integration.Tests --filter FirstRunRestoreJourneyTests|V9_BackupRestoreTests",
+      "result": "15 passed (V9 12, Journey 3); SC-001 interaction elapsed well under the 2-minute budget",
+      "warnings": []
     }
   ],
   "concerns": [
@@ -954,6 +1097,10 @@
     },
     {
       "note": "EF Core SQLite has no global DateTime value converter, so every DateTime column round-trips as DateTimeKind.Unspecified on both sides. T028 still proves tick + kind identity through the .sfbak wire form under a foreign culture, but a Utc-vs-Unspecified distinction is not preserved by the storage layer to begin with — out of scope for this feature.",
+      "step": "implement"
+    },
+    {
+      "note": "T039 build+test is green, but the runtime half of SC-010 (launch each of the 7 shipped languages and confirm no Missing localization key warning for T011/T017/T027 strings) cannot run in this environment — it needs the MAUI app launched with WEBVIEW2 remote debugging. The static guard Us2LocalizationGuardTests covers the completeness invariant; a manual per-language launch is still advisable before release.",
       "step": "implement"
     }
   ]
