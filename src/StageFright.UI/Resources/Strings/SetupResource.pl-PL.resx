@@ -88,6 +88,13 @@
   <data name="Setup_Review_AgmMonthTerm" xml:space="preserve"><value>Miesiąc walnego zgromadzenia</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_AuditRetentionTerm" xml:space="preserve"><value>Przechowywanie dziennika audytu</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_SeatTargetTerm" xml:space="preserve"><value>Docelowa liczba miejsc</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Tab_Accounting" xml:space="preserve"><value>Księgowość</value><comment>Setup Wizard tab title.</comment></data>
+  <data name="Setup_Review_OrganisationGroupHeading" xml:space="preserve"><value>Organizacja</value><comment>Review tab — organisation group heading.</comment></data>
+  <data name="Setup_Review_AccountingGroupHeading" xml:space="preserve"><value>Księgowość</value><comment>Review tab — accounting group heading.</comment></data>
+  <data name="Setup_Review_CurrencyTerm" xml:space="preserve"><value>Waluta</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_FinancialYearStartTerm" xml:space="preserve"><value>Początek roku obrotowego</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_InceptionDateTerm" xml:space="preserve"><value>Data założenia</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_TaxEntryModeTerm" xml:space="preserve"><value>Wprowadzanie kwoty</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_Yes" xml:space="preserve"><value>Tak</value><comment>Review tab — affirmative value.</comment></data>
   <data name="Setup_Review_No" xml:space="preserve"><value>Nie</value><comment>Review tab — negative value.</comment></data>
   <data name="Setup_Review_NotSet" xml:space="preserve"><value>Nie ustawiono</value><comment>Review tab — shown for an unset optional value.</comment></data>

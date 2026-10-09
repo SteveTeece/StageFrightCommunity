@@ -88,6 +88,13 @@
   <data name="Setup_Review_AgmMonthTerm" xml:space="preserve"><value>Mois de l'AGA</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_AuditRetentionTerm" xml:space="preserve"><value>Conservation du journal d'audit</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_SeatTargetTerm" xml:space="preserve"><value>Objectif de sièges</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Tab_Accounting" xml:space="preserve"><value>Comptabilité</value><comment>Setup Wizard tab title.</comment></data>
+  <data name="Setup_Review_OrganisationGroupHeading" xml:space="preserve"><value>Organisation</value><comment>Review tab — organisation group heading.</comment></data>
+  <data name="Setup_Review_AccountingGroupHeading" xml:space="preserve"><value>Comptabilité</value><comment>Review tab — accounting group heading.</comment></data>
+  <data name="Setup_Review_CurrencyTerm" xml:space="preserve"><value>Devise</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_FinancialYearStartTerm" xml:space="preserve"><value>Début de l'exercice</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_InceptionDateTerm" xml:space="preserve"><value>Date de création</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_TaxEntryModeTerm" xml:space="preserve"><value>Saisie du montant</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_Yes" xml:space="preserve"><value>Oui</value><comment>Review tab — affirmative value.</comment></data>
   <data name="Setup_Review_No" xml:space="preserve"><value>Non</value><comment>Review tab — negative value.</comment></data>
   <data name="Setup_Review_NotSet" xml:space="preserve"><value>Non défini</value><comment>Review tab — shown for an unset optional value.</comment></data>

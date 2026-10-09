@@ -88,6 +88,13 @@
   <data name="Setup_Review_AgmMonthTerm" xml:space="preserve"><value>⟦ÁGM Móñth—⟧</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_AuditRetentionTerm" xml:space="preserve"><value>⟦Áúdít Tráíl Rétéñtíóñ—⟧</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_SeatTargetTerm" xml:space="preserve"><value>⟦Séát Çóúñt Tárgét—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Tab_Accounting" xml:space="preserve"><value>⟦Áççóúñtíñg—⟧</value><comment>Setup Wizard tab title.</comment></data>
+  <data name="Setup_Review_OrganisationGroupHeading" xml:space="preserve"><value>⟦Órgáñísátíóñ—⟧</value><comment>Review tab — organisation group heading.</comment></data>
+  <data name="Setup_Review_AccountingGroupHeading" xml:space="preserve"><value>⟦Áççóúñtíñg—⟧</value><comment>Review tab — accounting group heading.</comment></data>
+  <data name="Setup_Review_CurrencyTerm" xml:space="preserve"><value>⟦Çúrréñçý—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_FinancialYearStartTerm" xml:space="preserve"><value>⟦Fíñáñçíál Ýéár Stárts—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_InceptionDateTerm" xml:space="preserve"><value>⟦Íñçéptíóñ Dáté—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_TaxEntryModeTerm" xml:space="preserve"><value>⟦Ámóúñt Éñtrý—⟧</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_Yes" xml:space="preserve"><value>⟦Ýés—⟧</value><comment>Review tab — affirmative value.</comment></data>
   <data name="Setup_Review_No" xml:space="preserve"><value>⟦Ñó—⟧</value><comment>Review tab — negative value.</comment></data>
   <data name="Setup_Review_NotSet" xml:space="preserve"><value>⟦Ñót sét—⟧</value><comment>Review tab — shown for an unset optional value.</comment></data>

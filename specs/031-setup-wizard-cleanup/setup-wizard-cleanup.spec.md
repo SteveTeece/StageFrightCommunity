@@ -144,6 +144,46 @@ The language selector and, in Debug builds, the "load sample data" switch remain
 - The language selector and sample-data switch stay on the existing first screen. Spec 029 placed them there so the wizard renders in the chosen language and so sample data can skip the wizard; moving them into the wizard would undo that. This already satisfies the issue's "top of the first page" request for the first screen the user sees.
 - "Accounting settings" means the money-related fields in FR-003. The Chart of Accounts and Opening Balances tabs stay separate, because each is a full-size data-entry surface.
 - Membership renewal month and audit retention are organisation housekeeping, not accounting, so they stay on the Organisation tab.
-- The Accounting tab is named "Accounting" and the first tab is renamed "Organisation"; final label wording may be adjusted during planning.
+- The new tab is named "Accounting". The first tab keeps its existing "Organisation Settings" label, so no existing translation changes (decided at plan time).
 - The theme control remains a Light/Dark dropdown, as spec 017 requires.
 - The fee fields' currency symbol behaviour is unchanged by this work.
+
+## MODIFIED Requirements
+<!-- capability: app-host -->
+
+### The setup wizard captures required configuration through validated steps before anything else can run
+
+The wizard MUST require organisation identity, fee/renewal configuration, and sales-tax treatment (applicability, rate, and per-fee tax codes) before allowing submission, gating advancement on a per-step validation pass rather than only validating at final submit. Its tabs run in a fixed order: Organisation Settings (name, theme, renewal month, audit retention), Accounting (currency, financial year, inception date, fees, sales tax), Chart of Accounts, Opening Balances, Committee, Review. Every money-related field lives on the Accounting tab only. Completion MUST persist configuration through one setup service call and then route straight into the app.
+
+#### Scenario: user attempts to advance past an incomplete step
+- **WHEN** required fields for the current step fail validation
+- **THEN** the wizard does not advance to the next step
+
+#### Scenario: user completes all steps
+- **WHEN** the final step is submitted successfully
+- **THEN** configuration is persisted and the user is navigated to `/dashboard`
+
+#### Scenario: sales tax switched on with no rate
+- **WHEN** the coordinator turns sales tax on in the Accounting tab, leaves the rate blank and presses Next
+- **THEN** the wizard stays on the Accounting tab and shows the tax-rate validation message
+
+### Optional sample-data seeding is a debug-only, opt-in, non-blocking capability
+
+Sample-data seeding MUST NOT be offered or reachable in release builds, MUST require explicit user opt-in even when available, and MUST run without freezing the UI, reporting incremental progress. It MUST also be safe to invoke against a database that already has data. The opt-in switch lives on the pre-wizard `/language-select` screen, directly below the language selector; choosing it completes setup from valid placeholder defaults, seeds the dataset and opens the dashboard without showing the wizard, so the user types nothing. The seeder stamps its own generated organisation name, fee schedule, renewal months and committee seat target over the placeholders; currency, language and sales-tax treatment keep their defaults.
+
+#### Scenario: release build reaches first run
+- **WHEN** no debug seeder is registered in the container
+- **THEN** the sample-data switch is not shown and confirming the language proceeds towards the setup wizard
+
+#### Scenario: user opts into sample data in a debug build
+- **WHEN** the switch is on and the user confirms the language screen
+- **THEN** setup completes from valid placeholder values, seeding runs off the UI thread with progress shown, and the dashboard opens without the wizard ever appearing
+
+#### Scenario: seeding runs against a database that already has member data
+- **WHEN** the seeder is invoked and active members already exist
+- **THEN** it exits without creating duplicate data
+
+#### Scenario: sample data overrides the organisation identity and fee inputs
+- **WHEN** the seeder runs after setup was completed with the placeholder organisation name and fee figures
+- **THEN** the persisted settings carry the seeder's generated organisation name, annual fee, attendance fee and renewal configuration instead
+- **AND** the currency, language and sales-tax treatment are left unchanged
