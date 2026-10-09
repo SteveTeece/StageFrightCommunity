@@ -1,0 +1,100 @@
+{
+  "workflow": "companion",
+  "specName": "Setup Wizard Layout Cleanup",
+  "branch": "031-setup-wizard-cleanup",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-09T01:54:08.351Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-09T01:55:16.663Z"
+    }
+  ],
+  "telemetryInstanceId": "cadd3965-14f0-4e9c-8690-dac1780869b9",
+  "livingSpecs": {
+    "loaded": [
+      "app-host"
+    ]
+  },
+  "last_action": "living specs loaded (app-host)",
+  "coverage": {
+    "FR-001": {
+      "title": "Tabs ordered Organisation, Accounting, Chart of Accounts, Opening Balances, Committee, Review"
+    },
+    "FR-002": {
+      "title": "Organisation tab holds only name, theme, renewal month, audit retention"
+    },
+    "FR-003": {
+      "title": "Accounting tab holds currency, FY, inception, fees, sales tax and fee tax treatment"
+    },
+    "FR-004": {
+      "title": "Tax detail fields hidden while sales tax is off"
+    },
+    "FR-005": {
+      "title": "Fees shown with their tax treatment"
+    },
+    "FR-006": {
+      "title": "No accounting field on any other tab"
+    },
+    "FR-007": {
+      "title": "Captured values, defaults and validation unchanged"
+    },
+    "FR-008": {
+      "title": "Next and Finish validation unchanged"
+    },
+    "FR-009": {
+      "title": "Review groups Organisation and Accounting values"
+    },
+    "FR-010": {
+      "title": "Lazy one-tab-at-a-time loading kept"
+    },
+    "FR-011": {
+      "title": "No language or sample-data option inside wizard"
+    },
+    "FR-012": {
+      "title": "First screen: language first, Debug sample-data switch below"
+    },
+    "FR-013": {
+      "title": "Sample data completes setup with no manual entry"
+    },
+    "FR-014": {
+      "title": "Seeder sets a valid value for every wizard setting"
+    },
+    "FR-015": {
+      "title": "New labels translated in every shipped language"
+    },
+    "FR-016": {
+      "title": "Update specs and docs describing wizard tab layout"
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 16,
+    "projectedTasks": 12,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "expectations": [
+    "Moving language or sample data into the wizard",
+    "Merging Chart of Accounts or Opening Balances into the Accounting tab",
+    "Changing captured values or validation rules"
+  ],
+  "context": [
+    "area: src/StageFright.UI/Pages/Setup (SetupWizard, Tabs/*)",
+    "area: src/StageFright.App/Seeding/DebugDataSeeder.cs",
+    "constraint: spec 029 keeps language and sample data on /language-select",
+    "constraint: spec 017 theme control stays a dropdown",
+    "constraint: new keys translated in all shipped cultures"
+  ],
+  "intent": "Declutter the setup wizard by splitting Organisation and Accounting tabs and guaranteeing zero-entry sample data"
+}
