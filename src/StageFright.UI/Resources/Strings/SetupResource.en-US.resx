@@ -135,7 +135,7 @@
   <data name="Setup_Nav_FinishButton" xml:space="preserve"><value>Finish</value><comment>Setup Wizard — complete setup.</comment></data>
   <data name="Setup_Seeding_Message" xml:space="preserve"><value>Setting up your sample data — this may take a few minutes. Please don't close the app.</value><comment>Overlay message while sample data is being seeded.</comment></data>
   <data name="Setup_Error_InvalidSubmit" xml:space="preserve"><value>Some required fields are incomplete — check every tab before finishing.</value><comment>Shown when Finish is clicked with an invalid field somewhere.</comment></data>
-  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>Enter at least one opening balance, or select "Load sample data" on the Review tab, before finishing.</value><comment>Shown when Finish is attempted with no opening balance and no sample-data opt-in.</comment></data>
+  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>Enter at least one opening balance on the Opening Balances tab before finishing.</value><comment>Shown when Finish is attempted with no opening balance entered.</comment></data>
   <data name="Setup_Error_Unexpected" xml:space="preserve"><value>An unexpected error occurred. Please try again.</value><comment>Generic setup failure message.</comment></data>
   <data name="Setup_General_OrgNameLabel" xml:space="preserve"><value>Organization Name</value><comment>General tab — organisation name label.</comment></data>
   <data name="Setup_General_OrgNamePlaceholder" xml:space="preserve"><value>e.g. Springfield Choral Society</value><comment>Placeholder for the organisation name field.</comment></data>
@@ -172,7 +172,7 @@
   <data name="Setup_Coa_QueuedEmpty" xml:space="preserve"><value>No accounts queued yet.</value><comment>Empty text for the queued accounts list.</comment></data>
   <data name="Setup_Coa_BankCashSuffix" xml:space="preserve"><value> · Bank/Cash</value><comment>Suffix appended to a bank/cash account's type in the account lists.</comment></data>
   <data name="Setup_Coa_SystemBadge" xml:space="preserve"><value>System</value><comment>Badge / title marking a system account.</comment></data>
-  <data name="Setup_Ob_Intro" xml:space="preserve"><value>Enter opening balances for any accounts you'd like to start with a balance — including accounts you just queued on the Chart of Accounts tab. This is optional; you can also load sample data from the Review tab instead.</value><comment>Opening Balances tab intro paragraph.</comment></data>
+  <data name="Setup_Ob_Intro" xml:space="preserve"><value>Enter opening balances for any accounts you'd like to start with a balance — including accounts you just queued on the Chart of Accounts tab. Balances are kept as you type, and at least one is needed to finish setup.</value><comment>Opening Balances tab intro paragraph.</comment></data>
   <data name="Setup_Ob_AsAtLabel" xml:space="preserve"><value>As at</value><comment>Opening Balances tab — as-at date label.</comment></data>
   <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>AGM Month</value><comment>Committee tab — AGM month label.</comment></data>
   <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>The month your AGM is normally held. Drives committee term boundaries.</value><comment>Help text under the AGM month field.</comment></data>

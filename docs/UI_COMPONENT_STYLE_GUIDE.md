@@ -269,7 +269,7 @@ Below 576px every tile collapses to a single column. See [ARCHITECTURE.md § Das
 </EditForm>
 ```
 
-> **bUnit limitation**: a shared child form component (e.g. `AddAccountForm`/`OpeningBalanceEntryForm`) rendered *inside* another component's own outer `<EditForm>` — as in the Setup Wizard — cannot have its nested `<form>` submit simulated by bUnit; its inner `<form>` collapses when bUnit builds its AngleSharp DOM. This is a bUnit limitation, not a production bug. In tests, invoke the child component's own `EventCallback` parameters directly (`cut.FindComponent<ChildTab>().Instance.OnSubmit.InvokeAsync(...)`) instead of simulating the nested submit.
+> **bUnit limitation**: a shared child form component with its own `<EditForm>` (e.g. `AddAccountForm`) rendered *inside* another component's own outer `<EditForm>` — as in the Setup Wizard — cannot have its nested `<form>` submit simulated by bUnit; its inner `<form>` collapses when bUnit builds its AngleSharp DOM. This is a bUnit limitation, not a production bug. In tests, invoke the child component's own `EventCallback` parameters directly (`cut.FindComponent<ChildTab>().Instance.OnSubmit.InvokeAsync(...)`) instead of simulating the nested submit. `OpeningBalanceEntryForm` renders no `<form>`, so it isn't affected: since issue #382 the wizard's Opening Balances tab reports its entries on every amount change (`SubmitOnChange`), so tests can type into its `.opening-balance-amount` inputs directly (`OpeningBalancesTab.OnChange` is the callback to invoke when a test just needs a queued balance).
 
 ---
 

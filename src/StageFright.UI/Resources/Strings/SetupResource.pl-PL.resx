@@ -23,7 +23,7 @@
   <data name="Setup_Nav_FinishButton" xml:space="preserve"><value>Zakończ</value><comment>Setup Wizard — complete setup.</comment></data>
   <data name="Setup_Seeding_Message" xml:space="preserve"><value>Przygotowywanie danych przykładowych — może to potrwać kilka minut. Nie zamykaj aplikacji.</value><comment>Overlay message while sample data is being seeded.</comment></data>
   <data name="Setup_Error_InvalidSubmit" xml:space="preserve"><value>Niektóre wymagane pola są niekompletne — sprawdź wszystkie karty przed zakończeniem.</value><comment>Shown when Finish is clicked with an invalid field somewhere.</comment></data>
-  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>Wprowadź co najmniej jedno saldo otwarcia lub wybierz „Załaduj dane przykładowe” na karcie Przegląd przed zakończeniem.</value><comment>Shown when Finish is attempted with no opening balance and no sample-data opt-in.</comment></data>
+  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>Przed zakończeniem wprowadź co najmniej jedno saldo otwarcia na karcie Salda początkowe.</value><comment>Shown when Finish is attempted with no opening balance entered.</comment></data>
   <data name="Setup_Error_Unexpected" xml:space="preserve"><value>Wystąpił nieoczekiwany błąd. Spróbuj ponownie.</value><comment>Generic setup failure message.</comment></data>
   <data name="Setup_General_OrgNameLabel" xml:space="preserve"><value>Nazwa organizacji</value><comment>General tab — organisation name label.</comment></data>
   <data name="Setup_General_OrgNamePlaceholder" xml:space="preserve"><value>np. Springfield Choral Society</value><comment>Placeholder for the organisation name field.</comment></data>
@@ -60,7 +60,7 @@
   <data name="Setup_Coa_QueuedEmpty" xml:space="preserve"><value>Brak kont w kolejce.</value><comment>Empty text for the queued accounts list.</comment></data>
   <data name="Setup_Coa_BankCashSuffix" xml:space="preserve"><value> · Bank/gotówka</value><comment>Suffix appended to a bank/cash account's type in the account lists.</comment></data>
   <data name="Setup_Coa_SystemBadge" xml:space="preserve"><value>Systemowe</value><comment>Badge / title marking a system account.</comment></data>
-  <data name="Setup_Ob_Intro" xml:space="preserve"><value>Wprowadź salda otwarcia dla kont, które mają rozpocząć z saldem — w tym kont właśnie dodanych do kolejki na karcie Plan kont. Jest to opcjonalne; zamiast tego możesz też załadować dane przykładowe z karty Przegląd.</value><comment>Opening Balances tab intro paragraph.</comment></data>
+  <data name="Setup_Ob_Intro" xml:space="preserve"><value>Wprowadź salda otwarcia dla kont, które mają rozpocząć z saldem — w tym kont właśnie dodanych do kolejki na karcie Plan kont. Salda są zapamiętywane na bieżąco, a do zakończenia konfiguracji potrzebne jest co najmniej jedno.</value><comment>Opening Balances tab intro paragraph.</comment></data>
   <data name="Setup_Ob_AsAtLabel" xml:space="preserve"><value>Na dzień</value><comment>Opening Balances tab — as-at date label.</comment></data>
   <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>Miesiąc walnego zgromadzenia</value><comment>Committee tab — AGM month label.</comment></data>
   <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>Miesiąc, w którym zwykle odbywa się walne zgromadzenie. Wyznacza granice kadencji komitetu.</value><comment>Help text under the AGM month field.</comment></data>

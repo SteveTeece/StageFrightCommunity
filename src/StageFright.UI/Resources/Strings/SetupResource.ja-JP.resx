@@ -23,7 +23,7 @@
   <data name="Setup_Nav_FinishButton" xml:space="preserve"><value>完了</value><comment>Setup Wizard — complete setup.</comment></data>
   <data name="Setup_Seeding_Message" xml:space="preserve"><value>サンプルデータを設定しています。数分かかる場合があります。アプリを閉じないでください。</value><comment>Overlay message while sample data is being seeded.</comment></data>
   <data name="Setup_Error_InvalidSubmit" xml:space="preserve"><value>必須項目に未入力があります。完了する前にすべてのタブを確認してください。</value><comment>Shown when Finish is clicked with an invalid field somewhere.</comment></data>
-  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>完了する前に、期首残高を少なくとも1件入力するか、確認タブで「サンプルデータを読み込む」を選択してください。</value><comment>Shown when Finish is attempted with no opening balance and no sample-data opt-in.</comment></data>
+  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>完了する前に、期首残高タブで期首残高を少なくとも1件入力してください。</value><comment>Shown when Finish is attempted with no opening balance entered.</comment></data>
   <data name="Setup_Error_Unexpected" xml:space="preserve"><value>予期しないエラーが発生しました。もう一度お試しください。</value><comment>Generic setup failure message.</comment></data>
   <data name="Setup_General_OrgNameLabel" xml:space="preserve"><value>組織名</value><comment>General tab — organisation name label.</comment></data>
   <data name="Setup_General_OrgNamePlaceholder" xml:space="preserve"><value>例: スプリングフィールド合唱協会</value><comment>Placeholder for the organisation name field.</comment></data>
@@ -60,7 +60,7 @@
   <data name="Setup_Coa_QueuedEmpty" xml:space="preserve"><value>まだキューに登録された勘定科目はありません。</value><comment>Empty text for the queued accounts list.</comment></data>
   <data name="Setup_Coa_BankCashSuffix" xml:space="preserve"><value> · 銀行／現金</value><comment>Suffix appended to a bank/cash account's type in the account lists.</comment></data>
   <data name="Setup_Coa_SystemBadge" xml:space="preserve"><value>システム</value><comment>Badge / title marking a system account.</comment></data>
-  <data name="Setup_Ob_Intro" xml:space="preserve"><value>残高を設定して開始したい勘定（勘定科目一覧タブでキューに登録したばかりの勘定を含む）の期首残高を入力します。これは任意です。代わりに確認タブからサンプルデータを読み込むこともできます。</value><comment>Opening Balances tab intro paragraph.</comment></data>
+  <data name="Setup_Ob_Intro" xml:space="preserve"><value>残高を設定して開始したい勘定（勘定科目一覧タブでキューに登録したばかりの勘定を含む）の期首残高を入力します。入力した残高はそのまま保持され、セットアップを完了するには少なくとも1件の期首残高が必要です。</value><comment>Opening Balances tab intro paragraph.</comment></data>
   <data name="Setup_Ob_AsAtLabel" xml:space="preserve"><value>基準日</value><comment>Opening Balances tab — as-at date label.</comment></data>
   <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>総会の月</value><comment>Committee tab — AGM month label.</comment></data>
   <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>通常、総会が開催される月です。委員会の任期の区切りを決定します。</value><comment>Help text under the AGM month field.</comment></data>

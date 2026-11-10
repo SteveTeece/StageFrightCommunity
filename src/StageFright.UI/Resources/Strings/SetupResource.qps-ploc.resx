@@ -23,7 +23,7 @@
   <data name="Setup_Nav_FinishButton" xml:space="preserve"><value>⟦Fíñísh—⟧</value><comment>Setup Wizard — complete setup.</comment></data>
   <data name="Setup_Seeding_Message" xml:space="preserve"><value>⟦Séttíñg úp ýóúr sámplé dátá — thís máý táké á féw míñútés. Pléásé dóñ't çlósé thé ápp.—⟧</value><comment>Overlay message while sample data is being seeded.</comment></data>
   <data name="Setup_Error_InvalidSubmit" xml:space="preserve"><value>⟦Sómé réqúíréd fíélds áré íñçómplété — çhéçk évérý táb béfóré fíñíshíñg.—⟧</value><comment>Shown when Finish is clicked with an invalid field somewhere.</comment></data>
-  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>⟦Éñtér át léást óñé ópéñíñg báláñçé, ór séléçt "Lóád sámplé dátá" óñ thé Révíéw táb, béfóré fíñíshíñg.—⟧</value><comment>Shown when Finish is attempted with no opening balance and no sample-data opt-in.</comment></data>
+  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>⟦Éñtér át léást óñé ópéñíñg báláñçé óñ thé Ópéñíñg Báláñçés táb béfóré fíñíshíñg.—⟧</value><comment>Shown when Finish is attempted with no opening balance entered.</comment></data>
   <data name="Setup_Error_Unexpected" xml:space="preserve"><value>⟦Áñ úñéxpéçtéd érrór óççúrréd. Pléásé trý ágáíñ.—⟧</value><comment>Generic setup failure message.</comment></data>
   <data name="Setup_General_OrgNameLabel" xml:space="preserve"><value>⟦Órgáñísátíóñ Ñámé—⟧</value><comment>General tab — organisation name label.</comment></data>
   <data name="Setup_General_OrgNamePlaceholder" xml:space="preserve"><value>⟦é.g. Spríñgfíéld Çhórál Sóçíétý—⟧</value><comment>Placeholder for the organisation name field.</comment></data>
@@ -60,7 +60,7 @@
   <data name="Setup_Coa_QueuedEmpty" xml:space="preserve"><value>⟦Ñó áççóúñts qúéúéd ýét.—⟧</value><comment>Empty text for the queued accounts list.</comment></data>
   <data name="Setup_Coa_BankCashSuffix" xml:space="preserve"><value>⟦ · Báñk/Çásh—⟧</value><comment>Suffix appended to a bank/cash account's type in the account lists.</comment></data>
   <data name="Setup_Coa_SystemBadge" xml:space="preserve"><value>⟦Sýstém—⟧</value><comment>Badge / title marking a system account.</comment></data>
-  <data name="Setup_Ob_Intro" xml:space="preserve"><value>⟦Éñtér ópéñíñg báláñçés fór áñý áççóúñts ýóú'd líké tó stárt wíth á báláñçé — íñçlúdíñg áççóúñts ýóú júst qúéúéd óñ thé Çhárt óf Áççóúñts táb. Thís ís óptíóñál; ýóú çáñ álsó lóád sámplé dátá fróm thé Révíéw táb íñstéád.—⟧</value><comment>Opening Balances tab intro paragraph.</comment></data>
+  <data name="Setup_Ob_Intro" xml:space="preserve"><value>⟦Éñtér ópéñíñg báláñçés fór áñý áççóúñts ýóú'd líké tó stárt wíth á báláñçé — íñçlúdíñg áççóúñts ýóú júst qúéúéd óñ thé Çhárt óf Áççóúñts táb. Báláñçés áré képt ás ýóú týpé, áñd át léást óñé ís ñéédéd tó fíñísh sétúp.—⟧</value><comment>Opening Balances tab intro paragraph.</comment></data>
   <data name="Setup_Ob_AsAtLabel" xml:space="preserve"><value>⟦Ás át—⟧</value><comment>Opening Balances tab — as-at date label.</comment></data>
   <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>⟦ÁGM Móñth—⟧</value><comment>Committee tab — AGM month label.</comment></data>
   <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>⟦Thé móñth ýóúr ÁGM ís ñórmállý héld. Drívés çómmíttéé térm bóúñdáríés.—⟧</value><comment>Help text under the AGM month field.</comment></data>
