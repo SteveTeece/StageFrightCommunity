@@ -816,6 +816,12 @@ a {
     color: var(--sf-text);
 }
 
+/* A report cell may carry one entry per line (e.g. the Committee report's general
+   committee members, issue #369) — show those line breaks, as the PDF does. */
+.report-viewer td {
+    white-space: pre-line;
+}
+
 /* --- Forms --- */
 .form-control, .form-select, .form-check-input {
     background-color: var(--sf-glass2);
