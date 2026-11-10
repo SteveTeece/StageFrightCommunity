@@ -135,6 +135,12 @@ html, body {
     flex-direction: column;
     height: 100%;
     overflow: hidden;
+}
+
+/* Themed orb backdrop, shared by ShellLayout and the chrome-free BlankLayout so the
+   restart-required screen sits on the same backdrop as every other page (issue #384). */
+.shell-container,
+.blank-layout {
     color: var(--sf-text);
     background:
         radial-gradient(600px 420px at 12% 8%, var(--sf-orb1), transparent 65%),

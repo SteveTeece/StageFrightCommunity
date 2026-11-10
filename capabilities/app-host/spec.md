@@ -200,3 +200,4 @@ After a restore completes successfully — from the first-run flow or from Setti
 - **WHEN** `/restart-required` is displayed
 - **THEN** it renders under the chrome-free `BlankLayout` (no `shell-sidebar`, no menu-item links, no theme switch), not `ShellLayout`
 - **AND** the restart notice is centred both horizontally and vertically in the window (issue #384)
+- **AND** the screen sits on the same themed backdrop as every `ShellLayout` page (in light and dark), never a bare white page (issue #384)
