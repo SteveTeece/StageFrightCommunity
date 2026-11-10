@@ -2,8 +2,8 @@ namespace StageFright.App;
 
 public partial class App : Application
 {
-    private const double StartupWidth = 800;
-    private const double StartupHeight = 600;
+    private const double StartupWidth = 1024;
+    private const double StartupHeight = 768;
 
     public App()
     {
@@ -17,7 +17,7 @@ public partial class App : Application
         double screenWidth = displayInfo.Width / density;
         double screenHeight = displayInfo.Height / density;
 
-        // Open at a fixed 800x600, centred on the display (issue #383). The
+        // Open at a fixed 1024x768, centred on the display (issue #383). The
         // Math.Max guards a display smaller than the window from pushing it off-screen.
         Window window = new Window(new MainPage())
         {

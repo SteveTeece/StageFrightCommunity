@@ -14,7 +14,7 @@ The app-host capability is the MAUI composition root that boots the process, wir
 
 #### Scenario: application launches on any supported platform
 - **WHEN** the OS activates the app
-- **THEN** a single native window is created at a fixed 800×600 startup size, centred on the device's main display (via `DeviceDisplay.MainDisplayInfo`, density-corrected, clamped so it never starts off-screen) — issue #383
+- **THEN** a single native window is created at a fixed 1024×768 startup size, centred on the device's main display (via `DeviceDisplay.MainDisplayInfo`, density-corrected, clamped so it never starts off-screen) — issue #383
 - **AND** when the window is larger than its content, `ShellLayout` centres the page horizontally and vertically in the main pane (`.shell-content-inner`, capped at `--sf-content-max-w`), while a page taller than the pane still scrolls from its top
 - **AND** that window's content is one `BlazorWebView` whose root component is the `StageFright.UI` app shell, started at `/dashboard`
 
