@@ -52,11 +52,17 @@ public class SetupWizardTests : LocalizedTestContext
     private string OrgSettingsTabTitle =>
         Services.GetRequiredService<IStringLocalizer<SetupResource>>()["Setup_Tab_OrganisationSettings"];
 
+    // Fills the only required Organisation Settings field, then steps past both the
+    // Organisation Settings and Accounting tabs (spec 031) — lands on Chart of Accounts.
     private static void AdvanceFromOrganisationSettings(IRenderedComponent<SetupWizard> cut, string orgName = "My Choir")
     {
         cut.Find("#orgName").Change(orgName);
-        cut.Find("#btn-next").Click();
+        cut.Find("#btn-next").Click(); // -> Accounting
+        cut.Find("#btn-next").Click(); // -> Chart of Accounts
     }
+
+    private string AccountingTabTitle =>
+        Services.GetRequiredService<IStringLocalizer<SetupResource>>()["Setup_Tab_Accounting"];
 
     private static void AdvanceToReview(IRenderedComponent<SetupWizard> cut)
     {
@@ -82,13 +88,15 @@ public class SetupWizardTests : LocalizedTestContext
         var cut = Render<SetupWizard>();
 
         var organisationSettings = cut.Markup.IndexOf(OrgSettingsTabTitle, StringComparison.Ordinal);
+        var accounting = cut.Markup.IndexOf(AccountingTabTitle, StringComparison.Ordinal);
         var chartOfAccounts = cut.Markup.IndexOf("Chart of Accounts", StringComparison.Ordinal);
         var openingBalances = cut.Markup.IndexOf("Opening Balances", StringComparison.Ordinal);
         var committee = cut.Markup.IndexOf("Committee", StringComparison.Ordinal);
         var review = cut.Markup.IndexOf("Review", StringComparison.Ordinal);
 
         Assert.True(organisationSettings >= 0);
-        Assert.True(chartOfAccounts > organisationSettings);
+        Assert.True(accounting > organisationSettings);
+        Assert.True(chartOfAccounts > accounting);
         Assert.True(openingBalances > chartOfAccounts);
         Assert.True(committee > openingBalances);
         Assert.True(review > committee);
@@ -122,8 +130,12 @@ public class SetupWizardTests : LocalizedTestContext
         var cut = Render<SetupWizard>();
 
         cut.Find("#orgName").Change("My Choir");
-        cut.Find("#annualFee");
         cut.Find("#renewalMonth");
+        cut.Find("#themeSelect");
+
+        cut.Find("#btn-next").Click(); // -> Accounting
+        cut.Find("#setup-currency");
+        cut.Find("#annualFee");
         cut.Find("#taxApplicable");
 
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
@@ -156,9 +168,9 @@ public class SetupWizardTests : LocalizedTestContext
     public async Task TaxRateField_OnlyShown_WhenTaxApplicableChecked()
     {
         var cut = Render<SetupWizard>();
+        cut.Find("#orgName").Change("My Choir");
+        cut.Find("#btn-next").Click(); // -> Accounting (spec 031: sales tax lives here)
 
-        // Sales Tax fields now live on the same Organisation Settings tab as orgName —
-        // no Next click needed to reach #taxApplicable.
         Assert.Empty(cut.FindAll("#taxRate"));
 
         await cut.Find("#taxApplicable").ChangeAsync(true);
@@ -171,6 +183,8 @@ public class SetupWizardTests : LocalizedTestContext
     {
         var cut = Render<SetupWizard>();
         cut.Find("#orgName").Change("My Choir");
+        cut.Find("#btn-next").Click(); // -> Accounting
+        cut.Find("#setup-currency").Change("NZD");
         cut.Find("#annualFee").Change("80");
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
         cut.Find("#btn-next").Click(); // -> Opening Balances
@@ -188,6 +202,7 @@ public class SetupWizardTests : LocalizedTestContext
         await _setupService.Received(1).InitializeAsync(
             Arg.Is<SetupRequest>(r =>
                 r!.OrganizationName == "My Choir"
+                && r.CurrencyCode == "NZD"
                 && r.AnnualFee == 80m
                 && r.CommitteeOfficeHolderTitles!.Contains("Publicity Officer")),
             Arg.Any<CancellationToken>());
@@ -430,5 +445,59 @@ public class SetupWizardTests : LocalizedTestContext
         await _setupService.Received(1).InitializeAsync(
             Arg.Is<SetupRequest>(r => r!.LanguageCode == cut.Instance.CurrentCulture.Name),
             Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData("#setup-currency")]
+    [InlineData("#setup-fy-start-month")]
+    [InlineData("#setup-inception-date")]
+    [InlineData("#annualFee")]
+    [InlineData("#attendanceFee")]
+    [InlineData("#taxApplicable")]
+    public void Should_NotRenderAccountingField_When_OnOrganisationTab(string selector)
+    {
+        var cut = Render<SetupWizard>();
+
+        Assert.Empty(cut.FindAll(selector));
+    }
+
+    [Fact]
+    public async Task Should_StayOnAccountingTab_When_TaxRateBlankAndNextClicked()
+    {
+        var cut = Render<SetupWizard>();
+        cut.Find("#orgName").Change("My Choir");
+        cut.Find("#btn-next").Click(); // -> Accounting
+        await cut.Find("#taxApplicable").ChangeAsync(true);
+
+        cut.Find("#btn-next").Click();
+
+        Assert.Empty(cut.FindAll("#account-name"));
+        Assert.Contains("Tax rate must be greater than zero", cut.Markup);
+    }
+
+    [Fact]
+    public void Should_KeepEnteredValues_When_MovingBackFromAccountingTab()
+    {
+        var cut = Render<SetupWizard>();
+        cut.Find("#orgName").Change("My Choir");
+        cut.Find("#btn-next").Click(); // -> Accounting
+        cut.Find("#setup-currency").Change("NZD");
+
+        cut.FindAll(".nav-link").First(a => a.TextContent.Contains(OrgSettingsTabTitle)).Click();
+        cut.FindAll(".nav-link").First(a => a.TextContent.Contains(AccountingTabTitle)).Click();
+
+        Assert.Equal("My Choir", cut.Find("#orgName").GetAttribute("value"));
+        Assert.Equal("NZD", cut.Find("#setup-currency").GetAttribute("value"));
+    }
+
+    [Fact]
+    public void Should_RenderNoLanguageOrSampleDataControl_When_EveryTabShown()
+    {
+        var cut = Render<SetupWizard>();
+
+        AdvanceToReview(cut);
+
+        Assert.Empty(cut.FindAll("#languageSelect"));
+        Assert.Empty(cut.FindAll("#seedData"));
     }
 }

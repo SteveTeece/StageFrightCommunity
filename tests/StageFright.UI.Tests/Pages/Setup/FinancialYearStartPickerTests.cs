@@ -9,7 +9,7 @@ namespace StageFright.UI.Tests.Pages.Setup;
 /// <summary>
 /// bUnit coverage for the first-run financial-year-start pickers (spec 028, US7 / FR-019, FR-020):
 /// month (<c>#setup-fy-start-month</c>) and day (<c>#setup-fy-start-day</c>) live on
-/// <see cref="GeneralAppearanceTab"/>, are always rendered and mandatory, default to 1 July, and
+/// <see cref="AccountingTab"/>, are always rendered and mandatory, default to 1 July, and
 /// two-way bind <see cref="SetupFormModel.FinancialYearStartMonth"/> /
 /// <see cref="SetupFormModel.FinancialYearStartDay"/>.
 /// </summary>
@@ -17,8 +17,8 @@ public class FinancialYearStartPickerTests : LocalizedTestContext
 {
     private static RenderFragment<EditContext> GeneralTab(SetupFormModel model) => _ => builder =>
     {
-        builder.OpenComponent<GeneralAppearanceTab>(0);
-        builder.AddComponentParameter(1, nameof(GeneralAppearanceTab.Model), model);
+        builder.OpenComponent<AccountingTab>(0);
+        builder.AddComponentParameter(1, nameof(AccountingTab.Model), model);
         builder.CloseComponent();
     };
 

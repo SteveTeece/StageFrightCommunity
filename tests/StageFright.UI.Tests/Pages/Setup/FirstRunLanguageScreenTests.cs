@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using NSubstitute;
 using StageFright.Core.Contracts;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Settings;
 using StageFright.UI.Layout;
 using StageFright.UI.Pages.Setup;
@@ -116,6 +117,48 @@ public class FirstRunLanguageScreenTests : LocalizedTestContext
         var cut = RenderScreen();
 
         cut.Find("#seedData");
+    }
+
+    [Fact]
+    public void Should_RenderLanguageSelectorBeforeSampleDataSwitch_When_DebugSeederRegistered()
+    {
+        Services.AddSingleton(Substitute.For<IDebugDataSeeder>());
+
+        var cut = RenderScreen();
+
+        var language = cut.Markup.IndexOf("id=\"languageSelect\"", StringComparison.Ordinal);
+        var sampleData = cut.Markup.IndexOf("seedData", StringComparison.Ordinal);
+        var confirm = cut.Markup.IndexOf("btn-confirm-language", StringComparison.Ordinal);
+        Assert.True(language >= 0);
+        Assert.True(sampleData > language);
+        Assert.True(confirm > sampleData);
+    }
+
+    [Fact]
+    public async Task Should_SendValidPlaceholderRequest_When_SampleDataChosen()
+    {
+        // Spec 031 FR-013/FR-014: the sample-data path needs no typed values, so every setting
+        // a wizard tab would have asked for must come from a valid default here (the seeder
+        // then overwrites name, fees, renewal months and seat target).
+        using var _ = new CultureRestorer();
+        var debugSeeder = Substitute.For<IDebugDataSeeder>();
+        debugSeeder.SeedAsync(Arg.Any<IProgress<string>>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        Services.AddSingleton(debugSeeder);
+
+        var cut = RenderScreen();
+        cut.Find("[role=switch]").Click();
+        await cut.Find("#btn-confirm-language").ClickAsync(new MouseEventArgs());
+
+        await _setupService.Received(1).InitializeAsync(
+            Arg.Is<SetupRequest>(r =>
+                !string.IsNullOrWhiteSpace(r!.OrganizationName)
+                && CurrencyCatalog.All.Any(c => c.Code == r.CurrencyCode)
+                && r.FinancialYearStartMonth >= 1 && r.FinancialYearStartMonth <= 12
+                && r.FinancialYearStartDay >= 1 && r.FinancialYearStartDay <= 28
+                && r.MembershipRenewalMonth >= 1 && r.MembershipRenewalMonth <= 12
+                && r.AuditRetentionYears >= 1 && r.AuditRetentionYears <= 7
+                && !r.IsTaxApplicable),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]

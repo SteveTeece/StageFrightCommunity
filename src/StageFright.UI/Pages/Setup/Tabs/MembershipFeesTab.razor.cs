@@ -5,8 +5,9 @@ using StageFright.UI.Resources.Strings;
 
 namespace StageFright.UI.Pages.Setup.Tabs;
 
-/// <summary>Membership &amp; Fees tab (US1) — fees, renewal month, audit retention,
-/// relocated unchanged from the old single-page wizard's Step 2.</summary>
+/// <summary>Membership section of the Organisation Settings tab — renewal month and audit
+/// retention. The fee amounts moved to <see cref="AccountingTab"/> beside their tax
+/// treatment (spec 031).</summary>
 public partial class MembershipFeesTab : ComponentBase
 {
     [Parameter, EditorRequired] public SetupFormModel Model { get; set; } = null!;

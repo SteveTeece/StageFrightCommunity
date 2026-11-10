@@ -31,8 +31,9 @@ public partial class SetupWizard : ComponentBase
 
     // Lazy-render flags: a tab's content is only instantiated once it has been shown, so
     // multiple tabs never touch the shared DbContext concurrently (see SettingsPage's own
-    // precedent for this exact MAUI WebView gotcha). Grows as later stories add tabs.
-    private readonly List<bool> _tabShown = new() { true, false, false, false, false };
+    // precedent for this exact MAUI WebView gotcha). One entry per tab, in tab order:
+    // Organisation Settings, Accounting, Chart of Accounts, Opening Balances, Committee, Review.
+    private readonly List<bool> _tabShown = new() { true, false, false, false, false, false };
     private int _currentTabIndex;
 
     // Chart of Accounts queue (US4): accounts added here are never persisted until Finish

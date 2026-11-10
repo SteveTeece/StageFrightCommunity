@@ -5,6 +5,8 @@
 **Status**: Draft
 **Source**: GitHub issue [#313](https://github.com/SteveTeece/StageFrightCommunity/issues/313) — "Move Seed Data checkbox"
 
+> **Superseded.** Spec 029 moved the sample-data option off the wizard to the pre-wizard `/language-select` screen, and spec 031 split the Organisation Settings tab's money-related fields onto a new Accounting tab. This document records the historical design only.
+
 ## User Scenarios & Testing
 
 ### User Story 1 - Decide on sample data from the first tab (Priority: P1)

@@ -1,4 +1,4 @@
-@page "/setup"
+﻿@page "/setup"
 @inherits ComponentBase
 @inject ISetupService SetupService
 @inject NavigationManager Nav
@@ -31,7 +31,6 @@
                                     <MembershipFeesTab Model="_model" />
                                     <div class="row g-3 mb-3">
                                         <ThemeSelectionTab />
-                                        <SalesTaxTab Model="_model" />
                                     </div>
                                 </ChildContent>
                                 <ErrorContent Context="tabError"><div class="alert alert-danger">@L["Setup_Tab_LoadFailed"]</div></ErrorContent>
@@ -40,10 +39,25 @@
                     </div>
                 </Content>
             </Tab>
-            <Tab Title="@L["Setup_Tab_ChartOfAccounts"]" OnClick="@(() => SetActiveTab(1))">
+            <Tab Title="@L["Setup_Tab_Accounting"]" OnClick="@(() => SetActiveTab(1))">
                 <Content>
                     <div class="pt-3">
                         @if (_tabShown[1])
+                        {
+                            <ErrorBoundary>
+                                <ChildContent>
+                                    <AccountingTab Model="_model" />
+                                </ChildContent>
+                                <ErrorContent Context="tabError"><div class="alert alert-danger">@L["Setup_Tab_LoadFailed"]</div></ErrorContent>
+                            </ErrorBoundary>
+                        }
+                    </div>
+                </Content>
+            </Tab>
+            <Tab Title="@L["Setup_Tab_ChartOfAccounts"]" OnClick="@(() => SetActiveTab(2))">
+                <Content>
+                    <div class="pt-3">
+                        @if (_tabShown[2])
                         {
                             <ErrorBoundary>
                                 <ChildContent>
@@ -57,10 +71,10 @@
                     </div>
                 </Content>
             </Tab>
-            <Tab Title="@L["Setup_Tab_OpeningBalances"]" OnClick="@(() => SetActiveTab(2))">
+            <Tab Title="@L["Setup_Tab_OpeningBalances"]" OnClick="@(() => SetActiveTab(3))">
                 <Content>
                     <div class="pt-3">
-                        @if (_tabShown[2])
+                        @if (_tabShown[3])
                         {
                             <ErrorBoundary>
                                 <ChildContent>
@@ -73,10 +87,10 @@
                     </div>
                 </Content>
             </Tab>
-            <Tab Title="@L["Setup_Tab_Committee"]" OnClick="@(() => SetActiveTab(3))">
+            <Tab Title="@L["Setup_Tab_Committee"]" OnClick="@(() => SetActiveTab(4))">
                 <Content>
                     <div class="pt-3">
-                        @if (_tabShown[3])
+                        @if (_tabShown[4])
                         {
                             <ErrorBoundary>
                                 <ChildContent>
@@ -91,10 +105,10 @@
                     </div>
                 </Content>
             </Tab>
-            <Tab Title="@L["Setup_Tab_Review"]" OnClick="@(() => SetActiveTab(4))">
+            <Tab Title="@L["Setup_Tab_Review"]" OnClick="@(() => SetActiveTab(5))">
                 <Content>
                     <div class="pt-3">
-                        @if (_tabShown[4])
+                        @if (_tabShown[5])
                         {
                             <ErrorBoundary>
                                 <ChildContent>
