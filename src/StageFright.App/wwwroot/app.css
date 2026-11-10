@@ -40,6 +40,7 @@
 :root,
 [data-bs-theme="light"] {
     --sf-sidebar-w: 232px;
+    --sf-content-max-w: 1400px;
     --sf-bg: #e6edfb;
     --sf-orb1: rgba(70, 130, 255, .28);
     --sf-orb2: rgba(60, 200, 255, .3);
@@ -147,7 +148,18 @@ html, body {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
     padding: 1rem 1.25rem 1rem calc(var(--sf-sidebar-w) + 1.25rem);
+}
+
+/* Centres the page in the main pane on large windows (issue #383): the auto
+   margins centre it both ways while it fits, and collapse to 0 once it
+   overflows, so a tall page still scrolls from its top rather than clipping. */
+.shell-content-inner {
+    margin: auto;
+    width: 100%;
+    max-width: var(--sf-content-max-w);
 }
 
 /* Shrink every RadzenSwitch toggle app-wide (from Radzen's default 3rem x
