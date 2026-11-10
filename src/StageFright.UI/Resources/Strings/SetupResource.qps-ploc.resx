@@ -62,7 +62,6 @@
   <data name="Setup_Coa_SystemBadge" xml:space="preserve"><value>⟦Sýstém—⟧</value><comment>Badge / title marking a system account.</comment></data>
   <data name="Setup_Ob_Intro" xml:space="preserve"><value>⟦Éñtér ópéñíñg báláñçés fór áñý áççóúñts ýóú'd líké tó stárt wíth á báláñçé — íñçlúdíñg áççóúñts ýóú júst qúéúéd óñ thé Çhárt óf Áççóúñts táb. Thís ís óptíóñál; ýóú çáñ álsó lóád sámplé dátá fróm thé Révíéw táb íñstéád.—⟧</value><comment>Opening Balances tab intro paragraph.</comment></data>
   <data name="Setup_Ob_AsAtLabel" xml:space="preserve"><value>⟦Ás át—⟧</value><comment>Opening Balances tab — as-at date label.</comment></data>
-  <data name="Setup_Ob_QueueBalancesButton" xml:space="preserve"><value>⟦Qúéúé Báláñçés—⟧</value><comment>Submit button text for the opening-balance form in the setup wizard.</comment></data>
   <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>⟦ÁGM Móñth—⟧</value><comment>Committee tab — AGM month label.</comment></data>
   <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>⟦Thé móñth ýóúr ÁGM ís ñórmállý héld. Drívés çómmíttéé térm bóúñdáríés.—⟧</value><comment>Help text under the AGM month field.</comment></data>
   <data name="Setup_Committee_SeatTargetLabel" xml:space="preserve"><value>⟦Géñérál Çómmíttéé Séát Çóúñt Tárgét—⟧</value><comment>Committee tab — seat target label.</comment></data>

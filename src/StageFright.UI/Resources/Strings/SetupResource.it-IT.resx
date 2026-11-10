@@ -62,7 +62,6 @@
   <data name="Setup_Coa_SystemBadge" xml:space="preserve"><value>Sistema</value><comment>Badge / title marking a system account.</comment></data>
   <data name="Setup_Ob_Intro" xml:space="preserve"><value>Inserisci i saldi iniziali per i conti che vuoi far partire con un saldo, compresi i conti che hai appena messo in coda nella scheda Piano dei conti. È facoltativo; in alternativa puoi caricare dati di esempio dalla scheda Riepilogo.</value><comment>Opening Balances tab intro paragraph.</comment></data>
   <data name="Setup_Ob_AsAtLabel" xml:space="preserve"><value>Alla data del</value><comment>Opening Balances tab — as-at date label.</comment></data>
-  <data name="Setup_Ob_QueueBalancesButton" xml:space="preserve"><value>Metti saldi in coda</value><comment>Submit button text for the opening-balance form in the setup wizard.</comment></data>
   <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>Mese dell'assemblea generale</value><comment>Committee tab — AGM month label.</comment></data>
   <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>Il mese in cui si tiene normalmente la tua assemblea generale. Determina i limiti dei mandati del comitato.</value><comment>Help text under the AGM month field.</comment></data>
   <data name="Setup_Committee_SeatTargetLabel" xml:space="preserve"><value>Numero obiettivo di seggi del comitato generale</value><comment>Committee tab — seat target label.</comment></data>

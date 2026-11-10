@@ -44,10 +44,10 @@ public partial class SetupWizard : ComponentBase
     // it's given, so adding/removing here is all that's needed for that sync.
     private readonly List<QueuedAccountRequest> _queuedAccounts = new();
 
-    // Opening Balances queue (US2): replaced wholesale each time the tab's "Queue
-    // Balances" action fires (it always reports the full current non-zero row set, not
-    // one entry at a time) — held in memory only, same untouched-on-failed-Finish
-    // guarantee as the account queue above.
+    // Opening Balances queue (US2): replaced wholesale every time an amount or the as-at
+    // date changes on the tab (it always reports the full current non-zero row set, not
+    // one entry at a time — issue #382 removed the separate "Queue Balances" click) — held
+    // in memory only, same untouched-on-failed-Finish guarantee as the account queue above.
     private readonly List<OpeningBalanceEntry> _queuedOpeningBalances = new();
     private DateTime _openingBalanceAsAtDate = DateTime.Today;
 
@@ -101,14 +101,14 @@ public partial class SetupWizard : ComponentBase
         _queuedAccounts.Remove(account);
         // FR-020: removing a queued account also drops any balance already entered for it —
         // OpeningBalanceEntryForm's own row reconciliation drops the row visually once
-        // QueuedAccounts no longer includes it, but a balance already queued via a prior
-        // "Queue Balances" click lives here and needs its own cleanup.
+        // QueuedAccounts no longer includes it, but a balance it already reported for that
+        // row lives here and needs its own cleanup.
         _queuedOpeningBalances.RemoveAll(e => e.AccountId == account.ClientId);
     }
 
-    // Opening Balances tab (US2) queue handler — the tab's "Queue Balances" action always
-    // reports its full current non-zero row set, so this replaces rather than appends.
-    private void HandleQueueOpeningBalances(RecordOpeningBalancesRequest request)
+    // Opening Balances tab (US2) change handler — the tab always reports its full current
+    // non-zero row set, so this replaces rather than appends.
+    private void HandleOpeningBalancesChanged(RecordOpeningBalancesRequest request)
     {
         _queuedOpeningBalances.Clear();
         _queuedOpeningBalances.AddRange(request.Entries);

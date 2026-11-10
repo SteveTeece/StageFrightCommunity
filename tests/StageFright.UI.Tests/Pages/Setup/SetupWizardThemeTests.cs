@@ -62,7 +62,7 @@ public class SetupWizardThemeTests : LocalizedTestContext
     private static async Task QueueOpeningBalanceAsync(IRenderedComponent<ThemeProvider> cut)
     {
         var tab = cut.FindComponent<OpeningBalancesTab>();
-        await cut.InvokeAsync(() => tab.Instance.OnSubmit.InvokeAsync(new RecordOpeningBalancesRequest
+        await cut.InvokeAsync(() => tab.Instance.OnChange.InvokeAsync(new RecordOpeningBalancesRequest
         {
             AsAtDate = DateTime.Today,
             Entries = new List<OpeningBalanceEntry> { new() { AccountId = Guid.NewGuid(), Amount = 100m } }

@@ -29,6 +29,11 @@ public partial class OpeningBalanceEntryForm : ComponentBase
     /// <summary>Submit button text; when unset, falls back to the shared default (spec 027).</summary>
     [Parameter] public string? SubmitButtonText { get; set; }
 
+    /// <summary>When true, the submit button is hidden and <see cref="OnSubmit"/> fires with the
+    /// current entries every time an amount changes instead (issue #382) — the setup wizard's
+    /// Opening Balances tab, where a separate "Queue" click only added a step before Next.</summary>
+    [Parameter] public bool SubmitOnChange { get; set; }
+
     [Inject] private IOpeningBalanceService OpeningBalanceService { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
@@ -70,9 +75,12 @@ public partial class OpeningBalanceEntryForm : ComponentBase
     // The value of an <input type="number"> is always serialised invariant, so it is parsed
     // invariant via the shared helper — never with CultureInfo.CurrentCulture, which reads the
     // period as a thousands separator under fr-FR / de-DE (spec 028, FR-007…FR-009).
-    private void SetAmount(OpeningBalanceRowModel row, ChangeEventArgs args)
+    private async Task SetAmountAsync(OpeningBalanceRowModel row, ChangeEventArgs args)
     {
         row.Amount = MoneyInput.Parse(args.Value?.ToString());
+
+        if (SubmitOnChange)
+            await OnSubmit.InvokeAsync(BuildRequest());
     }
 
     private async Task HandleSubmitAsync()
@@ -80,19 +88,19 @@ public partial class OpeningBalanceEntryForm : ComponentBase
         _submitting = true;
         try
         {
-            var request = new RecordOpeningBalancesRequest
-            {
-                AsAtDate = AsAtDate,
-                Entries = NonZeroRows
-                    .Select(r => new OpeningBalanceEntry { AccountId = r.Account.Id, Amount = r.Amount })
-                    .ToList()
-            };
-
-            await OnSubmit.InvokeAsync(request);
+            await OnSubmit.InvokeAsync(BuildRequest());
         }
         finally
         {
             _submitting = false;
         }
     }
+
+    private RecordOpeningBalancesRequest BuildRequest() => new()
+    {
+        AsAtDate = AsAtDate,
+        Entries = NonZeroRows
+            .Select(r => new OpeningBalanceEntry { AccountId = r.Account.Id, Amount = r.Amount })
+            .ToList()
+    };
 }

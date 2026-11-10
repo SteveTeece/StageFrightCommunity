@@ -62,7 +62,6 @@
   <data name="Setup_Coa_SystemBadge" xml:space="preserve"><value>システム</value><comment>Badge / title marking a system account.</comment></data>
   <data name="Setup_Ob_Intro" xml:space="preserve"><value>残高を設定して開始したい勘定（勘定科目一覧タブでキューに登録したばかりの勘定を含む）の期首残高を入力します。これは任意です。代わりに確認タブからサンプルデータを読み込むこともできます。</value><comment>Opening Balances tab intro paragraph.</comment></data>
   <data name="Setup_Ob_AsAtLabel" xml:space="preserve"><value>基準日</value><comment>Opening Balances tab — as-at date label.</comment></data>
-  <data name="Setup_Ob_QueueBalancesButton" xml:space="preserve"><value>残高をキューに追加</value><comment>Submit button text for the opening-balance form in the setup wizard.</comment></data>
   <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>総会の月</value><comment>Committee tab — AGM month label.</comment></data>
   <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>通常、総会が開催される月です。委員会の任期の区切りを決定します。</value><comment>Help text under the AGM month field.</comment></data>
   <data name="Setup_Committee_SeatTargetLabel" xml:space="preserve"><value>一般委員の目標人数</value><comment>Committee tab — seat target label.</comment></data>

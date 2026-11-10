@@ -79,7 +79,7 @@
                             <ErrorBoundary>
                                 <ChildContent>
                                     <OpeningBalancesTab QueuedAccounts="_queuedAccounts"
-                                                         OnSubmit="HandleQueueOpeningBalances" />
+                                                         OnChange="HandleOpeningBalancesChanged" />
                                 </ChildContent>
                                 <ErrorContent Context="tabError"><div class="alert alert-danger">@L["Setup_Tab_LoadFailed"]</div></ErrorContent>
                             </ErrorBoundary>

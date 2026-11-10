@@ -165,7 +165,6 @@
   <data name="Setup_Coa_SystemBadge" xml:space="preserve"><value>System</value><comment>Badge / title marking a system account.</comment></data>
   <data name="Setup_Ob_Intro" xml:space="preserve"><value>Enter opening balances for any accounts you'd like to start with a balance — including accounts you just queued on the Chart of Accounts tab. This is optional; you can also load sample data from the Review tab instead.</value><comment>Opening Balances tab intro paragraph.</comment></data>
   <data name="Setup_Ob_AsAtLabel" xml:space="preserve"><value>As at</value><comment>Opening Balances tab — as-at date label.</comment></data>
-  <data name="Setup_Ob_QueueBalancesButton" xml:space="preserve"><value>Queue Balances</value><comment>Submit button text for the opening-balance form in the setup wizard.</comment></data>
   <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>AGM Month</value><comment>Committee tab — AGM month label.</comment></data>
   <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>The month your AGM is normally held. Drives committee term boundaries.</value><comment>Help text under the AGM month field.</comment></data>
   <data name="Setup_Committee_SeatTargetLabel" xml:space="preserve"><value>General Committee Seat Count Target</value><comment>Committee tab — seat target label.</comment></data>

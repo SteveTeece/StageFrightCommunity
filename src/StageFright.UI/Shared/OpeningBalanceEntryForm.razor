@@ -31,7 +31,7 @@
                             <input type="number" step="0.01"
                                    class="form-control form-control-sm text-end opening-balance-amount"
                                    value="@(row.Amount == 0m ? null : row.Amount)"
-                                   @onchange="e => SetAmount(row, e)"
+                                   @onchange="e => SetAmountAsync(row, e)"
                                    aria-label="@BalanceAriaLabel(row.Account.Name)" />
                         </td>
                     </tr>
@@ -46,10 +46,13 @@
         </table>
     </div>
 
-    <div class="d-flex gap-2 mt-2">
-        <button type="button" class="btn btn-primary btn-sm wizard-post" @onclick="HandleSubmitAsync"
-                disabled="@(NonZeroRows.Count == 0 || _submitting)">
-            @(_submitting ? PostingText : (SubmitButtonText ?? DefaultSubmitText))
-        </button>
-    </div>
+    @if (!SubmitOnChange)
+    {
+        <div class="d-flex gap-2 mt-2">
+            <button type="button" class="btn btn-primary btn-sm wizard-post" @onclick="HandleSubmitAsync"
+                    disabled="@(NonZeroRows.Count == 0 || _submitting)">
+                @(_submitting ? PostingText : (SubmitButtonText ?? DefaultSubmitText))
+            </button>
+        </div>
+    }
 </div>

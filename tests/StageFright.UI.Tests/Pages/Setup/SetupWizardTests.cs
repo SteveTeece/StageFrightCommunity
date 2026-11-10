@@ -75,7 +75,7 @@ public class SetupWizardTests : LocalizedTestContext
     private static async Task QueueRealOpeningBalanceAsync(IRenderedComponent<SetupWizard> cut)
     {
         var obTab = cut.FindComponent<OpeningBalancesTab>();
-        await cut.InvokeAsync(() => obTab.Instance.OnSubmit.InvokeAsync(new RecordOpeningBalancesRequest
+        await cut.InvokeAsync(() => obTab.Instance.OnChange.InvokeAsync(new RecordOpeningBalancesRequest
         {
             AsAtDate = DateTime.Today,
             Entries = new List<OpeningBalanceEntry> { new() { AccountId = Guid.NewGuid(), Amount = 100m } }
@@ -385,6 +385,34 @@ public class SetupWizardTests : LocalizedTestContext
     }
 
     [Fact]
+    public async Task Should_CarryTypedBalanceToFinish_When_NextClickedWithoutAnyQueueStep()
+    {
+        // Issue #382: typing an amount and pressing Next is enough — there is no Queue button.
+        var cashId = Guid.NewGuid();
+        _openingBalanceService.GetOpeningBalanceAccountsAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>
+        {
+            new() { Id = cashId, Name = "Cash on Hand", AccountNumber = "1100", Type = Core.Enums.AccountType.Asset }
+        });
+        var cut = Render<SetupWizard>();
+        AdvanceFromOrganisationSettings(cut); // -> Chart of Accounts
+        cut.Find("#btn-next").Click(); // -> Opening Balances
+
+        Assert.Empty(cut.FindAll(".wizard-post"));
+        cut.Find(".opening-balance-amount").Change("750");
+        cut.Find("#btn-next").Click(); // -> Committee
+        cut.Find("#btn-next").Click(); // -> Review
+        await cut.Find("form").SubmitAsync();
+
+        await _setupService.Received(1).InitializeAsync(
+            Arg.Is<SetupRequest>(r =>
+                r!.QueuedOpeningBalances != null
+                && r.QueuedOpeningBalances.Count == 1
+                && r.QueuedOpeningBalances[0].AccountId == cashId
+                && r.QueuedOpeningBalances[0].Amount == 750m),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task Finish_Succeeds_When_BalanceEntered()
     {
         var cut = Render<SetupWizard>();
@@ -393,7 +421,7 @@ public class SetupWizardTests : LocalizedTestContext
         var tab = cut.FindComponent<OpeningBalancesTab>();
         var asAtDate = new DateTime(2025, 7, 1);
         var accountId = Guid.NewGuid();
-        await cut.InvokeAsync(() => tab.Instance.OnSubmit.InvokeAsync(new RecordOpeningBalancesRequest
+        await cut.InvokeAsync(() => tab.Instance.OnChange.InvokeAsync(new RecordOpeningBalancesRequest
         {
             AsAtDate = asAtDate,
             Entries = new List<OpeningBalanceEntry> { new() { AccountId = accountId, Amount = 500m } }

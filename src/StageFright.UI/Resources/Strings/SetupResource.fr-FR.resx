@@ -62,7 +62,6 @@
   <data name="Setup_Coa_SystemBadge" xml:space="preserve"><value>Système</value><comment>Badge / title marking a system account.</comment></data>
   <data name="Setup_Ob_Intro" xml:space="preserve"><value>Saisissez les soldes d'ouverture des comptes que vous souhaitez démarrer avec un solde — y compris ceux que vous venez de mettre en attente sur l'onglet Plan comptable. C'est facultatif ; vous pouvez aussi charger des données d'exemple depuis l'onglet Récapitulatif.</value><comment>Opening Balances tab intro paragraph.</comment></data>
   <data name="Setup_Ob_AsAtLabel" xml:space="preserve"><value>À la date du</value><comment>Opening Balances tab — as-at date label.</comment></data>
-  <data name="Setup_Ob_QueueBalancesButton" xml:space="preserve"><value>Mettre les soldes en attente</value><comment>Submit button text for the opening-balance form in the setup wizard.</comment></data>
   <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>Mois de l'AGA</value><comment>Committee tab — AGM month label.</comment></data>
   <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>Le mois où se tient habituellement votre AGA. Détermine les limites des mandats du comité.</value><comment>Help text under the AGM month field.</comment></data>
   <data name="Setup_Committee_SeatTargetLabel" xml:space="preserve"><value>Objectif de sièges au comité général</value><comment>Committee tab — seat target label.</comment></data>

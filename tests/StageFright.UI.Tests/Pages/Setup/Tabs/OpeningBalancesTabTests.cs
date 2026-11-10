@@ -15,7 +15,8 @@ namespace StageFright.UI.Tests.Pages.Setup.Tabs;
 /// bUnit tests for OpeningBalancesTab (US2) — hosts the shared OpeningBalanceEntryForm
 /// covering existing eligible accounts plus this session's queued Chart of Accounts
 /// entries (each a placeholder Account keyed by ClientId). Nothing here posts to the
-/// ledger; OnSubmit bubbles the built request up for SetupWizard to queue.
+/// ledger; OnChange reports the full entry set up for SetupWizard to queue whenever an
+/// amount or the as-at date changes (issue #382 — no separate Queue button).
 /// </summary>
 public class OpeningBalancesTabTests : LocalizedTestContext
 {
@@ -42,10 +43,10 @@ public class OpeningBalancesTabTests : LocalizedTestContext
 
     private IRenderedComponent<OpeningBalancesTab> RenderTab(
         IReadOnlyList<QueuedAccountRequest>? queued = null,
-        EventCallback<RecordOpeningBalancesRequest>? onSubmit = null) =>
+        EventCallback<RecordOpeningBalancesRequest>? onChange = null) =>
         Render<OpeningBalancesTab>(p => p
             .Add(x => x.QueuedAccounts, queued ?? Array.Empty<QueuedAccountRequest>())
-            .Add(x => x.OnSubmit, onSubmit ?? EventCallback.Factory.Create<RecordOpeningBalancesRequest>(this, _ => { })));
+            .Add(x => x.OnChange, onChange ?? EventCallback.Factory.Create<RecordOpeningBalancesRequest>(this, _ => { })));
 
     [Fact]
     public void RendersOneRow_PerExistingAccount()
@@ -124,20 +125,88 @@ public class OpeningBalancesTabTests : LocalizedTestContext
     }
 
     [Fact]
-    public void OnSubmit_ReceivesBuiltRequest_WithAsAtDateAndNonZeroEntries()
+    public void Should_RenderNoQueueButton_When_TabShown()
     {
-        RecordOpeningBalancesRequest? submitted = null;
-        var cut = RenderTab(onSubmit: EventCallback.Factory.Create<RecordOpeningBalancesRequest>(this, r => submitted = r));
+        // Issue #382: the separate "Queue Balances" click is gone — entries sync on change.
+        var cut = RenderTab();
+
+        Assert.Empty(cut.FindAll(".wizard-post"));
+    }
+
+    [Fact]
+    public void Should_ReportBuiltRequest_When_AmountChanged()
+    {
+        RecordOpeningBalancesRequest? reported = null;
+        var cut = RenderTab(onChange: EventCallback.Factory.Create<RecordOpeningBalancesRequest>(this, r => reported = r));
 
         cut.Find("#ob-tab-as-at-date").Change("2025-01-01");
         cut.FindAll(".opening-balance-amount")[0].Change("1000");
-        cut.Find(".wizard-post").Click();
 
-        Assert.NotNull(submitted);
-        Assert.Equal(new DateTime(2025, 1, 1), submitted!.AsAtDate);
-        Assert.Single(submitted.Entries);
-        Assert.Equal(ExistingAccountId, submitted.Entries[0].AccountId);
-        Assert.Equal(1000m, submitted.Entries[0].Amount);
+        Assert.NotNull(reported);
+        Assert.Equal(new DateTime(2025, 1, 1), reported!.AsAtDate);
+        Assert.Single(reported.Entries);
+        Assert.Equal(ExistingAccountId, reported.Entries[0].AccountId);
+        Assert.Equal(1000m, reported.Entries[0].Amount);
+    }
+
+    [Fact]
+    public void Should_ReportEmptyEntries_When_OnlyAmountClearedToZero()
+    {
+        RecordOpeningBalancesRequest? reported = null;
+        var cut = RenderTab(onChange: EventCallback.Factory.Create<RecordOpeningBalancesRequest>(this, r => reported = r));
+
+        cut.FindAll(".opening-balance-amount")[0].Change("1000");
+        cut.FindAll(".opening-balance-amount")[0].Change("");
+
+        Assert.NotNull(reported);
+        Assert.Empty(reported!.Entries);
+    }
+
+    [Fact]
+    public void Should_ReReportEnteredBalances_UnderNewDate_When_AsAtDateChangedAfterEntry()
+    {
+        RecordOpeningBalancesRequest? reported = null;
+        var cut = RenderTab(onChange: EventCallback.Factory.Create<RecordOpeningBalancesRequest>(this, r => reported = r));
+
+        cut.FindAll(".opening-balance-amount")[0].Change("1000");
+        cut.Find("#ob-tab-as-at-date").Change("2025-07-01");
+
+        Assert.NotNull(reported);
+        Assert.Equal(new DateTime(2025, 7, 1), reported!.AsAtDate);
+        Assert.Single(reported.Entries);
+        Assert.Equal(1000m, reported.Entries[0].Amount);
+    }
+
+    [Fact]
+    public void Should_KeepDate_When_AsAtDateInputUnparseable()
+    {
+        RecordOpeningBalancesRequest? reported = null;
+        var cut = RenderTab(onChange: EventCallback.Factory.Create<RecordOpeningBalancesRequest>(this, r => reported = r));
+
+        cut.Find("#ob-tab-as-at-date").Change("not-a-date");
+
+        Assert.NotNull(reported);
+        Assert.Equal(DateTime.Today, reported!.AsAtDate);
+        Assert.Empty(reported.Entries);
+    }
+
+    [Fact]
+    public void Should_DropRemovedQueuedAccountEntry_When_AsAtDateChangedAfterRemoval()
+    {
+        var queuedId = Guid.NewGuid();
+        var queued = new[] { new QueuedAccountRequest(queuedId, "Grant Income", AccountType.Income, false) };
+        RecordOpeningBalancesRequest? reported = null;
+        var cut = RenderTab(queued: queued,
+            onChange: EventCallback.Factory.Create<RecordOpeningBalancesRequest>(this, r => reported = r));
+
+        cut.FindAll(".opening-balance-amount")[0].Change("1000"); // Cash on Hand
+        cut.FindAll(".opening-balance-amount")[1].Change("200");  // Grant Income
+        cut.Render(p => p.Add(x => x.QueuedAccounts, Array.Empty<QueuedAccountRequest>()));
+        cut.Find("#ob-tab-as-at-date").Change("2025-07-01");
+
+        Assert.NotNull(reported);
+        Assert.Single(reported!.Entries);
+        Assert.Equal(ExistingAccountId, reported.Entries[0].AccountId);
     }
 
     [Fact]
