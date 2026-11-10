@@ -1199,7 +1199,12 @@ a {
     padding: 2rem;
 }
 
+/* Blazor.Bootstrap's own stylesheet sizes every <main> as `flex: 1; height: 100vh`, which
+   stretched this one to the full window and pinned the notice to the top — size it to its
+   content so .blank-layout's flex centring works vertically too (issue #384). */
 .blank-layout-content {
+    flex: 0 1 auto;
+    height: auto;
     width: 100%;
     max-width: 480px;
 }

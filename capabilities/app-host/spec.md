@@ -199,3 +199,4 @@ After a restore completes successfully — from the first-run flow or from Setti
 #### Scenario: the restart screen is rendered
 - **WHEN** `/restart-required` is displayed
 - **THEN** it renders under the chrome-free `BlankLayout` (no `shell-sidebar`, no menu-item links, no theme switch), not `ShellLayout`
+- **AND** the restart notice is centred both horizontally and vertically in the window (issue #384)
