@@ -16,6 +16,8 @@ public partial class ReportsPage : ComponentBase
 
     private IReportProvider? _currentProvider;
 
+    private bool IsChartOfAccounts => _currentProvider?.ReportId == "chart-of-accounts";
+
     private string NotFoundText() =>
         Loc.Get<SharedResource>("Shared_ReportsPage_NotFound", ReportId ?? string.Empty);
 

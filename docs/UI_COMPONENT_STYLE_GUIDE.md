@@ -285,7 +285,7 @@ Below 576px every tile collapses to a single column. See [ARCHITECTURE.md § Das
 
 ## Reports
 
-`ReportViewer.razor` renders `ReportData` (rows/columns/sections/subtotals) inside a modal with a synchronous "Generating…" state; a Cancel action appears after 5 seconds. It is the one place that deviates from `RadzenDataGrid` (see above). In QuestPDF-rendered checkbox-style cells (`AttendanceRollPdfRenderer` etc.), render a checked box as a bordered `Container` with a centered "✓" glyph — **never** a solid filled box.
+`ReportViewer.razor` renders `ReportData` (rows/columns/sections/subtotals) inside a modal with a synchronous "Generating…" state; a Cancel action appears after 5 seconds. It is the one place that deviates from `RadzenDataGrid` (see above). A report whose on-screen view needs a richer grid can pass `ReportViewer` a `BodyTemplate` (given the applied filter values), which replaces only the table — title, filters and Print/Export/Refresh stay the viewer's, and printed/CSV output still comes from the provider. Chart of Accounts uses this so Reports → Chart of Accounts and Finance → Chart of Accounts show the same `ChartOfAccountsGrid` (type header rows via RadzenDataGrid grouping, Balance column driven by the Include balances switch; issue #367). In QuestPDF-rendered checkbox-style cells (`AttendanceRollPdfRenderer` etc.), render a checked box as a bordered `Container` with a centered "✓" glyph — **never** a solid filled box.
 
 ---
 

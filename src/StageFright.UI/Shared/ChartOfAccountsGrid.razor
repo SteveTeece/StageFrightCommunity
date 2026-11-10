@@ -1,0 +1,59 @@
+@using StageFright.Core.Modules.Finance
+
+@* Keyed on IncludeBalances so toggling it builds a fresh grid instead of flipping a live
+   column's Visible: Radzen's RadzenDataGridColumn reads its ParameterView after an await on a
+   Visible change, which throws "ParameterView ... has expired" in the real renderer. *@
+<RadzenDataGrid @key="IncludeBalances" Data="@Rows" TItem="ChartOfAccountsGridRow"
+                AllowSorting="true" AllowPaging="true" PageSize="15"
+                Render="@OnRender"
+                class="rz-shadow-0 chart-of-accounts-grid">
+    <GroupHeaderTemplate>
+        <span class="chart-of-accounts-section">@SectionHeading(context)</span>
+    </GroupHeaderTemplate>
+    <Columns>
+        <RadzenDataGridColumn TItem="ChartOfAccountsGridRow" Property="Account.AccountNumber" Title="@L["Finance_Coa_NumberColumn"]" Width="90px">
+            <Template Context="row">
+                <code>@row.Account.AccountNumber</code>
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ChartOfAccountsGridRow" Property="Account.Name" Title="@L["Finance_Coa_NameColumn"]">
+            <Template Context="row">
+                @if (EditTemplate is not null && EditingAccountId == row.Account.AccountId)
+                {
+                    @EditTemplate(row.Account)
+                }
+                else
+                {
+                    @row.Account.Name
+                    @if (row.Account.IsSystem)
+                    {
+                        <span class="badge bg-secondary ms-1" title="@L["Finance_Coa_SystemBadgeTitle"]">@L["Finance_Coa_SystemBadge"]</span>
+                    }
+                    @if (row.Account.IsBankAccount)
+                    {
+                        <span class="badge bg-info ms-1" title="@L["Finance_Coa_BankBadgeTitle"]">@L["Finance_Coa_BankBadge"]</span>
+                    }
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ChartOfAccountsGridRow" Property="Account.Balance" Title="@L["Finance_Coa_BalanceColumn"]"
+                              Width="130px" TextAlign="TextAlign.Right" Visible="@IncludeBalances">
+            <Template Context="row">
+                @if (row.Account.HasError)
+                {
+                    <span class="text-danger" title="@L["Finance_Coa_BalanceErrorTitle"]">—</span>
+                }
+                else
+                {
+                    @(row.Account.Balance is { } balance ? MoneyFormatter.Format(balance) : null)
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ChartOfAccountsGridRow" Title="@ActionsTitle" Width="210px" Sortable="false"
+                              Visible="@(RowActions is not null)">
+            <Template Context="row">
+                @RowActions?.Invoke(row.Account)
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>

@@ -7,7 +7,16 @@
     <h1 class="h3 mb-0">@L["Shared_ReportsPage_Heading"]</h1>
 </div>
 
-@if (_currentProvider != null)
+@if (_currentProvider != null && IsChartOfAccounts)
+{
+    @* Same grid as Finance → Chart of Accounts (issue #367); Print/Export still use the provider. *@
+    <ReportViewer Provider="_currentProvider">
+        <BodyTemplate Context="filters">
+            <ChartOfAccountsReportView IncludeBalances="@(filters.Get("includeBalances") == "true")" />
+        </BodyTemplate>
+    </ReportViewer>
+}
+else if (_currentProvider != null)
 {
     <ReportViewer Provider="_currentProvider" />
 }
