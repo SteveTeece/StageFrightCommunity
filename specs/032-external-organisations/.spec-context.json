@@ -109,49 +109,175 @@
       ]
     },
     "FR-002": {
-      "title": "Add organisation with required name, optional address and receipts email"
+      "title": "Add organisation with required name, optional address and receipts email",
+      "tasks": [
+        "T002",
+        "T026",
+        "T028",
+        "T030",
+        "T032",
+        "T034"
+      ]
     },
     "FR-003": {
-      "title": "Refuse duplicate active organisation names, case- and space-insensitive"
+      "title": "Refuse duplicate active organisation names, case- and space-insensitive",
+      "tasks": [
+        "T012",
+        "T024",
+        "T026",
+        "T028",
+        "T032"
+      ]
     },
     "FR-004": {
-      "title": "Validate email format and field lengths with inline messages"
+      "title": "Validate email format and field lengths with inline messages",
+      "tasks": [
+        "T007",
+        "T025",
+        "T026",
+        "T028",
+        "T034",
+        "T038",
+        "T042"
+      ]
     },
     "FR-005": {
-      "title": "Edit organisation name, address and email"
+      "title": "Edit organisation name, address and email",
+      "tasks": [
+        "T026",
+        "T028",
+        "T032",
+        "T034"
+      ]
     },
     "FR-006": {
-      "title": "Archive and restore organisations without deleting data"
+      "title": "Archive and restore organisations without deleting data",
+      "tasks": [
+        "T019",
+        "T022",
+        "T026",
+        "T029",
+        "T032",
+        "T035"
+      ]
     },
     "FR-007": {
-      "title": "Show-archived switch and live name search on the list"
+      "title": "Show-archived switch and live name search on the list",
+      "tasks": [
+        "T027",
+        "T033"
+      ]
     },
     "FR-008": {
-      "title": "Add, edit, remove contacts (name required, role and phone optional)"
+      "title": "Add, edit, remove contacts (name required; role, phone, mobile, email optional)",
+      "tasks": [
+        "T003",
+        "T036",
+        "T037",
+        "T038",
+        "T039",
+        "T040",
+        "T041",
+        "T042",
+        "T043"
+      ]
     },
     "FR-009": {
-      "title": "Removing a contact hides it without deleting data"
+      "title": "Removing a contact hides it without deleting data",
+      "tasks": [
+        "T020",
+        "T023",
+        "T036",
+        "T037",
+        "T041"
+      ]
     },
     "FR-010": {
-      "title": "Optional organisation choice on expense and income entry, posting unchanged"
+      "title": "Optional organisation choice on expense and income entry, fixed at recording, payee pre-fill",
+      "tasks": [
+        "T004",
+        "T014",
+        "T044",
+        "T045",
+        "T049",
+        "T050",
+        "T052",
+        "T053",
+        "T057",
+        "T058",
+        "T059",
+        "T060",
+        "T064",
+        "T065"
+      ]
     },
     "FR-011": {
-      "title": "Organisation financial history, newest first, with totals paid and received"
+      "title": "Organisation financial history, newest first, with totals paid and received",
+      "tasks": [
+        "T046",
+        "T047",
+        "T048",
+        "T054",
+        "T055",
+        "T056",
+        "T061",
+        "T062",
+        "T063",
+        "T066"
+      ]
     },
     "FR-012": {
-      "title": "History totals count only the bank-side movement once per entry"
+      "title": "History totals count only the bank-side movement once per entry",
+      "tasks": [
+        "T047",
+        "T051",
+        "T063"
+      ]
     },
     "FR-013": {
-      "title": "History amounts use the configured currency formatting"
+      "title": "History amounts use the configured currency formatting",
+      "tasks": [
+        "T048",
+        "T066"
+      ]
     },
     "FR-014": {
-      "title": "Audit-trail entries for organisation and contact changes"
+      "title": "Audit-trail entries for organisation and contact changes",
+      "tasks": [
+        "T026",
+        "T032",
+        "T036",
+        "T041"
+      ]
     },
     "FR-015": {
-      "title": "Backup and restore include organisations, contacts and links; old backups restore empty"
+      "title": "Backup and restore include organisations, contacts and links; old backups restore empty",
+      "tasks": [
+        "T067",
+        "T068",
+        "T069",
+        "T070",
+        "T071",
+        "T072",
+        "T073",
+        "T074",
+        "T075",
+        "T076",
+        "T077",
+        "T078"
+      ]
     },
     "FR-016": {
-      "title": "All new text translated into every shipped language"
+      "title": "All new text translated into every shipped language",
+      "tasks": [
+        "T008",
+        "T009",
+        "T010",
+        "T011",
+        "T015",
+        "T016",
+        "T085"
+      ]
     }
   },
   "classification": {
@@ -230,6 +356,9 @@
     "plan": {
       "summary": "Full plan, research, data model and UI contract for the external organisations register with linked expense/income history",
       "key_finding": "Linking at the JournalEntry header keeps ledger lines immutable and makes the history amount a simple debit sum"
+    },
+    "tasks": {
+      "summary": "85 tasks in 7 phases: Setup, Foundational (5 waves), US1 MVP, US2, US3, Backup, Polish; detail screen split into three tab pages so each story owns its files"
     }
   },
   "approach": "New Organisations module with ExternalOrganisation and soft-deletable contacts, a nullable FK on JournalEntry stamped by the expense and income services, and history computed from linked journal entries. Backup schema goes to 1.3.0, with organisations restored before journal entries. A new localized OrganisationsResource area and a top-level menu entry after Members."
