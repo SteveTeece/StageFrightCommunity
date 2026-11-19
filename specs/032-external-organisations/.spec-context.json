@@ -1,0 +1,102 @@
+{
+  "workflow": "companion",
+  "specName": "External Organisations",
+  "branch": "032-external-organisations",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-19T18:54:57.959Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-19T18:56:40.010Z"
+    }
+  ],
+  "telemetryInstanceId": "400d696d-69ec-4378-8ed1-dfd9f6289af3",
+  "request": "create a new spec for issue #388",
+  "expectations": [
+    "emailing receipts or correspondence",
+    "interaction notes or meeting log",
+    "importing organisations from a file",
+    "merging duplicate organisations",
+    "printable organisations report",
+    "retroactively linking existing transactions",
+    "linking fees, member payments or journal entries to organisations",
+    "linking organisations to events or rehearsals"
+  ],
+  "context": [
+    "area: src/StageFright.Core/Entities (Transaction has MemberId but no organisation link)",
+    "area: src/StageFright.Core/Modules/Finance (RecordExpenseRequest has free-text Payee; RecordIncomeRequest has none)",
+    "constraint: financial records immutable, so links are set at entry time only",
+    "constraint: soft-delete for non-finance entities",
+    "constraint: every neutral resx key translated into all shipped cultures",
+    "constraint: backup/restore schema must carry new data"
+  ],
+  "coverage": {
+    "FR-001": {
+      "title": "Organisations screen in main nav with sortable paged grid (name, email, contact count)"
+    },
+    "FR-002": {
+      "title": "Add organisation with required name, optional address and receipts email"
+    },
+    "FR-003": {
+      "title": "Refuse duplicate active organisation names, case- and space-insensitive"
+    },
+    "FR-004": {
+      "title": "Validate email format and field lengths with inline messages"
+    },
+    "FR-005": {
+      "title": "Edit organisation name, address and email"
+    },
+    "FR-006": {
+      "title": "Archive and restore organisations without deleting data"
+    },
+    "FR-007": {
+      "title": "Show-archived switch and live name search on the list"
+    },
+    "FR-008": {
+      "title": "Add, edit, remove contacts (name required, role and phone optional)"
+    },
+    "FR-009": {
+      "title": "Removing a contact hides it without deleting data"
+    },
+    "FR-010": {
+      "title": "Optional organisation choice on expense and income entry, posting unchanged"
+    },
+    "FR-011": {
+      "title": "Organisation financial history, newest first, with totals paid and received"
+    },
+    "FR-012": {
+      "title": "History totals count only the bank-side movement once per entry"
+    },
+    "FR-013": {
+      "title": "History amounts use the configured currency formatting"
+    },
+    "FR-014": {
+      "title": "Audit-trail entries for organisation and contact changes"
+    },
+    "FR-015": {
+      "title": "Backup and restore include organisations, contacts and links; old backups restore empty"
+    },
+    "FR-016": {
+      "title": "All new text translated into every shipped language"
+    }
+  },
+  "classification": {
+    "projectedFiles": 35,
+    "projectedTasks": 30,
+    "scopeSignal": "none",
+    "verdict": "oversized"
+  },
+  "intent": "Keep a small CRM-style register of external organisations with contacts and linked financial history",
+  "size": "oversized",
+  "source": "#388"
+}
