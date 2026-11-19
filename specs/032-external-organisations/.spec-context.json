@@ -2,8 +2,8 @@
   "workflow": "companion",
   "specName": "External Organisations",
   "branch": "032-external-organisations",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -53,6 +53,27 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-19T19:21:40.871Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-19T19:25:31.810Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:29:13.569Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:29:14.032Z"
     }
   ],
   "telemetryInstanceId": "400d696d-69ec-4378-8ed1-dfd9f6289af3",
@@ -77,7 +98,15 @@
   ],
   "coverage": {
     "FR-001": {
-      "title": "Organisations screen in main nav with sortable paged grid (name, email, contact count)"
+      "title": "Organisations screen in main nav with sortable paged grid (name, email, contact count)",
+      "tasks": [
+        "T027",
+        "T033",
+        "T079",
+        "T080",
+        "T081",
+        "T082"
+      ]
     },
     "FR-002": {
       "title": "Add organisation with required name, optional address and receipts email"
