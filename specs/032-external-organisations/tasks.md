@@ -8,7 +8,7 @@
 
 ## Phase 1: Setup
 
-- [ ] **T001** Rework the docs to match this task split: split contract §3.3/§3.4 into three tab routes: `/organisations/{Id:guid}` (details, `OrganisationDetail`), `/organisations/{Id:guid}/contacts` (`OrganisationContacts`, which hosts `ContactEditor`) and `/organisations/{Id:guid}/history` (`OrganisationHistoryPage`), plus a shared `OrganisationTabs` strip. Move `GetHistoryAsync` from `IExternalOrganisationService` to a new `IOrganisationHistoryService`. Update plan.md's Screens, Call Flow and Project Structure sections to match · specs/032-external-organisations/contracts/ui-contract.md, specs/032-external-organisations/plan.md
+- [x] **T001** Rework the docs to match this task split: split contract §3.3/§3.4 into three tab routes: `/organisations/{Id:guid}` (details, `OrganisationDetail`), `/organisations/{Id:guid}/contacts` (`OrganisationContacts`, which hosts `ContactEditor`) and `/organisations/{Id:guid}/history` (`OrganisationHistoryPage`), plus a shared `OrganisationTabs` strip. Move `GetHistoryAsync` from `IExternalOrganisationService` to a new `IOrganisationHistoryService`. Update plan.md's Screens, Call Flow and Project Structure sections to match · specs/032-external-organisations/contracts/ui-contract.md, specs/032-external-organisations/plan.md
 
 ## Phase 2: Foundational (blocks every story)
 

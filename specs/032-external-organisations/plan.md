@@ -2,7 +2,7 @@
 
 **Branch**: `032-external-organisations` | **Date**: 2026-11-20 | **Spec**: [spec.md](./spec.md)
 
-> **Scale note**: this change spans about 35 files across five areas. It adds a new Core module, two entities with a migration, a backup schema bump to 1.3.0, two finance entry screens, and a new localization area translated into seven cultures. Watch three seams in particular. The restore order must load organisations before journal entries. Expense and income postings with no organisation chosen must stay byte-identical. Every new neutral key must ship translated.
+> **Scale note**: this change spans about 60 files across five areas. It adds a new Core module, two entities with a migration, a backup schema bump to 1.3.0, two finance entry screens, and a new localization area translated into seven cultures. Watch three seams in particular. The restore order must load organisations before journal entries. Expense and income postings with no organisation chosen must stay byte-identical. Every new neutral key must ship translated.
 
 ## Summary
 
@@ -41,9 +41,11 @@ src/StageFright.Core/
   Contracts/IExternalOrganisationContactRepository.cs (new)
   Contracts/IExternalOrganisationService.cs        (new)
   Contracts/IExternalOrganisationContactService.cs (new)
+  Contracts/IOrganisationHistoryService.cs         (new, GetHistoryAsync)
   Contracts/IJournalEntryRepository.cs             (+ GetByExternalOrganisationAsync)
   Modules/Organisations/ExternalOrganisationService.cs        (new)
   Modules/Organisations/ExternalOrganisationContactService.cs (new)
+  Modules/Organisations/OrganisationHistoryService.cs         (new)
   Modules/Organisations/OrganisationsMenuItemProvider.cs      (new)
   Modules/Organisations/ExternalOrganisationValidationService.cs (new, per-field rules shared by forms and services, FR-004)
   Modules/Organisations/SaveExternalOrganisationRequest.cs    (new)
@@ -76,8 +78,11 @@ src/StageFright.Data/
 src/StageFright.UI/
   Pages/Organisations/OrganisationList.razor(.cs)   (new, /organisations)
   Pages/Organisations/OrganisationForm.razor(.cs)   (new, /organisations/new, /organisations/{id}/edit)
-  Pages/Organisations/OrganisationDetail.razor(.cs) (new, /organisations/{id})
-  Pages/Organisations/ContactEditor.razor(.cs)      (new, inline add/edit on detail)
+  Pages/Organisations/OrganisationTabs.razor(.cs)   (new, shared Details/Contacts/History strip)
+  Pages/Organisations/OrganisationDetail.razor(.cs) (new, /organisations/{id}, Details tab)
+  Pages/Organisations/OrganisationContacts.razor(.cs) (new, /organisations/{id}/contacts)
+  Pages/Organisations/ContactEditor.razor(.cs)      (new, inline add/edit on the Contacts tab)
+  Pages/Organisations/OrganisationHistoryPage.razor(.cs) (new, /organisations/{id}/history)
   Pages/Finance/ExpensePaymentPage.razor(.cs), ExpensePaymentModel.cs (+ picker, payee fill)
   Pages/Finance/RecordIncome.razor(.cs), RecordIncomeModel.cs         (+ picker)
   Resources/Strings/OrganisationsResource.cs + .resx x 9 (new area)
@@ -88,7 +93,7 @@ tests/  Core, Data, UI, Integration, Localization  (new and extended tests)
 CLAUDE.md, docs/localization/adding-a-language.md (module list, entity count, area count)
 ```
 
-**Structure Decision**: a new `Organisations` module slice follows the existing Members/Events shape. The financial link is one nullable FK on `JournalEntry`, not on `Transaction`, because one expense or income entry is exactly one journal entry.
+**Structure Decision**: a new `Organisations` module slice follows the existing Members/Events shape. The financial link is one nullable FK on `JournalEntry`, not on `Transaction`, because one expense or income entry is exactly one journal entry. The organisation's detail screen is three tab pages joined by `OrganisationTabs`, and the history has its own `IOrganisationHistoryService`. That way each user story owns its own page and service, and no story edits another's file.
 
 ## Call Flow
 
@@ -97,12 +102,12 @@ Recording an expense with an organisation:
 1. `ExpensePaymentPage` loads active organisations through `IExternalOrganisationService.GetActiveAsync`.
 2. On selection, the page fills `_form.Payee` only when it is blank (FR-010).
 3. The submit sends `RecordExpenseRequest { ExternalOrganisationId }` to `ExpensePaymentService.RecordExpenseAsync`.
-4. Before the transaction opens, the service loads the organisation through `IExternalOrganisationRepository.GetByIdIncludingArchivedAsync`. A missing or archived organisation raises a `ValidationException`.
+4. Before the transaction opens, the service loads the organisation through `IExternalOrganisationRepository.GetByIdIncludingArchivedAsync`. A missing organisation raises `EntityNotFoundException`, and an archived one raises `ValidationException`.
 5. Inside `IUnitOfWork.ExecuteInTransactionAsync`, the `JournalEntry` is added with `ExternalOrganisationId` set. Ledger lines and the audit entry are unchanged.
 
 Viewing the history:
 
-1. `OrganisationDetail` calls `IExternalOrganisationService.GetHistoryAsync(id)`.
+1. `OrganisationHistoryPage` loads the organisation through `IExternalOrganisationService.GetByIdAsync`. Null shows the not-found message. Otherwise it calls `IOrganisationHistoryService.GetHistoryAsync(id)`.
 2. That calls `IJournalEntryRepository.GetByExternalOrganisationAsync(id)`, which returns entries with their `Transactions` and each line's `Account`.
 3. The service maps each entry to an `OrganisationHistoryEntry`. Its amount is the sum of `DebitAmount`, its direction comes from `JournalEntryType`, and its account is the non-bank line's account. The service then totals paid and received.
 4. The page renders amounts with `MoneyFormatter.Format`.
@@ -120,7 +125,10 @@ A contact has no restore action in the UI (the spec asks only for removal). It s
 
 - **`/organisations` (OrganisationList)**: a search box, a "show archived" switch, an Add button, and a grid of name, email and contact count. A row click opens the detail screen. An empty state shows when there are no rows.
 - **`/organisations/new`, `/organisations/{id}/edit` (OrganisationForm)**: name, multi-line address and email, with inline validation messages.
-- **`/organisations/{id}` (OrganisationDetail)**: the details card with Edit and Archive/Restore buttons, a contacts grid with an inline `ContactEditor` for add and edit, and a financial history grid with "Total paid" and "Total received".
+- **The organisation's detail screen**: three tabs under the organisation's name, joined by the `OrganisationTabs` strip.
+  - **`/organisations/{id}` (OrganisationDetail, Details tab)**: the details card with Edit and Archive/Restore buttons.
+  - **`/organisations/{id}/contacts` (OrganisationContacts, Contacts tab)**: a contacts grid with an inline `ContactEditor` for add and edit.
+  - **`/organisations/{id}/history` (OrganisationHistoryPage, History tab)**: a financial history grid with "Total paid" and "Total received".
 - **Expense payment / Record income**: a new optional "Organisation" select above the payee (expense) or description (income) field.
 
 ## Phase 0 and Phase 1 outputs

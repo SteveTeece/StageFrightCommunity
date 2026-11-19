@@ -12,12 +12,16 @@ The spec has no Verbatim Constraints section. The user-visible English (en-AU) s
 |---|---|---|
 | `/organisations` | `Pages/Organisations/OrganisationList.razor` | Top-level menu target (FR-001). |
 | `/organisations/new` | `Pages/Organisations/OrganisationForm.razor` | Create mode. Saving goes to `/organisations/{Id}`. |
-| `/organisations/{Id:guid}/edit` | `Pages/Organisations/OrganisationForm.razor` | Edit mode. Saving goes to `/organisations/{Id}`. Cancel goes back to the detail screen. |
-| `/organisations/{Id:guid}` | `Pages/Organisations/OrganisationDetail.razor` | Details, contacts and financial history. Works for active and archived organisations. An unknown id shows a not-found message, not an exception. |
+| `/organisations/{Id:guid}/edit` | `Pages/Organisations/OrganisationForm.razor` | Edit mode. Saving goes to `/organisations/{Id}`. Cancel goes back to the Details tab. |
+| `/organisations/{Id:guid}` | `Pages/Organisations/OrganisationDetail.razor` | Details tab (§3.4). |
+| `/organisations/{Id:guid}/contacts` | `Pages/Organisations/OrganisationContacts.razor` | Contacts tab (§3.5). Hosts `ContactEditor`. |
+| `/organisations/{Id:guid}/history` | `Pages/Organisations/OrganisationHistoryPage.razor` | Financial history tab (§3.7). |
 | `/finance` tab `record-expense` | `Pages/Finance/ExpensePaymentPage.razor` (also `@page "/finance/expenses"`) | Gains the organisation picker (§5). |
 | `/finance` tab `record-income` | `Pages/Finance/RecordIncome.razor` | Gains the organisation picker (§5). |
 
 Every new `.razor` has a paired `.razor.cs`, with no `@code` block.
+
+The spec's "detail screen" is these three tabs, joined by the shared `OrganisationTabs` strip (§3.3). Each tab is its own page, so each user story owns its own file: US1 the Details tab, US2 the Contacts tab, US3 the History tab. Each tab loads the organisation itself through `IExternalOrganisationService.GetByIdAsync`. Each works for active and archived organisations, and each shows `L["Organisations_Detail_NotFound"]` for an unknown id, not an exception. Each renders the organisation's name as its `h1`, plus the `L["Organisations_Detail_ArchivedBadge"]` badge when archived, above the strip.
 
 ## 2. Navigation
 
@@ -59,23 +63,44 @@ Ids follow the existing camelCase convention (`#payee`, `#expenseDate`, `showIna
 
 Field-level messages (FR-004) follow the `MemberForm` pattern. Before calling the service, the page fills a `Dictionary<string, string> _errors` keyed by request property name (`"Name"`, `"Address"`, `"Email"`) from `ExternalOrganisationValidationService.GetErrors(request)` (§4.4). Each offending input gets `is-invalid` and a following `<div class="invalid-feedback">` holding the message. The service is not called while `_errors` is non-empty.
 
-### 3.3 `OrganisationDetail` (`/organisations/{Id:guid}`)
+### 3.3 `OrganisationTabs` (shared strip)
+
+| Parameter | Type | Contract |
+|---|---|---|
+| `Id` | `Guid` | Required. The organisation the links point at. |
+| `Active` | `string` | Required. `"details"`, `"contacts"` or `"history"`. |
 
 | Element | Contract |
 |---|---|
-| Details card | Shows name, address (line breaks preserved), email, and an archived badge when archived. |
+| `<nav aria-label>` | `L["Organisations_Tabs_AriaLabel"]`. Holds a Bootstrap `nav nav-tabs` list. |
+| `#organisationTabDetails` | Links to `/organisations/{Id}`. Label `L["Organisations_Tabs_Details"]`. |
+| `#organisationTabContacts` | Links to `/organisations/{Id}/contacts`. Label `L["Organisations_Tabs_Contacts"]`. |
+| `#organisationTabHistory` | Links to `/organisations/{Id}/history`. Label `L["Organisations_Tabs_History"]`. |
+
+The link matching `Active` gets the `active` class and `aria-current="page"`. The strip loads no data.
+
+### 3.4 `OrganisationDetail` (`/organisations/{Id:guid}`, Details tab)
+
+| Element | Contract |
+|---|---|
+| `OrganisationTabs` | `Active="details"`. |
+| Details card | Shows address (line breaks preserved) and email. |
 | `#editOrganisationButton` | Opens `/organisations/{Id}/edit`. Shown only while active. |
 | `#archiveOrganisationButton` | Shown while active. Calls `IExternalOrganisationService.ArchiveAsync`. |
 | `#restoreOrganisationButton` | Shown while archived. Calls `RestoreAsync`. A `ValidationException` (name taken) shows in `#organisationDetailError`. |
 | `#organisationDetailError` | `alert alert-danger` for service refusals. |
-| Contacts grid | `RadzenDataGrid<ExternalOrganisationContact>`, Members-grid attributes, `PageSize="15"`. Columns: Name, Role, Phone, Mobile, Email (`Organisations_Contacts_Col*`). Empty state: `L["Organisations_Contacts_Empty"]`. |
-| `#addContactButton` | Opens an empty `ContactEditor`. Shown only while the organisation is active. |
-| Per-row `#editContact-{ContactId}` / `#removeContact-{ContactId}` | Edit loads that contact into `ContactEditor`. Remove calls `IExternalOrganisationContactService.RemoveAsync`. Both are shown only while the organisation is active. |
-| History grid | `RadzenDataGrid<OrganisationHistoryEntry>`, Members-grid attributes, `PageSize="15"`. Columns: Date, Description, Account, Amount, with Amount in a `<Template>` calling `MoneyFormatter.Format(...)` (FR-013). Rows arrive newest first. Empty state: `L["Organisations_History_Empty"]`. |
-| `#totalPaid` | Label `L["Organisations_History_TotalPaid"]` ("Total paid"), value `MoneyFormatter.Format(history.TotalPaid)`. |
-| `#totalReceived` | Label `L["Organisations_History_TotalReceived"]` ("Total received"), value `MoneyFormatter.Format(history.TotalReceived)`. |
 
-### 3.4 `ContactEditor` (inline on `OrganisationDetail`)
+### 3.5 `OrganisationContacts` (`/organisations/{Id:guid}/contacts`, Contacts tab)
+
+| Element | Contract |
+|---|---|
+| `OrganisationTabs` | `Active="contacts"`. |
+| Contacts grid | `RadzenDataGrid<ExternalOrganisationContact>` over the organisation's `Contacts`, Members-grid attributes, `PageSize="15"`. Columns: Name, Role, Phone, Mobile, Email (`Organisations_Contacts_Col*`). Empty state: `L["Organisations_Contacts_Empty"]`. |
+| `#addContactButton` | Opens an empty `ContactEditor`. Shown only while the organisation is active. |
+| Per-row `#editContact-{ContactId}` / `#removeContact-{ContactId}` | Edit loads that contact into `ContactEditor`. Remove calls `IExternalOrganisationContactService.RemoveAsync`, then reloads. Both are shown only while the organisation is active. |
+| `#organisationContactsError` | `alert alert-danger` for a refused remove. |
+
+### 3.6 `ContactEditor` (inline on `OrganisationContacts`)
 
 | Parameter | Type | Contract |
 |---|---|---|
@@ -95,6 +120,17 @@ Field-level messages (FR-004) follow the `MemberForm` pattern. Before calling th
 | `#contactEditorError` | `alert alert-danger` for service refusals. |
 
 Field-level messages use the same `_errors` pattern as §3.2, keyed `"Name"`, `"Role"`, `"Phone"`, `"Mobile"`, `"Email"`.
+
+### 3.7 `OrganisationHistoryPage` (`/organisations/{Id:guid}/history`, History tab)
+
+The page loads the organisation through `IExternalOrganisationService.GetByIdAsync`, then the history through `IOrganisationHistoryService.GetHistoryAsync` (§4.9).
+
+| Element | Contract |
+|---|---|
+| `OrganisationTabs` | `Active="history"`. |
+| History grid | `RadzenDataGrid<OrganisationHistoryEntry>`, Members-grid attributes, `PageSize="15"`. Columns: Date, Description, Account, Amount, with Amount in a `<Template>` calling `MoneyFormatter.Format(...)` (FR-013). Rows arrive newest first. Empty state: `L["Organisations_History_Empty"]`. |
+| `#totalPaid` | Label `L["Organisations_History_TotalPaid"]` ("Total paid"), value `MoneyFormatter.Format(history.TotalPaid)`. |
+| `#totalReceived` | Label `L["Organisations_History_TotalReceived"]` ("Total received"), value `MoneyFormatter.Format(history.TotalReceived)`. |
 
 ## 4. Core types and services
 
@@ -171,7 +207,7 @@ Length limits match the EF configuration (data-model.md), so the database never 
 
 ### 4.4 `ExternalOrganisationValidationService` (`Modules/Organisations/`, new)
 
-This is the one owner of the format and length rules above. Both the form pages (§3.2, §3.4) and the services use it, so the rule text exists in one place. It mirrors `MemberValidationService` and adds the per-field shape FR-004 needs.
+This is the one owner of the format and length rules above. Both the form pages (§3.2, §3.6) and the services use it, so the rule text exists in one place. It mirrors `MemberValidationService` and adds the per-field shape FR-004 needs.
 
 ```csharp
 public partial class ExternalOrganisationValidationService
@@ -213,12 +249,10 @@ public interface IExternalOrganisationService
     /// Throws ValidationException (Validation_Organisation_NameDuplicate) when an active
     /// organisation now uses the name. Audits Restore.
     Task RestoreAsync(Guid id, CancellationToken ct = default);
-
-    /// Linked expense and income entries with totals (§4.2). Works for archived organisations.
-    /// Throws EntityNotFoundException for an unknown id.
-    Task<OrganisationHistory> GetHistoryAsync(Guid id, CancellationToken ct = default);
 }
 ```
+
+The financial history is not on this service. It lives on `IOrganisationHistoryService` (§4.9), so US3 owns it without editing US1's service.
 
 ### 4.6 `IExternalOrganisationContactService` (`StageFright.Core/Contracts/`)
 
@@ -269,6 +303,19 @@ Task<IReadOnlyList<JournalEntry>> GetByExternalOrganisationAsync(Guid externalOr
 ```
 
 `GetAllAsync` and `GetArchivedAsync` on `IExternalOrganisationRepository` load `Contacts` filtered to non-removed contacts, including for archived organisations. Implementations inherit `DataAccessException` translation from `BaseRepository` / `SoftDeletableBaseRepository`.
+
+### 4.9 `IOrganisationHistoryService` (`StageFright.Core/Contracts/`)
+
+```csharp
+public interface IOrganisationHistoryService
+{
+    /// Linked expense and income entries with totals, mapped per §4.2. Works for archived
+    /// organisations. An unknown id has no linked entries, so it returns an empty history.
+    Task<OrganisationHistory> GetHistoryAsync(Guid organisationId, CancellationToken ct = default);
+}
+```
+
+`Modules/Organisations/OrganisationHistoryService.cs` implements it on top of `IJournalEntryRepository.GetByExternalOrganisationAsync` alone. It never checks that the organisation exists: the History tab does that through `IExternalOrganisationService.GetByIdAsync` before it asks for the history.
 
 ## 5. Finance screen and service changes
 
@@ -332,18 +379,20 @@ All keys are added to the neutral `.resx` (en-AU) and translated into `de-DE`, `
 |---|---|
 | List | `Organisations_List_PageTitle`, `Organisations_List_Heading` ("Organisations"), `Organisations_List_AddButton` ("Add organisation"), `Organisations_List_SearchPlaceholder`, `Organisations_List_SearchAriaLabel`, `Organisations_List_ShowArchivedLabel` ("Show archived"), `Organisations_List_ArchivedBadge`, `Organisations_List_ColName`, `Organisations_List_ColEmail`, `Organisations_List_ColContacts`, `Organisations_List_Empty`, `Organisations_List_NoMatch`, `Organisations_List_LoadingText` |
 | Form | `Organisations_Form_PageTitleNew`, `Organisations_Form_PageTitleEdit`, `Organisations_Form_NameLabel`, `Organisations_Form_AddressLabel`, `Organisations_Form_EmailLabel`, `Organisations_Form_EmailHelp`, `Organisations_Form_SaveButton`, `Organisations_Form_CancelButton` |
+| Tabs | `Organisations_Tabs_AriaLabel`, `Organisations_Tabs_Details`, `Organisations_Tabs_Contacts`, `Organisations_Tabs_History` |
 | Detail | `Organisations_Detail_PageTitle`, `Organisations_Detail_NotFound`, `Organisations_Detail_EditButton`, `Organisations_Detail_ArchiveButton`, `Organisations_Detail_RestoreButton`, `Organisations_Detail_ArchivedBadge`, `Organisations_Detail_AddressLabel`, `Organisations_Detail_EmailLabel` |
-| Contacts | `Organisations_Contacts_Heading`, `Organisations_Contacts_AddButton`, `Organisations_Contacts_ColName`, `Organisations_Contacts_ColRole`, `Organisations_Contacts_ColPhone`, `Organisations_Contacts_ColMobile`, `Organisations_Contacts_ColEmail`, `Organisations_Contacts_EditButton`, `Organisations_Contacts_RemoveButton`, `Organisations_Contacts_SaveButton`, `Organisations_Contacts_CancelButton`, `Organisations_Contacts_Empty` |
-| History | `Organisations_History_Heading`, `Organisations_History_ColDate`, `Organisations_History_ColDescription`, `Organisations_History_ColAccount`, `Organisations_History_ColAmount`, `Organisations_History_TotalPaid` ("Total paid"), `Organisations_History_TotalReceived` ("Total received"), `Organisations_History_Empty` |
+| Contacts | `Organisations_Contacts_PageTitle`, `Organisations_Contacts_Heading`, `Organisations_Contacts_AddButton`, `Organisations_Contacts_ColName`, `Organisations_Contacts_ColRole`, `Organisations_Contacts_ColPhone`, `Organisations_Contacts_ColMobile`, `Organisations_Contacts_ColEmail`, `Organisations_Contacts_EditButton`, `Organisations_Contacts_RemoveButton`, `Organisations_Contacts_SaveButton`, `Organisations_Contacts_CancelButton`, `Organisations_Contacts_Empty` |
+| History | `Organisations_History_PageTitle`, `Organisations_History_Heading`, `Organisations_History_ColDate`, `Organisations_History_ColDescription`, `Organisations_History_ColAccount`, `Organisations_History_ColAmount`, `Organisations_History_TotalPaid` ("Total paid"), `Organisations_History_TotalReceived` ("Total received"), `Organisations_History_Empty` |
 | Shared | `Organisations_Error_Unexpected` |
 
 ## 8. DI registration (`MauiProgram`)
 
-`IExternalOrganisationRepository` → `ExternalOrganisationRepository`, `IExternalOrganisationContactRepository` → `ExternalOrganisationContactRepository`, `IExternalOrganisationService` → `ExternalOrganisationService`, `IExternalOrganisationContactService` → `ExternalOrganisationContactService`, and `ExternalOrganisationValidationService` (concrete, the same lifetime as `MemberValidationService`) are all scoped. `IMenuItemProvider` → `OrganisationsMenuItemProvider`.
+`IExternalOrganisationRepository` → `ExternalOrganisationRepository`, `IExternalOrganisationContactRepository` → `ExternalOrganisationContactRepository`, `IExternalOrganisationService` → `ExternalOrganisationService`, `IExternalOrganisationContactService` → `ExternalOrganisationContactService`, `IOrganisationHistoryService` → `OrganisationHistoryService`, and `ExternalOrganisationValidationService` (concrete, the same lifetime as `MemberValidationService`) are all scoped. `IMenuItemProvider` → `OrganisationsMenuItemProvider`.
 
 ## 9. Additions to plan.md
 
 These additions fill gaps in plan.md's file list. Plan.md and data-model.md should pick them up:
 
 - `Modules/Organisations/ExternalOrganisationValidationService.cs` (§4.4). FR-004 needs field-level messages, and the existing `MemberValidationService` only throws one message, so the form could not place it next to a field.
+- The three detail tabs (§3.3–§3.7) and `IOrganisationHistoryService` (§4.9). One detail page would have been edited by all three stories. Splitting it lets each story own its own page and service.
 - `IExternalOrganisationRepository.GetByIdIncludingArchivedAsync` (§4.8). The inherited `GetByIdAsync` uses `FindAsync`, which applies the soft-delete filter. It returns null for an archived organisation, so the service could not tell "archived" (`ValidationException`) from "unknown" (`EntityNotFoundException`), which research §6 requires.
