@@ -89,6 +89,222 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-19T19:35:31.004Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:43:13.837Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:43:21.250Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:44:28.536Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:44:28.711Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:44:28.880Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:45:04.054Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:45:04.298Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:48:23.949Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:48:24.143Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:48:46.140Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:48:46.142Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:48:46.143Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:52:09.161Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:52:53.388Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:53:28.583Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:53:28.879Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:54:28.673Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:54:28.965Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:56:27.096Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:58:25.595Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:58:25.596Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:58:25.597Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T20:01:04.784Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T20:01:04.974Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T20:01:11.054Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T20:01:42.537Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T074",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T20:04:43.694Z"
     }
   ],
   "telemetryInstanceId": "400d696d-69ec-4378-8ed1-dfd9f6289af3",
@@ -142,6 +358,9 @@
         "T026",
         "T028",
         "T032"
+      ],
+      "tests": [
+        "tests/StageFright.Data.Tests/Migrations/AddExternalOrganisationsMigrationTests.cs; tests/StageFright.Data.Tests/Repositories/ExternalOrganisationRepositoryTests.cs (IsActiveNameInUseAsync)"
       ]
     },
     "FR-004": {
@@ -154,6 +373,9 @@
         "T034",
         "T038",
         "T042"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Organisations/ExternalOrganisationValidationServiceTests.cs"
       ]
     },
     "FR-005": {
@@ -205,6 +427,9 @@
         "T036",
         "T037",
         "T041"
+      ],
+      "tests": [
+        "tests/StageFright.Data.Tests/Repositories/ExternalOrganisationContactRepositoryTests.cs"
       ]
     },
     "FR-010": {
@@ -292,6 +517,9 @@
         "T015",
         "T016",
         "T085"
+      ],
+      "tests": [
+        "tests/StageFright.Localization.Tests (Us1/Us2 guards now include the Organisations area)"
       ]
     }
   },
@@ -388,11 +616,62 @@
       "rejected": "reusing heading keys as tab labels",
       "by": "agent",
       "at": "2026-11-19T19:35:31.556Z"
+    },
+    {
+      "decision": "Pulled T030, T039 (save requests) and T074 (journal-entry backup DTO field) into Phase 2",
+      "why": "T007 validation service takes both requests, and BackupDtoFieldParityTests fails as soon as T004 adds the JournalEntry column",
+      "rejected": "holding T007 until US1/US2, or leaving the parity guard red until the Backup phase",
+      "by": "agent",
+      "at": "2026-11-19T20:07:55.173Z"
+    },
+    {
+      "decision": "IExternalOrganisationRepository.IsActiveNameInUseAsync(name, excludeId) compares trimmed names OrdinalIgnoreCase in C#",
+      "why": "research 4: SQLite NOCASE folds ASCII only, so the stricter C# check runs first and the filtered unique index is the backstop",
+      "rejected": "comparing in SQL through the NOCASE column",
+      "by": "agent",
+      "at": "2026-11-19T20:07:55.173Z"
+    },
+    {
+      "decision": "Archived-organisation reads use a filtered Include on Contacts",
+      "why": "IgnoreQueryFilters on the root also drops the contacts soft-delete filter",
+      "rejected": "plain Include after IgnoreQueryFilters",
+      "by": "agent",
+      "at": "2026-11-19T20:07:55.173Z"
+    },
+    {
+      "decision": "IExternalOrganisationContactRepository has no extra members; contacts are listed through the organisation Contacts include",
+      "why": "contract 4.8 defines it empty",
+      "rejected": "a per-organisation list method on the contact repository",
+      "by": "agent",
+      "at": "2026-11-19T20:07:55.173Z"
+    },
+    {
+      "decision": "Added OrganisationsResource to the hard-coded NEUTRAL_RESX list in scripts/generate-pseudo-locale.py",
+      "why": "the generator does not discover areas, so T015 could not create the new qps-ploc file otherwise",
+      "rejected": "hand-writing the qps-ploc file",
+      "by": "agent",
+      "at": "2026-11-19T20:07:55.173Z"
     }
   ],
   "concerns": [
     {
       "note": "plan-blocks.py templates (call-paths.md, states.md, screens.md, code-pins.md) are missing from the companion install; blocks were written by hand"
+    },
+    {
+      "note": "JournalEntryBackupDto now carries ExternalOrganisationId but BackupService does not map it until T078 (Backup phase); a backup taken before then drops organisation links",
+      "step": "implement"
+    },
+    {
+      "note": "dotnet ef migrations add needed --startup-project src/StageFright.Data/ (its design-time factory); the documented App startup project fails on the multi-target MAUI csproj",
+      "step": "implement"
+    },
+    {
+      "note": "CLAUDE.md entity count (20) and module list are stale until T083 in Polish updates them",
+      "step": "implement"
+    },
+    {
+      "note": "BaseRepository.UpdateAsync and SoftDeletableBaseRepository.RestoreAsync map a UNIQUE violation to DataAccessException, not DuplicateEntityException (pre-existing). US1 T032 must pre-check IsActiveNameInUseAsync on update and restore (research 4), which T026 covers; the index stays a backstop only",
+      "step": "implement"
     }
   ],
   "step_summaries": {
@@ -404,11 +683,11 @@
       "summary": "85 tasks in 7 phases: Setup, Foundational (5 waves), US1 MVP, US2, US3, Backup, Polish; detail screen split into three tab pages so each story owns its files"
     },
     "implement": {
-      "summary": "Phase 1 (T001) done: contract and plan reworked to the three-tab detail split and IOrganisationHistoryService"
+      "summary": "Phase 2 foundational: entities, configurations, DbSets, repositories, migration, validation service, OrganisationTabs, all resource keys in 8 cultures plus pseudo-locale, and their tests"
     }
   },
   "approach": "New Organisations module with ExternalOrganisation and soft-deletable contacts, a nullable FK on JournalEntry stamped by the expense and income services, and history computed from linked journal entries. Backup schema goes to 1.3.0, with organisations restored before journal entries. A new localized OrganisationsResource area and a top-level menu entry after Members.",
-  "currentTask": "T001",
+  "currentTask": "T074",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -417,20 +696,289 @@
         "specs/032-external-organisations/contracts/ui-contract.md",
         "specs/032-external-organisations/plan.md"
       ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Added IExternalOrganisationRepository (ISoftDeletableRepository<ExternalOrganisation>) with GetByIdIncludingArchivedAsync and IsActiveNameInUseAsync active-name lookup",
+      "files": [
+        "src/StageFright.Core/Contracts/IExternalOrganisationRepository.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Added Nav_Organisations_Title and Nav_Organisations_ShortLabel to neutral NavigationResource and all seven cultures with real translations",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.de-DE.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.en-US.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.es-ES.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.fr-FR.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.it-IT.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.ja-JP.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.pl-PL.resx"
+      ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Created ExternalOrganisation entity (Name/Address/Email, soft-delete + audit fields, Contacts and JournalEntries navigations) per data-model 1",
+      "files": [
+        "src/StageFright.Core/Entities/ExternalOrganisation.cs"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Created IExternalOrganisationContactRepository extending ISoftDeletableRepository<ExternalOrganisationContact> per contract 4.8",
+      "files": [
+        "src/StageFright.Core/Contracts/IExternalOrganisationContactRepository.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Added 15 Validation_Organisation_* and Validation_OrganisationContact_* keys to neutral ValidationResource and all 7 cultures with real translations",
+      "files": [
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.de-DE.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.en-US.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.es-ES.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.fr-FR.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.it-IT.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.ja-JP.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.pl-PL.resx"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "Created ExternalOrganisationContact entity per data-model 2 (name, role, phone, mobile, email, FK, soft-delete, audit, owning navigation)",
+      "files": [
+        "src/StageFright.Core/Entities/ExternalOrganisationContact.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Added Finance_Organisation_Label and Finance_Organisation_None to neutral FinanceResource and all seven cultures with real translations",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/FinanceResource.resx",
+        "src/StageFright.UI/Resources/Strings/FinanceResource.de-DE.resx",
+        "src/StageFright.UI/Resources/Strings/FinanceResource.en-US.resx",
+        "src/StageFright.UI/Resources/Strings/FinanceResource.es-ES.resx",
+        "src/StageFright.UI/Resources/Strings/FinanceResource.fr-FR.resx",
+        "src/StageFright.UI/Resources/Strings/FinanceResource.it-IT.resx",
+        "src/StageFright.UI/Resources/Strings/FinanceResource.ja-JP.resx",
+        "src/StageFright.UI/Resources/Strings/FinanceResource.pl-PL.resx"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Added nullable ExternalOrganisationId FK and ExternalOrganisation? navigation to JournalEntry (data-model 3)",
+      "files": [
+        "src/StageFright.Core/Entities/JournalEntry.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Created OrganisationsResource area: marker + neutral en-AU resx with all 56 contract 7 Organisations_* keys, translated into de-DE, en-US, es-ES, fr-FR, it-IT, ja-JP, pl-PL",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/OrganisationsResource.cs",
+        "src/StageFright.UI/Resources/Strings/OrganisationsResource.resx",
+        "src/StageFright.UI/Resources/Strings/OrganisationsResource.de-DE.resx",
+        "src/StageFright.UI/Resources/Strings/OrganisationsResource.en-US.resx",
+        "src/StageFright.UI/Resources/Strings/OrganisationsResource.es-ES.resx",
+        "src/StageFright.UI/Resources/Strings/OrganisationsResource.fr-FR.resx",
+        "src/StageFright.UI/Resources/Strings/OrganisationsResource.it-IT.resx",
+        "src/StageFright.UI/Resources/Strings/OrganisationsResource.ja-JP.resx",
+        "src/StageFright.UI/Resources/Strings/OrganisationsResource.pl-PL.resx"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Validation service plus the two save requests it takes (pulled forward from US1/US2)",
+      "files": [
+        "src/StageFright.Core/Modules/Organisations/ExternalOrganisationValidationService.cs",
+        "src/StageFright.Core/Modules/Organisations/SaveExternalOrganisationRequest.cs",
+        "src/StageFright.Core/Modules/Organisations/SaveExternalOrganisationContactRequest.cs"
+      ],
+      "wave": "T007-T039"
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Validation service plus the two save requests it takes (pulled forward from US1/US2)",
+      "files": [
+        "src/StageFright.Core/Modules/Organisations/ExternalOrganisationValidationService.cs",
+        "src/StageFright.Core/Modules/Organisations/SaveExternalOrganisationRequest.cs",
+        "src/StageFright.Core/Modules/Organisations/SaveExternalOrganisationContactRequest.cs"
+      ],
+      "wave": "T007-T039"
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "Validation service plus the two save requests it takes (pulled forward from US1/US2)",
+      "files": [
+        "src/StageFright.Core/Modules/Organisations/ExternalOrganisationValidationService.cs",
+        "src/StageFright.Core/Modules/Organisations/SaveExternalOrganisationRequest.cs",
+        "src/StageFright.Core/Modules/Organisations/SaveExternalOrganisationContactRequest.cs"
+      ],
+      "wave": "T007-T039"
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Configured optional JournalEntry->ExternalOrganisation FK (WithMany JournalEntries, Restrict delete) plus ExternalOrganisationId index",
+      "files": [
+        "src/StageFright.Data/Configurations/JournalEntryConfiguration.cs"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Added OrganisationsResource to the pseudo-locale generator's list and regenerated every qps-ploc file",
+      "files": [
+        "scripts/generate-pseudo-locale.py",
+        "src/StageFright.UI/Resources/Strings/OrganisationsResource.qps-ploc.resx",
+        "NavigationResource.qps-ploc.resx",
+        "ValidationResource.qps-ploc.resx",
+        "FinanceResource.qps-ploc.resx"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Added ExternalOrganisationConfiguration: Name required/200/NOCASE, filtered unique Name index [IsDeleted] = 0, Address 1000, Email 254, soft-delete query filter",
+      "files": [
+        "src/StageFright.Data/Configurations/ExternalOrganisationConfiguration.cs"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Added Organisations area to the Us1 and Us2 guard AreaResx dictionaries",
+      "files": [
+        "tests/StageFright.Localization.Tests/Us1LocalizationGuardTests.cs",
+        "tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Added ExternalOrganisationContactConfiguration: field max lengths, required Name, Restrict FK to ExternalOrganisation.Contacts, FK index, soft-delete query filter",
+      "files": [
+        "src/StageFright.Data/Configurations/ExternalOrganisationContactConfiguration.cs"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "Added shared OrganisationTabs nav-tabs strip (Details/Contacts/History links from Id, active class + aria-current from Active)",
+      "files": [
+        "src/StageFright.UI/Pages/Organisations/OrganisationTabs.razor",
+        "src/StageFright.UI/Pages/Organisations/OrganisationTabs.razor.cs"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "DbSets and configuration registration for organisations and contacts",
+      "files": [
+        "src/StageFright.Data/StageFrightDbContext.cs"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "Organisation and contact repositories plus the AddExternalOrganisations migration",
+      "files": [
+        "src/StageFright.Data/Repositories/ExternalOrganisationRepository.cs",
+        "src/StageFright.Data/Repositories/ExternalOrganisationContactRepository.cs",
+        "src/StageFright.Data/Migrations/20261119195813_AddExternalOrganisations.cs",
+        "src/StageFright.Data/Migrations/StageFrightDbContextModelSnapshot.cs"
+      ],
+      "wave": "T019-T021"
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "Organisation and contact repositories plus the AddExternalOrganisations migration",
+      "files": [
+        "src/StageFright.Data/Repositories/ExternalOrganisationRepository.cs",
+        "src/StageFright.Data/Repositories/ExternalOrganisationContactRepository.cs",
+        "src/StageFright.Data/Migrations/20261119195813_AddExternalOrganisations.cs",
+        "src/StageFright.Data/Migrations/StageFrightDbContextModelSnapshot.cs"
+      ],
+      "wave": "T019-T021"
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Organisation and contact repositories plus the AddExternalOrganisations migration",
+      "files": [
+        "src/StageFright.Data/Repositories/ExternalOrganisationRepository.cs",
+        "src/StageFright.Data/Repositories/ExternalOrganisationContactRepository.cs",
+        "src/StageFright.Data/Migrations/20261119195813_AddExternalOrganisations.cs",
+        "src/StageFright.Data/Migrations/StageFrightDbContextModelSnapshot.cs"
+      ],
+      "wave": "T019-T021"
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "Migration tests: pre-existing journal entry has null org link; NOCASE filtered unique index refuses case-only duplicate of active org, allows it against archived one",
+      "files": [
+        "tests/StageFright.Data.Tests/Migrations/AddExternalOrganisationsMigrationTests.cs"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "Contact repository SQLite tests: only active contacts of the requested organisation returned via org include, removal is a soft delete, archived list and restore covered",
+      "files": [
+        "tests/StageFright.Data.Tests/Repositories/ExternalOrganisationContactRepositoryTests.cs"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "Added ExternalOrganisationValidationService tests covering required name, every max-length boundary, invalid email, blank optional fields and field-keyed messages for organisations and contacts (44 cases, green)",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Organisations/ExternalOrganisationValidationServiceTests.cs"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "ExternalOrganisationRepository SQLite tests: archived hidden by default, including-archived lookup, removed contacts excluded on all reads, IsActiveNameInUseAsync case/whitespace/archived/excludeId (17 tests)",
+      "files": [
+        "tests/StageFright.Data.Tests/Repositories/ExternalOrganisationRepositoryTests.cs"
+      ]
+    },
+    "T074": {
+      "status": "DONE",
+      "did": "Journal-entry backup DTO gains the organisation link field so the backup parity guard stays green",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/Backup/JournalEntryBackupDto.cs"
+      ]
     }
   },
   "verified": [
     {
       "what": "No stale GetHistoryAsync-on-IExternalOrganisationService or single-detail-page references remain in contract, plan, research or data-model",
       "result": "grep clean after fixing one renumbered section ref"
+    },
+    {
+      "what": "full rebuild",
+      "command": "dotnet build -t:Rebuild",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 30.5,
+      "result": "    1 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:30.14",
+      "commit": "bbe75aa",
+      "tree": "27316fd8dac27f6116a17acc4e38fe9cc467ffd6"
+    },
+    {
+      "what": "full test suite",
+      "command": "dotnet test",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 84.6,
+      "result": "Passed!  - Failed:     0, Passed:   186, Skipped:     0, Total:   186, Duration: 35 s - StageFright.Data.Tests.dll (net10.0) · Passed!  - Failed:     0, Passed:   270, Skipped:     0, Total:   270, Duration: 55 s - StageFright.Integration.Tests.dll (net10.0) ·   StageFright.App -> c:\\SourceCode\\StageFrightCommunity\\src\\StageFright.App\\bin\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\StageFright.App.dll",
+      "commit": "bbe75aa",
+      "tree": "27316fd8dac27f6116a17acc4e38fe9cc467ffd6"
+    },
+    {
+      "what": "two independent reviews of the Phase 2 diff (exception-boundary-checker, csharp-reviewer)",
+      "result": "no important findings in new code; base-repository gap noted as concern"
     }
   ],
-  "last_action": "Closed T001; phases 2-7 remain",
+  "last_action": "Phase 2 reviewed at high depth; committing",
   "risk": {
     "tier": "high",
     "computed": "high",
     "reasons": [
-      "248 files changed"
+      "touches src/StageFright.Data/Migrations/20261119195813_AddExternalOrganisations.Designer.cs, src/StageFright.Data/Migrations/20261119195813_AddExternalOrganisations.cs, src/StageFright.Data/Migrations/StageFrightDbContextModelSnapshot.cs and 1 more"
     ]
   }
 }

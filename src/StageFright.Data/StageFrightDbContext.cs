@@ -34,6 +34,8 @@ public class StageFrightDbContext : DbContext
     public DbSet<ReconciliationLine> ReconciliationLines => Set<ReconciliationLine>();
     public DbSet<Settings> Settings => Set<Settings>();
     public DbSet<AuditTrailEntry> AuditTrailEntries => Set<AuditTrailEntry>();
+    public DbSet<ExternalOrganisation> ExternalOrganisations => Set<ExternalOrganisation>();
+    public DbSet<ExternalOrganisationContact> ExternalOrganisationContacts => Set<ExternalOrganisationContact>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -59,6 +61,8 @@ public class StageFrightDbContext : DbContext
         modelBuilder.ApplyConfiguration(new ReconciliationLineConfiguration());
         modelBuilder.ApplyConfiguration(new SettingsConfiguration());
         modelBuilder.ApplyConfiguration(new AuditTrailEntryConfiguration());
+        modelBuilder.ApplyConfiguration(new ExternalOrganisationConfiguration());
+        modelBuilder.ApplyConfiguration(new ExternalOrganisationContactConfiguration());
 
         SeedSystemAccounts(modelBuilder);
     }

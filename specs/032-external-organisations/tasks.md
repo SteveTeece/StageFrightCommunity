@@ -14,48 +14,51 @@
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T002** [P] Create the `ExternalOrganisation` entity as data-model §1 describes (name, address, email, soft-delete and audit fields, `Contacts` and `JournalEntries` navigations) · src/StageFright.Core/Entities/ExternalOrganisation.cs
-- [ ] **T003** [P] Create the `ExternalOrganisationContact` entity per data-model §2 (name, role, phone, mobile, email, `ExternalOrganisationId`, soft-delete) · src/StageFright.Core/Entities/ExternalOrganisationContact.cs
-- [ ] **T004** [P] Add a nullable `ExternalOrganisationId` and an `ExternalOrganisation?` navigation to `JournalEntry` per data-model §3 · src/StageFright.Core/Entities/JournalEntry.cs
-- [ ] **T005** [P] Create `IExternalOrganisationRepository` per contract §4.8, including `GetByIdIncludingArchivedAsync` and the active-name lookup · src/StageFright.Core/Contracts/IExternalOrganisationRepository.cs
-- [ ] **T006** [P] Create `IExternalOrganisationContactRepository` per contract §4.8 · src/StageFright.Core/Contracts/IExternalOrganisationContactRepository.cs
-- [ ] **T007** [P] Create `ExternalOrganisationValidationService` per contract §4.4: per-field length and email rules for organisations and contacts, returning a field→message map · src/StageFright.Core/Modules/Organisations/ExternalOrganisationValidationService.cs
-- [ ] **T008** [P] Create the `OrganisationsResource` area: the marker class, the neutral `.resx` holding every `Organisations_*` key from contract §7, and real translations in de-DE, en-US, es-ES, fr-FR, it-IT, ja-JP and pl-PL · src/StageFright.UI/Resources/Strings/OrganisationsResource.cs, src/StageFright.UI/Resources/Strings/OrganisationsResource{,.de-DE,.en-US,.es-ES,.fr-FR,.it-IT,.ja-JP,.pl-PL}.resx
-- [ ] **T009** [P] Add `Nav_Organisations_Title` and `Nav_Organisations_ShortLabel` to the neutral resource and all seven cultures · src/StageFright.Core/Modules/Localization/Resources/NavigationResource{,.de-DE,.en-US,.es-ES,.fr-FR,.it-IT,.ja-JP,.pl-PL}.resx
-- [ ] **T010** [P] Add every `Validation_Organisation_*` and `Validation_OrganisationContact_*` key from contract §4.3/§7 to the neutral resource and all seven cultures · src/StageFright.Core/Modules/Localization/Resources/ValidationResource{,.de-DE,.en-US,.es-ES,.fr-FR,.it-IT,.ja-JP,.pl-PL}.resx
-- [ ] **T011** [P] Add the Finance picker keys from contract §5.3/§7 to the neutral resource and all seven cultures · src/StageFright.UI/Resources/Strings/FinanceResource{,.de-DE,.en-US,.es-ES,.fr-FR,.it-IT,.ja-JP,.pl-PL}.resx
+- [x] **T002** [P] Create the `ExternalOrganisation` entity as data-model §1 describes (name, address, email, soft-delete and audit fields, `Contacts` and `JournalEntries` navigations) · src/StageFright.Core/Entities/ExternalOrganisation.cs
+- [x] **T003** [P] Create the `ExternalOrganisationContact` entity per data-model §2 (name, role, phone, mobile, email, `ExternalOrganisationId`, soft-delete) · src/StageFright.Core/Entities/ExternalOrganisationContact.cs
+- [x] **T004** [P] Add a nullable `ExternalOrganisationId` and an `ExternalOrganisation?` navigation to `JournalEntry` per data-model §3 · src/StageFright.Core/Entities/JournalEntry.cs
+- [x] **T005** [P] Create `IExternalOrganisationRepository` per contract §4.8, including `GetByIdIncludingArchivedAsync` and the active-name lookup · src/StageFright.Core/Contracts/IExternalOrganisationRepository.cs
+- [x] **T006** [P] Create `IExternalOrganisationContactRepository` per contract §4.8 · src/StageFright.Core/Contracts/IExternalOrganisationContactRepository.cs
+- [x] **T007** [P] Create `ExternalOrganisationValidationService` per contract §4.4: per-field length and email rules for organisations and contacts, returning a field→message map · src/StageFright.Core/Modules/Organisations/ExternalOrganisationValidationService.cs
+- [x] **T008** [P] Create the `OrganisationsResource` area: the marker class, the neutral `.resx` holding every `Organisations_*` key from contract §7, and real translations in de-DE, en-US, es-ES, fr-FR, it-IT, ja-JP and pl-PL · src/StageFright.UI/Resources/Strings/OrganisationsResource.cs, src/StageFright.UI/Resources/Strings/OrganisationsResource{,.de-DE,.en-US,.es-ES,.fr-FR,.it-IT,.ja-JP,.pl-PL}.resx
+- [x] **T009** [P] Add `Nav_Organisations_Title` and `Nav_Organisations_ShortLabel` to the neutral resource and all seven cultures · src/StageFright.Core/Modules/Localization/Resources/NavigationResource{,.de-DE,.en-US,.es-ES,.fr-FR,.it-IT,.ja-JP,.pl-PL}.resx
+- [x] **T010** [P] Add every `Validation_Organisation_*` and `Validation_OrganisationContact_*` key from contract §4.3/§7 to the neutral resource and all seven cultures · src/StageFright.Core/Modules/Localization/Resources/ValidationResource{,.de-DE,.en-US,.es-ES,.fr-FR,.it-IT,.ja-JP,.pl-PL}.resx
+- [x] **T011** [P] Add the Finance picker keys from contract §5.3/§7 to the neutral resource and all seven cultures · src/StageFright.UI/Resources/Strings/FinanceResource{,.de-DE,.en-US,.es-ES,.fr-FR,.it-IT,.ja-JP,.pl-PL}.resx
+- [x] **T030** [P] Create `SaveExternalOrganisationRequest` per contract §4.2 (moved here from US1: T007's validation service takes it) · src/StageFright.Core/Modules/Organisations/SaveExternalOrganisationRequest.cs
+- [x] **T039** [P] Create `SaveExternalOrganisationContactRequest` per contract §4.2 (moved here from US2: T007's validation service takes it) · src/StageFright.Core/Modules/Organisations/SaveExternalOrganisationContactRequest.cs
+- [x] **T074** [P] Add `[ProtoMember(6)] Guid? ExternalOrganisationId` to the journal-entry backup DTO (moved here from Backup: `BackupDtoFieldParityTests` fails once T004 adds the column; T078 still owns the mapping) · src/StageFright.Core/Modules/Settings/Backup/JournalEntryBackupDto.cs
 
 **⟶ Wait for Wave 1 to finish, then:**
 
 **Wave 2 — independent (different files):**
 
-- [ ] **T012** [P] Create `ExternalOrganisationConfiguration`: required `Name` with max length 200 and `NOCASE` collation, a unique `Name` index filtered on `[IsDeleted] = 0`, address and email max lengths, and the soft-delete query filter (research §4) · src/StageFright.Data/Configurations/ExternalOrganisationConfiguration.cs
-- [ ] **T013** [P] Create `ExternalOrganisationContactConfiguration`: field lengths, a required FK to the organisation with Restrict delete, and the query filter · src/StageFright.Data/Configurations/ExternalOrganisationContactConfiguration.cs
-- [ ] **T014** [P] Configure the optional `JournalEntry` → `ExternalOrganisation` FK with Restrict delete and an index · src/StageFright.Data/Configurations/JournalEntryConfiguration.cs
-- [ ] **T015** [P] Regenerate the pseudo-locale with `python scripts/generate-pseudo-locale.py`. Never hand-edit it · src/StageFright.UI/Resources/Strings/*.qps-ploc.resx, src/StageFright.Core/Modules/Localization/Resources/*.qps-ploc.resx
-- [ ] **T016** [P] Add the `Organisations` area to both guard area dictionaries, so FR-016 is enforced for the new area · tests/StageFright.Localization.Tests/Us1LocalizationGuardTests.cs, tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs
-- [ ] **T017** [P] Create the shared `OrganisationTabs` strip, with Details/Contacts/History links built from an `Id` and an active-tab parameter · src/StageFright.UI/Pages/Organisations/OrganisationTabs.razor, src/StageFright.UI/Pages/Organisations/OrganisationTabs.razor.cs
+- [x] **T012** [P] Create `ExternalOrganisationConfiguration`: required `Name` with max length 200 and `NOCASE` collation, a unique `Name` index filtered on `[IsDeleted] = 0`, address and email max lengths, and the soft-delete query filter (research §4) · src/StageFright.Data/Configurations/ExternalOrganisationConfiguration.cs
+- [x] **T013** [P] Create `ExternalOrganisationContactConfiguration`: field lengths, a required FK to the organisation with Restrict delete, and the query filter · src/StageFright.Data/Configurations/ExternalOrganisationContactConfiguration.cs
+- [x] **T014** [P] Configure the optional `JournalEntry` → `ExternalOrganisation` FK with Restrict delete and an index · src/StageFright.Data/Configurations/JournalEntryConfiguration.cs
+- [x] **T015** [P] Regenerate the pseudo-locale with `python scripts/generate-pseudo-locale.py`. Never hand-edit it · src/StageFright.UI/Resources/Strings/*.qps-ploc.resx, src/StageFright.Core/Modules/Localization/Resources/*.qps-ploc.resx
+- [x] **T016** [P] Add the `Organisations` area to both guard area dictionaries, so FR-016 is enforced for the new area · tests/StageFright.Localization.Tests/Us1LocalizationGuardTests.cs, tests/StageFright.Localization.Tests/Us2LocalizationGuardTests.cs
+- [x] **T017** [P] Create the shared `OrganisationTabs` strip, with Details/Contacts/History links built from an `Id` and an active-tab parameter · src/StageFright.UI/Pages/Organisations/OrganisationTabs.razor, src/StageFright.UI/Pages/Organisations/OrganisationTabs.razor.cs
 
 **⟶ Wait for Wave 2 to finish, then:**
 
-- [ ] **T018** Add the `ExternalOrganisations` and `ExternalOrganisationContacts` DbSets · src/StageFright.Data/StageFrightDbContext.cs
+- [x] **T018** Add the `ExternalOrganisations` and `ExternalOrganisationContacts` DbSets · src/StageFright.Data/StageFrightDbContext.cs
 
 **⟶ Wait for T018, then:**
 
 **Wave 4 — independent (different files):**
 
-- [ ] **T019** [P] Implement `ExternalOrganisationRepository` on top of `SoftDeletableBaseRepository`: contact counts, the active-name lookup and `GetByIdIncludingArchivedAsync` · src/StageFright.Data/Repositories/ExternalOrganisationRepository.cs
-- [ ] **T020** [P] Implement `ExternalOrganisationContactRepository`, which lists active contacts by organisation · src/StageFright.Data/Repositories/ExternalOrganisationContactRepository.cs
-- [ ] **T021** [P] Generate the `AddExternalOrganisations` migration with `dotnet ef migrations add AddExternalOrganisations --project src/StageFright.Data/ --startup-project src/StageFright.App/`, then review its Up/Down · src/StageFright.Data/Migrations/
+- [x] **T019** [P] Implement `ExternalOrganisationRepository` on top of `SoftDeletableBaseRepository`: contact counts, the active-name lookup and `GetByIdIncludingArchivedAsync` · src/StageFright.Data/Repositories/ExternalOrganisationRepository.cs
+- [x] **T020** [P] Implement `ExternalOrganisationContactRepository`, which lists active contacts by organisation · src/StageFright.Data/Repositories/ExternalOrganisationContactRepository.cs
+- [x] **T021** [P] Generate the `AddExternalOrganisations` migration with `dotnet ef migrations add AddExternalOrganisations --project src/StageFright.Data/ --startup-project src/StageFright.App/`, then review its Up/Down · src/StageFright.Data/Migrations/
 
 **⟶ Wait for Wave 4 to finish, then:**
 
 **Wave 5 — independent (different files):**
 
-- [ ] **T022** [P] Repository tests: archived organisations are hidden by default, `GetByIdIncludingArchivedAsync` finds an archived organisation, and the contact count excludes removed contacts · tests/StageFright.Data.Tests/Repositories/ExternalOrganisationRepositoryTests.cs
-- [ ] **T023** [P] Contact repository tests: only active contacts of the requested organisation are returned · tests/StageFright.Data.Tests/Repositories/ExternalOrganisationContactRepositoryTests.cs
-- [ ] **T024** [P] Migration tests: existing journal entries get a null link, and the filtered `NOCASE` unique index refuses "City Council" against an existing "city council" but allows it against an archived one · tests/StageFright.Data.Tests/Migrations/AddExternalOrganisationsMigrationTests.cs
-- [ ] **T025** [P] FR-004 validation service tests: each over-length field and each invalid email (organisation and contact) yields a message keyed by its field, and blank optional fields pass · tests/StageFright.Core.Tests/Modules/Organisations/ExternalOrganisationValidationServiceTests.cs
+- [x] **T022** [P] Repository tests: archived organisations are hidden by default, `GetByIdIncludingArchivedAsync` finds an archived organisation, and the contact count excludes removed contacts · tests/StageFright.Data.Tests/Repositories/ExternalOrganisationRepositoryTests.cs
+- [x] **T023** [P] Contact repository tests: only active contacts of the requested organisation are returned · tests/StageFright.Data.Tests/Repositories/ExternalOrganisationContactRepositoryTests.cs
+- [x] **T024** [P] Migration tests: existing journal entries get a null link, and the filtered `NOCASE` unique index refuses "City Council" against an existing "city council" but allows it against an archived one · tests/StageFright.Data.Tests/Migrations/AddExternalOrganisationsMigrationTests.cs
+- [x] **T025** [P] FR-004 validation service tests: each over-length field and each invalid email (organisation and contact) yields a message keyed by its field, and blank optional fields pass · tests/StageFright.Core.Tests/Modules/Organisations/ExternalOrganisationValidationServiceTests.cs
 
 **Checkpoint**: entities, schema, repositories, validation, the tab strip and every new string exist. Stories can start.
 
@@ -64,7 +67,7 @@
 **Goal**: add, edit, search, archive and restore organisations.
 **Independent Test**: on an empty database, add three organisations, edit one, search by part of a name, archive and restore one. No contacts or finance involved.
 
-Files: src/StageFright.Core/Modules/Organisations/SaveExternalOrganisationRequest.cs, src/StageFright.Core/Contracts/IExternalOrganisationService.cs, src/StageFright.Core/Modules/Organisations/ExternalOrganisationService.cs, src/StageFright.UI/Pages/Organisations/OrganisationList.razor(.cs), src/StageFright.UI/Pages/Organisations/OrganisationForm.razor(.cs), src/StageFright.UI/Pages/Organisations/OrganisationDetail.razor(.cs)
+Files: src/StageFright.Core/Contracts/IExternalOrganisationService.cs, src/StageFright.Core/Modules/Organisations/ExternalOrganisationService.cs, src/StageFright.UI/Pages/Organisations/OrganisationList.razor(.cs), src/StageFright.UI/Pages/Organisations/OrganisationForm.razor(.cs), src/StageFright.UI/Pages/Organisations/OrganisationDetail.razor(.cs)
 
 ### Tests (write first, see them fail)
 
@@ -79,7 +82,6 @@ Files: src/StageFright.Core/Modules/Organisations/SaveExternalOrganisationReques
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T030** [P] [US1] Create `SaveExternalOrganisationRequest` per contract §4.2 · src/StageFright.Core/Modules/Organisations/SaveExternalOrganisationRequest.cs
 - [ ] **T031** [P] [US1] Create `IExternalOrganisationService` per the revised contract §4.5 (no history method) · src/StageFright.Core/Contracts/IExternalOrganisationService.cs
 
 **⟶ Wait for Wave 1 to finish, then:**
@@ -101,7 +103,7 @@ Files: src/StageFright.Core/Modules/Organisations/SaveExternalOrganisationReques
 **Goal**: add, edit and remove contacts on an organisation.
 **Independent Test**: on one existing organisation, add two contacts, edit one and remove the other.
 
-Files: src/StageFright.Core/Modules/Organisations/SaveExternalOrganisationContactRequest.cs, src/StageFright.Core/Contracts/IExternalOrganisationContactService.cs, src/StageFright.Core/Modules/Organisations/ExternalOrganisationContactService.cs, src/StageFright.UI/Pages/Organisations/ContactEditor.razor(.cs), src/StageFright.UI/Pages/Organisations/OrganisationContacts.razor(.cs)
+Files: src/StageFright.Core/Contracts/IExternalOrganisationContactService.cs, src/StageFright.Core/Modules/Organisations/ExternalOrganisationContactService.cs, src/StageFright.UI/Pages/Organisations/ContactEditor.razor(.cs), src/StageFright.UI/Pages/Organisations/OrganisationContacts.razor(.cs)
 
 ### Tests (write first, see them fail)
 
@@ -115,7 +117,6 @@ Files: src/StageFright.Core/Modules/Organisations/SaveExternalOrganisationContac
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T039** [P] [US2] Create `SaveExternalOrganisationContactRequest` per contract §4.2 · src/StageFright.Core/Modules/Organisations/SaveExternalOrganisationContactRequest.cs
 - [ ] **T040** [P] [US2] Create `IExternalOrganisationContactService` per contract §4.6 · src/StageFright.Core/Contracts/IExternalOrganisationContactService.cs
 
 **⟶ Wait for Wave 1 to finish, then:**
@@ -190,7 +191,7 @@ Files: src/StageFright.Core/Modules/Finance/RecordExpenseRequest.cs, src/StageFr
 
 ## Phase 6: Backup and restore (FR-015, cross-cutting)
 
-Files: src/StageFright.Core/BackupSchema.cs, src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationBackupDto.cs, src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationContactBackupDto.cs, src/StageFright.Core/Modules/Settings/Backup/JournalEntryBackupDto.cs, src/StageFright.Core/Modules/Settings/Backup/BackupSnapshot.cs, src/StageFright.Core/Modules/Settings/Backup/BackupEnvelope.cs, src/StageFright.Data/Repositories/BackupRepository.cs, src/StageFright.Core/Modules/Settings/BackupService.cs
+Files: src/StageFright.Core/BackupSchema.cs, src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationBackupDto.cs, src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationContactBackupDto.cs, src/StageFright.Core/Modules/Settings/Backup/BackupSnapshot.cs, src/StageFright.Core/Modules/Settings/Backup/BackupEnvelope.cs, src/StageFright.Data/Repositories/BackupRepository.cs, src/StageFright.Core/Modules/Settings/BackupService.cs
 
 ### Tests (write first, see them fail)
 
@@ -208,7 +209,6 @@ Files: src/StageFright.Core/BackupSchema.cs, src/StageFright.Core/Modules/Settin
 - [ ] **T071** [P] Bump `CurrentSchemaVersion` to `1.3.0` · src/StageFright.Core/BackupSchema.cs
 - [ ] **T072** [P] Create `ExternalOrganisationBackupDto` per data-model §5 · src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationBackupDto.cs
 - [ ] **T073** [P] Create `ExternalOrganisationContactBackupDto` per data-model §5 · src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationContactBackupDto.cs
-- [ ] **T074** [P] Add `[ProtoMember(6)] Guid? ExternalOrganisationId` · src/StageFright.Core/Modules/Settings/Backup/JournalEntryBackupDto.cs
 - [ ] **T075** [P] Add the `ExternalOrganisations` and `ExternalOrganisationContacts` lists · src/StageFright.Core/Modules/Settings/Backup/BackupSnapshot.cs
 
 **⟶ Wait for Wave 1 to finish, then:**
@@ -249,10 +249,10 @@ Files: src/StageFright.Core/Modules/Organisations/OrganisationsMenuItemProvider.
 ## Dependencies & Execution Order
 
 - **Phase order**: Setup → Foundational → US1 → (US2 ∥ US3) → Backup → Polish. US2 needs only Foundational. US3 needs US1's `IExternalOrganisationService`. Backup needs only Foundational and can run beside the stories. Polish needs everything.
-- **Phase 2**: Wave 1 (T002–T011) → Wave 2 (T012–T017) → T018 → Wave 4 (T019–T021) → Wave 5 tests (T022–T025).
-- **US1**: tests T026–T029 → Wave 1 (T030, T031) → T032 → Wave 3 (T033–T035).
-- **US2**: tests T036–T038 → Wave 1 (T039, T040) → T041 → T042 → T043.
+- **Phase 2**: Wave 1 (T002–T011, T030, T039, T074) → Wave 2 (T012–T017) → T018 → Wave 4 (T019–T021) → Wave 5 tests (T022–T025).
+- **US1**: tests T026–T029 → T031 → T032 → Wave 3 (T033–T035).
+- **US2**: tests T036–T038 → T040 → T041 → T042 → T043.
 - **US3**: tests T044–T051 → Wave 1 (T052–T058) → Wave 2 (T059–T062) → Wave 3 (T063–T065) → T066.
-- **Backup**: tests T067–T070 → Wave 1 (T071–T075) → Wave 2 (T076, T077) → T078.
+- **Backup**: tests T067–T070 → Wave 1 (T071–T073, T075) → Wave 2 (T076, T077) → T078.
 - **Polish**: T079 → Wave 1 (T080–T083) → T084 → T085.
 - **File ownership**: every path appears under exactly one phase. Phase 2 owns all resource files, entities, configurations, the DbContext, repositories (except the journal-entry history query, which US3 owns) and `OrganisationTabs`. Polish owns `MauiProgram` and every menu provider.

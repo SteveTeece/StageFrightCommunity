@@ -19,5 +19,15 @@ public class JournalEntryConfiguration : IEntityTypeConfiguration<JournalEntry>
         // configured in TransactionConfiguration alongside the other FKs.
 
         builder.HasIndex(j => j.Type);
+
+        // Optional, write-once link to an external organisation (spec 032). Restrict delete:
+        // organisations are soft-deleted only, and a linked financial record must never lose it.
+        builder.HasOne(j => j.ExternalOrganisation)
+            .WithMany(o => o.JournalEntries)
+            .HasForeignKey(j => j.ExternalOrganisationId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(j => j.ExternalOrganisationId);
     }
 }

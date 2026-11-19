@@ -243,4 +243,6 @@
   <data name="Finance_Reconciliation_ToggleError" xml:space="preserve"><value>Impossibile aggiornare lo stato di compensazione: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Reconciliation_FinaliseError" xml:space="preserve"><value>Impossibile finalizzare: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Reconciliation_DeleteError" xml:space="preserve"><value>Impossibile eliminare la bozza: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Organisation_Label" xml:space="preserve"><value>Organizzazione</value><comment>Record Expense / Record Income — label on the optional external organisation picker.</comment></data>
+  <data name="Finance_Organisation_None" xml:space="preserve"><value>— Nessuna —</value><comment>First option in the organisation picker; leaves the entry unlinked.</comment></data>
 </root>

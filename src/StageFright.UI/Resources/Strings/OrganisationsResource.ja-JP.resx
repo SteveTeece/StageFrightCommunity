@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Organisations_List_PageTitle" xml:space="preserve"><value>外部団体</value><comment>Browser tab title for the Organisations list page.</comment></data>
+  <data name="Organisations_List_Heading" xml:space="preserve"><value>外部団体</value><comment>Page heading on the Organisations list.</comment></data>
+  <data name="Organisations_List_AddButton" xml:space="preserve"><value>団体を追加</value><comment>Button that opens the new-organisation form.</comment></data>
+  <data name="Organisations_List_SearchPlaceholder" xml:space="preserve"><value>名称で検索…</value><comment>Placeholder text in the Organisations search box.</comment></data>
+  <data name="Organisations_List_SearchAriaLabel" xml:space="preserve"><value>団体を検索</value><comment>aria-label on the Organisations search input.</comment></data>
+  <data name="Organisations_List_ShowArchivedLabel" xml:space="preserve"><value>アーカイブ済みを表示</value><comment>Label for the switch that includes archived organisations in the list.</comment></data>
+  <data name="Organisations_List_ArchivedBadge" xml:space="preserve"><value>アーカイブ済み</value><comment>Badge on an archived organisation's row in the list.</comment></data>
+  <data name="Organisations_List_ColName" xml:space="preserve"><value>名称</value><comment>Organisations grid column header — organisation name.</comment></data>
+  <data name="Organisations_List_ColEmail" xml:space="preserve"><value>メール</value><comment>Organisations grid column header — organisation email address.</comment></data>
+  <data name="Organisations_List_ColContacts" xml:space="preserve"><value>連絡先</value><comment>Organisations grid column header — number of contacts.</comment></data>
+  <data name="Organisations_List_Empty" xml:space="preserve"><value>まだ団体が登録されていません。</value><comment>Shown when the register holds no organisations.</comment></data>
+  <data name="Organisations_List_NoMatch" xml:space="preserve"><value>検索条件に一致する団体はありません。</value><comment>Shown when organisations exist but none matches the search term.</comment></data>
+  <data name="Organisations_List_LoadingText" xml:space="preserve"><value>団体を読み込んでいます…</value><comment>Status text shown while the Organisations list loads.</comment></data>
+  <data name="Organisations_Form_PageTitleNew" xml:space="preserve"><value>団体を追加</value><comment>Browser tab title and heading for the new-organisation form.</comment></data>
+  <data name="Organisations_Form_PageTitleEdit" xml:space="preserve"><value>団体を編集</value><comment>Browser tab title and heading for the edit-organisation form.</comment></data>
+  <data name="Organisations_Form_NameLabel" xml:space="preserve"><value>名称</value><comment>Organisation form field label — name (required).</comment></data>
+  <data name="Organisations_Form_AddressLabel" xml:space="preserve"><value>住所</value><comment>Organisation form field label — multi-line address.</comment></data>
+  <data name="Organisations_Form_EmailLabel" xml:space="preserve"><value>メール</value><comment>Organisation form field label — email address.</comment></data>
+  <data name="Organisations_Form_EmailHelp" xml:space="preserve"><value>領収書や連絡に使うアドレスです。参照用としてのみ保存されます。</value><comment>Help text under the organisation email field.</comment></data>
+  <data name="Organisations_Form_SaveButton" xml:space="preserve"><value>保存</value><comment>Button that saves the organisation form.</comment></data>
+  <data name="Organisations_Form_CancelButton" xml:space="preserve"><value>キャンセル</value><comment>Button that leaves the organisation form without saving.</comment></data>
+  <data name="Organisations_Tabs_AriaLabel" xml:space="preserve"><value>団体のセクション</value><comment>aria-label on the organisation detail tab strip.</comment></data>
+  <data name="Organisations_Tabs_Details" xml:space="preserve"><value>詳細</value><comment>Tab label — organisation details.</comment></data>
+  <data name="Organisations_Tabs_Contacts" xml:space="preserve"><value>連絡先</value><comment>Tab label — organisation contacts.</comment></data>
+  <data name="Organisations_Tabs_History" xml:space="preserve"><value>履歴</value><comment>Tab label — organisation financial history.</comment></data>
+  <data name="Organisations_Detail_PageTitle" xml:space="preserve"><value>団体</value><comment>Browser tab title for an organisation's Details tab.</comment></data>
+  <data name="Organisations_Detail_NotFound" xml:space="preserve"><value>団体が見つかりません。</value><comment>Shown when the requested organisation id does not exist.</comment></data>
+  <data name="Organisations_Detail_EditButton" xml:space="preserve"><value>編集</value><comment>Button that opens the edit form for an active organisation.</comment></data>
+  <data name="Organisations_Detail_ArchiveButton" xml:space="preserve"><value>アーカイブ</value><comment>Button that archives (soft-deletes) an organisation.</comment></data>
+  <data name="Organisations_Detail_RestoreButton" xml:space="preserve"><value>復元</value><comment>Button that restores an archived organisation.</comment></data>
+  <data name="Organisations_Detail_ArchivedBadge" xml:space="preserve"><value>アーカイブ済み</value><comment>Badge beside an archived organisation's name on its detail tabs.</comment></data>
+  <data name="Organisations_Detail_AddressLabel" xml:space="preserve"><value>住所</value><comment>Detail field label — organisation address.</comment></data>
+  <data name="Organisations_Detail_EmailLabel" xml:space="preserve"><value>メール</value><comment>Detail field label — organisation email address.</comment></data>
+  <data name="Organisations_Contacts_PageTitle" xml:space="preserve"><value>団体の連絡先</value><comment>Browser tab title for an organisation's Contacts tab.</comment></data>
+  <data name="Organisations_Contacts_Heading" xml:space="preserve"><value>連絡先</value><comment>Section heading on the Contacts tab.</comment></data>
+  <data name="Organisations_Contacts_AddButton" xml:space="preserve"><value>連絡先を追加</value><comment>Button that opens an empty contact editor.</comment></data>
+  <data name="Organisations_Contacts_ColName" xml:space="preserve"><value>氏名</value><comment>Contacts grid column header and editor label — contact name.</comment></data>
+  <data name="Organisations_Contacts_ColRole" xml:space="preserve"><value>役職</value><comment>Contacts grid column header and editor label — the contact's role at the organisation.</comment></data>
+  <data name="Organisations_Contacts_ColPhone" xml:space="preserve"><value>電話番号</value><comment>Contacts grid column header and editor label — phone number.</comment></data>
+  <data name="Organisations_Contacts_ColMobile" xml:space="preserve"><value>携帯電話</value><comment>Contacts grid column header and editor label — mobile phone number.</comment></data>
+  <data name="Organisations_Contacts_ColEmail" xml:space="preserve"><value>メール</value><comment>Contacts grid column header and editor label — email address.</comment></data>
+  <data name="Organisations_Contacts_EditButton" xml:space="preserve"><value>編集</value><comment>Per-row button that loads a contact into the editor.</comment></data>
+  <data name="Organisations_Contacts_RemoveButton" xml:space="preserve"><value>削除</value><comment>Per-row button that removes a contact.</comment></data>
+  <data name="Organisations_Contacts_SaveButton" xml:space="preserve"><value>連絡先を保存</value><comment>Button that saves the contact editor.</comment></data>
+  <data name="Organisations_Contacts_CancelButton" xml:space="preserve"><value>キャンセル</value><comment>Button that closes the contact editor without saving.</comment></data>
+  <data name="Organisations_Contacts_Empty" xml:space="preserve"><value>まだ連絡先が登録されていません。</value><comment>Shown when the organisation has no contacts.</comment></data>
+  <data name="Organisations_History_PageTitle" xml:space="preserve"><value>団体の履歴</value><comment>Browser tab title for an organisation's History tab.</comment></data>
+  <data name="Organisations_History_Heading" xml:space="preserve"><value>取引履歴</value><comment>Section heading on the History tab.</comment></data>
+  <data name="Organisations_History_ColDate" xml:space="preserve"><value>日付</value><comment>History grid column header — entry date.</comment></data>
+  <data name="Organisations_History_ColDescription" xml:space="preserve"><value>摘要</value><comment>History grid column header — entry description.</comment></data>
+  <data name="Organisations_History_ColAccount" xml:space="preserve"><value>勘定科目</value><comment>History grid column header — expense or income account.</comment></data>
+  <data name="Organisations_History_ColAmount" xml:space="preserve"><value>金額</value><comment>History grid column header — amount paid or received.</comment></data>
+  <data name="Organisations_History_TotalPaid" xml:space="preserve"><value>支払合計</value><comment>Label for the total of expense payments made to the organisation.</comment></data>
+  <data name="Organisations_History_TotalReceived" xml:space="preserve"><value>受取合計</value><comment>Label for the total of income received from the organisation.</comment></data>
+  <data name="Organisations_History_Empty" xml:space="preserve"><value>この団体に関する支払いや収入はまだ記録されていません。</value><comment>Shown when no financial entry is linked to the organisation.</comment></data>
+  <data name="Organisations_Error_Unexpected" xml:space="preserve"><value>予期しないエラーが発生しました。もう一度お試しください。</value><comment>Generic fallback message shown when an organisation operation fails unexpectedly.</comment></data>
+</root>

@@ -24,7 +24,17 @@ public class JournalEntry
     /// <summary>UTC timestamp when the record was created.</summary>
     public DateTime CreatedAt { get; set; }
 
+    /// <summary>
+    /// Optional FK to the external organisation this entry was paid to or received from.
+    /// Only expense payment and income entries carry a link. Set once when the entry is
+    /// created and never added, changed or cleared afterwards (spec 032 FR-010).
+    /// </summary>
+    public Guid? ExternalOrganisationId { get; set; }
+
     // --- Navigation ---
+
+    /// <summary>The linked external organisation, when <see cref="ExternalOrganisationId"/> is set.</summary>
+    public ExternalOrganisation? ExternalOrganisation { get; set; }
 
     /// <summary>The balanced GL lines posted under this entry.</summary>
     public List<Transaction> Transactions { get; set; } = new();
