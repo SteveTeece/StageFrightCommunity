@@ -634,6 +634,26 @@ public class BackupServiceTests : TestBase
     }
 
     [Fact]
+    public async Task Should_StampRunningBuildVersion_When_Exported()
+    {
+        // Spec 030 FR-003: the originating application version reflects the build, not a placeholder.
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(BuildMinimalSnapshot());
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_appversion_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+            var manifest = await svc.GetManifestAsync(path, Ct);
+            Assert.Equal(ApplicationVersionInfo.Current, manifest.ApplicationVersion);
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+        }
+    }
+
+    [Fact]
     public async Task ExportAsync_IncludesFinanceEntities_InEntityCounts()
     {
         var je = BuildJournalEntry();

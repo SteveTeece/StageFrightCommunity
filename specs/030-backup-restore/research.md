@@ -70,7 +70,7 @@ Routing changes:
 
 **Rationale**: The clarification explicitly widened rejection to "a newer build of the same major version … which may carry settings or record types this build does not recognise". The comparison is against a compiled constant, not `AppInfo.Current.Version`, so it is deterministic, host-independent (FR-013/FR-014), and unit-testable without a MAUI runtime.
 
-**Alternatives considered**: comparing marketing `ApplicationVersion` — rejected: that string is currently a hardcoded `"1.0.0"` placeholder and is a display value, not a compatibility axis. Keeping the major-only check — rejected: fails the clarified FR-019.
+**Alternatives considered**: comparing marketing `ApplicationVersion` — rejected: that string is a display value, not a compatibility axis (since the PR #389 review it is stamped from the build's informational version via `ApplicationVersionInfo`, e.g. `1.0.0+20472ad`, rather than the former hardcoded `"1.0.0"` placeholder). Keeping the major-only check — rejected: fails the clarified FR-019.
 
 ---
 

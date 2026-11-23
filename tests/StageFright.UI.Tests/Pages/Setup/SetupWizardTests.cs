@@ -413,6 +413,36 @@ public class SetupWizardTests : LocalizedTestContext
     }
 
     [Fact]
+    public async Task Should_FinishWithNewAsAtDate_When_DateChangedAfterAmountEntered()
+    {
+        // PR #389 review: the amount is reported with the date in force when it was typed, so
+        // a later as-at date change must re-sync the wizard's queued balances to the new date.
+        var cashId = Guid.NewGuid();
+        _openingBalanceService.GetOpeningBalanceAccountsAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>
+        {
+            new() { Id = cashId, Name = "Cash on Hand", AccountNumber = "1100", Type = Core.Enums.AccountType.Asset }
+        });
+        var cut = Render<SetupWizard>();
+        AdvanceFromOrganisationSettings(cut); // -> Chart of Accounts
+        cut.Find("#btn-next").Click(); // -> Opening Balances
+
+        cut.Find(".opening-balance-amount").Change("750");
+        cut.Find("#ob-tab-as-at-date").Change("2025-07-01");
+        cut.Find("#btn-next").Click(); // -> Committee
+        cut.Find("#btn-next").Click(); // -> Review
+        await cut.Find("form").SubmitAsync();
+
+        await _setupService.Received(1).InitializeAsync(
+            Arg.Is<SetupRequest>(r =>
+                r!.OpeningBalanceAsAtDate == new DateTime(2025, 7, 1)
+                && r.QueuedOpeningBalances != null
+                && r.QueuedOpeningBalances.Count == 1
+                && r.QueuedOpeningBalances[0].AccountId == cashId
+                && r.QueuedOpeningBalances[0].Amount == 750m),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task Finish_Succeeds_When_BalanceEntered()
     {
         var cut = Render<SetupWizard>();

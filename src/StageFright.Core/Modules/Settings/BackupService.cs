@@ -391,7 +391,7 @@ public class BackupService : IBackupService
         {
             SchemaVersion = "1.2.0",
             GeneratedAt = DateTime.UtcNow,
-            ApplicationVersion = "1.0.0",
+            ApplicationVersion = ApplicationVersionInfo.Current,
             Members = members,
             CommitteePositionRecords = committees,
             Rehearsals = rehearsals,
