@@ -38,7 +38,7 @@ public partial class ChartOfAccountsGrid : ComponentBase
 
     private void OnRender(DataGridRenderEventArgs<ChartOfAccountsGridRow> args)
     {
-        if (!args.FirstRender)
+        if (!args.FirstRender || args.Grid is null)
             return;
 
         args.Grid.Groups.Add(new GroupDescriptor
