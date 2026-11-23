@@ -139,7 +139,7 @@ There is no `appsettings.json` connection-string configuration — the database 
 - **Database file**: `FileSystem.AppDataDirectory/stagefright.db`, auto-created on first run — the MAUI app-data directory, not the repo.
 - **Logs**: rolling daily files (`stagefright-YYYYMMDD.log`, 7-day retention) under `FileSystem.AppDataDirectory/logs/`.
 - **Plugins**: loaded from `FileSystem.AppDataDirectory/Plugins/`, auto-created if missing.
-- **Pre-restore recovery copies**: `FileSystem.AppDataDirectory/recovery/` (`MauiRecoveryCopyStore`), auto-created. `BackupService.ImportAsync` writes a `StageFright-Recovery-<yyyyMMdd-HHmmss>.sfbak` snapshot of the current database here before **every** restore — first-run included, where the copy is of the freshly-seeded default database — so an unwanted restore can be undone.
+- **Pre-restore recovery copies**: `FileSystem.AppDataDirectory/recovery/` (`MauiRecoveryCopyStore`), auto-created. `BackupService.ImportAsync` writes a `StageFright-Recovery-<yyyyMMdd-HHmmss>.sfbak` snapshot of the current database here before every restore over a configured database — a first-run restore, made while setup is incomplete, skips it because the database holds only seeded defaults — so an unwanted restore can be undone.
 
 ### Apply / Create / Remove Migrations
 

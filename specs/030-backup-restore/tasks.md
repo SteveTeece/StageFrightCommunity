@@ -8,7 +8,7 @@ Line format: `- [ ] **T###** [P?] [US#] Description · exact/file/path`
 
 > **Already delivered ahead of task generation** — commit `7d2cc93` ("fix(030): close the .sfbak backup format drift") implemented the bulk of **User Story 4** (the `.sfbak` format completeness pass). Those tasks (T029–T034) are retained for traceability and are checked off with the commit noted.
 >
-> **Phase 1 (Setup) and Phase 2 (Foundational) delivered** — T001–T012 complete: `CommunityToolkit.Maui` added; `BackupSchema` / `BackupVerificationException` / `BackupVerificationResult` / `IRecoveryCopyStore` / `IBackupDestinationPicker` / `BackupFileNameBuilder` in place; `MauiRecoveryCopyStore` / `MauiBackupDestinationPicker` wired in `MauiProgram`; the FR-019 full-semver version check is live in `BackupService` (with `Validation_Backup_UnsupportedSchemaVersion` reworded + re-translated across all seven shipped cultures and `qps-ploc` regenerated); and every restore now writes a durable pre-restore recovery copy. US1, US2, US3, and docs remain to do.
+> **Phase 1 (Setup) and Phase 2 (Foundational) delivered** — T001–T012 complete: `CommunityToolkit.Maui` added; `BackupSchema` / `BackupVerificationException` / `BackupVerificationResult` / `IRecoveryCopyStore` / `IBackupDestinationPicker` / `BackupFileNameBuilder` in place; `MauiRecoveryCopyStore` / `MauiBackupDestinationPicker` wired in `MauiProgram`; the FR-019 full-semver version check is live in `BackupService` (with `Validation_Backup_UnsupportedSchemaVersion` reworded + re-translated across all seven shipped cultures and `qps-ploc` regenerated); and every restore now writes a durable pre-restore recovery copy (since the PR #389 review, skipped while first-run setup is incomplete). US1, US2, US3, and docs remain to do.
 
 ---
 
@@ -53,7 +53,7 @@ Shared contracts, value types, platform seams, and the version-check swap that e
 
 **Wave 4 — single task (same file as T011):**
 
-- [x] **T012** `BackupService.ImportAsync` — inject `IRecoveryCopyStore`; write the pre-restore recovery copy (`StageFright-Recovery-<yyyyMMdd-HHmmss>.sfbak`) into `GetRecoveryDirectory()` via the existing `ExportAsync` path on **every** restore (first-run included), replacing `GenerateCheckpointPath`; standardise the term to "pre-restore recovery copy" in code comments and update the `IBackupService` interface XML doc ("pre-import checkpoint" → "pre-restore recovery copy") (FR-015) · `src/StageFright.Core/Contracts/IBackupService.cs`, `src/StageFright.Core/Modules/Settings/BackupService.cs`
+- [x] **T012** `BackupService.ImportAsync` — inject `IRecoveryCopyStore`; write the pre-restore recovery copy (`StageFright-Recovery-<yyyyMMdd-HHmmss>.sfbak`) into `GetRecoveryDirectory()` via the existing `ExportAsync` path on **every** restore (first-run included; amended after the PR #389 review to skip it while first-run setup is incomplete), replacing `GenerateCheckpointPath`; standardise the term to "pre-restore recovery copy" in code comments and update the `IBackupService` interface XML doc ("pre-import checkpoint" → "pre-restore recovery copy") (FR-015) · `src/StageFright.Core/Contracts/IBackupService.cs`, `src/StageFright.Core/Modules/Settings/BackupService.cs`
 
 **Checkpoint:** Foundational plumbing exists and is registered; the version check rejects newer files; restores write a durable recovery copy. No user-visible behaviour yet.
 

@@ -313,6 +313,66 @@ public class BackupServiceTests : TestBase
         }
     }
 
+    [Fact]
+    public async Task Should_WriteRecoveryCopy_When_ImportingOverConfiguredDatabase()
+    {
+        // FR-015: a database that has completed setup (Settings record present) is always copied first.
+        var configured = new BackupSnapshot
+        {
+            Settings = new Settings
+            {
+                Id = Guid.NewGuid(), OrganizationName = "Cool Choir", AnnualFee = 60m, AttendanceFee = 5m,
+                MembershipRenewalMonth = 1, SchemaVersion = "1.1.0",
+                CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+            }
+        };
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(configured);
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_recovery_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+            await svc.ImportAsync(path, Ct);
+
+            await _audit.Received(1).LogAsync(
+                "Backup", Guid.Empty, AuditAction.Import, Arg.Any<string?>(),
+                Arg.Is<string?>(v => v!.Contains("pre-restore recovery copy: ") && v.Contains("StageFright-Recovery-")),
+                Arg.Any<string>(), Arg.Any<CancellationToken>());
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+                File.Delete(f);
+        }
+    }
+
+    [Fact]
+    public async Task Should_SkipRecoveryCopy_When_FirstRunSetupIncomplete()
+    {
+        // FR-015: with no Settings record the database holds only seeded defaults, so no copy is taken.
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(BuildMinimalSnapshot());
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_recovery_skip_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+            await svc.ImportAsync(path, Ct);
+
+            await _audit.Received(1).LogAsync(
+                "Backup", Guid.Empty, AuditAction.Import, Arg.Any<string?>(),
+                Arg.Is<string?>(v => v!.EndsWith("pre-restore recovery copy: none (first-run setup incomplete)")),
+                Arg.Any<string>(), Arg.Any<CancellationToken>());
+            await _uow.Received(1).ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>());
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+        }
+    }
+
     // --- Member name export/restore (spec 011) ---
 
     [Fact]

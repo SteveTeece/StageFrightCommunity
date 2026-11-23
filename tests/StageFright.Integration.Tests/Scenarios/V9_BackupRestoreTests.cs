@@ -163,6 +163,17 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
     [Fact]
     public async Task Import_CreatesCheckpoint_BeforeWrite()
     {
+        // FR-015: a recovery copy is taken once setup is complete (Settings record present).
+        _db.Settings.Add(new Settings
+        {
+            Id = Guid.NewGuid(), OrganizationName = "Test Choir",
+            AnnualFee = 50m, AttendanceFee = 10m, MembershipRenewalMonth = 1,
+            MaxAgeRangeYears = 150, MinimumMemberAge = 0, SchemaVersion = "1.1.0",
+            FinancialYearStartMonth = 7, FinancialYearStartDay = 1,
+            CurrencyCode = "AUD", IsTaxApplicable = false,
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        });
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
         var svc = BuildService();
         var path = TempPath();
 

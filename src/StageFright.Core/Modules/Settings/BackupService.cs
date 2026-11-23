@@ -18,7 +18,7 @@ namespace StageFright.Core.Modules.Settings;
 /// then reads it back and verifies its record counts before reporting success.
 /// <see cref="ExportAsync"/> is the lower-level write-to-a-path variant (used for the pre-restore
 /// recovery copy) and applies the same read-back consistency check. Import validates, writes a
-/// pre-restore recovery copy of the current data, then atomically upserts every record from the
+/// pre-restore recovery copy of the current data (unless first-run setup was never completed), then atomically upserts every record from the
 /// backup file.
 /// </summary>
 public class BackupService : IBackupService
@@ -95,6 +95,57 @@ public class BackupService : IBackupService
     public async Task ExportAsync(string filePath, CancellationToken ct = default)
     {
         var snapshot = await _backupRepo.GetFullSnapshotAsync(ct);
+        WriteVerifiedBackupFile(filePath, snapshot);
+    }
+
+    public async Task ImportAsync(string filePath, CancellationToken ct = default)
+    {
+        var envelope = DeserializeAndValidate(filePath);
+
+        // Pre-restore recovery copy (FR-015): export the current DB to a durable app-data location
+        // before any write, so an accidental or unwanted restore can be recovered from. Skipped
+        // only when first-run setup was never completed (no Settings record — the same test as
+        // SetupService.IsSetupCompleteAsync): that database holds nothing but seeded defaults,
+        // which any fresh install recreates, so a copy of it would only be noise.
+        var current = await _backupRepo.GetFullSnapshotAsync(ct);
+        string? recoveryCopyPath = null;
+        if (current.Settings is null)
+        {
+            _logger.LogInformation("Pre-restore recovery copy skipped: first-run setup is incomplete, so the database holds only seeded defaults");
+        }
+        else
+        {
+            recoveryCopyPath = GenerateRecoveryCopyPath();
+            WriteVerifiedBackupFile(recoveryCopyPath, current);
+            _logger.LogInformation("Pre-restore recovery copy saved to {RecoveryCopyPath}", recoveryCopyPath);
+        }
+
+        var snapshot = MapToSnapshot(envelope);
+
+        await _uow.ExecuteInTransactionAsync(async innerCt =>
+        {
+            await _backupRepo.UpsertSnapshotAsync(snapshot, innerCt);
+        }, ct);
+
+        var recoveryCopyDescription = recoveryCopyPath ?? "none (first-run setup incomplete)";
+        await _audit.LogAsync(
+            entityType: "Backup",
+            entityId: Guid.Empty,
+            action: AuditAction.Import,
+            newValue: $"Imported from {Path.GetFileName(filePath)}; pre-restore recovery copy: {recoveryCopyDescription}",
+            ct: ct);
+
+        _logger.LogInformation(
+            "Import completed from {FilePath}. Pre-restore recovery copy: {RecoveryCopy}. Counts: {Counts}",
+            filePath,
+            recoveryCopyDescription,
+            string.Join(", ", envelope.EntityCounts.Select(kv => $"{kv.Key}={kv.Value}")));
+    }
+
+    /// <summary>Serialises <paramref name="snapshot"/> to <paramref name="filePath"/>, then reads
+    /// the file back and verifies its recorded counts.</summary>
+    private void WriteVerifiedBackupFile(string filePath, BackupSnapshot snapshot)
+    {
         var envelope = MapToEnvelope(snapshot);
 
         try
@@ -114,38 +165,6 @@ public class BackupService : IBackupService
         _logger.LogInformation(
             "Backup exported to {FilePath}. Counts: {Counts}",
             filePath,
-            string.Join(", ", envelope.EntityCounts.Select(kv => $"{kv.Key}={kv.Value}")));
-    }
-
-    public async Task ImportAsync(string filePath, CancellationToken ct = default)
-    {
-        var envelope = DeserializeAndValidate(filePath);
-
-        // Pre-restore recovery copy: export the current DB to a durable app-data location before
-        // any write, so an accidental or unwanted restore can be recovered from. Written on every
-        // restore, first-run included (FR-015).
-        var recoveryCopyPath = GenerateRecoveryCopyPath();
-        await ExportAsync(recoveryCopyPath, ct);
-        _logger.LogInformation("Pre-restore recovery copy saved to {RecoveryCopyPath}", recoveryCopyPath);
-
-        var snapshot = MapToSnapshot(envelope);
-
-        await _uow.ExecuteInTransactionAsync(async innerCt =>
-        {
-            await _backupRepo.UpsertSnapshotAsync(snapshot, innerCt);
-        }, ct);
-
-        await _audit.LogAsync(
-            entityType: "Backup",
-            entityId: Guid.Empty,
-            action: AuditAction.Import,
-            newValue: $"Imported from {Path.GetFileName(filePath)}; pre-restore recovery copy: {recoveryCopyPath}",
-            ct: ct);
-
-        _logger.LogInformation(
-            "Import completed from {FilePath}. Pre-restore recovery copy at {RecoveryCopyPath}. Counts: {Counts}",
-            filePath,
-            recoveryCopyPath,
             string.Join(", ", envelope.EntityCounts.Select(kv => $"{kv.Key}={kv.Value}")));
     }
 

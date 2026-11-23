@@ -25,6 +25,17 @@ public class BackupImportTests_Integration : IDisposable
     public async Task ImportAsync_CreatesCheckpointFile_BeforeDataWrite()
     {
         using var db = _factory.CreateContext();
+        // FR-015: a recovery copy is taken once setup is complete (Settings record present).
+        db.Settings.Add(new Settings
+        {
+            Id = Guid.NewGuid(), OrganizationName = "Test Choir",
+            AnnualFee = 50m, AttendanceFee = 10m, MembershipRenewalMonth = 1,
+            MaxAgeRangeYears = 150, MinimumMemberAge = 0, SchemaVersion = "1.1.0",
+            FinancialYearStartMonth = 7, FinancialYearStartDay = 1,
+            CurrencyCode = "AUD", IsTaxApplicable = false,
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        });
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
         var svc = BuildBackupService(db);
         var exportPath = TempFile();
 
