@@ -436,6 +436,44 @@ public class ReportViewerTests : LocalizedTestContext
     }
 
     [Fact]
+    public async Task Should_RenderBodyTemplateInsteadOfTable_When_BodyTemplateSet()
+    {
+        // Issue #367: the Chart of Accounts report swaps in its own grid, keeping the viewer chrome.
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>()).Returns(SampleReport);
+
+        var cut = Render<ReportViewer>(p => p
+            .Add(x => x.Provider, _provider)
+            .Add(x => x.BodyTemplate, _ => builder => builder.AddMarkupContent(0, "<p class=\"custom-body\">custom</p>")));
+        await cut.InvokeAsync(() => { });
+
+        Assert.Single(cut.FindAll(".custom-body"));
+        Assert.Empty(cut.FindAll("table"));
+        Assert.Contains(cut.FindAll("button"), b => b.TextContent.Contains("Print"));
+    }
+
+    [Fact]
+    public async Task Should_PassGeneratedFilterValuesToBodyTemplate_NotUnappliedEdits_When_FilterChanged()
+    {
+        _provider.Filters.Returns(
+        [
+            new ReportFilterDefinition { Key = "compare", Type = ReportFilterType.Boolean, Label = "Compare", DefaultValue = "false" }
+        ]);
+        _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>()).Returns(SampleReport);
+
+        var cut = Render<ReportViewer>(p => p
+            .Add(x => x.Provider, _provider)
+            .Add(x => x.BodyTemplate, filters => builder =>
+                builder.AddMarkupContent(0, $"<p class=\"custom-body\">{filters.Get("compare")}</p>")));
+        await cut.InvokeAsync(() => { });
+
+        cut.Find("input[type=checkbox]").Change(true);
+        Assert.Equal("false", cut.Find(".custom-body").TextContent);
+
+        await cut.FindAll("button").First(b => b.TextContent.Contains("Apply")).ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+        Assert.Equal("true", cut.Find(".custom-body").TextContent);
+    }
+
+    [Fact]
     public async Task Should_RenderTextInput_When_FilterTypeIsText()
     {
         _provider.Filters.Returns(

@@ -1,5 +1,6 @@
 using Bunit;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Settings;
 using StageFright.UI.Pages.Setup;
 using StageFright.UI.Pages.Setup.Tabs;
@@ -89,5 +90,65 @@ public class ReviewTabTests : LocalizedTestContext
 
         Assert.DoesNotContain("Load sample data", cut.Markup);
         Assert.Empty(cut.FindAll("#seedData"));
+    }
+
+    [Fact]
+    public void Should_GroupOrganisationBeforeAccounting_When_Rendered()
+    {
+        var model = new SetupFormModel { OrganizationName = "My Choir", AnnualFee = 80m };
+        var cut = Render<ReviewTab>(p => p.Add(x => x.Model, model));
+
+        var organisationHeading = cut.Markup.IndexOf("review-group-organisation", StringComparison.Ordinal);
+        var orgName = cut.Markup.IndexOf("My Choir", StringComparison.Ordinal);
+        var accountingHeading = cut.Markup.IndexOf("review-group-accounting", StringComparison.Ordinal);
+        var annualFee = cut.Markup.IndexOf(MoneyFormatter.Format(80m), StringComparison.Ordinal);
+
+        Assert.True(organisationHeading >= 0);
+        Assert.True(orgName > organisationHeading);
+        Assert.True(accountingHeading > orgName);
+        Assert.True(annualFee > accountingHeading);
+    }
+
+    [Fact]
+    public void Should_ShowCurrencyFinancialYearAndInception_When_Rendered()
+    {
+        var model = new SetupFormModel
+        {
+            CurrencyCode = "NZD",
+            FinancialYearStartMonth = 4,
+            FinancialYearStartDay = 1,
+            InceptionDate = new DateTime(1998, 3, 14)
+        };
+        var cut = Render<ReviewTab>(p => p.Add(x => x.Model, model));
+
+        Assert.Contains("(NZD)", cut.Markup);
+        Assert.Contains(new DateTime(2000, 4, 1).ToString("M"), cut.Markup);
+        Assert.Contains(new DateTime(1998, 3, 14).ToString("d"), cut.Markup);
+    }
+
+    [Fact]
+    public void Should_ShowNotSet_When_InceptionDateBlank()
+    {
+        var cut = Render<ReviewTab>(p => p.Add(x => x.Model, new SetupFormModel()));
+
+        Assert.Contains("Not set", cut.Markup);
+    }
+
+    [Fact]
+    public void Should_ShowTaxEntryMode_When_TaxApplicable()
+    {
+        var model = new SetupFormModel { IsTaxApplicable = true, TaxRate = 10m, TaxEntryMode = TaxEntryMode.Exclusive };
+        var cut = Render<ReviewTab>(p => p.Add(x => x.Model, model));
+
+        Assert.Contains(TaxEntryMode.Exclusive.LocalizeEnum(), cut.Markup);
+    }
+
+    [Fact]
+    public void Should_HideTaxEntryMode_When_TaxNotApplicable()
+    {
+        var model = new SetupFormModel { TaxEntryMode = TaxEntryMode.Exclusive };
+        var cut = Render<ReviewTab>(p => p.Add(x => x.Model, model));
+
+        Assert.DoesNotContain(TaxEntryMode.Exclusive.LocalizeEnum(), cut.Markup);
     }
 }

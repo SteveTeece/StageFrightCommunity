@@ -23,6 +23,9 @@ public sealed class BackupSnapshot
     public IReadOnlyList<Fee> Fees { get; init; } = Array.Empty<Fee>();
     public IReadOnlyList<Payment> Payments { get; init; } = Array.Empty<Payment>();
     public IReadOnlyList<Transaction> Transactions { get; init; } = Array.Empty<Transaction>();
+    public IReadOnlyList<JournalEntry> JournalEntries { get; init; } = Array.Empty<JournalEntry>();
+    public IReadOnlyList<BankReconciliation> BankReconciliations { get; init; } = Array.Empty<BankReconciliation>();
+    public IReadOnlyList<ReconciliationLine> ReconciliationLines { get; init; } = Array.Empty<ReconciliationLine>();
     public IReadOnlyList<Account> Accounts { get; init; } = Array.Empty<Account>();
     public SettingsEntity? Settings { get; init; }
     public IReadOnlyList<AuditTrailEntry> AuditTrailEntries { get; init; } = Array.Empty<AuditTrailEntry>();

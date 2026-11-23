@@ -182,6 +182,14 @@ jobs:
       # that hand a single concrete RID to the referenced libraries. Release builds get this
       # universal RID set by MAUI automatically; a Debug build has to opt in. See the
       # dotnet/macios .NET 8 release notes and dotnet/maui's Controls.TestCases.HostApp.csproj.
+      #
+      # ValidateXcodeVersion=false: each Mac Catalyst workload pack demands one exact
+      # Xcode major.minor (e.g. pack 26.0.11017 -> "requires Xcode 26.0"), while the
+      # macos-latest image ships whatever default Xcode it currently has (26.6 at the
+      # time of writing). The two drift independently every few weeks, so pinning
+      # either side breaks again on the next image or workload bump. Same-major Xcode
+      # builds fine, and this is an internal Debug test build, so the strict check is
+      # switched off for this step only (never set in StageFright.App.csproj).
       - name: Publish unsigned universal .app
         run: >
           dotnet publish ${{ env.APP_PROJECT }}
@@ -189,6 +197,7 @@ jobs:
           -c Debug
           -p:CreatePackage=false
           -p:PublishMacUniversal=true
+          -p:ValidateXcodeVersion=false
 
       # `ditto` is Apple's supported way to archive an .app bundle for transport — it
       # preserves the symlinks, permissions, and resource forks that a plain `zip`

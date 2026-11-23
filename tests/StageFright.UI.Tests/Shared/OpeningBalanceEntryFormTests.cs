@@ -44,6 +44,52 @@ public class OpeningBalanceEntryFormTests : LocalizedTestContext
     }
 
     [Fact]
+    public void Should_HideSubmitButton_When_SubmitOnChangeSet()
+    {
+        var cut = Render<OpeningBalanceEntryForm>(p => p
+            .Add(x => x.Accounts, new[] { BankAccount })
+            .Add(x => x.AsAtDate, DateTime.Today)
+            .Add(x => x.SubmitOnChange, true)
+            .Add(x => x.OnSubmit, EventCallback.Factory.Create<RecordOpeningBalancesRequest>(this, _ => { })));
+
+        Assert.Empty(cut.FindAll(".wizard-post"));
+    }
+
+    [Fact]
+    public void Should_SubmitCurrentEntries_When_AmountChangedWithSubmitOnChangeSet()
+    {
+        RecordOpeningBalancesRequest? submitted = null;
+        var asAt = new DateTime(2025, 7, 1);
+        var cut = Render<OpeningBalanceEntryForm>(p => p
+            .Add(x => x.Accounts, new[] { BankAccount })
+            .Add(x => x.AsAtDate, asAt)
+            .Add(x => x.SubmitOnChange, true)
+            .Add(x => x.OnSubmit, EventCallback.Factory.Create<RecordOpeningBalancesRequest>(this, r => submitted = r)));
+
+        cut.Find(".opening-balance-amount").Change("320.50");
+
+        Assert.NotNull(submitted);
+        Assert.Equal(asAt, submitted!.AsAtDate);
+        Assert.Equal(BankAccount.Id, submitted.Entries.Single().AccountId);
+        Assert.Equal(320.50m, submitted.Entries.Single().Amount);
+    }
+
+    [Fact]
+    public void Should_NotSubmit_When_AmountChangedWithoutSubmitOnChange()
+    {
+        var submitCount = 0;
+        var cut = Render<OpeningBalanceEntryForm>(p => p
+            .Add(x => x.Accounts, new[] { BankAccount })
+            .Add(x => x.AsAtDate, DateTime.Today)
+            .Add(x => x.OnSubmit, EventCallback.Factory.Create<RecordOpeningBalancesRequest>(this, _ => submitCount++)));
+
+        cut.Find(".opening-balance-amount").Change("320.50");
+
+        Assert.Equal(0, submitCount);
+        Assert.NotEmpty(cut.FindAll(".wizard-post"));
+    }
+
+    [Fact]
     public async Task NegativeAmount_IsAccepted()
     {
         RecordOpeningBalancesRequest? submitted = null;

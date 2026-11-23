@@ -84,6 +84,7 @@
 
     <ItemGroup>
         <PackageReference Include="Blazor.Bootstrap" />
+        <PackageReference Include="CommunityToolkit.Maui" />
         <PackageReference Include="Microsoft.Maui.Controls" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" />

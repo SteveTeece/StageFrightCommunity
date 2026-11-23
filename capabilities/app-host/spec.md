@@ -14,7 +14,8 @@ The app-host capability is the MAUI composition root that boots the process, wir
 
 #### Scenario: application launches on any supported platform
 - **WHEN** the OS activates the app
-- **THEN** a single native window is created sized to the device's current display bounds (via `DeviceDisplay.MainDisplayInfo`, density-corrected)
+- **THEN** a single native window is created at a fixed 1024×768 startup size, centred on the device's main display (via `DeviceDisplay.MainDisplayInfo`, density-corrected, clamped so it never starts off-screen) — issue #383
+- **AND** when the window is larger than its content, `ShellLayout` centres the page horizontally and vertically in the main pane (`.shell-content-inner`, capped at `--sf-content-max-w`), while a page taller than the pane still scrolls from its top
 - **AND** that window's content is one `BlazorWebView` whose root component is the `StageFright.UI` app shell, started at `/dashboard`
 
 ### DI composition happens once, in a fixed dependency order, before any UI renders
@@ -49,10 +50,18 @@ The Blazor shell MUST check for a recorded startup error before it checks whethe
 
 ### First-run detection redirects to setup before any operational page loads
 
-The app shell MUST ask a setup-completion service whether initial configuration has happened, and if not, redirect to the setup wizard before the dashboard or any other page is reachable.
+While first-run setup is incomplete and no startup error is recorded, the app shell MUST route through the pre-wizard screens before any operational page loads: to the display-language screen when no language preference has been recorded, otherwise to the restore-from-backup screen. The setup wizard MUST NOT be the direct first-run target — it is reachable only via the restore-from-backup screen's *Continue* action. A completed setup with no startup error still leaves the requested route untouched.
 
-#### Scenario: app is launched for the first time
-- **WHEN** no startup error is recorded and setup has not been completed
+#### Scenario: app is launched for the first time with no recorded language preference
+- **WHEN** no startup error is recorded, setup has not been completed, and no display-language preference has been recorded
+- **THEN** the shell navigates to `/language-select`
+
+#### Scenario: app is launched for the first time with a language preference already recorded
+- **WHEN** no startup error is recorded, setup has not been completed, and a display-language preference has been recorded
+- **THEN** the shell navigates to `/first-run-restore`, not to `/setup`
+
+#### Scenario: user declines the restore and continues to setup
+- **WHEN** the user chooses *Continue* on `/first-run-restore` without restoring
 - **THEN** the shell navigates to `/setup`
 
 #### Scenario: app has already been configured
@@ -61,7 +70,7 @@ The app shell MUST ask a setup-completion service whether initial configuration 
 
 ### The setup wizard captures required configuration through validated steps before anything else can run
 
-The wizard MUST require organisation identity, fee/renewal configuration, and sales-tax treatment (applicability, rate, and per-fee tax codes) before allowing submission, gating advancement on a per-step validation pass rather than only validating at final submit. Completion MUST persist configuration through one setup service call and then route straight into the app.
+The wizard MUST require organisation identity, fee/renewal configuration, and sales-tax treatment (applicability, rate, and per-fee tax codes) before allowing submission, gating advancement on a per-step validation pass rather than only validating at final submit. Its tabs run in a fixed order: Organisation Settings (name, theme, renewal month, audit retention), Accounting (currency, financial year, inception date, fees, sales tax), Chart of Accounts, Opening Balances, Committee, Review. Every money-related field lives on the Accounting tab only. Completion MUST persist configuration through one setup service call and then route straight into the app.
 
 #### Scenario: user attempts to advance past an incomplete step
 - **WHEN** required fields for the current step fail validation
@@ -71,34 +80,30 @@ The wizard MUST require organisation identity, fee/renewal configuration, and sa
 - **WHEN** the final step is submitted successfully
 - **THEN** configuration is persisted and the user is navigated to `/dashboard`
 
+#### Scenario: sales tax switched on with no rate
+- **WHEN** the coordinator turns sales tax on in the Accounting tab, leaves the rate blank and presses Next
+- **THEN** the wizard stays on the Accounting tab and shows the tax-rate validation message
+
 ### Optional sample-data seeding is a debug-only, opt-in, non-blocking capability
 
-Sample-data seeding MUST NOT be offered or reachable in release builds, MUST require explicit user opt-in even when available, and MUST run without freezing the setup UI, reporting incremental progress back to it. It MUST also be safe to invoke against a database that already has data. The opt-in control lives on the Organisation Settings tab (the wizard's first tab), and selecting it disables the Chart of Accounts, Opening Balances, and Committee tabs — sample data supplies that information itself, so manual entry on those tabs is bypassed rather than merely optional. The seeder likewise stamps its own generated organisation name and fee schedule over the Organisation Settings inputs, so the sample dataset is internally consistent regardless of the placeholder values entered to satisfy the wizard's own validation; currency, language and sales-tax treatment are the exception and follow what the coordinator configured.
+Sample-data seeding MUST NOT be offered or reachable in release builds, MUST require explicit user opt-in even when available, and MUST run without freezing the UI, reporting incremental progress. It MUST also be safe to invoke against a database that already has data. The opt-in switch lives on the pre-wizard `/language-select` screen, directly below the language selector; choosing it completes setup from valid placeholder defaults, seeds the dataset and opens the dashboard without showing the wizard, so the user types nothing. The seeder stamps its own generated organisation name, fee schedule, renewal months and committee seat target over the placeholders; currency, language and sales-tax treatment keep their defaults.
 
-#### Scenario: release build reaches the setup wizard
+#### Scenario: release build reaches first run
 - **WHEN** no debug seeder is registered in the container
-- **THEN** the sample-data checkbox is not shown at all, on any tab, and no tab is ever disabled
+- **THEN** the sample-data switch is not shown and confirming the language proceeds towards the setup wizard
 
 #### Scenario: user opts into sample data in a debug build
-- **WHEN** the checkbox is checked on the Organisation Settings tab and setup is submitted
-- **THEN** seeding runs off the UI thread while progress messages update the wizard in place, and normal navigation to `/dashboard` still follows once seeding finishes
+- **WHEN** the switch is on and the user confirms the language screen
+- **THEN** setup completes from valid placeholder values, seeding runs off the UI thread with progress shown, and the dashboard opens without the wizard ever appearing
 
 #### Scenario: seeding runs against a database that already has member data
 - **WHEN** the seeder is invoked and active members already exist
 - **THEN** it exits without creating duplicate data
 
-#### Scenario: coordinator selects sample data before reaching the manual-entry tabs
-- **WHEN** the checkbox is checked on the Organisation Settings tab
-- **THEN** the Chart of Accounts, Opening Balances, and Committee tab headers become unavailable and Next advances directly from Organisation Settings to Review
-
-#### Scenario: coordinator had already queued manual entries before selecting sample data
-- **WHEN** the checkbox is checked after an account, opening balance, or committee title was already queued
-- **THEN** every queued entry is discarded so it is never submitted alongside the seeded sample data
-
 #### Scenario: sample data overrides the organisation identity and fee inputs
-- **WHEN** the seeder runs after setup was submitted with a placeholder organisation name and fee figures
+- **WHEN** the seeder runs after setup was completed with the placeholder organisation name and fee figures
 - **THEN** the persisted settings carry the seeder's generated organisation name, annual fee, attendance fee and renewal configuration instead
-- **AND** the currency, language and sales-tax treatment chosen during setup are left unchanged
+- **AND** the currency, language and sales-tax treatment are left unchanged
 
 ### Plugin assemblies are discovered and loaded in isolation from each other and from the host
 
@@ -181,3 +186,18 @@ The debug data seeder SHALL suppress audit trail logging for its entire run, so 
 - **WHEN** the debug data seeder runs (via the opt-in setup-wizard checkbox)
 - **THEN** no audit trail entry is created for any member, rehearsal, attendance, fee, payment, event, AGM, expense, income, deposit, or account record it creates
 - **AND** audit trail logging for actions taken after seeding finishes is unaffected
+
+### A completed restore routes to a chrome-free restart screen with no navigation surface
+
+After a restore completes successfully — from the first-run flow or from Settings → Backup & Restore — the shell MUST navigate to `/restart-required`, and that screen MUST render under a layout that has no sidebar, no navigation links, and no theme toggle, so a user sitting on pre-restore in-memory state cannot reach the dashboard or any operational page without restarting the application.
+
+#### Scenario: a first-run or Settings restore finishes successfully
+- **WHEN** `ImportAsync` completes without error
+- **THEN** the shell navigates to `/restart-required`
+- **AND** the screen offers only an instruction to close and reopen the application — no continue, dashboard, retry, or navigation control
+
+#### Scenario: the restart screen is rendered
+- **WHEN** `/restart-required` is displayed
+- **THEN** it renders under the chrome-free `BlankLayout` (no `shell-sidebar`, no menu-item links, no theme switch), not `ShellLayout`
+- **AND** the restart notice is centred both horizontally and vertically in the window (issue #384)
+- **AND** the screen sits on the same themed backdrop as every `ShellLayout` page (in light and dark), never a bare white page (issue #384)

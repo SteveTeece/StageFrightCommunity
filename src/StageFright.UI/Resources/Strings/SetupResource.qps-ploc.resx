@@ -10,7 +10,7 @@
   <data name="Setup_FirstRun_Subheading" xml:space="preserve"><value>⟦Çhóósé ýóúr díspláý láñgúágé tó gét stártéd.—⟧</value><comment>Sub-heading under the first-run screen title (spec 029).</comment></data>
   <data name="Setup_FirstRun_ConfirmButton" xml:space="preserve"><value>⟦Çóñtíñúé—⟧</value><comment>First-run language-select screen — confirm button (spec 029).</comment></data>
   <data name="Setup_FirstRun_SeedingError" xml:space="preserve"><value>⟦Sóméthíñg wéñt wróñg whílé lóádíñg thé sámplé dátá. Pléásé trý ágáíñ.—⟧</value><comment>First-run language-select screen — sample-data seeding failure message (spec 029, US3).</comment></data>
-  <data name="Setup_FirstRun_SampleOrganizationPlaceholder" xml:space="preserve"><value>⟦Sámplé Órgáñízátíóñ—⟧</value><comment>First-run language-select screen — placeholder organisation name for the sample-data setup request; DebugDataSeeder overwrites it with a generated name once seeding runs (spec 029, US3).</comment></data>
+  <data name="Setup_FirstRun_SampleOrganizationPlaceholder" xml:space="preserve"><value>⟦Sámplé Órgáñísátíóñ—⟧</value><comment>First-run language-select screen — placeholder organisation name for the sample-data setup request; DebugDataSeeder overwrites it with a generated name once seeding runs (spec 029, US3).</comment></data>
   <data name="Setup_Wizard_Heading" xml:space="preserve"><value>⟦StágéFríght Çómmúñítý - Sétúp Wízárd—⟧</value><comment>Setup Wizard page heading.</comment></data>
   <data name="Setup_Wizard_Subheading" xml:space="preserve"><value>⟦Çómplété thé sétúp bélów tó gét stártéd.—⟧</value><comment>Sub-heading under the wizard title.</comment></data>
   <data name="Setup_Tab_OrganisationSettings" xml:space="preserve"><value>⟦Órgáñísátíóñ Séttíñgs—⟧</value><comment>Setup Wizard tab title.</comment></data>
@@ -23,7 +23,7 @@
   <data name="Setup_Nav_FinishButton" xml:space="preserve"><value>⟦Fíñísh—⟧</value><comment>Setup Wizard — complete setup.</comment></data>
   <data name="Setup_Seeding_Message" xml:space="preserve"><value>⟦Séttíñg úp ýóúr sámplé dátá — thís máý táké á féw míñútés. Pléásé dóñ't çlósé thé ápp.—⟧</value><comment>Overlay message while sample data is being seeded.</comment></data>
   <data name="Setup_Error_InvalidSubmit" xml:space="preserve"><value>⟦Sómé réqúíréd fíélds áré íñçómplété — çhéçk évérý táb béfóré fíñíshíñg.—⟧</value><comment>Shown when Finish is clicked with an invalid field somewhere.</comment></data>
-  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>⟦Éñtér át léást óñé ópéñíñg báláñçé, ór séléçt "Lóád sámplé dátá" óñ thé Révíéw táb, béfóré fíñíshíñg.—⟧</value><comment>Shown when Finish is attempted with no opening balance and no sample-data opt-in.</comment></data>
+  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>⟦Éñtér át léást óñé ópéñíñg báláñçé óñ thé Ópéñíñg Báláñçés táb béfóré fíñíshíñg.—⟧</value><comment>Shown when Finish is attempted with no opening balance entered.</comment></data>
   <data name="Setup_Error_Unexpected" xml:space="preserve"><value>⟦Áñ úñéxpéçtéd érrór óççúrréd. Pléásé trý ágáíñ.—⟧</value><comment>Generic setup failure message.</comment></data>
   <data name="Setup_General_OrgNameLabel" xml:space="preserve"><value>⟦Órgáñísátíóñ Ñámé—⟧</value><comment>General tab — organisation name label.</comment></data>
   <data name="Setup_General_OrgNamePlaceholder" xml:space="preserve"><value>⟦é.g. Spríñgfíéld Çhórál Sóçíétý—⟧</value><comment>Placeholder for the organisation name field.</comment></data>
@@ -60,9 +60,8 @@
   <data name="Setup_Coa_QueuedEmpty" xml:space="preserve"><value>⟦Ñó áççóúñts qúéúéd ýét.—⟧</value><comment>Empty text for the queued accounts list.</comment></data>
   <data name="Setup_Coa_BankCashSuffix" xml:space="preserve"><value>⟦ · Báñk/Çásh—⟧</value><comment>Suffix appended to a bank/cash account's type in the account lists.</comment></data>
   <data name="Setup_Coa_SystemBadge" xml:space="preserve"><value>⟦Sýstém—⟧</value><comment>Badge / title marking a system account.</comment></data>
-  <data name="Setup_Ob_Intro" xml:space="preserve"><value>⟦Éñtér ópéñíñg báláñçés fór áñý áççóúñts ýóú'd líké tó stárt wíth á báláñçé — íñçlúdíñg áççóúñts ýóú júst qúéúéd óñ thé Çhárt óf Áççóúñts táb. Thís ís óptíóñál; ýóú çáñ álsó lóád sámplé dátá fróm thé Révíéw táb íñstéád.—⟧</value><comment>Opening Balances tab intro paragraph.</comment></data>
+  <data name="Setup_Ob_Intro" xml:space="preserve"><value>⟦Éñtér ópéñíñg báláñçés fór áñý áççóúñts ýóú'd líké tó stárt wíth á báláñçé — íñçlúdíñg áççóúñts ýóú júst qúéúéd óñ thé Çhárt óf Áççóúñts táb. Báláñçés áré képt ás ýóú týpé, áñd át léást óñé ís ñéédéd tó fíñísh sétúp.—⟧</value><comment>Opening Balances tab intro paragraph.</comment></data>
   <data name="Setup_Ob_AsAtLabel" xml:space="preserve"><value>⟦Ás át—⟧</value><comment>Opening Balances tab — as-at date label.</comment></data>
-  <data name="Setup_Ob_QueueBalancesButton" xml:space="preserve"><value>⟦Qúéúé Báláñçés—⟧</value><comment>Submit button text for the opening-balance form in the setup wizard.</comment></data>
   <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>⟦ÁGM Móñth—⟧</value><comment>Committee tab — AGM month label.</comment></data>
   <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>⟦Thé móñth ýóúr ÁGM ís ñórmállý héld. Drívés çómmíttéé térm bóúñdáríés.—⟧</value><comment>Help text under the AGM month field.</comment></data>
   <data name="Setup_Committee_SeatTargetLabel" xml:space="preserve"><value>⟦Géñérál Çómmíttéé Séát Çóúñt Tárgét—⟧</value><comment>Committee tab — seat target label.</comment></data>
@@ -88,6 +87,13 @@
   <data name="Setup_Review_AgmMonthTerm" xml:space="preserve"><value>⟦ÁGM Móñth—⟧</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_AuditRetentionTerm" xml:space="preserve"><value>⟦Áúdít Tráíl Rétéñtíóñ—⟧</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_SeatTargetTerm" xml:space="preserve"><value>⟦Séát Çóúñt Tárgét—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Tab_Accounting" xml:space="preserve"><value>⟦Áççóúñtíñg—⟧</value><comment>Setup Wizard tab title.</comment></data>
+  <data name="Setup_Review_OrganisationGroupHeading" xml:space="preserve"><value>⟦Órgáñísátíóñ—⟧</value><comment>Review tab — organisation group heading.</comment></data>
+  <data name="Setup_Review_AccountingGroupHeading" xml:space="preserve"><value>⟦Áççóúñtíñg—⟧</value><comment>Review tab — accounting group heading.</comment></data>
+  <data name="Setup_Review_CurrencyTerm" xml:space="preserve"><value>⟦Çúrréñçý—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_FinancialYearStartTerm" xml:space="preserve"><value>⟦Fíñáñçíál Ýéár Stárts—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_InceptionDateTerm" xml:space="preserve"><value>⟦Íñçéptíóñ Dáté—⟧</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_TaxEntryModeTerm" xml:space="preserve"><value>⟦Ámóúñt Éñtrý—⟧</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_Yes" xml:space="preserve"><value>⟦Ýés—⟧</value><comment>Review tab — affirmative value.</comment></data>
   <data name="Setup_Review_No" xml:space="preserve"><value>⟦Ñó—⟧</value><comment>Review tab — negative value.</comment></data>
   <data name="Setup_Review_NotSet" xml:space="preserve"><value>⟦Ñót sét—⟧</value><comment>Review tab — shown for an unset optional value.</comment></data>
@@ -99,4 +105,20 @@
   <data name="Setup_Review_AuditRetentionYears_One" xml:space="preserve"><value>⟦{Count} ýéár—⟧</value><comment>Review tab audit-retention value, singular.</comment></data>
   <data name="Setup_Review_AuditRetentionYears_Other" xml:space="preserve"><value>⟦{Count} ýéárs—⟧</value><comment>Review tab audit-retention value, plural.</comment></data>
   <data name="Setup_Review_BankCashSuffix" xml:space="preserve"><value>⟦ · Báñk/Çásh—⟧</value><comment>Suffix appended to a bank/cash account's type in the review list.</comment></data>
+  <data name="Setup_FirstRunRestore_PageTitle" xml:space="preserve"><value>⟦Réstóré Fróm Báçkúp — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title — first-run restore-from-backup screen (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_Heading" xml:space="preserve"><value>⟦Réstóré fróm á báçkúp—⟧</value><comment>First-run restore screen heading (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_Subheading" xml:space="preserve"><value>⟦Lóád áñ éxístíñg báçkúp fílé íñstéád óf séttíñg thé órgáñísátíóñ úp bý háñd.—⟧</value><comment>Sub-heading under the first-run restore screen title (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_CheckboxLabel" xml:space="preserve"><value>⟦Réstóré fróm á báçkúp fílé íñstéád óf çómplétíñg sétúp máñúállý—⟧</value><comment>First-run restore screen — the FR-001 checkbox label (spec 030, US1). Verbatim Constraint: a plain checkbox.</comment></data>
+  <data name="Setup_FirstRunRestore_FilePickLabel" xml:space="preserve"><value>⟦Çhóósé á báçkúp fílé (.sfbák)—⟧</value><comment>First-run restore screen — file-picker label, shown once the checkbox is ticked (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_SummaryHeading" xml:space="preserve"><value>⟦Báçkúp çóñtéñts—⟧</value><comment>First-run restore screen — heading over the chosen file's contents summary (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_GeneratedTerm" xml:space="preserve"><value>⟦Çréátéd—⟧</value><comment>First-run restore summary — term for the date the backup was taken (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_VersionTerm" xml:space="preserve"><value>⟦Çréátéd bý vérsíóñ—⟧</value><comment>First-run restore summary — term for the originating application version (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_ConfirmButton" xml:space="preserve"><value>⟦Réstóré thís báçkúp—⟧</value><comment>First-run restore screen — confirm button, shown after the summary (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_CancelButton" xml:space="preserve"><value>⟦Çhóósé á dífféréñt fílé—⟧</value><comment>First-run restore screen — cancel button, clears the chosen file and summary (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_ContinueButton" xml:space="preserve"><value>⟦Sét úp máñúállý íñstéád—⟧</value><comment>First-run restore screen — continue-to-wizard button, available whenever no backup is loaded (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_ReadFileError" xml:space="preserve"><value>⟦Thé báçkúp fílé çóúld ñót bé réád: {Detail}—⟧</value><comment>First-run restore screen — shown when the chosen file cannot be read or restored. {Detail} = error detail.</comment></data>
+  <data name="Setup_FirstRunRestore_ProgressMessage" xml:space="preserve"><value>⟦Réstóríñg ýóúr dátá — pléásé dóñ't çlósé thé ápp.—⟧</value><comment>First-run restore screen — blocking-overlay message while the restore runs (spec 030, US1).</comment></data>
+  <data name="Setup_RestartRequired_PageTitle" xml:space="preserve"><value>⟦Réstárt Réqúíréd — StágéFríght Çómmúñítý—⟧</value><comment>Browser tab title — terminal post-restore restart screen (spec 030, US1 / FR-007).</comment></data>
+  <data name="Setup_RestartRequired_Heading" xml:space="preserve"><value>⟦Álmóst théré — pléásé réstárt—⟧</value><comment>Restart-required screen heading (spec 030, US1 / FR-007).</comment></data>
+  <data name="Setup_RestartRequired_Instruction" xml:space="preserve"><value>⟦Ýóúr báçkúp hás bééñ réstóréd. Çlósé thé ápplíçátíóñ áñd ópéñ ít ágáíñ tó stárt úsíñg thé réstóréd dátá.—⟧</value><comment>Restart-required screen — the single close-and-reopen instruction; the screen has no continue control (spec 030, FR-007).</comment></data>
 </root>

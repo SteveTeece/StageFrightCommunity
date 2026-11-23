@@ -991,8 +991,8 @@ public class DebugDataSeeder : IDebugDataSeeder
     /// </summary>
     private static IReadOnlyList<DateTime> GetTermStartMondays(int year) => year switch
     {
-        2025 => [Utc(2025, 2, 3), Utc(2025, 4, 28), Utc(2025, 7, 21), Utc(2025, 10, 13)],
-        2026 => [Utc(2026, 2, 2), Utc(2026, 4, 28), Utc(2026, 7, 21), Utc(2026, 10, 13)],
+        2025 => (DateTime[])[Utc(2025, 2, 3), Utc(2025, 4, 28), Utc(2025, 7, 21), Utc(2025, 10, 13)],
+        2026 => (DateTime[])[Utc(2026, 2, 2), Utc(2026, 4, 28), Utc(2026, 7, 21), Utc(2026, 10, 13)],
         _ => throw new ArgumentOutOfRangeException(nameof(year), $"No school terms configured for {year}.")
     };
 

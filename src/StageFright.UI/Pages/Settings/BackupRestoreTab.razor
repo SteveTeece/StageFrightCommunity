@@ -7,19 +7,42 @@
         <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
     }
 
-    @if (!string.IsNullOrEmpty(_successMessage))
-    {
-        <div class="alert alert-success py-1 mb-2 small" role="status">@_successMessage</div>
-    }
-
     <section aria-labelledby="backup-heading" class="mb-3">
         <h6 id="backup-heading" class="mb-1">@L["Settings_Backup_Heading"]</h6>
         <p class="text-muted small">
             @L["Settings_Backup_Description"]
         </p>
-        <button class="btn btn-primary btn-sm" @onclick="HandleBackupAsync" disabled="@_busy">
+
+        <div class="backup-unencrypted-notice alert alert-warning py-1 mb-2 small" role="alert">
+            @L["Settings_Backup_UnencryptedNotice"]
+        </div>
+
+        <button id="create-backup" class="btn btn-primary btn-sm" @onclick="HandleBackupAsync" disabled="@_busy">
             @(_busy && _operation == "backup" ? L["Settings_Backup_CreatingText"] : L["Settings_Backup_CreateButton"])
         </button>
+
+        @if (_verifyResult is not null)
+        {
+            <div class="backup-verify-result alert alert-success py-1 mt-2 mb-0 small" role="status">
+                <div>@L["Settings_Backup_Verified"]</div>
+                <div class="text-muted">@(Loc.Get<SettingsResource>("Settings_Backup_Created", _verifyResult.FilePath))</div>
+            </div>
+        }
+        else if (_verifyDiscrepancies is not null)
+        {
+            <div class="backup-verify-result alert alert-danger py-1 mt-2 mb-0 small" role="alert">
+                <div>@L["Settings_Backup_VerifyFailed"]</div>
+                @if (_verifyDiscrepancies.Count > 0)
+                {
+                    <ul class="mb-0 mt-1">
+                        @foreach (var discrepancy in _verifyDiscrepancies)
+                        {
+                            <li>@discrepancy</li>
+                        }
+                    </ul>
+                }
+            </div>
+        }
     </section>
 
     <section aria-labelledby="restore-heading">
@@ -56,16 +79,16 @@
                 <div class="alert alert-warning py-1 mb-2 small" role="alert">
                     @L["Settings_Restore_Warning"]
                 </div>
-                <button class="btn btn-warning btn-sm" @onclick="ConfirmRestore" disabled="@_busy">
+                <button id="understand-restore" class="btn btn-warning btn-sm" @onclick="ConfirmRestore" disabled="@_busy">
                     @L["Settings_Restore_UnderstandButton"]
                 </button>
             }
             else
             {
-                <button class="btn btn-danger btn-sm" @onclick="HandleRestoreAsync" disabled="@_busy">
+                <button id="confirm-restore" class="btn btn-danger btn-sm" @onclick="HandleRestoreAsync" disabled="@_busy">
                     @(_busy && _operation == "restore" ? L["Settings_Restore_RestoringText"] : L["Settings_Restore_ConfirmButton"])
                 </button>
-                <button class="btn btn-secondary btn-sm ms-2" @onclick="CancelRestore" disabled="@_busy">@Shared["Shared_Action_Cancel"]</button>
+                <button id="cancel-restore" class="btn btn-secondary btn-sm ms-2" @onclick="CancelRestore" disabled="@_busy">@Shared["Shared_Action_Cancel"]</button>
             }
         }
     </section>

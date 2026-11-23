@@ -16,4 +16,5 @@ public class FeeBackupDto
     [ProtoMember(7)] public bool PaidAtCreation { get; set; }
     [ProtoMember(8)] public Guid? RehearsalId { get; set; }
     [ProtoMember(9)] public DateTime CreatedAt { get; set; }
+    [ProtoMember(10)] public TaxCode? TaxCode { get; set; }
 }

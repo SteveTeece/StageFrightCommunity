@@ -13,6 +13,7 @@ namespace StageFright.Localization.Tests;
 ///   <item>baseline completeness — every referenced localization key has a neutral (en-AU) entry (SC-008);</item>
 ///   <item>enum coverage — <c>EnumsResource</c> has an <c>Enum_&lt;Type&gt;_&lt;Member&gt;</c> entry for every member of each user-facing enum, and no screen renders one raw (FR-024);</item>
 ///   <item>no orphan satellite keys — every key in a shipped <c>.&lt;culture&gt;.resx</c> also exists in its neutral file;</item>
+///   <item>translation completeness — every shipped <c>.&lt;culture&gt;.resx</c> (every satellite but <c>qps-ploc</c>) carries a non-blank value for every neutral key, so a new key is never left on the English fallback (FR-025);</item>
 ///   <item>placeholder parity — a plural <c>_One</c>/<c>_Other</c> pair uses the same named tokens, and every plural half has its partner (FR-010);</item>
 ///   <item>no <c>"C"</c> currency format at any display site repo-wide — use <c>MoneyFormatter</c> (FR-015).</item>
 /// </list>
@@ -283,6 +284,41 @@ public class Us2LocalizationGuardTests
             "A satellite .resx defines a key its neutral file does not:\n" + string.Join("\n", orphans));
     }
 
+    /// <summary>
+    /// The mirror of <see cref="Should_HaveNoOrphanKey_When_SatelliteResxScanned"/>: every shipped
+    /// <c>.&lt;culture&gt;.resx</c> must carry a non-blank value for <b>every</b> key its neutral file
+    /// defines. A new or reworded neutral key is translated into all shipped culture sets in the same
+    /// change — the key-by-key English fallback is a regression safety net, not licence to ship a gap
+    /// (FR-025; <c>CLAUDE.md</c> → Localization; <c>docs/localization/adding-a-language.md</c> §3.2).
+    /// The <c>qps-ploc</c> pseudo-locale is excluded: it deliberately omits a few keys to exercise the
+    /// fallback path (<see cref="Us3PseudoLocaleGuardTests"/>; adding-a-language.md §6).
+    /// </summary>
+    [Fact]
+    public void Should_TranslateEveryNeutralKey_When_ShippedCultureResxScanned()
+    {
+        var gaps = new List<string>();
+
+        foreach (var (neutralPath, satellitePath) in EnumerateSatellitePairs())
+        {
+            if (IsPseudoLocaleResx(satellitePath)) continue;
+
+            var neutral = ResxKeyScanner.ScanFile(neutralPath);
+            var satellite = ResxKeyScanner.ScanFile(satellitePath);
+
+            foreach (var key in neutral.Keys)
+            {
+                if (!satellite.TryGetValue(key, out var translated))
+                    gaps.Add($"{Rel(satellitePath)}  {key}  (missing — defined in {Rel(neutralPath)})");
+                else if (string.IsNullOrWhiteSpace(translated))
+                    gaps.Add($"{Rel(satellitePath)}  {key}  (blank value)");
+            }
+        }
+
+        Assert.True(gaps.Count == 0,
+            "A shipped culture .resx has no translation for a neutral key — add it in the same change, "
+            + "do not rely on the English fallback:\n" + string.Join("\n", gaps));
+    }
+
     // --- Placeholder / plural parity ------------------------------------------------
 
     [Fact]
@@ -382,6 +418,13 @@ public class Us2LocalizationGuardTests
         if (!text.Any(char.IsLetter)) return true;
         return text is "else" or "true" or "false";
     }
+
+    /// <summary>
+    /// True for a <c>&lt;Stem&gt;.qps-*.resx</c> pseudo-locale file. These are test fixtures, not a
+    /// shipped language (adding-a-language.md §6), so translation-completeness does not apply to them.
+    /// </summary>
+    private static bool IsPseudoLocaleResx(string resxPath) =>
+        Path.GetFileNameWithoutExtension(resxPath).Contains(".qps-", StringComparison.OrdinalIgnoreCase);
 
     private static void AssertTokensAgree(
         string filePath, string keyA, string valueA, string keyB, string valueB,

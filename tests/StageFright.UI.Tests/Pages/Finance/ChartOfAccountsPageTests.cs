@@ -153,9 +153,31 @@ public class ChartOfAccountsPageTests : LocalizedTestContext
     // --- Balance column ---
 
     [Fact]
-    public void Should_RenderCurrencyFormattedBalance_When_PageLoads()
+    public void Should_HideBalances_When_IncludeBalancesSwitchOff()
+    {
+        // Issue #367: the Balance column follows the Include balances switch, as on the report.
+        var cut = Render<ChartOfAccountsPage>();
+
+        Assert.DoesNotContain(cut.FindAll("th"), th => th.TextContent.Contains("Balance"));
+        Assert.DoesNotContain("$500.00", cut.Markup);
+    }
+
+    [Fact]
+    public void Should_RenderTypeHeaderRows_When_PageLoads()
+    {
+        // Issue #367: header row per account type, accounts beneath, in report order.
+        var cut = Render<ChartOfAccountsPage>();
+
+        var headings = cut.FindAll(".chart-of-accounts-section").Select(h => h.TextContent.Trim()).ToList();
+        Assert.Equal(["Assets", "Income"], headings);
+        Assert.DoesNotContain(cut.FindAll("th"), th => th.TextContent.Trim() == "Type");
+    }
+
+    [Fact]
+    public void Should_RenderCurrencyFormattedBalance_When_IncludeBalancesSwitchOn()
     {
         var cut = Render<ChartOfAccountsPage>();
+        cut.Find("[role=switch]").Click();
 
         Assert.Contains("$500.00", cut.Markup);   // Cash on Hand
         Assert.Contains("$1,000.00", cut.Markup); // Operating Account
@@ -190,6 +212,7 @@ public class ChartOfAccountsPageTests : LocalizedTestContext
             ]).ToList());
 
         var cut = Render<ChartOfAccountsPage>();
+        cut.Find("[role=switch]").Click();
 
         Assert.Contains("Broken Account", cut.Markup);
         Assert.Contains("—", cut.Markup);
@@ -199,7 +222,7 @@ public class ChartOfAccountsPageTests : LocalizedTestContext
     }
 
     [Fact]
-    public void Should_ShowBalanceForArchivedAccounts_When_ArchivedListLoads()
+    public void Should_ShowBalanceForArchivedAccounts_When_IncludeBalancesSwitchOn()
     {
         _accountBalanceService.GetArchivedAccountBalancesAsync(Arg.Any<CancellationToken>())
             .Returns(new List<AccountBalance>
@@ -222,26 +245,28 @@ public class ChartOfAccountsPageTests : LocalizedTestContext
             });
 
         var cut = Render<ChartOfAccountsPage>();
+        Assert.DoesNotContain("$42.00", cut.Markup);
+        cut.Find("[role=switch]").Click();
 
         Assert.Contains("Old Fund", cut.Markup);
         Assert.Contains("$42.00", cut.Markup);
     }
 
     [Fact]
-    public void Should_SortByBalance_When_BalanceColumnHeaderClicked()
+    public void Should_SortByBalanceWithinEachTypeSection_When_BalanceColumnHeaderClicked()
     {
         var cut = Render<ChartOfAccountsPage>();
+        cut.Find("[role=switch]").Click();
 
+        // Rows start in account-number order under their type header: Assets 1100 (500),
+        // 1110 (1000); Income 4000 (250). Two clicks sort by Balance descending — the Assets
+        // rows swap, and Income stays its own section rather than mixing in.
         var header = cut.FindAll("th").First(th => th.TextContent.Contains("Balance"));
         header.QuerySelector("div")!.Click();
+        cut.FindAll("th").First(th => th.TextContent.Contains("Balance")).QuerySelector("div")!.Click();
 
-        var cells = cut.FindAll("code");
-        // Before sort, rows appear in the order the service returned them: 1100, 1110, 4000
-        // (Balances 500, 1000, 250). After ascending sort by Balance (250, 500, 1000) the
-        // account-number column should reorder to 4000, 1100, 1110.
-        Assert.Equal("4000", cells[0].TextContent.Trim());
-        Assert.Equal("1100", cells[1].TextContent.Trim());
-        Assert.Equal("1110", cells[2].TextContent.Trim());
+        var numbers = cut.FindAll("code").Select(c => c.TextContent.Trim()).ToList();
+        Assert.Equal(["1110", "1100", "4000"], numbers);
     }
 
     // --- Print Chart of Accounts ---

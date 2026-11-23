@@ -36,6 +36,15 @@ public partial class ReviewTab : ComponentBase
     private string AuditRetentionText() =>
         Loc.Plural<SetupResource>("Setup_Review_AuditRetentionYears", Model.AuditRetentionYears);
 
+    private string CurrencyText() =>
+        CurrencyCatalog.TryGet(Model.CurrencyCode, out var currency)
+            ? $"{currency.DisplayName} ({currency.Code})"
+            : Model.CurrencyCode;
+
+    // "M" is the culture's month-day pattern ("1 July", "July 1", "7月1日"); the year is irrelevant.
+    private string FinancialYearStartText() =>
+        new DateTime(2000, Model.FinancialYearStartMonth, Model.FinancialYearStartDay).ToString("M");
+
     private string AccountTypeText(QueuedAccountRequest account) =>
         account.Type.LocalizeEnum() + (account.IsBankAccount ? L["Setup_Review_BankCashSuffix"].Value : string.Empty);
 }

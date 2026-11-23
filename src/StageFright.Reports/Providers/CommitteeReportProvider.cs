@@ -186,7 +186,10 @@ public class CommitteeReportProvider : IReportProvider
 
         if (generalMembers.Count > 0)
         {
-            rows.Add(new ReportRow { Cells = [year.ToString(), _localizer.Get<ReportsResource>("Reports_Committee_GeneralCommitteeMembers"), JoinAlphabetically(generalMembers)] });
+            // One name per line (issue #369): the PDF renders the line breaks as-is, and
+            // ReportViewer's cells preserve them (white-space: pre-line).
+            var generalMemberLines = string.Join("\n", generalMembers.OrderBy(n => n, StringComparer.OrdinalIgnoreCase));
+            rows.Add(new ReportRow { Cells = [year.ToString(), _localizer.Get<ReportsResource>("Reports_Committee_GeneralCommitteeMembers"), generalMemberLines] });
         }
 
         return rows;
@@ -196,7 +199,8 @@ public class CommitteeReportProvider : IReportProvider
     /// FR-029: a single holder (legacy or term-based) renders as name only. Multiple holders for
     /// the same term-tracked slot (a special election occurred) render as "Name (Start–End or
     /// 'present')" per holder, ordered by StartDate. Multiple legacy holders (no StartDate to
-    /// order by) keep the pre-existing plain alphabetical comma-join.
+    /// order by) keep the plain alphabetical join. People are separated by
+    /// <see cref="PersonSeparator"/>, never a comma (issue #369).
     /// </summary>
     private string FormatHolders(List<(Core.Entities.Member Member, Core.Entities.CommitteePositionRecord PositionRecord)> holders)
     {
@@ -206,7 +210,7 @@ public class CommitteeReportProvider : IReportProvider
         if (holders.All(h => h.PositionRecord.StartDate.HasValue))
         {
             var presentLabel = _localizer.Get<ReportsResource>("Reports_Committee_Present");
-            return string.Join(", ", holders
+            return string.Join(PersonSeparator, holders
                 .OrderBy(h => h.PositionRecord.StartDate)
                 .Select(h =>
                 {
@@ -219,6 +223,10 @@ public class CommitteeReportProvider : IReportProvider
         return JoinAlphabetically(holders.Select(h => h.Member.SortableFullName));
     }
 
+    // SortableFullName is already "Last, First", so a comma between people made the list
+    // ambiguous (issue #369).
+    private const string PersonSeparator = "; ";
+
     private static string JoinAlphabetically(IEnumerable<string> names) =>
-        string.Join(", ", names.OrderBy(n => n, StringComparer.OrdinalIgnoreCase));
+        string.Join(PersonSeparator, names.OrderBy(n => n, StringComparer.OrdinalIgnoreCase));
 }

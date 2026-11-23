@@ -23,7 +23,7 @@
   <data name="Setup_Nav_FinishButton" xml:space="preserve"><value>Terminer</value><comment>Setup Wizard — complete setup.</comment></data>
   <data name="Setup_Seeding_Message" xml:space="preserve"><value>Mise en place de vos données d'exemple — cela peut prendre quelques minutes. Veuillez ne pas fermer l'application.</value><comment>Overlay message while sample data is being seeded.</comment></data>
   <data name="Setup_Error_InvalidSubmit" xml:space="preserve"><value>Certains champs obligatoires sont incomplets — vérifiez chaque onglet avant de terminer.</value><comment>Shown when Finish is clicked with an invalid field somewhere.</comment></data>
-  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>Saisissez au moins un solde d'ouverture, ou cochez « Charger des données d'exemple » sur l'onglet Récapitulatif, avant de terminer.</value><comment>Shown when Finish is attempted with no opening balance and no sample-data opt-in.</comment></data>
+  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>Saisissez au moins un solde d'ouverture sur l'onglet Soldes d'ouverture avant de terminer.</value><comment>Shown when Finish is attempted with no opening balance entered.</comment></data>
   <data name="Setup_Error_Unexpected" xml:space="preserve"><value>Une erreur inattendue s'est produite. Veuillez réessayer.</value><comment>Generic setup failure message.</comment></data>
   <data name="Setup_General_OrgNameLabel" xml:space="preserve"><value>Nom de l'organisation</value><comment>General tab — organisation name label.</comment></data>
   <data name="Setup_General_OrgNamePlaceholder" xml:space="preserve"><value>ex. : Chorale de Springfield</value><comment>Placeholder for the organisation name field.</comment></data>
@@ -60,9 +60,8 @@
   <data name="Setup_Coa_QueuedEmpty" xml:space="preserve"><value>Aucun compte en attente pour le moment.</value><comment>Empty text for the queued accounts list.</comment></data>
   <data name="Setup_Coa_BankCashSuffix" xml:space="preserve"><value> · Banque/Caisse</value><comment>Suffix appended to a bank/cash account's type in the account lists.</comment></data>
   <data name="Setup_Coa_SystemBadge" xml:space="preserve"><value>Système</value><comment>Badge / title marking a system account.</comment></data>
-  <data name="Setup_Ob_Intro" xml:space="preserve"><value>Saisissez les soldes d'ouverture des comptes que vous souhaitez démarrer avec un solde — y compris ceux que vous venez de mettre en attente sur l'onglet Plan comptable. C'est facultatif ; vous pouvez aussi charger des données d'exemple depuis l'onglet Récapitulatif.</value><comment>Opening Balances tab intro paragraph.</comment></data>
+  <data name="Setup_Ob_Intro" xml:space="preserve"><value>Saisissez les soldes d'ouverture des comptes que vous souhaitez démarrer avec un solde — y compris ceux que vous venez de mettre en attente sur l'onglet Plan comptable. Les soldes sont conservés au fil de la saisie, et au moins un est nécessaire pour terminer la configuration.</value><comment>Opening Balances tab intro paragraph.</comment></data>
   <data name="Setup_Ob_AsAtLabel" xml:space="preserve"><value>À la date du</value><comment>Opening Balances tab — as-at date label.</comment></data>
-  <data name="Setup_Ob_QueueBalancesButton" xml:space="preserve"><value>Mettre les soldes en attente</value><comment>Submit button text for the opening-balance form in the setup wizard.</comment></data>
   <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>Mois de l'AGA</value><comment>Committee tab — AGM month label.</comment></data>
   <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>Le mois où se tient habituellement votre AGA. Détermine les limites des mandats du comité.</value><comment>Help text under the AGM month field.</comment></data>
   <data name="Setup_Committee_SeatTargetLabel" xml:space="preserve"><value>Objectif de sièges au comité général</value><comment>Committee tab — seat target label.</comment></data>
@@ -88,6 +87,13 @@
   <data name="Setup_Review_AgmMonthTerm" xml:space="preserve"><value>Mois de l'AGA</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_AuditRetentionTerm" xml:space="preserve"><value>Conservation du journal d'audit</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_SeatTargetTerm" xml:space="preserve"><value>Objectif de sièges</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Tab_Accounting" xml:space="preserve"><value>Comptabilité</value><comment>Setup Wizard tab title.</comment></data>
+  <data name="Setup_Review_OrganisationGroupHeading" xml:space="preserve"><value>Organisation</value><comment>Review tab — organisation group heading.</comment></data>
+  <data name="Setup_Review_AccountingGroupHeading" xml:space="preserve"><value>Comptabilité</value><comment>Review tab — accounting group heading.</comment></data>
+  <data name="Setup_Review_CurrencyTerm" xml:space="preserve"><value>Devise</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_FinancialYearStartTerm" xml:space="preserve"><value>Début de l'exercice</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_InceptionDateTerm" xml:space="preserve"><value>Date de création</value><comment>Review tab term.</comment></data>
+  <data name="Setup_Review_TaxEntryModeTerm" xml:space="preserve"><value>Saisie du montant</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_Yes" xml:space="preserve"><value>Oui</value><comment>Review tab — affirmative value.</comment></data>
   <data name="Setup_Review_No" xml:space="preserve"><value>Non</value><comment>Review tab — negative value.</comment></data>
   <data name="Setup_Review_NotSet" xml:space="preserve"><value>Non défini</value><comment>Review tab — shown for an unset optional value.</comment></data>
@@ -99,4 +105,20 @@
   <data name="Setup_Review_AuditRetentionYears_One" xml:space="preserve"><value>{Count} an</value><comment>Review tab audit-retention value, singular.</comment></data>
   <data name="Setup_Review_AuditRetentionYears_Other" xml:space="preserve"><value>{Count} ans</value><comment>Review tab audit-retention value, plural.</comment></data>
   <data name="Setup_Review_BankCashSuffix" xml:space="preserve"><value> · Banque/Caisse</value><comment>Suffix appended to a bank/cash account's type in the review list.</comment></data>
+  <data name="Setup_FirstRunRestore_PageTitle" xml:space="preserve"><value>Restaurer à partir d'une sauvegarde — StageFright Community</value><comment>Browser tab title — first-run restore-from-backup screen (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_Heading" xml:space="preserve"><value>Restaurer à partir d'une sauvegarde</value><comment>First-run restore screen heading (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_Subheading" xml:space="preserve"><value>Chargez un fichier de sauvegarde existant au lieu de configurer l'organisation manuellement.</value><comment>Sub-heading under the first-run restore screen title (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_CheckboxLabel" xml:space="preserve"><value>Restaurer à partir d'un fichier de sauvegarde au lieu de terminer la configuration manuellement</value><comment>First-run restore screen — the FR-001 checkbox label (spec 030, US1). Verbatim Constraint: a plain checkbox.</comment></data>
+  <data name="Setup_FirstRunRestore_FilePickLabel" xml:space="preserve"><value>Choisissez un fichier de sauvegarde (.sfbak)</value><comment>First-run restore screen — file-picker label, shown once the checkbox is ticked (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_SummaryHeading" xml:space="preserve"><value>Contenu de la sauvegarde</value><comment>First-run restore screen — heading over the chosen file's contents summary (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_GeneratedTerm" xml:space="preserve"><value>Créée le</value><comment>First-run restore summary — term for the date the backup was taken (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_VersionTerm" xml:space="preserve"><value>Créée avec la version</value><comment>First-run restore summary — term for the originating application version (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_ConfirmButton" xml:space="preserve"><value>Restaurer cette sauvegarde</value><comment>First-run restore screen — confirm button, shown after the summary (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_CancelButton" xml:space="preserve"><value>Choisir un autre fichier</value><comment>First-run restore screen — cancel button, clears the chosen file and summary (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_ContinueButton" xml:space="preserve"><value>Configurer manuellement</value><comment>First-run restore screen — continue-to-wizard button, available whenever no backup is loaded (spec 030, US1).</comment></data>
+  <data name="Setup_FirstRunRestore_ReadFileError" xml:space="preserve"><value>Impossible de lire le fichier de sauvegarde : {Detail}</value><comment>First-run restore screen — shown when the chosen file cannot be read or restored. {Detail} = error detail.</comment></data>
+  <data name="Setup_FirstRunRestore_ProgressMessage" xml:space="preserve"><value>Restauration de vos données en cours — ne fermez pas l'application.</value><comment>First-run restore screen — blocking-overlay message while the restore runs (spec 030, US1).</comment></data>
+  <data name="Setup_RestartRequired_PageTitle" xml:space="preserve"><value>Redémarrage requis — StageFright Community</value><comment>Browser tab title — terminal post-restore restart screen (spec 030, US1 / FR-007).</comment></data>
+  <data name="Setup_RestartRequired_Heading" xml:space="preserve"><value>Presque terminé — veuillez redémarrer</value><comment>Restart-required screen heading (spec 030, US1 / FR-007).</comment></data>
+  <data name="Setup_RestartRequired_Instruction" xml:space="preserve"><value>Votre sauvegarde a été restaurée. Fermez l'application puis rouvrez-la pour utiliser les données restaurées.</value><comment>Restart-required screen — the single close-and-reopen instruction; the screen has no continue control (spec 030, FR-007).</comment></data>
 </root>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Shared_Action_Save" xml:space="preserve"><value>保存</value><comment>Generic Save button label.</comment></data>
+  <data name="Shared_Action_Saving" xml:space="preserve"><value>保存中…</value><comment>Generic Save button label while a save is in progress.</comment></data>
+  <data name="Shared_Action_Cancel" xml:space="preserve"><value>キャンセル</value><comment>Generic Cancel button label.</comment></data>
+  <data name="Shared_Action_Edit" xml:space="preserve"><value>編集</value><comment>Generic Edit button label.</comment></data>
+  <data name="Shared_Common_Loading" xml:space="preserve"><value>読み込み中…</value><comment>Generic loading indicator text.</comment></data>
+  <data name="Shared_Table_ActionsColumn" xml:space="preserve"><value>操作</value><comment>Generic grid column header for a row's action buttons.</comment></data>
+  <data name="Shared_Table_StatusColumn" xml:space="preserve"><value>状態</value><comment>Generic grid column / field label for a status value.</comment></data>
+  <data name="Shared_Error_Unexpected" xml:space="preserve"><value>予期しないエラーが発生しました。もう一度お試しください。</value><comment>Generic fallback message shown when an operation fails unexpectedly.</comment></data>
+  <data name="Shared_Tile_LoadError" xml:space="preserve"><value>読み込めませんでした</value><comment>Generic dashboard-tile message shown when the tile's data fails to load.</comment></data>
+  <data name="Shared_Tile_LoadErrorFor" xml:space="preserve"><value>{TileTitle} を読み込めませんでした</value><comment>Tile renderer error text. {TileTitle} = the failing tile's title.</comment></data>
+  <data name="Shared_Action_Close" xml:space="preserve"><value>閉じる</value><comment>Generic Close button / dialog-dismiss aria-label.</comment></data>
+  <data name="Shared_Action_Remove" xml:space="preserve"><value>削除</value><comment>Generic Remove button label / aria-label (e.g. remove a row from a bordered list box).</comment></data>
+  <data name="Shared_Action_TryAgain" xml:space="preserve"><value>再試行</value><comment>Generic retry button label.</comment></data>
+  <data name="Shared_Action_Apply" xml:space="preserve"><value>適用</value><comment>Generic Apply button label (e.g. apply report filters).</comment></data>
+  <data name="Shared_ListBox_DefaultEmpty" xml:space="preserve"><value>まだ何も追加されていません。</value><comment>Default empty-state text for a bordered list box.</comment></data>
+  <data name="Shared_AddAccount_NamePlaceholder" xml:space="preserve"><value>勘定科目名</value><comment>Placeholder and aria-label for the account-name field in the shared add-account form.</comment></data>
+  <data name="Shared_AddAccount_TypeAriaLabel" xml:space="preserve"><value>勘定科目の種類</value><comment>aria-label for the account-type select in the shared add-account form.</comment></data>
+  <data name="Shared_AddAccount_BankAccountLabel" xml:space="preserve"><value>銀行／現金勘定</value><comment>Checkbox label marking an asset account as a bank/cash account.</comment></data>
+  <data name="Shared_AddAccount_AddingText" xml:space="preserve"><value>追加中…</value><comment>Add-account submit button text while a create is in progress.</comment></data>
+  <data name="Shared_AddAccount_SubmitButton" xml:space="preserve"><value>勘定科目を追加</value><comment>Default submit button text for the shared add-account form.</comment></data>
+  <data name="Shared_AddAccount_DuplicateError" xml:space="preserve"><value>「{AccountName}」という名前の勘定科目はすでに存在します。</value><comment>Shown when the entered account name matches an existing one. {AccountName} = the entered name.</comment></data>
+  <data name="Shared_OpeningBalances_AlreadyPostedWarning" xml:space="preserve"><value>期首残高はすでに計上されています。再度計上すると、既存の残高を置き換えるのではなく加算されます。</value><comment>Warning shown above the opening-balances entry table when balances already exist.</comment></data>
+  <data name="Shared_OpeningBalances_Instruction" xml:space="preserve"><value>{AsAtDate} 時点の各勘定の残高を入力してください。不要な勘定は0のままにします。差額は自動的に期首残高資本に計上されます。</value><comment>Instruction above the opening-balances entry table. {AsAtDate} = the as-at date, long form.</comment></data>
+  <data name="Shared_OpeningBalances_NumberColumn" xml:space="preserve"><value>番号</value><comment>Opening-balances table column header — account number.</comment></data>
+  <data name="Shared_OpeningBalances_AccountColumn" xml:space="preserve"><value>勘定科目</value><comment>Opening-balances table column header — account name.</comment></data>
+  <data name="Shared_OpeningBalances_TypeColumn" xml:space="preserve"><value>種類</value><comment>Opening-balances table column header — account type.</comment></data>
+  <data name="Shared_OpeningBalances_BalanceColumn" xml:space="preserve"><value>残高</value><comment>Opening-balances table column header — the entered balance.</comment></data>
+  <data name="Shared_OpeningBalances_BalanceForAriaLabel" xml:space="preserve"><value>{AccountName} の残高</value><comment>aria-label on an opening-balance amount input. {AccountName} = the account name.</comment></data>
+  <data name="Shared_OpeningBalances_PlugRow" xml:space="preserve"><value>期首残高資本の調整額</value><comment>Opening-balances table footer row label for the balancing equity plug.</comment></data>
+  <data name="Shared_OpeningBalances_PostingText" xml:space="preserve"><value>計上中…</value><comment>Opening-balances submit button text while a post is in progress.</comment></data>
+  <data name="Shared_OpeningBalances_SubmitButton" xml:space="preserve"><value>期首残高を計上</value><comment>Default submit button text for the shared opening-balances form.</comment></data>
+  <data name="Shared_Forgiveness_Title" xml:space="preserve"><value>再入会時の請求免除</value><comment>Heading of the reactivation fee-forgiveness dialog.</comment></data>
+  <data name="Shared_Forgiveness_LoadingText" xml:space="preserve"><value>請求を読み込み中…</value><comment>Status text while the forgiveness dialog loads outstanding fees.</comment></data>
+  <data name="Shared_Forgiveness_NoFees" xml:space="preserve"><value>この会員に免除できる未払いの請求はありません。</value><comment>Shown when the member has no outstanding fees.</comment></data>
+  <data name="Shared_Forgiveness_Instruction" xml:space="preserve"><value>前年度以前の請求が免除対象としてあらかじめ選択されています。残したい請求のチェックを外してください。</value><comment>Instruction text in the forgiveness dialog.</comment></data>
+  <data name="Shared_Forgiveness_PriorYearBadge" xml:space="preserve"><value>前年度</value><comment>Badge marking a fee as being from a prior year.</comment></data>
+  <data name="Shared_Forgiveness_FeeRow" xml:space="preserve"><value>{FeeDate} — {Amount}</value><comment>A selectable fee row in the forgiveness dialog. {FeeDate} = fee date, {Amount} = fee amount as AUD.</comment></data>
+  <data name="Shared_Forgiveness_ApplyingText" xml:space="preserve"><value>適用中…</value><comment>Forgiveness submit button text while applying.</comment></data>
+  <data name="Shared_Forgiveness_ForgiveButton_One" xml:space="preserve"><value>{Count} 件の請求を免除</value><comment>Forgiveness submit button label, singular. {Count} = number of selected fees.</comment></data>
+  <data name="Shared_Forgiveness_ForgiveButton_Other" xml:space="preserve"><value>{Count} 件の請求を免除</value><comment>Forgiveness submit button label, plural. {Count} = number of selected fees.</comment></data>
+  <data name="Shared_Forgiveness_LoadError" xml:space="preserve"><value>請求の読み込みに失敗しました: {Detail}</value><comment>Shown when loading fees for forgiveness fails. {Detail} = the error detail.</comment></data>
+  <data name="Shared_Forgiveness_ApplyError" xml:space="preserve"><value>免除の適用に失敗しました: {Detail}</value><comment>Shown when applying forgiveness fails. {Detail} = the error detail.</comment></data>
+  <data name="Shared_Report_GeneratingText" xml:space="preserve"><value>レポートを生成中...</value><comment>Status text while a report is being generated.</comment></data>
+  <data name="Shared_Report_GenerateFailedHeading" xml:space="preserve"><value>レポートを生成できません。</value><comment>Bold lead-in of the report-generation error alert.</comment></data>
+  <data name="Shared_Report_GeneratedAt" xml:space="preserve"><value>生成日時: {Timestamp} UTC</value><comment>Report viewer — when the report was generated. {Timestamp} = date and time.</comment></data>
+  <data name="Shared_Report_ActionsAriaLabel" xml:space="preserve"><value>レポートの操作</value><comment>aria-label on the report action button group.</comment></data>
+  <data name="Shared_Report_PrintButton" xml:space="preserve"><value>印刷 / PDF</value><comment>Report viewer button — print / save as PDF.</comment></data>
+  <data name="Shared_Report_ExportCsvButton" xml:space="preserve"><value>CSV エクスポート</value><comment>Report viewer button — export as CSV.</comment></data>
+  <data name="Shared_Report_RefreshButton" xml:space="preserve"><value>更新</value><comment>Report viewer button — regenerate the report.</comment></data>
+  <data name="Shared_Report_RowsRange" xml:space="preserve"><value>{Total} 件中 {From}–{To} 行</value><comment>Report viewer paging summary. {From}/{To} = visible row range, {Total} = total rows.</comment></data>
+  <data name="Shared_Report_PrevPage" xml:space="preserve"><value>‹ 前へ</value><comment>Report viewer — previous page button.</comment></data>
+  <data name="Shared_Report_NextPage" xml:space="preserve"><value>次へ ›</value><comment>Report viewer — next page button.</comment></data>
+  <data name="Shared_Report_PrevPageAriaLabel" xml:space="preserve"><value>前のページ</value><comment>aria-label on the report viewer previous-page button.</comment></data>
+  <data name="Shared_Report_NextPageAriaLabel" xml:space="preserve"><value>次のページ</value><comment>aria-label on the report viewer next-page button.</comment></data>
+  <data name="Shared_Report_PageOf" xml:space="preserve"><value>{Total} ページ中 {Current} ページ</value><comment>Report viewer paging indicator. {Current} = current page, {Total} = total pages.</comment></data>
+  <data name="Shared_Report_PageNavAriaLabel" xml:space="preserve"><value>レポートのページ移動</value><comment>aria-label on the report viewer pagination nav.</comment></data>
+  <data name="Shared_Report_CancelledError" xml:space="preserve"><value>レポートの生成がキャンセルされました。</value><comment>Shown when report generation is cancelled by the user.</comment></data>
+  <data name="Shared_Report_GenerateError" xml:space="preserve"><value>レポートの生成中にエラーが発生しました。もう一度お試しください。({ErrorType})</value><comment>Shown when report generation throws. {ErrorType} = the exception type name.</comment></data>
+  <data name="Shared_Report_PdfError" xml:space="preserve"><value>PDF を生成できません。もう一度お試しください。</value><comment>Shown when rendering the report PDF fails.</comment></data>
+  <data name="Shared_Report_CsvError" xml:space="preserve"><value>CSV をエクスポートできません。もう一度お試しください。</value><comment>Shown when exporting the report CSV fails.</comment></data>
+  <data name="Shared_StartupError_Heading" xml:space="preserve"><value>データベースエラー</value><comment>Heading on the startup database-error page.</comment></data>
+  <data name="Shared_StartupError_Body" xml:space="preserve"><value>StageFright Community はデータベースを開けませんでした。ファイルが破損しているか、アクセスできない可能性があります。</value><comment>Body text on the startup database-error page.</comment></data>
+  <data name="Shared_StartupError_DbLocationLabel" xml:space="preserve"><value>データベースの場所:</value><comment>Label preceding the database file path on the startup error page.</comment></data>
+  <data name="Shared_StartupError_OpenFolderButton" xml:space="preserve"><value>ファイルの場所を開く</value><comment>Button — open the folder containing the database file.</comment></data>
+  <data name="Shared_StartupError_RecreateButton" xml:space="preserve"><value>新しいデータベースを作成</value><comment>Button — delete the corrupt database and start fresh.</comment></data>
+  <data name="Shared_StartupError_RecreatingText" xml:space="preserve"><value>新しいデータベースを作成中…</value><comment>Recreate button text while the new database is being created.</comment></data>
+  <data name="Shared_StartupError_OpenFolderError" xml:space="preserve"><value>フォルダーを開けませんでした: {Detail}</value><comment>Shown when opening the database folder fails. {Detail} = error detail.</comment></data>
+  <data name="Shared_StartupError_DeleteError" xml:space="preserve"><value>データベースファイルを削除できませんでした: {Detail}</value><comment>Shown when deleting the corrupt database fails. {Detail} = error detail.</comment></data>
+  <data name="Shared_ReportsPage_Title" xml:space="preserve"><value>レポート — StageFright Community</value><comment>Browser tab title — Reports page.</comment></data>
+  <data name="Shared_ReportsPage_Heading" xml:space="preserve"><value>レポート</value><comment>Reports page heading.</comment></data>
+  <data name="Shared_ReportsPage_NotFound" xml:space="preserve"><value>レポート「{ReportId}」が見つかりません。</value><comment>Shown when a report id in the URL has no provider. {ReportId} = the id.</comment></data>
+  <data name="Shared_ReportsPage_SelectPrompt" xml:space="preserve"><value>ナビゲーションメニューからレポートを選択して生成してください。</value><comment>Shown on the Reports page when no report is selected.</comment></data>
+  <data name="Shared_App_ErrorHeading" xml:space="preserve"><value>エラーが発生しました</value><comment>Heading of the router error-boundary panel shown when a page throws.</comment></data>
+  <data name="Shared_App_ErrorDismissButton" xml:space="preserve"><value>閉じて再試行</value><comment>Button on the router error-boundary panel — clears the error and re-renders the page.</comment></data>
+  <data name="Shared_App_NotFoundTitle" xml:space="preserve"><value>見つかりません — StageFright Community</value><comment>Browser tab title for an unrouted URL.</comment></data>
+  <data name="Shared_App_NotFoundHeading" xml:space="preserve"><value>ページが見つかりません</value><comment>Heading shown when a URL matches no page.</comment></data>
+  <data name="Shared_App_NotFoundBody" xml:space="preserve"><value>お探しのページは見つかりませんでした。</value><comment>Body text on the "page not found" screen; followed by the return-to-dashboard link.</comment></data>
+  <data name="Shared_App_NotFoundReturnLink" xml:space="preserve"><value>ダッシュボードに戻る</value><comment>Hyperlink caption on the "page not found" screen — navigates to the dashboard.</comment></data>
+  <data name="Shared_StartupWarning_AuditPurgeFailed" xml:space="preserve"><value>起動時の期限切れ監査証跡エントリのクリーンアップが完了しませんでした。記録は保持されています。次回アプリ起動時にクリーンアップが再試行されます。</value><comment>Non-fatal dashboard banner shown when the startup audit-trail purge failed (spec 028, FR-025).</comment></data>
+  <data name="Shared_StartupWarning_DismissLabel" xml:space="preserve"><value>閉じる</value><comment>Button that hides the non-fatal startup-warning banner for the current session.</comment></data>
+</root>

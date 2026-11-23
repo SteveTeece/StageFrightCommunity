@@ -15,6 +15,12 @@ public partial class ReportViewer : ComponentBase, IDisposable
 {
     [Parameter] public IReportProvider? Provider { get; set; }
 
+    /// <summary>Optional on-screen body in place of the generic report table, given the filters the
+    /// report was generated with. Title, filters and Print/Export/Refresh stay the viewer's own, and
+    /// print/CSV output still comes from the provider's <c>ReportData</c>. Used for the Chart of
+    /// Accounts report so it shows the same <see cref="ChartOfAccountsGrid"/> as Finance (issue #367).</summary>
+    [Parameter] public RenderFragment<ReportFilterValues>? BodyTemplate { get; set; }
+
     [Inject] private IPdfReportRenderer PdfRenderer { get; set; } = null!;
     [Inject] private ICsvReportExporter CsvExporter { get; set; } = null!;
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
@@ -43,6 +49,10 @@ public partial class ReportViewer : ComponentBase, IDisposable
     private bool _showCancel;
     private CancellationTokenSource? _cts;
     private ReportFilterValues _filterValues = new();
+
+    // The filters the on-screen report was last generated with — handed to BodyTemplate, so an
+    // un-applied filter edit doesn't change the body ahead of Apply.
+    private ReportFilterValues _generatedFilterValues = new();
 
     private int _currentPage = 1;
     private const int PageSize = 15;
@@ -141,6 +151,9 @@ public partial class ReportViewer : ComponentBase, IDisposable
         try
         {
             _report = await Provider.GenerateAsync(_filterValues, _cts.Token);
+            _generatedFilterValues = new ReportFilterValues();
+            foreach (var (key, value) in _filterValues.All)
+                _generatedFilterValues.Set(key, value);
         }
         catch (OperationCanceledException)
         {

@@ -6,8 +6,8 @@ using StageFright.UI.Pages.Setup.Tabs;
 
 namespace StageFright.UI.Tests.Pages.Setup.Tabs;
 
-/// <summary>bUnit tests for MembershipFeesTab (US1) — fees, renewal month, audit
-/// retention, relocated unchanged from the old wizard's Step 2. Rendered inside an
+/// <summary>bUnit tests for MembershipFeesTab (US1) — renewal month and audit
+/// retention (fees moved to AccountingTab in spec 031). Rendered inside an
 /// EditForm since its Input*/ValidationMessage components need a cascaded EditContext.
 /// EditForm.ChildContent is RenderFragment&lt;EditContext&gt; (generic), so bUnit's
 /// AddChildContent&lt;T&gt; shorthand doesn't apply — built manually instead.</summary>
@@ -29,15 +29,22 @@ public class MembershipFeesTabTests : LocalizedTestContext
         var model = new SetupFormModel();
         var cut = RenderInForm(model);
 
-        cut.Find("#annualFee").Change("80");
-        cut.Find("#attendanceFee").Change("6");
         cut.Find("#renewalMonth").Change("3");
         cut.Find("#auditRetentionYears").Change("5");
 
-        Assert.Equal(80m, model.AnnualFee);
-        Assert.Equal(6m, model.AttendanceFee);
         Assert.Equal(3, model.MembershipRenewalMonth);
         Assert.Equal(5, model.AuditRetentionYears);
+    }
+
+    [Theory]
+    [InlineData("#annualFee")]
+    [InlineData("#attendanceFee")]
+    [InlineData("#taxApplicable")]
+    public void Should_NotRenderFeeOrTaxField_When_TabRendered(string selector)
+    {
+        var cut = RenderInForm(new SetupFormModel());
+
+        Assert.Empty(cut.FindAll(selector));
     }
 
     [Fact]

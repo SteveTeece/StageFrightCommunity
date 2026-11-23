@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Rehearsals_List_PageTitle" xml:space="preserve"><value>Proben — StageFright Community</value><comment>Browser tab title for the Rehearsals list page.</comment></data>
+  <data name="Rehearsals_List_Heading" xml:space="preserve"><value>Proben</value><comment>Page heading on the Rehearsals list.</comment></data>
+  <data name="Rehearsals_List_ScheduleButton" xml:space="preserve"><value>Probe ansetzen</value><comment>Button that opens the schedule-rehearsal form.</comment></data>
+  <data name="Rehearsals_List_SearchPlaceholder" xml:space="preserve"><value>Nach Datum oder Notizen suchen…</value><comment>Placeholder text in the Rehearsals search box.</comment></data>
+  <data name="Rehearsals_List_SearchAriaLabel" xml:space="preserve"><value>Proben suchen</value><comment>aria-label on the Rehearsals search input.</comment></data>
+  <data name="Rehearsals_List_LoadingText" xml:space="preserve"><value>Proben werden geladen…</value><comment>Status text shown while the Rehearsals list loads.</comment></data>
+  <data name="Rehearsals_List_EmptyNone" xml:space="preserve"><value>Noch keine Proben angesetzt.</value><comment>Shown when there are no rehearsals at all.</comment></data>
+  <data name="Rehearsals_List_NoMatch" xml:space="preserve"><value>Keine Proben entsprechen "{SearchTerm}".</value><comment>Shown when a search returns nothing. {SearchTerm} = the text the user typed.</comment></data>
+  <data name="Rehearsals_List_DateColumn" xml:space="preserve"><value>Datum</value><comment>Rehearsals grid column header — rehearsal date.</comment></data>
+  <data name="Rehearsals_List_TimeColumn" xml:space="preserve"><value>Uhrzeit</value><comment>Rehearsals grid column header — rehearsal time.</comment></data>
+  <data name="Rehearsals_List_AttendanceColumn" xml:space="preserve"><value>Anwesenheit</value><comment>Rehearsals grid column header — recorded attendance rate.</comment></data>
+  <data name="Rehearsals_List_NotesColumn" xml:space="preserve"><value>Notizen</value><comment>Rehearsals grid column header — rehearsal notes.</comment></data>
+  <data name="Rehearsals_List_AttendanceNotRecorded" xml:space="preserve"><value>Nicht erfasst</value><comment>Shown in the Attendance column when no attendance rate has been recorded.</comment></data>
+  <data name="Rehearsals_List_ViewAttendanceAriaLabel" xml:space="preserve"><value>Anwesenheit für {Date} anzeigen</value><comment>aria-label on the date button that opens a rehearsal's recorded attendance. {Date} = the rehearsal date.</comment></data>
+  <data name="Rehearsals_List_RecordAttendanceButton" xml:space="preserve"><value>Anwesenheit erfassen</value><comment>Button that opens the attendance-recording grid for a rehearsal.</comment></data>
+  <data name="Rehearsals_List_RecordAttendanceAriaLabel" xml:space="preserve"><value>Anwesenheit für {Date} erfassen</value><comment>aria-label on the Record Attendance button. {Date} = the rehearsal date.</comment></data>
+  <data name="Rehearsals_List_RecordedText" xml:space="preserve"><value>Erfasst</value><comment>Shown in the Actions column when a rehearsal's attendance has already been recorded.</comment></data>
+  <data name="Rehearsals_List_PrintRollButton" xml:space="preserve"><value>Anwesenheitsliste drucken</value><comment>Button that prints the attendance roll PDF for a rehearsal.</comment></data>
+  <data name="Rehearsals_List_PrintRollAriaLabel" xml:space="preserve"><value>Anwesenheitsliste für {Date} drucken</value><comment>aria-label on the Print Roll button. {Date} = the rehearsal date.</comment></data>
+  <data name="Rehearsals_List_RollNoMembers" xml:space="preserve"><value>Keine aktiven Mitglieder gefunden — nichts zu drucken.</value><comment>Shown when Print Roll is used but there are no active members.</comment></data>
+  <data name="Rehearsals_List_RollError" xml:space="preserve"><value>Anwesenheitsliste kann nicht gedruckt werden. Bitte versuchen Sie es erneut.</value><comment>Shown when generating the attendance roll PDF fails.</comment></data>
+  <data name="Rehearsals_List_LoadError" xml:space="preserve"><value>Proben können nicht geladen werden. Bitte versuchen Sie es erneut.</value><comment>Shown when the Rehearsals list fails to load.</comment></data>
+  <data name="Rehearsals_Form_PageTitle" xml:space="preserve"><value>Probe ansetzen — StageFright Community</value><comment>Browser tab title for the schedule-rehearsal form.</comment></data>
+  <data name="Rehearsals_Form_Heading" xml:space="preserve"><value>Probe ansetzen</value><comment>Page heading on the schedule-rehearsal form.</comment></data>
+  <data name="Rehearsals_Form_DateLabel" xml:space="preserve"><value>Datum</value><comment>Schedule-rehearsal form field label — date.</comment></data>
+  <data name="Rehearsals_Form_TimeLabel" xml:space="preserve"><value>Uhrzeit</value><comment>Schedule-rehearsal form field label — time.</comment></data>
+  <data name="Rehearsals_Form_TimeRequired" xml:space="preserve"><value>Uhrzeit ist erforderlich.</value><comment>Validation message shown when the time field is left blank.</comment></data>
+  <data name="Rehearsals_Form_NotesLabel" xml:space="preserve"><value>Notizen</value><comment>Schedule-rehearsal form field label — notes.</comment></data>
+  <data name="Rehearsals_Form_ScheduleButton" xml:space="preserve"><value>Ansetzen</value><comment>Submit button on the schedule-rehearsal form.</comment></data>
+  <data name="Rehearsals_Attendance_PageTitleView" xml:space="preserve"><value>Anwesenheit — StageFright Community</value><comment>Browser tab title when viewing a rehearsal's already-recorded attendance.</comment></data>
+  <data name="Rehearsals_Attendance_PageTitleRecord" xml:space="preserve"><value>Anwesenheit erfassen — StageFright Community</value><comment>Browser tab title when recording attendance for a rehearsal.</comment></data>
+  <data name="Rehearsals_Attendance_HeadingView" xml:space="preserve"><value>Anwesenheit</value><comment>Page heading when viewing a rehearsal's already-recorded attendance.</comment></data>
+  <data name="Rehearsals_Attendance_HeadingRecord" xml:space="preserve"><value>Anwesenheit erfassen</value><comment>Page heading when recording attendance for a rehearsal.</comment></data>
+  <data name="Rehearsals_Attendance_BackButton" xml:space="preserve"><value>Zurück zu den Proben</value><comment>Link back to the Rehearsals list from the attendance grid.</comment></data>
+  <data name="Rehearsals_Attendance_RecordedBanner" xml:space="preserve"><value>Anwesenheit mit einer Anwesenheitsquote von {Rate} % erfasst. Datensätze sind unveränderlich.</value><comment>Info banner shown when attendance has already been recorded. {Rate} = the stored attendance rate to one decimal place.</comment></data>
+  <data name="Rehearsals_Attendance_NoRecords" xml:space="preserve"><value>Für diese Probe wurden keine Anwesenheitsdaten gefunden.</value><comment>Shown when a rehearsal is marked recorded but has no attendance rows.</comment></data>
+  <data name="Rehearsals_Attendance_AttendedColumn" xml:space="preserve"><value>Anwesend</value><comment>Attendance grid column header — whether the member attended.</comment></data>
+  <data name="Rehearsals_Attendance_PaidColumn" xml:space="preserve"><value>Bezahlt</value><comment>Attendance grid column header — whether the attendance fee was paid.</comment></data>
+  <data name="Rehearsals_Attendance_MemberColumn" xml:space="preserve"><value>Mitglied</value><comment>Attendance grid column header — member name.</comment></data>
+  <data name="Rehearsals_Attendance_FeeColumn" xml:space="preserve"><value>Gebühr</value><comment>Attendance grid column header — the attendance fee for the row.</comment></data>
+  <data name="Rehearsals_Attendance_AttendedAriaLabel" xml:space="preserve"><value>{MemberName} war anwesend</value><comment>aria-label on a row's Attended checkbox. {MemberName} = the member's name.</comment></data>
+  <data name="Rehearsals_Attendance_PaidAriaLabel" xml:space="preserve"><value>{MemberName} hat bezahlt</value><comment>aria-label on a row's Paid checkbox in the read-only recorded view. {MemberName} = the member's name.</comment></data>
+  <data name="Rehearsals_Attendance_MarkPaidAriaLabel" xml:space="preserve"><value>{MemberName} als bezahlt markieren</value><comment>aria-label on a row's Paid checkbox while recording. {MemberName} = the member's name.</comment></data>
+  <data name="Rehearsals_Attendance_SelectAllAriaLabel" xml:space="preserve"><value>Alle Mitglieder als anwesend markieren</value><comment>aria-label on the header checkbox that marks every member as attended.</comment></data>
+  <data name="Rehearsals_Attendance_SelectAllLabel" xml:space="preserve"><value>Alle auswählen</value><comment>Label beside the header checkbox that marks every member as attended.</comment></data>
+  <data name="Rehearsals_Attendance_FutureNotice" xml:space="preserve"><value>Anwesenheit kann ab {Date} erfasst werden.</value><comment>Shown when the rehearsal is in the future. {Date} = the rehearsal date, long form.</comment></data>
+  <data name="Rehearsals_Attendance_NoActiveMembers" xml:space="preserve"><value>Keine aktiven Mitglieder gefunden. Fügen Sie Mitglieder hinzu, bevor Sie die Anwesenheit erfassen.</value><comment>Shown when there are no active members to record attendance for.</comment></data>
+  <data name="Rehearsals_Attendance_OwedBadge" xml:space="preserve"><value>Ausstehend</value><comment>Badge shown beside the fee when a member attended but has not paid.</comment></data>
+  <data name="Rehearsals_Attendance_SaveButton" xml:space="preserve"><value>Anwesenheit speichern</value><comment>Button that saves the recorded attendance for a rehearsal.</comment></data>
+  <data name="Rehearsals_Attendance_NotFound" xml:space="preserve"><value>Probe nicht gefunden.</value><comment>Shown when the requested rehearsal id does not exist.</comment></data>
+  <data name="Rehearsals_Tile_Title" xml:space="preserve"><value>Proben</value><comment>Dashboard tile heading for the Rehearsals module.</comment></data>
+  <data name="Rehearsals_Tile_ActionText" xml:space="preserve"><value>Proben anzeigen</value><comment>Action link on the Rehearsals dashboard tile.</comment></data>
+  <data name="Rehearsals_Tile_UpcomingLabel" xml:space="preserve"><value>Anstehend</value><comment>Rehearsals tile stat label — count of upcoming rehearsals.</comment></data>
+  <data name="Rehearsals_Tile_NextLabel" xml:space="preserve"><value>Nächste</value><comment>Rehearsals tile stat label — date of the next rehearsal.</comment></data>
+  <data name="Rehearsals_Tile_LastAttendanceLabel" xml:space="preserve"><value>Letzte Anwesenheit</value><comment>Rehearsals tile note label preceding the most recent recorded attendance rate.</comment></data>
+  <data name="Rehearsals_Tile_AttendanceDetail" xml:space="preserve"><value>{Attended} von {Total} ({Rate} %)</value><comment>Rehearsals tile — recorded attendance. {Attended} = members who attended, {Total} = attendance records, {Rate} = rate to whole number.</comment></data>
+  <data name="Rehearsals_Tile_AttendanceRate" xml:space="preserve"><value>{Rate} %</value><comment>Rehearsals tile — recorded attendance rate only. {Rate} = rate to whole number.</comment></data>
+  <data name="Rehearsals_Tile_NoAttendance" xml:space="preserve"><value>Noch keine Anwesenheit erfasst</value><comment>Rehearsals tile note shown when no attendance has been recorded.</comment></data>
+  <data name="Rehearsals_TrendTile_Title" xml:space="preserve"><value>Anwesenheitstrend</value><comment>Dashboard tile heading for the six-month attendance-trend chart.</comment></data>
+  <data name="Rehearsals_TrendTile_Empty" xml:space="preserve"><value>In den letzten 6 Monaten keine Anwesenheit erfasst</value><comment>Attendance-trend tile message shown when there is no data to chart.</comment></data>
+  <data name="Rehearsals_TrendTile_Series" xml:space="preserve"><value>Anwesenheit %</value><comment>Attendance-trend chart legend label for the monthly average attendance-rate line.</comment></data>
+</root>

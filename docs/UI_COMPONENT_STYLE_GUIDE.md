@@ -269,7 +269,7 @@ Below 576px every tile collapses to a single column. See [ARCHITECTURE.md § Das
 </EditForm>
 ```
 
-> **bUnit limitation**: a shared child form component (e.g. `AddAccountForm`/`OpeningBalanceEntryForm`) rendered *inside* another component's own outer `<EditForm>` — as in the Setup Wizard — cannot have its nested `<form>` submit simulated by bUnit; its inner `<form>` collapses when bUnit builds its AngleSharp DOM. This is a bUnit limitation, not a production bug. In tests, invoke the child component's own `EventCallback` parameters directly (`cut.FindComponent<ChildTab>().Instance.OnSubmit.InvokeAsync(...)`) instead of simulating the nested submit.
+> **bUnit limitation**: a shared child form component with its own `<EditForm>` (e.g. `AddAccountForm`) rendered *inside* another component's own outer `<EditForm>` — as in the Setup Wizard — cannot have its nested `<form>` submit simulated by bUnit; its inner `<form>` collapses when bUnit builds its AngleSharp DOM. This is a bUnit limitation, not a production bug. In tests, invoke the child component's own `EventCallback` parameters directly (`cut.FindComponent<ChildTab>().Instance.OnSubmit.InvokeAsync(...)`) instead of simulating the nested submit. `OpeningBalanceEntryForm` renders no `<form>`, so it isn't affected: since issue #382 the wizard's Opening Balances tab reports its entries on every amount change (`SubmitOnChange`), so tests can type into its `.opening-balance-amount` inputs directly (`OpeningBalancesTab.OnChange` is the callback to invoke when a test just needs a queued balance).
 
 ---
 
@@ -285,7 +285,7 @@ Below 576px every tile collapses to a single column. See [ARCHITECTURE.md § Das
 
 ## Reports
 
-`ReportViewer.razor` renders `ReportData` (rows/columns/sections/subtotals) inside a modal with a synchronous "Generating…" state; a Cancel action appears after 5 seconds. It is the one place that deviates from `RadzenDataGrid` (see above). In QuestPDF-rendered checkbox-style cells (`AttendanceRollPdfRenderer` etc.), render a checked box as a bordered `Container` with a centered "✓" glyph — **never** a solid filled box.
+`ReportViewer.razor` renders `ReportData` (rows/columns/sections/subtotals) inside a modal with a synchronous "Generating…" state; a Cancel action appears after 5 seconds. It is the one place that deviates from `RadzenDataGrid` (see above). A report whose on-screen view needs a richer grid can pass `ReportViewer` a `BodyTemplate` (given the applied filter values), which replaces only the table — title, filters and Print/Export/Refresh stay the viewer's, and printed/CSV output still comes from the provider. Chart of Accounts uses this so Reports → Chart of Accounts and Finance → Chart of Accounts show the same `ChartOfAccountsGrid` (type header rows via RadzenDataGrid grouping, Balance column driven by the Include balances switch; issue #367). In QuestPDF-rendered checkbox-style cells (`AttendanceRollPdfRenderer` etc.), render a checked box as a bordered `Container` with a centered "✓" glyph — **never** a solid filled box.
 
 ---
 

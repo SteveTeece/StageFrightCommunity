@@ -73,6 +73,19 @@ dotnet test tests/StageFright.Core.Tests/
 
 See [SETUP.md](docs/SETUP.md) for full developer setup, database/migration commands, and CI details.
 
+### Supported Languages
+
+| Flag | Language | Culture |
+|:---:|---|---|
+| 🇦🇺 | Australian English | `en-AU` |
+| 🇺🇸 | English (United States) | `en-US` |
+| 🇩🇪 | German | `de-DE` |
+| 🇫🇷 | French | `fr-FR` |
+| 🇪🇸 | Spanish | `es-ES` |
+| 🇮🇹 | Italian | `it-IT` |
+| 🇵🇱 | Polish | `pl-PL` |
+| 🇯🇵 | Japanese | `ja-JP` |
+
 ## Architecture
 
 ### Layered Architecture with Module Slices

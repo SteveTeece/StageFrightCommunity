@@ -115,7 +115,11 @@ else if (_report != null)
             </div>
         }
 
-        @if (UseMasterDetail)
+        @if (BodyTemplate is not null)
+        {
+            @BodyTemplate(_generatedFilterValues)
+        }
+        else if (UseMasterDetail)
         {
             <RadzenDataGrid @key="_masterDetailGeneration" Data="@_report.Sections" TItem="ReportSection"
                              AllowPaging="true" PageSize="15" class="rz-shadow-0" AllowSorting="false"

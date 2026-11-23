@@ -192,7 +192,7 @@ The theme is chosen from a dropdown selector instead of a toggle switch, and eve
 <!-- capability: settings -->
 
 ### First-run setup is one tabbed screen, not a linear multi-step flow
-The setup wizard MUST present every setting on one screen with a persistent tab strip (Organisation Settings, Chart of Accounts, Opening Balances, Committee, Review), navigable by clicking any tab header or by Next; Next MUST validate only the current tab's own fields before advancing, while Finish validates every field across every tab. *(Amended by spec 022: when "load sample data" is selected on the Organisation Settings tab, the Chart of Accounts, Opening Balances, and Committee tab headers become unavailable and Next advances straight from Organisation Settings to Review.)*
+The setup wizard MUST present every setting on one screen with a persistent tab strip (Organisation Settings, Accounting, Chart of Accounts, Opening Balances, Committee, Review — the Accounting tab added by spec 031, which moved currency, financial year, inception date, fees and sales tax off Organisation Settings), navigable by clicking any tab header or by Next; Next MUST validate only the current tab's own fields before advancing, while Finish validates every field across every tab. *(Amended by spec 022: when "load sample data" is selected on the Organisation Settings tab, the Chart of Accounts, Opening Balances, and Committee tab headers become unavailable and Next advances straight from Organisation Settings to Review.)*
 
 #### Scenario: coordinator jumps directly to a later tab
 - **WHEN** the coordinator clicks a tab header ahead of the current tab

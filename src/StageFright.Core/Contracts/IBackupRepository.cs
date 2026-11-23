@@ -10,7 +10,8 @@ namespace StageFright.Core.Contracts;
 public interface IBackupRepository
 {
     /// <summary>
-    /// Reads all 13 entity types from the database, including soft-deleted records.
+    /// Reads all 16 entity types from the database (including GL journal entries, bank
+    /// reconciliations and their lines), including soft-deleted records.
     /// Returns a complete point-in-time snapshot for use in backup export.
     /// </summary>
     Task<BackupSnapshot> GetFullSnapshotAsync(CancellationToken ct = default);

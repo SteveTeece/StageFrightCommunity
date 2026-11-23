@@ -31,4 +31,19 @@ public class GeneralAppearanceTabTests : LocalizedTestContext
 
         Assert.Equal("Springfield Choral Society", model.OrganizationName);
     }
+
+    [Theory]
+    [InlineData("#setup-currency")]
+    [InlineData("#setup-fy-start-month")]
+    [InlineData("#setup-fy-start-day")]
+    [InlineData("#setup-inception-date")]
+    public void Should_NotRenderAccountingField_When_TabRendered(string selector)
+    {
+        var model = new SetupFormModel();
+        var cut = Render<EditForm>(p => p
+            .Add(f => f.Model, model)
+            .Add(f => f.ChildContent, GeneralTab(model)));
+
+        Assert.Empty(cut.FindAll(selector));
+    }
 }

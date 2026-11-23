@@ -40,6 +40,7 @@
 :root,
 [data-bs-theme="light"] {
     --sf-sidebar-w: 232px;
+    --sf-content-max-w: 1400px;
     --sf-bg: #e6edfb;
     --sf-orb1: rgba(70, 130, 255, .28);
     --sf-orb2: rgba(60, 200, 255, .3);
@@ -134,6 +135,12 @@ html, body {
     flex-direction: column;
     height: 100%;
     overflow: hidden;
+}
+
+/* Themed orb backdrop, shared by ShellLayout and the chrome-free BlankLayout so the
+   restart-required screen sits on the same backdrop as every other page (issue #384). */
+.shell-container,
+.blank-layout {
     color: var(--sf-text);
     background:
         radial-gradient(600px 420px at 12% 8%, var(--sf-orb1), transparent 65%),
@@ -147,7 +154,18 @@ html, body {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
     padding: 1rem 1.25rem 1rem calc(var(--sf-sidebar-w) + 1.25rem);
+}
+
+/* Centres the page in the main pane on large windows (issue #383): the auto
+   margins centre it both ways while it fits, and collapse to 0 once it
+   overflows, so a tall page still scrolls from its top rather than clipping. */
+.shell-content-inner {
+    margin: auto;
+    width: 100%;
+    max-width: var(--sf-content-max-w);
 }
 
 /* Shrink every RadzenSwitch toggle app-wide (from Radzen's default 3rem x
@@ -798,6 +816,12 @@ a {
     color: var(--sf-text);
 }
 
+/* A report cell may carry one entry per line (e.g. the Committee report's general
+   committee members, issue #369) — show those line breaks, as the PDF does. */
+.report-viewer td {
+    white-space: pre-line;
+}
+
 /* --- Forms --- */
 .form-control, .form-select, .form-check-input {
     background-color: var(--sf-glass2);
@@ -1176,6 +1200,34 @@ a {
     border-radius: .5rem;
     padding: 1.5rem 2rem;
     max-width: 360px;
+}
+
+/* --- Chrome-free BlankLayout + terminal restart-required screen (spec 030, FR-007) --- */
+.blank-layout {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+/* Blazor.Bootstrap's own stylesheet sizes every <main> as `flex: 1; height: 100vh`, which
+   stretched this one to the full window and pinned the notice to the top — size it to its
+   content so .blank-layout's flex centring works vertically too (issue #384). */
+.blank-layout-content {
+    flex: 0 1 auto;
+    height: auto;
+    width: 100%;
+    max-width: 480px;
+}
+
+.restart-required {
+    background: var(--sf-panel);
+    color: var(--sf-text);
+    border: 1px solid var(--sf-line);
+    border-radius: .5rem;
+    padding: 1.5rem 2rem;
+    text-align: center;
 }
 
 /* --- Bordered list box: app-wide list-box convention (spec 017, FR-007) --- */

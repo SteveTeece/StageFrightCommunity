@@ -52,11 +52,17 @@ public class SetupWizardTests : LocalizedTestContext
     private string OrgSettingsTabTitle =>
         Services.GetRequiredService<IStringLocalizer<SetupResource>>()["Setup_Tab_OrganisationSettings"];
 
+    // Fills the only required Organisation Settings field, then steps past both the
+    // Organisation Settings and Accounting tabs (spec 031) — lands on Chart of Accounts.
     private static void AdvanceFromOrganisationSettings(IRenderedComponent<SetupWizard> cut, string orgName = "My Choir")
     {
         cut.Find("#orgName").Change(orgName);
-        cut.Find("#btn-next").Click();
+        cut.Find("#btn-next").Click(); // -> Accounting
+        cut.Find("#btn-next").Click(); // -> Chart of Accounts
     }
+
+    private string AccountingTabTitle =>
+        Services.GetRequiredService<IStringLocalizer<SetupResource>>()["Setup_Tab_Accounting"];
 
     private static void AdvanceToReview(IRenderedComponent<SetupWizard> cut)
     {
@@ -69,7 +75,7 @@ public class SetupWizardTests : LocalizedTestContext
     private static async Task QueueRealOpeningBalanceAsync(IRenderedComponent<SetupWizard> cut)
     {
         var obTab = cut.FindComponent<OpeningBalancesTab>();
-        await cut.InvokeAsync(() => obTab.Instance.OnSubmit.InvokeAsync(new RecordOpeningBalancesRequest
+        await cut.InvokeAsync(() => obTab.Instance.OnChange.InvokeAsync(new RecordOpeningBalancesRequest
         {
             AsAtDate = DateTime.Today,
             Entries = new List<OpeningBalanceEntry> { new() { AccountId = Guid.NewGuid(), Amount = 100m } }
@@ -82,13 +88,15 @@ public class SetupWizardTests : LocalizedTestContext
         var cut = Render<SetupWizard>();
 
         var organisationSettings = cut.Markup.IndexOf(OrgSettingsTabTitle, StringComparison.Ordinal);
+        var accounting = cut.Markup.IndexOf(AccountingTabTitle, StringComparison.Ordinal);
         var chartOfAccounts = cut.Markup.IndexOf("Chart of Accounts", StringComparison.Ordinal);
         var openingBalances = cut.Markup.IndexOf("Opening Balances", StringComparison.Ordinal);
         var committee = cut.Markup.IndexOf("Committee", StringComparison.Ordinal);
         var review = cut.Markup.IndexOf("Review", StringComparison.Ordinal);
 
         Assert.True(organisationSettings >= 0);
-        Assert.True(chartOfAccounts > organisationSettings);
+        Assert.True(accounting > organisationSettings);
+        Assert.True(chartOfAccounts > accounting);
         Assert.True(openingBalances > chartOfAccounts);
         Assert.True(committee > openingBalances);
         Assert.True(review > committee);
@@ -122,8 +130,12 @@ public class SetupWizardTests : LocalizedTestContext
         var cut = Render<SetupWizard>();
 
         cut.Find("#orgName").Change("My Choir");
-        cut.Find("#annualFee");
         cut.Find("#renewalMonth");
+        cut.Find("#themeSelect");
+
+        cut.Find("#btn-next").Click(); // -> Accounting
+        cut.Find("#setup-currency");
+        cut.Find("#annualFee");
         cut.Find("#taxApplicable");
 
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
@@ -156,9 +168,9 @@ public class SetupWizardTests : LocalizedTestContext
     public async Task TaxRateField_OnlyShown_WhenTaxApplicableChecked()
     {
         var cut = Render<SetupWizard>();
+        cut.Find("#orgName").Change("My Choir");
+        cut.Find("#btn-next").Click(); // -> Accounting (spec 031: sales tax lives here)
 
-        // Sales Tax fields now live on the same Organisation Settings tab as orgName —
-        // no Next click needed to reach #taxApplicable.
         Assert.Empty(cut.FindAll("#taxRate"));
 
         await cut.Find("#taxApplicable").ChangeAsync(true);
@@ -171,6 +183,8 @@ public class SetupWizardTests : LocalizedTestContext
     {
         var cut = Render<SetupWizard>();
         cut.Find("#orgName").Change("My Choir");
+        cut.Find("#btn-next").Click(); // -> Accounting
+        cut.Find("#setup-currency").Change("NZD");
         cut.Find("#annualFee").Change("80");
         cut.Find("#btn-next").Click(); // -> Chart of Accounts
         cut.Find("#btn-next").Click(); // -> Opening Balances
@@ -188,6 +202,7 @@ public class SetupWizardTests : LocalizedTestContext
         await _setupService.Received(1).InitializeAsync(
             Arg.Is<SetupRequest>(r =>
                 r!.OrganizationName == "My Choir"
+                && r.CurrencyCode == "NZD"
                 && r.AnnualFee == 80m
                 && r.CommitteeOfficeHolderTitles!.Contains("Publicity Officer")),
             Arg.Any<CancellationToken>());
@@ -370,6 +385,64 @@ public class SetupWizardTests : LocalizedTestContext
     }
 
     [Fact]
+    public async Task Should_CarryTypedBalanceToFinish_When_NextClickedWithoutAnyQueueStep()
+    {
+        // Issue #382: typing an amount and pressing Next is enough — there is no Queue button.
+        var cashId = Guid.NewGuid();
+        _openingBalanceService.GetOpeningBalanceAccountsAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>
+        {
+            new() { Id = cashId, Name = "Cash on Hand", AccountNumber = "1100", Type = Core.Enums.AccountType.Asset }
+        });
+        var cut = Render<SetupWizard>();
+        AdvanceFromOrganisationSettings(cut); // -> Chart of Accounts
+        cut.Find("#btn-next").Click(); // -> Opening Balances
+
+        Assert.Empty(cut.FindAll(".wizard-post"));
+        cut.Find(".opening-balance-amount").Change("750");
+        cut.Find("#btn-next").Click(); // -> Committee
+        cut.Find("#btn-next").Click(); // -> Review
+        await cut.Find("form").SubmitAsync();
+
+        await _setupService.Received(1).InitializeAsync(
+            Arg.Is<SetupRequest>(r =>
+                r!.QueuedOpeningBalances != null
+                && r.QueuedOpeningBalances.Count == 1
+                && r.QueuedOpeningBalances[0].AccountId == cashId
+                && r.QueuedOpeningBalances[0].Amount == 750m),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_FinishWithNewAsAtDate_When_DateChangedAfterAmountEntered()
+    {
+        // PR #389 review: the amount is reported with the date in force when it was typed, so
+        // a later as-at date change must re-sync the wizard's queued balances to the new date.
+        var cashId = Guid.NewGuid();
+        _openingBalanceService.GetOpeningBalanceAccountsAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>
+        {
+            new() { Id = cashId, Name = "Cash on Hand", AccountNumber = "1100", Type = Core.Enums.AccountType.Asset }
+        });
+        var cut = Render<SetupWizard>();
+        AdvanceFromOrganisationSettings(cut); // -> Chart of Accounts
+        cut.Find("#btn-next").Click(); // -> Opening Balances
+
+        cut.Find(".opening-balance-amount").Change("750");
+        cut.Find("#ob-tab-as-at-date").Change("2025-07-01");
+        cut.Find("#btn-next").Click(); // -> Committee
+        cut.Find("#btn-next").Click(); // -> Review
+        await cut.Find("form").SubmitAsync();
+
+        await _setupService.Received(1).InitializeAsync(
+            Arg.Is<SetupRequest>(r =>
+                r!.OpeningBalanceAsAtDate == new DateTime(2025, 7, 1)
+                && r.QueuedOpeningBalances != null
+                && r.QueuedOpeningBalances.Count == 1
+                && r.QueuedOpeningBalances[0].AccountId == cashId
+                && r.QueuedOpeningBalances[0].Amount == 750m),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task Finish_Succeeds_When_BalanceEntered()
     {
         var cut = Render<SetupWizard>();
@@ -378,7 +451,7 @@ public class SetupWizardTests : LocalizedTestContext
         var tab = cut.FindComponent<OpeningBalancesTab>();
         var asAtDate = new DateTime(2025, 7, 1);
         var accountId = Guid.NewGuid();
-        await cut.InvokeAsync(() => tab.Instance.OnSubmit.InvokeAsync(new RecordOpeningBalancesRequest
+        await cut.InvokeAsync(() => tab.Instance.OnChange.InvokeAsync(new RecordOpeningBalancesRequest
         {
             AsAtDate = asAtDate,
             Entries = new List<OpeningBalanceEntry> { new() { AccountId = accountId, Amount = 500m } }
@@ -430,5 +503,59 @@ public class SetupWizardTests : LocalizedTestContext
         await _setupService.Received(1).InitializeAsync(
             Arg.Is<SetupRequest>(r => r!.LanguageCode == cut.Instance.CurrentCulture.Name),
             Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData("#setup-currency")]
+    [InlineData("#setup-fy-start-month")]
+    [InlineData("#setup-inception-date")]
+    [InlineData("#annualFee")]
+    [InlineData("#attendanceFee")]
+    [InlineData("#taxApplicable")]
+    public void Should_NotRenderAccountingField_When_OnOrganisationTab(string selector)
+    {
+        var cut = Render<SetupWizard>();
+
+        Assert.Empty(cut.FindAll(selector));
+    }
+
+    [Fact]
+    public async Task Should_StayOnAccountingTab_When_TaxRateBlankAndNextClicked()
+    {
+        var cut = Render<SetupWizard>();
+        cut.Find("#orgName").Change("My Choir");
+        cut.Find("#btn-next").Click(); // -> Accounting
+        await cut.Find("#taxApplicable").ChangeAsync(true);
+
+        cut.Find("#btn-next").Click();
+
+        Assert.Empty(cut.FindAll("#account-name"));
+        Assert.Contains("Tax rate must be greater than zero", cut.Markup);
+    }
+
+    [Fact]
+    public void Should_KeepEnteredValues_When_MovingBackFromAccountingTab()
+    {
+        var cut = Render<SetupWizard>();
+        cut.Find("#orgName").Change("My Choir");
+        cut.Find("#btn-next").Click(); // -> Accounting
+        cut.Find("#setup-currency").Change("NZD");
+
+        cut.FindAll(".nav-link").First(a => a.TextContent.Contains(OrgSettingsTabTitle)).Click();
+        cut.FindAll(".nav-link").First(a => a.TextContent.Contains(AccountingTabTitle)).Click();
+
+        Assert.Equal("My Choir", cut.Find("#orgName").GetAttribute("value"));
+        Assert.Equal("NZD", cut.Find("#setup-currency").GetAttribute("value"));
+    }
+
+    [Fact]
+    public void Should_RenderNoLanguageOrSampleDataControl_When_EveryTabShown()
+    {
+        var cut = Render<SetupWizard>();
+
+        AdvanceToReview(cut);
+
+        Assert.Empty(cut.FindAll("#languageSelect"));
+        Assert.Empty(cut.FindAll("#seedData"));
     }
 }

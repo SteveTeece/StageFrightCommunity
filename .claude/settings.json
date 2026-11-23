@@ -19,6 +19,32 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PROJECT_DIR}/.specify/events.py\" speckit.companion.on-prompt user_prompt_submit 10",
+            "timeout": 15,
+            "__speckit_event__": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PROJECT_DIR}/.specify/events.py\" speckit.companion.on-stop stop 10",
+            "timeout": 15,
+            "__speckit_event__": true
+          }
+        ]
+      }
     ]
   }
 }

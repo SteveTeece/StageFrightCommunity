@@ -1,22 +1,3 @@
-<div class="row g-2 mb-2">
-    <div class="col">
-        <label for="annualFee" class="form-label">@L["Setup_Fees_AnnualFeeLabel"]</label>
-        <div class="input-group input-group-sm">
-            <span class="input-group-text">$</span>
-            <InputNumber id="annualFee" class="form-control" @bind-Value="Model.AnnualFee" @bind-Value:format="N2" />
-        </div>
-        <ValidationMessage For="() => Model.AnnualFee" class="text-danger small" />
-    </div>
-    <div class="col">
-        <label for="attendanceFee" class="form-label">@L["Setup_Fees_AttendanceFeeLabel"]</label>
-        <div class="input-group input-group-sm">
-            <span class="input-group-text">$</span>
-            <InputNumber id="attendanceFee" class="form-control" @bind-Value="Model.AttendanceFee" @bind-Value:format="N2" />
-        </div>
-        <ValidationMessage For="() => Model.AttendanceFee" class="text-danger small" />
-    </div>
-</div>
-
 <div class="row g-2 mb-3">
     <div class="col">
         <label for="renewalMonth" class="form-label">@L["Setup_Fees_RenewalMonthLabel"] <span aria-hidden="true" class="text-danger">*</span></label>

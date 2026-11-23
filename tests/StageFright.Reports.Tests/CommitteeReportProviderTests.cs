@@ -233,6 +233,7 @@ public class CommitteeReportProviderTests
         Assert.True(cell.IndexOf("Alice", StringComparison.Ordinal) < cell.IndexOf("Bob", StringComparison.Ordinal));
         Assert.Contains("2026", cell);
         Assert.Contains("–present)", cell);
+        Assert.Contains("); Bob", cell);
         Assert.DoesNotContain("Alice, Bob", cell);
     }
 
@@ -288,7 +289,54 @@ public class CommitteeReportProviderTests
         var section = Assert.Single(result.Sections);
         var lastRow = section.Rows[^1];
         Assert.Equal("General Committee Members", lastRow.Cells[1]);
-        Assert.Equal("Bob, Zoe", lastRow.Cells[2]);
+        Assert.Equal("Bob\nZoe", lastRow.Cells[2]);
+    }
+
+    [Fact]
+    public async Task Should_SeparatePeopleWithSemicolons_When_NamesContainCommas()
+    {
+        // Issue #369: SortableFullName is "Last, First", so people are separated by "; ".
+        var alice = MakeMember("Alice", lastName: "Smith");
+        var bob = MakeMember("Bob", lastName: "Jones");
+        SetupMembers(alice, bob);
+        SetupCommittee(alice.Id, MakeCommittee(alice.Id, 2026, "Welfare Officer"));
+        SetupCommittee(bob.Id, MakeCommittee(bob.Id, 2026, "Welfare Officer"));
+
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
+
+        var welfareRow = Assert.Single(result.Sections).Rows.Single(r => r.Cells[1] == "Welfare Officer");
+        Assert.Equal("Jones, Bob; Smith, Alice", welfareRow.Cells[2]);
+    }
+
+    [Fact]
+    public async Task Should_ListGeneralCommitteeMembersOnePerLine_When_SeveralHaveNoPosition()
+    {
+        // Issue #369: one person per line, so "Last, First" names never run together.
+        var alice = MakeMember("Alice", lastName: "Smith");
+        var bob = MakeMember("Bob", lastName: "Jones");
+        var carol = MakeMember("Carol", lastName: "Brown");
+        SetupMembers(alice, bob, carol);
+        SetupCommittee(alice.Id, MakeCommittee(alice.Id, 2026, ""));
+        SetupCommittee(bob.Id, MakeCommittee(bob.Id, 2026, ""));
+        SetupCommittee(carol.Id, MakeCommittee(carol.Id, 2026, ""));
+
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
+
+        var generalRow = Assert.Single(result.Sections).Rows[^1];
+        Assert.Equal("General Committee Members", generalRow.Cells[1]);
+        Assert.Equal(["Brown, Carol", "Jones, Bob", "Smith, Alice"], generalRow.Cells[2].Split('\n'));
+    }
+
+    [Fact]
+    public async Task Should_ListSingleGeneralCommitteeMemberWithoutLineBreak_When_OnlyOneHasNoPosition()
+    {
+        var alice = MakeMember("Alice", lastName: "Smith");
+        SetupMembers(alice);
+        SetupCommittee(alice.Id, MakeCommittee(alice.Id, 2026, ""));
+
+        var result = await _sut.GenerateAsync(DefaultFilters(), TestContext.Current.CancellationToken);
+
+        Assert.Equal("Smith, Alice", Assert.Single(result.Sections).Rows[^1].Cells[2]);
     }
 
     [Fact]
@@ -308,13 +356,13 @@ public class CommitteeReportProviderTests
 
         var section = Assert.Single(result.Sections);
         Assert.Single(section.Rows, r => r.Cells[1] == "President");
-        Assert.Equal("Alice, Bob", section.Rows.Single(r => r.Cells[1] == "President").Cells[2]);
+        Assert.Equal("Alice; Bob", section.Rows.Single(r => r.Cells[1] == "President").Cells[2]);
 
         var otherPositionRows = section.Rows.Where(r =>
             r.Cells[1] is not ("President" or "Secretary" or "Treasurer" or "General Committee Members")).ToList();
         var welfareRow = Assert.Single(otherPositionRows);
         Assert.Equal("welfare officer", welfareRow.Cells[1]);
-        Assert.Equal("Carol, Dave", welfareRow.Cells[2]);
+        Assert.Equal("Carol; Dave", welfareRow.Cells[2]);
     }
 
     [Fact]
@@ -330,7 +378,7 @@ public class CommitteeReportProviderTests
 
         var section = Assert.Single(result.Sections);
         var presidentRow = section.Rows.Single(r => r.Cells[1] == "President");
-        Assert.Equal("Alice, Bob", presidentRow.Cells[2]);
+        Assert.Equal("Alice; Bob", presidentRow.Cells[2]);
     }
 
     [Fact]
@@ -346,7 +394,7 @@ public class CommitteeReportProviderTests
 
         var section = Assert.Single(result.Sections);
         var welfareRow = section.Rows.Single(r => r.Cells[1] == "Welfare Officer");
-        Assert.Equal("Alice, Bob", welfareRow.Cells[2]);
+        Assert.Equal("Alice; Bob", welfareRow.Cells[2]);
     }
 
     // --- User Story 3: Exportable, consistent output ---
@@ -476,11 +524,12 @@ public class CommitteeReportProviderTests
             UpdatedAt = DateTime.UtcNow
         };
 
-    private static Member MakeMember(string name, MemberStatus status = MemberStatus.Active, bool isDeleted = false)
+    private static Member MakeMember(string name, MemberStatus status = MemberStatus.Active, bool isDeleted = false, string lastName = "")
         => new()
         {
             Id = Guid.NewGuid(),
             FirstName = name,
+            LastName = lastName,
             StreetAddress = "1 Test St",
             JoinDate = DateTime.UtcNow.AddYears(-1),
             Status = status,

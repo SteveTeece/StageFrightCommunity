@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Enum_MemberStatus_Active" xml:space="preserve"><value>有効</value><comment>MemberStatus.Active display text.</comment></data>
+  <data name="Enum_MemberStatus_Inactive" xml:space="preserve"><value>無効</value><comment>MemberStatus.Inactive display text.</comment></data>
+  <data name="Enum_Theme_Light" xml:space="preserve"><value>ライト</value><comment>Theme.Light display text.</comment></data>
+  <data name="Enum_Theme_Dark" xml:space="preserve"><value>ダーク</value><comment>Theme.Dark display text.</comment></data>
+  <data name="Enum_FeeType_Annual" xml:space="preserve"><value>年会費</value><comment>FeeType enum — Annual membership fee.</comment></data>
+  <data name="Enum_FeeType_Attendance" xml:space="preserve"><value>出席料</value><comment>FeeType enum — per-rehearsal attendance fee.</comment></data>
+  <data name="Enum_FeeType_Other" xml:space="preserve"><value>その他</value><comment>FeeType enum — other / ad-hoc fee.</comment></data>
+  <data name="Enum_PaymentMethod_Cash" xml:space="preserve"><value>現金</value><comment>PaymentMethod enum — cash.</comment></data>
+  <data name="Enum_PaymentMethod_Check" xml:space="preserve"><value>小切手</value><comment>PaymentMethod enum — cheque payment (enum member name is "Check").</comment></data>
+  <data name="Enum_PaymentMethod_Card" xml:space="preserve"><value>カード</value><comment>PaymentMethod enum — debit/credit card.</comment></data>
+  <data name="Enum_PaymentMethod_ElectronicTransfer" xml:space="preserve"><value>電子送金</value><comment>PaymentMethod enum — electronic bank transfer.</comment></data>
+  <data name="Enum_PaymentMethod_Other" xml:space="preserve"><value>その他</value><comment>PaymentMethod enum — other method.</comment></data>
+  <data name="Enum_PaymentType_Annual" xml:space="preserve"><value>年会費</value><comment>PaymentType enum — payment against an annual fee.</comment></data>
+  <data name="Enum_PaymentType_Attendance" xml:space="preserve"><value>出席料</value><comment>PaymentType enum — payment against an attendance fee.</comment></data>
+  <data name="Enum_PaymentType_Other" xml:space="preserve"><value>その他</value><comment>PaymentType enum — payment against an other/ad-hoc fee.</comment></data>
+  <data name="Enum_AccountType_Income" xml:space="preserve"><value>収益</value><comment>AccountType enum — income account.</comment></data>
+  <data name="Enum_AccountType_Expense" xml:space="preserve"><value>費用</value><comment>AccountType enum — expense account.</comment></data>
+  <data name="Enum_AccountType_Asset" xml:space="preserve"><value>資産</value><comment>AccountType enum — asset account.</comment></data>
+  <data name="Enum_AccountType_Liability" xml:space="preserve"><value>負債</value><comment>AccountType enum — liability account.</comment></data>
+  <data name="Enum_AccountType_Equity" xml:space="preserve"><value>資本</value><comment>AccountType enum — equity account.</comment></data>
+  <data name="Enum_TaxCode_Taxable" xml:space="preserve"><value>課税</value><comment>TaxCode enum — taxable supply.</comment></data>
+  <data name="Enum_TaxCode_TaxExempt" xml:space="preserve"><value>非課税</value><comment>TaxCode enum — tax-exempt supply.</comment></data>
+  <data name="Enum_TaxCode_Excluded" xml:space="preserve"><value>対象外</value><comment>TaxCode enum — excluded from tax reporting.</comment></data>
+  <data name="Enum_TaxEntryMode_Inclusive" xml:space="preserve"><value>税込</value><comment>TaxEntryMode enum — the entered amount is the tax-inclusive gross.</comment></data>
+  <data name="Enum_TaxEntryMode_Exclusive" xml:space="preserve"><value>税抜</value><comment>TaxEntryMode enum — the entered amount is the net; tax is added on top.</comment></data>
+  <data name="Enum_ReconciliationStatus_Draft" xml:space="preserve"><value>下書き</value><comment>ReconciliationStatus enum — draft (in progress).</comment></data>
+  <data name="Enum_ReconciliationStatus_Finalised" xml:space="preserve"><value>確定済み</value><comment>ReconciliationStatus enum — finalised (locked).</comment></data>
+  <data name="Enum_JournalEntryType_Income" xml:space="preserve"><value>収入</value><comment>JournalEntryType enum — income receipt.</comment></data>
+  <data name="Enum_JournalEntryType_ExpensePayment" xml:space="preserve"><value>経費支払</value><comment>JournalEntryType enum — expense payment.</comment></data>
+  <data name="Enum_JournalEntryType_Transfer" xml:space="preserve"><value>振替</value><comment>JournalEntryType enum — inter-account transfer.</comment></data>
+  <data name="Enum_JournalEntryType_BankDeposit" xml:space="preserve"><value>銀行預入</value><comment>JournalEntryType enum — bank deposit.</comment></data>
+  <data name="Enum_JournalEntryType_GeneralJournal" xml:space="preserve"><value>一般仕訳</value><comment>JournalEntryType enum — general journal entry.</comment></data>
+  <data name="Enum_JournalEntryType_OpeningBalance" xml:space="preserve"><value>期首残高</value><comment>JournalEntryType enum — opening balance entry.</comment></data>
+</root>

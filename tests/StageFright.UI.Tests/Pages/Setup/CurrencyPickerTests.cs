@@ -9,7 +9,7 @@ namespace StageFright.UI.Tests.Pages.Setup;
 
 /// <summary>
 /// bUnit coverage for the first-run currency picker (spec 028, US1 / FR-001): it lives on
-/// <see cref="GeneralAppearanceTab"/> as <c>#setup-currency</c>, lists every
+/// <see cref="AccountingTab"/> as <c>#setup-currency</c>, lists every
 /// <see cref="CurrencyCatalog"/> entry, defaults to <c>AUD</c>, and two-way binds
 /// <see cref="SetupFormModel.CurrencyCode"/>.
 /// </summary>
@@ -17,8 +17,8 @@ public class CurrencyPickerTests : LocalizedTestContext
 {
     private static RenderFragment<EditContext> GeneralTab(SetupFormModel model) => _ => builder =>
     {
-        builder.OpenComponent<GeneralAppearanceTab>(0);
-        builder.AddComponentParameter(1, nameof(GeneralAppearanceTab.Model), model);
+        builder.OpenComponent<AccountingTab>(0);
+        builder.AddComponentParameter(1, nameof(AccountingTab.Model), model);
         builder.CloseComponent();
     };
 

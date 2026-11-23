@@ -41,6 +41,9 @@ public class BackupRepository : IBackupRepository
                 Fees = await _db.Fees.AsNoTracking().ToListAsync(ct),
                 Payments = await _db.Payments.AsNoTracking().ToListAsync(ct),
                 Transactions = await _db.Transactions.AsNoTracking().ToListAsync(ct),
+                JournalEntries = await _db.JournalEntries.AsNoTracking().ToListAsync(ct),
+                BankReconciliations = await _db.BankReconciliations.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
+                ReconciliationLines = await _db.ReconciliationLines.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
                 Accounts = await _db.Accounts.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
                 Settings = await _db.Settings.IgnoreQueryFilters().AsNoTracking().FirstOrDefaultAsync(ct),
                 AuditTrailEntries = await _db.AuditTrailEntries.AsNoTracking().ToListAsync(ct)
@@ -72,9 +75,14 @@ public class BackupRepository : IBackupRepository
             await UpsertCollectionAsync(snapshot.Events, _db.Events, e => e.Id, ct);
             await UpsertCollectionAsync(snapshot.ParticipationRecords, _db.ParticipationRecords, pr => pr.Id, ct);
             await UpsertCollectionAsync(snapshot.Accounts, _db.Accounts, c => c.Id, ct);
+            // JournalEntry headers before Transactions — Transaction.JournalEntryId points here.
+            await UpsertCollectionAsync(snapshot.JournalEntries, _db.JournalEntries, j => j.Id, ct);
             await UpsertCollectionAsync(snapshot.Fees, _db.Fees, f => f.Id, ct);
             await UpsertCollectionAsync(snapshot.Payments, _db.Payments, p => p.Id, ct);
             await UpsertCollectionAsync(snapshot.Transactions, _db.Transactions, t => t.Id, ct);
+            // Reconciliations after Transactions; their cleared-lines FK to both a reconciliation and a transaction.
+            await UpsertCollectionAsync(snapshot.BankReconciliations, _db.BankReconciliations, r => r.Id, ct);
+            await UpsertCollectionAsync(snapshot.ReconciliationLines, _db.ReconciliationLines, l => l.Id, ct);
 
             if (snapshot.Settings is not null)
                 await UpsertSettingsAsync(snapshot.Settings, ct);
