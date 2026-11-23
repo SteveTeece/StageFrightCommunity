@@ -1,0 +1,62 @@
+@page "/organisations/{Id:guid}"
+
+<PageTitle>@L["Organisations_Detail_PageTitle"]</PageTitle>
+
+@if (_loading)
+{
+    <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
+}
+else if (_organisation is null)
+{
+    <div class="alert alert-warning py-1 mb-2 small">@L["Organisations_Detail_NotFound"]</div>
+}
+else
+{
+    <div class="page-header d-flex align-items-center justify-content-between mb-2">
+        <div class="d-flex align-items-center gap-2">
+            <h1 class="h3 mb-0">@_organisation.Name</h1>
+            @if (_organisation.IsDeleted)
+            {
+                <span class="badge text-bg-secondary">@L["Organisations_Detail_ArchivedBadge"]</span>
+            }
+        </div>
+        <div class="d-flex gap-2">
+            @if (_organisation.IsDeleted)
+            {
+                <button id="restoreOrganisationButton" class="btn btn-outline-success btn-sm" disabled="@_busy"
+                        @onclick="RestoreAsync">@L["Organisations_Detail_RestoreButton"]</button>
+            }
+            else
+            {
+                <button id="editOrganisationButton" class="btn btn-outline-secondary btn-sm"
+                        @onclick="Edit">@L["Organisations_Detail_EditButton"]</button>
+                <button id="archiveOrganisationButton" class="btn btn-outline-danger btn-sm" disabled="@_busy"
+                        @onclick="ArchiveAsync">@L["Organisations_Detail_ArchiveButton"]</button>
+            }
+        </div>
+    </div>
+
+    <OrganisationTabs Id="Id" Active="@OrganisationTabs.DetailsTab" />
+
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <div id="organisationDetailError" class="alert alert-danger py-1 mb-2 small" role="alert">@_error</div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <dl class="row mb-0 small">
+                @if (!string.IsNullOrEmpty(_organisation.Address))
+                {
+                    <dt class="col-sm-3">@L["Organisations_Detail_AddressLabel"]</dt>
+                    <dd id="organisationDetailAddress" class="col-sm-9" style="white-space: pre-line">@_organisation.Address</dd>
+                }
+                @if (!string.IsNullOrEmpty(_organisation.Email))
+                {
+                    <dt class="col-sm-3">@L["Organisations_Detail_EmailLabel"]</dt>
+                    <dd id="organisationDetailEmail" class="col-sm-9">@_organisation.Email</dd>
+                }
+            </dl>
+        </div>
+    </div>
+}

@@ -305,6 +305,78 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-19T20:04:43.694Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T19:59:11.656Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T19:59:12.253Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T20:00:16.196Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T20:03:28.576Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T20:03:29.330Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T20:03:30.040Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T20:09:57.719Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T20:09:58.363Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T20:09:58.964Z"
     }
   ],
   "telemetryInstanceId": "400d696d-69ec-4378-8ed1-dfd9f6289af3",
@@ -337,6 +409,9 @@
         "T080",
         "T081",
         "T082"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Organisations/OrganisationListTests.cs"
       ]
     },
     "FR-002": {
@@ -348,6 +423,9 @@
         "T030",
         "T032",
         "T034"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Organisations/ExternalOrganisationServiceTests.cs; OrganisationFormTests.cs"
       ]
     },
     "FR-003": {
@@ -360,7 +438,7 @@
         "T032"
       ],
       "tests": [
-        "tests/StageFright.Data.Tests/Migrations/AddExternalOrganisationsMigrationTests.cs; tests/StageFright.Data.Tests/Repositories/ExternalOrganisationRepositoryTests.cs (IsActiveNameInUseAsync)"
+        "ExternalOrganisationServiceTests.cs; OrganisationFormTests.cs; OrganisationDetailTests.cs"
       ]
     },
     "FR-004": {
@@ -375,7 +453,7 @@
         "T042"
       ],
       "tests": [
-        "tests/StageFright.Core.Tests/Modules/Organisations/ExternalOrganisationValidationServiceTests.cs"
+        "ExternalOrganisationServiceTests.cs; OrganisationFormTests.cs"
       ]
     },
     "FR-005": {
@@ -385,6 +463,9 @@
         "T028",
         "T032",
         "T034"
+      ],
+      "tests": [
+        "ExternalOrganisationServiceTests.cs; OrganisationFormTests.cs"
       ]
     },
     "FR-006": {
@@ -396,6 +477,9 @@
         "T029",
         "T032",
         "T035"
+      ],
+      "tests": [
+        "ExternalOrganisationServiceTests.cs; OrganisationDetailTests.cs"
       ]
     },
     "FR-007": {
@@ -403,6 +487,9 @@
       "tasks": [
         "T027",
         "T033"
+      ],
+      "tests": [
+        "OrganisationListTests.cs"
       ]
     },
     "FR-008": {
@@ -488,6 +575,9 @@
         "T032",
         "T036",
         "T041"
+      ],
+      "tests": [
+        "ExternalOrganisationServiceTests.cs"
       ]
     },
     "FR-015": {
@@ -651,6 +741,20 @@
       "rejected": "hand-writing the qps-ploc file",
       "by": "agent",
       "at": "2026-11-19T20:07:55.173Z"
+    },
+    {
+      "decision": "RestoreAsync on an already-active organisation is a no-op with no audit entry",
+      "why": "Nothing changed, so nothing to audit",
+      "rejected": "Throwing a validation error",
+      "by": "agent",
+      "at": "2026-11-23T20:17:51.026Z"
+    },
+    {
+      "decision": "Pages are not registered in MauiProgram yet",
+      "why": "tasks.md gives DI and the menu to Phase 7",
+      "rejected": "Wiring DI inside US1",
+      "by": "agent",
+      "at": "2026-11-23T20:17:51.026Z"
     }
   ],
   "concerns": [
@@ -672,6 +776,10 @@
     {
       "note": "BaseRepository.UpdateAsync and SoftDeletableBaseRepository.RestoreAsync map a UNIQUE violation to DataAccessException, not DuplicateEntityException (pre-existing). US1 T032 must pre-check IsActiveNameInUseAsync on update and restore (research 4), which T026 covers; the index stays a backstop only",
       "step": "implement"
+    },
+    {
+      "note": "Phase 3 pages are unreachable in the running app until Phase 7 registers the services and menu; live CDP check is T084",
+      "step": "implement"
     }
   ],
   "step_summaries": {
@@ -683,11 +791,11 @@
       "summary": "85 tasks in 7 phases: Setup, Foundational (5 waves), US1 MVP, US2, US3, Backup, Polish; detail screen split into three tab pages so each story owns its files"
     },
     "implement": {
-      "summary": "Phase 2 foundational: entities, configurations, DbSets, repositories, migration, validation service, OrganisationTabs, all resource keys in 8 cultures plus pseudo-locale, and their tests"
+      "summary": "Phase 3 (US1): organisation service plus list, form and detail pages, with 69 new tests"
     }
   },
   "approach": "New Organisations module with ExternalOrganisation and soft-deletable contacts, a nullable FK on JournalEntry stamped by the expense and income services, and history computed from linked journal entries. Backup schema goes to 1.3.0, with organisations restored before journal entries. A new localized OrganisationsResource area and a top-level menu entry after Members.",
-  "currentTask": "T026",
+  "currentTask": "T035",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -941,6 +1049,72 @@
       "files": [
         "src/StageFright.Core/Modules/Settings/Backup/JournalEntryBackupDto.cs"
       ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "Created IExternalOrganisationService per contract §4.5 (no history method)",
+      "files": [
+        "src/StageFright.Core/Contracts/IExternalOrganisationService.cs"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "Service tests for create, duplicate names, email validation, update, archive/restore and audit entries",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Organisations/ExternalOrganisationServiceTests.cs"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "Implemented ExternalOrganisationService: trim, validate, active-name check, create/update/archive/restore with audit, plus GetActive/GetArchived/GetById",
+      "files": [
+        "src/StageFright.Core/Modules/Organisations/ExternalOrganisationService.cs"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "bUnit list tests: name/email/contact-count columns, empty state with Add, search-as-typed, show-archived switch via [role=switch]",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Organisations/OrganisationListTests.cs"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "bUnit form tests: save on new route, edit route loads and saves, field-level messages without service call, duplicate-name banner",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Organisations/OrganisationFormTests.cs"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "bUnit detail tests: multi-line address card, tabs, Archive becomes Restore, refused restore shows duplicate message",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Organisations/OrganisationDetailTests.cs"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "OrganisationList at /organisations: search-as-typed, RadzenSwitch show archived, Add button, RadzenDataGrid (standard attributes) with empty and no-match states",
+      "files": [
+        "src/StageFright.UI/Pages/Organisations/OrganisationList.razor",
+        "src/StageFright.UI/Pages/Organisations/OrganisationList.razor.cs"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "OrganisationForm at /organisations/new and /organisations/{Id}/edit with field-level messages from the validation service and a service-refusal banner",
+      "files": [
+        "src/StageFright.UI/Pages/Organisations/OrganisationForm.razor",
+        "src/StageFright.UI/Pages/Organisations/OrganisationForm.razor.cs"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "OrganisationDetail at /organisations/{Id}: OrganisationTabs (details), details card with multi-line address, Edit and Archive/Restore with error banner",
+      "files": [
+        "src/StageFright.UI/Pages/Organisations/OrganisationDetail.razor",
+        "src/StageFright.UI/Pages/Organisations/OrganisationDetail.razor.cs"
+      ]
     }
   },
   "verified": [
@@ -953,27 +1127,31 @@
       "command": "dotnet build -t:Rebuild",
       "source": "derived",
       "exitCode": 0,
-      "durationSeconds": 30.5,
-      "result": "    1 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:30.14",
-      "commit": "bbe75aa",
-      "tree": "27316fd8dac27f6116a17acc4e38fe9cc467ffd6"
+      "durationSeconds": 115.5,
+      "result": "    1 Warning(s) ·     0 Error(s) · Time Elapsed 00:01:53.87",
+      "commit": "2dbbcca",
+      "tree": "f29c2ffac209caae8d0dcca90527be056c1c20c4"
     },
     {
       "what": "full test suite",
       "command": "dotnet test",
       "source": "derived",
       "exitCode": 0,
-      "durationSeconds": 84.6,
-      "result": "Passed!  - Failed:     0, Passed:   186, Skipped:     0, Total:   186, Duration: 35 s - StageFright.Data.Tests.dll (net10.0) · Passed!  - Failed:     0, Passed:   270, Skipped:     0, Total:   270, Duration: 55 s - StageFright.Integration.Tests.dll (net10.0) ·   StageFright.App -> c:\\SourceCode\\StageFrightCommunity\\src\\StageFright.App\\bin\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\StageFright.App.dll",
-      "commit": "bbe75aa",
-      "tree": "27316fd8dac27f6116a17acc4e38fe9cc467ffd6"
+      "durationSeconds": 270.9,
+      "result": "Passed!  - Failed:     0, Passed:    29, Skipped:     0, Total:    29, Duration: 5 s - StageFright.Localization.Tests.dll (net10.0) ·   StageFright.App -> c:\\SourceCode\\StageFrightCommunity\\src\\StageFright.App\\bin\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\StageFright.App.dll · Passed!  - Failed:     0, Passed:   270, Skipped:     0, Total:   270, Duration: 2 m 5 s - StageFright.Integration.Tests.dll (net10.0)",
+      "commit": "2dbbcca",
+      "tree": "f29c2ffac209caae8d0dcca90527be056c1c20c4"
     },
     {
       "what": "two independent reviews of the Phase 2 diff (exception-boundary-checker, csharp-reviewer)",
       "result": "no important findings in new code; base-repository gap noted as concern"
+    },
+    {
+      "what": "Own read of Phase 3 diff (service, list, form, detail)",
+      "result": "No @code blocks; grid uses the standard attributes; contact count relies on the repository's filtered Include; refusals surface localized messages"
     }
   ],
-  "last_action": "Phase 2 reviewed at high depth; committing",
+  "last_action": "Phase 3 verified; full suite 2369 green",
   "risk": {
     "tier": "high",
     "computed": "high",

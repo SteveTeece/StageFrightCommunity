@@ -1,4 +1,4 @@
-y# Tasks: External Organisations
+# Tasks: External Organisations
 
 **Input**: [spec.md](./spec.md), [plan.md](./plan.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/ui-contract.md](./contracts/ui-contract.md)
 
@@ -73,28 +73,28 @@ Files: src/StageFright.Core/Contracts/IExternalOrganisationService.cs, src/Stage
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T026** [P] [US1] Service tests through `IExternalOrganisationService`. FR-002: create with name only and with every field. FR-003: refuse "city council " when "City Council" is active, allow it when that one is archived, and refuse a restore once the name is taken. FR-004: refuse an invalid email at the service boundary. FR-005: update persists. FR-006: archive hides the organisation and restore returns it. FR-014: each action writes its Create/Update/Delete/Restore audit entry · tests/StageFright.Core.Tests/Modules/Organisations/ExternalOrganisationServiceTests.cs
-- [ ] **T027** [P] [US1] bUnit list tests. FR-001: the grid shows name, email and contact count. Empty register: shows the empty state and an Add action. FR-007: typing part of a name filters rows as typed, and the "show archived" switch reveals archived rows (driven via `[role=switch]`) · tests/StageFright.UI.Tests/Pages/Organisations/OrganisationListTests.cs
-- [ ] **T028** [P] [US1] bUnit form tests. FR-002: save on the new route. FR-005: the edit route loads and saves. FR-004: an invalid email or an over-length name shows its message next to that field and the service is not called. FR-003: a duplicate name shows the duplicate message · tests/StageFright.UI.Tests/Pages/Organisations/OrganisationFormTests.cs
-- [ ] **T029** [P] [US1] bUnit detail tests. Details render with a multi-line address. FR-006: Archive calls the service and the button becomes Restore, and Restore with a taken name shows the duplicate message · tests/StageFright.UI.Tests/Pages/Organisations/OrganisationDetailTests.cs
+- [x] **T026** [P] [US1] Service tests through `IExternalOrganisationService`. FR-002: create with name only and with every field. FR-003: refuse "city council " when "City Council" is active, allow it when that one is archived, and refuse a restore once the name is taken. FR-004: refuse an invalid email at the service boundary. FR-005: update persists. FR-006: archive hides the organisation and restore returns it. FR-014: each action writes its Create/Update/Delete/Restore audit entry · tests/StageFright.Core.Tests/Modules/Organisations/ExternalOrganisationServiceTests.cs
+- [x] **T027** [P] [US1] bUnit list tests. FR-001: the grid shows name, email and contact count. Empty register: shows the empty state and an Add action. FR-007: typing part of a name filters rows as typed, and the "show archived" switch reveals archived rows (driven via `[role=switch]`) · tests/StageFright.UI.Tests/Pages/Organisations/OrganisationListTests.cs
+- [x] **T028** [P] [US1] bUnit form tests. FR-002: save on the new route. FR-005: the edit route loads and saves. FR-004: an invalid email or an over-length name shows its message next to that field and the service is not called. FR-003: a duplicate name shows the duplicate message · tests/StageFright.UI.Tests/Pages/Organisations/OrganisationFormTests.cs
+- [x] **T029** [P] [US1] bUnit detail tests. Details render with a multi-line address. FR-006: Archive calls the service and the button becomes Restore, and Restore with a taken name shows the duplicate message · tests/StageFright.UI.Tests/Pages/Organisations/OrganisationDetailTests.cs
 
 ### Implementation
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T031** [P] [US1] Create `IExternalOrganisationService` per the revised contract §4.5 (no history method) · src/StageFright.Core/Contracts/IExternalOrganisationService.cs
+- [x] **T031** [P] [US1] Create `IExternalOrganisationService` per the revised contract §4.5 (no history method) · src/StageFright.Core/Contracts/IExternalOrganisationService.cs
 
 **⟶ Wait for Wave 1 to finish, then:**
 
-- [ ] **T032** [US1] Implement `ExternalOrganisationService`: trim, run the validation service, check active names case-insensitively, then create, update, archive and restore, auditing each, plus `GetActiveAsync` and `GetArchivedAsync` · src/StageFright.Core/Modules/Organisations/ExternalOrganisationService.cs
+- [x] **T032** [US1] Implement `ExternalOrganisationService`: trim, run the validation service, check active names case-insensitively, then create, update, archive and restore, auditing each, plus `GetActiveAsync` and `GetArchivedAsync` · src/StageFright.Core/Modules/Organisations/ExternalOrganisationService.cs
 
 **⟶ Wait for T032, then:**
 
 **Wave 3 — independent (different files):**
 
-- [ ] **T033** [P] [US1] `OrganisationList` at `/organisations`: a search box, a `RadzenSwitch` "show archived", an Add button, and a `RadzenDataGrid` (`AllowSorting="true" AllowPaging="true" PageSize="15" class="rz-shadow-0"`) with an empty state · src/StageFright.UI/Pages/Organisations/OrganisationList.razor, src/StageFright.UI/Pages/Organisations/OrganisationList.razor.cs
-- [ ] **T034** [P] [US1] `OrganisationForm` at `/organisations/new` and `/organisations/{Id:guid}/edit`, with field-level messages from the validation service · src/StageFright.UI/Pages/Organisations/OrganisationForm.razor, src/StageFright.UI/Pages/Organisations/OrganisationForm.razor.cs
-- [ ] **T035** [US1] `OrganisationDetail` at `/organisations/{Id:guid}`: `OrganisationTabs` (Details active), the details card, and Edit and Archive/Restore buttons · src/StageFright.UI/Pages/Organisations/OrganisationDetail.razor, src/StageFright.UI/Pages/Organisations/OrganisationDetail.razor.cs
+- [x] **T033** [P] [US1] `OrganisationList` at `/organisations`: a search box, a `RadzenSwitch` "show archived", an Add button, and a `RadzenDataGrid` (`AllowSorting="true" AllowPaging="true" PageSize="15" class="rz-shadow-0"`) with an empty state · src/StageFright.UI/Pages/Organisations/OrganisationList.razor, src/StageFright.UI/Pages/Organisations/OrganisationList.razor.cs
+- [x] **T034** [P] [US1] `OrganisationForm` at `/organisations/new` and `/organisations/{Id:guid}/edit`, with field-level messages from the validation service · src/StageFright.UI/Pages/Organisations/OrganisationForm.razor, src/StageFright.UI/Pages/Organisations/OrganisationForm.razor.cs
+- [x] **T035** [US1] `OrganisationDetail` at `/organisations/{Id:guid}`: `OrganisationTabs` (Details active), the details card, and Edit and Archive/Restore buttons · src/StageFright.UI/Pages/Organisations/OrganisationDetail.razor, src/StageFright.UI/Pages/Organisations/OrganisationDetail.razor.cs
 
 **Checkpoint**: US1 works and passes T026–T029 on its own.
 
