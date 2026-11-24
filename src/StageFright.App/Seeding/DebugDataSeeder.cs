@@ -1076,7 +1076,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         }
 
         var termStarts = GetTermStartMondays(year);
-        for (var i = 0; i < termStarts.Count; i++)
+        for (var i = 0; i < termStarts.Length; i++)
             await PayAsync(termStarts[i].AddDays(-3), 150m, hallHireExpense, "Community Hall Committee", $"Term {i + 1} hall hire {year}");
 
         await PayAsync(Utc(year, 2, 15), 120m, costumesExpense, "Clarence Valley Stage Supplies", $"Costume repairs {year}");
@@ -1114,7 +1114,7 @@ public class DebugDataSeeder : IDebugDataSeeder
     /// (each term run out to exactly 10 weekly rehearsals, with 1.5–2 week term breaks and
     /// a ~6-week end-of-year break).
     /// </summary>
-    private static IReadOnlyList<DateTime> GetTermStartMondays(int year) => year switch
+    private static DateTime[] GetTermStartMondays(int year) => year switch
     {
         2025 => [Utc(2025, 2, 3), Utc(2025, 4, 28), Utc(2025, 7, 21), Utc(2025, 10, 13)],
         2026 => [Utc(2026, 2, 2), Utc(2026, 4, 28), Utc(2026, 7, 21), Utc(2026, 10, 13)],
