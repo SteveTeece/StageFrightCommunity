@@ -1,0 +1,68 @@
+<div class="card mb-3">
+    <div class="card-body">
+        <EditForm Model="_request" OnSubmit="SaveAsync">
+            <div class="row g-2 mb-2">
+
+                <div class="col-md-4">
+                    <label class="form-label" for="contactName">@L["Organisations_Contacts_ColName"] <span aria-hidden="true">*</span></label>
+                    <InputText id="contactName" class="@InputClass("Name")" @bind-Value="_request.Name" />
+                    @if (_errors.TryGetValue("Name", out var nameError))
+                    {
+                        <div class="invalid-feedback">@nameError</div>
+                    }
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label" for="contactRole">@L["Organisations_Contacts_ColRole"]</label>
+                    <InputText id="contactRole" class="@InputClass("Role")" @bind-Value="_request.Role" />
+                    @if (_errors.TryGetValue("Role", out var roleError))
+                    {
+                        <div class="invalid-feedback">@roleError</div>
+                    }
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label" for="contactEmail">@L["Organisations_Contacts_ColEmail"]</label>
+                    <InputText id="contactEmail" type="email" class="@InputClass("Email")" @bind-Value="_request.Email" />
+                    @if (_errors.TryGetValue("Email", out var emailError))
+                    {
+                        <div class="invalid-feedback">@emailError</div>
+                    }
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label" for="contactPhone">@L["Organisations_Contacts_ColPhone"]</label>
+                    <InputText id="contactPhone" class="@InputClass("Phone")" @bind-Value="_request.Phone" />
+                    @if (_errors.TryGetValue("Phone", out var phoneError))
+                    {
+                        <div class="invalid-feedback">@phoneError</div>
+                    }
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label" for="contactMobile">@L["Organisations_Contacts_ColMobile"]</label>
+                    <InputText id="contactMobile" class="@InputClass("Mobile")" @bind-Value="_request.Mobile" />
+                    @if (_errors.TryGetValue("Mobile", out var mobileError))
+                    {
+                        <div class="invalid-feedback">@mobileError</div>
+                    }
+                </div>
+
+            </div>
+
+            @if (!string.IsNullOrEmpty(_formError))
+            {
+                <div id="contactEditorError" class="alert alert-danger py-1 mb-2 small" role="alert">@_formError</div>
+            }
+
+            <div class="d-flex gap-2">
+                <button id="saveContactButton" type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
+                    @L["Organisations_Contacts_SaveButton"]
+                </button>
+                <button id="cancelContactButton" type="button" class="btn btn-outline-secondary btn-sm" @onclick="OnCancelled">
+                    @L["Organisations_Contacts_CancelButton"]
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>

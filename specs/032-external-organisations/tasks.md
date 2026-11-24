@@ -109,27 +109,27 @@ Files: src/StageFright.Core/Contracts/IExternalOrganisationContactService.cs, sr
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T036** [P] [US2] Service tests. FR-008: add with all five fields, a name-only contact saves, a missing name is refused, an invalid contact email is refused, edit persists, and adding to an archived organisation is refused. FR-009: remove soft-deletes the contact, which then drops out of the list but stays in data. FR-014: add, edit and remove are audited · tests/StageFright.Core.Tests/Modules/Organisations/ExternalOrganisationContactServiceTests.cs
-- [ ] **T037** [P] [US2] bUnit contacts page tests. FR-008: the grid lists name, role, phone, mobile and email. FR-009: Remove takes the row out of the grid · tests/StageFright.UI.Tests/Pages/Organisations/OrganisationContactsTests.cs
-- [ ] **T038** [P] [US2] bUnit editor tests. FR-004/FR-008: a blank name or invalid email shows its field message and does not submit, and a valid contact raises the save callback · tests/StageFright.UI.Tests/Pages/Organisations/ContactEditorTests.cs
+- [x] **T036** [P] [US2] Service tests. FR-008: add with all five fields, a name-only contact saves, a missing name is refused, an invalid contact email is refused, edit persists, and adding to an archived organisation is refused. FR-009: remove soft-deletes the contact, which then drops out of the list but stays in data. FR-014: add, edit and remove are audited · tests/StageFright.Core.Tests/Modules/Organisations/ExternalOrganisationContactServiceTests.cs
+- [x] **T037** [P] [US2] bUnit contacts page tests. FR-008: the grid lists name, role, phone, mobile and email. FR-009: Remove takes the row out of the grid · tests/StageFright.UI.Tests/Pages/Organisations/OrganisationContactsTests.cs
+- [x] **T038** [P] [US2] bUnit editor tests. FR-004/FR-008: a blank name or invalid email shows its field message and does not submit, and a valid contact raises the save callback · tests/StageFright.UI.Tests/Pages/Organisations/ContactEditorTests.cs
 
 ### Implementation
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T040** [P] [US2] Create `IExternalOrganisationContactService` per contract §4.6 · src/StageFright.Core/Contracts/IExternalOrganisationContactService.cs
+- [x] **T040** [P] [US2] Create `IExternalOrganisationContactService` per contract §4.6 · src/StageFright.Core/Contracts/IExternalOrganisationContactService.cs
 
 **⟶ Wait for Wave 1 to finish, then:**
 
-- [ ] **T041** [US2] Implement `ExternalOrganisationContactService`: validate, refuse an archived parent, then add, update and soft-remove, auditing each · src/StageFright.Core/Modules/Organisations/ExternalOrganisationContactService.cs
+- [x] **T041** [US2] Implement `ExternalOrganisationContactService`: validate, refuse an archived parent, then add, update and soft-remove, auditing each · src/StageFright.Core/Modules/Organisations/ExternalOrganisationContactService.cs
 
 **⟶ Wait for T041, then:**
 
-- [ ] **T042** [US2] Create the inline `ContactEditor` for add/edit, with five fields and field-level messages · src/StageFright.UI/Pages/Organisations/ContactEditor.razor, src/StageFright.UI/Pages/Organisations/ContactEditor.razor.cs
+- [x] **T042** [US2] Create the inline `ContactEditor` for add/edit, with five fields and field-level messages · src/StageFright.UI/Pages/Organisations/ContactEditor.razor, src/StageFright.UI/Pages/Organisations/ContactEditor.razor.cs
 
 **⟶ Wait for T042, then:**
 
-- [ ] **T043** [US2] `OrganisationContacts` at `/organisations/{Id:guid}/contacts`: `OrganisationTabs` (Contacts active), a contacts `RadzenDataGrid`, and `ContactEditor` · src/StageFright.UI/Pages/Organisations/OrganisationContacts.razor, src/StageFright.UI/Pages/Organisations/OrganisationContacts.razor.cs
+- [x] **T043** [US2] `OrganisationContacts` at `/organisations/{Id:guid}/contacts`: `OrganisationTabs` (Contacts active), a contacts `RadzenDataGrid`, and `ContactEditor` · src/StageFright.UI/Pages/Organisations/OrganisationContacts.razor, src/StageFright.UI/Pages/Organisations/OrganisationContacts.razor.cs
 
 **Checkpoint**: US2 works and passes T036–T038 on its own.
 
