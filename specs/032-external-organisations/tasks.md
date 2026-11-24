@@ -197,30 +197,30 @@ Files: src/StageFright.Core/BackupSchema.cs, src/StageFright.Core/Modules/Settin
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T067** [P] FR-015 schema tests: the current version is `1.3.0`, `1.2.0` and `1.3.0` files are restorable, and `1.4.0` is not · tests/StageFright.Core.Tests/Modules/Settings/BackupSchemaTests.cs
-- [ ] **T068** [P] FR-015 service tests: the envelope carries organisations, contacts and journal-entry links, with entity counts. `SchemaVersion` comes from `BackupSchema.CurrentSchemaVersion`. A `1.2.0` envelope with null lists maps to an empty register · tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs
-- [ ] **T069** [P] FR-015 repository tests: the snapshot includes archived organisations and removed contacts, and a restore upserts organisations then contacts before journal entries, with no FK failure · tests/StageFright.Data.Tests/Repositories/BackupRepositoryTests.cs
-- [ ] **T070** [P] SC-005 integration round trip: back up, wipe, restore, and every organisation, contact and link is unchanged · tests/StageFright.Integration.Tests/Scenarios/OrganisationBackupRoundTripTests.cs
+- [x] **T067** [P] FR-015 schema tests: the current version is `1.3.0`, `1.2.0` and `1.3.0` files are restorable, and `1.4.0` is not · tests/StageFright.Core.Tests/Modules/Settings/BackupSchemaTests.cs
+- [x] **T068** [P] FR-015 service tests: the envelope carries organisations, contacts and journal-entry links, with entity counts. `SchemaVersion` comes from `BackupSchema.CurrentSchemaVersion`. A `1.2.0` envelope with null lists maps to an empty register · tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs
+- [x] **T069** [P] FR-015 repository tests: the snapshot includes archived organisations and removed contacts, and a restore upserts organisations then contacts before journal entries, with no FK failure · tests/StageFright.Data.Tests/Repositories/BackupRepositoryTests.cs
+- [x] **T070** [P] SC-005 integration round trip: back up, wipe, restore, and every organisation, contact and link is unchanged · tests/StageFright.Integration.Tests/Scenarios/OrganisationBackupRoundTripTests.cs
 
 ### Implementation
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T071** [P] Bump `CurrentSchemaVersion` to `1.3.0` · src/StageFright.Core/BackupSchema.cs
-- [ ] **T072** [P] Create `ExternalOrganisationBackupDto` per data-model §5 · src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationBackupDto.cs
-- [ ] **T073** [P] Create `ExternalOrganisationContactBackupDto` per data-model §5 · src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationContactBackupDto.cs
-- [ ] **T075** [P] Add the `ExternalOrganisations` and `ExternalOrganisationContacts` lists · src/StageFright.Core/Modules/Settings/Backup/BackupSnapshot.cs
+- [x] **T071** [P] Bump `CurrentSchemaVersion` to `1.3.0` · src/StageFright.Core/BackupSchema.cs
+- [x] **T072** [P] Create `ExternalOrganisationBackupDto` per data-model §5 · src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationBackupDto.cs
+- [x] **T073** [P] Create `ExternalOrganisationContactBackupDto` per data-model §5 · src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationContactBackupDto.cs
+- [x] **T075** [P] Add the `ExternalOrganisations` and `ExternalOrganisationContacts` lists · src/StageFright.Core/Modules/Settings/Backup/BackupSnapshot.cs
 
 **⟶ Wait for Wave 1 to finish, then:**
 
 **Wave 2 — independent (different files):**
 
-- [ ] **T076** [P] Add envelope members 27 `ExternalOrganisations` and 28 `ExternalOrganisationContacts` · src/StageFright.Core/Modules/Settings/Backup/BackupEnvelope.cs
-- [ ] **T077** [P] Read both sets with `IgnoreQueryFilters()`, and upsert organisations then contacts ahead of `JournalEntries` · src/StageFright.Data/Repositories/BackupRepository.cs
+- [x] **T076** [P] Add envelope members 27 `ExternalOrganisations` and 28 `ExternalOrganisationContacts` · src/StageFright.Core/Modules/Settings/Backup/BackupEnvelope.cs
+- [x] **T077** [P] Read both sets with `IgnoreQueryFilters()`, and upsert organisations then contacts ahead of `JournalEntries` · src/StageFright.Data/Repositories/BackupRepository.cs
 
 **⟶ Wait for Wave 2 to finish, then:**
 
-- [ ] **T078** Map both sets and the link in each direction, add the entity counts, default null lists, and replace the `"1.2.0"` literal with `BackupSchema.CurrentSchemaVersion` · src/StageFright.Core/Modules/Settings/BackupService.cs
+- [x] **T078** Map both sets and the link in each direction, add the entity counts, default null lists, and replace the `"1.2.0"` literal with `BackupSchema.CurrentSchemaVersion` · src/StageFright.Core/Modules/Settings/BackupService.cs
 
 **Checkpoint**: backup and restore carry the register, and pre-feature backups still restore.
 

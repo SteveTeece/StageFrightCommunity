@@ -12,11 +12,12 @@ public class BackupSchemaTests
     [Fact]
     public void CurrentSchemaVersion_IsThePublishedValue()
     {
-        Assert.Equal("1.2.0", BackupSchema.CurrentSchemaVersion);
+        Assert.Equal("1.3.0", BackupSchema.CurrentSchemaVersion);
     }
 
     [Theory]
-    [InlineData("1.2.0")]   // equal
+    [InlineData("1.3.0")]   // equal
+    [InlineData("1.2.0")]   // pre-organisations file (spec 032, FR-015)
     [InlineData("1.1.0")]   // older minor
     [InlineData("1.1.9")]   // older minor, newer patch within it
     [InlineData("1.0.0")]   // older minor
@@ -28,9 +29,9 @@ public class BackupSchemaTests
 
     [Theory]
     [InlineData("2.0.0")]   // newer major
-    [InlineData("1.3.0")]   // newer minor
-    [InlineData("1.2.1")]   // newer patch
-    [InlineData("1.2.99")]  // newer build of the same major.minor
+    [InlineData("1.4.0")]   // newer minor
+    [InlineData("1.3.1")]   // newer patch
+    [InlineData("1.3.99")]  // newer build of the same major.minor
     [InlineData("10.0.0")]
     public void IsRestorable_ReturnsFalse_ForAnyVersionNewerOnAnyComponent(string version)
     {

@@ -46,7 +46,9 @@ public class BackupRepository : IBackupRepository
                 ReconciliationLines = await _db.ReconciliationLines.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
                 Accounts = await _db.Accounts.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
                 Settings = await _db.Settings.IgnoreQueryFilters().AsNoTracking().FirstOrDefaultAsync(ct),
-                AuditTrailEntries = await _db.AuditTrailEntries.AsNoTracking().ToListAsync(ct)
+                AuditTrailEntries = await _db.AuditTrailEntries.AsNoTracking().ToListAsync(ct),
+                ExternalOrganisations = await _db.ExternalOrganisations.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
+                ExternalOrganisationContacts = await _db.ExternalOrganisationContacts.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct)
             };
         }
         catch (Exception ex)
@@ -64,6 +66,9 @@ public class BackupRepository : IBackupRepository
             _db.ChangeTracker.Clear();
 
             await UpsertCollectionAsync(snapshot.Members, _db.Members, m => m.Id, ct);
+            // Organisations before their contacts and before JournalEntries, which both FK to them.
+            await UpsertCollectionAsync(snapshot.ExternalOrganisations, _db.ExternalOrganisations, o => o.Id, ct);
+            await UpsertCollectionAsync(snapshot.ExternalOrganisationContacts, _db.ExternalOrganisationContacts, c => c.Id, ct);
             await UpsertCollectionAsync(snapshot.AnnualGeneralMeetings, _db.AnnualGeneralMeetings, a => a.Id, ct);
             await UpsertCollectionAsync(snapshot.CommitteeOfficeHolderTypes, _db.CommitteeOfficeHolderTypes, t => t.Id, ct);
             await UpsertCollectionAsync(snapshot.CommitteeTerms, _db.CommitteeTerms, t => t.Id, ct);

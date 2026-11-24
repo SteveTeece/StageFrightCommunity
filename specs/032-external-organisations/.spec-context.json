@@ -617,6 +617,94 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-24T01:14:02.073Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T067",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-24T01:24:03.820Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T068",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-24T01:24:03.822Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T069",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-24T01:24:03.824Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T070",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-24T01:24:03.825Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T071",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-24T01:24:04.502Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T072",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-24T01:24:04.504Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T073",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-24T01:24:04.506Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T075",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-24T01:24:04.509Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T076",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-24T01:25:26.412Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T077",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-24T01:25:26.414Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T078",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-24T01:30:07.468Z"
     }
   ],
   "telemetryInstanceId": "400d696d-69ec-4378-8ed1-dfd9f6289af3",
@@ -838,6 +926,9 @@
         "T076",
         "T077",
         "T078"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs::Should_RoundTripOrganisationsContactsAndLinks_When_ExportedThenImported; ::Should_RestoreEmptyRegister_When_Version120FileHasNoOrganisationLists; tests/StageFright.Core.Tests/Modules/Settings/BackupSchemaTests.cs; tests/StageFright.Data.Tests/Repositories/BackupRepositoryTests.cs"
       ]
     },
     "FR-016": {
@@ -853,6 +944,11 @@
       ],
       "tests": [
         "tests/StageFright.Localization.Tests (Us1/Us2 guards now include the Organisations area)"
+      ]
+    },
+    "SC-005": {
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/OrganisationBackupRoundTripTests.cs::Should_RestoreEveryOrganisationContactAndLinkUnchanged_When_BackedUpThenRestoredIntoEmptyDatabase_Integration"
       ]
     }
   },
@@ -1019,6 +1115,27 @@
       "rejected": "fan-out worker per fan-out.md",
       "by": "agent",
       "at": "2026-11-24T00:27:50.954Z"
+    },
+    {
+      "decision": "Upsert organisations then contacts immediately after Members, ahead of JournalEntries",
+      "why": "Contacts and JournalEntries.ExternalOrganisationId both FK to organisations; SQLite enforces FKs on SaveChanges ordering per tracked graph",
+      "rejected": "Upserting them after JournalEntries",
+      "by": "agent",
+      "at": "2026-11-24T01:32:44.874Z"
+    },
+    {
+      "decision": "Organisation lists are optional, not gated in ValidateCompleteness",
+      "why": "FR-015: a 1.2.0 file must restore with an empty register",
+      "rejected": "Requiring the new EntityCounts keys",
+      "by": "agent",
+      "at": "2026-11-24T01:32:44.874Z"
+    },
+    {
+      "decision": "New integration test writes its recovery copy to a private temp folder",
+      "why": "Glob-deleting StageFright-Recovery-*.sfbak in the shared temp dir raced V9_BackupRestoreTests' read-back verification",
+      "rejected": "Reusing V9's shared-temp cleanup pattern",
+      "by": "agent",
+      "at": "2026-11-24T01:32:44.874Z"
     }
   ],
   "concerns": [
@@ -1048,6 +1165,14 @@
     {
       "note": "Contacts page and service are not registered in MauiProgram yet (T082, Polish), so /organisations/{id}/contacts is unreachable in the running app until then",
       "step": "implement"
+    },
+    {
+      "note": "A 1.3.0 backup is refused by pre-032 builds (by design via BackupSchema.IsRestorable); users downgrading cannot restore newer backups",
+      "step": "implement"
+    },
+    {
+      "note": "Pre-existing rebuild warnings remain (ChartOfAccountsGrid CS8602, DebugDataSeeder CsWinRT1032); left for Polish T085 which requires no new warnings",
+      "step": "implement"
     }
   ],
   "step_summaries": {
@@ -1059,11 +1184,11 @@
       "summary": "85 tasks in 7 phases: Setup, Foundational (5 waves), US1 MVP, US2, US3, Backup, Polish; detail screen split into three tab pages so each story owns its files"
     },
     "implement": {
-      "summary": "US2 contacts: IExternalOrganisationContactService + service, ContactEditor, OrganisationContacts tab; 41 new tests"
+      "summary": "Phase 6: .sfbak schema 1.3.0 carries organisations, contacts and journal-entry links; 1.2.0 files restore with an empty register"
     }
   },
   "approach": "New Organisations module with ExternalOrganisation and soft-deletable contacts, a nullable FK on JournalEntry stamped by the expense and income services, and history computed from linked journal entries. Backup schema goes to 1.3.0, with organisations restored before journal entries. A new localized OrganisationsResource area and a top-level menu entry after Members.",
-  "currentTask": "T067",
+  "currentTask": "T078",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -1443,6 +1568,119 @@
         "src/StageFright.UI/Pages/Organisations/OrganisationContacts.razor",
         "src/StageFright.UI/Pages/Organisations/OrganisationContacts.razor.cs"
       ]
+    },
+    "T067": {
+      "status": "DONE",
+      "did": "Wrote FR-015/SC-005 backup tests: schema 1.3.0, service round trip and 1.2.0 fallback, repository snapshot/upsert order, integration round trip",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupSchemaTests.cs",
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs",
+        "tests/StageFright.Data.Tests/Repositories/BackupRepositoryTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/OrganisationBackupRoundTripTests.cs"
+      ],
+      "wave": "T067-T070"
+    },
+    "T068": {
+      "status": "DONE",
+      "did": "Wrote FR-015/SC-005 backup tests: schema 1.3.0, service round trip and 1.2.0 fallback, repository snapshot/upsert order, integration round trip",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupSchemaTests.cs",
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs",
+        "tests/StageFright.Data.Tests/Repositories/BackupRepositoryTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/OrganisationBackupRoundTripTests.cs"
+      ],
+      "wave": "T067-T070"
+    },
+    "T069": {
+      "status": "DONE",
+      "did": "Wrote FR-015/SC-005 backup tests: schema 1.3.0, service round trip and 1.2.0 fallback, repository snapshot/upsert order, integration round trip",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupSchemaTests.cs",
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs",
+        "tests/StageFright.Data.Tests/Repositories/BackupRepositoryTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/OrganisationBackupRoundTripTests.cs"
+      ],
+      "wave": "T067-T070"
+    },
+    "T070": {
+      "status": "DONE",
+      "did": "Wrote FR-015/SC-005 backup tests: schema 1.3.0, service round trip and 1.2.0 fallback, repository snapshot/upsert order, integration round trip",
+      "files": [
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupSchemaTests.cs",
+        "tests/StageFright.Core.Tests/Modules/Settings/BackupServiceTests.cs",
+        "tests/StageFright.Data.Tests/Repositories/BackupRepositoryTests.cs",
+        "tests/StageFright.Integration.Tests/Scenarios/OrganisationBackupRoundTripTests.cs"
+      ],
+      "wave": "T067-T070"
+    },
+    "T071": {
+      "status": "DONE",
+      "did": "Bumped backup schema to 1.3.0, added organisation and contact backup DTOs and snapshot lists",
+      "files": [
+        "src/StageFright.Core/BackupSchema.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationBackupDto.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationContactBackupDto.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/BackupSnapshot.cs"
+      ],
+      "wave": "T071-T075"
+    },
+    "T072": {
+      "status": "DONE",
+      "did": "Bumped backup schema to 1.3.0, added organisation and contact backup DTOs and snapshot lists",
+      "files": [
+        "src/StageFright.Core/BackupSchema.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationBackupDto.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationContactBackupDto.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/BackupSnapshot.cs"
+      ],
+      "wave": "T071-T075"
+    },
+    "T073": {
+      "status": "DONE",
+      "did": "Bumped backup schema to 1.3.0, added organisation and contact backup DTOs and snapshot lists",
+      "files": [
+        "src/StageFright.Core/BackupSchema.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationBackupDto.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationContactBackupDto.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/BackupSnapshot.cs"
+      ],
+      "wave": "T071-T075"
+    },
+    "T075": {
+      "status": "DONE",
+      "did": "Bumped backup schema to 1.3.0, added organisation and contact backup DTOs and snapshot lists",
+      "files": [
+        "src/StageFright.Core/BackupSchema.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationBackupDto.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/ExternalOrganisationContactBackupDto.cs",
+        "src/StageFright.Core/Modules/Settings/Backup/BackupSnapshot.cs"
+      ],
+      "wave": "T071-T075"
+    },
+    "T076": {
+      "status": "DONE",
+      "did": "Added envelope members 27/28 and repository read/upsert of organisations then contacts ahead of journal entries",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/Backup/BackupEnvelope.cs",
+        "src/StageFright.Data/Repositories/BackupRepository.cs"
+      ],
+      "wave": "T076-T077"
+    },
+    "T077": {
+      "status": "DONE",
+      "did": "Added envelope members 27/28 and repository read/upsert of organisations then contacts ahead of journal entries",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/Backup/BackupEnvelope.cs",
+        "src/StageFright.Data/Repositories/BackupRepository.cs"
+      ],
+      "wave": "T076-T077"
+    },
+    "T078": {
+      "status": "DONE",
+      "did": "BackupService maps organisations, contacts and the journal-entry link both ways, counts both, defaults null lists, writes BackupSchema.CurrentSchemaVersion",
+      "files": [
+        "src/StageFright.Core/Modules/Settings/BackupService.cs"
+      ]
     }
   },
   "verified": [
@@ -1464,14 +1702,11 @@
       "what": "full test suite",
       "command": "dotnet test",
       "source": "derived",
-      "exitCode": 1,
-      "durationSeconds": 89.2,
-      "result": "--- End of stack trace from previous location --- · Failed!  - Failed:     1, Passed:   269, Skipped:     0, Total:   270, Duration: 1 m 5 s - StageFright.Integration.Tests.dll (net10.0) · [xUnit.net 00:00:38.89]     StageFright.Integration.Tests.Scenarios.V9_BackupRestoreTests.Import_CreatesCheckpoint_BeforeWrite [FAIL]",
-      "warnings": [
-        "exited 1"
-      ],
-      "commit": "46e25b6",
-      "tree": "585e2b4fbc474af9fd32c9621ce5a5cc867a8b02"
+      "exitCode": 0,
+      "durationSeconds": 88.4,
+      "result": "Passed!  - Failed:     0, Passed:   801, Skipped:     0, Total:   801, Duration: 25 s - StageFright.UI.Tests.dll (net10.0) · Passed!  - Failed:     0, Passed:   195, Skipped:     0, Total:   195, Duration: 40 s - StageFright.Data.Tests.dll (net10.0) · Passed!  - Failed:     0, Passed:   273, Skipped:     0, Total:   273, Duration: 1 m 3 s - StageFright.Integration.Tests.dll (net10.0)",
+      "commit": "792d269",
+      "tree": "9749f6989ab82067dcf7cc515dfc61de84d38693"
     },
     {
       "what": "two independent reviews of the Phase 2 diff (exception-boundary-checker, csharp-reviewer)",
@@ -1490,13 +1725,21 @@
       "command": "dotnet build",
       "source": "derived",
       "exitCode": 0,
-      "durationSeconds": 9.4,
-      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:08.82",
-      "commit": "46e25b6",
-      "tree": "585e2b4fbc474af9fd32c9621ce5a5cc867a8b02"
+      "durationSeconds": 8.5,
+      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:07.91",
+      "commit": "792d269",
+      "tree": "9749f6989ab82067dcf7cc515dfc61de84d38693"
+    },
+    {
+      "what": "Full Rebuild warning count",
+      "result": "3 distinct warnings, all in files Phase 6 did not touch (ChartOfAccountsGrid.razor.cs CS8602; DebugDataSeeder.cs CsWinRT1032 from US3)"
+    },
+    {
+      "what": "New integration round trip stable under parallel test classes",
+      "result": "16/16 backup integration tests passed on 3 consecutive runs after isolating its recovery folder"
     }
   ],
-  "last_action": "Phase 4 (T036-T043) complete; full suite green",
+  "last_action": "Phase 6 (T067-T078) complete; Phase 7 Polish remains",
   "risk": {
     "tier": "high",
     "computed": "high",

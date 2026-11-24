@@ -8,8 +8,11 @@ namespace StageFright.Core;
 /// </summary>
 public static class BackupSchema
 {
-    /// <summary>The backup-file schema version produced by this build (a three-part semantic version).</summary>
-    public const string CurrentSchemaVersion = "1.2.0";
+    /// <summary>
+    /// The backup-file schema version produced by this build (a three-part semantic version).
+    /// 1.3.0 added the external-organisation register and journal-entry links (spec 032).
+    /// </summary>
+    public const string CurrentSchemaVersion = "1.3.0";
 
     /// <summary>
     /// True when a file recording <paramref name="fileVersion"/> can be restored into this build:

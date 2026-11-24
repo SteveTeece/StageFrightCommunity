@@ -199,6 +199,9 @@ public class BackupService : IBackupService
         envelope.JournalEntries ??= [];
         envelope.BankReconciliations ??= [];
         envelope.ReconciliationLines ??= [];
+        // Added in schema 1.3.0 — a 1.2.0 file restores with an empty organisation register.
+        envelope.ExternalOrganisations ??= [];
+        envelope.ExternalOrganisationContacts ??= [];
         envelope.EntityCounts ??= new Dictionary<string, int>();
 
         ValidateVersion(envelope.SchemaVersion);
@@ -339,6 +342,8 @@ public class BackupService : IBackupService
         ["JournalEntries"] = e.JournalEntries?.Count ?? 0,
         ["BankReconciliations"] = e.BankReconciliations?.Count ?? 0,
         ["ReconciliationLines"] = e.ReconciliationLines?.Count ?? 0,
+        ["ExternalOrganisations"] = e.ExternalOrganisations?.Count ?? 0,
+        ["ExternalOrganisationContacts"] = e.ExternalOrganisationContacts?.Count ?? 0,
     };
 
     private static BackupEnvelope MapToEnvelope(BackupSnapshot snapshot)
@@ -362,6 +367,8 @@ public class BackupService : IBackupService
         var journalEntries = snapshot.JournalEntries.Select(MapJournalEntry).ToList();
         var bankReconciliations = snapshot.BankReconciliations.Select(MapBankReconciliation).ToList();
         var reconciliationLines = snapshot.ReconciliationLines.Select(MapReconciliationLine).ToList();
+        var organisations = snapshot.ExternalOrganisations.Select(MapExternalOrganisation).ToList();
+        var organisationContacts = snapshot.ExternalOrganisationContacts.Select(MapExternalOrganisationContact).ToList();
 
         var counts = new Dictionary<string, int>
         {
@@ -384,12 +391,14 @@ public class BackupService : IBackupService
             ["CommitteeTerms"] = committeeTerms.Count,
             ["JournalEntries"] = journalEntries.Count,
             ["BankReconciliations"] = bankReconciliations.Count,
-            ["ReconciliationLines"] = reconciliationLines.Count
+            ["ReconciliationLines"] = reconciliationLines.Count,
+            ["ExternalOrganisations"] = organisations.Count,
+            ["ExternalOrganisationContacts"] = organisationContacts.Count
         };
 
         return new BackupEnvelope
         {
-            SchemaVersion = "1.2.0",
+            SchemaVersion = BackupSchema.CurrentSchemaVersion,
             GeneratedAt = DateTime.UtcNow,
             ApplicationVersion = "1.0.0",
             Members = members,
@@ -409,6 +418,8 @@ public class BackupService : IBackupService
             JournalEntries = journalEntries,
             BankReconciliations = bankReconciliations,
             ReconciliationLines = reconciliationLines,
+            ExternalOrganisations = organisations,
+            ExternalOrganisationContacts = organisationContacts,
             EntityCounts = counts
         };
     }
@@ -451,7 +462,9 @@ public class BackupService : IBackupService
             CommitteeTerms = env.CommitteeTerms!.Select(MapCommitteeTermFromDto).ToList(),
             JournalEntries = env.JournalEntries!.Select(MapJournalEntryFromDto).ToList(),
             BankReconciliations = env.BankReconciliations!.Select(MapBankReconciliationFromDto).ToList(),
-            ReconciliationLines = env.ReconciliationLines!.Select(MapReconciliationLineFromDto).ToList()
+            ReconciliationLines = env.ReconciliationLines!.Select(MapReconciliationLineFromDto).ToList(),
+            ExternalOrganisations = env.ExternalOrganisations!.Select(MapExternalOrganisationFromDto).ToList(),
+            ExternalOrganisationContacts = env.ExternalOrganisationContacts!.Select(MapExternalOrganisationContactFromDto).ToList()
         };
     }
 
@@ -573,7 +586,23 @@ public class BackupService : IBackupService
 
     private static JournalEntryBackupDto MapJournalEntry(JournalEntry j) => new()
     {
-        Id = j.Id, Type = j.Type, Date = j.Date, Description = j.Description, CreatedAt = j.CreatedAt
+        Id = j.Id, Type = j.Type, Date = j.Date, Description = j.Description, CreatedAt = j.CreatedAt,
+        ExternalOrganisationId = j.ExternalOrganisationId
+    };
+
+    private static ExternalOrganisationBackupDto MapExternalOrganisation(ExternalOrganisation o) => new()
+    {
+        Id = o.Id, Name = o.Name, Address = o.Address, Email = o.Email,
+        IsDeleted = o.IsDeleted, DeletedAt = o.DeletedAt, DeletedBy = o.DeletedBy,
+        CreatedAt = o.CreatedAt, UpdatedAt = o.UpdatedAt
+    };
+
+    private static ExternalOrganisationContactBackupDto MapExternalOrganisationContact(ExternalOrganisationContact c) => new()
+    {
+        Id = c.Id, ExternalOrganisationId = c.ExternalOrganisationId, Name = c.Name, Role = c.Role,
+        Phone = c.Phone, Mobile = c.Mobile, Email = c.Email,
+        IsDeleted = c.IsDeleted, DeletedAt = c.DeletedAt, DeletedBy = c.DeletedBy,
+        CreatedAt = c.CreatedAt, UpdatedAt = c.UpdatedAt
     };
 
     private static BankReconciliationBackupDto MapBankReconciliation(BankReconciliation r) => new()
@@ -744,7 +773,23 @@ public class BackupService : IBackupService
 
     private static JournalEntry MapJournalEntryFromDto(JournalEntryBackupDto d) => new()
     {
-        Id = d.Id, Type = d.Type, Date = d.Date, Description = d.Description, CreatedAt = d.CreatedAt
+        Id = d.Id, Type = d.Type, Date = d.Date, Description = d.Description, CreatedAt = d.CreatedAt,
+        ExternalOrganisationId = d.ExternalOrganisationId
+    };
+
+    private static ExternalOrganisation MapExternalOrganisationFromDto(ExternalOrganisationBackupDto d) => new()
+    {
+        Id = d.Id, Name = d.Name, Address = d.Address, Email = d.Email,
+        IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy,
+        CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
+    };
+
+    private static ExternalOrganisationContact MapExternalOrganisationContactFromDto(ExternalOrganisationContactBackupDto d) => new()
+    {
+        Id = d.Id, ExternalOrganisationId = d.ExternalOrganisationId, Name = d.Name, Role = d.Role,
+        Phone = d.Phone, Mobile = d.Mobile, Email = d.Email,
+        IsDeleted = d.IsDeleted, DeletedAt = d.DeletedAt, DeletedBy = d.DeletedBy,
+        CreatedAt = d.CreatedAt, UpdatedAt = d.UpdatedAt
     };
 
     private static BankReconciliation MapBankReconciliationFromDto(BankReconciliationBackupDto d) => new()

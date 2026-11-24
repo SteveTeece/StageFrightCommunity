@@ -56,7 +56,7 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
 
             // Verify manifest
             var manifest = await svc.GetManifestAsync(path, TestContext.Current.CancellationToken);
-            Assert.Equal("1.2.0", manifest.SchemaVersion);
+            Assert.Equal(StageFright.Core.BackupSchema.CurrentSchemaVersion, manifest.SchemaVersion);
             Assert.Equal(2, manifest.EntityCounts["Members"]);
 
             // Clear active members (simulate fresh restore target)
@@ -498,7 +498,7 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
             await BuildService().ExportAsync(path, TestContext.Current.CancellationToken);
 
             var manifest = await BuildService().GetManifestAsync(path, TestContext.Current.CancellationToken);
-            Assert.Equal("1.2.0", manifest.SchemaVersion); // the create path always writes the current schema
+            Assert.Equal(StageFright.Core.BackupSchema.CurrentSchemaVersion, manifest.SchemaVersion); // the create path always writes the current schema
 
             // Restore into a fresh database, then clear the change tracker to simulate an app restart.
             target = await NewDatabaseAsync();
