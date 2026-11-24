@@ -17,6 +17,10 @@ Always run `dotnet build` and the full test suite (without --no-build) after mak
 
 When a change touches behavior or UI that an existing `specs/<feature>/` doc (spec.md, contracts/, data-model.md, etc.) describes, always update that doc — and any other project documentation the change makes stale — in the same task, not as a separate follow-up. This applies even to small, presentation-only tweaks (e.g. a layout reorder): find the sentence that now reads wrong and fix it alongside the code.
 
+## Seed Data Workflow
+
+Whenever a change touches the data schema — a new or changed entity, property, relationship, enum, or EF Core migration — update the DEBUG seed data in `src/StageFright.App/Seeding/DebugDataSeeder.cs` (contract `IDebugDataSeeder` in `StageFright.Core/Contracts/`, registered only in `DEBUG` builds by `MauiProgram`) in the same task, not as a follow-up. The seed data exists so the app can be fully tested by hand: it must provide a **minimum of 2 years of complete history and transactions** (relative to the seeder's current date) across every feature, so seed realistic records for any new or changed entity across that window. Seeded finance data must stay GL-balanced (paired debits/credits), like any other fee or payment write.
+
 ## Git / Commit Workflow
 
 Always commit all changed and new files at the end of a task — this overrides the default behavior of only committing when explicitly asked. Stage everything (`git add -A`) and commit with a message describing the change, following the existing commit style (see `git log`), unless the user explicitly says not to commit or asks for only specific files to be committed. Still show the user what changed; committing automatically doesn't replace surfacing a summary of the work.
