@@ -17,6 +17,7 @@ public partial class RecordIncome : ComponentBase
     [Inject] private IAccountService AccountService { get; set; } = null!;
     [Inject] private ISettingsService SettingsService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private IExternalOrganisationService OrganisationService { get; set; } = null!;
     [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
@@ -25,6 +26,7 @@ public partial class RecordIncome : ComponentBase
     private readonly Dictionary<string, string> _errors = new();
     private IReadOnlyList<Account> _accounts = [];
     private IReadOnlyList<Account> _bankAccounts = [];
+    private IReadOnlyList<ExternalOrganisation> _organisations = [];
     private bool _loading = true;
     private bool _saving;
     private bool _isTaxApplicable;
@@ -65,6 +67,7 @@ public partial class RecordIncome : ComponentBase
 
             _bankAccounts = await AccountService.GetBankAccountsAsync();
             _form.DepositAccountId = SystemAccounts.CashId;
+            _organisations = await OrganisationService.GetActiveAsync();
 
             var settings = await SettingsService.GetAsync();
             _isTaxApplicable = settings?.IsTaxApplicable ?? false;
@@ -109,7 +112,8 @@ public partial class RecordIncome : ComponentBase
                 AccountId = _form.AccountId,
                 DepositAccountId = _form.DepositAccountId == Guid.Empty ? null : _form.DepositAccountId,
                 TaxCode = _isTaxApplicable ? _form.TaxCode : null,
-                Description = string.IsNullOrWhiteSpace(_form.Description) ? null : _form.Description.Trim()
+                Description = string.IsNullOrWhiteSpace(_form.Description) ? null : _form.Description.Trim(),
+                ExternalOrganisationId = _form.ExternalOrganisationId
             };
 
             await IncomeEntryService.RecordIncomeAsync(request);
@@ -136,6 +140,7 @@ public partial class RecordIncome : ComponentBase
         _errorMessage = null;
         _form.Amount = 0m;
         _form.TaxCode = null;
+        _form.ExternalOrganisationId = null;
         _form.Description = null;
         _form.Date = DateTime.Today;
     }

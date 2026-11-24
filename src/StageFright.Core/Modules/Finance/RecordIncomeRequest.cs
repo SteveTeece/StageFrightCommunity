@@ -33,4 +33,10 @@ public class RecordIncomeRequest
 
     /// <summary>Optional description for the GL transaction.</summary>
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Optional id of the active external organisation the income came from (spec 032 FR-010).
+    /// Stamped on the journal entry only; it never changes the amounts, accounts or tax posted.
+    /// </summary>
+    public Guid? ExternalOrganisationId { get; set; }
 }

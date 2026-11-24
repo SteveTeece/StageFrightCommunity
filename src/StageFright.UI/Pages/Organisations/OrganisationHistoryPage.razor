@@ -1,0 +1,63 @@
+@page "/organisations/{Id:guid}/history"
+@using StageFright.Core.Modules.Organisations
+
+<PageTitle>@L["Organisations_History_PageTitle"]</PageTitle>
+
+@if (_loading)
+{
+    <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
+}
+else if (!string.IsNullOrEmpty(_error))
+{
+    <div id="organisationHistoryError" class="alert alert-danger py-1 mb-2 small" role="alert">@_error</div>
+}
+else if (_organisation is null)
+{
+    <div class="alert alert-warning py-1 mb-2 small">@L["Organisations_Detail_NotFound"]</div>
+}
+else
+{
+    <div class="page-header d-flex align-items-center gap-2 mb-2">
+        <h1 class="h3 mb-0">@_organisation.Name</h1>
+        @if (_organisation.IsDeleted)
+        {
+            <span class="badge text-bg-secondary">@L["Organisations_Detail_ArchivedBadge"]</span>
+        }
+    </div>
+
+    <OrganisationTabs Id="Id" Active="@OrganisationTabs.HistoryTab" />
+
+    <h2 class="h5 mb-2">@L["Organisations_History_Heading"]</h2>
+
+    @if (_history is not null)
+    {
+        <dl class="row mb-2">
+            <dt class="col-sm-3">@L["Organisations_History_TotalPaid"]</dt>
+            <dd id="totalPaid" class="col-sm-9">@MoneyFormatter.Format(_history.TotalPaid)</dd>
+            <dt class="col-sm-3">@L["Organisations_History_TotalReceived"]</dt>
+            <dd id="totalReceived" class="col-sm-9">@MoneyFormatter.Format(_history.TotalReceived)</dd>
+        </dl>
+
+        @if (_history.Entries.Count == 0)
+        {
+            <p class="text-muted">@L["Organisations_History_Empty"]</p>
+        }
+        else
+        {
+            <RadzenDataGrid Data="@_history.Entries" TItem="OrganisationHistoryEntry"
+                            AllowSorting="true" AllowPaging="true" PageSize="15" class="rz-shadow-0">
+                <Columns>
+                    <RadzenDataGridColumn TItem="OrganisationHistoryEntry" Property="Date" Title="@L["Organisations_History_ColDate"]" Width="130px">
+                        <Template Context="entry">@entry.Date.ToString("d MMM yyyy")</Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="OrganisationHistoryEntry" Property="Description" Title="@L["Organisations_History_ColDescription"]" />
+                    <RadzenDataGridColumn TItem="OrganisationHistoryEntry" Property="AccountName" Title="@L["Organisations_History_ColAccount"]" />
+                    <RadzenDataGridColumn TItem="OrganisationHistoryEntry" Property="Amount" Title="@L["Organisations_History_ColAmount"]"
+                                          TextAlign="TextAlign.Right" Width="140px">
+                        <Template Context="entry">@MoneyFormatter.Format(entry.Amount)</Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+        }
+    }
+}

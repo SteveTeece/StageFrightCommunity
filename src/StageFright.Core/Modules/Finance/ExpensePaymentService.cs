@@ -20,6 +20,7 @@ public class ExpensePaymentService : IExpensePaymentService
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILocalizer _localizer;
+    private readonly IExternalOrganisationRepository _organisationRepo;
 
     public ExpensePaymentService(
         IAccountRepository accountRepo,
@@ -28,7 +29,8 @@ public class ExpensePaymentService : IExpensePaymentService
         ISettingsRepository settingsRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork,
-        ILocalizer localizer)
+        ILocalizer localizer,
+        IExternalOrganisationRepository organisationRepo)
     {
         _accountRepo = accountRepo;
         _glRepo = glRepo;
@@ -37,6 +39,7 @@ public class ExpensePaymentService : IExpensePaymentService
         _audit = audit;
         _unitOfWork = unitOfWork;
         _localizer = localizer;
+        _organisationRepo = organisationRepo;
     }
 
     public async Task<IReadOnlyList<Account>> GetExpenseAccountsAsync(CancellationToken ct = default)
@@ -79,6 +82,18 @@ public class ExpensePaymentService : IExpensePaymentService
                 _localizer.Get<ValidationResource>("Validation_Expense_SystemAccountNotAllowed"),
                 nameof(Account), nameof(RecordExpenseAsync));
 
+        // Spec 032 research §6: the organisation link is checked before the transaction opens.
+        if (request.ExternalOrganisationId is { } organisationId)
+        {
+            var organisation = await _organisationRepo.GetByIdIncludingArchivedAsync(organisationId, ct)
+                ?? throw new EntityNotFoundException(nameof(ExternalOrganisation), organisationId, nameof(RecordExpenseAsync));
+
+            if (organisation.IsDeleted)
+                throw new ValidationException(
+                    _localizer.Get<ValidationResource>("Validation_Organisation_ArchivedNotSelectable"),
+                    nameof(ExternalOrganisation), nameof(RecordExpenseAsync));
+        }
+
         var settings = await _settingsRepo.GetAsync(ct);
         var isTaxApplicable = settings?.IsTaxApplicable ?? false;
         var taxCode = isTaxApplicable ? (request.TaxCode ?? TaxCode.TaxExempt) : (TaxCode?)null;
@@ -98,7 +113,8 @@ public class ExpensePaymentService : IExpensePaymentService
                 Type = JournalEntryType.ExpensePayment,
                 Date = request.Date,
                 Description = description,
-                CreatedAt = now
+                CreatedAt = now,
+                ExternalOrganisationId = request.ExternalOrganisationId
             }, innerCt);
 
             // Taxable while tax applies: DR Expense net / DR Tax Receivable (2320, recoverable

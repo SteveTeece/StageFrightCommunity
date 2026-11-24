@@ -20,4 +20,11 @@ public interface IJournalEntryRepository
     /// posting opening balances a second time.
     /// </summary>
     Task<bool> AnyOfTypeAsync(JournalEntryType type, CancellationToken ct = default);
+
+    /// <summary>
+    /// Entries linked to the external organisation, with Transactions and each line's Account
+    /// loaded, ordered by Date then CreatedAt descending. Never filtered by the organisation's
+    /// archived state (spec 032 FR-011).
+    /// </summary>
+    Task<IReadOnlyList<JournalEntry>> GetByExternalOrganisationAsync(Guid externalOrganisationId, CancellationToken ct = default);
 }

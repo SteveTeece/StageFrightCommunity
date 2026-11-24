@@ -174,7 +174,7 @@ public sealed class V14_ExpensesTransfersTests : IAsyncLifetime
 
     private ExpensePaymentService BuildExpenseService() =>
         new(new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new JournalEntryRepository(_db),
-            new SettingsRepository(_db), BuildAuditService(), new UnitOfWork(_db), RealLocalizer.Instance);
+            new SettingsRepository(_db), BuildAuditService(), new UnitOfWork(_db), RealLocalizer.Instance, new ExternalOrganisationRepository(_db));
 
     private BankDepositService BuildBankDepositService() =>
         new(new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new JournalEntryRepository(_db),

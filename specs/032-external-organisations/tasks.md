@@ -145,47 +145,47 @@ Files: src/StageFright.Core/Modules/Finance/RecordExpenseRequest.cs, src/StageFr
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T044** [P] [US3] Expense service tests. FR-010: the link is stamped on the journal entry. SC-004: lines are identical with and without an organisation, for both taxable and exempt entries. An archived organisation raises `ValidationException`. An unknown ID raises `EntityNotFoundException` · tests/StageFright.Core.Tests/Modules/Finance/ExpensePaymentServiceTests.cs
-- [ ] **T045** [P] [US3] Income service tests, the same four cases as T044 for `RecordIncomeAsync` · tests/StageFright.Core.Tests/Modules/Finance/IncomeEntryServiceTests.cs
-- [ ] **T046** [P] [US3] Repository tests: `GetByExternalOrganisationAsync` returns only that organisation's entries, with lines and accounts loaded, newest first, including when the organisation is archived · tests/StageFright.Data.Tests/Repositories/JournalEntryRepositoryTests.cs
-- [ ] **T047** [P] [US3] History service tests. FR-011: entries are newest first, with total paid and total received. FR-012: a taxable three-line expense counts its gross once, not every line. An organisation with no entries gets zero totals · tests/StageFright.Core.Tests/Modules/Organisations/OrganisationHistoryServiceTests.cs
-- [ ] **T048** [P] [US3] bUnit history tab tests. FR-011: the grid shows date, description, account and amount, plus "Total paid"/"Total received". FR-013: amounts follow `MoneyFormatter` configured to a non-AUD currency. Archived organisation: the history still renders · tests/StageFright.UI.Tests/Pages/Organisations/OrganisationHistoryPageTests.cs
-- [ ] **T049** [P] [US3] bUnit expense page tests. FR-010: the picker lists only active organisations. Choosing one fills an empty payee. A typed payee is not overwritten. The filled payee stays editable and stays put when the choice is cleared. The chosen ID reaches the request · tests/StageFright.UI.Tests/Pages/Finance/ExpensePaymentPageTests.cs
-- [ ] **T050** [P] [US3] bUnit income page tests. FR-010: the picker lists only active organisations and the chosen ID reaches the request. No choice sends null · tests/StageFright.UI.Tests/Pages/Finance/RecordIncomeTests.cs
-- [ ] **T051** [P] [US3] Integration journey. SC-003: record a $500 expense to "Town Hall" and a $200 income entry from it, then the history totals are exactly $500 paid and $200 received. An unlinked expense appears in no history · tests/StageFright.Integration.Tests/Scenarios/OrganisationFinancialHistoryJourneyTests.cs
+- [x] **T044** [P] [US3] Expense service tests. FR-010: the link is stamped on the journal entry. SC-004: lines are identical with and without an organisation, for both taxable and exempt entries. An archived organisation raises `ValidationException`. An unknown ID raises `EntityNotFoundException` · tests/StageFright.Core.Tests/Modules/Finance/ExpensePaymentServiceTests.cs
+- [x] **T045** [P] [US3] Income service tests, the same four cases as T044 for `RecordIncomeAsync` · tests/StageFright.Core.Tests/Modules/Finance/IncomeEntryServiceTests.cs
+- [x] **T046** [P] [US3] Repository tests: `GetByExternalOrganisationAsync` returns only that organisation's entries, with lines and accounts loaded, newest first, including when the organisation is archived · tests/StageFright.Data.Tests/Repositories/JournalEntryRepositoryTests.cs
+- [x] **T047** [P] [US3] History service tests. FR-011: entries are newest first, with total paid and total received. FR-012: a taxable three-line expense counts its gross once, not every line. An organisation with no entries gets zero totals · tests/StageFright.Core.Tests/Modules/Organisations/OrganisationHistoryServiceTests.cs
+- [x] **T048** [P] [US3] bUnit history tab tests. FR-011: the grid shows date, description, account and amount, plus "Total paid"/"Total received". FR-013: amounts follow `MoneyFormatter` configured to a non-AUD currency. Archived organisation: the history still renders · tests/StageFright.UI.Tests/Pages/Organisations/OrganisationHistoryPageTests.cs
+- [x] **T049** [P] [US3] bUnit expense page tests. FR-010: the picker lists only active organisations. Choosing one fills an empty payee. A typed payee is not overwritten. The filled payee stays editable and stays put when the choice is cleared. The chosen ID reaches the request · tests/StageFright.UI.Tests/Pages/Finance/ExpensePaymentPageTests.cs
+- [x] **T050** [P] [US3] bUnit income page tests. FR-010: the picker lists only active organisations and the chosen ID reaches the request. No choice sends null · tests/StageFright.UI.Tests/Pages/Finance/RecordIncomeTests.cs
+- [x] **T051** [P] [US3] Integration journey. SC-003: record a $500 expense to "Town Hall" and a $200 income entry from it, then the history totals are exactly $500 paid and $200 received. An unlinked expense appears in no history · tests/StageFright.Integration.Tests/Scenarios/OrganisationFinancialHistoryJourneyTests.cs
 
 ### Implementation
 
 **Wave 1 — independent (different files):**
 
-- [ ] **T052** [P] [US3] Add an optional `ExternalOrganisationId` to `RecordExpenseRequest` · src/StageFright.Core/Modules/Finance/RecordExpenseRequest.cs
-- [ ] **T053** [P] [US3] Add an optional `ExternalOrganisationId` to `RecordIncomeRequest` · src/StageFright.Core/Modules/Finance/RecordIncomeRequest.cs
-- [ ] **T054** [P] [US3] Declare `GetByExternalOrganisationAsync` · src/StageFright.Core/Contracts/IJournalEntryRepository.cs
-- [ ] **T055** [P] [US3] Create `OrganisationHistoryEntry` per data-model §4 · src/StageFright.Core/Modules/Organisations/OrganisationHistoryEntry.cs
-- [ ] **T056** [P] [US3] Create `OrganisationHistory` (entries plus totals) per data-model §4 · src/StageFright.Core/Modules/Organisations/OrganisationHistory.cs
-- [ ] **T057** [P] [US3] Add `ExternalOrganisationId` to the expense form model · src/StageFright.UI/Pages/Finance/ExpensePaymentModel.cs
-- [ ] **T058** [P] [US3] Add `ExternalOrganisationId` to the income form model · src/StageFright.UI/Pages/Finance/RecordIncomeModel.cs
+- [x] **T052** [P] [US3] Add an optional `ExternalOrganisationId` to `RecordExpenseRequest` · src/StageFright.Core/Modules/Finance/RecordExpenseRequest.cs
+- [x] **T053** [P] [US3] Add an optional `ExternalOrganisationId` to `RecordIncomeRequest` · src/StageFright.Core/Modules/Finance/RecordIncomeRequest.cs
+- [x] **T054** [P] [US3] Declare `GetByExternalOrganisationAsync` · src/StageFright.Core/Contracts/IJournalEntryRepository.cs
+- [x] **T055** [P] [US3] Create `OrganisationHistoryEntry` per data-model §4 · src/StageFright.Core/Modules/Organisations/OrganisationHistoryEntry.cs
+- [x] **T056** [P] [US3] Create `OrganisationHistory` (entries plus totals) per data-model §4 · src/StageFright.Core/Modules/Organisations/OrganisationHistory.cs
+- [x] **T057** [P] [US3] Add `ExternalOrganisationId` to the expense form model · src/StageFright.UI/Pages/Finance/ExpensePaymentModel.cs
+- [x] **T058** [P] [US3] Add `ExternalOrganisationId` to the income form model · src/StageFright.UI/Pages/Finance/RecordIncomeModel.cs
 
 **⟶ Wait for Wave 1 to finish, then:**
 
 **Wave 2 — independent (different files):**
 
-- [ ] **T059** [P] [US3] `ExpensePaymentService`: validate the organisation before the transaction (research §6), then set `JournalEntry.ExternalOrganisationId`, with no other posting change · src/StageFright.Core/Modules/Finance/ExpensePaymentService.cs
-- [ ] **T060** [P] [US3] `IncomeEntryService`: the same as T059 · src/StageFright.Core/Modules/Finance/IncomeEntryService.cs
-- [ ] **T061** [P] [US3] Implement `GetByExternalOrganisationAsync`, with lines and their accounts included and ordered by date descending · src/StageFright.Data/Repositories/JournalEntryRepository.cs
-- [ ] **T062** [P] [US3] Create `IOrganisationHistoryService` with `GetHistoryAsync(Guid organisationId, CancellationToken ct = default)` · src/StageFright.Core/Contracts/IOrganisationHistoryService.cs
+- [x] **T059** [P] [US3] `ExpensePaymentService`: validate the organisation before the transaction (research §6), then set `JournalEntry.ExternalOrganisationId`, with no other posting change · src/StageFright.Core/Modules/Finance/ExpensePaymentService.cs
+- [x] **T060** [P] [US3] `IncomeEntryService`: the same as T059 · src/StageFright.Core/Modules/Finance/IncomeEntryService.cs
+- [x] **T061** [P] [US3] Implement `GetByExternalOrganisationAsync`, with lines and their accounts included and ordered by date descending · src/StageFright.Data/Repositories/JournalEntryRepository.cs
+- [x] **T062** [P] [US3] Create `IOrganisationHistoryService` with `GetHistoryAsync(Guid organisationId, CancellationToken ct = default)` · src/StageFright.Core/Contracts/IOrganisationHistoryService.cs
 
 **⟶ Wait for Wave 2 to finish, then:**
 
 **Wave 3 — independent (different files):**
 
-- [ ] **T063** [P] [US3] Implement `OrganisationHistoryService`. Each entry's amount is the sum of its `DebitAmount` (research §2) and its direction comes from `JournalEntryType`. Its account is the entry's non-bank, non-system line · src/StageFright.Core/Modules/Organisations/OrganisationHistoryService.cs
-- [ ] **T064** [P] [US3] Add the organisation `InputSelect` (active only) to the expense page, filling the payee only while it is blank (FR-010) · src/StageFright.UI/Pages/Finance/ExpensePaymentPage.razor, src/StageFright.UI/Pages/Finance/ExpensePaymentPage.razor.cs
-- [ ] **T065** [P] [US3] Add the organisation `InputSelect` (active only) to the income page · src/StageFright.UI/Pages/Finance/RecordIncome.razor, src/StageFright.UI/Pages/Finance/RecordIncome.razor.cs
+- [x] **T063** [P] [US3] Implement `OrganisationHistoryService`. Each entry's amount is the sum of its `DebitAmount` (research §2) and its direction comes from `JournalEntryType`. Its account is the entry's non-bank, non-system line · src/StageFright.Core/Modules/Organisations/OrganisationHistoryService.cs
+- [x] **T064** [P] [US3] Add the organisation `InputSelect` (active only) to the expense page, filling the payee only while it is blank (FR-010) · src/StageFright.UI/Pages/Finance/ExpensePaymentPage.razor, src/StageFright.UI/Pages/Finance/ExpensePaymentPage.razor.cs
+- [x] **T065** [P] [US3] Add the organisation `InputSelect` (active only) to the income page · src/StageFright.UI/Pages/Finance/RecordIncome.razor, src/StageFright.UI/Pages/Finance/RecordIncome.razor.cs
 
 **⟶ Wait for T063, then:**
 
-- [ ] **T066** [US3] `OrganisationHistoryPage` at `/organisations/{Id:guid}/history`: `OrganisationTabs` (History active), a `RadzenDataGrid` with a `MoneyFormatter.Format` amount template, and the two totals · src/StageFright.UI/Pages/Organisations/OrganisationHistoryPage.razor, src/StageFright.UI/Pages/Organisations/OrganisationHistoryPage.razor.cs
+- [x] **T066** [US3] `OrganisationHistoryPage` at `/organisations/{Id:guid}/history`: `OrganisationTabs` (History active), a `RadzenDataGrid` with a `MoneyFormatter.Format` amount template, and the two totals · src/StageFright.UI/Pages/Organisations/OrganisationHistoryPage.razor, src/StageFright.UI/Pages/Organisations/OrganisationHistoryPage.razor.cs
 
 **Checkpoint**: US3 works and passes T044–T051 on its own.
 
@@ -238,7 +238,7 @@ Files: src/StageFright.Core/Modules/Organisations/OrganisationsMenuItemProvider.
 
 - [ ] **T080** [P] Create `OrganisationsMenuItemProvider` with `DisplayOrder => 2` · src/StageFright.Core/Modules/Organisations/OrganisationsMenuItemProvider.cs
 - [ ] **T081** [P] Shift `DisplayOrder` up by one: Rehearsals to 3, Events to 4, Finance to 5, Reports to 6 · src/StageFright.Core/Modules/Rehearsals/RehearsalMenuItemProvider.cs, src/StageFright.Core/Modules/Events/EventsMenuItemProvider.cs, src/StageFright.Core/Modules/Finance/FinanceMenuItemProvider.cs, src/StageFright.UI/Modules/Reports/ReportMenuItemProvider.cs
-- [ ] **T082** [P] Register both repositories, the validation, organisation, contact and history services, and the menu provider per contract §8 · src/StageFright.App/MauiProgram.cs
+- [ ] **T082** [P] Register both repositories, the validation, organisation, contact and history services, and the menu provider per contract §8. Partly landed with US3: every repository and service registration is already in place, because the finance services and the DEBUG seeder need them. Only the menu provider remains · src/StageFright.App/MauiProgram.cs
 - [ ] **T083** [P] Update docs. CLAUDE.md: add `Organisations` to the modules list, raise the entity count from 20 to 22 and name the two new entities, add the soft-delete note, and count the new resource area. Constitution §4.1: the current-modules list. The adding-a-language guide: its area list · CLAUDE.md, .specify/memory/constitution.md, docs/localization/adding-a-language.md
 
 **⟶ Wait for Wave 1 to finish, then:**

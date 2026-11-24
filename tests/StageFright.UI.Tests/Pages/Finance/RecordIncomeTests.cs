@@ -26,13 +26,21 @@ public class RecordIncomeTests : LocalizedTestContext
     private readonly IIncomeEntryService _incomeService = Substitute.For<IIncomeEntryService>();
     private readonly IAccountService _accountService = Substitute.For<IAccountService>();
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
+    private readonly IExternalOrganisationService _organisationService = Substitute.For<IExternalOrganisationService>();
     private static readonly Guid AccountId = Guid.NewGuid();
+    private static readonly Guid TownHallId = Guid.NewGuid();
 
     public RecordIncomeTests()
     {
         Services.AddSingleton(_incomeService);
         Services.AddSingleton(_accountService);
         Services.AddSingleton(_settingsService);
+        Services.AddSingleton(_organisationService);
+
+        _organisationService.GetActiveAsync(Arg.Any<CancellationToken>()).Returns(new List<ExternalOrganisation>
+        {
+            new() { Id = TownHallId, Name = "Town Hall", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+        });
 
         _settingsService.GetAsync(Arg.Any<CancellationToken>())
             .Returns(new AppSettings
@@ -211,6 +219,47 @@ public class RecordIncomeTests : LocalizedTestContext
             new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
 
         Assert.Contains("Record Another", cut.Markup, StringComparison.OrdinalIgnoreCase);
+    }
+
+    // --- External organisation picker (spec 032 US3, FR-010) ---
+
+    [Fact]
+    public void Should_ListOnlyActiveOrganisationsAfterNoneOption_When_PageLoads()
+    {
+        var cut = Render<RecordIncome>();
+
+        var options = cut.FindAll("#incomeOrganisation option");
+        Assert.Equal(2, options.Count);
+        Assert.Equal(string.Empty, options[0].GetAttribute("value"));
+        Assert.Equal("Town Hall", options[1].TextContent.Trim());
+        _organisationService.DidNotReceiveWithAnyArgs().GetArchivedAsync(Xunit.TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task Should_SendChosenOrganisationId_When_Submitted()
+    {
+        var cut = Render<RecordIncome>();
+
+        cut.Find("#incomeOrganisation").Change(TownHallId.ToString());
+        await cut.Find("#amount").ChangeAsync(new Microsoft.AspNetCore.Components.ChangeEventArgs { Value = "200" });
+        await cut.Find("button.btn-primary").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        await _incomeService.Received(1).RecordIncomeAsync(
+            Arg.Is<RecordIncomeRequest>(r => r!.ExternalOrganisationId == TownHallId),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_SendNullOrganisation_When_NoneChosen()
+    {
+        var cut = Render<RecordIncome>();
+
+        await cut.Find("#amount").ChangeAsync(new Microsoft.AspNetCore.Components.ChangeEventArgs { Value = "200" });
+        await cut.Find("button.btn-primary").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        await _incomeService.Received(1).RecordIncomeAsync(
+            Arg.Is<RecordIncomeRequest>(r => r!.ExternalOrganisationId == null),
+            Arg.Any<CancellationToken>());
     }
 
     // --- Helpers ---

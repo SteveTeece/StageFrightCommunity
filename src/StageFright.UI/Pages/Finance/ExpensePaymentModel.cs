@@ -11,4 +11,5 @@ internal sealed class ExpensePaymentModel
     public TaxCode? TaxCode { get; set; }
     public string? Payee { get; set; }
     public string? Description { get; set; }
+    public Guid? ExternalOrganisationId { get; set; }
 }

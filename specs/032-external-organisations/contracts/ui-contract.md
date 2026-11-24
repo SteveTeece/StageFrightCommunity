@@ -131,6 +131,7 @@ The page loads the organisation through `IExternalOrganisationService.GetByIdAsy
 | History grid | `RadzenDataGrid<OrganisationHistoryEntry>`, Members-grid attributes, `PageSize="15"`. Columns: Date, Description, Account, Amount, with Amount in a `<Template>` calling `MoneyFormatter.Format(...)` (FR-013). Rows arrive newest first. Empty state: `L["Organisations_History_Empty"]`. |
 | `#totalPaid` | Label `L["Organisations_History_TotalPaid"]` ("Total paid"), value `MoneyFormatter.Format(history.TotalPaid)`. |
 | `#totalReceived` | Label `L["Organisations_History_TotalReceived"]` ("Total received"), value `MoneyFormatter.Format(history.TotalReceived)`. |
+| `#organisationHistoryError` | `alert alert-danger` showing `L["Organisations_Error_Unexpected"]` when loading the organisation or its history fails. The totals and grid are not shown. |
 
 ## 4. Core types and services
 
@@ -388,6 +389,8 @@ All keys are added to the neutral `.resx` (en-AU) and translated into `de-DE`, `
 ## 8. DI registration (`MauiProgram`)
 
 `IExternalOrganisationRepository` → `ExternalOrganisationRepository`, `IExternalOrganisationContactRepository` → `ExternalOrganisationContactRepository`, `IExternalOrganisationService` → `ExternalOrganisationService`, `IExternalOrganisationContactService` → `ExternalOrganisationContactService`, `IOrganisationHistoryService` → `OrganisationHistoryService`, and `ExternalOrganisationValidationService` (concrete, the same lifetime as `MemberValidationService`) are all scoped. `IMenuItemProvider` → `OrganisationsMenuItemProvider`.
+
+All of these except the menu provider were registered with US3: once `ExpensePaymentService` and `IncomeEntryService` take `IExternalOrganisationRepository`, and the finance pages inject `IExternalOrganisationService`, the existing finance screens and the DEBUG seeder cannot resolve without them. The menu provider still lands last (T080/T082), so the Organisations screens stay unreachable from the nav until then.
 
 ## 9. Additions to plan.md
 

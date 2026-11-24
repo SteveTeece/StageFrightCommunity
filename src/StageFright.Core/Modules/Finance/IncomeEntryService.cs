@@ -22,6 +22,7 @@ public class IncomeEntryService : IIncomeEntryService
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILocalizer _localizer;
+    private readonly IExternalOrganisationRepository _organisationRepo;
 
     public IncomeEntryService(
         IAccountRepository accountRepo,
@@ -30,7 +31,8 @@ public class IncomeEntryService : IIncomeEntryService
         ISettingsRepository settingsRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork,
-        ILocalizer localizer)
+        ILocalizer localizer,
+        IExternalOrganisationRepository organisationRepo)
     {
         _accountRepo = accountRepo;
         _glRepo = glRepo;
@@ -39,6 +41,7 @@ public class IncomeEntryService : IIncomeEntryService
         _audit = audit;
         _unitOfWork = unitOfWork;
         _localizer = localizer;
+        _organisationRepo = organisationRepo;
     }
 
     public async Task<IReadOnlyList<Account>> GetIncomeAccountsAsync(CancellationToken ct = default)
@@ -83,6 +86,18 @@ public class IncomeEntryService : IIncomeEntryService
                 _localizer.Get<ValidationResource>("Validation_Income_DepositAccountMustBeBank"),
                 nameof(Account), nameof(RecordIncomeAsync));
 
+        // Spec 032 research §6: the organisation link is checked before the transaction opens.
+        if (request.ExternalOrganisationId is { } organisationId)
+        {
+            var organisation = await _organisationRepo.GetByIdIncludingArchivedAsync(organisationId, ct)
+                ?? throw new EntityNotFoundException(nameof(ExternalOrganisation), organisationId, nameof(RecordIncomeAsync));
+
+            if (organisation.IsDeleted)
+                throw new ValidationException(
+                    _localizer.Get<ValidationResource>("Validation_Organisation_ArchivedNotSelectable"),
+                    nameof(ExternalOrganisation), nameof(RecordIncomeAsync));
+        }
+
         var settings = await _settingsRepo.GetAsync(ct);
         var isTaxApplicable = settings?.IsTaxApplicable ?? false;
         var taxCode = isTaxApplicable ? (request.TaxCode ?? TaxCode.TaxExempt) : (TaxCode?)null;
@@ -100,7 +115,8 @@ public class IncomeEntryService : IIncomeEntryService
                 Type = JournalEntryType.Income,
                 Date = request.Date,
                 Description = description,
-                CreatedAt = now
+                CreatedAt = now,
+                ExternalOrganisationId = request.ExternalOrganisationId
             }, innerCt);
 
             // Taxable while tax applies: DR Bank gross / CR Income net / CR Tax Collected.

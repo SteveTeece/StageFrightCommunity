@@ -131,7 +131,7 @@ On `ExpensePaymentModel`, choosing an organisation sets `Payee` to the organisat
 | `Date` | `DateTime` | `JournalEntry.Date` |
 | `Description` | `string?` | `JournalEntry.Description` |
 | `AccountName` | `string` | The account of the entry's non-bank line: the expense account for `ExpensePayment`, the income account for `Income`. A tax line is never chosen. |
-| `Direction` | `Paid` or `Received` | `ExpensePayment` → `Paid`, `Income` → `Received` |
+| `Type` | `JournalEntryType` | `JournalEntry.Type`: `ExpensePayment` is money paid to the organisation, `Income` is money received from it |
 | `Amount` | `decimal` | Σ `DebitAmount` over the entry's `Transactions` (research §2) |
 
 ### `OrganisationHistory`
@@ -139,8 +139,8 @@ On `ExpensePaymentModel`, choosing an organisation sets `Payee` to the organisat
 | Field | Type | Rule |
 |---|---|---|
 | `Entries` | `IReadOnlyList<OrganisationHistoryEntry>` | Newest first: `Date` descending, then `CreatedAt` descending |
-| `TotalPaid` | `decimal` | Σ `Amount` where `Direction = Paid` |
-| `TotalReceived` | `decimal` | Σ `Amount` where `Direction = Received` |
+| `TotalPaid` | `decimal` | Σ `Amount` where `Type = ExpensePayment` |
+| `TotalReceived` | `decimal` | Σ `Amount` where `Type = Income` |
 
 **Why Σ debits is correct (FR-012, SC-003).** Every entry balances. An expense debits the expense account (net) and tax receivable `2320` (tax), and credits the bank with the gross. An income entry debits the deposit account with the gross, and credits income (net) and tax collected `2310` (tax). Either way the debit total equals the money that crossed the bank account, counted once. Summing debits and credits together would double-count.
 

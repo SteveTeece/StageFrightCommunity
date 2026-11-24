@@ -433,6 +433,190 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-24T00:24:48.328Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.071Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.071Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.071Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.071Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.071Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.071Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T050",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T053",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T054",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T055",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T056",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T057",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T058",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T059",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T060",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T061",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T062",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T063",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T064",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T065",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.072Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T066",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-24T01:14:02.073Z"
     }
   ],
   "telemetryInstanceId": "400d696d-69ec-4378-8ed1-dfd9f6289af3",
@@ -879,7 +1063,7 @@
     }
   },
   "approach": "New Organisations module with ExternalOrganisation and soft-deletable contacts, a nullable FK on JournalEntry stamped by the expense and income services, and history computed from linked journal entries. Backup schema goes to 1.3.0, with organisations restored before journal entries. A new localized OrganisationsResource area and a top-level menu entry after Members.",
-  "currentTask": "T044",
+  "currentTask": "T067",
   "task_summaries": {
     "T001": {
       "status": "DONE",
