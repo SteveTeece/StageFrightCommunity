@@ -38,7 +38,7 @@ public partial class ChartOfAccountsGrid : ComponentBase
 
     private void OnRender(DataGridRenderEventArgs<ChartOfAccountsGridRow> args)
     {
-        if (!args.FirstRender)
+        if (!args.FirstRender || args.Grid is null)
             return;
 
         // Radzen annotates Grid as nullable but always passes the rendering grid to its own Render event.

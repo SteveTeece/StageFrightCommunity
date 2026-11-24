@@ -1,0 +1,1 @@
+{"at":"2026-11-19T19:43:05.068Z","tool":"write-context","op":"task-append","ok":false,"reason":"Could not resolve the active feature directory (checked --feature-dir, SPECIFY_FEATURE_DIRECTORY, SPECIFY_FEATURE, .specify/feature.json, git branch prefix). Skipping context write.","spec":null,"files":[],"bytes":0,"in_bytes":326,"ms":138}

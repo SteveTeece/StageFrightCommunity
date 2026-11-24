@@ -171,7 +171,7 @@ launch (no startup err, │  App.razor.cs                               │
          valid ──▶ show summary (per-type counts, created date, originating version) + Confirm / Cancel
             Cancel ──▶ back to checkbox state, nothing changed  ──Continue──▶ /setup
             Confirm ──▶ ImportAsync
-                        recovery copy written to IRecoveryCopyStore dir (copy of seeded default DB)
+                        no recovery copy (setup incomplete — DB holds only seeded defaults; FR-015)
                         atomic PK-upsert transaction
                         audit entry (AuditAction.Import) in the restored DB
                success ──▶ /restart-required   (terminal; only "Close and reopen")
@@ -192,7 +192,7 @@ Next launch after a successful restore: `Settings` row exists → `IsSetupComple
 | File `SchemaVersion` newer than app (incl. newer same-major) → reject (FR-019) | `BackupSchema.IsRestorable` |
 | Completeness: a *required* legacy collection key missing → reject (FR-004) | `BackupService.ValidateCompleteness` |
 | Restore is all-or-nothing; partial failure leaves pre-restore state (FR-005) | `IUnitOfWork.ExecuteInTransactionAsync` (existing) |
-| Pre-restore recovery copy written first, every restore (FR-015) | `BackupService.ImportAsync` + `IRecoveryCopyStore` |
+| Pre-restore recovery copy written first on every restore over a configured database; skipped while first-run setup is incomplete (FR-015) | `BackupService.ImportAsync` + `IRecoveryCopyStore` |
 | Post-write read-back + count match against source & file self-counts (FR-021–024) | `BackupService` create path → `BackupVerificationResult` / `BackupVerificationException` |
 | Default filename = `<sanitised org> backup <yyyy-MM-dd>.sfbak`, valid chars only, fixed fallback when org name blank (FR-010) | `BackupFileNameBuilder.Build` (pure, unit-tested) |
 | Backup file unencrypted, no password prompt; user shown a notice (FR-020) | `BackupRestoreTab` UI + localisation key |

@@ -7,7 +7,7 @@ namespace StageFright.Core.Contracts;
 /// it serialises a full snapshot, hands it to the native "Save As" dialog, reads the written file
 /// back from disk and verifies its record counts before reporting success. The lower-level
 /// <see cref="ExportAsync"/> writes to an explicit path (used internally for the pre-restore
-/// recovery copy). Import validates, retains a pre-restore recovery copy of the current database,
+/// recovery copy). Import validates, retains a pre-restore recovery copy of the current database (unless first-run setup was never completed),
 /// then atomically upserts every record from the backup file.
 /// </summary>
 public interface IBackupService
@@ -43,7 +43,7 @@ public interface IBackupService
     /// <summary>
     /// Imports a backup file. Steps: deserialize → full semantic-version check (a file newer than
     /// this build on any version component is rejected) → completeness check → pre-restore recovery
-    /// copy (auto-export of the current DB to a durable app-data location, written on every restore)
+    /// copy (auto-export of the current DB to a durable app-data location, skipped only while first-run setup is incomplete — no Settings record)
     /// → atomic PK-upsert → audit.
     /// Throws <see cref="Core.Exceptions.ImportException"/> on any validation failure.
     /// </summary>

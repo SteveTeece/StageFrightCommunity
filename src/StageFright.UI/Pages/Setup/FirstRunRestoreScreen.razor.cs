@@ -97,7 +97,8 @@ public partial class FirstRunRestoreScreen : ComponentBase
 
         try
         {
-            // ImportAsync writes the pre-restore recovery copy, runs the atomic PK-upsert and the
+            // ImportAsync skips the pre-restore recovery copy here (setup is incomplete, so the DB holds
+            // only seeded defaults — FR-015), then runs the atomic PK-upsert and the
             // audit entry. It exposes no progress callback, so the blocking overlay itself is the
             // "advancing progress" indicator (mirrors the setup-seeding overlay). Run it off the UI
             // thread so the render stays responsive (spec Edge Case "Large dataset").

@@ -22,8 +22,8 @@ public interface IBackupService
 
     /// Unchanged signature. Now also: rejects a file whose SchemaVersion is newer than
     /// BackupSchema.CurrentSchemaVersion on any component (incl. a newer same-major build);
-    /// writes the pre-restore recovery copy to IRecoveryCopyStore's directory for EVERY
-    /// restore (first-run included); upserts the three new entity types.
+    /// writes the pre-restore recovery copy to IRecoveryCopyStore's directory for every
+    /// restore over a configured database (skipped while first-run setup is incomplete); upserts the three new entity types.
     /// Throws ImportException on corrupt/incomplete/incompatible file (DB untouched).
     Task ImportAsync(string filePath, CancellationToken ct = default);
 

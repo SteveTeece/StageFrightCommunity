@@ -70,7 +70,7 @@ Routing changes:
 
 **Rationale**: The clarification explicitly widened rejection to "a newer build of the same major version … which may carry settings or record types this build does not recognise". The comparison is against a compiled constant, not `AppInfo.Current.Version`, so it is deterministic, host-independent (FR-013/FR-014), and unit-testable without a MAUI runtime.
 
-**Alternatives considered**: comparing marketing `ApplicationVersion` — rejected: that string is currently a hardcoded `"1.0.0"` placeholder and is a display value, not a compatibility axis. Keeping the major-only check — rejected: fails the clarified FR-019.
+**Alternatives considered**: comparing marketing `ApplicationVersion` — rejected: that string is a display value, not a compatibility axis (since the PR #389 review it is stamped from the build's informational version via `ApplicationVersionInfo`, e.g. `1.0.0+20472ad`, rather than the former hardcoded `"1.0.0"` placeholder). Keeping the major-only check — rejected: fails the clarified FR-019.
 
 ---
 
@@ -96,7 +96,7 @@ Routing changes:
 
 ## D7 — Pre-restore recovery copy location (FR-015)
 
-**Decision**: Add `IRecoveryCopyStore` (Core contract) returning a stable directory, implemented in `StageFright.App` as `FileSystem.AppDataDirectory/recovery`. `BackupService.ImportAsync` writes the pre-restore recovery copy there (filename `StageFright-Recovery-<yyyyMMdd-HHmmss>.sfbak`) via the existing `ExportAsync` path, for **every** restore including first-run (where it is a copy of the freshly-seeded default database) — one code path.
+**Decision**: Add `IRecoveryCopyStore` (Core contract) returning a stable directory, implemented in `StageFright.App` as `FileSystem.AppDataDirectory/recovery`. `BackupService.ImportAsync` writes the pre-restore recovery copy there (filename `StageFright-Recovery-<yyyyMMdd-HHmmss>.sfbak`) via the existing `ExportAsync` path, for every restore over a configured database. (Amended after the PR #389 review: skipped while first-run setup is incomplete — no `Settings` record — because that database holds only seeded defaults; originally written on every restore, first-run included.)
 
 **Rationale**: The current `GenerateCheckpointPath` writes next to the import file, and in practice the import file is always a temp copy (`Path.GetTempPath()`), so recovery copies land in a directory the OS may clean. FR-015 + the Edge Case "Restore interrupted … the pre-restore recovery copy must still be available" want it somewhere durable and findable. `BackupService` lives in `StageFright.Core` and cannot reference `FileSystem.AppDataDirectory` directly, so a thin injected seam (matching `ILanguagePreferenceStore`'s shape) is the minimal change; tests supply a temp-dir fake.
 
