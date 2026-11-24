@@ -879,7 +879,7 @@
     }
   },
   "approach": "New Organisations module with ExternalOrganisation and soft-deletable contacts, a nullable FK on JournalEntry stamped by the expense and income services, and history computed from linked journal entries. Backup schema goes to 1.3.0, with organisations restored before journal entries. A new localized OrganisationsResource area and a top-level menu entry after Members.",
-  "currentTask": "T043",
+  "currentTask": "T044",
   "task_summaries": {
     "T001": {
       "status": "DONE",
