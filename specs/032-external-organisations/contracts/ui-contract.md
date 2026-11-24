@@ -35,6 +35,8 @@ The spec's "detail screen" is these three tabs, joined by the shared `Organisati
 
 Other providers' `DisplayOrder` after this change: Dashboard `0`, Members `1` (unchanged), **Organisations `2`**, Rehearsals `3`, Events `4`, Finance `5`, Reports `6`, Settings `999` (unchanged).
 
+The nav icon comes from `ShellLayout.IconClass`, which maps the `organisations` route root to `icon-organisations` (a Bootstrap Icons "building" mask image in `StageFright.App/wwwroot/app.css`, beside the other module icons). Without that case the item would fall through to the generic `icon-plugin` used for external plugins.
+
 ## 3. Screen contracts (test-facing ids)
 
 Ids follow the existing camelCase convention (`#payee`, `#expenseDate`, `showInactiveSwitch`).

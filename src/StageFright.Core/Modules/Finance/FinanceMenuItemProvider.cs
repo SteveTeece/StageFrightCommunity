@@ -9,7 +9,7 @@ namespace StageFright.Core.Modules.Finance;
 /// (Outstanding / Record Income / Record Expense / Apply Annual Fees — recording a member
 /// payment happens inline on the Outstanding tab); the expanded accounting surfaces are
 /// sub-items.
-/// DisplayOrder=4 places Finance after Events (3) and before Reports (5).
+/// DisplayOrder=5 places Finance after Events (4) and before Reports (6).
 /// </summary>
 public class FinanceMenuItemProvider : IMenuItemProvider
 {
@@ -21,7 +21,7 @@ public class FinanceMenuItemProvider : IMenuItemProvider
     }
 
     public string ModuleName => "Finance";
-    public int DisplayOrder => 4;
+    public int DisplayOrder => 5;
 
     public IReadOnlyList<MenuItem> GetMenuItems() =>
     [

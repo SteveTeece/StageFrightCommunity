@@ -59,6 +59,7 @@ public class ShellLayoutTests : LocalizedTestContext
     [Theory]
     [InlineData("/dashboard", "icon-dashboard")]
     [InlineData("/members", "icon-members")]
+    [InlineData("/organisations", "icon-organisations")]
     [InlineData("/finance", "icon-finance")]
     [InlineData("/rehearsals", "icon-rehearsals")]
     [InlineData("/events", "icon-events")]

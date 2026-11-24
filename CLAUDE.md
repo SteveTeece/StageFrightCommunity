@@ -93,7 +93,7 @@ Blazor Router owns **all** navigation. Every screen has a `@page` directive. `Na
 
 Application logic lives in `StageFright.Core/Modules/<ModuleName>/`. Each module slice contains its services, request/response models, and menu/tile providers. Repositories are *not* module-owned; they live centrally in `StageFright.Data/Repositories/` (this is a spec-mandated deviation from pure vertical-slice, required by FR-042).
 
-Current modules: `Agm`, `AuditTrail`, `Dashboard`, `Events`, `Finance`, `Localization`, `Members`, `Rehearsals`, `Settings`.
+Current modules: `Agm`, `AuditTrail`, `Dashboard`, `Events`, `Finance`, `Localization`, `Members`, `Organisations`, `Rehearsals`, `Settings`.
 
 ### Extension points (plugin contracts)
 
@@ -133,9 +133,9 @@ Dashboard tiles opt into one of four sizes via `DashboardTileSize` (`StageFright
 
 ### Localization
 
-All app-authored user-facing text is resolved through `Microsoft.Extensions.Localization` `IStringLocalizer<T>` at render time — never a hardcoded literal (enforced by `tests/StageFright.Localization.Tests`). Text lives in ~12 area-scoped `.resx` files; the neutral file (no culture suffix) **is** the Australian English `en-AU` baseline and the key-by-key fallback for every other language:
+All app-authored user-facing text is resolved through `Microsoft.Extensions.Localization` `IStringLocalizer<T>` at render time — never a hardcoded literal (enforced by `tests/StageFright.Localization.Tests`). Text lives in ~13 area-scoped `.resx` files; the neutral file (no culture suffix) **is** the Australian English `en-AU` baseline and the key-by-key fallback for every other language:
 
-- `src/StageFright.UI/Resources/Strings/` — `SharedResource`, `DashboardResource`, `MembersResource`, `RehearsalsResource`, `EventsResource`, `FinanceResource`, `SettingsResource`, `SetupResource` (a `<Name>Resource.cs` marker + `.resx` each).
+- `src/StageFright.UI/Resources/Strings/` — `SharedResource`, `DashboardResource`, `MembersResource`, `OrganisationsResource`, `RehearsalsResource`, `EventsResource`, `FinanceResource`, `SettingsResource`, `SetupResource` (a `<Name>Resource.cs` marker + `.resx` each).
 - `src/StageFright.Core/Modules/Localization/Resources/` — `NavigationResource` (menu titles + shell chrome), `ValidationResource` (user-facing exception/validation message text), `EnumsResource` (shared `Enum_<Type>_<Member>` display labels).
 - `src/StageFright.Reports/Resources/` — `ReportsResource` (report titles, column headers, section/total labels).
 
@@ -149,9 +149,9 @@ Display language resolves at startup via `LanguageProvider` (explicit `Settings.
 
 ### Data model highlights
 
-- **20 entities** in `StageFright.Core/Entities/`: `Member`, `CommitteeTerm`, `CommitteePositionRecord`, `CommitteeOfficeHolderType`, `AnnualGeneralMeeting`, `AgmAttendanceRecord`, `Rehearsal`, `AttendanceRecord`, `Event`, `EventType`, `ParticipationRecord`, `Account`, `Fee`, `Payment`, `Transaction`, `JournalEntry`, `BankReconciliation`, `ReconciliationLine`, `Settings`, `AuditTrailEntry`. `Category` was fully replaced by `Account` (see the `ConvertCategoriesToAccounts` migration).
+- **22 entities** in `StageFright.Core/Entities/`: `Member`, `ExternalOrganisation`, `ExternalOrganisationContact`, `CommitteeTerm`, `CommitteePositionRecord`, `CommitteeOfficeHolderType`, `AnnualGeneralMeeting`, `AgmAttendanceRecord`, `Rehearsal`, `AttendanceRecord`, `Event`, `EventType`, `ParticipationRecord`, `Account`, `Fee`, `Payment`, `Transaction`, `JournalEntry`, `BankReconciliation`, `ReconciliationLine`, `Settings`, `AuditTrailEntry`. `Category` was fully replaced by `Account` (see the `ConvertCategoriesToAccounts` migration).
 - All PKs are `Guid`. All entities carry `CreatedAt`; most carry `UpdatedAt`.
-- **Soft-delete** (`IsDeleted`, `DeletedAt`, `DeletedBy`) is present on every entity *except* `Fee`, `Payment`, `Transaction` (financial exemption — see "Finance / GL integrity" above), `JournalEntry` (immutable GL header, same exemption), `AuditTrailEntry` (governed by retention purge instead), `ReconciliationLine`, and `CommitteeTerm` — see each entity's doc-comment for its specific rationale.
+- **Soft-delete** (`IsDeleted`, `DeletedAt`, `DeletedBy`) is present on every entity *except* `Fee`, `Payment`, `Transaction` (financial exemption — see "Finance / GL integrity" above), `JournalEntry` (immutable GL header, same exemption), `AuditTrailEntry` (governed by retention purge instead), `ReconciliationLine`, and `CommitteeTerm` — see each entity's doc-comment for its specific rationale. Spec 032's `ExternalOrganisation` and `ExternalOrganisationContact` follow the default (soft-deleted, global `!IsDeleted` query filter); archiving an organisation leaves its contacts and its linked journal entries untouched. The link to finance is a nullable `JournalEntry.ExternalOrganisationId`, set only when an expense payment or income entry is posted and never changed afterwards — the GL lines themselves carry no organisation.
 - `AttendanceRecord` carries soft-delete fields but they are never set by any MVP workflow — records are permanently immutable once saved.
 
 ---

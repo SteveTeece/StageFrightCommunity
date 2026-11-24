@@ -6,7 +6,7 @@ namespace StageFright.Core.Modules.Events;
 
 /// <summary>
 /// Contributes the Events navigation section.
-/// DisplayOrder=3 places Events after Rehearsals (2) and before Finance (4).
+/// DisplayOrder=4 places Events after Rehearsals (3) and before Finance (5).
 /// </summary>
 public class EventsMenuItemProvider : IMenuItemProvider
 {
@@ -18,7 +18,7 @@ public class EventsMenuItemProvider : IMenuItemProvider
     }
 
     public string ModuleName => "Events";
-    public int DisplayOrder => 3;
+    public int DisplayOrder => 4;
 
     public IReadOnlyList<MenuItem> GetMenuItems() =>
     [
