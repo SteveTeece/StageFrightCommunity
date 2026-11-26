@@ -12,6 +12,10 @@
 - Q: Where does a payment or income received by card or electronic transfer go? → A: Straight into a bank account the user picks when entering it. It never passes through the holding account.
 - Q: One cash account or two? → A: One. The existing Cash on Hand system account is renamed **Petty Cash**. Cash takings and cash withdrawn as event floats both land in it.
 - Q: How is a mistaken deposit corrected? → A: By reversing the whole deposit. Its cheques return to "awaiting deposit", its cash returns to Petty Cash, and the user records the deposit again.
+- Q: Can a deposit be reversed after its bank line was cleared in a finalised bank reconciliation? → A: No. A deposit cleared in a finalised reconciliation cannot be reversed, and the user is told why. Being cleared in a draft reconciliation does not block reversal, and reversing removes it from that draft.
+- Q: What date should a deposit reversal be posted on? → A: The original deposit's date. The reversal is refused if that date is in a closed financial period.
+- Q: Can amounts be put into Undeposited Funds other than by recording a payment or income? → A: Opening balances only. An opening balance on Undeposited Funds becomes one "opening balance" item awaiting deposit. General journal entries cannot use the account.
+- Q: Which Petty Cash balance limits a deposit's cash amount? → A: Both. The cash may not exceed the Petty Cash balance on the deposit's date or the current balance, and the lower of the two is shown as the cash available.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -60,7 +64,7 @@ The treasurer goes to the bank with three cheques and some of the cash. In the a
 
 1. **Given** cheques awaiting deposit and cash in Petty Cash, **When** the user records a deposit of selected cheques and a cash amount into a bank account, **Then** that bank account rises by the deposit total, Undeposited Funds falls by the selected cheques' total, and Petty Cash falls by the cash amount.
 2. **Given** a deposit was recorded, **When** the user views the bank account during reconciliation, **Then** the deposit appears as one line for its full total, matching the single line on the bank statement.
-3. **Given** a deposit is being prepared, **When** the user enters a cash amount greater than the Petty Cash balance, **Then** the deposit cannot be saved and the user is told the cash available.
+3. **Given** a deposit is being prepared, **When** the user enters a cash amount greater than the cash available (the lower of the Petty Cash balance on the deposit's date and the current balance, FR-010), **Then** the deposit cannot be saved and the user is told the cash available.
 4. **Given** a deposit is being prepared, **When** neither a cheque nor a cash amount is included, **Then** the deposit cannot be saved.
 5. **Given** a cheque was included in a saved deposit, **When** the user starts another deposit, **Then** that cheque is no longer offered.
 
@@ -97,6 +101,8 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 3. **Given** a recorded deposit, **When** the user reverses it and confirms, **Then** the bank account, Undeposited Funds and Petty Cash return to their balances before that deposit, its cheques are offered for deposit again, and the deposit is shown as reversed.
 4. **Given** a deposit that was already reversed, **When** the user views it, **Then** no reverse action is offered.
 5. **Given** a deposit dated in a closed financial period, **When** the user tries to reverse it, **Then** the reversal is refused with the same message the app gives for other closed-period postings.
+6. **Given** a deposit whose bank line was cleared in a finalised bank reconciliation, **When** the user tries to reverse it, **Then** the reversal is refused and the user is told the deposit is part of a finalised reconciliation.
+7. **Given** a deposit whose bank line is cleared only in a draft reconciliation, **When** the user reverses it, **Then** the reversal succeeds and the line is no longer cleared in that draft.
 
 ---
 
@@ -105,9 +111,10 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 - **No bank account set up**: deposits, withdrawals and card/EFT receipts need a bank account other than Petty Cash. Without one, those screens explain that an account must be added in the chart of accounts and link to it. Cash and cheque receipts still work.
 - **A single bank account**: it is preselected wherever a bank account must be chosen. With several, the user must choose.
 - **Nothing awaiting deposit**: the Banking screen shows zero cheques and the Petty Cash balance, and a new deposit offers only the cash line.
-- **Petty Cash is zero or negative** (for example, petty-cash expenses exceeded takings): the cash line of a deposit cannot be filled in. A negative balance is shown as negative, never hidden.
+- **Petty Cash is zero or negative** (for example, petty-cash expenses exceeded takings): the cash available (FR-010) is zero or less, so the cash line of a deposit cannot be filled in. A negative balance is shown as negative, never hidden.
 - **Cheque from a member payment that covered several fees**: it is still one cheque awaiting deposit for the full payment amount.
 - **A reversal would leave Petty Cash negative** (its cash was spent after the deposit): the reversal is still allowed. Petty Cash shows a negative balance, which the user corrects in the normal way.
+- **Opening balance on Undeposited Funds**: a positive amount becomes one "Opening balance" item awaiting deposit (FR-001). A negative opening balance on Undeposited Funds is refused.
 - **Deposit date earlier than an included cheque's receipt date**: refused. A cheque cannot be banked before it was received.
 - **Restoring a backup taken before this change** (`1.2.0`, or `1.3.0` from spec 032): it restores as it does today. History is not reclassified, nothing is listed as awaiting deposit, and the old Cash on Hand balance appears as Petty Cash. A `1.3.0` backup also keeps its organisations and organisation links.
 - **Cheque income from an organisation that is later archived**: it stays on the awaiting-deposit list under the organisation's name and can be deposited as normal. Archiving an organisation never blocks or changes a deposit.
@@ -120,7 +127,7 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 
 **Receiving money**
 
-- **FR-001**: The system MUST provide an "Undeposited Funds" asset account. It is created automatically for new and existing organisations, holds cheques and other non-cash instruments received but not yet banked, and cannot be deleted or chosen as a bank account. It MUST be a system account, like the other built-in accounts, so that screens which pick an entry's account by skipping bank and system accounts (for example, an organisation's financial history from spec 032) show the income account and never "Undeposited Funds".
+- **FR-001**: The system MUST provide an "Undeposited Funds" asset account. It is created automatically for new and existing organisations, holds cheques and other non-cash instruments received but not yet banked, and cannot be deleted or chosen as a bank account. It MUST be a system account, like the other built-in accounts, so that screens which pick an entry's account by skipping bank and system accounts (for example, an organisation's financial history from spec 032) show the income account and never "Undeposited Funds". Money MUST enter it only from a cheque or "other" receipt (FR-003, FR-004) or an opening balance. The general journal MUST NOT offer it. An opening balance entered against it becomes a single item awaiting deposit, with the opening-balance date, the payer "Opening balance" and the full amount. That item is deposited like a cheque, in full, and its balance always equals the total of items awaiting deposit.
 - **FR-002**: The existing Cash on Hand system account MUST be renamed "Petty Cash". It MUST keep its account number, history and balance, and continue to work wherever a bank-type account can be chosen, for example paying an expense from petty cash.
 - **FR-003**: When a member payment is recorded, the system MUST send it to the destination for its payment method: cash to Petty Cash; cheque or "other" to Undeposited Funds; card or electronic transfer to the bank account the user selects.
 - **FR-004**: The income-entry workflow (raffles, donations, fundraising) MUST ask how the money was received (cash, cheque, card, electronic transfer or other) and route it by the same rules as FR-003. It MUST no longer offer a free choice of any bank-type account. The payment method replaces the deposit-account picker at the same place on the form. The bank-account picker (card or electronic transfer only) and the cheque reference (cheque or "other" only) appear directly after it. The optional organisation picker added by spec 032 is unchanged and stays directly above the description.
@@ -135,7 +142,7 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 **Deposits**
 
 - **FR-009**: The user MUST be able to record a bank deposit made up of any selection of cheques awaiting deposit plus an optional cash amount, into one bank account other than Petty Cash, on a chosen date.
-- **FR-010**: A deposit MUST be refused when it includes no cheque and no cash amount, when its cash amount exceeds the Petty Cash balance, when an included cheque is no longer awaiting deposit, or when its date is earlier than any included cheque's receipt date.
+- **FR-010**: A deposit MUST be refused when it includes no cheque and no cash amount, when its cash amount exceeds the cash available, when an included cheque is no longer awaiting deposit, or when its date is earlier than any included cheque's receipt date. The cash available is the lower of two figures: the Petty Cash balance on the deposit's date (counting everything posted on or before that date) and the current Petty Cash balance (counting every posting). The refusal message shows that figure.
 - **FR-011**: While a deposit is being prepared, the system MUST show its running total split into cash and cheques.
 - **FR-012**: Saving a deposit MUST, in one all-or-nothing posting, increase the bank account by the deposit total, decrease Undeposited Funds by the included cheques' total, decrease Petty Cash by the cash amount, and mark each included cheque as deposited. Total debits MUST equal total credits.
 - **FR-013**: In bank reconciliation, each deposit MUST appear on the bank account as a single line for its full total.
@@ -147,9 +154,9 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 **History and reversal**
 
 - **FR-015**: The Banking screen MUST list past deposits and withdrawals with their date, type, bank account, total and status. Opening a deposit MUST show its cash amount and each included cheque.
-- **FR-016**: The user MUST be able to reverse a recorded deposit after confirming. The reversal posts the exact opposite entries in one all-or-nothing posting, returns each included cheque to awaiting deposit, and marks the deposit as reversed. A deposit can be reversed only once.
+- **FR-016**: The user MUST be able to reverse a recorded deposit after confirming. The reversal posts the exact opposite entries, dated on the original deposit's date, in one all-or-nothing posting, returns each included cheque to awaiting deposit, and marks the deposit as reversed. A deposit can be reversed only once. A reversal MUST be refused, with a message saying why, when the deposit's bank line has been cleared in a finalised bank reconciliation. When the line is cleared only in a draft reconciliation, the reversal is allowed and the line is removed from that draft.
 - **FR-017**: A withdrawal recorded by mistake MUST be correctable by recording its reverse: a deposit of that cash back into the same bank account. No separate withdrawal-reversal action is required.
-- **FR-018**: Deposits, withdrawals and reversals MUST respect the existing closed-financial-period rule and be refused when dated inside a closed period.
+- **FR-018**: Deposits, withdrawals and reversals MUST respect the existing closed-financial-period rule and be refused when dated inside a closed period. Because a reversal takes the original deposit's date, a deposit dated in a closed period cannot be reversed.
 
 **Integrity and compatibility**
 
@@ -163,9 +170,9 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 
 ### Key Entities
 
-- **Undeposited Funds**: a new system asset account holding non-cash instruments received but not banked. Its balance equals the total of items awaiting deposit, plus any amounts posted to it by journal entry.
+- **Undeposited Funds**: a new system asset account holding non-cash instruments received but not banked. Its balance always equals the total of items awaiting deposit, because only receipts and an opening balance can post to it (FR-001).
 - **Petty Cash** *(existing account, renamed)*: the former Cash on Hand account. It holds cash takings and float withdrawals, and is drawn down by deposits and petty-cash expenses.
-- **Received item awaiting deposit**: a cheque or "other" receipt from a member payment or an income entry. It has a received date, payer (per FR-008), optional reference, amount, and a deposit status (awaiting or deposited, with the deposit it went into). Because the status changes over time, it MUST be held in its own record (or derived from the deposit lines), never as a field on the payment or journal entry it came from. Those are financial records and are never edited.
+- **Received item awaiting deposit**: a cheque or "other" receipt from a member payment or an income entry, or the single opening-balance item on Undeposited Funds. It has a received date, payer (per FR-008), optional reference, amount, and a deposit status (awaiting or deposited, with the deposit it went into). Because the status changes over time, it MUST be held in its own record (or derived from the deposit lines), never as a field on the payment or journal entry it came from. Those are financial records and are never edited.
 - **Bank deposit**: a dated record of money banked into one bank account. It has a cash amount, the cheques it included, a total, a status (recorded or reversed) and, once reversed, a link to its reversal. Like its reversal, it carries no organisation link (FR-025).
 - **Cash withdrawal**: a dated record of cash taken from a bank account into Petty Cash, with an amount and a purpose. It carries no organisation link.
 - **Member payment** *(existing `Payment` entity)*, **income entry** *(existing; not an entity of its own but a `JournalEntry` of type Income, which since spec 032 may carry an organisation link)*: gain a payment method and a cheque reference. Both are set once, when the entry is recorded, and never changed. The payment method decides where the money is posted.
@@ -211,7 +218,7 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 ## Assumptions
 
 - "Other" payment method receipts (for example, a money order) are physical instruments that must be banked, so they wait in Undeposited Funds like cheques.
-- Petty Cash may go negative (for example, after expenses are paid from it). The system shows this rather than blocking it, except that a deposit can never take more cash than the balance.
+- Petty Cash may go negative (for example, after expenses are paid from it). The system shows this rather than blocking it, except that a deposit can never take more than the cash available (FR-010).
 - A withdrawal is corrected by depositing the cash back (FR-017), so it needs no reversal action of its own.
 - "Banking" replaces "Record Bank Deposit" at the same position in the Finance menu. The old screen address redirects to the new screen so that bookmarks and links keep working.
 - The Undeposited Funds account takes a free number in the current-asset range next to Petty Cash, without disturbing any account the organisation created itself.
