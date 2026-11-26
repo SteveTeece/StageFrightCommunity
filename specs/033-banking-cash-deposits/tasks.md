@@ -19,14 +19,14 @@ Format: `- [ ] **T###** [P?] [US#] Description · path`. `[P]` means the task is
 Files: every source file in plan.md's Project Structure except the UI pages owned below, plus all `*.resx` changes, `MauiProgram.cs`, `DebugDataSeeder.cs`, and the Core/Data/Reports test files named here.
 
 **Wave 1 — independent (different files):**
-- [ ] **T002** [P] Create `ReceivedItem` per data-model §3 (no soft-delete; doc comment states the financial exemption) · src/StageFright.Core/Entities/ReceivedItem.cs
-- [ ] **T003** [P] Create `BankDeposit` per data-model §4 · src/StageFright.Core/Entities/BankDeposit.cs
-- [ ] **T004** [P] Create `BankDepositLine` per data-model §5 · src/StageFright.Core/Entities/BankDepositLine.cs
-- [ ] **T005** [P] Append `BankDepositReversal` and `CashWithdrawal` to `JournalEntryType` with doc comments, and reword the `BankDeposit` doc (no longer "from Cash on Hand") · src/StageFright.Core/Enums/JournalEntryType.cs
-- [ ] **T006** [P] Add `UndepositedFundsId` (`…0008`) and `UndepositedFundsNumber` ("1105") to `SystemAccounts`, and reword the `CashId` doc to Petty Cash · src/StageFright.Core/Modules/Finance/SystemAccounts.cs
-- [ ] **T007** [P] Add a read-only `MoneyFormatter.Symbol`, with tests for AUD and a configured non-AUD currency · src/StageFright.Core/Localization/MoneyFormatter.cs, tests/StageFright.Core.Tests/Localization/MoneyFormatterTests.cs
-- [ ] **T008** [P] Create the static `ReceiptRouting` (`Destination`, `CreatesReceivedItem`) per research §6, with a unit test for each `PaymentMethod` value · src/StageFright.Core/Modules/Finance/ReceiptRouting.cs, tests/StageFright.Core.Tests/Modules/Finance/ReceiptRoutingTests.cs
-- [ ] **T009** [P] Add every new key, fully translated in de-DE, en-US ("check" wording), es-ES, fr-FR, it-IT, ja-JP and pl-PL, then regenerate qps-ploc with `scripts/generate-pseudo-locale.py`:
+- [x] **T002** [P] Create `ReceivedItem` per data-model §3 (no soft-delete; doc comment states the financial exemption) · src/StageFright.Core/Entities/ReceivedItem.cs
+- [x] **T003** [P] Create `BankDeposit` per data-model §4 · src/StageFright.Core/Entities/BankDeposit.cs
+- [x] **T004** [P] Create `BankDepositLine` per data-model §5 · src/StageFright.Core/Entities/BankDepositLine.cs
+- [x] **T005** [P] Append `BankDepositReversal` and `CashWithdrawal` to `JournalEntryType` with doc comments, and reword the `BankDeposit` doc (no longer "from Cash on Hand") · src/StageFright.Core/Enums/JournalEntryType.cs
+- [x] **T006** [P] Add `UndepositedFundsId` (`…0008`) and `UndepositedFundsNumber` ("1105") to `SystemAccounts`, and reword the `CashId` doc to Petty Cash · src/StageFright.Core/Modules/Finance/SystemAccounts.cs
+- [x] **T007** [P] Add a read-only `MoneyFormatter.Symbol`, with tests for AUD and a configured non-AUD currency · src/StageFright.Core/Localization/MoneyFormatter.cs, tests/StageFright.Core.Tests/Localization/MoneyFormatterTests.cs
+- [x] **T008** [P] Create the static `ReceiptRouting` (`Destination`, `CreatesReceivedItem`) per research §6, with a unit test for each `PaymentMethod` value · src/StageFright.Core/Modules/Finance/ReceiptRouting.cs, tests/StageFright.Core.Tests/Modules/Finance/ReceiptRoutingTests.cs
+- [x] **T009** [P] Add every new key, fully translated in de-DE, en-US ("check" wording), es-ES, fr-FR, it-IT, ja-JP and pl-PL, then regenerate qps-ploc with `scripts/generate-pseudo-locale.py`:
   - Banking, deposit, withdrawal and detail page text, plus payment-method field text (`FinanceResource`);
   - `Nav_Finance_Banking`, replacing `Nav_Finance_RecordBankDeposit` (`NavigationResource`);
   - every rule refusal in research §9 to §11 and data-model §1 (`ValidationResource`);
@@ -38,9 +38,9 @@ Files: every source file in plan.md's Project Structure except the UI pages owne
 **⟶ Wait for Wave 1 to finish, then:**
 
 **Wave 2 — independent:**
-- [ ] **T010** [P] Add EF configurations: the exactly-one-source check constraint, the filtered unique indexes, the restrict FKs and the (deposit, item) unique index · src/StageFright.Data/Configurations/{ReceivedItem,BankDeposit,BankDepositLine}Configuration.cs
-- [ ] **T011** [P] Add the repository contracts. `IReceivedItemRepository` has add, get-awaiting with payer data, and get-by-ids. `IBankDepositRepository` has add, get-by-id with lines, history, and set-reversal. `IBankReconciliationRepository` gains `IsTransactionInFinalisedAsync` and `GetDraftLineReconciliationIdAsync` · src/StageFright.Core/Contracts/IReceivedItemRepository.cs, IBankDepositRepository.cs, IBankReconciliationRepository.cs
-- [ ] **T012** [P] Add the read models, the two request types and `IBankingService` (overview, cash available, deposit, withdrawal, reverse, history, detail) per data-model §6 · src/StageFright.Core/Modules/Finance/{BankingOverview,AwaitingDepositItem,BankingHistoryEntry,DepositDetail,RecordDepositRequest,RecordCashWithdrawalRequest}.cs, src/StageFright.Core/Contracts/IBankingService.cs
+- [x] **T010** [P] Add EF configurations: the exactly-one-source check constraint, the filtered unique indexes, the restrict FKs and the (deposit, item) unique index · src/StageFright.Data/Configurations/{ReceivedItem,BankDeposit,BankDepositLine}Configuration.cs
+- [x] **T011** [P] Add the repository contracts. `IReceivedItemRepository` has add, get-awaiting with payer data, and get-by-ids. `IBankDepositRepository` has add, get-by-id with lines, history, and set-reversal. `IBankReconciliationRepository` gains `IsTransactionInFinalisedAsync` and `GetDraftLineReconciliationIdAsync` · src/StageFright.Core/Contracts/IReceivedItemRepository.cs, IBankDepositRepository.cs, IBankReconciliationRepository.cs
+- [x] **T012** [P] Add the read models, the two request types and `IBankingService` (overview, cash available, deposit, withdrawal, reverse, history, detail) per data-model §6 · src/StageFright.Core/Modules/Finance/{BankingOverview,AwaitingDepositItem,BankingHistoryEntry,DepositDetail,RecordDepositRequest,RecordCashWithdrawalRequest}.cs, src/StageFright.Core/Contracts/IBankingService.cs
 
 **⟶ Wait for Wave 2 to finish, then:**
 

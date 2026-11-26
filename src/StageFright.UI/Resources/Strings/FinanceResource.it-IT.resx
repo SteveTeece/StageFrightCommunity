@@ -102,7 +102,7 @@
   <data name="Finance_AnnualFees_ApplyError" xml:space="preserve"><value>Impossibile applicare le quote annuali: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_BankDeposit_PageTitle" xml:space="preserve"><value>Registra versamento bancario</value><comment>Browser tab title — Record Bank Deposit page.</comment></data>
   <data name="Finance_BankDeposit_Heading" xml:space="preserve"><value>Registra versamento bancario</value><comment>Record Bank Deposit page heading.</comment></data>
-  <data name="Finance_BankDeposit_NoAccountsHtml" xml:space="preserve"><value>I versamenti bancari richiedono almeno un conto bancario diverso da Cassa. Aggiungi prima un conto bancario nel &lt;a href="/finance/accounts"&gt;Piano dei conti&lt;/a&gt;.</value><comment>Warning (contains a link to the Chart of Accounts) shown when no destination bank account exists.</comment></data>
+  <data name="Finance_BankDeposit_NoAccountsHtml" xml:space="preserve"><value>I versamenti bancari richiedono almeno un conto bancario diverso da Piccola cassa. Aggiungi prima un conto bancario nel &lt;a href="/finance/accounts"&gt;Piano dei conti&lt;/a&gt;.</value><comment>Warning (contains a link to the Chart of Accounts) shown when no destination bank account exists.</comment></data>
   <data name="Finance_BankDeposit_FromLabel" xml:space="preserve"><value>Da</value><comment>Record Bank Deposit — source account label.</comment></data>
   <data name="Finance_BankDeposit_FromValue" xml:space="preserve"><value>Cassa</value><comment>Record Bank Deposit — fixed source account shown as a disabled field.</comment></data>
   <data name="Finance_BankDeposit_ToLabel" xml:space="preserve"><value>A</value><comment>Record Bank Deposit — destination account label.</comment></data>
@@ -245,4 +245,49 @@
   <data name="Finance_Reconciliation_DeleteError" xml:space="preserve"><value>Impossibile eliminare la bozza: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Organisation_Label" xml:space="preserve"><value>Organizzazione</value><comment>Record Expense / Record Income — label on the optional external organisation picker.</comment></data>
   <data name="Finance_Organisation_None" xml:space="preserve"><value>— Nessuna —</value><comment>First option in the organisation picker; leaves the entry unlinked.</comment></data>
+  <data name="Finance_Banking_PageTitle" xml:space="preserve"><value>Banca</value><comment>Banking page title and heading.</comment></data>
+  <data name="Finance_Banking_UndepositedTotal" xml:space="preserve"><value>Fondi non versati</value><comment>Banking summary card: total of items awaiting deposit.</comment></data>
+  <data name="Finance_Banking_PettyCashBalance" xml:space="preserve"><value>Piccola cassa</value><comment>Banking summary card: Petty Cash balance.</comment></data>
+  <data name="Finance_Banking_CashAvailable" xml:space="preserve"><value>Contanti disponibili</value><comment>Banking summary card: cash available to deposit.</comment></data>
+  <data name="Finance_Banking_AwaitingHeading" xml:space="preserve"><value>In attesa di versamento</value><comment>Heading of the grid of items awaiting deposit.</comment></data>
+  <data name="Finance_Banking_NothingAwaiting" xml:space="preserve"><value>Nessun assegno o altro elemento è in attesa di versamento.</value><comment>Empty text of the awaiting-deposit grid.</comment></data>
+  <data name="Finance_Banking_HistoryHeading" xml:space="preserve"><value>Versamenti e prelievi</value><comment>Heading of the deposits and withdrawals history grid.</comment></data>
+  <data name="Finance_Banking_NoHistory" xml:space="preserve"><value>Non è stato registrato alcun versamento o prelievo.</value><comment>Empty text of the history grid.</comment></data>
+  <data name="Finance_Banking_RecordDeposit" xml:space="preserve"><value>Registra versamento</value><comment>Banking page button: record a deposit.</comment></data>
+  <data name="Finance_Banking_RecordWithdrawal" xml:space="preserve"><value>Registra prelievo di contanti</value><comment>Banking page button: record a cash withdrawal.</comment></data>
+  <data name="Finance_Banking_Col_Received" xml:space="preserve"><value>Ricevuto</value><comment>Grid column: date received.</comment></data>
+  <data name="Finance_Banking_Col_Payer" xml:space="preserve"><value>Pagatore</value><comment>Grid column: payer.</comment></data>
+  <data name="Finance_Banking_Col_Reference" xml:space="preserve"><value>Riferimento</value><comment>Grid column: cheque reference.</comment></data>
+  <data name="Finance_Banking_Col_Amount" xml:space="preserve"><value>Importo</value><comment>Grid column: amount.</comment></data>
+  <data name="Finance_Banking_Col_Date" xml:space="preserve"><value>Data</value><comment>Grid column: date.</comment></data>
+  <data name="Finance_Banking_Col_Type" xml:space="preserve"><value>Tipo</value><comment>Grid column: deposit or withdrawal.</comment></data>
+  <data name="Finance_Banking_Col_BankAccount" xml:space="preserve"><value>Conto bancario</value><comment>Grid column: bank account.</comment></data>
+  <data name="Finance_Banking_Col_Total" xml:space="preserve"><value>Totale</value><comment>Grid column: total.</comment></data>
+  <data name="Finance_Banking_Col_Status" xml:space="preserve"><value>Stato</value><comment>Grid column: recorded or reversed.</comment></data>
+  <data name="Finance_Banking_Status_Recorded" xml:space="preserve"><value>Registrato</value><comment>Deposit status: recorded.</comment></data>
+  <data name="Finance_Banking_Status_Reversed" xml:space="preserve"><value>Stornato</value><comment>Deposit status: reversed.</comment></data>
+  <data name="Finance_Banking_NoBankAccountHtml" xml:space="preserve"><value>Serve un conto bancario diverso da Piccola cassa. Aggiungine prima uno nel &lt;a href="/finance/accounts"&gt;Piano dei conti&lt;/a&gt;.</value><comment>Notice (contains a link to the Chart of Accounts) shown when no bank account other than Petty Cash exists.</comment></data>
+  <data name="Finance_Banking_DepositTitle" xml:space="preserve"><value>Registra versamento bancario</value><comment>Record deposit page title.</comment></data>
+  <data name="Finance_Banking_ItemsHeading" xml:space="preserve"><value>Assegni e altri elementi</value><comment>Record deposit: heading of the item picker.</comment></data>
+  <data name="Finance_Banking_CashAmountLabel" xml:space="preserve"><value>Importo in contanti</value><comment>Record deposit: cash amount field label.</comment></data>
+  <data name="Finance_Banking_CashAvailableHelp" xml:space="preserve"><value>Contanti disponibili: {CashAvailable}</value><comment>Record deposit: help text. {CashAvailable} = formatted amount.</comment></data>
+  <data name="Finance_Banking_TotalCash" xml:space="preserve"><value>Contanti</value><comment>Record deposit totals panel: cash.</comment></data>
+  <data name="Finance_Banking_TotalCheques" xml:space="preserve"><value>Assegni</value><comment>Record deposit totals panel: cheques.</comment></data>
+  <data name="Finance_Banking_TotalDeposit" xml:space="preserve"><value>Totale del versamento</value><comment>Record deposit totals panel: deposit total.</comment></data>
+  <data name="Finance_Banking_DepositDetailTitle" xml:space="preserve"><value>Versamento bancario</value><comment>Deposit detail page title.</comment></data>
+  <data name="Finance_Banking_DepositNotFound" xml:space="preserve"><value>Impossibile trovare questo versamento.</value><comment>Deposit detail: unknown deposit id.</comment></data>
+  <data name="Finance_Banking_ReverseButton" xml:space="preserve"><value>Storna versamento</value><comment>Deposit detail: reverse button.</comment></data>
+  <data name="Finance_Banking_ReverseConfirm" xml:space="preserve"><value>Stornare questo versamento? I suoi assegni tornano in attesa di versamento e i contanti tornano in Piccola cassa.</value><comment>Deposit detail: reversal confirmation.</comment></data>
+  <data name="Finance_Banking_ReversedOn" xml:space="preserve"><value>Stornato il {Date}</value><comment>Deposit detail: reversal date. {Date} = formatted date.</comment></data>
+  <data name="Finance_Banking_LegacyDepositNote" xml:space="preserve"><value>Registrato prima dell'introduzione del monitoraggio degli assegni; non può essere stornato qui.</value><comment>Deposit detail: note for deposits recorded before this feature.</comment></data>
+  <data name="Finance_Banking_WithdrawalTitle" xml:space="preserve"><value>Registra prelievo di contanti</value><comment>Record cash withdrawal page title.</comment></data>
+  <data name="Finance_Banking_PurposeLabel" xml:space="preserve"><value>Scopo</value><comment>Cash withdrawal: optional purpose field label.</comment></data>
+  <data name="Finance_Banking_WithdrawalDefaultDescription" xml:space="preserve"><value>Prelievo di contanti</value><comment>Journal description used when a withdrawal has no purpose.</comment></data>
+  <data name="Finance_Banking_DepositSaved" xml:space="preserve"><value>Versamento registrato.</value><comment>Success message after recording a deposit.</comment></data>
+  <data name="Finance_Banking_WithdrawalSaved" xml:space="preserve"><value>Prelievo registrato.</value><comment>Success message after recording a withdrawal.</comment></data>
+  <data name="Finance_Banking_DepositReversed" xml:space="preserve"><value>Versamento stornato.</value><comment>Success message after reversing a deposit.</comment></data>
+  <data name="Finance_Banking_OpeningBalancePayer" xml:space="preserve"><value>Saldo di apertura</value><comment>Payer shown for the opening-balance item awaiting deposit.</comment></data>
+  <data name="Finance_Payment_BankAccountLabel" xml:space="preserve"><value>Conto bancario</value><comment>Record payment: bank account field label.</comment></data>
+  <data name="Finance_Payment_ReferenceLabel" xml:space="preserve"><value>Riferimento assegno</value><comment>Record payment: cheque reference field label.</comment></data>
+  <data name="Finance_RecordIncome_PaymentMethodLabel" xml:space="preserve"><value>Metodo di pagamento</value><comment>Record income: payment method field label.</comment></data>
 </root>

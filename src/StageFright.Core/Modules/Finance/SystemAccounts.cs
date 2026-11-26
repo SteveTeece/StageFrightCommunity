@@ -7,7 +7,7 @@ namespace StageFright.Core.Modules.Finance;
 /// </summary>
 public static class SystemAccounts
 {
-    /// <summary>Cash on Hand — Asset 1100, IsBankAccount. The default deposit/payment account.</summary>
+    /// <summary>Petty Cash — Asset 1100, IsBankAccount. The cash float held on hand (spec 033).</summary>
     public static readonly Guid CashId = new("00000000-0000-0000-0000-000000000001");
 
     /// <summary>Member Receivable — Asset 1200. The authoritative per-member balance account.</summary>
@@ -33,8 +33,14 @@ public static class SystemAccounts
     /// <summary>Accumulated Surplus — Equity 3200. Presentation account for retained surplus.</summary>
     public static readonly Guid AccumulatedSurplusId = new("00000000-0000-0000-0000-000000000007");
 
-    /// <summary>Account number of Cash on Hand.</summary>
+    /// <summary>Undeposited Funds — Asset 1105. Holding account for cheques and other receipts awaiting banking (spec 033).</summary>
+    public static readonly Guid UndepositedFundsId = new("00000000-0000-0000-0000-000000000008");
+
+    /// <summary>Account number of Petty Cash.</summary>
     public const string CashNumber = "1100";
+
+    /// <summary>Account number of Undeposited Funds.</summary>
+    public const string UndepositedFundsNumber = "1105";
 
     /// <summary>Account number of Member Receivable.</summary>
     public const string MemberReceivableNumber = "1200";

@@ -122,6 +122,22 @@ public sealed class MoneyFormatterTests : IDisposable
     }
 
     [Fact]
+    public void Should_ExposeTheAudSymbol_When_DefaultCurrencyIsConfigured()
+    {
+        MoneyFormatter.Configure(CurrencyCatalog.Default);
+
+        Assert.Equal("$", MoneyFormatter.Symbol);
+    }
+
+    [Fact]
+    public void Should_ExposeTheConfiguredSymbol_When_ANonAudCurrencyIsConfigured()
+    {
+        MoneyFormatter.Configure(CurrencyCatalog.Get("JPY"));
+
+        Assert.Equal("¥", MoneyFormatter.Symbol);
+    }
+
+    [Fact]
     public void Should_FallBackToAud_When_ConfiguredWithNull()
     {
         CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-AU");

@@ -102,7 +102,7 @@
   <data name="Finance_AnnualFees_ApplyError" xml:space="preserve"><value>Jahresbeiträge konnten nicht angewendet werden: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_BankDeposit_PageTitle" xml:space="preserve"><value>Bankeinzahlung erfassen</value><comment>Browser tab title — Record Bank Deposit page.</comment></data>
   <data name="Finance_BankDeposit_Heading" xml:space="preserve"><value>Bankeinzahlung erfassen</value><comment>Record Bank Deposit page heading.</comment></data>
-  <data name="Finance_BankDeposit_NoAccountsHtml" xml:space="preserve"><value>Für Bankeinzahlungen wird mindestens ein Bankkonto außer dem Kassenbestand benötigt. Bitte fügen Sie zuerst im &lt;a href="/finance/accounts"&gt;Kontenplan&lt;/a&gt; ein Bankkonto hinzu.</value><comment>Warning (contains a link to the Chart of Accounts) shown when no destination bank account exists.</comment></data>
+  <data name="Finance_BankDeposit_NoAccountsHtml" xml:space="preserve"><value>Für Bankeinzahlungen wird mindestens ein Bankkonto außer der Handkasse benötigt. Bitte fügen Sie zuerst im &lt;a href="/finance/accounts"&gt;Kontenplan&lt;/a&gt; ein Bankkonto hinzu.</value><comment>Warning (contains a link to the Chart of Accounts) shown when no destination bank account exists.</comment></data>
   <data name="Finance_BankDeposit_FromLabel" xml:space="preserve"><value>Von</value><comment>Record Bank Deposit — source account label.</comment></data>
   <data name="Finance_BankDeposit_FromValue" xml:space="preserve"><value>Kassenbestand</value><comment>Record Bank Deposit — fixed source account shown as a disabled field.</comment></data>
   <data name="Finance_BankDeposit_ToLabel" xml:space="preserve"><value>An</value><comment>Record Bank Deposit — destination account label.</comment></data>
@@ -245,4 +245,49 @@
   <data name="Finance_Reconciliation_DeleteError" xml:space="preserve"><value>Entwurf konnte nicht gelöscht werden: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Organisation_Label" xml:space="preserve"><value>Organisation</value><comment>Record Expense / Record Income — label on the optional external organisation picker.</comment></data>
   <data name="Finance_Organisation_None" xml:space="preserve"><value>— Keine —</value><comment>First option in the organisation picker; leaves the entry unlinked.</comment></data>
+  <data name="Finance_Banking_PageTitle" xml:space="preserve"><value>Bankgeschäfte</value><comment>Banking page title and heading.</comment></data>
+  <data name="Finance_Banking_UndepositedTotal" xml:space="preserve"><value>Nicht eingezahlte Gelder</value><comment>Banking summary card: total of items awaiting deposit.</comment></data>
+  <data name="Finance_Banking_PettyCashBalance" xml:space="preserve"><value>Handkasse</value><comment>Banking summary card: Petty Cash balance.</comment></data>
+  <data name="Finance_Banking_CashAvailable" xml:space="preserve"><value>Verfügbares Bargeld</value><comment>Banking summary card: cash available to deposit.</comment></data>
+  <data name="Finance_Banking_AwaitingHeading" xml:space="preserve"><value>Zur Einzahlung ausstehend</value><comment>Heading of the grid of items awaiting deposit.</comment></data>
+  <data name="Finance_Banking_NothingAwaiting" xml:space="preserve"><value>Es warten keine Schecks oder anderen Posten auf Einzahlung.</value><comment>Empty text of the awaiting-deposit grid.</comment></data>
+  <data name="Finance_Banking_HistoryHeading" xml:space="preserve"><value>Einzahlungen und Abhebungen</value><comment>Heading of the deposits and withdrawals history grid.</comment></data>
+  <data name="Finance_Banking_NoHistory" xml:space="preserve"><value>Es wurden keine Einzahlungen oder Abhebungen erfasst.</value><comment>Empty text of the history grid.</comment></data>
+  <data name="Finance_Banking_RecordDeposit" xml:space="preserve"><value>Einzahlung erfassen</value><comment>Banking page button: record a deposit.</comment></data>
+  <data name="Finance_Banking_RecordWithdrawal" xml:space="preserve"><value>Bargeldabhebung erfassen</value><comment>Banking page button: record a cash withdrawal.</comment></data>
+  <data name="Finance_Banking_Col_Received" xml:space="preserve"><value>Erhalten</value><comment>Grid column: date received.</comment></data>
+  <data name="Finance_Banking_Col_Payer" xml:space="preserve"><value>Zahler</value><comment>Grid column: payer.</comment></data>
+  <data name="Finance_Banking_Col_Reference" xml:space="preserve"><value>Referenz</value><comment>Grid column: cheque reference.</comment></data>
+  <data name="Finance_Banking_Col_Amount" xml:space="preserve"><value>Betrag</value><comment>Grid column: amount.</comment></data>
+  <data name="Finance_Banking_Col_Date" xml:space="preserve"><value>Datum</value><comment>Grid column: date.</comment></data>
+  <data name="Finance_Banking_Col_Type" xml:space="preserve"><value>Typ</value><comment>Grid column: deposit or withdrawal.</comment></data>
+  <data name="Finance_Banking_Col_BankAccount" xml:space="preserve"><value>Bankkonto</value><comment>Grid column: bank account.</comment></data>
+  <data name="Finance_Banking_Col_Total" xml:space="preserve"><value>Summe</value><comment>Grid column: total.</comment></data>
+  <data name="Finance_Banking_Col_Status" xml:space="preserve"><value>Status</value><comment>Grid column: recorded or reversed.</comment></data>
+  <data name="Finance_Banking_Status_Recorded" xml:space="preserve"><value>Erfasst</value><comment>Deposit status: recorded.</comment></data>
+  <data name="Finance_Banking_Status_Reversed" xml:space="preserve"><value>Storniert</value><comment>Deposit status: reversed.</comment></data>
+  <data name="Finance_Banking_NoBankAccountHtml" xml:space="preserve"><value>Dafür wird ein anderes Bankkonto als die Handkasse benötigt. Fügen Sie zuerst im &lt;a href="/finance/accounts"&gt;Kontenplan&lt;/a&gt; eines hinzu.</value><comment>Notice (contains a link to the Chart of Accounts) shown when no bank account other than Petty Cash exists.</comment></data>
+  <data name="Finance_Banking_DepositTitle" xml:space="preserve"><value>Bankeinzahlung erfassen</value><comment>Record deposit page title.</comment></data>
+  <data name="Finance_Banking_ItemsHeading" xml:space="preserve"><value>Schecks und andere Posten</value><comment>Record deposit: heading of the item picker.</comment></data>
+  <data name="Finance_Banking_CashAmountLabel" xml:space="preserve"><value>Bargeldbetrag</value><comment>Record deposit: cash amount field label.</comment></data>
+  <data name="Finance_Banking_CashAvailableHelp" xml:space="preserve"><value>Verfügbares Bargeld: {CashAvailable}</value><comment>Record deposit: help text. {CashAvailable} = formatted amount.</comment></data>
+  <data name="Finance_Banking_TotalCash" xml:space="preserve"><value>Bargeld</value><comment>Record deposit totals panel: cash.</comment></data>
+  <data name="Finance_Banking_TotalCheques" xml:space="preserve"><value>Schecks</value><comment>Record deposit totals panel: cheques.</comment></data>
+  <data name="Finance_Banking_TotalDeposit" xml:space="preserve"><value>Einzahlungssumme</value><comment>Record deposit totals panel: deposit total.</comment></data>
+  <data name="Finance_Banking_DepositDetailTitle" xml:space="preserve"><value>Bankeinzahlung</value><comment>Deposit detail page title.</comment></data>
+  <data name="Finance_Banking_DepositNotFound" xml:space="preserve"><value>Diese Einzahlung wurde nicht gefunden.</value><comment>Deposit detail: unknown deposit id.</comment></data>
+  <data name="Finance_Banking_ReverseButton" xml:space="preserve"><value>Einzahlung stornieren</value><comment>Deposit detail: reverse button.</comment></data>
+  <data name="Finance_Banking_ReverseConfirm" xml:space="preserve"><value>Diese Einzahlung stornieren? Die Schecks warten wieder auf Einzahlung und das Bargeld geht zurück in die Handkasse.</value><comment>Deposit detail: reversal confirmation.</comment></data>
+  <data name="Finance_Banking_ReversedOn" xml:space="preserve"><value>Storniert am {Date}</value><comment>Deposit detail: reversal date. {Date} = formatted date.</comment></data>
+  <data name="Finance_Banking_LegacyDepositNote" xml:space="preserve"><value>Vor der Einführung der Scheckverfolgung erfasst; kann hier nicht storniert werden.</value><comment>Deposit detail: note for deposits recorded before this feature.</comment></data>
+  <data name="Finance_Banking_WithdrawalTitle" xml:space="preserve"><value>Bargeldabhebung erfassen</value><comment>Record cash withdrawal page title.</comment></data>
+  <data name="Finance_Banking_PurposeLabel" xml:space="preserve"><value>Zweck</value><comment>Cash withdrawal: optional purpose field label.</comment></data>
+  <data name="Finance_Banking_WithdrawalDefaultDescription" xml:space="preserve"><value>Bargeldabhebung</value><comment>Journal description used when a withdrawal has no purpose.</comment></data>
+  <data name="Finance_Banking_DepositSaved" xml:space="preserve"><value>Einzahlung erfasst.</value><comment>Success message after recording a deposit.</comment></data>
+  <data name="Finance_Banking_WithdrawalSaved" xml:space="preserve"><value>Abhebung erfasst.</value><comment>Success message after recording a withdrawal.</comment></data>
+  <data name="Finance_Banking_DepositReversed" xml:space="preserve"><value>Einzahlung storniert.</value><comment>Success message after reversing a deposit.</comment></data>
+  <data name="Finance_Banking_OpeningBalancePayer" xml:space="preserve"><value>Eröffnungssaldo</value><comment>Payer shown for the opening-balance item awaiting deposit.</comment></data>
+  <data name="Finance_Payment_BankAccountLabel" xml:space="preserve"><value>Bankkonto</value><comment>Record payment: bank account field label.</comment></data>
+  <data name="Finance_Payment_ReferenceLabel" xml:space="preserve"><value>Scheckreferenz</value><comment>Record payment: cheque reference field label.</comment></data>
+  <data name="Finance_RecordIncome_PaymentMethodLabel" xml:space="preserve"><value>Zahlungsart</value><comment>Record income: payment method field label.</comment></data>
 </root>

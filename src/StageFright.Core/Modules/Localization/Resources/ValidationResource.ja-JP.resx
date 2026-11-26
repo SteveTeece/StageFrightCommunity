@@ -80,7 +80,7 @@
   <data name="Validation_Income_DepositAccountMustBeBank" xml:space="preserve"><value>入金先の勘定は銀行／現金勘定である必要があります。</value><comment>Shown when an other-income entry's deposit account is not a bank/cash account.</comment></data>
   <data name="Validation_BankDeposit_AmountPositive" xml:space="preserve"><value>預入額は0より大きい値である必要があります。</value><comment>Shown when recording a bank deposit with a non-positive amount.</comment></data>
   <data name="Validation_BankDeposit_TargetMustBeBank" xml:space="preserve"><value>預入は銀行勘定に対してのみ許可されています。</value><comment>Shown when a bank deposit's destination account is not a bank account.</comment></data>
-  <data name="Validation_BankDeposit_TargetNotCashOnHand" xml:space="preserve"><value>入金先の勘定は手元現金と異なる必要があります。</value><comment>Shown when a bank deposit's destination account is Cash on Hand.</comment></data>
+  <data name="Validation_BankDeposit_TargetNotCashOnHand" xml:space="preserve"><value>入金先の勘定は小口現金と異なる必要があります。</value><comment>Shown when a bank deposit's destination account is Cash on Hand.</comment></data>
   <data name="Validation_OpeningBalance_AtLeastOneNonZero" xml:space="preserve"><value>0以外の期首残高を少なくとも1件入力してください。</value><comment>Shown when recording opening balances with no non-zero entry.</comment></data>
   <data name="Validation_OpeningBalance_AccountOncePerBatch" xml:space="preserve"><value>各勘定は期首残高に一度だけ入力できます。</value><comment>Shown when an account is entered more than once in one opening-balances batch.</comment></data>
   <data name="Validation_OpeningBalance_AccountNotEligible" xml:space="preserve"><value>1つ以上の勘定が期首残高の対象ではありません。</value><comment>Shown when an opening-balances entry targets an account not eligible for opening balances.</comment></data>
@@ -104,4 +104,20 @@
   <data name="Validation_OrganisationContact_EmailInvalid" xml:space="preserve"><value>メールアドレスの形式が正しくありません。</value><comment>Shown when an organisation contact email is not a valid format (spec 032, FR-004).</comment></data>
   <data name="Validation_Organisation_Archived" xml:space="preserve"><value>この組織はアーカイブされています。変更する前に復元してください。</value><comment>Shown when an edit is attempted on an archived external organisation or one of its contacts (spec 032).</comment></data>
   <data name="Validation_Organisation_ArchivedNotSelectable" xml:space="preserve"><value>この組織はアーカイブされているため選択できません。有効な組織を選択するか、「なし」を選択してください。</value><comment>Shown when an expense or income entry is posted against an archived external organisation (spec 032, FR-010).</comment></data>
+  <data name="Validation_Deposit_Empty" xml:space="preserve"><value>預入には少なくとも1枚の小切手または現金額が必要です。</value><comment>A deposit with no cheque and no cash.</comment></data>
+  <data name="Validation_Deposit_CashNegative" xml:space="preserve"><value>現金額をマイナスにすることはできません。</value><comment>Negative cash amount.</comment></data>
+  <data name="Validation_Deposit_CashExceedsAvailable" xml:space="preserve"><value>現金額が利用可能な現金（{CashAvailable}）を超えています。</value><comment>Cash above what Petty Cash holds. {CashAvailable} = formatted amount.</comment></data>
+  <data name="Validation_Deposit_ItemNotAwaiting" xml:space="preserve"><value>選択した項目の1つ以上は、すでに預入待ちではありません。</value><comment>A selected item was already deposited.</comment></data>
+  <data name="Validation_Deposit_DateBeforeItem" xml:space="preserve"><value>預入日は、含まれる小切手の受領日より前にはできません。</value><comment>Deposit date earlier than an included cheque was received.</comment></data>
+  <data name="Validation_Deposit_BankAccountInvalid" xml:space="preserve"><value>小口現金以外の銀行勘定を選択してください。</value><comment>Deposit bank account is not a valid bank account.</comment></data>
+  <data name="Validation_Deposit_NotFound" xml:space="preserve"><value>その預入が見つかりませんでした。</value><comment>Deposit to reverse does not exist.</comment></data>
+  <data name="Validation_Deposit_AlreadyReversed" xml:space="preserve"><value>この預入はすでに取り消されています。</value><comment>Deposit already reversed.</comment></data>
+  <data name="Validation_Deposit_ReversalBlockedByFinalisedReconciliation" xml:space="preserve"><value>この預入は確定済みの銀行照合に含まれているため、取り消せません。</value><comment>Reversal refused: bank line in a finalised reconciliation.</comment></data>
+  <data name="Validation_Withdrawal_AmountPositive" xml:space="preserve"><value>引出額は0より大きくする必要があります。</value><comment>Withdrawal amount not above zero.</comment></data>
+  <data name="Validation_Withdrawal_BankAccountInvalid" xml:space="preserve"><value>小口現金以外の銀行勘定を選択してください。</value><comment>Withdrawal bank account is not a valid bank account.</comment></data>
+  <data name="Validation_Withdrawal_PurposeTooLong" xml:space="preserve"><value>目的は200文字以内で入力してください。</value><comment>Withdrawal purpose over 200 characters.</comment></data>
+  <data name="Validation_Receipt_BankAccountRequired" xml:space="preserve"><value>カードおよび電子送金の入金には、小口現金以外の銀行勘定を選択してください。</value><comment>Card/EFT receipt without a valid bank account.</comment></data>
+  <data name="Validation_Receipt_ReferenceTooLong" xml:space="preserve"><value>小切手の参照は50文字以内で入力してください。</value><comment>Cheque reference over 50 characters.</comment></data>
+  <data name="Validation_Journal_NoUndepositedFunds" xml:space="preserve"><value>未預入資金は一般仕訳では使用できません。</value><comment>Undeposited Funds used in a general journal line.</comment></data>
+  <data name="Validation_OpeningBalance_UndepositedFundsNegative" xml:space="preserve"><value>未預入資金の期首残高をマイナスにすることはできません。</value><comment>Negative opening balance on Undeposited Funds.</comment></data>
 </root>

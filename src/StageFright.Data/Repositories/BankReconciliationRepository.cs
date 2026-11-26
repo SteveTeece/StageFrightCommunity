@@ -131,6 +131,36 @@ public class BankReconciliationRepository : IBankReconciliationRepository
             .AnyAsync(l => l.TransactionId == transactionId && l.ReconciliationId != excludeReconciliationId, ct);
     }
 
+    public async Task<bool> IsTransactionInFinalisedAsync(Guid transactionId, CancellationToken ct = default)
+    {
+        try
+        {
+            return await _db.ReconciliationLines
+                .AnyAsync(l => l.TransactionId == transactionId
+                    && l.Reconciliation!.Status == ReconciliationStatus.Finalised, ct);
+        }
+        catch (Exception ex)
+        {
+            throw new DataAccessException(ex.Message, nameof(ReconciliationLine), nameof(IsTransactionInFinalisedAsync), transactionId, ex);
+        }
+    }
+
+    public async Task<Guid?> GetDraftLineReconciliationIdAsync(Guid transactionId, CancellationToken ct = default)
+    {
+        try
+        {
+            return await _db.ReconciliationLines
+                .Where(l => l.TransactionId == transactionId
+                    && l.Reconciliation!.Status == ReconciliationStatus.Draft)
+                .Select(l => (Guid?)l.ReconciliationId)
+                .FirstOrDefaultAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            throw new DataAccessException(ex.Message, nameof(ReconciliationLine), nameof(GetDraftLineReconciliationIdAsync), transactionId, ex);
+        }
+    }
+
     public async Task FinaliseAsync(Guid reconciliationId, CancellationToken ct = default)
     {
         var reconciliation = await RequireDraftAsync(reconciliationId, nameof(FinaliseAsync), ct);

@@ -42,6 +42,12 @@ public interface IBankReconciliationRepository
     /// </summary>
     Task<bool> IsTransactionClearedElsewhereAsync(Guid transactionId, Guid excludeReconciliationId, CancellationToken ct = default);
 
+    /// <summary>True when the transaction is cleared by a finalised, non-deleted reconciliation (spec 033 deposit reversal guard).</summary>
+    Task<bool> IsTransactionInFinalisedAsync(Guid transactionId, CancellationToken ct = default);
+
+    /// <summary>Returns the id of the draft reconciliation that has cleared the transaction, or null when no draft has.</summary>
+    Task<Guid?> GetDraftLineReconciliationIdAsync(Guid transactionId, CancellationToken ct = default);
+
     /// <summary>Finalises a draft reconciliation (status + FinalisedAt). Balance gating happens in the service.</summary>
     Task FinaliseAsync(Guid reconciliationId, CancellationToken ct = default);
 

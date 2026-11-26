@@ -14,12 +14,18 @@ public enum JournalEntryType
     /// <summary>Movement of funds between two bank accounts.</summary>
     Transfer,
 
-    /// <summary>Cash on Hand deposited into a bank account.</summary>
+    /// <summary>Undeposited funds (cash and cheques received) deposited into a bank account.</summary>
     BankDeposit,
 
     /// <summary>Manually entered multi-line general journal.</summary>
     GeneralJournal,
 
     /// <summary>One-off opening balances posted by the opening balances wizard.</summary>
-    OpeningBalance
+    OpeningBalance,
+
+    /// <summary>Reversal of a previously recorded bank deposit, returning its items to awaiting deposit.</summary>
+    BankDepositReversal,
+
+    /// <summary>Cash withdrawn from a bank account into Petty Cash.</summary>
+    CashWithdrawal
 }

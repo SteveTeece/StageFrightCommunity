@@ -102,7 +102,7 @@
   <data name="Finance_AnnualFees_ApplyError" xml:space="preserve"><value>⟦Fáíléd tó ápplý áññúál féés: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_BankDeposit_PageTitle" xml:space="preserve"><value>⟦Réçórd Báñk Dépósít—⟧</value><comment>Browser tab title — Record Bank Deposit page.</comment></data>
   <data name="Finance_BankDeposit_Heading" xml:space="preserve"><value>⟦Réçórd Báñk Dépósít—⟧</value><comment>Record Bank Deposit page heading.</comment></data>
-  <data name="Finance_BankDeposit_NoAccountsHtml" xml:space="preserve"><value>⟦Báñk dépósíts ñééd át léást óñé báñk áççóúñt óthér tháñ Çásh óñ Háñd. Pléásé ádd á báñk áççóúñt íñ thé &lt;á hréf="/fíñáñçé/áççóúñts"&gt;Çhárt óf Áççóúñts&lt;/á&gt; fírst.—⟧</value><comment>Warning (contains a link to the Chart of Accounts) shown when no destination bank account exists.</comment></data>
+  <data name="Finance_BankDeposit_NoAccountsHtml" xml:space="preserve"><value>⟦Báñk dépósíts ñééd át léást óñé báñk áççóúñt óthér tháñ Péttý Çásh. Pléásé ádd á báñk áççóúñt íñ thé &lt;á hréf="/fíñáñçé/áççóúñts"&gt;Çhárt óf Áççóúñts&lt;/á&gt; fírst.—⟧</value><comment>Warning (contains a link to the Chart of Accounts) shown when no destination bank account exists.</comment></data>
   <data name="Finance_BankDeposit_FromLabel" xml:space="preserve"><value>⟦Fróm—⟧</value><comment>Record Bank Deposit — source account label.</comment></data>
   <data name="Finance_BankDeposit_FromValue" xml:space="preserve"><value>⟦Çásh óñ Háñd—⟧</value><comment>Record Bank Deposit — fixed source account shown as a disabled field.</comment></data>
   <data name="Finance_BankDeposit_ToLabel" xml:space="preserve"><value>⟦Tó—⟧</value><comment>Record Bank Deposit — destination account label.</comment></data>
@@ -245,4 +245,49 @@
   <data name="Finance_Reconciliation_DeleteError" xml:space="preserve"><value>⟦Fáíléd tó délété dráft: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Organisation_Label" xml:space="preserve"><value>⟦Órgáñísátíóñ—⟧</value><comment>Record Expense / Record Income — label on the optional external organisation picker.</comment></data>
   <data name="Finance_Organisation_None" xml:space="preserve"><value>⟦— Ñóñé ——⟧</value><comment>First option in the organisation picker; leaves the entry unlinked.</comment></data>
+  <data name="Finance_Banking_PageTitle" xml:space="preserve"><value>⟦Báñkíñg—⟧</value><comment>Banking page title and heading.</comment></data>
+  <data name="Finance_Banking_UndepositedTotal" xml:space="preserve"><value>⟦Úñdépósítéd Fúñds—⟧</value><comment>Banking summary card: total of items awaiting deposit.</comment></data>
+  <data name="Finance_Banking_PettyCashBalance" xml:space="preserve"><value>⟦Péttý Çásh—⟧</value><comment>Banking summary card: Petty Cash balance.</comment></data>
+  <data name="Finance_Banking_CashAvailable" xml:space="preserve"><value>⟦Çásh áváíláblé—⟧</value><comment>Banking summary card: cash available to deposit.</comment></data>
+  <data name="Finance_Banking_AwaitingHeading" xml:space="preserve"><value>⟦Áwáítíñg dépósít—⟧</value><comment>Heading of the grid of items awaiting deposit.</comment></data>
+  <data name="Finance_Banking_NothingAwaiting" xml:space="preserve"><value>⟦Ñó çhéqúés ór óthér ítéms áré áwáítíñg dépósít.—⟧</value><comment>Empty text of the awaiting-deposit grid.</comment></data>
+  <data name="Finance_Banking_HistoryHeading" xml:space="preserve"><value>⟦Dépósíts áñd wíthdráwáls—⟧</value><comment>Heading of the deposits and withdrawals history grid.</comment></data>
+  <data name="Finance_Banking_NoHistory" xml:space="preserve"><value>⟦Ñó dépósíts ór wíthdráwáls hávé bééñ réçórdéd.—⟧</value><comment>Empty text of the history grid.</comment></data>
+  <data name="Finance_Banking_RecordDeposit" xml:space="preserve"><value>⟦Réçórd dépósít—⟧</value><comment>Banking page button: record a deposit.</comment></data>
+  <data name="Finance_Banking_RecordWithdrawal" xml:space="preserve"><value>⟦Réçórd çásh wíthdráwál—⟧</value><comment>Banking page button: record a cash withdrawal.</comment></data>
+  <data name="Finance_Banking_Col_Received" xml:space="preserve"><value>⟦Réçéívéd—⟧</value><comment>Grid column: date received.</comment></data>
+  <data name="Finance_Banking_Col_Payer" xml:space="preserve"><value>⟦Páýér—⟧</value><comment>Grid column: payer.</comment></data>
+  <data name="Finance_Banking_Col_Reference" xml:space="preserve"><value>⟦Référéñçé—⟧</value><comment>Grid column: cheque reference.</comment></data>
+  <data name="Finance_Banking_Col_Amount" xml:space="preserve"><value>⟦Ámóúñt—⟧</value><comment>Grid column: amount.</comment></data>
+  <data name="Finance_Banking_Col_Date" xml:space="preserve"><value>⟦Dáté—⟧</value><comment>Grid column: date.</comment></data>
+  <data name="Finance_Banking_Col_Type" xml:space="preserve"><value>⟦Týpé—⟧</value><comment>Grid column: deposit or withdrawal.</comment></data>
+  <data name="Finance_Banking_Col_BankAccount" xml:space="preserve"><value>⟦Báñk áççóúñt—⟧</value><comment>Grid column: bank account.</comment></data>
+  <data name="Finance_Banking_Col_Total" xml:space="preserve"><value>⟦Tótál—⟧</value><comment>Grid column: total.</comment></data>
+  <data name="Finance_Banking_Col_Status" xml:space="preserve"><value>⟦Státús—⟧</value><comment>Grid column: recorded or reversed.</comment></data>
+  <data name="Finance_Banking_Status_Recorded" xml:space="preserve"><value>⟦Réçórdéd—⟧</value><comment>Deposit status: recorded.</comment></data>
+  <data name="Finance_Banking_Status_Reversed" xml:space="preserve"><value>⟦Révérséd—⟧</value><comment>Deposit status: reversed.</comment></data>
+  <data name="Finance_Banking_NoBankAccountHtml" xml:space="preserve"><value>⟦Thís ñééds á báñk áççóúñt óthér tháñ Péttý Çásh. Ádd óñé íñ thé &lt;á hréf="/fíñáñçé/áççóúñts"&gt;Çhárt óf Áççóúñts&lt;/á&gt; fírst.—⟧</value><comment>Notice (contains a link to the Chart of Accounts) shown when no bank account other than Petty Cash exists.</comment></data>
+  <data name="Finance_Banking_DepositTitle" xml:space="preserve"><value>⟦Réçórd báñk dépósít—⟧</value><comment>Record deposit page title.</comment></data>
+  <data name="Finance_Banking_ItemsHeading" xml:space="preserve"><value>⟦Çhéqúés áñd óthér ítéms—⟧</value><comment>Record deposit: heading of the item picker.</comment></data>
+  <data name="Finance_Banking_CashAmountLabel" xml:space="preserve"><value>⟦Çásh ámóúñt—⟧</value><comment>Record deposit: cash amount field label.</comment></data>
+  <data name="Finance_Banking_CashAvailableHelp" xml:space="preserve"><value>⟦Çásh áváíláblé: {CashAvailable}—⟧</value><comment>Record deposit: help text. {CashAvailable} = formatted amount.</comment></data>
+  <data name="Finance_Banking_TotalCash" xml:space="preserve"><value>⟦Çásh—⟧</value><comment>Record deposit totals panel: cash.</comment></data>
+  <data name="Finance_Banking_TotalCheques" xml:space="preserve"><value>⟦Çhéqúés—⟧</value><comment>Record deposit totals panel: cheques.</comment></data>
+  <data name="Finance_Banking_TotalDeposit" xml:space="preserve"><value>⟦Dépósít tótál—⟧</value><comment>Record deposit totals panel: deposit total.</comment></data>
+  <data name="Finance_Banking_DepositDetailTitle" xml:space="preserve"><value>⟦Báñk dépósít—⟧</value><comment>Deposit detail page title.</comment></data>
+  <data name="Finance_Banking_DepositNotFound" xml:space="preserve"><value>⟦Thát dépósít çóúld ñót bé fóúñd.—⟧</value><comment>Deposit detail: unknown deposit id.</comment></data>
+  <data name="Finance_Banking_ReverseButton" xml:space="preserve"><value>⟦Révérsé dépósít—⟧</value><comment>Deposit detail: reverse button.</comment></data>
+  <data name="Finance_Banking_ReverseConfirm" xml:space="preserve"><value>⟦Révérsé thís dépósít? Íts çhéqúés rétúrñ tó áwáítíñg dépósít áñd íts çásh rétúrñs tó Péttý Çásh.—⟧</value><comment>Deposit detail: reversal confirmation.</comment></data>
+  <data name="Finance_Banking_ReversedOn" xml:space="preserve"><value>⟦Révérséd óñ {Date}—⟧</value><comment>Deposit detail: reversal date. {Date} = formatted date.</comment></data>
+  <data name="Finance_Banking_LegacyDepositNote" xml:space="preserve"><value>⟦Réçórdéd béfóré çhéqúé tráçkíñg wás áddéd; ít çáññót bé révérséd héré.—⟧</value><comment>Deposit detail: note for deposits recorded before this feature.</comment></data>
+  <data name="Finance_Banking_WithdrawalTitle" xml:space="preserve"><value>⟦Réçórd çásh wíthdráwál—⟧</value><comment>Record cash withdrawal page title.</comment></data>
+  <data name="Finance_Banking_PurposeLabel" xml:space="preserve"><value>⟦Púrpósé—⟧</value><comment>Cash withdrawal: optional purpose field label.</comment></data>
+  <data name="Finance_Banking_WithdrawalDefaultDescription" xml:space="preserve"><value>⟦Çásh wíthdráwál—⟧</value><comment>Journal description used when a withdrawal has no purpose.</comment></data>
+  <data name="Finance_Banking_DepositSaved" xml:space="preserve"><value>⟦Dépósít réçórdéd.—⟧</value><comment>Success message after recording a deposit.</comment></data>
+  <data name="Finance_Banking_WithdrawalSaved" xml:space="preserve"><value>⟦Wíthdráwál réçórdéd.—⟧</value><comment>Success message after recording a withdrawal.</comment></data>
+  <data name="Finance_Banking_DepositReversed" xml:space="preserve"><value>⟦Dépósít révérséd.—⟧</value><comment>Success message after reversing a deposit.</comment></data>
+  <data name="Finance_Banking_OpeningBalancePayer" xml:space="preserve"><value>⟦Ópéñíñg báláñçé—⟧</value><comment>Payer shown for the opening-balance item awaiting deposit.</comment></data>
+  <data name="Finance_Payment_BankAccountLabel" xml:space="preserve"><value>⟦Báñk áççóúñt—⟧</value><comment>Record payment: bank account field label.</comment></data>
+  <data name="Finance_Payment_ReferenceLabel" xml:space="preserve"><value>⟦Çhéqúé référéñçé—⟧</value><comment>Record payment: cheque reference field label.</comment></data>
+  <data name="Finance_RecordIncome_PaymentMethodLabel" xml:space="preserve"><value>⟦Páýméñt méthód—⟧</value><comment>Record income: payment method field label.</comment></data>
 </root>

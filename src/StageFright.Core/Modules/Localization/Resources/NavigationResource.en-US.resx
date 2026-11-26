@@ -248,4 +248,8 @@
     <value>ORGS</value>
     <comment>Collapsed nav-rail abbreviation for Organisations.</comment>
   </data>
+  <data name="Nav_Finance_Banking" xml:space="preserve">
+    <value>Banking</value>
+    <comment>Finance sub-menu item — banking (deposits and withdrawals).</comment>
+  </data>
 </root>

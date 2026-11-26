@@ -37,6 +37,9 @@ public static class MoneyFormatter
     public static void Configure(SupportedCurrency currency) =>
         _currency = currency ?? CurrencyCatalog.Default;
 
+    /// <summary>The configured currency's symbol, e.g. "$" (AUD) or "¥" (JPY) — for input-field prefixes and labels.</summary>
+    public static string Symbol => _currency.Symbol;
+
     /// <summary>Formats <paramref name="amount"/> with the configured symbol, e.g. "$1,234.50" (en-AU) / "$1 234,50" (fr-FR) / "¥1,235" (JPY).</summary>
     public static string Format(decimal amount) => FormatCore(amount, _currency.Symbol);
 

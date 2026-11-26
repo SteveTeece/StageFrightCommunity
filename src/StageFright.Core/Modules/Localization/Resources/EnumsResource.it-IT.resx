@@ -37,4 +37,11 @@
   <data name="Enum_JournalEntryType_BankDeposit" xml:space="preserve"><value>Versamento bancario</value><comment>JournalEntryType enum — bank deposit.</comment></data>
   <data name="Enum_JournalEntryType_GeneralJournal" xml:space="preserve"><value>Registrazione generale</value><comment>JournalEntryType enum — general journal entry.</comment></data>
   <data name="Enum_JournalEntryType_OpeningBalance" xml:space="preserve"><value>Saldo iniziale</value><comment>JournalEntryType enum — opening balance entry.</comment></data>
+  <data name="Enum_JournalEntryType_BankDepositReversal" xml:space="preserve"><value>Storno di versamento bancario</value><comment>JournalEntryType enum — bank deposit reversal.</comment></data>
+  <data name="Enum_JournalEntryType_CashWithdrawal" xml:space="preserve"><value>Prelievo di contanti</value><comment>JournalEntryType enum — cash withdrawal.</comment></data>
+  <data name="Enum_ReceivedItemSource_MemberPayment" xml:space="preserve"><value>Pagamento del socio</value><comment>ReceivedItemSource enum — member payment.</comment></data>
+  <data name="Enum_ReceivedItemSource_IncomeEntry" xml:space="preserve"><value>Entrata</value><comment>ReceivedItemSource enum — income entry.</comment></data>
+  <data name="Enum_ReceivedItemSource_OpeningBalance" xml:space="preserve"><value>Saldo di apertura</value><comment>ReceivedItemSource enum — opening balance.</comment></data>
+  <data name="Enum_BankingHistoryEntryType_Deposit" xml:space="preserve"><value>Versamento</value><comment>BankingHistoryEntryType enum — deposit.</comment></data>
+  <data name="Enum_BankingHistoryEntryType_Withdrawal" xml:space="preserve"><value>Prelievo</value><comment>BankingHistoryEntryType enum — withdrawal.</comment></data>
 </root>

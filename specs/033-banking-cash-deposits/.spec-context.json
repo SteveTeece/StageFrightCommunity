@@ -82,6 +82,94 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-26T02:56:23.152Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T03:00:49.104Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T03:00:49.618Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T03:01:04.398Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T03:01:04.981Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T03:01:22.428Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T03:01:22.856Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T03:04:03.396Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T03:04:03.842Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T03:20:20.734Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T03:20:20.736Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T03:20:20.738Z"
     }
   ],
   "telemetryInstanceId": "2d0602eb-ff2b-480e-bd3e-beb0b4a6e39a",
@@ -153,6 +241,27 @@
       "rejected": "a stub redirect page or keeping both services",
       "by": "agent",
       "at": "2026-11-26T02:36:12.904Z"
+    },
+    {
+      "decision": "One IBankingService (tasks.md T012) instead of ui-contract §3 three services and ReceiptDestinationResolver",
+      "why": "tasks.md and research §6 are the later design; contract §3 predates them",
+      "rejected": "IBankingQueryService + IBankDepositService + ICashWithdrawalService",
+      "by": "agent",
+      "at": "2026-11-26T03:20:21.500Z"
+    },
+    {
+      "decision": "Read-model members follow ui-contract §3 (Source, IsLegacy, DepositBankAccounts) with data-model §6 CanReverse/CannotReverseReason added to DepositDetail; added ReceivedItemSource and BankingHistoryEntryType enums",
+      "why": "Wave 1 already shipped their Enum_* keys; Source lets the UI show the translated opening-balance payer",
+      "rejected": "Method on AwaitingDepositItem (no column shows it)",
+      "by": "agent",
+      "at": "2026-11-26T03:20:21.500Z"
+    },
+    {
+      "decision": "Implemented IsTransactionInFinalisedAsync and GetDraftLineReconciliationIdAsync in BankReconciliationRepository during T011",
+      "why": "the interface change otherwise breaks the build until T014",
+      "rejected": "leaving the solution uncompilable between waves",
+      "by": "agent",
+      "at": "2026-11-26T03:20:21.500Z"
     }
   ],
   "expectations": [
@@ -437,7 +546,7 @@
     }
   },
   "approach": "Route each receipt by payment method through a pure ReceiptRouting rule, track cheques as ReceivedItem rows, and post deposits, reversals and withdrawals as balanced journal entries through a new BankingService. One migration renames 1100 and seeds 1105, and backup moves to 1.4.0.",
-  "currentTask": "T001",
+  "currentTask": "T012",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -445,6 +554,160 @@
       "files": [
         "(none)"
       ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Created ReceivedItem entity per data-model section 3 (no soft-delete, financial exemption documented)",
+      "files": [
+        "src/StageFright.Core/Entities/ReceivedItem.cs"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Added UndepositedFundsId (...0008) and UndepositedFundsNumber 1105 to SystemAccounts; reworded CashId doc to Petty Cash",
+      "files": [
+        "src/StageFright.Core/Modules/Finance/SystemAccounts.cs"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Created BankDepositLine entity (no soft-delete, FK ids only)",
+      "files": [
+        "src/StageFright.Core/Entities/BankDepositLine.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Created static ReceiptRouting with 13 passing unit tests",
+      "files": [
+        "src/StageFright.Core/Modules/Finance/ReceiptRouting.cs",
+        "tests/StageFright.Core.Tests/Modules/Finance/ReceiptRoutingTests.cs"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "Created BankDeposit entity per data-model s4 (no soft-delete, derived Total, nav props)",
+      "files": [
+        "src/StageFright.Core/Entities/BankDeposit.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Added read-only MoneyFormatter.Symbol with AUD and JPY tests",
+      "files": [
+        "src/StageFright.Core/Localization/MoneyFormatter.cs",
+        "tests/StageFright.Core.Tests/Localization/MoneyFormatterTests.cs"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Appended BankDepositReversal and CashWithdrawal to JournalEntryType and reworded the BankDeposit doc",
+      "files": [
+        "src/StageFright.Core/Enums/JournalEntryType.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Added banking, nav, enum and validation keys in all shipped cultures, reworded Cash on Hand to Petty Cash, regenerated qps-ploc",
+      "files": [
+        "src/StageFright.UI/Resources/Strings/FinanceResource*.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/NavigationResource*.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/ValidationResource*.resx",
+        "src/StageFright.Core/Modules/Localization/Resources/EnumsResource*.resx"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "EF configs for ReceivedItem/BankDeposit/BankDepositLine (+navigations), repository contracts incl. two reconciliation queries (implemented early to keep build green), read models, request types, two display enums and IBankingService",
+      "files": [
+        "src/StageFright.Data/Configurations/{ReceivedItem",
+        "BankDeposit",
+        "BankDepositLine}Configuration.cs",
+        "src/StageFright.Core/Contracts/{IReceivedItemRepository",
+        "IBankDepositRepository",
+        "IBankReconciliationRepository",
+        "IBankingService}.cs",
+        "src/StageFright.Data/Repositories/BankReconciliationRepository.cs",
+        "src/StageFright.Core/Modules/Finance/{BankingOverview",
+        "AwaitingDepositItem",
+        "BankingHistoryEntry",
+        "DepositDetail",
+        "RecordDepositRequest",
+        "RecordCashWithdrawalRequest}.cs",
+        "src/StageFright.Core/Enums/{ReceivedItemSource",
+        "BankingHistoryEntryType}.cs",
+        "src/StageFright.Core/Entities/{ReceivedItem",
+        "BankDeposit",
+        "BankDepositLine}.cs"
+      ],
+      "wave": "T010-T012"
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "EF configs for ReceivedItem/BankDeposit/BankDepositLine (+navigations), repository contracts incl. two reconciliation queries (implemented early to keep build green), read models, request types, two display enums and IBankingService",
+      "files": [
+        "src/StageFright.Data/Configurations/{ReceivedItem",
+        "BankDeposit",
+        "BankDepositLine}Configuration.cs",
+        "src/StageFright.Core/Contracts/{IReceivedItemRepository",
+        "IBankDepositRepository",
+        "IBankReconciliationRepository",
+        "IBankingService}.cs",
+        "src/StageFright.Data/Repositories/BankReconciliationRepository.cs",
+        "src/StageFright.Core/Modules/Finance/{BankingOverview",
+        "AwaitingDepositItem",
+        "BankingHistoryEntry",
+        "DepositDetail",
+        "RecordDepositRequest",
+        "RecordCashWithdrawalRequest}.cs",
+        "src/StageFright.Core/Enums/{ReceivedItemSource",
+        "BankingHistoryEntryType}.cs",
+        "src/StageFright.Core/Entities/{ReceivedItem",
+        "BankDeposit",
+        "BankDepositLine}.cs"
+      ],
+      "wave": "T010-T012"
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "EF configs for ReceivedItem/BankDeposit/BankDepositLine (+navigations), repository contracts incl. two reconciliation queries (implemented early to keep build green), read models, request types, two display enums and IBankingService",
+      "files": [
+        "src/StageFright.Data/Configurations/{ReceivedItem",
+        "BankDeposit",
+        "BankDepositLine}Configuration.cs",
+        "src/StageFright.Core/Contracts/{IReceivedItemRepository",
+        "IBankDepositRepository",
+        "IBankReconciliationRepository",
+        "IBankingService}.cs",
+        "src/StageFright.Data/Repositories/BankReconciliationRepository.cs",
+        "src/StageFright.Core/Modules/Finance/{BankingOverview",
+        "AwaitingDepositItem",
+        "BankingHistoryEntry",
+        "DepositDetail",
+        "RecordDepositRequest",
+        "RecordCashWithdrawalRequest}.cs",
+        "src/StageFright.Core/Enums/{ReceivedItemSource",
+        "BankingHistoryEntryType}.cs",
+        "src/StageFright.Core/Entities/{ReceivedItem",
+        "BankDeposit",
+        "BankDepositLine}.cs"
+      ],
+      "wave": "T010-T012"
     }
-  }
+  },
+  "concerns": [
+    {
+      "note": "T009 validation keys were derived from FR-010/FR-018 and research §9-11, not from a key list; Wave 5 services must confirm every refusal they throw has a key.",
+      "step": "implement"
+    },
+    {
+      "note": "Obsolete keys kept because live code still uses them: Nav_Finance_RecordBankDeposit, Finance_BankDeposit_* (incl. FromValue still saying Cash on Hand), Validation_BankDeposit_*, Validation_Income_DepositAccountMustBeBank, Finance_RecordIncome_DepositToLabel. Remove them when BankDepositPage/BankDepositService/old income form are replaced.",
+      "step": "implement"
+    },
+    {
+      "note": "T010 configurations are not applied to the model until T013 registers them in StageFrightDbContext, so no test exercises them yet; T015 migration test and T016 repository tests cover them, including the two reconciliation queries.",
+      "step": "implement"
+    }
+  ],
+  "last_action": "Phase 2 Wave 2 (T010-T012) done; rebuild 0 warnings, 2493 tests passing; stopped before Wave 3, uncommitted."
 }

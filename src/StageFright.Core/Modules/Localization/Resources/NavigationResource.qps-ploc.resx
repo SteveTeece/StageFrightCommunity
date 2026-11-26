@@ -36,4 +36,5 @@
   <data name="Nav_Settings_ShortLabel" xml:space="preserve"><value>⟦SÉT—⟧</value><comment>Collapsed nav-rail abbreviation for Settings.</comment></data>
   <data name="Nav_Organisations_Title" xml:space="preserve"><value>⟦Órgáñísátíóñs—⟧</value><comment>Navigation label for the Organisations (external organisations) section.</comment></data>
   <data name="Nav_Organisations_ShortLabel" xml:space="preserve"><value>⟦ÓRGS—⟧</value><comment>Collapsed nav-rail abbreviation for Organisations.</comment></data>
+  <data name="Nav_Finance_Banking" xml:space="preserve"><value>⟦Báñkíñg—⟧</value><comment>Finance sub-menu item — banking (deposits and withdrawals).</comment></data>
 </root>
