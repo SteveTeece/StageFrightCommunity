@@ -44,7 +44,6 @@
   <data name="Finance_Common_AmountPositiveError" xml:space="preserve"><value>金額は0より大きい値である必要があります。</value><comment>Validation error when a Finance amount is zero or negative.</comment></data>
   <data name="Finance_RecordIncome_NoAccountsHtml" xml:space="preserve"><value>収益勘定が設定されていません。収入を記録する前に、&lt;a href="/finance/accounts"&gt;勘定科目一覧&lt;/a&gt;で収益勘定を追加してください。</value><comment>Warning (contains a link to the Chart of Accounts) shown when no income accounts exist.</comment></data>
   <data name="Finance_RecordIncome_AccountLabel" xml:space="preserve"><value>勘定</value><comment>Record Income — account field label.</comment></data>
-  <data name="Finance_RecordIncome_DepositToLabel" xml:space="preserve"><value>入金先</value><comment>Record Income — deposit-account field label.</comment></data>
   <data name="Finance_RecordIncome_DescriptionPlaceholder" xml:space="preserve"><value>例: クリスマス福引、年次募金…</value><comment>Record Income — description placeholder.</comment></data>
   <data name="Finance_RecordIncome_SubmitButton" xml:space="preserve"><value>収入を記録</value><comment>Record Income — submit button.</comment></data>
   <data name="Finance_RecordIncome_AccountRequiredError" xml:space="preserve"><value>勘定を選択してください。</value><comment>Record Income — validation error when no account is chosen.</comment></data>
@@ -100,18 +99,6 @@
   <data name="Finance_AnnualFees_SuccessMessage_One" xml:space="preserve"><value>{Count} 名の会員に年会費を適用しました。</value><comment>{Count} = 1.</comment></data>
   <data name="Finance_AnnualFees_SuccessMessage_Other" xml:space="preserve"><value>{Count} 名の会員に年会費を適用しました。</value><comment>{Count} = number of members charged.</comment></data>
   <data name="Finance_AnnualFees_ApplyError" xml:space="preserve"><value>年会費の適用に失敗しました: {Detail}</value><comment>{Detail} = error detail.</comment></data>
-  <data name="Finance_BankDeposit_PageTitle" xml:space="preserve"><value>銀行預入を記録</value><comment>Browser tab title — Record Bank Deposit page.</comment></data>
-  <data name="Finance_BankDeposit_Heading" xml:space="preserve"><value>銀行預入を記録</value><comment>Record Bank Deposit page heading.</comment></data>
-  <data name="Finance_BankDeposit_NoAccountsHtml" xml:space="preserve"><value>銀行預入には、小口現金以外の銀行勘定が少なくとも1つ必要です。まず &lt;a href="/finance/accounts"&gt;勘定科目一覧&lt;/a&gt;で銀行勘定を追加してください。</value><comment>Warning (contains a link to the Chart of Accounts) shown when no destination bank account exists.</comment></data>
-  <data name="Finance_BankDeposit_FromLabel" xml:space="preserve"><value>出金元</value><comment>Record Bank Deposit — source account label.</comment></data>
-  <data name="Finance_BankDeposit_FromValue" xml:space="preserve"><value>手元現金</value><comment>Record Bank Deposit — fixed source account shown as a disabled field.</comment></data>
-  <data name="Finance_BankDeposit_ToLabel" xml:space="preserve"><value>入金先</value><comment>Record Bank Deposit — destination account label.</comment></data>
-  <data name="Finance_BankDeposit_DescriptionPlaceholder" xml:space="preserve"><value>例: リハーサル出席料の入金…</value><comment>Record Bank Deposit — description placeholder.</comment></data>
-  <data name="Finance_BankDeposit_SubmitButton" xml:space="preserve"><value>預入を記録</value><comment>Record Bank Deposit — submit button.</comment></data>
-  <data name="Finance_BankDeposit_LoadError" xml:space="preserve"><value>勘定の読み込みに失敗しました: {Detail}</value><comment>{Detail} = error detail.</comment></data>
-  <data name="Finance_BankDeposit_ToAccountRequiredError" xml:space="preserve"><value>入金先の勘定を選択してください。</value><comment>Validation error when no destination account is chosen.</comment></data>
-  <data name="Finance_BankDeposit_SuccessMessage" xml:space="preserve"><value>{Amount} の預入を記録しました。</value><comment>{Amount} = deposit amount formatted as AUD.</comment></data>
-  <data name="Finance_BankDeposit_RecordError" xml:space="preserve"><value>預入の記録に失敗しました: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Coa_PageTitle" xml:space="preserve"><value>勘定科目一覧</value><comment>Browser tab title — Chart of Accounts page.</comment></data>
   <data name="Finance_Coa_Heading" xml:space="preserve"><value>勘定科目一覧</value><comment>Chart of Accounts page heading.</comment></data>
   <data name="Finance_Coa_LoadingText" xml:space="preserve"><value>勘定を読み込み中…</value><comment>Status text while accounts load.</comment></data>
@@ -290,4 +277,5 @@
   <data name="Finance_Payment_BankAccountLabel" xml:space="preserve"><value>銀行勘定</value><comment>Record payment: bank account field label.</comment></data>
   <data name="Finance_Payment_ReferenceLabel" xml:space="preserve"><value>小切手の参照</value><comment>Record payment: cheque reference field label.</comment></data>
   <data name="Finance_RecordIncome_PaymentMethodLabel" xml:space="preserve"><value>支払方法</value><comment>Record income: payment method field label.</comment></data>
+  <data name="Finance_Banking_LoadError" xml:space="preserve"><value>銀行情報の読み込みに失敗しました: {Detail}</value><comment>Banking page load failure. {Detail} = error detail.</comment></data>
 </root>

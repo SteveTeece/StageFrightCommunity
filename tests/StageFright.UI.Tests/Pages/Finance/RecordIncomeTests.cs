@@ -5,6 +5,7 @@ using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.UI.Pages.Finance;
 using AppSettings = StageFright.Core.Entities.Settings;
@@ -260,6 +261,146 @@ public class RecordIncomeTests : LocalizedTestContext
         await _incomeService.Received(1).RecordIncomeAsync(
             Arg.Is<RecordIncomeRequest>(r => r!.ExternalOrganisationId == null),
             Arg.Any<CancellationToken>());
+    }
+
+    // --- Spec 033: payment method, bank account and reference (FR-004) ---
+
+    private static readonly Guid BankId = Guid.NewGuid();
+
+    private void SetBankAccounts(params Account[] banks)
+    {
+        var petty = new Account
+        {
+            Id = SystemAccounts.CashId, Name = "Petty Cash", AccountNumber = "1100", Type = AccountType.Asset,
+            IsBankAccount = true, IsSystem = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        _accountService.GetBankAccountsAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Account>([petty, .. banks]));
+    }
+
+    private static Account MakeBank(Guid id, string name) => new()
+    {
+        Id = id, Name = name, AccountNumber = "1110", Type = AccountType.Asset, IsBankAccount = true,
+        CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+    };
+
+    [Fact]
+    public void Should_ReplaceDepositToWithPaymentMethod_When_Rendered()
+    {
+        var cut = Render<RecordIncome>();
+
+        cut.Find("#paymentMethod");
+        Assert.Empty(cut.FindAll("#depositAccount"));
+        Assert.DoesNotContain("Deposit to", cut.Markup);
+        Assert.Equal(PaymentMethod.Cash.ToString(), cut.Find("#paymentMethod").GetAttribute("value"));
+    }
+
+    [Fact]
+    public void Should_PlaceMethodAfterAccountAndOrganisationBeforeDescription_When_Rendered()
+    {
+        var cut = Render<RecordIncome>();
+        var markup = cut.Markup;
+
+        Assert.True(markup.IndexOf("id=\"account\"", StringComparison.Ordinal)
+                    < markup.IndexOf("id=\"paymentMethod\"", StringComparison.Ordinal));
+        Assert.True(markup.IndexOf("id=\"paymentMethod\"", StringComparison.Ordinal)
+                    < markup.IndexOf("id=\"incomeOrganisation\"", StringComparison.Ordinal));
+        Assert.True(markup.IndexOf("id=\"incomeOrganisation\"", StringComparison.Ordinal)
+                    < markup.IndexOf("id=\"description\"", StringComparison.Ordinal));
+    }
+
+    [Theory]
+    [InlineData(PaymentMethod.Card)]
+    [InlineData(PaymentMethod.ElectronicTransfer)]
+    public void Should_ShowBankPickerOnly_When_MethodIsCardOrEft(PaymentMethod method)
+    {
+        SetBankAccounts(MakeBank(BankId, "Community Bank"));
+        var cut = Render<RecordIncome>();
+
+        cut.Find("#paymentMethod").Change(method.ToString());
+
+        cut.Find("#bankAccount");
+        Assert.Empty(cut.FindAll("#reference"));
+        Assert.Equal(BankId.ToString(), cut.Find("#bankAccount").GetAttribute("value"));
+    }
+
+    [Theory]
+    [InlineData(PaymentMethod.Check)]
+    [InlineData(PaymentMethod.Other)]
+    public void Should_ShowReferenceOnly_When_MethodIsChequeOrOther(PaymentMethod method)
+    {
+        var cut = Render<RecordIncome>();
+
+        cut.Find("#paymentMethod").Change(method.ToString());
+
+        cut.Find("#reference");
+        Assert.Empty(cut.FindAll("#bankAccount"));
+    }
+
+    [Fact]
+    public void Should_ShowNoBankWarning_When_CardChosenAndNoBankAccountExists()
+    {
+        var cut = Render<RecordIncome>();
+        Assert.DoesNotContain("/finance/accounts", cut.Markup);
+
+        cut.Find("#paymentMethod").Change(PaymentMethod.Card.ToString());
+
+        Assert.Contains("/finance/accounts", cut.Markup);
+    }
+
+    [Theory]
+    [InlineData(PaymentMethod.Cash)]
+    [InlineData(PaymentMethod.Check)]
+    public async Task Should_SaveWithoutBank_When_CashOrChequeAndNoBankAccountExists(PaymentMethod method)
+    {
+        var cut = Render<RecordIncome>();
+        cut.Find("#paymentMethod").Change(method.ToString());
+        if (method == PaymentMethod.Check)
+            cut.Find("#reference").Change(" 1042 ");
+        await cut.Find("#amount").ChangeAsync(new Microsoft.AspNetCore.Components.ChangeEventArgs { Value = "75" });
+
+        await cut.Find("button.btn-primary").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        await _incomeService.Received(1).RecordIncomeAsync(
+            Arg.Is<RecordIncomeRequest>(r => r!.PaymentMethod == method && r.BankAccountId == null
+                && r.Reference == (method == PaymentMethod.Check ? "1042" : null)),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_SendBankAccount_When_CardSubmitted()
+    {
+        SetBankAccounts(MakeBank(BankId, "Community Bank"));
+        var cut = Render<RecordIncome>();
+        cut.Find("#paymentMethod").Change(PaymentMethod.Card.ToString());
+        await cut.Find("#amount").ChangeAsync(new Microsoft.AspNetCore.Components.ChangeEventArgs { Value = "75" });
+
+        await cut.Find("button.btn-primary").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        await _incomeService.Received(1).RecordIncomeAsync(
+            Arg.Is<RecordIncomeRequest>(r => r!.PaymentMethod == PaymentMethod.Card && r.BankAccountId == BankId),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_RefuseSave_When_CardChosenWithNoBankAccount()
+    {
+        var cut = Render<RecordIncome>();
+        cut.Find("#paymentMethod").Change(PaymentMethod.Card.ToString());
+        await cut.Find("#amount").ChangeAsync(new Microsoft.AspNetCore.Components.ChangeEventArgs { Value = "75" });
+
+        await cut.Find("button.btn-primary").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        await _incomeService.DidNotReceive().RecordIncomeAsync(
+            Arg.Any<RecordIncomeRequest>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public void Should_PrefixAmountWithConfiguredSymbol_When_Rendered()
+    {
+        var cut = Render<RecordIncome>();
+
+        Assert.Contains(MoneyFormatter.Symbol, cut.Find(".input-group-text").TextContent);
     }
 
     // --- Helpers ---

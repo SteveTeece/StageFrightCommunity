@@ -1,0 +1,122 @@
+@page "/finance/banking"
+@page "/finance/bank-deposit"
+@using StageFright.Core.Modules.Finance
+
+<PageTitle>@L["Finance_Banking_PageTitle"]</PageTitle>
+
+<div class="banking-page container-fluid py-2">
+    <h4 class="mb-2">@L["Finance_Banking_PageTitle"]</h4>
+
+    @if (_loading)
+    {
+        <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+        }
+
+        @if (_overview is not null)
+        {
+            <div class="row g-2 mb-2">
+                <div class="col-md-4">
+                    <div class="card"><div class="card-body py-2">
+                        <div class="small text-muted">@L["Finance_Banking_UndepositedTotal"]</div>
+                        <div class="fs-5 fw-semibold" id="undepositedTotal">@MoneyFormatter.Format(_overview.UndepositedTotal)</div>
+                    </div></div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card"><div class="card-body py-2">
+                        <div class="small text-muted">@L["Finance_Banking_PettyCashBalance"]</div>
+                        <div class="fs-5 fw-semibold" id="pettyCashBalance">@MoneyFormatter.Format(_overview.PettyCashBalance)</div>
+                    </div></div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card"><div class="card-body py-2">
+                        <div class="small text-muted">@L["Finance_Banking_CashAvailable"]</div>
+                        <div class="fs-5 fw-semibold" id="cashAvailable">@MoneyFormatter.Format(_overview.CashAvailableToday)</div>
+                    </div></div>
+                </div>
+            </div>
+
+            @if (_overview.DepositBankAccounts.Count == 0)
+            {
+                <div class="alert alert-warning py-1 mb-2 small" role="alert">
+                    @((MarkupString)L["Finance_Banking_NoBankAccountHtml"].Value)
+                </div>
+            }
+            else
+            {
+                <div class="d-flex gap-2 mb-3">
+                    <button type="button" class="btn btn-primary btn-sm" id="recordDeposit" @onclick="GoToDeposit">@L["Finance_Banking_RecordDeposit"]</button>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="recordWithdrawal" @onclick="GoToWithdrawal">@L["Finance_Banking_RecordWithdrawal"]</button>
+                </div>
+            }
+
+            <h5>@L["Finance_Banking_AwaitingHeading"]</h5>
+            @if (_overview.AwaitingItems.Count == 0)
+            {
+                <p class="text-muted small">@L["Finance_Banking_NothingAwaiting"]</p>
+            }
+            else
+            {
+                <RadzenDataGrid Data="@_overview.AwaitingItems" TItem="AwaitingDepositItem"
+                                AllowSorting="true" AllowPaging="true" PageSize="15"
+                                class="rz-shadow-0 mb-3">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="AwaitingDepositItem" Property="ReceivedDate" Title="@L["Finance_Banking_Col_Received"]" Width="130px">
+                            <Template Context="item">@item.ReceivedDate.ToShortDateString()</Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="AwaitingDepositItem" Property="PayerName" Title="@L["Finance_Banking_Col_Payer"]">
+                            <Template Context="item">@PayerText(item)</Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="AwaitingDepositItem" Property="Reference" Title="@L["Finance_Banking_Col_Reference"]" />
+                        <RadzenDataGridColumn TItem="AwaitingDepositItem" Property="Amount" Title="@L["Finance_Banking_Col_Amount"]" Width="140px" TextAlign="TextAlign.Right">
+                            <Template Context="item">@MoneyFormatter.Format(item.Amount)</Template>
+                            <FooterTemplate><strong id="awaitingTotal">@MoneyFormatter.Format(_overview.UndepositedTotal)</strong></FooterTemplate>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            }
+
+            <h5>@L["Finance_Banking_HistoryHeading"]</h5>
+            @if (_history.Count == 0)
+            {
+                <p class="text-muted small">@L["Finance_Banking_NoHistory"]</p>
+            }
+            else
+            {
+                <RadzenDataGrid Data="@_history" TItem="BankingHistoryEntry"
+                                AllowSorting="true" AllowPaging="true" PageSize="15"
+                                class="rz-shadow-0">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="BankingHistoryEntry" Property="Date" Title="@L["Finance_Banking_Col_Date"]" Width="130px">
+                            <Template Context="entry">
+                                @if (entry.Type == BankingHistoryEntryType.Deposit)
+                                {
+                                    <a href="@DepositLink(entry)" class="text-decoration-none">@entry.Date.ToShortDateString()</a>
+                                }
+                                else
+                                {
+                                    @entry.Date.ToShortDateString()
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="BankingHistoryEntry" Property="Type" Title="@L["Finance_Banking_Col_Type"]" Width="130px">
+                            <Template Context="entry">@entry.Type.LocalizeEnum()</Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="BankingHistoryEntry" Property="BankAccountName" Title="@L["Finance_Banking_Col_BankAccount"]" />
+                        <RadzenDataGridColumn TItem="BankingHistoryEntry" Property="Total" Title="@L["Finance_Banking_Col_Total"]" Width="140px" TextAlign="TextAlign.Right">
+                            <Template Context="entry">@MoneyFormatter.Format(entry.Total)</Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="BankingHistoryEntry" Property="IsReversed" Title="@L["Finance_Banking_Col_Status"]" Width="130px">
+                            <Template Context="entry">@StatusText(entry)</Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            }
+        }
+    }
+</div>

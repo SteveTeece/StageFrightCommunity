@@ -32,7 +32,7 @@ public class Us2ExceptionMessageGuardTests
         "src/StageFright.Core/Modules/Finance/FeeService.cs",
         "src/StageFright.Core/Modules/Finance/GeneralJournalService.cs",
         "src/StageFright.Core/Modules/Finance/IncomeEntryService.cs",
-        "src/StageFright.Core/Modules/Finance/BankDepositService.cs",
+        "src/StageFright.Core/Modules/Finance/BankingService.cs",
         "src/StageFright.Core/Modules/Finance/OpeningBalanceService.cs",
     ];
 

@@ -26,7 +26,6 @@
   <data name="Nav_Finance_ShortLabel" xml:space="preserve"><value>⟦FÍÑ—⟧</value><comment>Collapsed nav-rail abbreviation for Finance.</comment></data>
   <data name="Nav_Finance_Overview" xml:space="preserve"><value>⟦Óvérvíéw—⟧</value><comment>Finance sub-menu item — the Finance overview page.</comment></data>
   <data name="Nav_Finance_ChartOfAccounts" xml:space="preserve"><value>⟦Çhárt óf Áççóúñts—⟧</value><comment>Finance sub-menu item — the chart of accounts.</comment></data>
-  <data name="Nav_Finance_RecordBankDeposit" xml:space="preserve"><value>⟦Réçórd Báñk Dépósít—⟧</value><comment>Finance sub-menu item — record a bank deposit.</comment></data>
   <data name="Nav_Finance_JournalEntries" xml:space="preserve"><value>⟦Jóúrñál Éñtríés—⟧</value><comment>Finance sub-menu item — general journal entries.</comment></data>
   <data name="Nav_Finance_Reconciliation" xml:space="preserve"><value>⟦Réçóñçílíátíóñ—⟧</value><comment>Finance sub-menu item — bank reconciliation.</comment></data>
   <data name="Nav_Finance_OpeningBalances" xml:space="preserve"><value>⟦Ópéñíñg Báláñçés—⟧</value><comment>Finance sub-menu item — opening balances.</comment></data>

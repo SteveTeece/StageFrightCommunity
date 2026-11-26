@@ -142,7 +142,7 @@ public sealed class V14_ExpensesTransfersTests : IAsyncLifetime
     // --- Combined journey ---
 
     [Fact]
-    public async Task ExpenseThenBankDeposit_LedgerDebitsEqualCredits_AndEachEntryBalances()
+    public async Task ExpenseThenCashWithdrawal_LedgerDebitsEqualCredits_AndEachEntryBalances()
     {
         await BuildExpenseService().RecordExpenseAsync(new RecordExpenseRequest
         {
@@ -151,10 +151,10 @@ public sealed class V14_ExpensesTransfersTests : IAsyncLifetime
             ExpenseAccountId = VenueHireAccountId
         }, TestContext.Current.CancellationToken);
 
-        await BuildBankDepositService().RecordDepositAsync(new RecordBankDepositRequest
+        await BuildBankingService().RecordWithdrawalAsync(new RecordCashWithdrawalRequest
         {
             Date = Today, Amount = 250m,
-            ToAccountId = SavingsAccountId
+            BankAccountId = SavingsAccountId
         }, TestContext.Current.CancellationToken);
 
         var totalDebits = await _db.Transactions.SumAsync(t => t.DebitAmount, cancellationToken: TestContext.Current.CancellationToken);
@@ -176,9 +176,10 @@ public sealed class V14_ExpensesTransfersTests : IAsyncLifetime
         new(new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new JournalEntryRepository(_db),
             new SettingsRepository(_db), BuildAuditService(), new UnitOfWork(_db), RealLocalizer.Instance, new ExternalOrganisationRepository(_db));
 
-    private BankDepositService BuildBankDepositService() =>
+    private BankingService BuildBankingService() =>
         new(new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new JournalEntryRepository(_db),
-            BuildAuditService(), new UnitOfWork(_db), RealLocalizer.Instance);
+            new ReceivedItemRepository(_db), new BankDepositRepository(_db), new BankReconciliationRepository(_db),
+            new ClosedPeriodGuard(new SettingsRepository(_db)), BuildAuditService(), new UnitOfWork(_db), RealLocalizer.Instance);
 
     private static AuditTrailService BuildAuditService()
     {

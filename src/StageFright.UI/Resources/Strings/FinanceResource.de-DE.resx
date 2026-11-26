@@ -44,7 +44,6 @@
   <data name="Finance_Common_AmountPositiveError" xml:space="preserve"><value>Der Betrag muss größer als null sein.</value><comment>Validation error when a Finance amount is zero or negative.</comment></data>
   <data name="Finance_RecordIncome_NoAccountsHtml" xml:space="preserve"><value>Es sind keine Ertragskonten konfiguriert. Bitte fügen Sie im &lt;a href="/finance/accounts"&gt;Kontenplan&lt;/a&gt; ein Ertragskonto hinzu, bevor Sie Einnahmen erfassen.</value><comment>Warning (contains a link to the Chart of Accounts) shown when no income accounts exist.</comment></data>
   <data name="Finance_RecordIncome_AccountLabel" xml:space="preserve"><value>Konto</value><comment>Record Income — account field label.</comment></data>
-  <data name="Finance_RecordIncome_DepositToLabel" xml:space="preserve"><value>Einzahlen auf</value><comment>Record Income — deposit-account field label.</comment></data>
   <data name="Finance_RecordIncome_DescriptionPlaceholder" xml:space="preserve"><value>z. B. Weihnachtstombola, Jahres-Spendenaktion…</value><comment>Record Income — description placeholder.</comment></data>
   <data name="Finance_RecordIncome_SubmitButton" xml:space="preserve"><value>Einnahme erfassen</value><comment>Record Income — submit button.</comment></data>
   <data name="Finance_RecordIncome_AccountRequiredError" xml:space="preserve"><value>Bitte wählen Sie ein Konto aus.</value><comment>Record Income — validation error when no account is chosen.</comment></data>
@@ -100,18 +99,6 @@
   <data name="Finance_AnnualFees_SuccessMessage_One" xml:space="preserve"><value>Jahresbeiträge erfolgreich auf {Count} Mitglied angewendet.</value><comment>{Count} = 1.</comment></data>
   <data name="Finance_AnnualFees_SuccessMessage_Other" xml:space="preserve"><value>Jahresbeiträge erfolgreich auf {Count} Mitglieder angewendet.</value><comment>{Count} = number of members charged.</comment></data>
   <data name="Finance_AnnualFees_ApplyError" xml:space="preserve"><value>Jahresbeiträge konnten nicht angewendet werden: {Detail}</value><comment>{Detail} = error detail.</comment></data>
-  <data name="Finance_BankDeposit_PageTitle" xml:space="preserve"><value>Bankeinzahlung erfassen</value><comment>Browser tab title — Record Bank Deposit page.</comment></data>
-  <data name="Finance_BankDeposit_Heading" xml:space="preserve"><value>Bankeinzahlung erfassen</value><comment>Record Bank Deposit page heading.</comment></data>
-  <data name="Finance_BankDeposit_NoAccountsHtml" xml:space="preserve"><value>Für Bankeinzahlungen wird mindestens ein Bankkonto außer der Handkasse benötigt. Bitte fügen Sie zuerst im &lt;a href="/finance/accounts"&gt;Kontenplan&lt;/a&gt; ein Bankkonto hinzu.</value><comment>Warning (contains a link to the Chart of Accounts) shown when no destination bank account exists.</comment></data>
-  <data name="Finance_BankDeposit_FromLabel" xml:space="preserve"><value>Von</value><comment>Record Bank Deposit — source account label.</comment></data>
-  <data name="Finance_BankDeposit_FromValue" xml:space="preserve"><value>Kassenbestand</value><comment>Record Bank Deposit — fixed source account shown as a disabled field.</comment></data>
-  <data name="Finance_BankDeposit_ToLabel" xml:space="preserve"><value>An</value><comment>Record Bank Deposit — destination account label.</comment></data>
-  <data name="Finance_BankDeposit_DescriptionPlaceholder" xml:space="preserve"><value>z. B. Einzahlung der Probenteilnahmegebühren…</value><comment>Record Bank Deposit — description placeholder.</comment></data>
-  <data name="Finance_BankDeposit_SubmitButton" xml:space="preserve"><value>Einzahlung erfassen</value><comment>Record Bank Deposit — submit button.</comment></data>
-  <data name="Finance_BankDeposit_LoadError" xml:space="preserve"><value>Konten konnten nicht geladen werden: {Detail}</value><comment>{Detail} = error detail.</comment></data>
-  <data name="Finance_BankDeposit_ToAccountRequiredError" xml:space="preserve"><value>Bitte wählen Sie das Zielkonto aus.</value><comment>Validation error when no destination account is chosen.</comment></data>
-  <data name="Finance_BankDeposit_SuccessMessage" xml:space="preserve"><value>Einzahlung von {Amount} erfolgreich erfasst.</value><comment>{Amount} = deposit amount formatted as AUD.</comment></data>
-  <data name="Finance_BankDeposit_RecordError" xml:space="preserve"><value>Einzahlung konnte nicht erfasst werden: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Coa_PageTitle" xml:space="preserve"><value>Kontenplan</value><comment>Browser tab title — Chart of Accounts page.</comment></data>
   <data name="Finance_Coa_Heading" xml:space="preserve"><value>Kontenplan</value><comment>Chart of Accounts page heading.</comment></data>
   <data name="Finance_Coa_LoadingText" xml:space="preserve"><value>Konten werden geladen…</value><comment>Status text while accounts load.</comment></data>
@@ -290,4 +277,5 @@
   <data name="Finance_Payment_BankAccountLabel" xml:space="preserve"><value>Bankkonto</value><comment>Record payment: bank account field label.</comment></data>
   <data name="Finance_Payment_ReferenceLabel" xml:space="preserve"><value>Scheckreferenz</value><comment>Record payment: cheque reference field label.</comment></data>
   <data name="Finance_RecordIncome_PaymentMethodLabel" xml:space="preserve"><value>Zahlungsart</value><comment>Record income: payment method field label.</comment></data>
+  <data name="Finance_Banking_LoadError" xml:space="preserve"><value>Bankdaten konnten nicht geladen werden: {Detail}</value><comment>Banking page load failure. {Detail} = error detail.</comment></data>
 </root>

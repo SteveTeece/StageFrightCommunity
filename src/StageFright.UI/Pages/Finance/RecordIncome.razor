@@ -42,7 +42,7 @@ else
                             <div class="col-md-4">
                                 <label class="form-label" for="amount">@AmountLabel <span aria-hidden="true">*</span></label>
                                 <div class="input-group input-group-sm @(_errors.ContainsKey("Amount") ? "has-validation" : "")">
-                                    <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
+                                    <span class="input-group-text">@MoneyFormatter.Symbol</span>
                                     <InputNumber id="amount"
                                                  class="@(_errors.ContainsKey("Amount") ? "form-control is-invalid" : "form-control")"
                                                  @bind-Value="_form.Amount"
@@ -72,15 +72,52 @@ else
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label" for="depositAccount">@L["Finance_RecordIncome_DepositToLabel"]</label>
-                                <InputSelect id="depositAccount" class="form-select form-select-sm"
-                                             @bind-Value="_form.DepositAccountId">
-                                    @foreach (var bank in _bankAccounts)
+                                <label class="form-label" for="paymentMethod">@L["Finance_RecordIncome_PaymentMethodLabel"] <span aria-hidden="true">*</span></label>
+                                <InputSelect id="paymentMethod" class="form-select form-select-sm" @bind-Value="_form.PaymentMethod">
+                                    @foreach (var method in Enum.GetValues<PaymentMethod>())
                                     {
-                                        <option value="@bank.Id">@bank.AccountNumber @bank.Name</option>
+                                        <option value="@method">@method.LocalizeEnum()</option>
                                     }
                                 </InputSelect>
                             </div>
+
+                            @if (NeedsBankAccount)
+                            {
+                                <div class="col-md-4">
+                                    <label class="form-label" for="bankAccount">@L["Finance_Payment_BankAccountLabel"] <span aria-hidden="true">*</span></label>
+                                    @if (_bankAccounts.Count == 0)
+                                    {
+                                        <div class="alert alert-warning py-1 mb-0 small" role="alert">
+                                            @((MarkupString)L["Finance_Banking_NoBankAccountHtml"].Value)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <InputSelect id="bankAccount"
+                                                     class="@(_errors.ContainsKey("BankAccountId") ? "form-select form-select-sm is-invalid" : "form-select form-select-sm")"
+                                                     @bind-Value="_form.BankAccountId">
+                                            <option value="@Guid.Empty">@L["Finance_Common_SelectOption"]</option>
+                                            @foreach (var bank in _bankAccounts)
+                                            {
+                                                <option value="@bank.Id">@bank.AccountNumber @bank.Name</option>
+                                            }
+                                        </InputSelect>
+                                        @if (_errors.TryGetValue("BankAccountId", out var bankErr))
+                                        {
+                                            <div class="invalid-feedback d-block">@bankErr</div>
+                                        }
+                                    }
+                                </div>
+                            }
+
+                            @if (HasReference)
+                            {
+                                <div class="col-md-4">
+                                    <label class="form-label" for="reference">@L["Finance_Payment_ReferenceLabel"]</label>
+                                    <InputText id="reference" class="form-control form-control-sm" maxlength="50"
+                                               @bind-Value="_form.Reference" />
+                                </div>
+                            }
 
                             @if (_isTaxApplicable)
                             {

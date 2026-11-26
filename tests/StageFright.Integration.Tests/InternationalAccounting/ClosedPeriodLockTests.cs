@@ -139,9 +139,9 @@ public sealed class ClosedPeriodLockTests : IAsyncLifetime
             Date = date, Amount = 40m, AccountId = IncomeId
         }, TestContext.Current.CancellationToken),
 
-        "deposit" => BuildBankDepositService().RecordDepositAsync(new RecordBankDepositRequest
+        "deposit" => BuildBankingService().RecordWithdrawalAsync(new RecordCashWithdrawalRequest
         {
-            Date = date, Amount = 25m, ToAccountId = BankId
+            Date = date, Amount = 25m, BankAccountId = BankId
         }, TestContext.Current.CancellationToken),
 
         _ => throw new ArgumentOutOfRangeException(nameof(path), path, null)
@@ -286,8 +286,9 @@ public sealed class ClosedPeriodLockTests : IAsyncLifetime
     private IncomeEntryService BuildIncomeService() =>
         new(new AccountRepository(_db), Gl(), new JournalEntryRepository(_db), new SettingsRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance, new ExternalOrganisationRepository(_db), new ReceivedItemRepository(_db));
 
-    private BankDepositService BuildBankDepositService() =>
-        new(new AccountRepository(_db), Gl(), new JournalEntryRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance);
+    private BankingService BuildBankingService() =>
+        new(new AccountRepository(_db), Gl(), new JournalEntryRepository(_db), new ReceivedItemRepository(_db), new BankDepositRepository(_db),
+            new BankReconciliationRepository(_db), new ClosedPeriodGuard(new SettingsRepository(_db)), Audit(), new UnitOfWork(_db), RealLocalizer.Instance);
 
     private PaymentService BuildPaymentService() =>
         new(new FeeRepository(_db), new PaymentRepository(_db, Audit()), Gl(), new MemberRepository(_db), new AccountRepository(_db), new ReceivedItemRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance);

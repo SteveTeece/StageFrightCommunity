@@ -4,11 +4,11 @@
 
 | Route | Component | Notes |
 |---|---|---|
-| `/finance/banking` | `Pages/Finance/Banking/BankingPage` | Replaces the old screen. Finance menu item `Nav_Finance_Banking` at DisplayOrder 3, in the slot of the old `Nav_Finance_RecordBankDeposit` item. |
+| `/finance/banking` | `Pages/Finance/BankingPage` | Replaces the old screen. Finance menu item `Nav_Finance_Banking` at DisplayOrder 3, in the slot of the old `Nav_Finance_RecordBankDeposit` item. |
 | `/finance/bank-deposit` | `BankingPage` (second `@page`) | Legacy address kept so bookmarks keep working (spec assumption). |
-| `/finance/banking/deposits/new` | `DepositForm` | Save → `/finance/banking/deposits/{id}`. Cancel → `/finance/banking`. |
+| `/finance/banking/deposit` | `DepositPage` | Save → `/finance/banking`. Cancel → `/finance/banking`. |
 | `/finance/banking/deposits/{id:guid}` | `DepositDetailPage` | Unknown Id → `Finance_Banking_DepositNotFound` message plus a back link. |
-| `/finance/banking/withdrawals/new` | `CashWithdrawalForm` | Save or Cancel → `/finance/banking`. |
+| `/finance/banking/withdrawal` | `CashWithdrawalPage` | Save or Cancel → `/finance/banking`. |
 
 `BankDepositPage.razor`, `BankDepositPage.razor.cs` and `BankDepositModel.cs` are deleted.
 

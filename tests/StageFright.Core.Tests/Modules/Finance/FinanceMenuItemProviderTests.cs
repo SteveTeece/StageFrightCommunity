@@ -24,7 +24,7 @@ public class FinanceMenuItemProviderTests
     [Theory]
     [InlineData("Overview")]
     [InlineData("Chart of Accounts")]
-    [InlineData("Record Bank Deposit")]
+    [InlineData("Banking")]
     [InlineData("Journal Entries")]
     [InlineData("Reconciliation")]
     [InlineData("Opening Balances")]
@@ -45,11 +45,20 @@ public class FinanceMenuItemProviderTests
     }
 
     [Fact]
-    public void GetMenuItems_RecordBankDeposit_RoutesToFinanceBankDeposit()
+    public void Should_RouteBankingToFinanceBanking_When_MenuBuilt()
     {
         var financeItem = Assert.Single(_sut.GetMenuItems());
 
-        var bankDeposit = Assert.Single(financeItem.SubItems!, item => item.Title == "Record Bank Deposit");
-        Assert.Equal("/finance/bank-deposit", bankDeposit.Route);
+        var banking = Assert.Single(financeItem.SubItems!, item => item.Title == "Banking");
+        Assert.Equal("/finance/banking", banking.Route);
+    }
+
+    [Fact]
+    public void Should_PlaceBankingAtDisplayOrderThree_When_MenuBuilt()
+    {
+        var financeItem = Assert.Single(_sut.GetMenuItems());
+
+        var banking = Assert.Single(financeItem.SubItems!, item => item.Title == "Banking");
+        Assert.Equal(3, banking.DisplayOrder);
     }
 }

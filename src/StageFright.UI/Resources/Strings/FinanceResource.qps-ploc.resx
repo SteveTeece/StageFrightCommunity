@@ -44,7 +44,6 @@
   <data name="Finance_Common_AmountPositiveError" xml:space="preserve"><value>⟦Ámóúñt múst bé gréátér tháñ zéró.—⟧</value><comment>Validation error when a Finance amount is zero or negative.</comment></data>
   <data name="Finance_RecordIncome_NoAccountsHtml" xml:space="preserve"><value>⟦Ñó íñçómé áççóúñts áré çóñfígúréd. Pléásé ádd áñ íñçómé áççóúñt íñ thé &lt;á hréf="/fíñáñçé/áççóúñts"&gt;Çhárt óf Áççóúñts&lt;/á&gt; béfóré réçórdíñg íñçómé.—⟧</value><comment>Warning (contains a link to the Chart of Accounts) shown when no income accounts exist.</comment></data>
   <data name="Finance_RecordIncome_AccountLabel" xml:space="preserve"><value>⟦Áççóúñt—⟧</value><comment>Record Income — account field label.</comment></data>
-  <data name="Finance_RecordIncome_DepositToLabel" xml:space="preserve"><value>⟦Dépósít tó—⟧</value><comment>Record Income — deposit-account field label.</comment></data>
   <data name="Finance_RecordIncome_DescriptionPlaceholder" xml:space="preserve"><value>⟦é.g. Çhrístmás ráfflé, Áññúál fúñdráísér…—⟧</value><comment>Record Income — description placeholder.</comment></data>
   <data name="Finance_RecordIncome_SubmitButton" xml:space="preserve"><value>⟦Réçórd Íñçómé—⟧</value><comment>Record Income — submit button.</comment></data>
   <data name="Finance_RecordIncome_AccountRequiredError" xml:space="preserve"><value>⟦Pléásé séléçt á áççóúñt.—⟧</value><comment>Record Income — validation error when no account is chosen.</comment></data>
@@ -100,18 +99,6 @@
   <data name="Finance_AnnualFees_SuccessMessage_One" xml:space="preserve"><value>⟦Áññúál féés ápplíéd súççéssfúllý tó {Count} mémbér.—⟧</value><comment>{Count} = 1.</comment></data>
   <data name="Finance_AnnualFees_SuccessMessage_Other" xml:space="preserve"><value>⟦Áññúál féés ápplíéd súççéssfúllý tó {Count} mémbérs.—⟧</value><comment>{Count} = number of members charged.</comment></data>
   <data name="Finance_AnnualFees_ApplyError" xml:space="preserve"><value>⟦Fáíléd tó ápplý áññúál féés: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
-  <data name="Finance_BankDeposit_PageTitle" xml:space="preserve"><value>⟦Réçórd Báñk Dépósít—⟧</value><comment>Browser tab title — Record Bank Deposit page.</comment></data>
-  <data name="Finance_BankDeposit_Heading" xml:space="preserve"><value>⟦Réçórd Báñk Dépósít—⟧</value><comment>Record Bank Deposit page heading.</comment></data>
-  <data name="Finance_BankDeposit_NoAccountsHtml" xml:space="preserve"><value>⟦Báñk dépósíts ñééd át léást óñé báñk áççóúñt óthér tháñ Péttý Çásh. Pléásé ádd á báñk áççóúñt íñ thé &lt;á hréf="/fíñáñçé/áççóúñts"&gt;Çhárt óf Áççóúñts&lt;/á&gt; fírst.—⟧</value><comment>Warning (contains a link to the Chart of Accounts) shown when no destination bank account exists.</comment></data>
-  <data name="Finance_BankDeposit_FromLabel" xml:space="preserve"><value>⟦Fróm—⟧</value><comment>Record Bank Deposit — source account label.</comment></data>
-  <data name="Finance_BankDeposit_FromValue" xml:space="preserve"><value>⟦Çásh óñ Háñd—⟧</value><comment>Record Bank Deposit — fixed source account shown as a disabled field.</comment></data>
-  <data name="Finance_BankDeposit_ToLabel" xml:space="preserve"><value>⟦Tó—⟧</value><comment>Record Bank Deposit — destination account label.</comment></data>
-  <data name="Finance_BankDeposit_DescriptionPlaceholder" xml:space="preserve"><value>⟦é.g. Báñkíñg óf réhéársál áttéñdáñçé féés…—⟧</value><comment>Record Bank Deposit — description placeholder.</comment></data>
-  <data name="Finance_BankDeposit_SubmitButton" xml:space="preserve"><value>⟦Réçórd Dépósít—⟧</value><comment>Record Bank Deposit — submit button.</comment></data>
-  <data name="Finance_BankDeposit_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád áççóúñts: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
-  <data name="Finance_BankDeposit_ToAccountRequiredError" xml:space="preserve"><value>⟦Pléásé séléçt thé déstíñátíóñ áççóúñt.—⟧</value><comment>Validation error when no destination account is chosen.</comment></data>
-  <data name="Finance_BankDeposit_SuccessMessage" xml:space="preserve"><value>⟦Dépósít óf {Amount} réçórdéd súççéssfúllý.—⟧</value><comment>{Amount} = deposit amount formatted as AUD.</comment></data>
-  <data name="Finance_BankDeposit_RecordError" xml:space="preserve"><value>⟦Fáíléd tó réçórd dépósít: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Coa_PageTitle" xml:space="preserve"><value>⟦Çhárt óf Áççóúñts—⟧</value><comment>Browser tab title — Chart of Accounts page.</comment></data>
   <data name="Finance_Coa_Heading" xml:space="preserve"><value>⟦Çhárt óf Áççóúñts—⟧</value><comment>Chart of Accounts page heading.</comment></data>
   <data name="Finance_Coa_LoadingText" xml:space="preserve"><value>⟦Lóádíñg áççóúñts…—⟧</value><comment>Status text while accounts load.</comment></data>
@@ -290,4 +277,5 @@
   <data name="Finance_Payment_BankAccountLabel" xml:space="preserve"><value>⟦Báñk áççóúñt—⟧</value><comment>Record payment: bank account field label.</comment></data>
   <data name="Finance_Payment_ReferenceLabel" xml:space="preserve"><value>⟦Çhéqúé référéñçé—⟧</value><comment>Record payment: cheque reference field label.</comment></data>
   <data name="Finance_RecordIncome_PaymentMethodLabel" xml:space="preserve"><value>⟦Páýméñt méthód—⟧</value><comment>Record income: payment method field label.</comment></data>
+  <data name="Finance_Banking_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád báñkíñg: {Detail}—⟧</value><comment>Banking page load failure. {Detail} = error detail.</comment></data>
 </root>

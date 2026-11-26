@@ -44,7 +44,6 @@
   <data name="Finance_Common_AmountPositiveError" xml:space="preserve"><value>El importe debe ser mayor que cero.</value><comment>Validation error when a Finance amount is zero or negative.</comment></data>
   <data name="Finance_RecordIncome_NoAccountsHtml" xml:space="preserve"><value>No hay cuentas de ingresos configuradas. Añada una cuenta de ingresos en el &lt;a href="/finance/accounts"&gt;Plan de cuentas&lt;/a&gt; antes de registrar ingresos.</value><comment>Warning (contains a link to the Chart of Accounts) shown when no income accounts exist.</comment></data>
   <data name="Finance_RecordIncome_AccountLabel" xml:space="preserve"><value>Cuenta</value><comment>Record Income — account field label.</comment></data>
-  <data name="Finance_RecordIncome_DepositToLabel" xml:space="preserve"><value>Depositar en</value><comment>Record Income — deposit-account field label.</comment></data>
   <data name="Finance_RecordIncome_DescriptionPlaceholder" xml:space="preserve"><value>p. ej. rifa de Navidad, recaudación anual…</value><comment>Record Income — description placeholder.</comment></data>
   <data name="Finance_RecordIncome_SubmitButton" xml:space="preserve"><value>Registrar ingresos</value><comment>Record Income — submit button.</comment></data>
   <data name="Finance_RecordIncome_AccountRequiredError" xml:space="preserve"><value>Seleccione una cuenta.</value><comment>Record Income — validation error when no account is chosen.</comment></data>
@@ -100,18 +99,6 @@
   <data name="Finance_AnnualFees_SuccessMessage_One" xml:space="preserve"><value>Cuotas anuales aplicadas correctamente a {Count} miembro.</value><comment>{Count} = 1.</comment></data>
   <data name="Finance_AnnualFees_SuccessMessage_Other" xml:space="preserve"><value>Cuotas anuales aplicadas correctamente a {Count} miembros.</value><comment>{Count} = number of members charged.</comment></data>
   <data name="Finance_AnnualFees_ApplyError" xml:space="preserve"><value>No se pudieron aplicar las cuotas anuales: {Detail}</value><comment>{Detail} = error detail.</comment></data>
-  <data name="Finance_BankDeposit_PageTitle" xml:space="preserve"><value>Registrar depósito bancario</value><comment>Browser tab title — Record Bank Deposit page.</comment></data>
-  <data name="Finance_BankDeposit_Heading" xml:space="preserve"><value>Registrar depósito bancario</value><comment>Record Bank Deposit page heading.</comment></data>
-  <data name="Finance_BankDeposit_NoAccountsHtml" xml:space="preserve"><value>Los depósitos bancarios necesitan al menos una cuenta bancaria distinta de Caja chica. Añada primero una cuenta bancaria en el &lt;a href="/finance/accounts"&gt;Plan de cuentas&lt;/a&gt;.</value><comment>Warning (contains a link to the Chart of Accounts) shown when no destination bank account exists.</comment></data>
-  <data name="Finance_BankDeposit_FromLabel" xml:space="preserve"><value>Desde</value><comment>Record Bank Deposit — source account label.</comment></data>
-  <data name="Finance_BankDeposit_FromValue" xml:space="preserve"><value>Caja</value><comment>Record Bank Deposit — fixed source account shown as a disabled field.</comment></data>
-  <data name="Finance_BankDeposit_ToLabel" xml:space="preserve"><value>A</value><comment>Record Bank Deposit — destination account label.</comment></data>
-  <data name="Finance_BankDeposit_DescriptionPlaceholder" xml:space="preserve"><value>p. ej. ingreso de cuotas de asistencia a ensayos…</value><comment>Record Bank Deposit — description placeholder.</comment></data>
-  <data name="Finance_BankDeposit_SubmitButton" xml:space="preserve"><value>Registrar depósito</value><comment>Record Bank Deposit — submit button.</comment></data>
-  <data name="Finance_BankDeposit_LoadError" xml:space="preserve"><value>No se pudieron cargar las cuentas: {Detail}</value><comment>{Detail} = error detail.</comment></data>
-  <data name="Finance_BankDeposit_ToAccountRequiredError" xml:space="preserve"><value>Seleccione la cuenta de destino.</value><comment>Validation error when no destination account is chosen.</comment></data>
-  <data name="Finance_BankDeposit_SuccessMessage" xml:space="preserve"><value>Depósito de {Amount} registrado correctamente.</value><comment>{Amount} = deposit amount formatted as AUD.</comment></data>
-  <data name="Finance_BankDeposit_RecordError" xml:space="preserve"><value>No se pudo registrar el depósito: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Coa_PageTitle" xml:space="preserve"><value>Plan de cuentas</value><comment>Browser tab title — Chart of Accounts page.</comment></data>
   <data name="Finance_Coa_Heading" xml:space="preserve"><value>Plan de cuentas</value><comment>Chart of Accounts page heading.</comment></data>
   <data name="Finance_Coa_LoadingText" xml:space="preserve"><value>Cargando cuentas…</value><comment>Status text while accounts load.</comment></data>
@@ -290,4 +277,5 @@
   <data name="Finance_Payment_BankAccountLabel" xml:space="preserve"><value>Cuenta bancaria</value><comment>Record payment: bank account field label.</comment></data>
   <data name="Finance_Payment_ReferenceLabel" xml:space="preserve"><value>Referencia del cheque</value><comment>Record payment: cheque reference field label.</comment></data>
   <data name="Finance_RecordIncome_PaymentMethodLabel" xml:space="preserve"><value>Forma de pago</value><comment>Record income: payment method field label.</comment></data>
+  <data name="Finance_Banking_LoadError" xml:space="preserve"><value>No se pudieron cargar los datos bancarios: {Detail}</value><comment>Banking page load failure. {Detail} = error detail.</comment></data>
 </root>

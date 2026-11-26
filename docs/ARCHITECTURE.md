@@ -57,7 +57,7 @@ StageFright.Core/Modules/Finance/
 ├── FeeService.cs                       # IFeeService implementation
 ├── PaymentService.cs                   # IPaymentService implementation
 ├── ExpensePaymentService.cs
-├── BankDepositService.cs
+├── BankingService.cs
 ├── BankReconciliationService.cs
 ├── GeneralJournalService.cs
 ├── OpeningBalanceService.cs

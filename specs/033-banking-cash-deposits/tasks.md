@@ -104,7 +104,7 @@ Files: every source file in plan.md's Project Structure except the UI pages owne
 Files: src/StageFright.UI/Pages/Finance/{BankingPage.razor,BankingPage.razor.cs,PaymentForm.razor,PaymentForm.razor.cs,PaymentFormModel.cs,RecordIncome.razor,RecordIncome.razor.cs,RecordIncomeModel.cs}, src/StageFright.Core/Modules/Finance/FinanceMenuItemProvider.cs, removal of BankDepositPage.razor(.cs), BankDepositModel.cs, BankDepositService.cs, RecordBankDepositRequest.cs, src/StageFright.Core/Contracts/IBankDepositService.cs.
 
 ### Tests (write first; they fail until the implementation below)
-- [ ] **T027** [P] [US1] Journey through the services on SQLite:
+- [x] **T027** [P] [US1] Journey through the services on SQLite:
   - A cheque member payment drops the member's balance, raises Undeposited Funds and changes no bank account (FR-003, US1-1, SC-001).
   - A cheque income entry lands in its income account and in Undeposited Funds (FR-004, US1-2).
   - Card and EFT go straight to the chosen bank and are never listed (US1-4).
@@ -112,43 +112,43 @@ Files: src/StageFright.UI/Pages/Finance/{BankingPage.razor,BankingPage.razor.cs,
   - An organisation-linked cheque shows the organisation's name and keeps its link (FR-025).
 
   · tests/StageFright.Integration.Tests/Scenarios/V33_ChequesAwaitingDepositTests.cs
-- [ ] **T028** [P] [US1] bUnit, PaymentForm:
+- [x] **T028** [P] [US1] bUnit, PaymentForm:
   - The bank picker appears only for card or EFT and is preselected when there is one bank account.
   - The reference box appears only for cheque or other, and is disabled after save.
   - The amount prefix uses the configured currency symbol.
 
   · tests/StageFright.UI.Tests/Pages/Finance/PaymentFormTests.cs
-- [ ] **T029** [P] [US1] bUnit, RecordIncome:
+- [x] **T029** [P] [US1] bUnit, RecordIncome:
   - The payment method takes the place of "Deposit to", followed by the bank picker and the reference box.
   - The organisation picker stays above the description (FR-004).
   - The no-bank warning appears only for card or EFT, and cash or cheque still saves.
 
   · tests/StageFright.UI.Tests/Pages/Finance/RecordIncomeTests.cs
-- [ ] **T030** [P] [US1] bUnit, BankingPage:
+- [x] **T030** [P] [US1] bUnit, BankingPage:
   - It shows the awaiting grid's columns and total, and the Petty Cash chip, including a negative balance (FR-007, FR-008).
   - With no bank account, it shows the message linking to `/finance/accounts`.
   - The old route `/finance/bank-deposit` renders the Banking page.
   - The history grid lists entries.
 
   · tests/StageFright.UI.Tests/Pages/Finance/BankingPageTests.cs
-- [ ] **T031** [P] [US1] The menu's Banking sub-item sits at `DisplayOrder` 3 and routes to `/finance/banking` (FR-007) · tests/StageFright.Core.Tests/Modules/Finance/FinanceMenuItemProviderTests.cs
+- [x] **T031** [P] [US1] The menu's Banking sub-item sits at `DisplayOrder` 3 and routes to `/finance/banking` (FR-007) · tests/StageFright.Core.Tests/Modules/Finance/FinanceMenuItemProviderTests.cs
 
 ### Implementation
 **Wave 1 — independent:**
-- [ ] **T032** [P] [US1] Add to PaymentForm:
+- [x] **T032** [P] [US1] Add to PaymentForm:
   - an `IAccountService` injection;
   - the bank picker (bank accounts other than Petty Cash, preselected when there is one);
   - the reference box, disabled after save;
   - the `MoneyFormatter.Symbol` prefix.
 
   · src/StageFright.UI/Pages/Finance/PaymentForm.razor, PaymentForm.razor.cs, PaymentFormModel.cs
-- [ ] **T033** [P] [US1] Change RecordIncome:
+- [x] **T033** [P] [US1] Change RecordIncome:
   - a payment-method select in the old "Deposit to" slot, then a conditional bank picker and reference;
   - a per-method no-bank warning;
   - the `MoneyFormatter.Symbol` prefix.
 
   · src/StageFright.UI/Pages/Finance/RecordIncome.razor, RecordIncome.razor.cs, RecordIncomeModel.cs
-- [ ] **T034** [P] [US1] Create BankingPage with `@page "/finance/banking"` and `@page "/finance/bank-deposit"`:
+- [x] **T034** [P] [US1] Create BankingPage with `@page "/finance/banking"` and `@page "/finance/bank-deposit"`:
   - summary chips;
   - the awaiting `RadzenDataGrid` (standard settings);
   - buttons to `/finance/banking/deposit` and `/finance/banking/withdrawal`;
@@ -156,10 +156,10 @@ Files: src/StageFright.UI/Pages/Finance/{BankingPage.razor,BankingPage.razor.cs,
   - the no-bank message.
 
   · src/StageFright.UI/Pages/Finance/BankingPage.razor, BankingPage.razor.cs
-- [ ] **T035** [P] [US1] Replace the Record Bank Deposit sub-item with Banking at `DisplayOrder` 3 · src/StageFright.Core/Modules/Finance/FinanceMenuItemProvider.cs
+- [x] **T035** [P] [US1] Replace the Record Bank Deposit sub-item with Banking at `DisplayOrder` 3 · src/StageFright.Core/Modules/Finance/FinanceMenuItemProvider.cs
 
 **⟶ Wait for Wave 1 to finish, then:**
-- [ ] **T036** [US1] Delete BankDepositPage, BankDepositModel, BankDepositService, IBankDepositService and RecordBankDepositRequest, plus BankDepositPageTests, BankDepositServiceTests and V17_BankDepositTests, whose coverage moves to V35 · src/StageFright.UI/Pages/Finance/BankDepositPage.*, src/StageFright.Core/Modules/Finance/BankDepositService.cs, tests/StageFright.UI.Tests/Pages/Finance/BankDepositPageTests.cs, tests/StageFright.Core.Tests/Modules/Finance/BankDepositServiceTests.cs, tests/StageFright.Integration.Tests/Scenarios/V17_BankDepositTests.cs
+- [x] **T036** [US1] Delete BankDepositPage, BankDepositModel, BankDepositService, IBankDepositService and RecordBankDepositRequest, plus BankDepositPageTests, BankDepositServiceTests and V17_BankDepositTests, whose coverage moves to V35 · src/StageFright.UI/Pages/Finance/BankDepositPage.*, src/StageFright.Core/Modules/Finance/BankDepositService.cs, tests/StageFright.UI.Tests/Pages/Finance/BankDepositPageTests.cs, tests/StageFright.Core.Tests/Modules/Finance/BankDepositServiceTests.cs, tests/StageFright.Integration.Tests/Scenarios/V17_BankDepositTests.cs
 
 **Checkpoint:** cheques are held and listed on the Banking screen, and card and EFT receipts reach the chosen bank. This works and can be tested on its own.
 

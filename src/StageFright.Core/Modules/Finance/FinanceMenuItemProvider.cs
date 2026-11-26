@@ -35,7 +35,7 @@ public class FinanceMenuItemProvider : IMenuItemProvider
             [
                 new MenuItem { Title = _localizer["Nav_Finance_Overview"], Route = "/finance", DisplayOrder = 0 },
                 new MenuItem { Title = _localizer["Nav_Finance_ChartOfAccounts"], Route = "/finance/accounts", DisplayOrder = 1 },
-                new MenuItem { Title = _localizer["Nav_Finance_RecordBankDeposit"], Route = "/finance/bank-deposit", DisplayOrder = 3 },
+                new MenuItem { Title = _localizer["Nav_Finance_Banking"], Route = "/finance/banking", DisplayOrder = 3 },
                 new MenuItem { Title = _localizer["Nav_Finance_JournalEntries"], Route = "/finance/journal", DisplayOrder = 4 },
                 new MenuItem { Title = _localizer["Nav_Finance_Reconciliation"], Route = "/finance/reconciliation", DisplayOrder = 5 },
                 new MenuItem { Title = _localizer["Nav_Finance_OpeningBalances"], Route = "/finance/opening-balances", DisplayOrder = 6 }

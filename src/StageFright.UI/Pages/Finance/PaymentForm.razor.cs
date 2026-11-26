@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using StageFright.Core.Contracts;
+using StageFright.Core.Entities;
+using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
@@ -14,6 +16,7 @@ public partial class PaymentForm : ComponentBase
     [Parameter] public Guid MemberId { get; set; }
 
     [Inject] private IPaymentService PaymentService { get; set; } = null!;
+    [Inject] private IAccountService AccountService { get; set; } = null!;
     [Inject] private IMemberService MemberService { get; set; } = null!;
     [Inject] private IMemberBalanceService MemberBalanceService { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
@@ -32,6 +35,11 @@ public partial class PaymentForm : ComponentBase
     private string? _successMessage;
     private IReadOnlyList<OutstandingFee> _outstandingFees = [];
     private OutstandingFeeSelectionGrid? _feeGrid;
+    private IReadOnlyList<Account> _bankAccounts = [];
+
+    // Card and electronic transfer go straight to a chosen bank account; cheque and other wait in Undeposited Funds.
+    private bool NeedsBankAccount => _form.PaymentMethod is PaymentMethod.Card or PaymentMethod.ElectronicTransfer;
+    private bool HasReference => _form.PaymentMethod is PaymentMethod.Check or PaymentMethod.Other;
 
     protected override async Task OnInitializedAsync()
     {
@@ -40,6 +48,11 @@ public partial class PaymentForm : ComponentBase
             var member = await MemberService.GetByIdAsync(MemberId);
             _memberName = member?.FullName;
             _outstandingFees = await MemberBalanceService.GetOutstandingFeesAsync(MemberId);
+
+            var bankAccounts = await AccountService.GetBankAccountsAsync();
+            _bankAccounts = bankAccounts.Where(a => a.Id != SystemAccounts.CashId).ToList();
+            if (_bankAccounts.Count == 1)
+                _form.BankAccountId = _bankAccounts[0].Id;
         }
         catch (Exception ex)
         {
@@ -73,6 +86,12 @@ public partial class PaymentForm : ComponentBase
             return;
         }
 
+        if (NeedsBankAccount && _form.BankAccountId == Guid.Empty)
+        {
+            _errors["BankAccountId"] = Loc.Get<ValidationResource>("Validation_Receipt_BankAccountRequired");
+            return;
+        }
+
         var selectedFeeIds = _feeGrid?.GetSelectedFeeIds() ?? [];
 
         if (selectedFeeIds.Count == 0)
@@ -100,6 +119,8 @@ public partial class PaymentForm : ComponentBase
                 Date = _form.Date,
                 Amount = _form.Amount,
                 PaymentMethod = _form.PaymentMethod,
+                BankAccountId = NeedsBankAccount ? _form.BankAccountId : null,
+                Reference = HasReference && !string.IsNullOrWhiteSpace(_form.Reference) ? _form.Reference.Trim() : null,
                 PaymentType = _form.PaymentType,
                 Notes = string.IsNullOrWhiteSpace(_form.Notes) ? null : _form.Notes.Trim(),
                 SelectedFeeIds = selectedFeeIds

@@ -12,10 +12,10 @@ This guide shows how to prove the feature works. The design is in [data-model.md
 ```bash
 dotnet test
 # focused runs while iterating
-dotnet test --filter "FullyQualifiedName~ReceiptDestinationResolver"
-dotnet test --filter "FullyQualifiedName~BankDepositService"
-dotnet test --filter "FullyQualifiedName~CashWithdrawalService"
-dotnet test --filter "FullyQualifiedName~BankingQueryService"
+dotnet test --filter "FullyQualifiedName~ReceiptRouting"
+dotnet test --filter "FullyQualifiedName~BankingService"
+dotnet test --filter "FullyQualifiedName~BankingPage"
+dotnet test --filter "FullyQualifiedName~V33_ChequesAwaitingDeposit"
 dotnet test --filter "FullyQualifiedName~Backup"
 dotnet test tests/StageFright.Localization.Tests/
 ```

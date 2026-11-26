@@ -27,7 +27,6 @@
   <data name="Nav_Finance_ShortLabel" xml:space="preserve"><value>FIN</value><comment>Collapsed nav-rail abbreviation for Finance.</comment></data>
   <data name="Nav_Finance_Overview" xml:space="preserve"><value>Przegląd</value><comment>Finance sub-menu item — the Finance overview page.</comment></data>
   <data name="Nav_Finance_ChartOfAccounts" xml:space="preserve"><value>Plan kont</value><comment>Finance sub-menu item — the chart of accounts.</comment></data>
-  <data name="Nav_Finance_RecordBankDeposit" xml:space="preserve"><value>Zarejestruj wpłatę bankową</value><comment>Finance sub-menu item — record a bank deposit.</comment></data>
   <data name="Nav_Finance_JournalEntries" xml:space="preserve"><value>Zapisy księgowe</value><comment>Finance sub-menu item — general journal entries.</comment></data>
   <data name="Nav_Finance_Reconciliation" xml:space="preserve"><value>Uzgodnienie</value><comment>Finance sub-menu item — bank reconciliation.</comment></data>
   <data name="Nav_Finance_OpeningBalances" xml:space="preserve"><value>Salda otwarcia</value><comment>Finance sub-menu item — opening balances.</comment></data>

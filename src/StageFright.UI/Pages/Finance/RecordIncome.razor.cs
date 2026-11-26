@@ -36,6 +36,10 @@ public partial class RecordIncome : ComponentBase
     private string? _successMessage;
     private string? _errorMessage;
 
+    // Card and electronic transfer go straight to a chosen bank account; cheque and other wait in Undeposited Funds.
+    private bool NeedsBankAccount => _form.PaymentMethod is PaymentMethod.Card or PaymentMethod.ElectronicTransfer;
+    private bool HasReference => _form.PaymentMethod is PaymentMethod.Check or PaymentMethod.Other;
+
     // The Amount field is entered gross under Inclusive mode and net under Exclusive mode (issue #354).
     private string AmountLabel =>
         !_isTaxApplicable ? L["Finance_Common_AmountLabel"]
@@ -65,8 +69,10 @@ public partial class RecordIncome : ComponentBase
             if (_accounts.Count == 1)
                 _form.AccountId = _accounts[0].Id;
 
-            _bankAccounts = await AccountService.GetBankAccountsAsync();
-            _form.DepositAccountId = SystemAccounts.CashId;
+            var bankAccounts = await AccountService.GetBankAccountsAsync();
+            _bankAccounts = bankAccounts.Where(a => a.Id != SystemAccounts.CashId).ToList();
+            if (_bankAccounts.Count == 1)
+                _form.BankAccountId = _bankAccounts[0].Id;
             _organisations = await OrganisationService.GetActiveAsync();
 
             var settings = await SettingsService.GetAsync();
@@ -102,19 +108,23 @@ public partial class RecordIncome : ComponentBase
             return;
         }
 
+        if (NeedsBankAccount && _form.BankAccountId == Guid.Empty)
+        {
+            _errors["BankAccountId"] = Loc.Get<ValidationResource>("Validation_Receipt_BankAccountRequired");
+            return;
+        }
+
         _saving = true;
         try
         {
-            // Spec 033 bridge until US1 adds the payment-method picker: Petty Cash (or no choice) is
-            // cash, any other bank account is an electronic transfer into it.
-            var isCash = _form.DepositAccountId == Guid.Empty || _form.DepositAccountId == SystemAccounts.CashId;
             var request = new RecordIncomeRequest
             {
                 Date = _form.Date,
                 Amount = _form.Amount,
                 AccountId = _form.AccountId,
-                PaymentMethod = isCash ? PaymentMethod.Cash : PaymentMethod.ElectronicTransfer,
-                BankAccountId = isCash ? null : _form.DepositAccountId,
+                PaymentMethod = _form.PaymentMethod,
+                BankAccountId = NeedsBankAccount ? _form.BankAccountId : null,
+                Reference = HasReference && !string.IsNullOrWhiteSpace(_form.Reference) ? _form.Reference.Trim() : null,
                 TaxCode = _isTaxApplicable ? _form.TaxCode : null,
                 Description = string.IsNullOrWhiteSpace(_form.Description) ? null : _form.Description.Trim(),
                 ExternalOrganisationId = _form.ExternalOrganisationId
@@ -143,6 +153,7 @@ public partial class RecordIncome : ComponentBase
         _successMessage = null;
         _errorMessage = null;
         _form.Amount = 0m;
+        _form.Reference = null;
         _form.TaxCode = null;
         _form.ExternalOrganisationId = null;
         _form.Description = null;

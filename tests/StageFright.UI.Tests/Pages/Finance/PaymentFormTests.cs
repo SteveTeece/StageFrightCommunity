@@ -5,6 +5,7 @@ using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.UI.Pages.Finance;
 
@@ -22,6 +23,7 @@ namespace StageFright.UI.Tests.Pages.Finance;
 public class PaymentFormTests : LocalizedTestContext
 {
     private readonly IPaymentService _paymentService = Substitute.For<IPaymentService>();
+    private readonly IAccountService _accountService = Substitute.For<IAccountService>();
     private readonly IMemberService _memberService = Substitute.For<IMemberService>();
     private readonly IMemberBalanceService _memberBalanceService = Substitute.For<IMemberBalanceService>();
     private static readonly Guid MemberId = Guid.NewGuid();
@@ -31,6 +33,8 @@ public class PaymentFormTests : LocalizedTestContext
     public PaymentFormTests()
     {
         Services.AddSingleton(_paymentService);
+        Services.AddSingleton(_accountService);
+        SetBankAccounts(MakeBank("1110", "Community Bank"));
         Services.AddSingleton(_memberService);
         Services.AddSingleton(_memberBalanceService);
 
@@ -257,7 +261,172 @@ public class PaymentFormTests : LocalizedTestContext
         Assert.Contains("recorded successfully", cut.Markup, StringComparison.OrdinalIgnoreCase);
     }
 
+    // --- Spec 033: bank account and cheque reference ---
+
+    [Fact]
+    public void Should_HideBankPickerAndShowReference_When_MethodIsCheque()
+    {
+        var cut = RenderWithMemberId();
+
+        cut.Find("#method").Change(PaymentMethod.Check.ToString());
+
+        Assert.Empty(cut.FindAll("#bankAccount"));
+        cut.Find("#reference");
+    }
+
+    [Theory]
+    [InlineData(PaymentMethod.Card)]
+    [InlineData(PaymentMethod.ElectronicTransfer)]
+    public void Should_ShowBankPickerAndHideReference_When_MethodIsCardOrEft(PaymentMethod method)
+    {
+        var cut = RenderWithMemberId();
+
+        cut.Find("#method").Change(method.ToString());
+
+        cut.Find("#bankAccount");
+        Assert.Empty(cut.FindAll("#reference"));
+    }
+
+    [Fact]
+    public void Should_HideBothBankPickerAndReference_When_MethodIsCash()
+    {
+        var cut = RenderWithMemberId();
+
+        Assert.Empty(cut.FindAll("#bankAccount"));
+        Assert.Empty(cut.FindAll("#reference"));
+    }
+
+    [Fact]
+    public void Should_PreselectBank_When_OnlyOneBankAccountExists()
+    {
+        var cut = RenderWithMemberId();
+
+        cut.Find("#method").Change(PaymentMethod.Card.ToString());
+
+        Assert.Equal(_bankId.ToString(), cut.Find("#bankAccount").GetAttribute("value"));
+    }
+
+    [Fact]
+    public void Should_NotPreselectBank_When_SeveralBankAccountsExist()
+    {
+        SetBankAccounts(MakeBank("1110", "Bank A"), MakeBank("1120", "Bank B"));
+        var cut = RenderWithMemberId();
+
+        cut.Find("#method").Change(PaymentMethod.ElectronicTransfer.ToString());
+
+        Assert.Equal(Guid.Empty.ToString(), cut.Find("#bankAccount").GetAttribute("value"));
+    }
+
+    [Fact]
+    public void Should_ExcludePettyCashFromBankPicker_When_BankAccountsListed()
+    {
+        var cut = RenderWithMemberId();
+
+        cut.Find("#method").Change(PaymentMethod.Card.ToString());
+
+        Assert.DoesNotContain(SystemAccounts.CashId.ToString(), cut.Find("#bankAccount").InnerHtml);
+    }
+
+    [Fact]
+    public void Should_ShowNoBankNoticeAndDisableSave_When_CardChosenWithNoBankAccount()
+    {
+        SetBankAccounts();
+        var cut = RenderWithMemberId();
+
+        cut.Find("#method").Change(PaymentMethod.Card.ToString());
+
+        Assert.Empty(cut.FindAll("#bankAccount"));
+        Assert.Contains("/finance/accounts", cut.Markup);
+        Assert.True(cut.Find("button[type=submit]").HasAttribute("disabled"));
+    }
+
+    [Fact]
+    public async Task Should_SendBankAndNoReference_When_CardPaymentSubmitted()
+    {
+        var cut = RenderWithMemberId();
+        cut.Find("#method").Change(PaymentMethod.Card.ToString());
+
+        await SubmitValidPayment(cut);
+
+        await _paymentService.Received(1).RecordAsync(
+            Arg.Is<RecordPaymentRequest>(r => r!.PaymentMethod == PaymentMethod.Card
+                && r.BankAccountId == _bankId && r.Reference == null),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_SendTrimmedReferenceAndNoBank_When_ChequePaymentSubmitted()
+    {
+        var cut = RenderWithMemberId();
+        cut.Find("#method").Change(PaymentMethod.Check.ToString());
+        cut.Find("#reference").Change("  CHQ 1042 ");
+
+        await SubmitValidPayment(cut);
+
+        await _paymentService.Received(1).RecordAsync(
+            Arg.Is<RecordPaymentRequest>(r => r!.PaymentMethod == PaymentMethod.Check
+                && r.BankAccountId == null && r.Reference == "CHQ 1042"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_RefuseSave_When_CardChosenWithMoreThanOneBankAndNoneSelected()
+    {
+        SetBankAccounts(MakeBank("1110", "Bank A"), MakeBank("1120", "Bank B"));
+        var cut = RenderWithMemberId();
+        cut.Find("#method").Change(PaymentMethod.Card.ToString());
+
+        await SubmitValidPayment(cut);
+
+        await _paymentService.DidNotReceive().RecordAsync(
+            Arg.Any<RecordPaymentRequest>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_DisableBankAndReference_When_PaymentSaved()
+    {
+        var cut = RenderWithMemberId();
+        cut.Find("#method").Change(PaymentMethod.Check.ToString());
+        await SubmitValidPayment(cut);
+
+        Assert.True(cut.Find("#reference").HasAttribute("disabled"));
+
+        var cut2 = RenderWithMemberId();
+        cut2.Find("#method").Change(PaymentMethod.Card.ToString());
+        await SubmitValidPayment(cut2);
+
+        Assert.True(cut2.Find("#bankAccount").HasAttribute("disabled"));
+    }
+
+    [Fact]
+    public void Should_PrefixAmountWithConfiguredSymbol_When_Rendered()
+    {
+        var cut = RenderWithMemberId();
+
+        Assert.Contains(MoneyFormatter.Symbol, cut.Find(".input-group-text").TextContent);
+    }
+
     // --- Helpers ---
+
+    private readonly Guid _bankId = Guid.NewGuid();
+
+    private Account MakeBank(string number, string name) => new()
+    {
+        Id = number == "1110" ? _bankId : Guid.NewGuid(), Name = name, AccountNumber = number,
+        Type = AccountType.Asset, IsBankAccount = true,
+        CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+    };
+
+    private void SetBankAccounts(params Account[] banks)
+    {
+        var petty = new Account
+        {
+            Id = SystemAccounts.CashId, Name = "Petty Cash", AccountNumber = "1100", Type = AccountType.Asset,
+            IsBankAccount = true, IsSystem = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        };
+        _accountService.GetBankAccountsAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Account>([petty, .. banks]));
+    }
 
     private IRenderedComponent<PaymentForm> RenderWithMemberId()
     {

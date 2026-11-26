@@ -199,10 +199,6 @@
     <value>Chart of Accounts</value>
     <comment>Finance sub-menu item — the chart of accounts.</comment>
   </data>
-  <data name="Nav_Finance_RecordBankDeposit" xml:space="preserve">
-    <value>Record Bank Deposit</value>
-    <comment>Finance sub-menu item — record a bank deposit.</comment>
-  </data>
   <data name="Nav_Finance_JournalEntries" xml:space="preserve">
     <value>Journal Entries</value>
     <comment>Finance sub-menu item — general journal entries.</comment>

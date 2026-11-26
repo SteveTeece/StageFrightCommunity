@@ -282,6 +282,86 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-26T09:03:43.955Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T09:31:40.887Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T09:31:41.145Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T09:31:41.404Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T09:31:41.675Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T09:31:41.930Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T09:31:42.179Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T09:31:42.438Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T09:31:42.698Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T09:31:42.963Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T09:31:43.217Z"
     }
   ],
   "telemetryInstanceId": "2d0602eb-ff2b-480e-bd3e-beb0b4a6e39a",
@@ -423,6 +503,20 @@
       "rejected": "relying on late-year cheques, which the last sweep always banks",
       "by": "agent",
       "at": "2026-11-26T09:04:00.876Z"
+    },
+    {
+      "decision": "Deposit/withdrawal routes are /finance/banking/deposit, /finance/banking/withdrawal, /finance/banking/deposits/{id}",
+      "why": "tasks.md and research.md agree; ui-contract.md was stale and is corrected",
+      "rejected": "contract's deposits/new and withdrawals/new",
+      "by": "agent",
+      "at": "2026-11-26T09:42:27.155Z"
+    },
+    {
+      "decision": "Unused Finance_BankDeposit_*, Finance_RecordIncome_DepositToLabel and Nav_Finance_RecordBankDeposit keys removed from all cultures",
+      "why": "their only users were deleted",
+      "rejected": "leaving dead keys",
+      "by": "agent",
+      "at": "2026-11-26T09:42:27.155Z"
     }
   ],
   "expectations": [
@@ -480,6 +574,9 @@
         "T028",
         "T032",
         "T037"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/V33_ChequesAwaitingDepositTests.cs; tests/StageFright.UI.Tests/Pages/Finance/PaymentFormTests.cs"
       ]
     },
     "FR-004": {
@@ -491,6 +588,9 @@
         "T029",
         "T033",
         "T037"
+      ],
+      "tests": [
+        "tests/StageFright.UI.Tests/Pages/Finance/RecordIncomeTests.cs; V33_ChequesAwaitingDepositTests.cs"
       ]
     },
     "FR-005": {
@@ -508,6 +608,9 @@
         "T018",
         "T027",
         "T028"
+      ],
+      "tests": [
+        "BankingPageTests.cs::Should_ShowAwaitingRowsAndTotal_When_ChequesAreAwaiting"
       ]
     },
     "FR-007": {
@@ -519,6 +622,9 @@
         "T034",
         "T035",
         "T036"
+      ],
+      "tests": [
+        "tests/StageFright.Core.Tests/Modules/Finance/FinanceMenuItemProviderTests.cs; BankingPageTests.cs"
       ]
     },
     "FR-008": {
@@ -529,6 +635,9 @@
         "T027",
         "T030",
         "T034"
+      ],
+      "tests": [
+        "V33_ChequesAwaitingDepositTests.cs; BankingPageTests.cs"
       ]
     },
     "FR-009": {
@@ -666,6 +775,9 @@
         "T018",
         "T027",
         "T047"
+      ],
+      "tests": [
+        "V33_ChequesAwaitingDepositTests.cs::Should_ShowOrganisationNameAndKeepLink_When_ChequeIncomeIsOrganisationLinked_Integration"
       ]
     }
   },
@@ -713,13 +825,35 @@
     },
     {
       "what": "full test suite",
-      "command": "dotnet test",
+      "command": "dotnet test StageFrightCommunity.slnx",
       "source": "derived",
       "exitCode": 0,
-      "durationSeconds": 125.3,
-      "result": "  StageFright.App -> c:\\SourceCode\\StageFrightCommunity\\src\\StageFright.App\\bin\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\StageFright.App.dll · Passed!  - Failed:     0, Passed:   235, Skipped:     0, Total:   235, Duration: 48 s - StageFright.Data.Tests.dll (net10.0) · Passed!  - Failed:     0, Passed:   276, Skipped:     0, Total:   276, Duration: 1 m 3 s - StageFright.Integration.Tests.dll (net10.0)",
-      "commit": "37a4539",
-      "tree": "9670a43d9874db66222129b34c77dbedc5bd88fe"
+      "durationSeconds": 118.3,
+      "result": "Passed!  - Failed:     0, Passed:    29, Skipped:     0, Total:    29, Duration: 2 s - StageFright.Localization.Tests.dll (net10.0) · Passed!  - Failed:     0, Passed:   277, Skipped:     0, Total:   277, Duration: 49 s - StageFright.Integration.Tests.dll (net10.0) ·   StageFright.App -> c:\\SourceCode\\StageFrightCommunity\\src\\StageFright.App\\bin\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\StageFright.App.dll",
+      "commit": "d82de56",
+      "tree": "5975a9cbefb57135efc766dbcac80acf04b02fef"
+    },
+    {
+      "what": "Independent FR check (fresh worker, FRs + diff + conventions only)",
+      "result": "FR-003, FR-004, FR-008, FR-025 met with real-service/real-component tests; FR-009/011/014/015/016 missing or at risk only because the Deposit, Withdrawal and DepositDetail pages are Phases 5-7"
+    },
+    {
+      "what": "Reviewer defect: BankingPage showed raw ex.Message",
+      "result": "fixed: Finance_Banking_LoadError added in all cultures; bUnit Should_ShowTranslatedLoadError_When_OverviewFailsToLoad passes"
+    },
+    {
+      "what": "Reviewer defect: CashAvailableToday uses DateTime.Today vs UTC",
+      "result": "dismissed: deposit dates are local date-picker dates, same basis as DateTime.Today"
+    },
+    {
+      "what": "full rebuild",
+      "command": "dotnet build -t:Rebuild StageFrightCommunity.slnx",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 49.0,
+      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:48.38",
+      "commit": "d82de56",
+      "tree": "5975a9cbefb57135efc766dbcac80acf04b02fef"
     }
   ],
   "step_summaries": {
@@ -729,10 +863,13 @@
     },
     "tasks": {
       "summary": "54 tasks: setup, a 6-wave foundational phase owning all back end, resx, DI and seed data, five story phases owning their pages and tests, and polish"
+    },
+    "implement": {
+      "summary": "Phase 3 (US1): PaymentForm/RecordIncome route by payment method with bank picker and reference; new Banking page and menu item; old bank-deposit page/service removed"
     }
   },
   "approach": "Route each receipt by payment method through a pure ReceiptRouting rule, track cheques as ReceivedItem rows, and post deposits, reversals and withdrawals as balanced journal entries through a new BankingService. One migration renames 1100 and seeds 1105, and backup moves to 1.4.0.",
-  "currentTask": "T026",
+  "currentTask": "T036",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -1050,6 +1187,76 @@
         "tests/**/*.cs fixtures"
       ],
       "wave": "T024-T026"
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "US1 phase 3 T027 done",
+      "files": [
+        "see phase 3 changes"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "US1 phase 3 T028 done",
+      "files": [
+        "see phase 3 changes"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "US1 phase 3 T029 done",
+      "files": [
+        "see phase 3 changes"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "US1 phase 3 T030 done",
+      "files": [
+        "see phase 3 changes"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "US1 phase 3 T031 done",
+      "files": [
+        "see phase 3 changes"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "US1 phase 3 T032 done",
+      "files": [
+        "see phase 3 changes"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "US1 phase 3 T033 done",
+      "files": [
+        "see phase 3 changes"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "US1 phase 3 T034 done",
+      "files": [
+        "see phase 3 changes"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "US1 phase 3 T035 done",
+      "files": [
+        "see phase 3 changes"
+      ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "US1 phase 3 T036 done",
+      "files": [
+        "see phase 3 changes"
+      ]
     }
   },
   "concerns": [
@@ -1088,7 +1295,30 @@
     {
       "note": "The seeder has no automated test; it was verified only by a throwaway harness run",
       "step": "implement"
+    },
+    {
+      "note": "Banking page buttons and history links route to /finance/banking/deposit, /withdrawal and /deposits/{id}, which have no page until Phases 5-7 land",
+      "step": "implement"
+    },
+    {
+      "note": "PaymentService silently truncates a >50-char cheque reference while IncomeEntryService refuses it; the form's maxlength=50 blocks it from the UI, so this is only reachable from non-UI callers",
+      "step": "implement"
+    },
+    {
+      "note": "Pre-existing: AttendanceService audit strings format money with :C, against the MoneyFormatter rule",
+      "step": "implement"
+    },
+    {
+      "note": "Legacy-route test checks BankingPage carries both @page routes; it does not drive the router",
+      "step": "implement"
     }
   ],
-  "last_action": "Phase 2 wave 6 closed; Foundational complete"
+  "last_action": "Phase 3 verified; phases 4-8 remain",
+  "risk": {
+    "tier": "high",
+    "computed": "high",
+    "reasons": [
+      "touches .github/workflows/debug-pre-release.yml, src/StageFright.Data/Migrations/20261119195813_AddExternalOrganisations.Designer.cs, src/StageFright.Data/Migrations/20261119195813_AddExternalOrganisations.cs and 7 more"
+    ]
+  }
 }
