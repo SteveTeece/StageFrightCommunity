@@ -91,6 +91,8 @@ All existing fields (`Id`, `Type`, `Date`, `Description`, `CreatedAt`, `Transact
 | `Income` | yes | `IncomeEntryService` |
 | Every other type (bank deposit, transfer, general journal, opening balances, fee and payment postings) | no, always `null` | — |
 
+> *Pending spec 033 (banking rework):* the deposit, deposit-reversal and cash-withdrawal entry types that spec 033 adds also never carry a link (spec 033 FR-025).
+
 **EF configuration** — `JournalEntryConfiguration.cs`
 
 - `HasOne(j => j.ExternalOrganisation).WithMany(o => o.JournalEntries).HasForeignKey(j => j.ExternalOrganisationId).IsRequired(false).OnDelete(DeleteBehavior.Restrict)`.
@@ -143,6 +145,8 @@ On `ExpensePaymentModel`, choosing an organisation sets `Payee` to the organisat
 | `TotalReceived` | `decimal` | Σ `Amount` where `Type = Income` |
 
 **Why Σ debits is correct (FR-012, SC-003).** Every entry balances. An expense debits the expense account (net) and tax receivable `2320` (tax), and credits the bank with the gross. An income entry debits the deposit account with the gross, and credits income (net) and tax collected `2310` (tax). Either way the debit total equals the money that crossed the bank account, counted once. Summing debits and credits together would double-count.
+
+> *Pending spec 033 (banking rework):* an income entry will debit Petty Cash (cash), Undeposited Funds (cheque or "other") or the chosen bank account (card or electronic transfer), not a free-choice deposit account. The debit total is still the gross received, so Σ debits stays correct. `AccountName` still skips those lines, because Petty Cash is a bank account and Undeposited Funds is a system account (spec 033 FR-001).
 
 Every amount and total is displayed through `MoneyFormatter.Format`, so it uses the society's configured currency symbol and precision (FR-013).
 

@@ -27,7 +27,7 @@ A treasurer receives a cheque from a member for their annual fee, and another fr
 
 1. **Given** a member owes a fee, **When** the user records a payment by cheque, **Then** the member's outstanding balance falls by the payment amount, the Undeposited Funds balance rises by the same amount, and no bank account balance changes.
 2. **Given** a non-member income entry, **When** the user records it as received by cheque, **Then** the income is recognised in its income account and the amount is held in Undeposited Funds.
-3. **Given** two cheques have been received and not deposited, **When** the user opens the Banking screen, **Then** both cheques are listed as awaiting deposit, each with its date, payer or description, optional cheque reference, and amount.
+3. **Given** two cheques have been received and not deposited, **When** the user opens the Banking screen, **Then** both cheques are listed as awaiting deposit, each with its date, payer (per FR-008), optional cheque reference, and amount.
 4. **Given** a payment received by card or electronic transfer, **When** the user records it, **Then** the amount goes straight into the bank account the user chose and is not listed as awaiting deposit.
 
 ---
@@ -109,7 +109,8 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 - **Cheque from a member payment that covered several fees**: it is still one cheque awaiting deposit for the full payment amount.
 - **A reversal would leave Petty Cash negative** (its cash was spent after the deposit): the reversal is still allowed. Petty Cash shows a negative balance, which the user corrects in the normal way.
 - **Deposit date earlier than an included cheque's receipt date**: refused. A cheque cannot be banked before it was received.
-- **Restoring a backup taken before this change**: it restores as it does today. History is not reclassified, nothing is listed as awaiting deposit, and the old Cash on Hand balance appears as Petty Cash.
+- **Restoring a backup taken before this change** (`1.2.0`, or `1.3.0` from spec 032): it restores as it does today. History is not reclassified, nothing is listed as awaiting deposit, and the old Cash on Hand balance appears as Petty Cash. A `1.3.0` backup also keeps its organisations and organisation links.
+- **Cheque income from an organisation that is later archived**: it stays on the awaiting-deposit list under the organisation's name and can be deposited as normal. Archiving an organisation never blocks or changes a deposit.
 - **Two deposits prepared at once, with the same cheque in both**: the second save is refused because the cheque is no longer awaiting deposit.
 - **Financial records**: deposits, withdrawals and reversals are never edited or deleted. A reversal is a new record.
 
@@ -119,17 +120,17 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 
 **Receiving money**
 
-- **FR-001**: The system MUST provide an "Undeposited Funds" asset account. It is created automatically for new and existing organisations, holds cheques and other non-cash instruments received but not yet banked, and cannot be deleted or chosen as a bank account.
+- **FR-001**: The system MUST provide an "Undeposited Funds" asset account. It is created automatically for new and existing organisations, holds cheques and other non-cash instruments received but not yet banked, and cannot be deleted or chosen as a bank account. It MUST be a system account, like the other built-in accounts, so that screens which pick an entry's account by skipping bank and system accounts (for example, an organisation's financial history from spec 032) show the income account and never "Undeposited Funds".
 - **FR-002**: The existing Cash on Hand system account MUST be renamed "Petty Cash". It MUST keep its account number, history and balance, and continue to work wherever a bank-type account can be chosen, for example paying an expense from petty cash.
 - **FR-003**: When a member payment is recorded, the system MUST send it to the destination for its payment method: cash to Petty Cash; cheque or "other" to Undeposited Funds; card or electronic transfer to the bank account the user selects.
-- **FR-004**: The income-entry workflow (raffles, donations, fundraising) MUST ask how the money was received (cash, cheque, card, electronic transfer or other) and route it by the same rules as FR-003. It MUST no longer offer a free choice of any bank-type account.
+- **FR-004**: The income-entry workflow (raffles, donations, fundraising) MUST ask how the money was received (cash, cheque, card, electronic transfer or other) and route it by the same rules as FR-003. It MUST no longer offer a free choice of any bank-type account. The payment method replaces the deposit-account picker at the same place on the form. The bank-account picker (card or electronic transfer only) and the cheque reference (cheque or "other" only) appear directly after it. The optional organisation picker added by spec 032 is unchanged and stays directly above the description.
 - **FR-005**: Cash fee payments taken during rehearsal attendance MUST go to Petty Cash.
 - **FR-006**: The user SHOULD be able to enter an optional reference for a cheque (for example, its cheque number). When given, it MUST be shown wherever that cheque is listed.
 
 **Banking screen**
 
 - **FR-007**: The "Record Bank Deposit" item on the Finance menu MUST be replaced by a single "Banking" item. It opens a screen showing the cheques awaiting deposit, the Petty Cash balance, and actions to record a deposit and a cash withdrawal.
-- **FR-008**: The list of cheques awaiting deposit MUST show each item's received date, payer or description, reference and amount, and the total of all items.
+- **FR-008**: The list of cheques awaiting deposit MUST show each item's received date, payer, reference and amount, and the total of all items. The payer is the member's name for a member payment. For an income entry it is the linked organisation's name (spec 032) when one was chosen, otherwise the entry's description. An organisation archived after the cheque was received is still shown by name.
 
 **Deposits**
 
@@ -155,18 +156,19 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 - **FR-019**: Every deposit, withdrawal and reversal MUST write an audit trail entry, as other financial postings do.
 - **FR-020**: Existing financial records MUST NOT be changed or reclassified. Payments recorded before this change stay where they were posted, and their amounts are part of the Petty Cash balance.
 - **FR-021**: Previously recorded "bank deposit" and historical "transfer" journal entries MUST continue to appear correctly in every existing report.
-- **FR-022**: A backup MUST include the new banking records (deposits and their lines, withdrawals, reversals and each cheque's deposit status), and restoring it MUST bring them back exactly. A backup taken before this change MUST still restore.
+- **FR-022**: A backup MUST include the new banking records (deposits and their lines, withdrawals, reversals and each cheque's deposit status), and restoring it MUST bring them back exactly. The backup format version MUST go from `1.3.0` (spec 032) to `1.4.0`. Backups taken before this change, both `1.2.0` and `1.3.0`, MUST still restore: a `1.3.0` backup keeps its organisations and organisation links, and neither older version lists anything as awaiting deposit.
 - **FR-023**: All new screen text MUST be fully translated into every shipped language, and every displayed amount MUST use the organisation's configured currency.
-- **FR-024**: The development sample data MUST include at least two years of cheques, cash takings, card receipts, deposits, at least one reversed deposit and event-float withdrawals, with the books balanced.
+- **FR-024**: The development sample data MUST include at least two years of cheques, cash takings, card receipts, deposits, at least one reversed deposit and event-float withdrawals, with the books balanced. The organisation-linked income that spec 032 seeds MUST get a payment method and keep its organisation link: the council grant arrives by electronic transfer into the bank, and the bowling-club sponsorship is a cheque that waits in Undeposited Funds until a later deposit.
+- **FR-025**: The organisation link from spec 032 MUST stay on the income entry that records the receipt. Deposits, withdrawals and reversals MUST NOT carry an organisation link or offer an organisation picker. An organisation's "total received" counts income on the date it was received, whatever its payment method, so a later deposit or deposit reversal MUST NOT change that organisation's financial history.
 
 ### Key Entities
 
 - **Undeposited Funds**: a new system asset account holding non-cash instruments received but not banked. Its balance equals the total of items awaiting deposit, plus any amounts posted to it by journal entry.
 - **Petty Cash** *(existing account, renamed)*: the former Cash on Hand account. It holds cash takings and float withdrawals, and is drawn down by deposits and petty-cash expenses.
-- **Received item awaiting deposit**: a cheque or "other" receipt from a member payment or an income entry. It has a received date, payer or description, optional reference, amount, and a deposit status (awaiting or deposited, with the deposit it went into).
-- **Bank deposit**: a dated record of money banked into one bank account. It has a cash amount, the cheques it included, a total, a status (recorded or reversed) and, once reversed, a link to its reversal.
-- **Cash withdrawal**: a dated record of cash taken from a bank account into Petty Cash, with an amount and a purpose.
-- **Member payment** *(existing)*, **income entry** *(existing)*: gain a cheque reference. Their payment method now decides where the money is posted.
+- **Received item awaiting deposit**: a cheque or "other" receipt from a member payment or an income entry. It has a received date, payer (per FR-008), optional reference, amount, and a deposit status (awaiting or deposited, with the deposit it went into). Because the status changes over time, it MUST be held in its own record (or derived from the deposit lines), never as a field on the payment or journal entry it came from. Those are financial records and are never edited.
+- **Bank deposit**: a dated record of money banked into one bank account. It has a cash amount, the cheques it included, a total, a status (recorded or reversed) and, once reversed, a link to its reversal. Like its reversal, it carries no organisation link (FR-025).
+- **Cash withdrawal**: a dated record of cash taken from a bank account into Petty Cash, with an amount and a purpose. It carries no organisation link.
+- **Member payment** *(existing `Payment` entity)*, **income entry** *(existing; not an entity of its own but a `JournalEntry` of type Income, which since spec 032 may carry an organisation link)*: gain a payment method and a cheque reference. Both are set once, when the entry is recorded, and never changed. The payment method decides where the money is posted.
 
 ## Success Criteria *(mandatory)*
 
@@ -177,7 +179,7 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 - **SC-003**: In bank reconciliation, a deposit made from 10 separate receipts shows as 1 line, not 10.
 - **SC-004**: A treasurer can record a deposit of 5 cheques plus cash in under 1 minute from opening the Banking screen.
 - **SC-005**: Reversing a deposit returns all three affected account balances to their exact pre-deposit values, and 100% of its cheques reappear as awaiting deposit.
-- **SC-006**: A backup taken before this change restores with no error, and every report total is the same before and after the restore.
+- **SC-006**: A backup taken before this change (`1.2.0` or `1.3.0`) restores with no error, and every report total and every organisation's financial history total is the same before and after the restore.
 
 ## Non-goals
 
@@ -196,7 +198,7 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 - Every posting is balanced and all-or-nothing, as it is today.
 - Account numbers already in use are not renumbered. Petty Cash keeps the Cash on Hand number.
 - No new third-party dependency.
-- The backup format can only grow. Existing fields keep their meaning, and the format version is raised once for this change.
+- The backup format can only grow. Existing fields keep their meaning, and the format version is raised once for this change, to `1.4.0`. Field numbers are append-only. Envelope members 27 and 28 and journal-entry field 6 now belong to spec 032, and member 30 is `EntityCounts`. So new envelope lists take member 29 first, then 31 onwards, and any new journal-entry field starts at 7.
 
 ## Verification plan
 
@@ -214,5 +216,16 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 - "Banking" replaces "Record Bank Deposit" at the same position in the Finance menu. The old screen address redirects to the new screen so that bookmarks and links keep working.
 - The Undeposited Funds account takes a free number in the current-asset range next to Petty Cash, without disturbing any account the organisation created itself.
 - This spec supersedes spec 009's FR-001 to FR-003 and FR-006 (deposits always sourced only from Cash on Hand). Spec 009's other requirements still hold.
-- Spec 032 (External Organisations, not yet merged) also raises the backup format version. Whichever spec merges second takes the next version and appends its fields after the other's.
+- Spec 032 (External Organisations) merged first and took backup version `1.3.0`, so this spec takes `1.4.0` and appends its fields after 032's (see Change-level rules).
 - The app is not yet released (#368 must ship before initial release), so no production data has to be migrated beyond the account rename and the new account.
+
+## Documentation this change updates
+
+Implementing this spec makes the following text in other specs out of date. Each is rewritten in the same change as the code, per the project's docs workflow. Until then, the spec 032 and spec 030 docs below carry a short "pending spec 033" note.
+
+- `specs/032-external-organisations/spec.md` FR-012 and SC-003: "bank-side movement" becomes the money-side line (bank, Petty Cash or Undeposited Funds), and totals count income when received (FR-025).
+- `specs/032-external-organisations/data-model.md` §2 "Who may set the link": add the new deposit, deposit-reversal and cash-withdrawal entry types as "no, always `null`". §3 "Why Σ debits is correct": an income entry debits Petty Cash, Undeposited Funds or the chosen bank account, not "the deposit account".
+- `specs/032-external-organisations/contracts/ui-contract.md` §5.3: the income form's payment-method layout (FR-004), and "Bank deposit" renamed to the Banking screen.
+- `specs/030-backup-restore/contracts/backup-envelope-schema.md`: a `1.4.0` note listing this spec's new members.
+- `specs/009-bank-deposit-transfers/spec.md`: FR-001 to FR-003 and FR-006 marked as superseded by this spec.
+- `CLAUDE.md`: the entity count and list, the backup version, the "Finance / GL integrity" account notes (Petty Cash, Undeposited Funds), and the spec 032 data-model line about which journal entries carry an organisation link.

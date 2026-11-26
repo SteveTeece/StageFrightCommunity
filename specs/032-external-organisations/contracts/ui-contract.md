@@ -350,6 +350,8 @@ Payee fill (FR-010, US3 scenarios 6 and 7), on the expense screen only. When `Ex
 
 After a successful save, both screens reset `ExternalOrganisationId` to null along with the rest of the form. Bank deposit, general journal, member fee and member payment screens get no picker.
 
+> *Pending spec 033 (banking rework):* on Record income, the deposit-account picker is replaced by a payment method, followed by a conditional bank-account picker and cheque reference. `#incomeOrganisation` stays directly above `#description` (spec 033 FR-004). The bank deposit screen becomes the Banking screen, which also gets no picker (spec 033 FR-025).
+
 ## 6. Backup (schema 1.3.0)
 
 | Item | Change |
