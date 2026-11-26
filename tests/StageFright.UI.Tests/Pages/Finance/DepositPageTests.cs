@@ -210,6 +210,35 @@ public class DepositPageTests : LocalizedTestContext
     }
 
     [Fact]
+    public void Should_ShowLoggedErrorTextNotExceptionText_When_SaveFailsWithFrameworkException()
+    {
+        _banking.RecordDepositAsync(Arg.Any<RecordDepositRequest>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<BankDeposit>(new InvalidOperationException("SQLite Error 5: database is locked")));
+        var cut = Render<DepositPage>();
+        cut.Find($"#deposit-item-{Cheque1.Id}").Change(true);
+
+        cut.Find("form").Submit();
+
+        Assert.Equal("Failed to record deposit: an unexpected error occurred. The details have been logged.",
+            cut.Find("[role=alert]").TextContent.Trim());
+    }
+
+    [Fact]
+    public void Should_OfferNoCashAndShowError_When_CashAvailableFailsToReloadOnDateChange()
+    {
+        _banking.GetCashAvailableAsync(Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<decimal>(new DataAccessException("down", "Transaction", "GetCashAvailable")));
+        var cut = Render<DepositPage>();
+        cut.Find("#depositCash").Input("30");
+
+        cut.Find("#depositDate").Change("2026-03-01");
+
+        Assert.True(cut.Find("#depositCash").HasAttribute("disabled"));
+        Assert.Equal(MoneyFormatter.Format(0m), cut.Find("#totalCash").TextContent.Trim());
+        Assert.Equal("Failed to load banking: down", cut.Find("[role=alert]").TextContent.Trim());
+    }
+
+    [Fact]
     public void Should_ShowNoBankMessageAndNoForm_When_NoBankAccountExists()
     {
         SetOverview(80m, []);

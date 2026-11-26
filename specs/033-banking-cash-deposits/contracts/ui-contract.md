@@ -183,3 +183,6 @@ Before deleting any key, the implementer greps for remaining uses.
 | `GLBalanceException` | the GL (a defensive check that should be unreachable) | A generic save-failed alert, logged. |
 | `DataIntegrityException` | `MarkReversedAsync` double stamp, which is a race | Treated as "already reversed": the page reloads. |
 | `DataAccessException` | repositories | A generic save-failed alert, logged. |
+| Any other exception | an unexpected framework failure | Logged. The alert shows `Finance_Banking_UnexpectedErrorDetail` as its `{Detail}`, never the exception's own text, through `ErrorDetail.For` (`StageFright.UI/Shared/`). StageFright exceptions keep their message as the detail. |
+
+If the cash available fails to reload after a date change, the deposit page sets it to zero and clears the cash amount, so the cash box locks rather than keep the previous date's figure.

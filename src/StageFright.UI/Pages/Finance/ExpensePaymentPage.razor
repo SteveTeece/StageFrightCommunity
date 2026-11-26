@@ -49,7 +49,7 @@
                                 <div class="col-md-4">
                                     <label class="form-label" for="expenseAmount">@AmountLabel <span aria-hidden="true">*</span></label>
                                     <div class="input-group input-group-sm @(_errors.ContainsKey("Amount") ? "has-validation" : "")">
-                                        <span class="input-group-text">@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
+                                        <span class="input-group-text">@MoneyFormatter.Symbol</span>
                                         <InputNumber id="expenseAmount"
                                                      class="@(_errors.ContainsKey("Amount") ? "form-control is-invalid" : "form-control")"
                                                      @bind-Value="_form.Amount"

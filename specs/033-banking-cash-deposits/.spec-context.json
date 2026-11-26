@@ -601,6 +601,13 @@
       "rejected": "Relying on the disabled submit button",
       "by": "agent",
       "at": "2026-11-26T22:55:15.082Z"
+    },
+    {
+      "decision": "Show a StageFright exception message as the alert detail, anything else as a translated generic line, and log both",
+      "why": "Custom exceptions are user-facing by design; framework text is not",
+      "rejected": "Rewording every {Detail} key app-wide",
+      "by": "agent",
+      "at": "2026-11-26T23:11:43.341Z"
     }
   ],
   "expectations": [
@@ -1012,6 +1019,39 @@
       "result": "Test run for c:\\SourceCode\\StageFrightCommunity\\tests\\StageFright.UI.Tests\\bin\\Debug\\net10.0\\StageFright.UI.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:    23, Skipped:     0, Total:    23, Duration: 1 s - StageFright.UI.Tests.dll (net10.0)",
       "commit": "1a55eb2",
       "tree": "daa9ee8a1257d8c4287a0b6a6068c5698c1ff052"
+    },
+    {
+      "what": "Concern: raw exception text on DepositPage/BankingPage",
+      "result": "resolved: non-StageFright exceptions are logged and shown as Finance_Banking_UnexpectedErrorDetail via ErrorDetail.For; tests Should_ShowLoggedErrorTextNotExceptionText_* on both pages"
+    },
+    {
+      "what": "Concern: stale cash available after a failed date-change reload",
+      "result": "resolved: cash available set to 0 and cash cleared, box locks; DepositPageTests::Should_OfferNoCashAndShowError_When_CashAvailableFailsToReloadOnDateChange"
+    },
+    {
+      "what": "Concern: no page + real BankingService test",
+      "result": "resolved: DepositPageSqliteTests renders DepositPage on in-memory SQLite (post + cheque no longer offered; over-limit refusal shows the cash available)"
+    },
+    {
+      "what": "Concern: ExpensePaymentPage currency symbol",
+      "result": "resolved: uses MoneyFormatter.Symbol"
+    },
+    {
+      "what": "Concern: no end-to-end restore of an older backup",
+      "result": "unfounded: V9_BackupRestoreTests::Should_RestoreWithNoBankingRecordsAndRenamePettyCash_When_FileOlderThan140_Integration already restores 1.2.0/1.3.0 files end to end"
+    },
+    {
+      "what": "banking UI",
+      "command": "dotnet test tests/StageFright.UI.Tests/ --no-build --filter FullyQualifiedName~DepositPage|FullyQualifiedName~BankingPageTests",
+      "source": "derived",
+      "exitCode": 255,
+      "durationSeconds": 0.1,
+      "result": "'FullyQualifiedName~BankingPageTests' is not recognized as an internal or external command, · operable program or batch file.",
+      "warnings": [
+        "exited 255"
+      ],
+      "commit": "92f0773",
+      "tree": "09b40c076ae3cd5100ae104e8bc1a1d8569e4aa3"
     }
   ],
   "step_summaries": {
@@ -1544,7 +1584,7 @@
       "step": "implement"
     }
   ],
-  "last_action": "Phase 5 T038-T043 done and verified; next is Phase 6 (US4, T044-T046)",
+  "last_action": "Phase 4/5 concerns fixed; next is Phase 6 (US4, T044-T046)",
   "risk": {
     "tier": "high",
     "computed": "high",

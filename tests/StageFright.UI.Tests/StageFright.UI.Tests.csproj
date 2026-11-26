@@ -30,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\StageFright.UI\StageFright.UI.csproj" />
     <ProjectReference Include="..\..\src\StageFright.Core\StageFright.Core.csproj" />
+    <ProjectReference Include="..\..\src\StageFright.Data\StageFright.Data.csproj" />
   </ItemGroup>
 
 </Project>

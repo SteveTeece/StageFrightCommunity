@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Exceptions;
@@ -7,6 +8,7 @@ using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Localization.Resources;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -20,6 +22,7 @@ public partial class DepositPage : ComponentBase
     [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<DepositPage> Logger { get; set; } = null!;
 
     private readonly DepositModel _form = new();
     private DepositItemSelectionGrid? _grid;
@@ -52,7 +55,8 @@ public partial class DepositPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Banking_LoadError", ex.Message);
+            Logger.LogError(ex, "Failed to load the deposit page");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Banking_LoadError", Detail(ex));
         }
         finally
         {
@@ -73,7 +77,11 @@ public partial class DepositPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Banking_LoadError", ex.Message);
+            // Without a figure for the new date, offer no cash rather than the old date's figure.
+            Logger.LogError(ex, "Failed to load the cash available for {DepositDate}", _form.Date);
+            _cashAvailable = 0m;
+            _form.CashAmount = null;
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Banking_LoadError", Detail(ex));
         }
     }
 
@@ -106,13 +114,16 @@ public partial class DepositPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Banking_DepositSaveError", ex.Message);
+            Logger.LogError(ex, "Failed to record a bank deposit");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Banking_DepositSaveError", Detail(ex));
         }
         finally
         {
             _saving = false;
         }
     }
+
+    private string Detail(Exception ex) => ErrorDetail.For(ex, L["Finance_Banking_UnexpectedErrorDetail"]);
 
     private void Cancel() => Nav.NavigateTo(BankingPath);
 }

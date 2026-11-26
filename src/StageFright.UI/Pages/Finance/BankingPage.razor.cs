@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
 using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -15,6 +17,7 @@ public partial class BankingPage : ComponentBase
     [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<BankingPage> Logger { get; set; } = null!;
 
     private BankingOverview? _overview;
     private IReadOnlyList<BankingHistoryEntry> _history = [];
@@ -30,7 +33,9 @@ public partial class BankingPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Banking_LoadError", ex.Message);
+            Logger.LogError(ex, "Failed to load the banking page");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Banking_LoadError",
+                ErrorDetail.For(ex, L["Finance_Banking_UnexpectedErrorDetail"]));
         }
         finally
         {

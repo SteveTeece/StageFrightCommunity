@@ -201,4 +201,16 @@ public class BankingPageTests : LocalizedTestContext
 
         Assert.Equal("Failed to load banking: disk unavailable", cut.Find("[role=alert]").TextContent.Trim());
     }
+
+    [Fact]
+    public void Should_ShowLoggedErrorTextNotExceptionText_When_OverviewFailsWithFrameworkException()
+    {
+        _banking.GetOverviewAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<BankingOverview>(new InvalidOperationException("SQLite Error 1: no such table")));
+
+        var cut = Render<BankingPage>();
+
+        Assert.Equal("Failed to load banking: an unexpected error occurred. The details have been logged.",
+            cut.Find("[role=alert]").TextContent.Trim());
+    }
 }
