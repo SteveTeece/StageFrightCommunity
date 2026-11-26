@@ -36,6 +36,9 @@ public class StageFrightDbContext : DbContext
     public DbSet<AuditTrailEntry> AuditTrailEntries => Set<AuditTrailEntry>();
     public DbSet<ExternalOrganisation> ExternalOrganisations => Set<ExternalOrganisation>();
     public DbSet<ExternalOrganisationContact> ExternalOrganisationContacts => Set<ExternalOrganisationContact>();
+    public DbSet<ReceivedItem> ReceivedItems => Set<ReceivedItem>();
+    public DbSet<BankDeposit> BankDeposits => Set<BankDeposit>();
+    public DbSet<BankDepositLine> BankDepositLines => Set<BankDepositLine>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -63,6 +66,9 @@ public class StageFrightDbContext : DbContext
         modelBuilder.ApplyConfiguration(new AuditTrailEntryConfiguration());
         modelBuilder.ApplyConfiguration(new ExternalOrganisationConfiguration());
         modelBuilder.ApplyConfiguration(new ExternalOrganisationContactConfiguration());
+        modelBuilder.ApplyConfiguration(new ReceivedItemConfiguration());
+        modelBuilder.ApplyConfiguration(new BankDepositConfiguration());
+        modelBuilder.ApplyConfiguration(new BankDepositLineConfiguration());
 
         SeedSystemAccounts(modelBuilder);
     }
@@ -76,7 +82,7 @@ public class StageFrightDbContext : DbContext
             new Account
             {
                 Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                Name = "Cash on Hand",
+                Name = "Petty Cash",
                 Type = AccountType.Asset,
                 AccountNumber = "1100",
                 SortOrder = 0,
@@ -94,6 +100,20 @@ public class StageFrightDbContext : DbContext
                 AccountNumber = "1200",
                 SortOrder = 1,
                 IsSystem = true,
+                IsDeleted = false,
+                CreatedAt = now,
+                UpdatedAt = now
+            },
+            new Account
+            {
+                // Holding account for cheques and other receipts awaiting banking (spec 033).
+                Id = new Guid("00000000-0000-0000-0000-000000000008"),
+                Name = "Undeposited Funds",
+                Type = AccountType.Asset,
+                AccountNumber = "1105",
+                SortOrder = 2,
+                IsSystem = true,
+                IsBankAccount = false,
                 IsDeleted = false,
                 CreatedAt = now,
                 UpdatedAt = now

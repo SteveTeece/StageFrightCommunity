@@ -45,14 +45,14 @@ Files: every source file in plan.md's Project Structure except the UI pages owne
 **⟶ Wait for Wave 2 to finish, then:**
 
 **Wave 3 — independent:**
-- [ ] **T013** [P] Add DbSets, rename row `…0001` to "Petty Cash" and seed the `…0008`/1105 row in `SeedSystemAccounts`, keeping the fixed 2026-01-01 timestamp · src/StageFright.Data/StageFrightDbContext.cs
-- [ ] **T014** [P] Implement `ReceivedItemRepository` and `BankDepositRepository`, plus the two new reconciliation queries. Translate raw exceptions to `DataAccessException` · src/StageFright.Data/Repositories/{ReceivedItemRepository,BankDepositRepository,BankReconciliationRepository}.cs
+- [x] **T013** [P] Add DbSets, rename row `…0001` to "Petty Cash" and seed the `…0008`/1105 row in `SeedSystemAccounts`, keeping the fixed 2026-01-01 timestamp · src/StageFright.Data/StageFrightDbContext.cs
+- [x] **T014** [P] Implement `ReceivedItemRepository` and `BankDepositRepository`, plus the two new reconciliation queries. Translate raw exceptions to `DataAccessException` · src/StageFright.Data/Repositories/{ReceivedItemRepository,BankDepositRepository,BankReconciliationRepository}.cs
 
 **⟶ Wait for Wave 3 to finish, then:**
 
 **Wave 4 — independent:**
-- [ ] **T015** [P] Generate the `AddBankingRework` migration and check it holds only the three tables, the `UpdateData` rename and the `InsertData` row, with a reversible `Down`. Add a SQLite test that the migrated database has 1105 as a system non-bank asset, that 1100 is named "Petty Cash" with its number and rows unchanged (FR-002, US2-1), and that the tables exist · src/StageFright.Data/Migrations/<ts>_AddBankingRework.cs, tests/StageFright.Data.Tests/Migrations/AddBankingReworkMigrationTests.cs
-- [ ] **T016** [P] Add SQLite integration tests for both new repositories and the reconciliation queries. Awaiting is derived (a reversed deposit makes its items awaiting again), the payer resolves to member, organisation (archived), description or opening balance, and finalised versus draft lines are told apart · tests/StageFright.Data.Tests/Repositories/{ReceivedItemRepository,BankDepositRepository,BankReconciliationRepositoryFinalised}Tests.cs
+- [x] **T015** [P] Generate the `AddBankingRework` migration and check it holds only the three tables, the `UpdateData` rename and the `InsertData` row, with a reversible `Down`. Add a SQLite test that the migrated database has 1105 as a system non-bank asset, that 1100 is named "Petty Cash" with its number and rows unchanged (FR-002, US2-1), and that the tables exist · src/StageFright.Data/Migrations/<ts>_AddBankingRework.cs, tests/StageFright.Data.Tests/Migrations/AddBankingReworkMigrationTests.cs
+- [x] **T016** [P] Add SQLite integration tests for both new repositories and the reconciliation queries. Awaiting is derived (a reversed deposit makes its items awaiting again), the payer resolves to member, organisation (archived), description or opening balance, and finalised versus draft lines are told apart · tests/StageFright.Data.Tests/Repositories/{ReceivedItemRepository,BankDepositRepository,BankReconciliationRepositoryFinalised}Tests.cs
 
 **⟶ Wait for Wave 4 to finish, then:**
 

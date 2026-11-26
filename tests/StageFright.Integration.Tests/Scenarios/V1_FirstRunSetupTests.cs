@@ -73,7 +73,7 @@ public sealed class V1_FirstRunSetupTests : IAsyncLifetime
         await svc.InitializeAsync(ValidRequest(), TestContext.Current.CancellationToken);
 
         var accounts = await new AccountRepository(_db).GetAllAsync(TestContext.Current.CancellationToken);
-        Assert.Contains(accounts, c => c.AccountNumber == "1100" && c.Name == "Cash on Hand" && c.IsSystem);
+        Assert.Contains(accounts, c => c.AccountNumber == "1100" && c.Name == "Petty Cash" && c.IsSystem);
         Assert.Contains(accounts, c => c.AccountNumber == "1200" && c.IsSystem);
         Assert.Contains(accounts, c => c.AccountNumber == "6999" && c.IsSystem);
     }
@@ -112,13 +112,13 @@ public sealed class V1_FirstRunSetupTests : IAsyncLifetime
         var svc = BuildSetupService();
         var queued = new[]
         {
-            new QueuedAccountRequest(Guid.NewGuid(), "Petty Cash", Core.Enums.AccountType.Asset, true),
+            new QueuedAccountRequest(Guid.NewGuid(), "Cash Float", Core.Enums.AccountType.Asset, true),
             new QueuedAccountRequest(Guid.NewGuid(), "Grant Income", Core.Enums.AccountType.Income, false)
         };
         await svc.InitializeAsync(ValidRequest() with { QueuedAccounts = queued }, TestContext.Current.CancellationToken);
 
         var accounts = await new AccountRepository(_db).GetAllAsync(TestContext.Current.CancellationToken);
-        Assert.Contains(accounts, a => a.Name == "Petty Cash" && a.Type == Core.Enums.AccountType.Asset && a.IsBankAccount && !a.IsSystem);
+        Assert.Contains(accounts, a => a.Name == "Cash Float" && a.Type == Core.Enums.AccountType.Asset && a.IsBankAccount && !a.IsSystem);
         Assert.Contains(accounts, a => a.Name == "Grant Income" && a.Type == Core.Enums.AccountType.Income && !a.IsBankAccount && !a.IsSystem);
     }
 
@@ -129,14 +129,14 @@ public sealed class V1_FirstRunSetupTests : IAsyncLifetime
         // queued-account creation, so the account is created exactly once (data-model.md's
         // account transition — nothing here re-runs on a rejected re-initialization).
         var svc = BuildSetupService();
-        var queued = new[] { new QueuedAccountRequest(Guid.NewGuid(), "Petty Cash", Core.Enums.AccountType.Asset, true) };
+        var queued = new[] { new QueuedAccountRequest(Guid.NewGuid(), "Cash Float", Core.Enums.AccountType.Asset, true) };
         await svc.InitializeAsync(ValidRequest() with { QueuedAccounts = queued }, TestContext.Current.CancellationToken);
 
         await Assert.ThrowsAsync<ValidationException>(
             () => svc.InitializeAsync(ValidRequest() with { QueuedAccounts = queued }, TestContext.Current.CancellationToken));
 
         var accounts = await new AccountRepository(_db).GetAllAsync(TestContext.Current.CancellationToken);
-        Assert.Single(accounts, a => a.Name == "Petty Cash");
+        Assert.Single(accounts, a => a.Name == "Cash Float");
     }
 
     [Fact]
@@ -170,17 +170,17 @@ public sealed class V1_FirstRunSetupTests : IAsyncLifetime
 
         await svc.InitializeAsync(ValidRequest() with
         {
-            QueuedAccounts = new[] { new QueuedAccountRequest(clientId, "Petty Cash", Core.Enums.AccountType.Asset, true) },
+            QueuedAccounts = new[] { new QueuedAccountRequest(clientId, "Cash Float", Core.Enums.AccountType.Asset, true) },
             QueuedOpeningBalances = new[] { new OpeningBalanceEntry { AccountId = clientId, Amount = 200m } },
             OpeningBalanceAsAtDate = asAtDate
         }, TestContext.Current.CancellationToken);
 
-        var pettyCash = (await new AccountRepository(_db).GetAllAsync(TestContext.Current.CancellationToken)).Single(a => a.Name == "Petty Cash");
-        Assert.NotEqual(clientId, pettyCash.Id); // resolved to a real, freshly assigned Account.Id
+        var cashFloat = (await new AccountRepository(_db).GetAllAsync(TestContext.Current.CancellationToken)).Single(a => a.Name == "Cash Float");
+        Assert.NotEqual(clientId, cashFloat.Id); // resolved to a real, freshly assigned Account.Id
 
         var journalEntry = Assert.Single(_db.JournalEntries, j => j.Type == JournalEntryType.OpeningBalance);
         var lines = await _db.Transactions.Where(t => t.JournalEntryId == journalEntry.Id).ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
-        Assert.Contains(lines, l => l.AccountId == pettyCash.Id && l.DebitAmount == 200m);
+        Assert.Contains(lines, l => l.AccountId == cashFloat.Id && l.DebitAmount == 200m);
         Assert.DoesNotContain(lines, l => l.AccountId == clientId);
         Assert.Equal(lines.Sum(l => l.DebitAmount), lines.Sum(l => l.CreditAmount));
     }

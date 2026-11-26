@@ -2,7 +2,7 @@
 
 One migration, `AddBankingRework`, does four things:
 - creates three tables (`ReceivedItems`, `BankDeposits`, `BankDepositLines`);
-- renames account `…0001` to "Petty Cash";
+- renames account `…0001` to "Petty Cash", after renaming any non-system account already called "Petty Cash" (any case) to "Petty Cash (own)";
 - seeds the Undeposited Funds account;
 - appends two `JournalEntryType` values. These are stored as strings, so no column changes.
 
@@ -114,4 +114,4 @@ Each DTO mirrors its entity's fields, numbered from 1 in table order.
 
 The restore order is as follows: `JournalEntries`, then `Fees`, then `Payments`, then `Transactions`, then **`ReceivedItems`**, then **`BankDeposits`**, then **`BankDepositLines`**, then the reconciliations.
 
-When the file version is older than `1.4.0`, account `CashId` is renamed "Petty Cash" after the upsert. Files at `1.2.0` and `1.3.0` restore with no items and no deposits. A `1.4.0` file is refused by a `1.3.0` app, which `BackupSchema.IsRestorable` already does.
+When the file version is older than `1.4.0`, account `CashId` is renamed "Petty Cash" after the upsert. As in the migration, a non-system account already named "Petty Cash" (any case) is renamed "Petty Cash (own)" first. Files at `1.2.0` and `1.3.0` restore with no items and no deposits. A `1.4.0` file is refused by a `1.3.0` app, which `BackupSchema.IsRestorable` already does.

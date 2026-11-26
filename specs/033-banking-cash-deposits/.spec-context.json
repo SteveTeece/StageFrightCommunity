@@ -170,6 +170,38 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-26T03:20:20.738Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T03:32:17.264Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T03:32:17.266Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T03:47:12.591Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T03:47:12.593Z"
     }
   ],
   "telemetryInstanceId": "2d0602eb-ff2b-480e-bd3e-beb0b4a6e39a",
@@ -262,6 +294,34 @@
       "rejected": "leaving the solution uncompilable between waves",
       "by": "agent",
       "at": "2026-11-26T03:20:21.500Z"
+    },
+    {
+      "decision": "Repository reads use IgnoreQueryFilters + AsNoTracking",
+      "why": "Payment.Member is a required nav to a soft-deleted entity, so a filtered Include would inner-join away items of a deleted member; archived organisations must still name the payer (research §13)",
+      "rejected": "filtered Includes",
+      "by": "agent",
+      "at": "2026-11-26T03:32:17.930Z"
+    },
+    {
+      "decision": "Undeposited Funds seed row SortOrder 2",
+      "why": "data-model §1 places it after Member Receivable (SortOrder 1)",
+      "rejected": "renumbering existing SortOrders",
+      "by": "agent",
+      "at": "2026-11-26T03:32:17.930Z"
+    },
+    {
+      "decision": "Generated the migration with --startup-project src/StageFright.Data",
+      "why": "the MAUI app multi-targets and dotnet ef cannot resolve it; StageFrightDbContextFactory is the design-time entry point",
+      "rejected": "CLAUDE.md command with the App startup project",
+      "by": "agent",
+      "at": "2026-11-26T03:47:13.301Z"
+    },
+    {
+      "decision": "AddBankingRework renames a non-system account named Petty Cash (any case) to Petty Cash (own) before renaming 1100; Down reverses it. The same rule is recorded in data-model §7 for the pre-1.4.0 restore path (T022).",
+      "why": "user chose Rename theirs: keeps account names unique without touching numbers, history or balances",
+      "rejected": "allowing a duplicate name; leaving 1100 as Cash on Hand when a clash exists",
+      "by": "agent",
+      "at": "2026-11-26T04:00:28.203Z"
     }
   ],
   "expectations": [
@@ -546,7 +606,7 @@
     }
   },
   "approach": "Route each receipt by payment method through a pure ReceiptRouting rule, track cheques as ReceivedItem rows, and post deposits, reversals and withdrawals as balanced journal entries through a new BankingService. One migration renames 1100 and seeds 1105, and backup moves to 1.4.0.",
-  "currentTask": "T012",
+  "currentTask": "T016",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -693,6 +753,54 @@
         "BankDepositLine}.cs"
       ],
       "wave": "T010-T012"
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "DbSets, configuration registration, 1100 renamed Petty Cash and 1105 Undeposited Funds seeded; ReceivedItemRepository and BankDepositRepository with derived awaiting state and DataAccessException wrapping",
+      "files": [
+        "src/StageFright.Data/StageFrightDbContext.cs",
+        "src/StageFright.Data/Repositories/{ReceivedItemRepository",
+        "BankDepositRepository}.cs"
+      ],
+      "wave": "T013-T014"
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "DbSets, configuration registration, 1100 renamed Petty Cash and 1105 Undeposited Funds seeded; ReceivedItemRepository and BankDepositRepository with derived awaiting state and DataAccessException wrapping",
+      "files": [
+        "src/StageFright.Data/StageFrightDbContext.cs",
+        "src/StageFright.Data/Repositories/{ReceivedItemRepository",
+        "BankDepositRepository}.cs"
+      ],
+      "wave": "T013-T014"
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "AddBankingRework migration (3 tables, 1100 rename, 1105 insert, reversible Down) with SQLite migration tests; integration tests for ReceivedItemRepository, BankDepositRepository and the two reconciliation queries (29 tests)",
+      "files": [
+        "src/StageFright.Data/Migrations/20261126033816_AddBankingRework.cs",
+        ".Designer.cs",
+        "StageFrightDbContextModelSnapshot.cs",
+        "tests/StageFright.Data.Tests/Migrations/AddBankingReworkMigrationTests.cs",
+        "tests/StageFright.Data.Tests/Repositories/{ReceivedItemRepository",
+        "BankDepositRepository",
+        "BankReconciliationRepositoryFinalised}Tests.cs"
+      ],
+      "wave": "T015-T016"
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "AddBankingRework migration (3 tables, 1100 rename, 1105 insert, reversible Down) with SQLite migration tests; integration tests for ReceivedItemRepository, BankDepositRepository and the two reconciliation queries (29 tests)",
+      "files": [
+        "src/StageFright.Data/Migrations/20261126033816_AddBankingRework.cs",
+        ".Designer.cs",
+        "StageFrightDbContextModelSnapshot.cs",
+        "tests/StageFright.Data.Tests/Migrations/AddBankingReworkMigrationTests.cs",
+        "tests/StageFright.Data.Tests/Repositories/{ReceivedItemRepository",
+        "BankDepositRepository",
+        "BankReconciliationRepositoryFinalised}Tests.cs"
+      ],
+      "wave": "T015-T016"
     }
   },
   "concerns": [
@@ -707,7 +815,23 @@
     {
       "note": "T010 configurations are not applied to the model until T013 registers them in StageFrightDbContext, so no test exercises them yet; T015 migration test and T016 repository tests cover them, including the two reconciliation queries.",
       "step": "implement"
+    },
+    {
+      "note": "After Wave 3 the suite is red by design: 353 Data/Integration tests fail with PendingModelChangesWarning until the T015 AddBankingRework migration (Wave 4), and SetupServiceIntegrationTests.InitializeAsync_SeedsSystemAccounts still asserts Cash on Hand until T020 (Wave 5). Build is 0 warnings; Core/UI/Reports/Localization all pass.",
+      "step": "implement"
+    },
+    {
+      "note": "Spec gap: an organisation that already has a user account named Petty Cash ends up with two accounts of that name after the 1100 rename (names are unique only in AccountService, not the DB); three V1_FirstRunSetupTests queue a user Petty Cash account and now fail on AccountService name uniqueness. Needs a product decision.",
+      "step": "implement"
+    },
+    {
+      "note": "Still failing after Wave 4 (owned by later tasks): SetupServiceIntegrationTests.InitializeAsync_SeedsSystemAccounts and V1_FirstRunSetupTests.AfterSetup_SystemAccountsExist_WithCorrectGLAccounts assert Cash on Hand (T020/T026); ConvertCategoriesToAccountsMigrationTests expects 10 accounts, now 11 with 1105 (T026).",
+      "step": "implement"
+    },
+    {
+      "note": "Resolved: Petty Cash name clash (migration + test + spec FR-002/edge case + data-model §1/§7). V1_FirstRunSetupTests now queue Cash Float and assert Petty Cash. Still red, owned by later tasks: SetupServiceIntegrationTests.InitializeAsync_SeedsSystemAccounts asserts Cash on Hand (T020) and ConvertCategoriesToAccountsMigrationTests expects 10 accounts, now 11 (T026).",
+      "step": "implement"
     }
   ],
-  "last_action": "Phase 2 Wave 2 (T010-T012) done; rebuild 0 warnings, 2493 tests passing; stopped before Wave 3, uncommitted."
+  "last_action": "Phase 2 Wave 4 done incl. Petty Cash clash fix; rebuild 0 warnings; 2522 of 2524 tests pass, 2 owned by T020/T026; uncommitted."
 }
