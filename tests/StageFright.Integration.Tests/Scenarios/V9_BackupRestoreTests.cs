@@ -5,6 +5,7 @@ using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.AuditTrail;
+using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Settings;
 using StageFright.Core.Modules.Settings.Backup;
 using StageFright.Data;
@@ -545,6 +546,221 @@ public sealed class V9_BackupRestoreTests : IAsyncLifetime
 
             Assert.True(await target.ReconciliationLines.IgnoreQueryFilters()
                 .AnyAsync(l => l.Id == line.Id && l.TransactionId == tx.Id, TestContext.Current.CancellationToken));
+        }
+        finally
+        {
+            if (target is not null)
+            {
+                await target.Database.CloseConnectionAsync();
+                await target.DisposeAsync();
+            }
+            CleanupFiles(path);
+        }
+    }
+
+    // --- spec 033: backup 1.4.0 banking records, and the Petty Cash rename for older files ---
+
+    [Fact]
+    public async Task Should_RoundTripBankingRecords_When_Version140FileRestoredIntoFreshDatabase_Integration()
+    {
+        var now = DateTime.UtcNow;
+        var bank = new Account
+        {
+            Id = Guid.NewGuid(), Name = "Cheque Account", Type = AccountType.Asset, AccountNumber = "1010",
+            SortOrder = 5, IsBankAccount = true, CreatedAt = now, UpdatedAt = now
+        };
+        var member = SeedMember("Carol", active: true);
+        var payment = new Payment
+        {
+            Id = Guid.NewGuid(), MemberId = member.Id, Date = now.Date.AddDays(-3), Amount = 85.50m,
+            PaymentMethod = PaymentMethod.Check, PaymentType = PaymentType.Annual, CreatedAt = now, UpdatedAt = now
+        };
+        var openingJe = new JournalEntry
+        {
+            Id = Guid.NewGuid(), Type = JournalEntryType.OpeningBalance, Date = now.Date.AddDays(-10),
+            Description = "Opening balances", CreatedAt = now
+        };
+        var depositJe = new JournalEntry
+        {
+            Id = Guid.NewGuid(), Type = JournalEntryType.BankDeposit, Date = now.Date.AddDays(-2),
+            Description = "Deposit", CreatedAt = now
+        };
+        var reversalJe = new JournalEntry
+        {
+            Id = Guid.NewGuid(), Type = JournalEntryType.BankDepositReversal, Date = depositJe.Date,
+            Description = "Deposit reversal", CreatedAt = now
+        };
+        var redepositJe = new JournalEntry
+        {
+            Id = Guid.NewGuid(), Type = JournalEntryType.BankDeposit, Date = now.Date.AddDays(-1),
+            Description = "Deposit again", CreatedAt = now
+        };
+        var cheque = new ReceivedItem
+        {
+            Id = Guid.NewGuid(), Date = payment.Date, Amount = payment.Amount, Method = PaymentMethod.Check,
+            Reference = "CHQ 001234", PaymentId = payment.Id, CreatedAt = now
+        };
+        var opening = new ReceivedItem
+        {
+            Id = Guid.NewGuid(), Date = openingJe.Date, Amount = 120m, Method = PaymentMethod.Other,
+            JournalEntryId = openingJe.Id, CreatedAt = now
+        };
+        var reversedDeposit = new BankDeposit
+        {
+            Id = Guid.NewGuid(), Date = depositJe.Date, BankAccountId = bank.Id, CashAmount = 40m,
+            ChequeTotal = 85.50m, JournalEntryId = depositJe.Id, ReversalJournalEntryId = reversalJe.Id,
+            ReversedAt = now, CreatedAt = now
+        };
+        var redeposit = new BankDeposit
+        {
+            Id = Guid.NewGuid(), Date = redepositJe.Date, BankAccountId = bank.Id, CashAmount = 0m,
+            ChequeTotal = 85.50m, JournalEntryId = redepositJe.Id, CreatedAt = now
+        };
+        // The same cheque sits in the reversed deposit and in the re-recorded one.
+        var reversedLine = new BankDepositLine
+        {
+            Id = Guid.NewGuid(), BankDepositId = reversedDeposit.Id, ReceivedItemId = cheque.Id, CreatedAt = now
+        };
+        var redepositLine = new BankDepositLine
+        {
+            Id = Guid.NewGuid(), BankDepositId = redeposit.Id, ReceivedItemId = cheque.Id, CreatedAt = now
+        };
+        _db.Accounts.Add(bank);
+        _db.Members.Add(member);
+        _db.Payments.Add(payment);
+        _db.JournalEntries.AddRange(openingJe, depositJe, reversalJe, redepositJe);
+        _db.ReceivedItems.AddRange(cheque, opening);
+        _db.BankDeposits.AddRange(reversedDeposit, redeposit);
+        _db.BankDepositLines.AddRange(reversedLine, redepositLine);
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var path = TempPath();
+        StageFrightDbContext? target = null;
+
+        try
+        {
+            await BuildService().ExportAsync(path, TestContext.Current.CancellationToken);
+
+            var manifest = await BuildService().GetManifestAsync(path, TestContext.Current.CancellationToken);
+            Assert.Equal("1.4.0", manifest.SchemaVersion);
+            Assert.Equal(2, manifest.EntityCounts["ReceivedItems"]);
+            Assert.Equal(2, manifest.EntityCounts["BankDeposits"]);
+            Assert.Equal(2, manifest.EntityCounts["BankDepositLines"]);
+
+            target = await NewDatabaseAsync();
+            await BuildService(target).ImportAsync(path, TestContext.Current.CancellationToken);
+            target.ChangeTracker.Clear();
+
+            var items = await target.ReceivedItems.OrderBy(i => i.Amount).ToListAsync(TestContext.Current.CancellationToken);
+            Assert.Equal(2, items.Count);
+            Assert.Equal(cheque.Id, items[0].Id);
+            Assert.Equal("CHQ 001234", items[0].Reference);
+            Assert.Equal(payment.Id, items[0].PaymentId);
+            Assert.Null(items[0].JournalEntryId);
+            Assert.Equal(opening.Id, items[1].Id);
+            Assert.Equal(openingJe.Id, items[1].JournalEntryId);
+            Assert.Equal(PaymentMethod.Other, items[1].Method);
+
+            var restoredReversed = await target.BankDeposits.SingleAsync(d => d.Id == reversedDeposit.Id, TestContext.Current.CancellationToken);
+            Assert.Equal(reversalJe.Id, restoredReversed.ReversalJournalEntryId);
+            Assert.NotNull(restoredReversed.ReversedAt);
+            Assert.Equal(40m, restoredReversed.CashAmount);
+            Assert.Equal(125.50m, restoredReversed.Total);
+
+            var restoredRedeposit = await target.BankDeposits.SingleAsync(d => d.Id == redeposit.Id, TestContext.Current.CancellationToken);
+            Assert.Null(restoredRedeposit.ReversalJournalEntryId);
+            Assert.Equal(bank.Id, restoredRedeposit.BankAccountId);
+
+            var lines = await target.BankDepositLines.ToListAsync(TestContext.Current.CancellationToken);
+            Assert.Equal(2, lines.Count);
+            Assert.All(lines, l => Assert.Equal(cheque.Id, l.ReceivedItemId));
+
+            // A current file leaves the chart as migrated: 1100 is Petty Cash, 1105 is present.
+            var cash = await target.Accounts.SingleAsync(a => a.Id == SystemAccounts.CashId, TestContext.Current.CancellationToken);
+            Assert.Equal("Petty Cash", cash.Name);
+            Assert.True(await target.Accounts.AnyAsync(a => a.Id == SystemAccounts.UndepositedFundsId, TestContext.Current.CancellationToken));
+        }
+        finally
+        {
+            if (target is not null)
+            {
+                await target.Database.CloseConnectionAsync();
+                await target.DisposeAsync();
+            }
+            CleanupFiles(path);
+        }
+    }
+
+    [Theory]
+    [InlineData("1.2.0")]
+    [InlineData("1.3.0")]
+    public async Task Should_RestoreWithNoBankingRecordsAndRenamePettyCash_When_FileOlderThan140_Integration(string fileVersion)
+    {
+        // An older file still names account 1100 "Cash on Hand", and the organisation may already
+        // have its own account called "petty cash" — which must become "Petty Cash (own)".
+        var now = DateTime.UtcNow;
+        var cash = await _db.Accounts.SingleAsync(a => a.Id == SystemAccounts.CashId, TestContext.Current.CancellationToken);
+        cash.Name = "Cash on Hand";
+        var ownPettyCash = new Account
+        {
+            Id = Guid.NewGuid(), Name = "petty cash", Type = AccountType.Asset, AccountNumber = "1150",
+            SortOrder = 6, CreatedAt = now, UpdatedAt = now
+        };
+        var cashTx = new Transaction
+        {
+            Id = Guid.NewGuid(), Date = now.Date, AccountId = SystemAccounts.CashId,
+            DebitAmount = 30m, GLAccount = SystemAccounts.CashNumber, Description = "Raffle takings", CreatedAt = now
+        };
+        _db.Accounts.Add(ownPettyCash);
+        _db.Transactions.Add(cashTx);
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var path = TempPath();
+        StageFrightDbContext? target = null;
+
+        try
+        {
+            await BuildService().ExportAsync(path, TestContext.Current.CancellationToken);
+
+            // Rewrite the export as an older file: no banking lists or count keys (and, for 1.2.0,
+            // no organisation lists either).
+            var envelope = ReadEnvelope(path);
+            envelope.SchemaVersion = fileVersion;
+            envelope.ReceivedItems = null;
+            envelope.BankDeposits = null;
+            envelope.BankDepositLines = null;
+            envelope.EntityCounts.Remove("ReceivedItems");
+            envelope.EntityCounts.Remove("BankDeposits");
+            envelope.EntityCounts.Remove("BankDepositLines");
+            if (fileVersion == "1.2.0")
+            {
+                envelope.ExternalOrganisations = null;
+                envelope.ExternalOrganisationContacts = null;
+                envelope.EntityCounts.Remove("ExternalOrganisations");
+                envelope.EntityCounts.Remove("ExternalOrganisationContacts");
+            }
+            Assert.Contains(envelope.Accounts!, a => a.Id == SystemAccounts.CashId && a.Name == "Cash on Hand");
+            WriteEnvelope(path, envelope);
+
+            target = await NewDatabaseAsync();
+            await BuildService(target).ImportAsync(path, TestContext.Current.CancellationToken);
+            target.ChangeTracker.Clear();
+
+            Assert.Equal(0, await target.ReceivedItems.CountAsync(TestContext.Current.CancellationToken));
+            Assert.Equal(0, await target.BankDeposits.CountAsync(TestContext.Current.CancellationToken));
+            Assert.Equal(0, await target.BankDepositLines.CountAsync(TestContext.Current.CancellationToken));
+
+            // 1100 is renamed, keeping its number and its history.
+            var restoredCash = await target.Accounts.SingleAsync(a => a.Id == SystemAccounts.CashId, TestContext.Current.CancellationToken);
+            Assert.Equal("Petty Cash", restoredCash.Name);
+            Assert.Equal(SystemAccounts.CashNumber, restoredCash.AccountNumber);
+            Assert.True(await target.Transactions.AnyAsync(t => t.Id == cashTx.Id && t.AccountId == SystemAccounts.CashId, TestContext.Current.CancellationToken));
+
+            var restoredOwn = await target.Accounts.SingleAsync(a => a.Id == ownPettyCash.Id, TestContext.Current.CancellationToken);
+            Assert.Equal("Petty Cash (own)", restoredOwn.Name);
+
+            var undeposited = await target.Accounts.SingleAsync(a => a.Id == SystemAccounts.UndepositedFundsId, TestContext.Current.CancellationToken);
+            Assert.Equal(SystemAccounts.UndepositedFundsNumber, undeposited.AccountNumber);
         }
         finally
         {

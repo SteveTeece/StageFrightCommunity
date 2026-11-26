@@ -397,7 +397,7 @@ public sealed class V3_RehearsalAttendanceTests : IAsyncLifetime
         var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var memberRepo = new MemberRepository(_db);
         var unitOfWork = new UnitOfWork(_db);
-        return new PaymentService(feeRepo, paymentRepo, glRepo, memberRepo, BuildAuditService(), unitOfWork, RealLocalizer.Instance);
+        return new PaymentService(feeRepo, paymentRepo, glRepo, memberRepo, new AccountRepository(_db), new ReceivedItemRepository(_db), BuildAuditService(), unitOfWork, RealLocalizer.Instance);
     }
 
     private AuditTrailService BuildAuditService()

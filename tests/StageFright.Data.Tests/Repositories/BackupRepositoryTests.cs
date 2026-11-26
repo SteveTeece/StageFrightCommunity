@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Finance;
 using StageFright.Data.Repositories;
 using StageFright.Data.Tests.Infrastructure;
 
@@ -120,6 +122,127 @@ public class BackupRepositoryTests : IDisposable
         await db.SaveChangesAsync(ct);
 
         return new SeededRegister(active, archived, contact, removedContact, linked);
+    }
+
+    // --- spec 033: Petty Cash rename for files older than backup 1.4.0 ---
+
+    [Fact]
+    public async Task Should_RenameCashAndOwnPettyCash_When_RenameCashAccountToPettyCashCalled_Integration()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var own = new Account
+        {
+            Id = Guid.NewGuid(), Name = "PETTY CASH", Type = AccountType.Asset, AccountNumber = "1150",
+            CreatedAt = Created, UpdatedAt = Created
+        };
+        var unrelated = new Account
+        {
+            Id = Guid.NewGuid(), Name = "Petty Cash Tin", Type = AccountType.Asset, AccountNumber = "1160",
+            CreatedAt = Created, UpdatedAt = Created
+        };
+        using (var db = _target.CreateContext())
+        {
+            var cash = await db.Accounts.SingleAsync(a => a.Id == SystemAccounts.CashId, ct);
+            cash.Name = "Cash on Hand";
+            db.Accounts.AddRange(own, unrelated);
+            await db.SaveChangesAsync(ct);
+
+            await new BackupRepository(db).RenameCashAccountToPettyCashAsync(ct);
+        }
+
+        using var check = _target.CreateContext();
+        var accounts = await check.Accounts.IgnoreQueryFilters().ToDictionaryAsync(a => a.Id, ct);
+        Assert.Equal("Petty Cash", accounts[SystemAccounts.CashId].Name);
+        Assert.Equal(SystemAccounts.CashNumber, accounts[SystemAccounts.CashId].AccountNumber);
+        Assert.Equal("Petty Cash (own)", accounts[own.Id].Name);
+        Assert.Equal("Petty Cash Tin", accounts[unrelated.Id].Name);
+    }
+
+    [Fact]
+    public async Task Should_LeaveAccountsUnchanged_When_CashAlreadyNamedPettyCash_Integration()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        DateTime before;
+        using (var db = _target.CreateContext())
+        {
+            before = (await db.Accounts.AsNoTracking().SingleAsync(a => a.Id == SystemAccounts.CashId, ct)).UpdatedAt;
+            await new BackupRepository(db).RenameCashAccountToPettyCashAsync(ct);
+        }
+
+        using var check = _target.CreateContext();
+        var cash = await check.Accounts.SingleAsync(a => a.Id == SystemAccounts.CashId, ct);
+        Assert.Equal("Petty Cash", cash.Name);
+        Assert.Equal(before, cash.UpdatedAt);
+    }
+
+    [Fact]
+    public async Task Should_ThrowDataAccessException_When_RenameFails_Integration()
+    {
+        var db = _target.CreateContext();
+        var repo = new BackupRepository(db);
+        await db.DisposeAsync();
+
+        await Assert.ThrowsAsync<DataAccessException>(
+            () => repo.RenameCashAccountToPettyCashAsync(TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task Should_RoundTripBankingRecords_When_SnapshotUpsertedIntoEmptyDatabase_Integration()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var bank = new Account
+        {
+            Id = Guid.NewGuid(), Name = "Cheque Account", Type = AccountType.Asset, AccountNumber = "1010",
+            IsBankAccount = true, CreatedAt = Created, UpdatedAt = Created
+        };
+        var incomeJe = new JournalEntry
+        {
+            Id = Guid.NewGuid(), Type = JournalEntryType.Income, Date = Created, Description = "Grant", CreatedAt = Created
+        };
+        var depositJe = new JournalEntry
+        {
+            Id = Guid.NewGuid(), Type = JournalEntryType.BankDeposit, Date = Created.AddDays(1), Description = "Deposit", CreatedAt = Created
+        };
+        var item = new ReceivedItem
+        {
+            Id = Guid.NewGuid(), Date = Created, Amount = 500m, Method = PaymentMethod.Check,
+            Reference = "000123", JournalEntryId = incomeJe.Id, CreatedAt = Created
+        };
+        var deposit = new BankDeposit
+        {
+            Id = Guid.NewGuid(), Date = depositJe.Date, BankAccountId = bank.Id, CashAmount = 0m,
+            ChequeTotal = 500m, JournalEntryId = depositJe.Id, CreatedAt = Created
+        };
+        var line = new BankDepositLine
+        {
+            Id = Guid.NewGuid(), BankDepositId = deposit.Id, ReceivedItemId = item.Id, CreatedAt = Created
+        };
+        using (var db = _source.CreateContext())
+        {
+            db.Accounts.Add(bank);
+            db.JournalEntries.AddRange(incomeJe, depositJe);
+            db.ReceivedItems.Add(item);
+            db.BankDeposits.Add(deposit);
+            db.BankDepositLines.Add(line);
+            await db.SaveChangesAsync(ct);
+        }
+
+        using (var sourceDb = _source.CreateContext())
+        using (var targetDb = _target.CreateContext())
+        {
+            var snapshot = await new BackupRepository(sourceDb).GetFullSnapshotAsync(ct);
+            Assert.Single(snapshot.ReceivedItems);
+            Assert.Single(snapshot.BankDeposits);
+            Assert.Single(snapshot.BankDepositLines);
+            await new BackupRepository(targetDb).UpsertSnapshotAsync(snapshot, ct);
+        }
+
+        using var check = _target.CreateContext();
+        Assert.Equal(item.Id, (await check.ReceivedItems.SingleAsync(ct)).Id);
+        Assert.Equal(deposit.Id, (await check.BankDeposits.SingleAsync(ct)).Id);
+        var restoredLine = await check.BankDepositLines.SingleAsync(ct);
+        Assert.Equal(deposit.Id, restoredLine.BankDepositId);
+        Assert.Equal(item.Id, restoredLine.ReceivedItemId);
     }
 
     public void Dispose()

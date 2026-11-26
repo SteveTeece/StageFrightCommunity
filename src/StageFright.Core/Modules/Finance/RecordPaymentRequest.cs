@@ -19,6 +19,19 @@ public class RecordPaymentRequest
     /// <summary>Tender method. Defaults to Cash.</summary>
     public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash;
 
+    /// <summary>
+    /// The bank account the money went into. Required for <see cref="PaymentMethod.Card"/> and
+    /// <see cref="PaymentMethod.ElectronicTransfer"/> (an existing bank account other than Petty Cash);
+    /// ignored for every other method.
+    /// </summary>
+    public Guid? BankAccountId { get; set; }
+
+    /// <summary>
+    /// Optional cheque number or note, kept on the item awaiting deposit. Used for
+    /// <see cref="PaymentMethod.Check"/> and <see cref="PaymentMethod.Other"/> only; trimmed, null when blank.
+    /// </summary>
+    public string? Reference { get; set; }
+
     /// <summary>Reporting classification of the payment.</summary>
     public PaymentType PaymentType { get; set; }
 

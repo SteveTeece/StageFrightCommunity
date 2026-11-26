@@ -98,7 +98,7 @@ public sealed class ConvertCategoriesToAccountsMigrationTests : IDisposable
         var accountCount = await db.Accounts.IgnoreQueryFilters().CountAsync(cancellationToken: TestContext.Current.CancellationToken);
         var transactionCount = await db.Transactions.CountAsync(cancellationToken: TestContext.Current.CancellationToken);
 
-        Assert.Equal(10, accountCount);      // 3 system + 3 user + 4 new system
+        Assert.Equal(11, accountCount);      // 3 system + 3 user + 4 new system + 1105 Undeposited Funds (spec 033)
         Assert.Equal(4, transactionCount);   // untouched
     }
 

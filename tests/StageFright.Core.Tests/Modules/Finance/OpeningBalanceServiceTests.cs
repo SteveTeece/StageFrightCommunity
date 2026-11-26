@@ -4,6 +4,7 @@ using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.Finance;
+using StageFright.Core.Modules.Localization.Resources;
 using StageFright.Core.Tests.Fixtures;
 
 namespace StageFright.Core.Tests.Modules.Finance;
@@ -12,13 +13,15 @@ namespace StageFright.Core.Tests.Modules.Finance;
 /// Unit tests for OpeningBalanceService — normal-side posting, Opening Balance
 /// Equity plug, account eligibility (only the Opening Balance Equity plug account
 /// itself is excluded — Member Receivable and the tax clearing accounts are
-/// eligible), rerun detection, and audit logging.
+/// eligible), rerun detection, audit logging, and the Undeposited Funds opening-balance
+/// item (spec 033: positive becomes one item awaiting deposit, negative is refused).
 /// </summary>
 public class OpeningBalanceServiceTests : TestBase
 {
     private readonly IAccountRepository _accountRepo = Substitute.For<IAccountRepository>();
     private readonly IGLRepository _glRepo = Substitute.For<IGLRepository>();
     private readonly IJournalEntryRepository _journalRepo = Substitute.For<IJournalEntryRepository>();
+    private readonly IReceivedItemRepository _receivedItemRepo = Substitute.For<IReceivedItemRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
 
@@ -40,7 +43,8 @@ public class OpeningBalanceServiceTests : TestBase
         _accountRepo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(new List<Account>
             {
-                MakeAccount(CashAccountId, "Cash on Hand", AccountType.Asset, "1100", isSystem: true, isBank: true),
+                MakeAccount(CashAccountId, "Petty Cash", AccountType.Asset, "1100", isSystem: true, isBank: true),
+                MakeAccount(SystemAccounts.UndepositedFundsId, "Undeposited Funds", AccountType.Asset, "1105", isSystem: true),
                 MakeAccount(SystemAccounts.MemberReceivableId, "Member Receivable", AccountType.Asset, "1200", isSystem: true),
                 MakeAccount(SystemAccounts.TaxCollectedId, "Tax Collected", AccountType.Liability, "2310", isSystem: true),
                 // 2320 is an Asset ("Tax Receivable") since spec 028 #355 — a positive opening
@@ -51,7 +55,7 @@ public class OpeningBalanceServiceTests : TestBase
                 MakeAccount(IncomeAccountId, "Raffle Income", AccountType.Income, "4000")
             });
 
-        _sut = new OpeningBalanceService(_accountRepo, _glRepo, _journalRepo, _audit, _unitOfWork, RealLocalizer.Instance);
+        _sut = new OpeningBalanceService(_accountRepo, _glRepo, _journalRepo, _receivedItemRepo, _audit, _unitOfWork, RealLocalizer.Instance);
     }
 
     // --- GetOpeningBalanceAccountsAsync ---
@@ -61,7 +65,8 @@ public class OpeningBalanceServiceTests : TestBase
     {
         var result = await _sut.GetOpeningBalanceAccountsAsync(Ct);
 
-        Assert.Equal(6, result.Count);
+        Assert.Equal(7, result.Count);
+        Assert.Contains(result, a => a.Id == SystemAccounts.UndepositedFundsId);
         Assert.Contains(result, a => a.Id == SystemAccounts.MemberReceivableId);
         Assert.Contains(result, a => a.Id == SystemAccounts.TaxCollectedId);
         Assert.Contains(result, a => a.Id == SystemAccounts.TaxPaidId);
@@ -284,6 +289,73 @@ public class OpeningBalanceServiceTests : TestBase
             Arg.Any<string>(), Arg.Any<Guid>(), AuditAction.Create,
             Arg.Any<string?>(), Arg.Any<string?>(),
             ct: Arg.Any<CancellationToken>());
+    }
+
+    // --- Undeposited Funds (spec 033) ---
+
+    [Fact]
+    public async Task Should_DebitUndepositedFundsAndAddOneOpeningBalanceItem_When_AmountIsPositive()
+    {
+        var request = MakeRequest(
+            new OpeningBalanceEntry { AccountId = SystemAccounts.UndepositedFundsId, Amount = 250m },
+            new OpeningBalanceEntry { AccountId = CashAccountId, Amount = 100m });
+
+        await _sut.RecordOpeningBalancesAsync(request, Ct);
+
+        await _glRepo.Received(1).AddBalancedSetAsync(
+            Arg.Is<IReadOnlyList<Transaction>>(lines =>
+                lines!.Any(t => t.DebitAmount == 250m && t.AccountId == SystemAccounts.UndepositedFundsId && t.GLAccount == "1105")),
+            Arg.Any<CancellationToken>());
+        await _receivedItemRepo.Received(1).AddAsync(Arg.Any<ReceivedItem>(), Arg.Any<CancellationToken>());
+        await _receivedItemRepo.Received(1).AddAsync(
+            Arg.Is<ReceivedItem>(i => i!.Amount == 250m && i.Method == PaymentMethod.Other
+                && i.Date == request.AsAtDate && i.JournalEntryId != null && i.PaymentId == null
+                && i.Reference == null),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_LinkOpeningBalanceItemToTheOpeningBalanceEntry_When_AmountIsPositive()
+    {
+        JournalEntry? saved = null;
+        _journalRepo.AddAsync(Arg.Do<JournalEntry>(j => saved = j), Arg.Any<CancellationToken>())
+            .Returns(ci => ci.ArgAt<JournalEntry>(0));
+
+        await _sut.RecordOpeningBalancesAsync(
+            MakeRequest(new OpeningBalanceEntry { AccountId = SystemAccounts.UndepositedFundsId, Amount = 80m }), Ct);
+
+        Assert.NotNull(saved);
+        await _receivedItemRepo.Received(1).AddAsync(
+            Arg.Is<ReceivedItem>(i => i!.JournalEntryId == saved!.Id),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_ThrowValidationAndPostNothing_When_UndepositedFundsAmountIsNegative()
+    {
+        var request = MakeRequest(
+            new OpeningBalanceEntry { AccountId = SystemAccounts.UndepositedFundsId, Amount = -50m });
+
+        var ex = await Assert.ThrowsAsync<ValidationException>(
+            () => _sut.RecordOpeningBalancesAsync(request, Ct));
+
+        Assert.Equal(
+            RealLocalizer.Instance.Get<ValidationResource>("Validation_OpeningBalance_UndepositedFundsNegative"),
+            ex.Message);
+        await _unitOfWork.DidNotReceive().ExecuteInTransactionAsync(
+            Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>());
+        await _receivedItemRepo.DidNotReceive().AddAsync(Arg.Any<ReceivedItem>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_AddNoItem_When_UndepositedFundsHasNoOpeningBalance()
+    {
+        await _sut.RecordOpeningBalancesAsync(
+            MakeRequest(
+                new OpeningBalanceEntry { AccountId = CashAccountId, Amount = 100m },
+                new OpeningBalanceEntry { AccountId = SystemAccounts.UndepositedFundsId, Amount = 0m }), Ct);
+
+        await _receivedItemRepo.DidNotReceive().AddAsync(Arg.Any<ReceivedItem>(), Arg.Any<CancellationToken>());
     }
 
     // --- Helpers ---

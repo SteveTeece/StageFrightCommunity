@@ -68,7 +68,7 @@ public sealed class OrganisationFinancialHistoryJourneyTests : IAsyncLifetime
         await BuildIncomeService().RecordIncomeAsync(new RecordIncomeRequest
         {
             Date = incomeDate, Amount = 200m, AccountId = GrantIncomeAccountId,
-            DepositAccountId = SavingsAccountId, Description = "Community grant",
+            PaymentMethod = PaymentMethod.ElectronicTransfer, BankAccountId = SavingsAccountId, Description = "Community grant",
             ExternalOrganisationId = TownHallId
         }, ct);
 
@@ -118,7 +118,7 @@ public sealed class OrganisationFinancialHistoryJourneyTests : IAsyncLifetime
     private IncomeEntryService BuildIncomeService() =>
         new(new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))),
             new JournalEntryRepository(_db), new SettingsRepository(_db), BuildAuditService(), new UnitOfWork(_db),
-            RealLocalizer.Instance, new ExternalOrganisationRepository(_db));
+            RealLocalizer.Instance, new ExternalOrganisationRepository(_db), new ReceivedItemRepository(_db));
 
     private OrganisationHistoryService BuildHistoryService() => new(new JournalEntryRepository(_db));
 

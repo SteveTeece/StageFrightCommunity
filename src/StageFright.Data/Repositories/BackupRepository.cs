@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Settings.Backup;
 using SettingsEntity = StageFright.Core.Entities.Settings;
 
@@ -44,6 +45,9 @@ public class BackupRepository : IBackupRepository
                 JournalEntries = await _db.JournalEntries.AsNoTracking().ToListAsync(ct),
                 BankReconciliations = await _db.BankReconciliations.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
                 ReconciliationLines = await _db.ReconciliationLines.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
+                ReceivedItems = await _db.ReceivedItems.AsNoTracking().ToListAsync(ct),
+                BankDeposits = await _db.BankDeposits.AsNoTracking().ToListAsync(ct),
+                BankDepositLines = await _db.BankDepositLines.AsNoTracking().ToListAsync(ct),
                 Accounts = await _db.Accounts.IgnoreQueryFilters().AsNoTracking().ToListAsync(ct),
                 Settings = await _db.Settings.IgnoreQueryFilters().AsNoTracking().FirstOrDefaultAsync(ct),
                 AuditTrailEntries = await _db.AuditTrailEntries.AsNoTracking().ToListAsync(ct),
@@ -85,6 +89,11 @@ public class BackupRepository : IBackupRepository
             await UpsertCollectionAsync(snapshot.Fees, _db.Fees, f => f.Id, ct);
             await UpsertCollectionAsync(snapshot.Payments, _db.Payments, p => p.Id, ct);
             await UpsertCollectionAsync(snapshot.Transactions, _db.Transactions, t => t.Id, ct);
+            // Banking records (spec 033) after Transactions: items FK to Payments/JournalEntries,
+            // deposits to Accounts/JournalEntries, and lines to both a deposit and an item.
+            await UpsertCollectionAsync(snapshot.ReceivedItems, _db.ReceivedItems, i => i.Id, ct);
+            await UpsertCollectionAsync(snapshot.BankDeposits, _db.BankDeposits, d => d.Id, ct);
+            await UpsertCollectionAsync(snapshot.BankDepositLines, _db.BankDepositLines, l => l.Id, ct);
             // Reconciliations after Transactions; their cleared-lines FK to both a reconciliation and a transaction.
             await UpsertCollectionAsync(snapshot.BankReconciliations, _db.BankReconciliations, r => r.Id, ct);
             await UpsertCollectionAsync(snapshot.ReconciliationLines, _db.ReconciliationLines, l => l.Id, ct);
@@ -101,6 +110,40 @@ public class BackupRepository : IBackupRepository
             throw new DataAccessException($"Upsert failed during restore: {ex.Message}", "Backup", nameof(UpsertSnapshotAsync), null, ex);
         }
     }
+
+    public async Task RenameCashAccountToPettyCashAsync(CancellationToken ct = default)
+    {
+        try
+        {
+            var now = DateTime.UtcNow;
+            var accounts = await _db.Accounts.IgnoreQueryFilters().ToListAsync(ct);
+
+            // An organisation's own "Petty Cash" account would clash with the renamed system
+            // account, so it becomes "Petty Cash (own)" first — the same rule as the migration.
+            foreach (var own in accounts.Where(a =>
+                         !a.IsSystem && string.Equals(a.Name, PettyCashName, StringComparison.OrdinalIgnoreCase)))
+            {
+                own.Name = PettyCashOwnName;
+                own.UpdatedAt = now;
+            }
+
+            var cash = accounts.FirstOrDefault(a => a.Id == SystemAccounts.CashId);
+            if (cash is not null && cash.Name != PettyCashName)
+            {
+                cash.Name = PettyCashName;
+                cash.UpdatedAt = now;
+            }
+
+            await _db.SaveChangesAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            throw new DataAccessException($"Failed to rename the cash account during restore: {ex.Message}", nameof(Account), nameof(RenameCashAccountToPettyCashAsync), SystemAccounts.CashId, ex);
+        }
+    }
+
+    private const string PettyCashName = "Petty Cash";
+    private const string PettyCashOwnName = "Petty Cash (own)";
 
     private async Task UpsertCollectionAsync<T>(
         IReadOnlyList<T> entities,

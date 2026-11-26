@@ -14,6 +14,8 @@ namespace StageFright.Core.Modules.Finance;
 /// and the tax clearing accounts, so a coordinator migrating from another system can
 /// seed real carried-over balances for them — is eligible; only Opening Balance
 /// Equity itself is excluded, since it's the plug target rather than an enterable row.
+/// A positive Undeposited Funds (1105) amount also becomes one "opening balance"
+/// <see cref="ReceivedItem"/> awaiting deposit; a negative one is refused (spec 033).
 /// </summary>
 public class OpeningBalanceService : IOpeningBalanceService
 {
@@ -25,6 +27,7 @@ public class OpeningBalanceService : IOpeningBalanceService
     private readonly IAccountRepository _accountRepo;
     private readonly IGLRepository _glRepo;
     private readonly IJournalEntryRepository _journalRepo;
+    private readonly IReceivedItemRepository _receivedItemRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILocalizer _localizer;
@@ -33,6 +36,7 @@ public class OpeningBalanceService : IOpeningBalanceService
         IAccountRepository accountRepo,
         IGLRepository glRepo,
         IJournalEntryRepository journalRepo,
+        IReceivedItemRepository receivedItemRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork,
         ILocalizer localizer)
@@ -40,6 +44,7 @@ public class OpeningBalanceService : IOpeningBalanceService
         _accountRepo = accountRepo;
         _glRepo = glRepo;
         _journalRepo = journalRepo;
+        _receivedItemRepo = receivedItemRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
         _localizer = localizer;
@@ -99,6 +104,12 @@ public class OpeningBalanceService : IOpeningBalanceService
                     nameof(Account), nameof(RecordOpeningBalancesAsync), entry.AccountId);
         }
 
+        var undepositedFunds = entries.FirstOrDefault(e => e.AccountId == SystemAccounts.UndepositedFundsId);
+        if (undepositedFunds is not null && undepositedFunds.Amount < 0m)
+            throw new ValidationException(
+                _localizer.Get<ValidationResource>("Validation_OpeningBalance_UndepositedFundsNegative"),
+                nameof(Account), nameof(RecordOpeningBalancesAsync), SystemAccounts.UndepositedFundsId);
+
         await _unitOfWork.ExecuteInTransactionAsync(async innerCt =>
         {
             var now = DateTime.UtcNow;
@@ -150,6 +161,19 @@ public class OpeningBalanceService : IOpeningBalanceService
             }
 
             await _glRepo.AddBalancedSetAsync(lines, innerCt);
+
+            if (undepositedFunds is not null)
+            {
+                await _receivedItemRepo.AddAsync(new ReceivedItem
+                {
+                    Id = Guid.NewGuid(),
+                    Date = request.AsAtDate,
+                    Amount = undepositedFunds.Amount,
+                    Method = PaymentMethod.Other,
+                    JournalEntryId = journalEntry.Id,
+                    CreatedAt = now
+                }, innerCt);
+            }
 
             await _audit.LogAsync(
                 nameof(JournalEntry), journalEntry.Id, AuditAction.Create,

@@ -172,7 +172,7 @@ public sealed class V10_ThemeTests : IAsyncLifetime
         var glRepo = new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db)));
         var journalRepo = new JournalEntryRepository(_db);
         var unitOfWork = new UnitOfWork(_db);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, new ReceivedItemRepository(_db), auditService, unitOfWork, RealLocalizer.Instance);
         return new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
     }
 

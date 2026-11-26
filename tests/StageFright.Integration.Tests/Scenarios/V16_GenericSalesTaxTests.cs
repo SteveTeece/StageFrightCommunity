@@ -177,7 +177,7 @@ public sealed class V16_GenericSalesTaxTests : IAsyncLifetime
 
     private IncomeEntryService BuildIncomeService() =>
         new(new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new JournalEntryRepository(_db),
-            new SettingsRepository(_db), BuildAuditService(), new UnitOfWork(_db), RealLocalizer.Instance, new ExternalOrganisationRepository(_db));
+            new SettingsRepository(_db), BuildAuditService(), new UnitOfWork(_db), RealLocalizer.Instance, new ExternalOrganisationRepository(_db), new ReceivedItemRepository(_db));
 
     private ExpensePaymentService BuildExpenseService() =>
         new(new AccountRepository(_db), new GLRepository(_db, new ClosedPeriodGuard(new SettingsRepository(_db))), new JournalEntryRepository(_db),

@@ -9,11 +9,14 @@ namespace StageFright.Core.Modules.Finance;
 
 /// <summary>
 /// Records non-member income (raffles, donations, fundraising) directly to the GL.
-/// GL pair under an Income journal entry: Debit the chosen deposit bank account
-/// (default Cash on Hand 1100) / Credit selected Income account.
+/// GL set under an Income journal entry: Debit the account <see cref="ReceiptRouting"/> picks for the
+/// payment method (Petty Cash 1100 for cash, Undeposited Funds 1105 for cheque and other, the chosen
+/// bank account for card and electronic transfer) / Credit the selected Income account.
+/// A cheque or other receipt also adds one <see cref="ReceivedItem"/> for the gross (spec 033).
 /// </summary>
 public class IncomeEntryService : IIncomeEntryService
 {
+    private const int MaxReferenceLength = 50;
 
     private readonly IAccountRepository _accountRepo;
     private readonly IGLRepository _glRepo;
@@ -23,6 +26,7 @@ public class IncomeEntryService : IIncomeEntryService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILocalizer _localizer;
     private readonly IExternalOrganisationRepository _organisationRepo;
+    private readonly IReceivedItemRepository _receivedItemRepo;
 
     public IncomeEntryService(
         IAccountRepository accountRepo,
@@ -32,7 +36,8 @@ public class IncomeEntryService : IIncomeEntryService
         IAuditTrailService audit,
         IUnitOfWork unitOfWork,
         ILocalizer localizer,
-        IExternalOrganisationRepository organisationRepo)
+        IExternalOrganisationRepository organisationRepo,
+        IReceivedItemRepository receivedItemRepo)
     {
         _accountRepo = accountRepo;
         _glRepo = glRepo;
@@ -42,6 +47,7 @@ public class IncomeEntryService : IIncomeEntryService
         _unitOfWork = unitOfWork;
         _localizer = localizer;
         _organisationRepo = organisationRepo;
+        _receivedItemRepo = receivedItemRepo;
     }
 
     public async Task<IReadOnlyList<Account>> GetIncomeAccountsAsync(CancellationToken ct = default)
@@ -76,15 +82,32 @@ public class IncomeEntryService : IIncomeEntryService
                 _localizer.Get<ValidationResource>("Validation_Income_SystemAccountNotAllowed"),
                 nameof(Account), nameof(RecordIncomeAsync));
 
-        var depositAccountId = request.DepositAccountId ?? SystemAccounts.CashId;
-        var depositAccount = all.FirstOrDefault(a => a.Id == depositAccountId)
-            ?? throw new EntityNotFoundException(
-                nameof(Account), depositAccountId, nameof(RecordIncomeAsync));
+        // Spec 033 research §6: route the money side by payment method.
+        var method = request.PaymentMethod;
+        var createsItem = ReceiptRouting.CreatesReceivedItem(method);
+        var reference = createsItem && !string.IsNullOrWhiteSpace(request.Reference)
+            ? request.Reference.Trim()
+            : null;
 
-        if (!depositAccount.IsBankAccount)
+        if (reference is { Length: > MaxReferenceLength })
             throw new ValidationException(
-                _localizer.Get<ValidationResource>("Validation_Income_DepositAccountMustBeBank"),
-                nameof(Account), nameof(RecordIncomeAsync));
+                _localizer.Get<ValidationResource>("Validation_Receipt_ReferenceTooLong"),
+                nameof(ReceivedItem), nameof(RecordIncomeAsync));
+
+        Account? bankAccount = null;
+        if (method != PaymentMethod.Cash && !createsItem)
+        {
+            bankAccount = all.FirstOrDefault(a => a.Id == request.BankAccountId);
+            if (bankAccount is null || !bankAccount.IsBankAccount || bankAccount.Id == SystemAccounts.CashId)
+                throw new ValidationException(
+                    _localizer.Get<ValidationResource>("Validation_Receipt_BankAccountRequired"),
+                    nameof(Account), nameof(RecordIncomeAsync));
+        }
+
+        var destinationId = ReceiptRouting.Destination(method, bankAccount?.Id);
+        var destinationNumber = bankAccount?.AccountNumber
+            ?? (createsItem ? SystemAccounts.UndepositedFundsNumber : SystemAccounts.CashNumber);
+        var destinationName = all.FirstOrDefault(a => a.Id == destinationId)?.Name ?? destinationNumber;
 
         // Spec 032 research §6: the organisation link is checked before the transaction opens.
         if (request.ExternalOrganisationId is { } organisationId)
@@ -119,9 +142,9 @@ public class IncomeEntryService : IIncomeEntryService
                 ExternalOrganisationId = request.ExternalOrganisationId
             }, innerCt);
 
-            // Taxable while tax applies: DR Bank gross / CR Income net / CR Tax Collected.
+            // Taxable while tax applies: DR destination gross / CR Income net / CR Tax Collected.
             // Under Exclusive entry mode request.Amount is the net and tax is added on top (the
-            // bank line still takes the gross); under Inclusive it is the gross and tax splits out.
+            // money-side line still takes the gross); under Inclusive it is the gross and tax splits out.
             // Otherwise a 2-line pair; postings while tax doesn't apply carry no tax code at all.
             var (grossAmount, incomeAmount, taxAmount) = taxCode == TaxCode.Taxable
                 ? TaxCalculator.Split(request.Amount, settings?.TaxEntryMode ?? TaxEntryMode.Inclusive, settings?.TaxRate ?? 0m,
@@ -134,10 +157,10 @@ public class IncomeEntryService : IIncomeEntryService
                 {
                     Id = Guid.NewGuid(),
                     Date = request.Date,
-                    AccountId = depositAccount.Id,
+                    AccountId = destinationId,
                     DebitAmount = grossAmount,
                     CreditAmount = 0m,
-                    GLAccount = depositAccount.AccountNumber,
+                    GLAccount = destinationNumber,
                     JournalEntryId = entry.Id,
                     TaxCode = taxCode,
                     Description = description,
@@ -177,10 +200,25 @@ public class IncomeEntryService : IIncomeEntryService
 
             await _glRepo.AddBalancedSetAsync(lines, innerCt);
 
+            // A cheque or other receipt waits in Undeposited Funds for its gross (research §3).
+            if (createsItem)
+            {
+                await _receivedItemRepo.AddAsync(new ReceivedItem
+                {
+                    Id = Guid.NewGuid(),
+                    Date = request.Date,
+                    Amount = grossAmount,
+                    Method = method,
+                    Reference = reference,
+                    JournalEntryId = entry.Id,
+                    CreatedAt = now
+                }, innerCt);
+            }
+
             await _audit.LogAsync(
-                nameof(Transaction), Guid.Empty, AuditAction.Create,
+                nameof(JournalEntry), entry.Id, AuditAction.Create,
                 oldValue: null,
-                newValue: $"Other income {request.Amount:C} to account '{account.Name}' deposited to '{depositAccount.Name}' on {request.Date:yyyy-MM-dd}",
+                newValue: $"Other income {MoneyFormatter.Format(grossAmount)} to account '{account.Name}' received by {method} into '{destinationName}' on {request.Date:yyyy-MM-dd}",
                 ct: innerCt);
 
         }, ct);

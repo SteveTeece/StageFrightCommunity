@@ -122,9 +122,16 @@ public class BackupService : IBackupService
 
         var snapshot = MapToSnapshot(envelope);
 
+        // A file older than 1.4.0 still calls account 1100 "Cash on Hand"; rename it after the
+        // upsert so the restored chart matches the migrated one (spec 033).
+        var renameCashAccount = BackupSchema.IsOlderThan(
+            envelope.SchemaVersion, BackupSchema.BankingReworkSchemaVersion);
+
         await _uow.ExecuteInTransactionAsync(async innerCt =>
         {
             await _backupRepo.UpsertSnapshotAsync(snapshot, innerCt);
+            if (renameCashAccount)
+                await _backupRepo.RenameCashAccountToPettyCashAsync(innerCt);
         }, ct);
 
         var recoveryCopyDescription = recoveryCopyPath ?? "none (first-run setup incomplete)";
@@ -221,6 +228,10 @@ public class BackupService : IBackupService
         // Added in schema 1.3.0 — a 1.2.0 file restores with an empty organisation register.
         envelope.ExternalOrganisations ??= [];
         envelope.ExternalOrganisationContacts ??= [];
+        // Added in schema 1.4.0 — a 1.2.0 or 1.3.0 file restores with no items and no deposits.
+        envelope.ReceivedItems ??= [];
+        envelope.BankDeposits ??= [];
+        envelope.BankDepositLines ??= [];
         envelope.EntityCounts ??= new Dictionary<string, int>();
 
         ValidateVersion(envelope.SchemaVersion);
@@ -363,6 +374,9 @@ public class BackupService : IBackupService
         ["ReconciliationLines"] = e.ReconciliationLines?.Count ?? 0,
         ["ExternalOrganisations"] = e.ExternalOrganisations?.Count ?? 0,
         ["ExternalOrganisationContacts"] = e.ExternalOrganisationContacts?.Count ?? 0,
+        ["ReceivedItems"] = e.ReceivedItems?.Count ?? 0,
+        ["BankDeposits"] = e.BankDeposits?.Count ?? 0,
+        ["BankDepositLines"] = e.BankDepositLines?.Count ?? 0,
     };
 
     private static BackupEnvelope MapToEnvelope(BackupSnapshot snapshot)
@@ -388,6 +402,9 @@ public class BackupService : IBackupService
         var reconciliationLines = snapshot.ReconciliationLines.Select(MapReconciliationLine).ToList();
         var organisations = snapshot.ExternalOrganisations.Select(MapExternalOrganisation).ToList();
         var organisationContacts = snapshot.ExternalOrganisationContacts.Select(MapExternalOrganisationContact).ToList();
+        var receivedItems = snapshot.ReceivedItems.Select(MapReceivedItem).ToList();
+        var bankDeposits = snapshot.BankDeposits.Select(MapBankDeposit).ToList();
+        var bankDepositLines = snapshot.BankDepositLines.Select(MapBankDepositLine).ToList();
 
         var counts = new Dictionary<string, int>
         {
@@ -412,7 +429,10 @@ public class BackupService : IBackupService
             ["BankReconciliations"] = bankReconciliations.Count,
             ["ReconciliationLines"] = reconciliationLines.Count,
             ["ExternalOrganisations"] = organisations.Count,
-            ["ExternalOrganisationContacts"] = organisationContacts.Count
+            ["ExternalOrganisationContacts"] = organisationContacts.Count,
+            ["ReceivedItems"] = receivedItems.Count,
+            ["BankDeposits"] = bankDeposits.Count,
+            ["BankDepositLines"] = bankDepositLines.Count
         };
 
         return new BackupEnvelope
@@ -439,6 +459,9 @@ public class BackupService : IBackupService
             ReconciliationLines = reconciliationLines,
             ExternalOrganisations = organisations,
             ExternalOrganisationContacts = organisationContacts,
+            ReceivedItems = receivedItems,
+            BankDeposits = bankDeposits,
+            BankDepositLines = bankDepositLines,
             EntityCounts = counts
         };
     }
@@ -483,7 +506,10 @@ public class BackupService : IBackupService
             BankReconciliations = env.BankReconciliations!.Select(MapBankReconciliationFromDto).ToList(),
             ReconciliationLines = env.ReconciliationLines!.Select(MapReconciliationLineFromDto).ToList(),
             ExternalOrganisations = env.ExternalOrganisations!.Select(MapExternalOrganisationFromDto).ToList(),
-            ExternalOrganisationContacts = env.ExternalOrganisationContacts!.Select(MapExternalOrganisationContactFromDto).ToList()
+            ExternalOrganisationContacts = env.ExternalOrganisationContacts!.Select(MapExternalOrganisationContactFromDto).ToList(),
+            ReceivedItems = env.ReceivedItems!.Select(MapReceivedItemFromDto).ToList(),
+            BankDeposits = env.BankDeposits!.Select(MapBankDepositFromDto).ToList(),
+            BankDepositLines = env.BankDepositLines!.Select(MapBankDepositLineFromDto).ToList()
         };
     }
 
@@ -636,6 +662,25 @@ public class BackupService : IBackupService
     private static ReconciliationLineBackupDto MapReconciliationLine(ReconciliationLine l) => new()
     {
         Id = l.Id, ReconciliationId = l.ReconciliationId, TransactionId = l.TransactionId, CreatedAt = l.CreatedAt
+    };
+
+    private static ReceivedItemBackupDto MapReceivedItem(ReceivedItem i) => new()
+    {
+        Id = i.Id, Date = i.Date, Amount = i.Amount, Method = i.Method, Reference = i.Reference,
+        PaymentId = i.PaymentId, JournalEntryId = i.JournalEntryId, CreatedAt = i.CreatedAt
+    };
+
+    private static BankDepositBackupDto MapBankDeposit(BankDeposit d) => new()
+    {
+        Id = d.Id, Date = d.Date, BankAccountId = d.BankAccountId,
+        CashAmount = d.CashAmount, ChequeTotal = d.ChequeTotal,
+        JournalEntryId = d.JournalEntryId, ReversalJournalEntryId = d.ReversalJournalEntryId,
+        ReversedAt = d.ReversedAt, CreatedAt = d.CreatedAt
+    };
+
+    private static BankDepositLineBackupDto MapBankDepositLine(BankDepositLine l) => new()
+    {
+        Id = l.Id, BankDepositId = l.BankDepositId, ReceivedItemId = l.ReceivedItemId, CreatedAt = l.CreatedAt
     };
 
     private static AccountBackupDto MapAccount(Account c) => new()
@@ -823,6 +868,25 @@ public class BackupService : IBackupService
     private static ReconciliationLine MapReconciliationLineFromDto(ReconciliationLineBackupDto d) => new()
     {
         Id = d.Id, ReconciliationId = d.ReconciliationId, TransactionId = d.TransactionId, CreatedAt = d.CreatedAt
+    };
+
+    private static ReceivedItem MapReceivedItemFromDto(ReceivedItemBackupDto d) => new()
+    {
+        Id = d.Id, Date = d.Date, Amount = d.Amount, Method = d.Method, Reference = d.Reference,
+        PaymentId = d.PaymentId, JournalEntryId = d.JournalEntryId, CreatedAt = d.CreatedAt
+    };
+
+    private static BankDeposit MapBankDepositFromDto(BankDepositBackupDto d) => new()
+    {
+        Id = d.Id, Date = d.Date, BankAccountId = d.BankAccountId,
+        CashAmount = d.CashAmount, ChequeTotal = d.ChequeTotal,
+        JournalEntryId = d.JournalEntryId, ReversalJournalEntryId = d.ReversalJournalEntryId,
+        ReversedAt = d.ReversedAt, CreatedAt = d.CreatedAt
+    };
+
+    private static BankDepositLine MapBankDepositLineFromDto(BankDepositLineBackupDto d) => new()
+    {
+        Id = d.Id, BankDepositId = d.BankDepositId, ReceivedItemId = d.ReceivedItemId, CreatedAt = d.CreatedAt
     };
 
     private static Account MapAccountFromDto(AccountBackupDto d) => new()

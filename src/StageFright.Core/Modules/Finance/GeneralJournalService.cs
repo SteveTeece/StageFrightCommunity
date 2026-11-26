@@ -11,6 +11,8 @@ namespace StageFright.Core.Modules.Finance;
 /// Posts manually entered multi-line general journals verbatim under a
 /// GeneralJournal journal entry. Lines to the Member Receivable account are
 /// blocked — per-member balances may only change through fee/payment workflows.
+/// Lines to Undeposited Funds are blocked too — its balance must always equal the
+/// awaiting received items, so it only moves through receipts and deposits (spec 033 FR-001).
 /// </summary>
 public class GeneralJournalService : IGeneralJournalService
 {
@@ -41,7 +43,8 @@ public class GeneralJournalService : IGeneralJournalService
     {
         var all = await _accountRepo.GetAllAsync(ct);
         return all
-            .Where(a => a.Id != SystemAccounts.MemberReceivableId)
+            .Where(a => a.Id != SystemAccounts.MemberReceivableId
+                && a.Id != SystemAccounts.UndepositedFundsId)
             .OrderBy(a => a.AccountNumber)
             .ToList();
     }
@@ -73,6 +76,11 @@ public class GeneralJournalService : IGeneralJournalService
             if (line.AccountId == SystemAccounts.MemberReceivableId)
                 throw new ValidationException(
                     _localizer.Get<ValidationResource>("Validation_Journal_NoMemberReceivable"),
+                    nameof(JournalEntry), nameof(RecordJournalAsync));
+
+            if (line.AccountId == SystemAccounts.UndepositedFundsId)
+                throw new ValidationException(
+                    _localizer.Get<ValidationResource>("Validation_Journal_NoUndepositedFunds"),
                     nameof(JournalEntry), nameof(RecordJournalAsync));
         }
 

@@ -1,5 +1,6 @@
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Members;
@@ -14,7 +15,8 @@ namespace StageFright.Data.Tests.Setup;
 
 /// <summary>
 /// Integration tests for SetupService using an in-memory SQLite database.
-/// Verifies Settings persistence, system account seeding, and zero Fee records post-setup.
+/// Verifies Settings persistence, system account seeding, zero Fee records post-setup, and the
+/// Undeposited Funds opening balance queued in the wizard (spec 033).
 /// </summary>
 public class SetupServiceIntegrationTests : IDisposable
 {
@@ -37,7 +39,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var glRepo = new GLRepository(db, new ClosedPeriodGuard(new SettingsRepository(db)));
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, new ReceivedItemRepository(db), auditService, unitOfWork, RealLocalizer.Instance);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         var request = new SetupRequest("My Choir", 80m, 6m, 3, false, null, null, null, Theme.Dark);
@@ -68,13 +70,14 @@ public class SetupServiceIntegrationTests : IDisposable
         var glRepo = new GLRepository(db, new ClosedPeriodGuard(new SettingsRepository(db)));
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, new ReceivedItemRepository(db), auditService, unitOfWork, RealLocalizer.Instance);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark), TestContext.Current.CancellationToken);
 
         var all = await accountRepo.GetAllAsync(TestContext.Current.CancellationToken);
-        Assert.Contains(all, c => c.AccountNumber == "1100" && c.Name == "Cash on Hand" && c.IsSystem);
+        Assert.Contains(all, c => c.AccountNumber == "1100" && c.Name == "Petty Cash" && c.IsSystem);
+        Assert.Contains(all, c => c.AccountNumber == "1105" && c.Name == "Undeposited Funds" && c.IsSystem && !c.IsBankAccount);
         Assert.Contains(all, c => c.AccountNumber == "1200" && c.IsSystem);
         Assert.Contains(all, c => c.AccountNumber == "6999" && c.IsSystem);
     }
@@ -96,7 +99,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var glRepo = new GLRepository(db, new ClosedPeriodGuard(new SettingsRepository(db)));
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, new ReceivedItemRepository(db), auditService, unitOfWork, RealLocalizer.Instance);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark), TestContext.Current.CancellationToken);
@@ -122,7 +125,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var glRepo = new GLRepository(db, new ClosedPeriodGuard(new SettingsRepository(db)));
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, new ReceivedItemRepository(db), auditService, unitOfWork, RealLocalizer.Instance);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         Assert.False(await svc.IsSetupCompleteAsync(TestContext.Current.CancellationToken));
@@ -145,7 +148,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var glRepo = new GLRepository(db, new ClosedPeriodGuard(new SettingsRepository(db)));
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, new ReceivedItemRepository(db), auditService, unitOfWork, RealLocalizer.Instance);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         await svc.InitializeAsync(new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark), TestContext.Current.CancellationToken);
@@ -172,7 +175,7 @@ public class SetupServiceIntegrationTests : IDisposable
         var glRepo = new GLRepository(db, new ClosedPeriodGuard(new SettingsRepository(db)));
         var journalRepo = new JournalEntryRepository(db);
         var unitOfWork = new UnitOfWork(db);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditService, unitOfWork, RealLocalizer.Instance);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, new ReceivedItemRepository(db), auditService, unitOfWork, RealLocalizer.Instance);
         var svc = new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditService, RealLocalizer.Instance);
 
         var request = new SetupRequest("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark)
@@ -184,6 +187,75 @@ public class SetupServiceIntegrationTests : IDisposable
         var settings = await settingsRepo.GetAsync(TestContext.Current.CancellationToken);
         Assert.Equal(7, settings!.AuditRetentionYears);
     }
+
+    [Fact]
+    public async Task Should_ListOneOpeningBalanceItemAwaitingDeposit_When_SetupQueuesPositiveUndepositedFunds_Integration()
+    {
+        using var db = _factory.CreateContext();
+        var svc = BuildSetupService(db);
+        var asAt = new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        await svc.InitializeAsync(MakeSetupRequest(asAt, 320m), TestContext.Current.CancellationToken);
+
+        var awaiting = await new ReceivedItemRepository(db).GetAwaitingAsync(TestContext.Current.CancellationToken);
+        var item = Assert.Single(awaiting);
+        Assert.Equal(320m, item.Amount);
+        Assert.Equal(PaymentMethod.Other, item.Method);
+        Assert.Equal(asAt, item.Date);
+        Assert.Null(item.PaymentId);
+        Assert.NotNull(item.JournalEntry);
+        Assert.Equal(JournalEntryType.OpeningBalance, item.JournalEntry!.Type);
+
+        var undepositedFundsDebits = await db.Transactions
+            .Where(t => t.AccountId == SystemAccounts.UndepositedFundsId)
+            .SumAsync(t => t.DebitAmount - t.CreditAmount, TestContext.Current.CancellationToken);
+        Assert.Equal(320m, undepositedFundsDebits);
+    }
+
+    [Fact]
+    public async Task Should_RefuseAndPostNothing_When_SetupQueuesNegativeUndepositedFunds_Integration()
+    {
+        using var db = _factory.CreateContext();
+        var svc = BuildSetupService(db);
+
+        await Assert.ThrowsAsync<ValidationException>(() => svc.InitializeAsync(
+            MakeSetupRequest(new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc), -40m),
+            TestContext.Current.CancellationToken));
+
+        Assert.Equal(0, await db.ReceivedItems.CountAsync(TestContext.Current.CancellationToken));
+        Assert.False(await db.Transactions.AnyAsync(
+            t => t.AccountId == SystemAccounts.UndepositedFundsId, TestContext.Current.CancellationToken));
+    }
+
+    private static SetupService BuildSetupService(StageFrightDbContext db)
+    {
+        var settingsRepo = new SettingsRepository(db);
+        var accountRepo = new AccountRepository(db);
+        var auditService = new AuditTrailService(new AuditTrailRepository(db), NullLogger<AuditTrailService>.Instance);
+        var officeHolderTypeService = new CommitteeOfficeHolderTypeService(
+            new CommitteeOfficeHolderTypeRepository(db), auditService, RealLocalizer.Instance);
+        var accountService = new AccountService(
+            accountRepo, new AccountNumberAssignmentService(accountRepo), auditService,
+            new BankReconciliationRepository(db), RealLocalizer.Instance);
+        var glRepo = new GLRepository(db, new ClosedPeriodGuard(new SettingsRepository(db)));
+        var openingBalanceService = new OpeningBalanceService(
+            accountRepo, glRepo, new JournalEntryRepository(db), new ReceivedItemRepository(db),
+            auditService, new UnitOfWork(db), RealLocalizer.Instance);
+        return new SetupService(
+            settingsRepo, accountRepo, new EventTypeRepository(db), officeHolderTypeService,
+            accountService, openingBalanceService, auditService, RealLocalizer.Instance);
+    }
+
+    private static SetupRequest MakeSetupRequest(DateTime asAt, decimal undepositedFunds) =>
+        new("Org", 50m, 5m, 1, false, null, null, null, Theme.Dark)
+        {
+            QueuedOpeningBalances =
+            [
+                new OpeningBalanceEntry { AccountId = SystemAccounts.UndepositedFundsId, Amount = undepositedFunds },
+                new OpeningBalanceEntry { AccountId = SystemAccounts.CashId, Amount = 100m }
+            ],
+            OpeningBalanceAsAtDate = asAt
+        };
 
     public void Dispose() => _factory.Dispose();
 }

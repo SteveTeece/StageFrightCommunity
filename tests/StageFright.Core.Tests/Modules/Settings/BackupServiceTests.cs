@@ -686,7 +686,7 @@ public class BackupServiceTests : TestBase
             await svc.ExportAsync(path, Ct);
             var manifest = await svc.GetManifestAsync(path, Ct);
             Assert.Equal(BackupSchema.CurrentSchemaVersion, manifest.SchemaVersion);
-            Assert.Equal("1.3.0", manifest.SchemaVersion);
+            Assert.Equal("1.4.0", manifest.SchemaVersion);
         }
         finally
         {
@@ -784,6 +784,191 @@ public class BackupServiceTests : TestBase
             foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
+    }
+
+    // --- Banking records (spec 033, backup 1.4.0) ---
+
+    [Fact]
+    public async Task Should_RoundTripBankingRecords_When_ExportedThenImported()
+    {
+        var (cheque, opening, deposit, line) = BuildBankingRecords();
+        var snapshot = new BackupSnapshot
+        {
+            ReceivedItems = [cheque, opening],
+            BankDeposits = [deposit],
+            BankDepositLines = [line]
+        };
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
+        _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0]!)(Ct));
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_banking_rt_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+
+            var manifest = await svc.GetManifestAsync(path, Ct);
+            Assert.Equal(2, manifest.EntityCounts["ReceivedItems"]);
+            Assert.Equal(1, manifest.EntityCounts["BankDeposits"]);
+            Assert.Equal(1, manifest.EntityCounts["BankDepositLines"]);
+
+            BackupSnapshot? upserted = null;
+            _backupRepo.UpsertSnapshotAsync(Arg.Do<BackupSnapshot>(s => upserted = s), Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask);
+
+            await svc.ImportAsync(path, Ct);
+
+            AssertSameReceivedItem(cheque, upserted!.ReceivedItems.Single(i => i.Id == cheque.Id));
+            AssertSameReceivedItem(opening, upserted.ReceivedItems.Single(i => i.Id == opening.Id));
+
+            var restoredDeposit = Assert.Single(upserted.BankDeposits);
+            Assert.Equal(deposit.Id, restoredDeposit.Id);
+            Assert.Equal(deposit.Date, restoredDeposit.Date);
+            Assert.Equal(deposit.BankAccountId, restoredDeposit.BankAccountId);
+            Assert.Equal(deposit.CashAmount, restoredDeposit.CashAmount);
+            Assert.Equal(deposit.ChequeTotal, restoredDeposit.ChequeTotal);
+            Assert.Equal(deposit.JournalEntryId, restoredDeposit.JournalEntryId);
+            Assert.Equal(deposit.ReversalJournalEntryId, restoredDeposit.ReversalJournalEntryId);
+            Assert.Equal(deposit.ReversedAt, restoredDeposit.ReversedAt);
+            Assert.Equal(deposit.CreatedAt, restoredDeposit.CreatedAt);
+
+            var restoredLine = Assert.Single(upserted.BankDepositLines);
+            Assert.Equal(line.Id, restoredLine.Id);
+            Assert.Equal(line.BankDepositId, restoredLine.BankDepositId);
+            Assert.Equal(line.ReceivedItemId, restoredLine.ReceivedItemId);
+            Assert.Equal(line.CreatedAt, restoredLine.CreatedAt);
+
+            // A 1.4.0 file already says "Petty Cash"; no rename is needed.
+            await _backupRepo.DidNotReceive().RenameCashAccountToPettyCashAsync(Arg.Any<CancellationToken>());
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+                File.Delete(f);
+        }
+    }
+
+    [Theory]
+    [InlineData("1.2.0")]
+    [InlineData("1.3.0")]
+    public async Task Should_RestoreNoBankingRecordsAndRenameCash_When_FileOlderThan140(string fileVersion)
+    {
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>())
+            .Returns(new BackupSnapshot { JournalEntries = [BuildJournalEntry()] });
+        _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0]!)(Ct));
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_pre140_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+
+            // Simulate an older file: no banking lists and no banking count keys.
+            var envelope = ReadEnvelope(path);
+            envelope.SchemaVersion = fileVersion;
+            envelope.ReceivedItems = null;
+            envelope.BankDeposits = null;
+            envelope.BankDepositLines = null;
+            envelope.EntityCounts.Remove("ReceivedItems");
+            envelope.EntityCounts.Remove("BankDeposits");
+            envelope.EntityCounts.Remove("BankDepositLines");
+            WriteEnvelope(path, envelope);
+
+            BackupSnapshot? upserted = null;
+            _backupRepo.UpsertSnapshotAsync(Arg.Do<BackupSnapshot>(s => upserted = s), Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask);
+
+            await svc.ImportAsync(path, Ct);
+
+            Assert.Empty(upserted!.ReceivedItems);
+            Assert.Empty(upserted.BankDeposits);
+            Assert.Empty(upserted.BankDepositLines);
+            Received.InOrder(() =>
+            {
+                _backupRepo.UpsertSnapshotAsync(Arg.Any<BackupSnapshot>(), Arg.Any<CancellationToken>());
+                _backupRepo.RenameCashAccountToPettyCashAsync(Arg.Any<CancellationToken>());
+            });
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+                File.Delete(f);
+        }
+    }
+
+    [Fact]
+    public async Task Should_NotRename_When_UpsertFails()
+    {
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>())
+            .Returns(new BackupSnapshot { JournalEntries = [BuildJournalEntry()] });
+        _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0]!)(Ct));
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_pre140_fail_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+            var envelope = ReadEnvelope(path);
+            envelope.SchemaVersion = "1.3.0";
+            WriteEnvelope(path, envelope);
+
+            _backupRepo.UpsertSnapshotAsync(Arg.Any<BackupSnapshot>(), Arg.Any<CancellationToken>())
+                .Returns(Task.FromException(new DataAccessException("boom", "Backup", "Upsert")));
+
+            await Assert.ThrowsAsync<DataAccessException>(() => svc.ImportAsync(path, Ct));
+
+            await _backupRepo.DidNotReceive().RenameCashAccountToPettyCashAsync(Arg.Any<CancellationToken>());
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+                File.Delete(f);
+        }
+    }
+
+    private static (ReceivedItem Cheque, ReceivedItem Opening, BankDeposit Deposit, BankDepositLine Line) BuildBankingRecords()
+    {
+        var created = new DateTime(2026, 3, 1, 9, 0, 0, DateTimeKind.Utc);
+        var cheque = new ReceivedItem
+        {
+            Id = Guid.NewGuid(), Date = new DateTime(2026, 3, 1), Amount = 85.50m,
+            Method = PaymentMethod.Check, Reference = "CHQ 001234",
+            PaymentId = Guid.NewGuid(), CreatedAt = created
+        };
+        var opening = new ReceivedItem
+        {
+            Id = Guid.NewGuid(), Date = new DateTime(2026, 1, 1), Amount = 120m,
+            Method = PaymentMethod.Other, JournalEntryId = Guid.NewGuid(), CreatedAt = created
+        };
+        var deposit = new BankDeposit
+        {
+            Id = Guid.NewGuid(), Date = new DateTime(2026, 3, 5), BankAccountId = Guid.NewGuid(),
+            CashAmount = 40m, ChequeTotal = 85.50m, JournalEntryId = Guid.NewGuid(),
+            ReversalJournalEntryId = Guid.NewGuid(), ReversedAt = created.AddDays(5), CreatedAt = created
+        };
+        var line = new BankDepositLine
+        {
+            Id = Guid.NewGuid(), BankDepositId = deposit.Id, ReceivedItemId = cheque.Id, CreatedAt = created
+        };
+        return (cheque, opening, deposit, line);
+    }
+
+    private static void AssertSameReceivedItem(ReceivedItem expected, ReceivedItem actual)
+    {
+        Assert.Equal(expected.Id, actual.Id);
+        Assert.Equal(expected.Date, actual.Date);
+        Assert.Equal(expected.Amount, actual.Amount);
+        Assert.Equal(expected.Method, actual.Method);
+        Assert.Equal(expected.Reference, actual.Reference);
+        Assert.Equal(expected.PaymentId, actual.PaymentId);
+        Assert.Equal(expected.JournalEntryId, actual.JournalEntryId);
+        Assert.Equal(expected.CreatedAt, actual.CreatedAt);
     }
 
     private static (ExternalOrganisation Org, ExternalOrganisation ArchivedOrg,

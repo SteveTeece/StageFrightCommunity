@@ -284,13 +284,13 @@ public sealed class ClosedPeriodLockTests : IAsyncLifetime
         new(new AccountRepository(_db), Gl(), new JournalEntryRepository(_db), new SettingsRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance, new ExternalOrganisationRepository(_db));
 
     private IncomeEntryService BuildIncomeService() =>
-        new(new AccountRepository(_db), Gl(), new JournalEntryRepository(_db), new SettingsRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance, new ExternalOrganisationRepository(_db));
+        new(new AccountRepository(_db), Gl(), new JournalEntryRepository(_db), new SettingsRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance, new ExternalOrganisationRepository(_db), new ReceivedItemRepository(_db));
 
     private BankDepositService BuildBankDepositService() =>
         new(new AccountRepository(_db), Gl(), new JournalEntryRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance);
 
     private PaymentService BuildPaymentService() =>
-        new(new FeeRepository(_db), new PaymentRepository(_db, Audit()), Gl(), new MemberRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance);
+        new(new FeeRepository(_db), new PaymentRepository(_db, Audit()), Gl(), new MemberRepository(_db), new AccountRepository(_db), new ReceivedItemRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance);
 
     private FeeService BuildFeeService() =>
         new(new MemberRepository(_db), new FeeRepository(_db), Gl(), new AccountRepository(_db), new SettingsRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance);

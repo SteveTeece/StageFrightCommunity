@@ -833,7 +833,8 @@ public class DebugDataSeeder : IDebugDataSeeder
             Date = date,
             Amount = eftposAmount,
             AccountId = concertIncomeAccount.Id,
-            DepositAccountId = bankAccount.Id,
+            PaymentMethod = PaymentMethod.Card,
+            BankAccountId = bankAccount.Id,
             Description = $"{location} concert ticket sales — EFTPOS"
         }, ct);
     }
@@ -1029,7 +1030,8 @@ public class DebugDataSeeder : IDebugDataSeeder
                 Date = date,
                 Amount = amount,
                 AccountId = grantsIncomeAccount.Id,
-                DepositAccountId = bankAccount.Id,
+                PaymentMethod = PaymentMethod.ElectronicTransfer,
+                BankAccountId = bankAccount.Id,
                 Description = description,
                 ExternalOrganisationId = organisations[organisation]
             }, ct);

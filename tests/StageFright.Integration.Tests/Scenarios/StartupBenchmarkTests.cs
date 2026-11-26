@@ -63,7 +63,7 @@ public sealed class StartupBenchmarkTests : IAsyncLifetime
         var glRepo = new GLRepository(ctx, new ClosedPeriodGuard(new SettingsRepository(ctx)));
         var journalRepo = new JournalEntryRepository(ctx);
         var unitOfWork = new UnitOfWork(ctx);
-        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, auditSvc, unitOfWork, RealLocalizer.Instance);
+        var openingBalanceService = new OpeningBalanceService(accountRepo, glRepo, journalRepo, new ReceivedItemRepository(ctx), auditSvc, unitOfWork, RealLocalizer.Instance);
         return new SetupService(settingsRepo, accountRepo, eventTypeRepo, officeHolderTypeService, accountService, openingBalanceService, auditSvc, RealLocalizer.Instance);
     }
 

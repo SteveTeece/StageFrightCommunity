@@ -153,5 +153,86 @@ public class JournalEntryRepositoryTests : IDisposable
             new JournalEntryRepository(db).GetByExternalOrganisationAsync(Guid.NewGuid(), TestContext.Current.CancellationToken));
     }
 
+    // --- GetByTypesAsync (spec 033 Banking history) ---
+
+    private static readonly Guid OldBankId = Guid.NewGuid();
+
+    private static JournalEntry NewWithdrawal(JournalEntryType type, DateTime date, decimal amount)
+    {
+        var entry = NewExpense(null, date, amount);
+        entry.Type = type;
+        entry.Transactions[0].AccountId = SystemAccounts.CashId;
+        entry.Transactions[0].GLAccount = SystemAccounts.CashNumber;
+        entry.Transactions[1].AccountId = OldBankId;
+        entry.Transactions[1].GLAccount = "1110";
+        return entry;
+    }
+
+    private async Task SeedArchivedBankAsync()
+    {
+        using var db = _factory.CreateContext();
+        db.Accounts.Add(new Account
+        {
+            Id = OldBankId, Name = "Old Bank", Type = AccountType.Asset, AccountNumber = "1110",
+            IsBankAccount = true, IsDeleted = true, DeletedAt = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        });
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task Should_ReturnOnlyRequestedTypesNewestFirst_When_QueriedByTypes_Integration()
+    {
+        await SeedArchivedBankAsync();
+        var withdrawal = NewWithdrawal(JournalEntryType.CashWithdrawal, new DateTime(2026, 1, 10, 0, 0, 0, DateTimeKind.Utc), 50m);
+        var deposit = NewWithdrawal(JournalEntryType.BankDeposit, new DateTime(2026, 2, 10, 0, 0, 0, DateTimeKind.Utc), 70m);
+        var expense = NewExpense(null, new DateTime(2026, 3, 10, 0, 0, 0, DateTimeKind.Utc), 90m);
+        await SeedAsync([], [withdrawal, deposit, expense]);
+
+        using var db = _factory.CreateContext();
+        var result = await new JournalEntryRepository(db).GetByTypesAsync(
+            [JournalEntryType.CashWithdrawal, JournalEntryType.BankDeposit], TestContext.Current.CancellationToken);
+
+        Assert.Equal(new[] { deposit.Id, withdrawal.Id }, result.Select(j => j.Id));
+    }
+
+    [Fact]
+    public async Task Should_LoadLinesWithArchivedAccount_When_QueriedByTypes_Integration()
+    {
+        await SeedArchivedBankAsync();
+        var withdrawal = NewWithdrawal(JournalEntryType.CashWithdrawal, new DateTime(2026, 1, 10, 0, 0, 0, DateTimeKind.Utc), 50m);
+        await SeedAsync([], [withdrawal]);
+
+        using var db = _factory.CreateContext();
+        var result = await new JournalEntryRepository(db).GetByTypesAsync(
+            [JournalEntryType.CashWithdrawal], TestContext.Current.CancellationToken);
+
+        var loaded = Assert.Single(result);
+        Assert.Equal(2, loaded.Transactions.Count);
+        Assert.Contains(loaded.Transactions, t => t.Account.Name == "Old Bank" && t.CreditAmount == 50m);
+    }
+
+    [Fact]
+    public async Task Should_ReturnEmpty_When_NoEntryOfTheTypesExists_Integration()
+    {
+        await SeedAsync([], [NewExpense(null, new DateTime(2026, 3, 10, 0, 0, 0, DateTimeKind.Utc), 90m)]);
+
+        using var db = _factory.CreateContext();
+        var result = await new JournalEntryRepository(db).GetByTypesAsync(
+            [JournalEntryType.CashWithdrawal], TestContext.Current.CancellationToken);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task Should_ThrowDataAccessException_When_DatabaseUnavailableForTypesQuery_Integration()
+    {
+        var db = _factory.CreateContext();
+        await db.DisposeAsync();
+
+        await Assert.ThrowsAsync<StageFright.Core.Exceptions.DataAccessException>(() =>
+            new JournalEntryRepository(db).GetByTypesAsync([JournalEntryType.BankDeposit], TestContext.Current.CancellationToken));
+    }
+
     public void Dispose() => _factory.Dispose();
 }

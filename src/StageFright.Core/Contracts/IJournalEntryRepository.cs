@@ -27,4 +27,11 @@ public interface IJournalEntryRepository
     /// archived state (spec 032 FR-011).
     /// </summary>
     Task<IReadOnlyList<JournalEntry>> GetByExternalOrganisationAsync(Guid externalOrganisationId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Entries of any of the given types, with Transactions and each line's Account loaded (archived
+    /// accounts included), ordered by Date then CreatedAt descending. Used by the Banking history for
+    /// cash withdrawals and deposits posted before spec 033.
+    /// </summary>
+    Task<IReadOnlyList<JournalEntry>> GetByTypesAsync(IReadOnlyCollection<JournalEntryType> types, CancellationToken ct = default);
 }

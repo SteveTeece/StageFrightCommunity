@@ -3,6 +3,7 @@ using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Modules.Finance;
+using StageFright.Core.Modules.Localization.Resources;
 using StageFright.Core.Tests.Fixtures;
 
 namespace StageFright.Core.Tests.Modules.Finance;
@@ -16,12 +17,17 @@ public class PaymentServiceTests : TestBase
     private readonly IPaymentRepository _paymentRepo = Substitute.For<IPaymentRepository>();
     private readonly IGLRepository _glRepo = Substitute.For<IGLRepository>();
     private readonly IMemberRepository _memberRepo = Substitute.For<IMemberRepository>();
+    private readonly IAccountRepository _accountRepo = Substitute.For<IAccountRepository>();
+    private readonly IReceivedItemRepository _receivedItemRepo = Substitute.For<IReceivedItemRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
 
     private static readonly Guid MemberId = Guid.NewGuid();
     private static readonly Guid Fee1Id = Guid.NewGuid();
     private static readonly Guid Fee2Id = Guid.NewGuid();
+    private static readonly Guid BankAccountId = Guid.NewGuid();
+    private static readonly Guid NonBankAccountId = Guid.NewGuid();
+    private const string BankAccountNumber = "1110";
 
     private readonly PaymentService _sut;
 
@@ -45,7 +51,12 @@ public class PaymentServiceTests : TestBase
                 MakeFee(Fee2Id, new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc), 80m),
             });
 
-        _sut = new PaymentService(_feeRepo, _paymentRepo, _glRepo, _memberRepo, _audit, _unitOfWork, RealLocalizer.Instance);
+        _accountRepo.GetByIdAsync(BankAccountId, Arg.Any<CancellationToken>())
+            .Returns(new Account { Id = BankAccountId, AccountNumber = BankAccountNumber, Name = "Main Bank", Type = AccountType.Asset, IsBankAccount = true });
+        _accountRepo.GetByIdAsync(NonBankAccountId, Arg.Any<CancellationToken>())
+            .Returns(new Account { Id = NonBankAccountId, AccountNumber = "1300", Name = "Prepaid", Type = AccountType.Asset, IsBankAccount = false });
+
+        _sut = new PaymentService(_feeRepo, _paymentRepo, _glRepo, _memberRepo, _accountRepo, _receivedItemRepo, _audit, _unitOfWork, RealLocalizer.Instance);
     }
 
     // --- RecordAsync: creates Payment ---
@@ -340,6 +351,168 @@ public class PaymentServiceTests : TestBase
             Arg.Any<CancellationToken>());
     }
 
+    // --- Routing by payment method (spec 033) ---
+
+    [Fact]
+    public async Task Should_DebitPettyCashAndAddNoItem_When_MethodIsCash()
+    {
+        await _sut.RecordAsync(MakeRequest(110m), Ct);
+
+        await _glRepo.Received(2).AddPairAsync(
+            Arg.Is<Transaction>(t => t!.AccountId == SystemAccounts.CashId && t.GLAccount == SystemAccounts.CashNumber),
+            Arg.Any<Transaction>(),
+            Arg.Any<CancellationToken>());
+        await _receivedItemRepo.DidNotReceive().AddAsync(Arg.Any<ReceivedItem>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_IgnoreBankAccountAndReference_When_MethodIsCash()
+    {
+        var request = MakeRequest(30m);
+        request.BankAccountId = BankAccountId;
+        request.Reference = "123456";
+
+        await _sut.RecordAsync(request, Ct);
+
+        await _glRepo.Received(1).AddPairAsync(
+            Arg.Is<Transaction>(t => t!.AccountId == SystemAccounts.CashId),
+            Arg.Any<Transaction>(),
+            Arg.Any<CancellationToken>());
+        await _accountRepo.DidNotReceive().GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        await _receivedItemRepo.DidNotReceive().AddAsync(Arg.Any<ReceivedItem>(), Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(PaymentMethod.Check)]
+    [InlineData(PaymentMethod.Other)]
+    public async Task Should_DebitUndepositedFundsAndAddOneItem_When_MethodIsChequeOrOther(PaymentMethod method)
+    {
+        var request = MakeRequest(30m, method);
+        request.Reference = "  000123  ";
+
+        var payment = await _sut.RecordAsync(request, Ct);
+
+        await _glRepo.Received(1).AddPairAsync(
+            Arg.Is<Transaction>(t => t!.AccountId == SystemAccounts.UndepositedFundsId
+                && t.GLAccount == SystemAccounts.UndepositedFundsNumber && t.DebitAmount == 30m),
+            Arg.Is<Transaction>(t => t!.AccountId == SystemAccounts.MemberReceivableId && t.CreditAmount == 30m),
+            Arg.Any<CancellationToken>());
+        await _receivedItemRepo.Received(1).AddAsync(
+            Arg.Is<ReceivedItem>(i => i!.PaymentId == payment.Id && i.JournalEntryId == null
+                && i.Amount == 30m && i.Method == method && i.Reference == "000123"
+                && i.Date == request.Date),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_AddOneItemForWholePayment_When_ChequePaysSeveralFeesAndOverpays()
+    {
+        // $130 cheque: $30 to fee1, $80 to fee2, $20 overpayment — three GL pairs, one item.
+        var payment = await _sut.RecordAsync(MakeRequest(130m, PaymentMethod.Check), Ct);
+
+        await _glRepo.Received(3).AddPairAsync(
+            Arg.Is<Transaction>(t => t!.AccountId == SystemAccounts.UndepositedFundsId),
+            Arg.Any<Transaction>(),
+            Arg.Any<CancellationToken>());
+        await _receivedItemRepo.Received(1).AddAsync(Arg.Any<ReceivedItem>(), Arg.Any<CancellationToken>());
+        await _receivedItemRepo.Received(1).AddAsync(
+            Arg.Is<ReceivedItem>(i => i!.Amount == 130m && i.PaymentId == payment.Id),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_StoreNullReference_When_ChequeReferenceIsBlank()
+    {
+        var request = MakeRequest(30m, PaymentMethod.Check);
+        request.Reference = "   ";
+
+        await _sut.RecordAsync(request, Ct);
+
+        await _receivedItemRepo.Received(1).AddAsync(
+            Arg.Is<ReceivedItem>(i => i!.Reference == null),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_CutReferenceToFiftyCharacters_When_ChequeReferenceIsLonger()
+    {
+        var request = MakeRequest(30m, PaymentMethod.Check);
+        request.Reference = new string('9', 60);
+
+        await _sut.RecordAsync(request, Ct);
+
+        await _receivedItemRepo.Received(1).AddAsync(
+            Arg.Is<ReceivedItem>(i => i!.Reference == new string('9', 50)),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(PaymentMethod.Card)]
+    [InlineData(PaymentMethod.ElectronicTransfer)]
+    public async Task Should_DebitChosenBankAccountAndAddNoItem_When_MethodIsCardOrTransfer(PaymentMethod method)
+    {
+        var request = MakeRequest(130m, method);
+        request.BankAccountId = BankAccountId;
+        request.Reference = "ignored";
+
+        await _sut.RecordAsync(request, Ct);
+
+        // Two fee allocations plus the overpayment, all to the chosen bank.
+        await _glRepo.Received(3).AddPairAsync(
+            Arg.Is<Transaction>(t => t!.AccountId == BankAccountId && t.GLAccount == BankAccountNumber),
+            Arg.Is<Transaction>(t => t!.AccountId == SystemAccounts.MemberReceivableId),
+            Arg.Any<CancellationToken>());
+        await _receivedItemRepo.DidNotReceive().AddAsync(Arg.Any<ReceivedItem>(), Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(PaymentMethod.Card)]
+    [InlineData(PaymentMethod.ElectronicTransfer)]
+    public async Task Should_ThrowValidationAndPostNothing_When_CardOrTransferHasNoBankAccount(PaymentMethod method)
+    {
+        var request = MakeRequest(30m, method);
+
+        await AssertRefusedWithInvalidBankAsync(request);
+    }
+
+    [Fact]
+    public async Task Should_ThrowValidationAndPostNothing_When_BankAccountIsPettyCash()
+    {
+        var request = MakeRequest(30m, PaymentMethod.Card);
+        request.BankAccountId = SystemAccounts.CashId;
+
+        await AssertRefusedWithInvalidBankAsync(request);
+    }
+
+    [Fact]
+    public async Task Should_ThrowValidationAndPostNothing_When_BankAccountDoesNotExist()
+    {
+        var request = MakeRequest(30m, PaymentMethod.ElectronicTransfer);
+        request.BankAccountId = Guid.NewGuid();
+
+        await AssertRefusedWithInvalidBankAsync(request);
+    }
+
+    [Fact]
+    public async Task Should_ThrowValidationAndPostNothing_When_AccountIsNotABankAccount()
+    {
+        var request = MakeRequest(30m, PaymentMethod.Card);
+        request.BankAccountId = NonBankAccountId;
+
+        await AssertRefusedWithInvalidBankAsync(request);
+    }
+
+    [Fact]
+    public async Task Should_AddNoItem_When_ChequePaymentIsRefusedForEmptyFeeSelection()
+    {
+        var request = MakeRequest(30m, PaymentMethod.Check);
+        request.SelectedFeeIds = [];
+
+        await Assert.ThrowsAsync<Core.Exceptions.ValidationException>(() => _sut.RecordAsync(request, Ct));
+
+        await _receivedItemRepo.DidNotReceive().AddAsync(Arg.Any<ReceivedItem>(), Arg.Any<CancellationToken>());
+    }
+
     // --- UpdateNotesAsync ---
 
     [Fact]
@@ -362,14 +535,24 @@ public class PaymentServiceTests : TestBase
 
     // --- Helpers ---
 
-    private static RecordPaymentRequest MakeRequest(decimal amount) => new()
+    private static RecordPaymentRequest MakeRequest(decimal amount, PaymentMethod method = PaymentMethod.Cash) => new()
     {
         MemberId = MemberId,
         Date = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc),
         Amount = amount,
-        PaymentMethod = PaymentMethod.Cash,
+        PaymentMethod = method,
         PaymentType = PaymentType.Annual,
     };
+
+    private async Task AssertRefusedWithInvalidBankAsync(RecordPaymentRequest request)
+    {
+        var ex = await Assert.ThrowsAsync<Core.Exceptions.ValidationException>(() => _sut.RecordAsync(request, Ct));
+
+        Assert.Equal(RealLocalizer.Instance.Get<ValidationResource>("Validation_Deposit_BankAccountInvalid"), ex.Message);
+        await _unitOfWork.DidNotReceive().ExecuteInTransactionAsync(
+            Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>());
+        await _paymentRepo.DidNotReceive().AddAsync(Arg.Any<Payment>(), Arg.Any<CancellationToken>());
+    }
 
     private static Fee MakeFee(Guid id, DateTime feeDate, decimal amount) => new()
     {

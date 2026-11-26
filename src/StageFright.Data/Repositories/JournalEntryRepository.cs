@@ -62,4 +62,26 @@ public class JournalEntryRepository : IJournalEntryRepository
             throw new DataAccessException(ex.Message, nameof(JournalEntry), nameof(GetByExternalOrganisationAsync), null, ex);
         }
     }
+
+    public async Task<IReadOnlyList<JournalEntry>> GetByTypesAsync(
+        IReadOnlyCollection<JournalEntryType> types, CancellationToken ct = default)
+    {
+        try
+        {
+            // Query filters are ignored so a line on an archived bank account still loads with its account.
+            return await _db.JournalEntries
+                .IgnoreQueryFilters()
+                .AsNoTracking()
+                .Include(j => j.Transactions)
+                    .ThenInclude(t => t.Account)
+                .Where(j => types.Contains(j.Type))
+                .OrderByDescending(j => j.Date)
+                .ThenByDescending(j => j.CreatedAt)
+                .ToListAsync(ct);
+        }
+        catch (Exception ex) when (ex is not DataAccessException and not OperationCanceledException)
+        {
+            throw new DataAccessException(ex.Message, nameof(JournalEntry), nameof(GetByTypesAsync), null, ex);
+        }
+    }
 }

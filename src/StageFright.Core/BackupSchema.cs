@@ -11,8 +11,32 @@ public static class BackupSchema
     /// <summary>
     /// The backup-file schema version produced by this build (a three-part semantic version).
     /// 1.3.0 added the external-organisation register and journal-entry links (spec 032).
+    /// 1.4.0 added received items, bank deposits and their lines, and renamed account 1100
+    /// to "Petty Cash" (spec 033).
     /// </summary>
-    public const string CurrentSchemaVersion = "1.3.0";
+    public const string CurrentSchemaVersion = "1.4.0";
+
+    /// <summary>
+    /// The schema version that introduced the banking rework (spec 033). A file older than this
+    /// still names account 1100 "Cash on Hand", so restore renames it to "Petty Cash".
+    /// </summary>
+    public const string BankingReworkSchemaVersion = "1.4.0";
+
+    /// <summary>
+    /// True when <paramref name="fileVersion"/> parses as a three-part numeric version that is
+    /// strictly older than <paramref name="version"/>. False when either value does not parse.
+    /// </summary>
+    public static bool IsOlderThan(string? fileVersion, string version)
+    {
+        if (!TryParse(fileVersion, out var file) || !TryParse(version, out var other))
+            return false;
+
+        if (file.Major != other.Major)
+            return file.Major < other.Major;
+        if (file.Minor != other.Minor)
+            return file.Minor < other.Minor;
+        return file.Patch < other.Patch;
+    }
 
     /// <summary>
     /// True when a file recording <paramref name="fileVersion"/> can be restored into this build:

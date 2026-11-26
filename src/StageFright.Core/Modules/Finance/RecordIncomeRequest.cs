@@ -26,10 +26,22 @@ public class RecordIncomeRequest
     public Guid AccountId { get; set; }
 
     /// <summary>
-    /// Id of the bank/cash account the income was deposited to.
-    /// Defaults to Cash on Hand (1100) when null.
+    /// How the income was received (spec 033, research §6). Cash goes to Petty Cash, cheque and other
+    /// wait in Undeposited Funds as a received item, and card and electronic transfer go straight to
+    /// <see cref="BankAccountId"/>. Defaults to cash.
     /// </summary>
-    public Guid? DepositAccountId { get; set; }
+    public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash;
+
+    /// <summary>
+    /// The bank account a card or electronic-transfer receipt went into. Required for those methods
+    /// (a bank account other than Petty Cash); ignored for every other method.
+    /// </summary>
+    public Guid? BankAccountId { get; set; }
+
+    /// <summary>
+    /// Optional cheque number or note (max 50) kept on the received item. Only used for cheque and other.
+    /// </summary>
+    public string? Reference { get; set; }
 
     /// <summary>Optional description for the GL transaction.</summary>
     public string? Description { get; set; }

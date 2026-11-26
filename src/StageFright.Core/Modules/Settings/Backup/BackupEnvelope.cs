@@ -7,6 +7,7 @@ namespace StageFright.Core.Modules.Settings.Backup;
 /// The pre-1.2.0 entity collections are REQUIRED for a valid backup (FR-014); collections
 /// added in 1.2.0 (JournalEntries, BankReconciliations, ReconciliationLines) are optional so
 /// an older file still restores — absent means none of that record type existed.
+/// The 1.3.0 organisation and 1.4.0 banking collections (spec 033) are optional in the same way.
 /// Field numbers are append-only — never reuse or renumber (forward compatibility, FR-012).
 /// </summary>
 [ProtoContract]
@@ -57,6 +58,15 @@ public class BackupEnvelope
     /// <summary>Organisation contacts, removed included. Added in schema 1.3.0; absent in older files.</summary>
     [ProtoMember(28)] public List<ExternalOrganisationContactBackupDto>? ExternalOrganisationContacts { get; set; }
 
+    /// <summary>Cheque/other receipts and the opening-balance item on Undeposited Funds. Added in schema 1.4.0; absent in older files.</summary>
+    [ProtoMember(29)] public List<ReceivedItemBackupDto>? ReceivedItems { get; set; }
+
     /// <summary>Per-entity record counts for validation and display. Keys match collection property names.</summary>
     [ProtoMember(30)] public Dictionary<string, int> EntityCounts { get; set; } = new();
+
+    /// <summary>Bank deposits, reversed included. Added in schema 1.4.0; absent in older files.</summary>
+    [ProtoMember(31)] public List<BankDepositBackupDto>? BankDeposits { get; set; }
+
+    /// <summary>Deposit-to-received-item join rows. Added in schema 1.4.0; absent in older files.</summary>
+    [ProtoMember(32)] public List<BankDepositLineBackupDto>? BankDepositLines { get; set; }
 }

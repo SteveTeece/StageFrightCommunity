@@ -4,6 +4,7 @@ using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Modules.Finance;
+using StageFright.Core.Modules.Localization.Resources;
 using StageFright.Core.Tests.Fixtures;
 
 namespace StageFright.Core.Tests.Modules.Finance;
@@ -38,7 +39,8 @@ public class GeneralJournalServiceTests : TestBase
         _accountRepo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(new List<Account>
             {
-                MakeAccount(CashAccountId, "Cash on Hand", AccountType.Asset, "1100", isSystem: true, isBank: true),
+                MakeAccount(CashAccountId, "Petty Cash", AccountType.Asset, "1100", isSystem: true, isBank: true),
+                MakeAccount(SystemAccounts.UndepositedFundsId, "Undeposited Funds", AccountType.Asset, SystemAccounts.UndepositedFundsNumber, isSystem: true),
                 MakeAccount(SystemAccounts.MemberReceivableId, "Member Receivable", AccountType.Asset, "1200", isSystem: true),
                 MakeAccount(ExpenseAccountId, "Hall Hire", AccountType.Expense, "6000"),
                 MakeAccount(IncomeAccountId, "Raffle Income", AccountType.Income, "4000")
@@ -56,6 +58,15 @@ public class GeneralJournalServiceTests : TestBase
 
         Assert.Equal(3, result.Count);
         Assert.DoesNotContain(result, a => a.Id == SystemAccounts.MemberReceivableId);
+    }
+
+    [Fact]
+    public async Task Should_ExcludeUndepositedFunds_When_GettingJournalAccounts()
+    {
+        var result = await _sut.GetJournalAccountsAsync(Ct);
+
+        Assert.DoesNotContain(result, a => a.Id == SystemAccounts.UndepositedFundsId);
+        Assert.Contains(result, a => a.Id == CashAccountId);
     }
 
     // --- Validation ---
@@ -133,6 +144,29 @@ public class GeneralJournalServiceTests : TestBase
 
         await Assert.ThrowsAsync<ValidationException>(
             () => _sut.RecordJournalAsync(request, Ct));
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Should_ThrowValidation_When_LinePostsToUndepositedFunds(bool onDebitSide)
+    {
+        var request = onDebitSide
+            ? MakeRequest(
+                new JournalLine { AccountId = SystemAccounts.UndepositedFundsId, DebitAmount = 100m },
+                new JournalLine { AccountId = IncomeAccountId, CreditAmount = 100m })
+            : MakeRequest(
+                new JournalLine { AccountId = ExpenseAccountId, DebitAmount = 100m },
+                new JournalLine { AccountId = SystemAccounts.UndepositedFundsId, CreditAmount = 100m });
+
+        var ex = await Assert.ThrowsAsync<ValidationException>(
+            () => _sut.RecordJournalAsync(request, Ct));
+
+        Assert.Equal(
+            RealLocalizer.Instance.Get<ValidationResource>("Validation_Journal_NoUndepositedFunds"),
+            ex.Message);
+        await _glRepo.DidNotReceive().AddBalancedSetAsync(
+            Arg.Any<IReadOnlyList<Transaction>>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

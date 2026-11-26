@@ -57,11 +57,11 @@ Files: every source file in plan.md's Project Structure except the UI pages owne
 **⟶ Wait for Wave 4 to finish, then:**
 
 **Wave 5 — independent services (different files):**
-- [ ] **T017** [P] Route `PaymentService.RecordAsync` through `ReceiptRouting`. Every money-side line goes to the destination. Cheque and other add one `ReceivedItem` for `Payment.Amount` with its `Reference`. Card and EFT require a valid bank account other than Petty Cash. Add `BankAccountId` and `Reference` to `RecordPaymentRequest`. Unit-test every method, a missing or invalid bank, and a multi-fee payment that gives one item (edge case) · src/StageFright.Core/Modules/Finance/PaymentService.cs, RecordPaymentRequest.cs, tests/StageFright.Core.Tests/Modules/Finance/PaymentServiceTests.cs
-- [ ] **T018** [P] Route `IncomeEntryService.RecordIncomeAsync` by `PaymentMethod`. Replace `DepositAccountId` with `PaymentMethod`, `BankAccountId` and `Reference`. The item stores the gross under exclusive tax. The organisation link stays on the entry (FR-025). Audit against the journal entry. Unit-test each method under inclusive and exclusive tax · src/StageFright.Core/Modules/Finance/IncomeEntryService.cs, RecordIncomeRequest.cs, tests/StageFright.Core.Tests/Modules/Finance/IncomeEntryServiceTests.cs
-- [ ] **T019** [P] Exclude Undeposited Funds from `GetJournalAccountsAsync` and refuse it in `RecordJournalAsync` (FR-001), with tests · src/StageFright.Core/Modules/Finance/GeneralJournalService.cs, tests/StageFright.Core.Tests/Modules/Finance/GeneralJournalServiceTests.cs
-- [ ] **T020** [P] Make `OpeningBalanceService` create one "opening balance" `ReceivedItem` for a positive Undeposited Funds amount and refuse a negative one. Test both, plus the setup-wizard path through `SetupService` · src/StageFright.Core/Modules/Finance/OpeningBalanceService.cs, tests/StageFright.Core.Tests/Modules/Finance/OpeningBalanceServiceTests.cs, tests/StageFright.Data.Tests/Settings/SetupServiceIntegrationTests.cs
-- [ ] **T021** [P] Implement `BankingService` per research §4, §5 and §8 to §11:
+- [x] **T017** [P] Route `PaymentService.RecordAsync` through `ReceiptRouting`. Every money-side line goes to the destination. Cheque and other add one `ReceivedItem` for `Payment.Amount` with its `Reference`. Card and EFT require a valid bank account other than Petty Cash. Add `BankAccountId` and `Reference` to `RecordPaymentRequest`. Unit-test every method, a missing or invalid bank, and a multi-fee payment that gives one item (edge case) · src/StageFright.Core/Modules/Finance/PaymentService.cs, RecordPaymentRequest.cs, tests/StageFright.Core.Tests/Modules/Finance/PaymentServiceTests.cs
+- [x] **T018** [P] Route `IncomeEntryService.RecordIncomeAsync` by `PaymentMethod`. Replace `DepositAccountId` with `PaymentMethod`, `BankAccountId` and `Reference`. The item stores the gross under exclusive tax. The organisation link stays on the entry (FR-025). Audit against the journal entry. Unit-test each method under inclusive and exclusive tax · src/StageFright.Core/Modules/Finance/IncomeEntryService.cs, RecordIncomeRequest.cs, tests/StageFright.Core.Tests/Modules/Finance/IncomeEntryServiceTests.cs
+- [x] **T019** [P] Exclude Undeposited Funds from `GetJournalAccountsAsync` and refuse it in `RecordJournalAsync` (FR-001), with tests · src/StageFright.Core/Modules/Finance/GeneralJournalService.cs, tests/StageFright.Core.Tests/Modules/Finance/GeneralJournalServiceTests.cs
+- [x] **T020** [P] Make `OpeningBalanceService` create one "opening balance" `ReceivedItem` for a positive Undeposited Funds amount and refuse a negative one. Test both, plus the setup-wizard path through `SetupService` · src/StageFright.Core/Modules/Finance/OpeningBalanceService.cs, tests/StageFright.Core.Tests/Modules/Finance/OpeningBalanceServiceTests.cs, tests/StageFright.Data.Tests/Settings/SetupServiceIntegrationTests.cs
+- [x] **T021** [P] Implement `BankingService` per research §4, §5 and §8 to §11:
   - the overview, and cash available as the lower of the deposit-date and current balances;
   - a deposit with one bank line and no zero lines, with in-transaction awaiting re-checks;
   - a withdrawal;
@@ -70,7 +70,7 @@ Files: every source file in plan.md's Project Structure except the UI pages owne
   - audit for each posting.
 
   Unit-test every branch · src/StageFright.Core/Modules/Finance/BankingService.cs, tests/StageFright.Core.Tests/Modules/Finance/BankingServiceTests.cs
-- [ ] **T022** [P] Backup `1.4.0`, per data-model §7:
+- [x] **T022** [P] Backup `1.4.0`, per data-model §7:
   - bump `BackupSchema`;
   - add envelope members 29, 31 and 32 and their DTOs;
   - add snapshot read, map and count support;
@@ -78,7 +78,7 @@ Files: every source file in plan.md's Project Structure except the UI pages owne
   - rename Petty Cash for files older than 1.4.0.
 
   Add SQLite round-trip tests for a 1.4.0 file and for restoring 1.2.0 and 1.3.0 files (FR-022, SC-006) · src/StageFright.Core/BackupSchema.cs, src/StageFright.Core/Modules/Settings/BackupService.cs, Backup/BackupEnvelope.cs, Backup/BackupSnapshot.cs, Backup/{ReceivedItem,BankDeposit,BankDepositLine}BackupDto.cs, src/StageFright.Data/Repositories/BackupRepository.cs, tests/StageFright.Integration.Tests/Scenarios/V9_BackupRestoreTests.cs
-- [ ] **T023** [P] Report tests showing historical `Transfer` and `BankDeposit` entries, plus the new `BankDepositReversal` and `CashWithdrawal` entries, render correctly in the General Ledger, Account Register, Trial Balance and Balance Sheet, with 1105 under Assets (FR-021) · tests/StageFright.Reports.Tests/Providers/BankingJournalTypesReportTests.cs
+- [x] **T023** [P] Report tests showing historical `Transfer` and `BankDeposit` entries, plus the new `BankDepositReversal` and `CashWithdrawal` entries, render correctly in the General Ledger, Account Register, Trial Balance and Balance Sheet, with 1105 under Assets (FR-021) · tests/StageFright.Reports.Tests/Providers/BankingJournalTypesReportTests.cs
 
 **⟶ Wait for Wave 5 to finish, then:**
 

@@ -9,17 +9,22 @@ namespace StageFright.Core.Modules.Finance;
 
 /// <summary>
 /// Records member payments with FIFO GL allocation.
-/// Per fee in FIFO order: Debit Cash (1100) / Credit MemberReceivable (1200).
-/// Overpayment (payment > balance): Debit Cash (1100) / Credit MemberReceivable (1200) — creates negative (credit) balance.
+/// Per fee in FIFO order: Debit money side / Credit MemberReceivable (1200).
+/// Overpayment (payment > balance): Debit money side / Credit MemberReceivable (1200) — creates negative (credit) balance.
+/// The money side follows <see cref="ReceiptRouting"/> (spec 033): Petty Cash for cash,
+/// Undeposited Funds for cheque and other (plus one <see cref="ReceivedItem"/> for the whole
+/// payment), and the chosen bank account for card and electronic transfer.
 /// </summary>
 public class PaymentService : IPaymentService
 {
-
+    private const int ReferenceMaxLength = 50;
 
     private readonly IFeeRepository _feeRepo;
     private readonly IPaymentRepository _paymentRepo;
     private readonly IGLRepository _glRepo;
     private readonly IMemberRepository _memberRepo;
+    private readonly IAccountRepository _accountRepo;
+    private readonly IReceivedItemRepository _receivedItemRepo;
     private readonly IAuditTrailService _audit;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILocalizer _localizer;
@@ -29,6 +34,8 @@ public class PaymentService : IPaymentService
         IPaymentRepository paymentRepo,
         IGLRepository glRepo,
         IMemberRepository memberRepo,
+        IAccountRepository accountRepo,
+        IReceivedItemRepository receivedItemRepo,
         IAuditTrailService audit,
         IUnitOfWork unitOfWork,
         ILocalizer localizer)
@@ -37,6 +44,8 @@ public class PaymentService : IPaymentService
         _paymentRepo = paymentRepo;
         _glRepo = glRepo;
         _memberRepo = memberRepo;
+        _accountRepo = accountRepo;
+        _receivedItemRepo = receivedItemRepo;
         _audit = audit;
         _unitOfWork = unitOfWork;
         _localizer = localizer;
@@ -48,6 +57,9 @@ public class PaymentService : IPaymentService
             throw new ValidationException(
                 _localizer.Get<ValidationResource>("Validation_Payment_AmountPositive"),
                 nameof(Payment), nameof(RecordAsync));
+
+        var moneyAccountNumber = await ResolveMoneyAccountNumberAsync(request, ct);
+        var moneyAccountId = ReceiptRouting.Destination(request.PaymentMethod, request.BankAccountId);
 
         Payment savedPayment = null!;
 
@@ -137,10 +149,10 @@ public class PaymentService : IPaymentService
                         {
                             Id = Guid.NewGuid(),
                             Date = request.Date,
-                            AccountId = SystemAccounts.CashId,
+                            AccountId = moneyAccountId,
                             DebitAmount = allocation,
                             CreditAmount = 0m,
-                            GLAccount = SystemAccounts.CashNumber,
+                            GLAccount = moneyAccountNumber,
                             MemberId = request.MemberId,
                             PaymentId = savedPayment.Id,
                             FeeId = fee.Id,
@@ -175,13 +187,13 @@ public class PaymentService : IPaymentService
                     {
                         Id = Guid.NewGuid(),
                         Date = request.Date,
-                        AccountId = SystemAccounts.CashId,
+                        AccountId = moneyAccountId,
                         DebitAmount = remainingPayment,
                         CreditAmount = 0m,
-                        GLAccount = SystemAccounts.CashNumber,
+                        GLAccount = moneyAccountNumber,
                         MemberId = request.MemberId,
                         PaymentId = savedPayment.Id,
-                        Description = $"Overpayment — cash received from {memberName}",
+                        Description = $"Overpayment received from {memberName}",
                         CreatedAt = now
                     },
                     new Transaction
@@ -200,11 +212,26 @@ public class PaymentService : IPaymentService
                     innerCt);
             }
 
-            // 4. Audit
+            // 4. Cheque or other: one item awaiting deposit for the whole payment, however many fees it paid
+            if (ReceiptRouting.CreatesReceivedItem(request.PaymentMethod))
+            {
+                await _receivedItemRepo.AddAsync(new ReceivedItem
+                {
+                    Id = Guid.NewGuid(),
+                    Date = request.Date,
+                    Amount = savedPayment.Amount,
+                    Method = request.PaymentMethod,
+                    Reference = NormaliseReference(request.Reference),
+                    PaymentId = savedPayment.Id,
+                    CreatedAt = now
+                }, innerCt);
+            }
+
+            // 5. Audit
             await _audit.LogAsync(
                 nameof(Payment), savedPayment.Id, AuditAction.Create,
                 oldValue: null,
-                newValue: $"Payment {request.Amount:C} from member {request.MemberId} on {request.Date:yyyy-MM-dd}",
+                newValue: $"Payment {request.Amount:C} by {request.PaymentMethod} from member {request.MemberId} on {request.Date:yyyy-MM-dd}",
                 ct: innerCt);
 
         }, ct);
@@ -215,5 +242,42 @@ public class PaymentService : IPaymentService
     public async Task UpdateNotesAsync(Guid paymentId, string? notes, CancellationToken ct = default)
     {
         await _paymentRepo.UpdateNotesAsync(paymentId, notes, ct);
+    }
+
+    /// <summary>
+    /// Returns the GL account number of the money side. Card and electronic transfer need an
+    /// existing bank account other than Petty Cash; any other method ignores <c>BankAccountId</c>.
+    /// </summary>
+    private async Task<string> ResolveMoneyAccountNumberAsync(RecordPaymentRequest request, CancellationToken ct)
+    {
+        switch (request.PaymentMethod)
+        {
+            case PaymentMethod.Cash:
+                return SystemAccounts.CashNumber;
+            case PaymentMethod.Check:
+            case PaymentMethod.Other:
+                return SystemAccounts.UndepositedFundsNumber;
+        }
+
+        var bank = request.BankAccountId is { } bankId && bankId != SystemAccounts.CashId
+            ? await _accountRepo.GetByIdAsync(bankId, ct)
+            : null;
+
+        if (bank is null || !bank.IsBankAccount)
+            throw new ValidationException(
+                _localizer.Get<ValidationResource>("Validation_Deposit_BankAccountInvalid"),
+                nameof(Payment), nameof(RecordAsync), request.BankAccountId);
+
+        return bank.AccountNumber;
+    }
+
+    /// <summary>Trims the reference, returning null when blank (data-model §3).</summary>
+    private static string? NormaliseReference(string? reference)
+    {
+        if (string.IsNullOrWhiteSpace(reference))
+            return null;
+
+        var trimmed = reference.Trim();
+        return trimmed.Length > ReferenceMaxLength ? trimmed[..ReferenceMaxLength] : trimmed;
     }
 }

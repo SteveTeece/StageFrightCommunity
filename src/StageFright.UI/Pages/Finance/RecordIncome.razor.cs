@@ -105,12 +105,16 @@ public partial class RecordIncome : ComponentBase
         _saving = true;
         try
         {
+            // Spec 033 bridge until US1 adds the payment-method picker: Petty Cash (or no choice) is
+            // cash, any other bank account is an electronic transfer into it.
+            var isCash = _form.DepositAccountId == Guid.Empty || _form.DepositAccountId == SystemAccounts.CashId;
             var request = new RecordIncomeRequest
             {
                 Date = _form.Date,
                 Amount = _form.Amount,
                 AccountId = _form.AccountId,
-                DepositAccountId = _form.DepositAccountId == Guid.Empty ? null : _form.DepositAccountId,
+                PaymentMethod = isCash ? PaymentMethod.Cash : PaymentMethod.ElectronicTransfer,
+                BankAccountId = isCash ? null : _form.DepositAccountId,
                 TaxCode = _isTaxApplicable ? _form.TaxCode : null,
                 Description = string.IsNullOrWhiteSpace(_form.Description) ? null : _form.Description.Trim(),
                 ExternalOrganisationId = _form.ExternalOrganisationId

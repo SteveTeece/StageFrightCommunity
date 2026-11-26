@@ -119,7 +119,7 @@ Task<IReadOnlyList<(Guid ReconciliationId, Guid TransactionId, ReconciliationSta
 
 ## 4. Backup members
 
-These are given in [data-model.md](../data-model.md) §9: envelope 29, 31 and 32, and `JournalEntryBackupDto` 7. `BackupSchema.CurrentSchemaVersion = "1.4.0"`.
+These are given in [data-model.md](../data-model.md) §7: envelope 29, 31 and 32. `JournalEntryBackupDto` is unchanged. `BackupSchema.CurrentSchemaVersion = "1.4.0"`.
 
 ## 5. Localization keys
 
