@@ -278,4 +278,7 @@
   <data name="Finance_Payment_ReferenceLabel" xml:space="preserve"><value>Référence du chèque</value><comment>Record payment: cheque reference field label.</comment></data>
   <data name="Finance_RecordIncome_PaymentMethodLabel" xml:space="preserve"><value>Mode de paiement</value><comment>Record income: payment method field label.</comment></data>
   <data name="Finance_Banking_LoadError" xml:space="preserve"><value>Échec du chargement des données bancaires : {Detail}</value><comment>Banking page load failure. {Detail} = error detail.</comment></data>
+  <data name="Finance_Banking_SelectAllAriaLabel" xml:space="preserve"><value>Sélectionner tous les éléments en attente de dépôt</value><comment>aria-label for the select-all checkbox on the deposit item grid.</comment></data>
+  <data name="Finance_Banking_SelectRowAriaLabel" xml:space="preserve"><value>Sélectionner l'élément de {Payer} reçu le {Date}</value><comment>aria-label for a deposit item checkbox. {Payer} = payer, {Date} = received date.</comment></data>
+  <data name="Finance_Banking_DepositSaveError" xml:space="preserve"><value>Échec de l'enregistrement du dépôt : {Detail}</value><comment>Deposit page save failure. {Detail} = error detail.</comment></data>
 </root>

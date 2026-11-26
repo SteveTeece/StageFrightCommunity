@@ -370,6 +370,54 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-26T22:25:58.642Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T22:44:06.059Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T22:44:06.425Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T22:44:06.779Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T22:44:07.135Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T22:44:07.493Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T22:44:07.854Z"
     }
   ],
   "telemetryInstanceId": "2d0602eb-ff2b-480e-bd3e-beb0b4a6e39a",
@@ -532,6 +580,27 @@
       "rejected": "Reasserting the migration rows already covered by AddBankingReworkMigrationTests",
       "by": "agent",
       "at": "2026-11-26T22:30:10.116Z"
+    },
+    {
+      "decision": "Cash box is a plain number input bound oninput, CashAmount decimal?",
+      "why": "FR-011 needs the total to update on every keystroke; InputNumber has no oninput binding",
+      "rejected": "InputNumber with onchange",
+      "by": "agent",
+      "at": "2026-11-26T22:55:15.082Z"
+    },
+    {
+      "decision": "Cash box symbol uses MoneyFormatter.Symbol",
+      "why": "CLAUDE.md money rule: the organisation currency, not the OS culture",
+      "rejected": "CultureInfo.CurrentCulture currency symbol",
+      "by": "agent",
+      "at": "2026-11-26T22:55:15.082Z"
+    },
+    {
+      "decision": "SaveAsync returns early while a save is in flight",
+      "why": "Reviewer flagged a cash-only double post; the test proved it real",
+      "rejected": "Relying on the disabled submit button",
+      "by": "agent",
+      "at": "2026-11-26T22:55:15.082Z"
     }
   ],
   "expectations": [
@@ -667,6 +736,9 @@
         "T021",
         "T038",
         "T043"
+      ],
+      "tests": [
+        "V35_BankDepositTests::Should_RaiseBankByTotalAndLowerUndepositedFundsAndPettyCash_When_ChequesAndCashDeposited_Integration; DepositPageTests::Should_SendTickedItemsAndCashAndReturnToBanking_When_Saved"
       ]
     },
     "FR-010": {
@@ -675,6 +747,9 @@
         "T021",
         "T038",
         "T039"
+      ],
+      "tests": [
+        "V35_BankDepositTests refusal cases; DepositPageTests::Should_ShowRefusalMessageAndStay_When_ServiceRefusesDeposit"
       ]
     },
     "FR-011": {
@@ -684,6 +759,9 @@
         "T040",
         "T041",
         "T043"
+      ],
+      "tests": [
+        "DepositPageTests::Should_SplitTotalIntoChequesAndCash_When_ItemsTickedAndCashTyped"
       ]
     },
     "FR-012": {
@@ -691,6 +769,9 @@
       "tasks": [
         "T021",
         "T038"
+      ],
+      "tests": [
+        "V35_BankDepositTests::Should_KeepTrialBalanceBalancedAndWriteAuditEntry_When_DepositRecorded_Integration"
       ]
     },
     "FR-013": {
@@ -698,6 +779,9 @@
       "tasks": [
         "T021",
         "T038"
+      ],
+      "tests": [
+        "V35_BankDepositTests::Should_ShowOneReconciliationLineForFullTotal_When_DepositOfTenReceiptsReconciled_Integration"
       ]
     },
     "FR-014": {
@@ -743,6 +827,9 @@
         "T038",
         "T044",
         "T047"
+      ],
+      "tests": [
+        "V35_BankDepositTests::Should_RefuseAndPostNothing_When_DepositDatedInClosedPeriod_Integration"
       ]
     },
     "FR-019": {
@@ -752,6 +839,9 @@
         "T038",
         "T044",
         "T047"
+      ],
+      "tests": [
+        "V35_BankDepositTests::Should_KeepTrialBalanceBalancedAndWriteAuditEntry_When_DepositRecorded_Integration"
       ]
     },
     "FR-020": {
@@ -799,7 +889,8 @@
       ],
       "tests": [
         "V33_ChequesAwaitingDepositTests.cs::Should_ShowOrganisationNameAndKeepLink_When_ChequeIncomeIsOrganisationLinked_Integration"
-      ]
+      ],
+      "assumes": "DepositModel/RecordDepositRequest have no organisation field; no direct test"
     }
   },
   "classification": {
@@ -893,6 +984,34 @@
       "result": "Test run for c:\\SourceCode\\StageFrightCommunity\\tests\\StageFright.Integration.Tests\\bin\\Debug\\net10.0\\StageFright.Integration.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:   280, Skipped:     0, Total:   280, Duration: 50 s - StageFright.Integration.Tests.dll (net10.0)",
       "commit": "9d7d5df",
       "tree": "97b513d4727a65843ac17f49d1bb0e9755282e2f"
+    },
+    {
+      "what": "Independent FR check (FR-009..013, FR-018, FR-019, FR-025, US3-5, negative-cash edge case)",
+      "result": "all met; one at-risk double-submit closed by a failing-then-passing test and a guard"
+    },
+    {
+      "what": "Full dotnet build + dotnet test after fixes",
+      "result": "0 errors, 0 warnings in the touched test project; 2724 passed, 0 failed"
+    },
+    {
+      "what": "deposit integration",
+      "command": "dotnet test tests/StageFright.Integration.Tests/ --no-build --filter FullyQualifiedName~V35_BankDepositTests",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 10.5,
+      "result": "Test run for c:\\SourceCode\\StageFrightCommunity\\tests\\StageFright.Integration.Tests\\bin\\Debug\\net10.0\\StageFright.Integration.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:     9, Skipped:     0, Total:     9, Duration: 6 s - StageFright.Integration.Tests.dll (net10.0)",
+      "commit": "1a55eb2",
+      "tree": "daa9ee8a1257d8c4287a0b6a6068c5698c1ff052"
+    },
+    {
+      "what": "deposit UI",
+      "command": "dotnet test tests/StageFright.UI.Tests/ --no-build --filter FullyQualifiedName~Deposit",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 4.7,
+      "result": "Test run for c:\\SourceCode\\StageFrightCommunity\\tests\\StageFright.UI.Tests\\bin\\Debug\\net10.0\\StageFright.UI.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:    23, Skipped:     0, Total:    23, Duration: 1 s - StageFright.UI.Tests.dll (net10.0)",
+      "commit": "1a55eb2",
+      "tree": "daa9ee8a1257d8c4287a0b6a6068c5698c1ff052"
     }
   ],
   "step_summaries": {
@@ -904,11 +1023,11 @@
       "summary": "54 tasks: setup, a 6-wave foundational phase owning all back end, resx, DI and seed data, five story phases owning their pages and tests, and polish"
     },
     "implement": {
-      "summary": "Phase 4 (US2): V34 Petty Cash end-to-end scenario tests"
+      "summary": "Phase 5 (US3): DepositPage, DepositItemSelectionGrid, DepositModel with V35 integration and bUnit tests"
     }
   },
   "approach": "Route each receipt by payment method through a pure ReceiptRouting rule, track cheques as ReceivedItem rows, and post deposits, reversals and withdrawals as balanced journal entries through a new BankingService. One migration renames 1100 and seeds 1105, and backup moves to 1.4.0.",
-  "currentTask": "T037",
+  "currentTask": "T043",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -1303,6 +1422,52 @@
       "files": [
         "tests/StageFright.Integration.Tests/Scenarios/V34_PettyCashTests.cs"
       ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "V35 bank deposit integration tests (9 passing)",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V35_BankDepositTests.cs"
+      ]
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "DepositPage bUnit tests",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Finance/DepositPageTests.cs"
+      ]
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "DepositItemSelectionGrid bUnit tests",
+      "files": [
+        "tests/StageFright.UI.Tests/Pages/Finance/DepositItemSelectionGridTests.cs"
+      ]
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "Created DepositItemSelectionGrid",
+      "files": [
+        "src/StageFright.UI/Pages/Finance/DepositItemSelectionGrid.razor",
+        "src/StageFright.UI/Pages/Finance/DepositItemSelectionGrid.razor.cs"
+      ]
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "Created DepositModel",
+      "files": [
+        "src/StageFright.UI/Pages/Finance/DepositModel.cs"
+      ]
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "Created DepositPage at /finance/banking/deposit plus 3 localized keys in 9 resx",
+      "files": [
+        "src/StageFright.UI/Pages/Finance/DepositPage.razor",
+        "src/StageFright.UI/Pages/Finance/DepositPage.razor.cs",
+        "src/StageFright.UI/Resources/Strings/FinanceResource*.resx",
+        "specs/033-banking-cash-deposits/contracts/ui-contract.md"
+      ]
     }
   },
   "concerns": [
@@ -1361,9 +1526,25 @@
     {
       "note": "Older-backup restore rename (Petty Cash (own)) is tested at repository level and as an invoked call in BackupServiceTests, but there is no end-to-end restore of a pre-1.4.0 file",
       "step": "implement"
+    },
+    {
+      "note": "DepositPage generic catch shows ex.Message through Finance_Banking_DepositSaveError, as BankingPage does with its load error; services wrap raw exceptions, but a non-custom one would surface its text",
+      "step": "implement"
+    },
+    {
+      "note": "If GetCashAvailableAsync fails on a date change, the previous cash-available figure stays on screen; the service still refuses an over-limit deposit on save",
+      "step": "implement"
+    },
+    {
+      "note": "No test drives DepositPage with the real BankingService on SQLite; page tests mock IBankingService and V35 drives the service directly",
+      "step": "implement"
+    },
+    {
+      "note": "Pre-existing, out of scope: ExpensePaymentPage.razor:52 shows CultureInfo.CurrentCulture currency symbol instead of MoneyFormatter.Symbol",
+      "step": "implement"
     }
   ],
-  "last_action": "Phase 4 T037 done and verified; next is Phase 5 (US3, T038-T043)",
+  "last_action": "Phase 5 T038-T043 done and verified; next is Phase 6 (US4, T044-T046)",
   "risk": {
     "tier": "high",
     "computed": "high",

@@ -278,4 +278,7 @@
   <data name="Finance_Payment_ReferenceLabel" xml:space="preserve"><value>Scheckreferenz</value><comment>Record payment: cheque reference field label.</comment></data>
   <data name="Finance_RecordIncome_PaymentMethodLabel" xml:space="preserve"><value>Zahlungsart</value><comment>Record income: payment method field label.</comment></data>
   <data name="Finance_Banking_LoadError" xml:space="preserve"><value>Bankdaten konnten nicht geladen werden: {Detail}</value><comment>Banking page load failure. {Detail} = error detail.</comment></data>
+  <data name="Finance_Banking_SelectAllAriaLabel" xml:space="preserve"><value>Alle Posten zur Einzahlung auswählen</value><comment>aria-label for the select-all checkbox on the deposit item grid.</comment></data>
+  <data name="Finance_Banking_SelectRowAriaLabel" xml:space="preserve"><value>Posten von {Payer} vom {Date} auswählen</value><comment>aria-label for a deposit item checkbox. {Payer} = payer, {Date} = received date.</comment></data>
+  <data name="Finance_Banking_DepositSaveError" xml:space="preserve"><value>Einzahlung konnte nicht erfasst werden: {Detail}</value><comment>Deposit page save failure. {Detail} = error detail.</comment></data>
 </root>

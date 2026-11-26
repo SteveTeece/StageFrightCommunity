@@ -278,4 +278,7 @@
   <data name="Finance_Payment_ReferenceLabel" xml:space="preserve"><value>小切手の参照</value><comment>Record payment: cheque reference field label.</comment></data>
   <data name="Finance_RecordIncome_PaymentMethodLabel" xml:space="preserve"><value>支払方法</value><comment>Record income: payment method field label.</comment></data>
   <data name="Finance_Banking_LoadError" xml:space="preserve"><value>銀行情報の読み込みに失敗しました: {Detail}</value><comment>Banking page load failure. {Detail} = error detail.</comment></data>
+  <data name="Finance_Banking_SelectAllAriaLabel" xml:space="preserve"><value>入金待ちの項目をすべて選択</value><comment>aria-label for the select-all checkbox on the deposit item grid.</comment></data>
+  <data name="Finance_Banking_SelectRowAriaLabel" xml:space="preserve"><value>{Date} に受領した {Payer} の項目を選択</value><comment>aria-label for a deposit item checkbox. {Payer} = payer, {Date} = received date.</comment></data>
+  <data name="Finance_Banking_DepositSaveError" xml:space="preserve"><value>入金の記録に失敗しました: {Detail}</value><comment>Deposit page save failure. {Detail} = error detail.</comment></data>
 </root>

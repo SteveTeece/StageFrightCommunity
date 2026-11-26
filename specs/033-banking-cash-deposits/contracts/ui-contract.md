@@ -31,7 +31,7 @@ The fields run top to bottom:
 - **Totals panel**: Cash, Cheques, Deposit total (FR-011).
 - **Save / Cancel**.
 
-Save is disabled while the total is 0. Service errors are shown inline in an alert.
+Save is disabled while the total is 0. The cash box updates the totals on every keystroke. Service errors are shown inline in an alert; the page does not pre-check the cash against the cash available, the service is the authority.
 
 ### 2.3 DepositDetailPage
 
@@ -161,6 +161,7 @@ Every neutral key ships translated into de-DE, en-US, es-ES, fr-FR, it-IT, ja-JP
 | `Finance_Banking_PurposeLabel` | Purpose |
 | `Finance_Banking_WithdrawalDefaultDescription` | Cash withdrawal |
 | `Finance_Banking_DepositSaved` / `_WithdrawalSaved` / `_DepositReversed` | Deposit recorded. / Withdrawal recorded. / Deposit reversed. |
+| `Finance_Banking_SelectAllAriaLabel` / `_SelectRowAriaLabel` / `_DepositSaveError` | Select all items awaiting deposit / Select item from {Payer} received {Date} / Failed to record deposit: {Detail} |
 | `Finance_Payment_BankAccountLabel` | Bank account |
 | `Finance_Payment_ReferenceLabel` | Cheque reference |
 | `Finance_RecordIncome_PaymentMethodLabel` | Payment method |

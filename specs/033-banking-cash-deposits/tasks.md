@@ -186,7 +186,7 @@ Files: tests/StageFright.Integration.Tests/Scenarios/V34_PettyCashTests.cs. The 
 Files: src/StageFright.UI/Pages/Finance/{DepositPage.razor,DepositPage.razor.cs,DepositModel.cs,DepositItemSelectionGrid.razor,DepositItemSelectionGrid.razor.cs}, tests named below.
 
 ### Tests
-- [ ] **T038** [P] [US3] On SQLite:
+- [x] **T038** [P] [US3] On SQLite:
   - **Posting:** a deposit of selected cheques plus cash raises the bank by the total, lowers Undeposited Funds by the cheques and Petty Cash by the cash (FR-009, FR-012, US3-1). The unselected cheque stays listed, and an included cheque is not offered again (US3-5).
   - **Reconciliation:** a deposit of 10 receipts is one reconciliation line (FR-013, SC-003, US3-2).
   - **Refusals (FR-010, US3-3, US3-4):** each is refused with its message:
@@ -198,7 +198,7 @@ Files: src/StageFright.UI/Pages/Finance/{DepositPage.razor,DepositPage.razor.cs,
   - **Integrity:** the trial balance stays balanced (SC-002), and an audit entry is written (FR-019).
 
   · tests/StageFright.Integration.Tests/Scenarios/V35_BankDepositTests.cs
-- [ ] **T039** [P] [US3] bUnit, DepositPage:
+- [x] **T039** [P] [US3] bUnit, DepositPage:
   - The running total splits into cheques and cash on every tick and keystroke (FR-011).
   - A single bank account is preselected, and the cash available is shown.
   - The cash box is disabled when the cash available is zero or less.
@@ -206,15 +206,15 @@ Files: src/StageFright.UI/Pages/Finance/{DepositPage.razor,DepositPage.razor.cs,
   - The no-bank message is shown.
 
   · tests/StageFright.UI.Tests/Pages/Finance/DepositPageTests.cs
-- [ ] **T040** [P] [US3] bUnit, DepositItemSelectionGrid: the select-all header template, and a selection-changed total · tests/StageFright.UI.Tests/Pages/Finance/DepositItemSelectionGridTests.cs
+- [x] **T040** [P] [US3] bUnit, DepositItemSelectionGrid: the select-all header template, and a selection-changed total · tests/StageFright.UI.Tests/Pages/Finance/DepositItemSelectionGridTests.cs
 
 ### Implementation
 **Wave 1 — independent:**
-- [ ] **T041** [P] [US3] Create the item picker grid, modelled on `OutstandingFeeSelectionGrid` · src/StageFright.UI/Pages/Finance/DepositItemSelectionGrid.razor, DepositItemSelectionGrid.razor.cs
-- [ ] **T042** [P] [US3] Create the deposit form model · src/StageFright.UI/Pages/Finance/DepositModel.cs
+- [x] **T041** [P] [US3] Create the item picker grid, modelled on `OutstandingFeeSelectionGrid` · src/StageFright.UI/Pages/Finance/DepositItemSelectionGrid.razor, DepositItemSelectionGrid.razor.cs
+- [x] **T042** [P] [US3] Create the deposit form model · src/StageFright.UI/Pages/Finance/DepositModel.cs
 
 **⟶ Wait for Wave 1 to finish, then:**
-- [ ] **T043** [US3] Create DepositPage at `/finance/banking/deposit`, with the running total, the cash available, validation and the save-and-return-to-Banking flow · src/StageFright.UI/Pages/Finance/DepositPage.razor, DepositPage.razor.cs
+- [x] **T043** [US3] Create DepositPage at `/finance/banking/deposit`, with the running total, the cash available, validation and the save-and-return-to-Banking flow · src/StageFright.UI/Pages/Finance/DepositPage.razor, DepositPage.razor.cs
 
 **Checkpoint:** the receive-then-deposit cycle works end to end, and US1 plus US3 form the MVP.
 

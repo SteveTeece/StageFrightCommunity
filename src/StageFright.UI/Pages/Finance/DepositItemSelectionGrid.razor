@@ -1,0 +1,47 @@
+@if (Items.Count == 0)
+{
+    <div class="alert alert-info py-1 mb-2 small">@L["Finance_Banking_NothingAwaiting"]</div>
+}
+else
+{
+    <RadzenDataGrid Data="@_rows" TItem="DepositItemRow"
+                    AllowSorting="true" AllowPaging="true" PageSize="15"
+                    class="rz-shadow-0">
+        <Columns>
+            <RadzenDataGridColumn TItem="DepositItemRow" Title="@L["Finance_FeeSelection_SelectColumn"]" Width="100px" Sortable="false">
+                <HeaderTemplate>
+                    <div class="d-flex flex-column align-items-center gap-1">
+                        <span>@L["Finance_FeeSelection_SelectColumn"]</span>
+                        <span class="select-all-inline small text-muted">
+                            (<input type="checkbox" class="form-check-input" id="select-all-deposit-items"
+                                    checked="@AllSelected" disabled="@ReadOnly"
+                                    @onchange="e => ToggleSelectAll((bool)(e.Value ?? false))"
+                                    aria-label="@L["Finance_Banking_SelectAllAriaLabel"]" />
+                            <label class="form-check-label mb-0" for="select-all-deposit-items">@L["Finance_FeeSelection_SelectAllLabel"]</label>)
+                        </span>
+                    </div>
+                </HeaderTemplate>
+                <Template Context="row">
+                    <div class="text-center">
+                        <input type="checkbox" class="form-check-input" id="deposit-item-@row.Item.Id"
+                               checked="@row.Selected" disabled="@ReadOnly"
+                               @onchange="e => ToggleRow(row, (bool)(e.Value ?? false))"
+                               aria-label="@SelectRowAriaLabel(row.Item)" />
+                    </div>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="DepositItemRow" Title="@L["Finance_Banking_Col_Received"]" Width="130px">
+                <Template Context="row">@row.Item.ReceivedDate.ToShortDateString()</Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="DepositItemRow" Title="@L["Finance_Banking_Col_Payer"]">
+                <Template Context="row">@PayerText(row.Item)</Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="DepositItemRow" Title="@L["Finance_Banking_Col_Reference"]">
+                <Template Context="row">@row.Item.Reference</Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="DepositItemRow" Title="@L["Finance_Banking_Col_Amount"]" Width="140px" TextAlign="TextAlign.Right">
+                <Template Context="row">@MoneyFormatter.Format(row.Item.Amount)</Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+}

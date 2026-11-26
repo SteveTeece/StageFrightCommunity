@@ -1,0 +1,87 @@
+@page "/finance/banking/deposit"
+
+<PageTitle>@L["Finance_Banking_DepositTitle"]</PageTitle>
+
+<div class="deposit-page container-fluid py-2">
+    <h4 class="mb-2">@L["Finance_Banking_DepositTitle"]</h4>
+
+    @if (_loading)
+    {
+        <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+        }
+
+        @if (_banks.Count == 0)
+        {
+            <div class="alert alert-warning py-1 mb-2 small" role="alert">
+                @((MarkupString)L["Finance_Banking_NoBankAccountHtml"].Value)
+            </div>
+        }
+        else
+        {
+            <div class="card mb-2">
+                <div class="card-body py-2">
+                    <EditForm Model="_form" OnValidSubmit="SaveAsync">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label class="form-label" for="depositDate">@L["Finance_Common_DateLabel"] <span aria-hidden="true">*</span></label>
+                                <InputDate id="depositDate" class="form-control form-control-sm"
+                                           @bind-Value="_form.Date" @bind-Value:after="OnDateChangedAsync" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label" for="depositBank">@L["Finance_Payment_BankAccountLabel"] <span aria-hidden="true">*</span></label>
+                                <InputSelect id="depositBank" class="form-select form-select-sm" @bind-Value="_form.BankAccountId">
+                                    <option value="@Guid.Empty">@L["Finance_Common_SelectOption"]</option>
+                                    @foreach (var bank in _banks)
+                                    {
+                                        <option value="@bank.Id">@bank.AccountNumber @bank.Name</option>
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label" for="depositCash">@L["Finance_Banking_CashAmountLabel"]</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">@MoneyFormatter.Symbol</span>
+                                    <input id="depositCash" type="number" step="any" min="0" class="form-control"
+                                           @bind="_form.CashAmount" @bind:event="oninput"
+                                           disabled="@(_cashAvailable <= 0m)" />
+                                </div>
+                                <div class="form-text small" id="cashAvailableHelp">
+                                    @CashAvailableHelp
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <h5 class="mb-1">@L["Finance_Banking_ItemsHeading"]</h5>
+                                <DepositItemSelectionGrid @ref="_grid" Items="_items" ReadOnly="_saving"
+                                                          SelectionChanged="OnSelectionChanged" />
+                            </div>
+
+                            <div class="col-12">
+                                <div class="d-flex flex-wrap gap-4 small">
+                                    <div>@L["Finance_Banking_TotalCash"]: <strong id="totalCash">@MoneyFormatter.Format(CashAmount)</strong></div>
+                                    <div>@L["Finance_Banking_TotalCheques"]: <strong id="totalCheques">@MoneyFormatter.Format(_chequeTotal)</strong></div>
+                                    <div>@L["Finance_Banking_TotalDeposit"]: <strong id="totalDeposit">@MoneyFormatter.Format(DepositTotal)</strong></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-2">
+                            <button type="submit" id="saveDeposit" class="btn btn-primary btn-sm" disabled="@(_saving || DepositTotal <= 0m)">
+                                @(_saving ? Shared["Shared_Action_Saving"] : Shared["Shared_Action_Save"])
+                            </button>
+                            <button type="button" id="cancelDeposit" class="btn btn-outline-secondary btn-sm" @onclick="Cancel">@Shared["Shared_Action_Cancel"]</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        }
+    }
+</div>
