@@ -170,7 +170,7 @@ Files: src/StageFright.UI/Pages/Finance/{BankingPage.razor,BankingPage.razor.cs,
 Files: tests/StageFright.Integration.Tests/Scenarios/V34_PettyCashTests.cs. The story's behaviour is delivered by Phase 2 (rename and routing) and US1 (forms). This phase proves it end to end.
 
 ### Tests
-- [ ] **T037** [US2] On SQLite:
+- [x] **T037** [US2] On SQLite:
   - The chart of accounts shows "Petty Cash" with number 1100, its full history and an unchanged balance (FR-002, US2-1).
   - A cash member payment, a rehearsal attendance cash fee and a cash raffle income each raise Petty Cash, and none of them is listed as awaiting deposit (FR-003, FR-004, FR-005, US2-2, US2-3).
   - Petty Cash is still offered as a pay-from account for an expense (FR-002).

@@ -34,3 +34,4 @@
 {"step": "implement", "substep": null, "task": "T034", "kind": "complete", "by": "ai", "at": "2026-11-26T09:31:42.698Z", "did": "US1 phase 3 T034 done", "files": ["see phase 3 changes"]}
 {"step": "implement", "substep": null, "task": "T035", "kind": "complete", "by": "ai", "at": "2026-11-26T09:31:42.963Z", "did": "US1 phase 3 T035 done", "files": ["see phase 3 changes"]}
 {"step": "implement", "substep": null, "task": "T036", "kind": "complete", "by": "ai", "at": "2026-11-26T09:31:43.217Z", "did": "US1 phase 3 T036 done", "files": ["see phase 3 changes"]}
+{"step": "implement", "substep": null, "task": "T037", "kind": "complete", "by": "ai", "at": "2026-11-26T22:25:58.642Z", "did": "V34 Petty Cash scenario: upgrade rename via chart of accounts, three cash entry points route to Petty Cash, expense pay-from", "files": ["tests/StageFright.Integration.Tests/Scenarios/V34_PettyCashTests.cs"]}

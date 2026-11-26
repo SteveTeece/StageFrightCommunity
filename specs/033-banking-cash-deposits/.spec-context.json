@@ -362,6 +362,14 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-26T09:31:43.217Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T22:25:58.642Z"
     }
   ],
   "telemetryInstanceId": "2d0602eb-ff2b-480e-bd3e-beb0b4a6e39a",
@@ -517,6 +525,13 @@
       "rejected": "leaving dead keys",
       "by": "agent",
       "at": "2026-11-26T09:42:27.155Z"
+    },
+    {
+      "decision": "Prove the rename through AccountBalanceService (the Chart of Accounts surface) after migrating from the pre-banking migration",
+      "why": "FR-002 says the chart shows Petty Cash with history and balance; the migration test only checks rows",
+      "rejected": "Reasserting the migration rows already covered by AddBankingReworkMigrationTests",
+      "by": "agent",
+      "at": "2026-11-26T22:30:10.116Z"
     }
   ],
   "expectations": [
@@ -563,6 +578,9 @@
         "T015",
         "T026",
         "T037"
+      ],
+      "tests": [
+        "V34_PettyCashTests::Should_ShowPettyCash1100WithFullHistoryAndUnchangedBalance_When_UpgradedFromCashOnHand_Integration; ::Should_OfferPettyCashAndLowerItsBalance_When_ExpensePaidFromPettyCash_Integration"
       ]
     },
     "FR-003": {
@@ -576,7 +594,7 @@
         "T037"
       ],
       "tests": [
-        "tests/StageFright.Integration.Tests/Scenarios/V33_ChequesAwaitingDepositTests.cs; tests/StageFright.UI.Tests/Pages/Finance/PaymentFormTests.cs"
+        "V34_PettyCashTests::Should_RaisePettyCashByTotalAndListNothingAwaiting_When_CashPaymentRehearsalFeeAndIncomeRecorded_Integration"
       ]
     },
     "FR-004": {
@@ -590,7 +608,7 @@
         "T037"
       ],
       "tests": [
-        "tests/StageFright.UI.Tests/Pages/Finance/RecordIncomeTests.cs; V33_ChequesAwaitingDepositTests.cs"
+        "V34_PettyCashTests::Should_RaisePettyCashByTotalAndListNothingAwaiting_When_CashPaymentRehearsalFeeAndIncomeRecorded_Integration"
       ]
     },
     "FR-005": {
@@ -598,6 +616,9 @@
       "tasks": [
         "T026",
         "T037"
+      ],
+      "tests": [
+        "V34_PettyCashTests::Should_RaisePettyCashByTotalAndListNothingAwaiting_When_CashPaymentRehearsalFeeAndIncomeRecorded_Integration"
       ]
     },
     "FR-006": {
@@ -854,6 +875,24 @@
       "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:48.38",
       "commit": "d82de56",
       "tree": "5975a9cbefb57135efc766dbcac80acf04b02fef"
+    },
+    {
+      "what": "Independent FR check (FR-002..FR-005, US2 acceptance) by a fresh reviewer against the code",
+      "result": "all met, none at risk"
+    },
+    {
+      "what": "Full dotnet build + dotnet test",
+      "result": "0 errors; 2694 passed, 1 known GUID-fee flake (EventFormTests.DoesNotRender_FeeOrPaidFields) green on isolated re-run"
+    },
+    {
+      "what": "integration suite",
+      "command": "dotnet test tests/StageFright.Integration.Tests/ --no-build",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 54.4,
+      "result": "Test run for c:\\SourceCode\\StageFrightCommunity\\tests\\StageFright.Integration.Tests\\bin\\Debug\\net10.0\\StageFright.Integration.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:   280, Skipped:     0, Total:   280, Duration: 50 s - StageFright.Integration.Tests.dll (net10.0)",
+      "commit": "9d7d5df",
+      "tree": "97b513d4727a65843ac17f49d1bb0e9755282e2f"
     }
   ],
   "step_summaries": {
@@ -865,11 +904,11 @@
       "summary": "54 tasks: setup, a 6-wave foundational phase owning all back end, resx, DI and seed data, five story phases owning their pages and tests, and polish"
     },
     "implement": {
-      "summary": "Phase 3 (US1): PaymentForm/RecordIncome route by payment method with bank picker and reference; new Banking page and menu item; old bank-deposit page/service removed"
+      "summary": "Phase 4 (US2): V34 Petty Cash end-to-end scenario tests"
     }
   },
   "approach": "Route each receipt by payment method through a pure ReceiptRouting rule, track cheques as ReceivedItem rows, and post deposits, reversals and withdrawals as balanced journal entries through a new BankingService. One migration renames 1100 and seeds 1105, and backup moves to 1.4.0.",
-  "currentTask": "T036",
+  "currentTask": "T037",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -1257,6 +1296,13 @@
       "files": [
         "see phase 3 changes"
       ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "V34 Petty Cash scenario: upgrade rename via chart of accounts, three cash entry points route to Petty Cash, expense pay-from",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V34_PettyCashTests.cs"
+      ]
     }
   },
   "concerns": [
@@ -1311,9 +1357,13 @@
     {
       "note": "Legacy-route test checks BankingPage carries both @page routes; it does not drive the router",
       "step": "implement"
+    },
+    {
+      "note": "Older-backup restore rename (Petty Cash (own)) is tested at repository level and as an invoked call in BackupServiceTests, but there is no end-to-end restore of a pre-1.4.0 file",
+      "step": "implement"
     }
   ],
-  "last_action": "Phase 3 verified; phases 4-8 remain",
+  "last_action": "Phase 4 T037 done and verified; next is Phase 5 (US3, T038-T043)",
   "risk": {
     "tier": "high",
     "computed": "high",
