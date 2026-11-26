@@ -86,6 +86,10 @@ Use Bootstrap utility classes for spacing and flex layout (`d-flex`, `align-item
 
 Reach for a `.razor.css` isolation file only when a style is genuinely scoped to one component; everything else belongs in `app.css`.
 
+**Pages are top-aligned, never centred vertically** (issue #385). `.shell-content-inner` centres the page horizontally on wide windows (`margin: 0 auto`, issue #383) but always starts it at the top of the main pane, so a page's heading and data stay in the same place as you move between modules and tabs. Don't add vertical centring (`margin: auto`, `align-items-center` on a page wrapper, `min-height` + `justify-content-center`) to a screen that shows or edits data. Only the chrome-free `BlankLayout` notice screen and modal overlays centre their content.
+
+**Every tab in a tab group is as tall as the tallest tab** (issue #385). `app.css` lays every BlazorBootstrap `<Tabs>` pane out in the same CSS grid cell (`.tab-content { display: grid }`, `.tab-pane { grid-area: 1 / 1; visibility: hidden }`, active pane `visibility: visible`), so switching tabs never changes the group's height. This needs no per-page markup. A tab that renders its content only once it is first opened (Settings, the Setup Wizard) counts towards the height from then on. Tabs built as links to separate routes are separate pages, so each keeps its own height; top alignment keeps their tab bar fixed.
+
 ---
 
 ## Component Standards

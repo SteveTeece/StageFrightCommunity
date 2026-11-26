@@ -159,11 +159,12 @@ html, body {
     padding: 1rem 1.25rem 1rem calc(var(--sf-sidebar-w) + 1.25rem);
 }
 
-/* Centres the page in the main pane on large windows (issue #383): the auto
-   margins centre it both ways while it fits, and collapse to 0 once it
-   overflows, so a tall page still scrolls from its top rather than clipping. */
+/* Centres the page horizontally in the main pane on large windows (issue #383)
+   but keeps it at the top (issue #385): a vertically centred page moved its
+   data up and down as you switched modules and tabs, which made it harder to
+   find. */
 .shell-content-inner {
-    margin: auto;
+    margin: 0 auto;
     width: 100%;
     max-width: var(--sf-content-max-w);
 }
@@ -914,6 +915,25 @@ a {
 
 .tab-content {
     padding-top: .75rem;
+    display: grid;
+}
+
+/* Every tab in a group takes the height of the tallest (issue #385), so
+   switching tabs never makes the page jump. All panes stay laid out in the
+   same grid cell, so the cell is as tall as the tallest one, and only the
+   active pane is visible (a visibility:hidden pane is also unfocusable and
+   hidden from screen readers). This overrides Bootstrap's display:none on
+   inactive panes. A tab whose content renders only once it is first opened
+   (Settings, the Setup Wizard) counts towards the height from then on. */
+.tab-content > .tab-pane {
+    display: block;
+    grid-area: 1 / 1;
+    visibility: hidden;
+    min-width: 0;
+}
+
+.tab-content > .tab-pane.active {
+    visibility: visible;
 }
 
 /* --- Tables --- */
