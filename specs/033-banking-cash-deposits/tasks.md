@@ -10,7 +10,7 @@ Format: `- [ ] **T###** [P?] [US#] Description · path`. `[P]` means the task is
 
 ## Phase 1: Setup
 
-- [ ] **T001** Run `dotnet build -t:Rebuild` and `dotnet test` on the branch as it stands, and record the warning count and any failures as the baseline · (no file)
+- [x] **T001** Run `dotnet build -t:Rebuild` and `dotnet test` on the branch as it stands, and record the warning count and any failures as the baseline · (no file)
 
 ---
 

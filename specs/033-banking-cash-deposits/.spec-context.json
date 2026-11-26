@@ -2,8 +2,8 @@
   "workflow": "companion",
   "specName": "Banking Rework — Undeposited Funds, Petty Cash, Deposits and Cash Withdrawals",
   "branch": "033-banking-cash-deposits",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implementing",
   "history": [
     {
       "step": "specify",
@@ -67,6 +67,21 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-26T02:41:37.456Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-26T02:53:03.401Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T02:56:23.152Z"
     }
   ],
   "telemetryInstanceId": "2d0602eb-ff2b-480e-bd3e-beb0b4a6e39a",
@@ -421,5 +436,15 @@
       "summary": "54 tasks: setup, a 6-wave foundational phase owning all back end, resx, DI and seed data, five story phases owning their pages and tests, and polish"
     }
   },
-  "approach": "Route each receipt by payment method through a pure ReceiptRouting rule, track cheques as ReceivedItem rows, and post deposits, reversals and withdrawals as balanced journal entries through a new BankingService. One migration renames 1100 and seeds 1105, and backup moves to 1.4.0."
+  "approach": "Route each receipt by payment method through a pure ReceiptRouting rule, track cheques as ReceivedItem rows, and post deposits, reversals and withdrawals as balanced journal entries through a new BankingService. One migration renames 1100 and seeds 1105, and backup moves to 1.4.0.",
+  "currentTask": "T001",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Baseline: full rebuild 0 warnings 0 errors; dotnet test 2478 passed 0 failed (Core 934, UI 808, Integration 273, Reports 239, Data 195, Localization 29)",
+      "files": [
+        "(none)"
+      ]
+    }
+  }
 }
