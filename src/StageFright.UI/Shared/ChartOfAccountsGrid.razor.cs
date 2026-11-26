@@ -41,7 +41,8 @@ public partial class ChartOfAccountsGrid : ComponentBase
         if (!args.FirstRender || args.Grid is null)
             return;
 
-        args.Grid.Groups.Add(new GroupDescriptor
+        // Radzen annotates Grid as nullable but always passes the rendering grid to its own Render event.
+        args.Grid!.Groups.Add(new GroupDescriptor
         {
             Property = nameof(ChartOfAccountsGridRow.SectionOrder),
             SortOrder = SortOrder.Ascending

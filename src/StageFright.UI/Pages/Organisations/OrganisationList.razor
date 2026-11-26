@@ -1,0 +1,65 @@
+@page "/organisations"
+
+<PageTitle>@L["Organisations_List_PageTitle"]</PageTitle>
+
+<div class="page-header d-flex align-items-center justify-content-between mb-2">
+    <h1 class="h3 mb-0">@L["Organisations_List_Heading"]</h1>
+    <button id="addOrganisationButton" class="btn btn-primary btn-sm" @onclick="AddOrganisation">@L["Organisations_List_AddButton"]</button>
+</div>
+
+<div class="mb-2 d-flex align-items-center gap-2 flex-wrap">
+    <div class="input-group input-group-sm" style="max-width: 320px;">
+        <span class="input-group-text" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+            </svg>
+        </span>
+        <input id="organisationSearch" type="search" class="form-control form-control-sm"
+               placeholder="@L["Organisations_List_SearchPlaceholder"]"
+               aria-label="@L["Organisations_List_SearchAriaLabel"]"
+               @bind="_searchTerm" @bind:event="oninput" />
+    </div>
+    <div class="d-flex align-items-center gap-2 ms-auto">
+        <label for="showArchivedSwitch" class="form-label mb-0">@L["Organisations_List_ShowArchivedLabel"]</label>
+        <RadzenSwitch Name="showArchivedSwitch" @bind-Value="_showArchived" Change="@(async (bool _) => await LoadAsync())" />
+    </div>
+</div>
+
+@if (_loading)
+{
+    <p role="status" aria-live="polite">@L["Organisations_List_LoadingText"]</p>
+}
+else if (_organisations.Count == 0)
+{
+    <p class="text-muted">@L["Organisations_List_Empty"]</p>
+}
+else if (!DisplayOrganisations.Any())
+{
+    <p class="text-muted">@L["Organisations_List_NoMatch"]</p>
+}
+else
+{
+    <RadzenDataGrid Data="@DisplayOrganisations" TItem="ExternalOrganisation"
+                    AllowSorting="true" AllowPaging="true" PageSize="15"
+                    class="rz-shadow-0" RowClick="@OnRowClick">
+        <Columns>
+            <RadzenDataGridColumn TItem="ExternalOrganisation" Property="Name" Title="@L["Organisations_List_ColName"]"
+                                  SortOrder="SortOrder.Ascending">
+                <Template Context="organisation">
+                    <a id="organisationLink-@organisation.Id" href="#"
+                       class="text-decoration-none fw-semibold"
+                       @onclick:preventDefault @onclick:stopPropagation
+                       @onclick="() => ViewOrganisation(organisation.Id)">@organisation.Name</a>
+                    @if (organisation.IsDeleted)
+                    {
+                        <span class="badge text-bg-secondary ms-1">@L["Organisations_List_ArchivedBadge"]</span>
+                    }
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="ExternalOrganisation" Property="Email" Title="@L["Organisations_List_ColEmail"]" />
+            <RadzenDataGridColumn TItem="ExternalOrganisation" Property="Contacts.Count" Title="@L["Organisations_List_ColContacts"]" Width="120px">
+                <Template Context="organisation">@organisation.Contacts.Count</Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+}

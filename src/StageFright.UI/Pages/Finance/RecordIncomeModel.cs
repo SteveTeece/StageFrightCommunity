@@ -10,4 +10,5 @@ internal sealed class RecordIncomeModel
     public Guid DepositAccountId { get; set; }
     public TaxCode? TaxCode { get; set; }
     public string? Description { get; set; }
+    public Guid? ExternalOrganisationId { get; set; }
 }

@@ -84,6 +84,7 @@ public class Us2LocalizationGuardTests
         ["Shared"] = "src/StageFright.UI/Resources/Strings/SharedResource.resx",
         ["Dashboard"] = "src/StageFright.UI/Resources/Strings/DashboardResource.resx",
         ["Members"] = "src/StageFright.UI/Resources/Strings/MembersResource.resx",
+        ["Organisations"] = "src/StageFright.UI/Resources/Strings/OrganisationsResource.resx",
         ["Rehearsals"] = "src/StageFright.UI/Resources/Strings/RehearsalsResource.resx",
         ["Events"] = "src/StageFright.UI/Resources/Strings/EventsResource.resx",
         ["Finance"] = "src/StageFright.UI/Resources/Strings/FinanceResource.resx",

@@ -29,4 +29,6 @@ public sealed class BackupSnapshot
     public IReadOnlyList<Account> Accounts { get; init; } = Array.Empty<Account>();
     public SettingsEntity? Settings { get; init; }
     public IReadOnlyList<AuditTrailEntry> AuditTrailEntries { get; init; } = Array.Empty<AuditTrailEntry>();
+    public IReadOnlyList<ExternalOrganisation> ExternalOrganisations { get; init; } = Array.Empty<ExternalOrganisation>();
+    public IReadOnlyList<ExternalOrganisationContact> ExternalOrganisationContacts { get; init; } = Array.Empty<ExternalOrganisationContact>();
 }

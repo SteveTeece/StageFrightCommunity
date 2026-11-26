@@ -279,7 +279,7 @@ The system is a **layered solution**: one project per architectural layer, with 
 **Layer/Project Requirements:**
 
 - **One Project Per Layer**: `StageFright.App` (MAUI Blazor Hybrid host — composition root only, zero application logic), `StageFright.Core` (domain entities, enums, custom exceptions, service/repository contracts, module services), `StageFright.Data` (centralized DAL: `DbContext`, migrations, one repository per entity, unit of work), `StageFright.Plugins.Contracts` (extension-point interfaces, no project dependencies), `StageFright.Reports` (report pipeline), `StageFright.UI` (all Blazor UI as a Razor class library).
-- **Module Folders Inside Core**: Each business capability gets a folder at `StageFright.Core/Modules/<ModuleName>/` containing that module's services and request/response DTOs. Current modules: `Agm`, `AuditTrail`, `Dashboard`, `Events`, `Finance`, `Members`, `Rehearsals`, `Settings`.
+- **Module Folders Inside Core**: Each business capability gets a folder at `StageFright.Core/Modules/<ModuleName>/` containing that module's services and request/response DTOs. Current modules: `Agm`, `AuditTrail`, `Dashboard`, `Events`, `Finance`, `Members`, `Organisations`, `Rehearsals`, `Settings`.
 - **No MediaTr or CQRS**: Modules must NOT use MediaTr for command/query dispatch or implement CQRS patterns. Instead, use:  
   - Direct service injection and method calls  
   - Dependency-injected services for business logic  

@@ -675,7 +675,7 @@ public class BackupServiceTests : TestBase
     // --- .sfbak drift fix (spec 030): finance record types, tax fields, expanded settings ---
 
     [Fact]
-    public async Task ExportAsync_WritesSchemaVersion120()
+    public async Task Should_WriteCurrentSchemaVersion_When_Exported()
     {
         _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(BuildMinimalSnapshot());
         var svc = CreateService();
@@ -685,12 +685,152 @@ public class BackupServiceTests : TestBase
         {
             await svc.ExportAsync(path, Ct);
             var manifest = await svc.GetManifestAsync(path, Ct);
-            Assert.Equal("1.2.0", manifest.SchemaVersion);
+            Assert.Equal(BackupSchema.CurrentSchemaVersion, manifest.SchemaVersion);
+            Assert.Equal("1.3.0", manifest.SchemaVersion);
         }
         finally
         {
             if (File.Exists(path)) File.Delete(path);
         }
+    }
+
+    // --- External organisations (spec 032, FR-015) ---
+
+    [Fact]
+    public async Task Should_RoundTripOrganisationsContactsAndLinks_When_ExportedThenImported()
+    {
+        var (org, archivedOrg, contact, removedContact) = BuildOrganisationRegister();
+        var linked = BuildJournalEntry();
+        linked.ExternalOrganisationId = org.Id;
+        var unlinked = BuildJournalEntry();
+        var snapshot = new BackupSnapshot
+        {
+            ExternalOrganisations = [org, archivedOrg],
+            ExternalOrganisationContacts = [contact, removedContact],
+            JournalEntries = [linked, unlinked]
+        };
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>()).Returns(snapshot);
+        _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0]!)(Ct));
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_org_rt_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+
+            var manifest = await svc.GetManifestAsync(path, Ct);
+            Assert.Equal(2, manifest.EntityCounts["ExternalOrganisations"]);
+            Assert.Equal(2, manifest.EntityCounts["ExternalOrganisationContacts"]);
+
+            BackupSnapshot? upserted = null;
+            _backupRepo.UpsertSnapshotAsync(Arg.Do<BackupSnapshot>(s => upserted = s), Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask);
+
+            await svc.ImportAsync(path, Ct);
+
+            AssertSameOrganisation(org, upserted!.ExternalOrganisations.Single(o => o.Id == org.Id));
+            AssertSameOrganisation(archivedOrg, upserted.ExternalOrganisations.Single(o => o.Id == archivedOrg.Id));
+            AssertSameContact(contact, upserted.ExternalOrganisationContacts.Single(c => c.Id == contact.Id));
+            AssertSameContact(removedContact, upserted.ExternalOrganisationContacts.Single(c => c.Id == removedContact.Id));
+            Assert.Equal(org.Id, upserted.JournalEntries.Single(j => j.Id == linked.Id).ExternalOrganisationId);
+            Assert.Null(upserted.JournalEntries.Single(j => j.Id == unlinked.Id).ExternalOrganisationId);
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+                File.Delete(f);
+        }
+    }
+
+    [Fact]
+    public async Task Should_RestoreEmptyRegister_When_Version120FileHasNoOrganisationLists()
+    {
+        var je = BuildJournalEntry();
+        _backupRepo.GetFullSnapshotAsync(Arg.Any<CancellationToken>())
+            .Returns(new BackupSnapshot { JournalEntries = [je] });
+        _uow.ExecuteInTransactionAsync(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ((Func<CancellationToken, Task>)ci[0]!)(Ct));
+        var svc = CreateService();
+        var path = Path.Combine(Path.GetTempPath(), $"test_120_file_{Guid.NewGuid()}.sfbak");
+
+        try
+        {
+            await svc.ExportAsync(path, Ct);
+
+            // Simulate a 1.2.0 file: no organisation lists and no organisation count keys.
+            var envelope = ReadEnvelope(path);
+            envelope.SchemaVersion = "1.2.0";
+            envelope.ExternalOrganisations = null;
+            envelope.ExternalOrganisationContacts = null;
+            envelope.EntityCounts.Remove("ExternalOrganisations");
+            envelope.EntityCounts.Remove("ExternalOrganisationContacts");
+            WriteEnvelope(path, envelope);
+
+            BackupSnapshot? upserted = null;
+            _backupRepo.UpsertSnapshotAsync(Arg.Do<BackupSnapshot>(s => upserted = s), Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask);
+
+            await svc.ImportAsync(path, Ct);
+
+            Assert.Empty(upserted!.ExternalOrganisations);
+            Assert.Empty(upserted.ExternalOrganisationContacts);
+            Assert.Null(Assert.Single(upserted.JournalEntries).ExternalOrganisationId);
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+                File.Delete(f);
+        }
+    }
+
+    private static (ExternalOrganisation Org, ExternalOrganisation ArchivedOrg,
+        ExternalOrganisationContact Contact, ExternalOrganisationContact RemovedContact) BuildOrganisationRegister()
+    {
+        var created = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var deleted = new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc);
+        var org = new ExternalOrganisation
+        {
+            Id = Guid.NewGuid(), Name = "Town Hall", Address = "1 Main St", Email = "hall@example.org",
+            CreatedAt = created, UpdatedAt = created
+        };
+        var archivedOrg = new ExternalOrganisation
+        {
+            Id = Guid.NewGuid(), Name = "Old Printer", IsDeleted = true, DeletedAt = deleted, DeletedBy = "treasurer",
+            CreatedAt = created, UpdatedAt = deleted
+        };
+        var contact = new ExternalOrganisationContact
+        {
+            Id = Guid.NewGuid(), ExternalOrganisationId = org.Id, Name = "Pat Lee", Role = "Bookings",
+            Phone = "02 1234 5678", Mobile = "0400 000 000", Email = "pat@example.org",
+            CreatedAt = created, UpdatedAt = created
+        };
+        var removedContact = new ExternalOrganisationContact
+        {
+            Id = Guid.NewGuid(), ExternalOrganisationId = org.Id, Name = "Sam Roe",
+            IsDeleted = true, DeletedAt = deleted, DeletedBy = "treasurer",
+            CreatedAt = created, UpdatedAt = deleted
+        };
+        return (org, archivedOrg, contact, removedContact);
+    }
+
+    private static void AssertSameOrganisation(ExternalOrganisation expected, ExternalOrganisation actual)
+    {
+        Assert.Equal(
+            (expected.Name, expected.Address, expected.Email, expected.IsDeleted, expected.DeletedAt, expected.DeletedBy, expected.CreatedAt, expected.UpdatedAt),
+            (actual.Name, actual.Address, actual.Email, actual.IsDeleted, actual.DeletedAt, actual.DeletedBy, actual.CreatedAt, actual.UpdatedAt));
+    }
+
+    private static void AssertSameContact(ExternalOrganisationContact expected, ExternalOrganisationContact actual)
+    {
+        Assert.Equal(
+            (expected.ExternalOrganisationId, expected.Name, expected.Role, expected.Phone, expected.Mobile, expected.Email),
+            (actual.ExternalOrganisationId, actual.Name, actual.Role, actual.Phone, actual.Mobile, actual.Email));
+        Assert.Equal(
+            (expected.IsDeleted, expected.DeletedAt, expected.DeletedBy, expected.CreatedAt, expected.UpdatedAt),
+            (actual.IsDeleted, actual.DeletedAt, actual.DeletedBy, actual.CreatedAt, actual.UpdatedAt));
     }
 
     [Fact]

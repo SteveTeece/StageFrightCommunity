@@ -6,7 +6,7 @@ namespace StageFright.Core.Modules.Rehearsals;
 
 /// <summary>
 /// Navigation menu provider for the Rehearsals module.
-/// Appears second in the nav bar (DisplayOrder=2), after Members (1) and before Events (3).
+/// DisplayOrder=3 places Rehearsals after Organisations (2) and before Events (4).
 /// </summary>
 public class RehearsalMenuItemProvider : IMenuItemProvider
 {
@@ -18,7 +18,7 @@ public class RehearsalMenuItemProvider : IMenuItemProvider
     }
 
     public string ModuleName => "Rehearsals";
-    public int DisplayOrder => 2;
+    public int DisplayOrder => 3;
 
     public IReadOnlyList<MenuItem> GetMenuItems() =>
         new List<MenuItem>

@@ -423,4 +423,6 @@
   <data name="Finance_Reconciliation_ToggleError" xml:space="preserve"><value>Failed to update cleared state: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Reconciliation_FinaliseError" xml:space="preserve"><value>Failed to finalize: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Reconciliation_DeleteError" xml:space="preserve"><value>Failed to delete draft: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Organisation_Label" xml:space="preserve"><value>Organization</value><comment>Record Expense / Record Income — label on the optional external organisation picker.</comment></data>
+  <data name="Finance_Organisation_None" xml:space="preserve"><value>— None —</value><comment>First option in the organisation picker; leaves the entry unlinked.</comment></data>
 </root>

@@ -572,6 +572,102 @@ namespace StageFright.Data.Migrations
                     b.ToTable("EventTypes");
                 });
 
+            modelBuilder.Entity("StageFright.Core.Entities.ExternalOrganisation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(254)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("ExternalOrganisations");
+                });
+
+            modelBuilder.Entity("StageFright.Core.Entities.ExternalOrganisationContact", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(254)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ExternalOrganisationId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Mobile")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Role")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExternalOrganisationId");
+
+                    b.ToTable("ExternalOrganisationContacts");
+                });
+
             modelBuilder.Entity("StageFright.Core.Entities.Fee", b =>
                 {
                     b.Property<Guid>("Id")
@@ -631,11 +727,16 @@ namespace StageFright.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("ExternalOrganisationId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ExternalOrganisationId");
 
                     b.HasIndex("Type");
 
@@ -1116,6 +1217,17 @@ namespace StageFright.Data.Migrations
                     b.Navigation("EventType");
                 });
 
+            modelBuilder.Entity("StageFright.Core.Entities.ExternalOrganisationContact", b =>
+                {
+                    b.HasOne("StageFright.Core.Entities.ExternalOrganisation", "ExternalOrganisation")
+                        .WithMany("Contacts")
+                        .HasForeignKey("ExternalOrganisationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ExternalOrganisation");
+                });
+
             modelBuilder.Entity("StageFright.Core.Entities.Fee", b =>
                 {
                     b.HasOne("StageFright.Core.Entities.Member", "Member")
@@ -1132,6 +1244,16 @@ namespace StageFright.Data.Migrations
                     b.Navigation("Member");
 
                     b.Navigation("Rehearsal");
+                });
+
+            modelBuilder.Entity("StageFright.Core.Entities.JournalEntry", b =>
+                {
+                    b.HasOne("StageFright.Core.Entities.ExternalOrganisation", "ExternalOrganisation")
+                        .WithMany("JournalEntries")
+                        .HasForeignKey("ExternalOrganisationId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ExternalOrganisation");
                 });
 
             modelBuilder.Entity("StageFright.Core.Entities.ParticipationRecord", b =>
@@ -1255,6 +1377,13 @@ namespace StageFright.Data.Migrations
             modelBuilder.Entity("StageFright.Core.Entities.EventType", b =>
                 {
                     b.Navigation("Events");
+                });
+
+            modelBuilder.Entity("StageFright.Core.Entities.ExternalOrganisation", b =>
+                {
+                    b.Navigation("Contacts");
+
+                    b.Navigation("JournalEntries");
                 });
 
             modelBuilder.Entity("StageFright.Core.Entities.JournalEntry", b =>

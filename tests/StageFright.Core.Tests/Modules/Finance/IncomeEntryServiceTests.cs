@@ -21,6 +21,10 @@ public class IncomeEntryServiceTests : TestBase
     private readonly ISettingsRepository _settingsRepo = Substitute.For<ISettingsRepository>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly IExternalOrganisationRepository _organisationRepo = Substitute.For<IExternalOrganisationRepository>();
+
+    private static readonly Guid ActiveOrganisationId = Guid.NewGuid();
+    private static readonly Guid ArchivedOrganisationId = Guid.NewGuid();
 
     private static readonly Guid IncomeAccountId = Guid.NewGuid();
     private static readonly Guid ExpenseAccountId = Guid.NewGuid();
@@ -49,7 +53,12 @@ public class IncomeEntryServiceTests : TestBase
                 MakeAccount(BankAccountId, "Operating Account", AccountType.Asset, "1110", isBank: true)
             });
 
-        _sut = new IncomeEntryService(_accountRepo, _glRepo, _journalRepo, _settingsRepo, _audit, _unitOfWork, RealLocalizer.Instance);
+        _organisationRepo.GetByIdIncludingArchivedAsync(ActiveOrganisationId, Arg.Any<CancellationToken>())
+            .Returns(MakeOrganisation(ActiveOrganisationId, "Town Hall", archived: false));
+        _organisationRepo.GetByIdIncludingArchivedAsync(ArchivedOrganisationId, Arg.Any<CancellationToken>())
+            .Returns(MakeOrganisation(ArchivedOrganisationId, "Old Venue", archived: true));
+
+        _sut = new IncomeEntryService(_accountRepo, _glRepo, _journalRepo, _settingsRepo, _audit, _unitOfWork, RealLocalizer.Instance, _organisationRepo);
     }
 
     // --- GetIncomeAccountsAsync ---
@@ -375,7 +384,89 @@ public class IncomeEntryServiceTests : TestBase
             ct: Arg.Any<CancellationToken>());
     }
 
+    // --- External organisation link (spec 032 US3) ---
+
+    [Fact]
+    public async Task Should_StampOrganisationOnJournalEntry_When_ActiveOrganisationChosen()
+    {
+        var request = MakeRequest(80m);
+        request.ExternalOrganisationId = ActiveOrganisationId;
+
+        await _sut.RecordIncomeAsync(request, Ct);
+
+        await _journalRepo.Received(1).AddAsync(
+            Arg.Is<JournalEntry>(j => j!.Type == JournalEntryType.Income && j.ExternalOrganisationId == ActiveOrganisationId),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_LeaveJournalEntryUnlinkedAndSkipLookup_When_NoOrganisationChosen()
+    {
+        await _sut.RecordIncomeAsync(MakeRequest(80m), Ct);
+
+        await _journalRepo.Received(1).AddAsync(
+            Arg.Is<JournalEntry>(j => j!.ExternalOrganisationId == null),
+            Arg.Any<CancellationToken>());
+        await _organisationRepo.DidNotReceiveWithAnyArgs().GetByIdIncludingArchivedAsync(default, TestContext.Current.CancellationToken);
+    }
+
+    [Theory]
+    [InlineData(TaxCode.Taxable)]
+    [InlineData(TaxCode.TaxExempt)]
+    public async Task Should_PostIdenticalLines_When_OrganisationChosenOrNot(TaxCode code)
+    {
+        // SC-004: choosing an organisation changes no amount, account, tax code or description.
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings(isTaxApplicable: true));
+        var posted = new List<IReadOnlyList<Transaction>>();
+        _glRepo.When(r => r.AddBalancedSetAsync(Arg.Any<IReadOnlyList<Transaction>>(), Arg.Any<CancellationToken>()))
+            .Do(ci => posted.Add(ci.ArgAt<IReadOnlyList<Transaction>>(0)));
+
+        var unlinked = MakeRequest(110m);
+        unlinked.TaxCode = code;
+        var linked = MakeRequest(110m);
+        linked.TaxCode = code;
+        linked.ExternalOrganisationId = ActiveOrganisationId;
+
+        await _sut.RecordIncomeAsync(unlinked, Ct);
+        await _sut.RecordIncomeAsync(linked, Ct);
+
+        Assert.Equal(2, posted.Count);
+        Assert.Equal(Project(posted[0]), Project(posted[1]));
+    }
+
+    [Fact]
+    public async Task Should_ThrowValidationAndPostNothing_When_OrganisationArchived()
+    {
+        var request = MakeRequest(80m);
+        request.ExternalOrganisationId = ArchivedOrganisationId;
+
+        await Assert.ThrowsAsync<ValidationException>(() => _sut.RecordIncomeAsync(request, Ct));
+
+        await _unitOfWork.DidNotReceiveWithAnyArgs().ExecuteInTransactionAsync(default!, TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task Should_ThrowEntityNotFoundAndPostNothing_When_OrganisationUnknown()
+    {
+        var request = MakeRequest(80m);
+        request.ExternalOrganisationId = Guid.NewGuid();
+
+        await Assert.ThrowsAsync<EntityNotFoundException>(() => _sut.RecordIncomeAsync(request, Ct));
+
+        await _unitOfWork.DidNotReceiveWithAnyArgs().ExecuteInTransactionAsync(default!, TestContext.Current.CancellationToken);
+    }
+
     // --- Helpers ---
+
+    private static List<string> Project(IReadOnlyList<Transaction> lines) => lines
+        .Select(t => $"{t.AccountId}|{t.GLAccount}|{t.DebitAmount}|{t.CreditAmount}|{t.TaxCode}|{t.Description}|{t.Date:O}")
+        .ToList();
+
+    private static ExternalOrganisation MakeOrganisation(Guid id, string name, bool archived) => new()
+    {
+        Id = id, Name = name, IsDeleted = archived,
+        CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+    };
 
     private static RecordIncomeRequest MakeRequest(
         decimal amount, Guid? accountId = null, Guid? depositAccountId = null) =>

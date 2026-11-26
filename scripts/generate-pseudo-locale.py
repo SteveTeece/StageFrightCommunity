@@ -33,6 +33,7 @@ NEUTRAL_RESX = [
     "src/StageFright.UI/Resources/Strings/RehearsalsResource.resx",
     "src/StageFright.UI/Resources/Strings/EventsResource.resx",
     "src/StageFright.UI/Resources/Strings/FinanceResource.resx",
+    "src/StageFright.UI/Resources/Strings/OrganisationsResource.resx",
     "src/StageFright.UI/Resources/Strings/SettingsResource.resx",
     "src/StageFright.UI/Resources/Strings/SetupResource.resx",
 ]
