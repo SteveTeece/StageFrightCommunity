@@ -4,6 +4,8 @@
 
 Full field tables: `data-model.md` §1–§5. This file is the numbering + compatibility contract.
 
+> **Since spec 032 the current version is `1.3.0`.** It appends envelope members 27 `ExternalOrganisations` and 28 `ExternalOrganisationContacts`, and `JournalEntryBackupDto` member 6 `ExternalOrganisationId`, with `EntityCounts` keys to match. A `1.2.0` file still restores, with an empty register and every journal entry unlinked. See `specs/032-external-organisations/data-model.md` §5. `BackupService` now writes `BackupSchema.CurrentSchemaVersion` instead of a literal.
+
 ---
 
 ## `SchemaVersion`

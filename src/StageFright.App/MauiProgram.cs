@@ -20,6 +20,7 @@ using StageFright.Core.Modules.Dashboard;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Events;
 using StageFright.Core.Modules.Members;
+using StageFright.Core.Modules.Organisations;
 using StageFright.Core.Modules.Rehearsals;
 using StageFright.Core.Modules.Settings;
 using StageFright.Data;
@@ -159,6 +160,9 @@ public static class MauiProgram
         services.AddScoped<IPaymentRepository, PaymentRepository>();
         services.AddScoped<IGLRepository, GLRepository>();
         services.AddScoped<IJournalEntryRepository, JournalEntryRepository>();
+        // Spec 032 US3: ExpensePaymentService / IncomeEntryService validate the optional organisation link.
+        services.AddScoped<IExternalOrganisationRepository, ExternalOrganisationRepository>();
+        services.AddScoped<IExternalOrganisationContactRepository, ExternalOrganisationContactRepository>();
         services.AddScoped<IBankReconciliationRepository, BankReconciliationRepository>();
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<ISettingsRepository, SettingsRepository>();
@@ -240,6 +244,13 @@ public static class MauiProgram
 
         // Finance expansion — posting engine + money-out workflows (spec 002 US2)
         services.AddScoped<IExpensePaymentService, ExpensePaymentService>();
+        // Spec 032: the finance organisation pickers, the History tab and the DEBUG seeder's
+        // organisations and contacts. The Organisations menu provider is registered with the
+        // other menu providers below.
+        services.AddScoped<ExternalOrganisationValidationService>();
+        services.AddScoped<IExternalOrganisationService, ExternalOrganisationService>();
+        services.AddScoped<IExternalOrganisationContactService, ExternalOrganisationContactService>();
+        services.AddScoped<IOrganisationHistoryService, OrganisationHistoryService>();
         services.AddScoped<IBankDepositService, BankDepositService>();
         services.AddScoped<IGeneralJournalService, GeneralJournalService>();
         services.AddScoped<IOpeningBalanceService, OpeningBalanceService>();
@@ -257,6 +268,7 @@ public static class MauiProgram
         // Menu and dashboard providers
         services.AddSingleton<IMenuItemProvider, DashboardMenuItemProvider>();
         services.AddSingleton<IMenuItemProvider, MemberMenuItemProvider>();
+        services.AddSingleton<IMenuItemProvider, OrganisationsMenuItemProvider>();
         services.AddSingleton<IMenuItemProvider, RehearsalMenuItemProvider>();
         services.AddSingleton<IMenuItemProvider, EventsMenuItemProvider>();
         services.AddSingleton<IMenuItemProvider, FinanceMenuItemProvider>();

@@ -8,6 +8,7 @@ using StageFright.Core.Modules.AuditTrail;
 using StageFright.Core.Modules.Events;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Members;
+using StageFright.Core.Modules.Organisations;
 using StageFright.Core.Modules.Rehearsals;
 
 namespace StageFright.App.Seeding;
@@ -73,6 +74,8 @@ public class DebugDataSeeder : IDebugDataSeeder
     private readonly IBankDepositService _bankDepositService;
     private readonly IOpeningBalanceService _openingBalanceService;
     private readonly ISettingsService _settingsService;
+    private readonly IExternalOrganisationService _organisationService;
+    private readonly IExternalOrganisationContactService _organisationContactService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<DebugDataSeeder> _logger;
 
@@ -96,6 +99,8 @@ public class DebugDataSeeder : IDebugDataSeeder
         IBankDepositService bankDepositService,
         IOpeningBalanceService openingBalanceService,
         ISettingsService settingsService,
+        IExternalOrganisationService organisationService,
+        IExternalOrganisationContactService organisationContactService,
         IUnitOfWork unitOfWork,
         ILogger<DebugDataSeeder> logger)
     {
@@ -118,6 +123,8 @@ public class DebugDataSeeder : IDebugDataSeeder
         _bankDepositService = bankDepositService;
         _openingBalanceService = openingBalanceService;
         _settingsService = settingsService;
+        _organisationService = organisationService;
+        _organisationContactService = organisationContactService;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
@@ -145,6 +152,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         var membershipIncomeAccount = await _accountService.CreateAsync("Membership & Attendance Fees", AccountType.Income, ct: ct);
         var concertIncomeAccount = await _accountService.CreateAsync("Concert & Ticket Sales", AccountType.Income, ct: ct);
         var raffleIncomeAccount = await _accountService.CreateAsync("Raffle Income", AccountType.Income, ct: ct);
+        var grantsIncomeAccount = await _accountService.CreateAsync("Grants & Sponsorship", AccountType.Income, ct: ct);
         var insuranceExpense = await _accountService.CreateAsync("Insurance", AccountType.Expense, ct: ct);
         var musicalDirectorExpense = await _accountService.CreateAsync("Musical Director Fees", AccountType.Expense, ct: ct);
         var hallHireExpense = await _accountService.CreateAsync("Hall Hire", AccountType.Expense, ct: ct);
@@ -207,6 +215,9 @@ public class DebugDataSeeder : IDebugDataSeeder
         progress?.Report("Seeding historical transfers (pre-spec 009)…");
         await SeedHistoricalTransfersAsync(bankAccount, ct);
 
+        progress?.Report("Creating external organisations & contacts…");
+        var organisations = await SeedOrganisationsAsync(ct);
+
         foreach (var year in new[] { 2025, 2026 })
         {
             _logger.LogInformation("Seeding {Year}...", year);
@@ -218,13 +229,16 @@ public class DebugDataSeeder : IDebugDataSeeder
             await SeedRehearsalsAsync(year, activeMembers, attendanceProfile, bankAccount, random, ct);
 
             progress?.Report($"Seeding {year} Eisteddfod…");
-            await SeedEisteddfodAsync(year, activeMembers, eisteddfodType, eisteddfodEntryExpense, bankAccount, ct);
+            await SeedEisteddfodAsync(year, activeMembers, eisteddfodType, eisteddfodEntryExpense, bankAccount, organisations, ct);
 
             progress?.Report($"Seeding {year} annual concert…");
             await SeedConcertsAsync(year, activeMembers, performanceType, concertIncomeAccount, bankAccount, ct);
 
             progress?.Report($"Seeding {year} raffle…");
             await SeedRaffleAsync(year, raffleIncomeAccount, ct);
+
+            progress?.Report($"Seeding {year} grants & sponsorship…");
+            await SeedGrantsAndSponsorshipAsync(year, grantsIncomeAccount, bankAccount, organisations, ct);
 
             progress?.Report($"Seeding {year} AGM…");
             var agm = await SeedAgmAsync(year, activeMembers, presidentType.Id, secretaryType.Id, treasurerType.Id, random, ct);
@@ -238,8 +252,12 @@ public class DebugDataSeeder : IDebugDataSeeder
             progress?.Report($"Seeding {year} operating expenses…");
             await SeedOperatingExpensesAsync(
                 year, bankAccount, hallHireExpense, costumesExpense, musicLicensingExpense,
-                printingExpense, insuranceExpense, musicalDirectorExpense, bankFeesExpense, ct);
+                printingExpense, insuranceExpense, musicalDirectorExpense, bankFeesExpense, organisations, ct);
         }
+
+        // The printer closed down: archiving keeps its two years of linked history viewable
+        // from its History tab while hiding it from the register and the finance pickers.
+        await _organisationService.ArchiveAsync(organisations[MacleanPrinting], ct);
 
         progress?.Report("Seed complete!");
         _logger.LogInformation(
@@ -722,6 +740,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         EventType eisteddfodType,
         Account eisteddfodEntryExpense,
         Account bankAccount,
+        IReadOnlyDictionary<string, Guid> organisations,
         CancellationToken ct)
     {
         var eventDate = GetEisteddfodDate(year);
@@ -749,8 +768,9 @@ public class DebugDataSeeder : IDebugDataSeeder
             Amount = 150m,
             BankAccountId = bankAccount.Id,
             ExpenseAccountId = eisteddfodEntryExpense.Id,
-            Payee = "Eisteddfod Committee",
-            Description = $"{year} Eisteddfod entry fee"
+            Payee = EisteddfodCommittee,
+            Description = $"{year} Eisteddfod entry fee",
+            ExternalOrganisationId = organisations[EisteddfodCommittee]
         }, ct);
     }
 
@@ -919,6 +939,107 @@ public class DebugDataSeeder : IDebugDataSeeder
     }
 
     // -------------------------------------------------------------------------
+    // External organisations (spec 032)
+    // -------------------------------------------------------------------------
+
+    private const string CommunityHallCommittee = "Community Hall Committee";
+    private const string StageSupplies = "Clarence Valley Stage Supplies";
+    private const string ApraAmcos = "APRA AMCOS";
+    private const string SheetMusicPlus = "Sheet Music Plus";
+    private const string MacleanPrinting = "Maclean Printing Co";
+    private const string NfpInsurance = "NFP Insurance Australia";
+    private const string EisteddfodCommittee = "Eisteddfod Committee";
+    private const string ValleyCouncil = "Clarence Valley Council";
+    private const string BowlingClub = "Maclean Bowling Club";
+
+    /// <summary>
+    /// Seeds the organisation register (venues, suppliers, a licensing body, the council and a
+    /// sponsor) with their contacts, keyed by name so the expense and income seeders can link
+    /// entries to them. One contact is removed to exercise the soft-delete, and one organisation
+    /// ("Yamba Surf Club") has no financial history at all.
+    /// </summary>
+    private async Task<IReadOnlyDictionary<string, Guid>> SeedOrganisationsAsync(CancellationToken ct)
+    {
+        var ids = new Dictionary<string, Guid>();
+
+        async Task<Guid> AddAsync(string name, string? address, string? email,
+            params (string Name, string? Role, string? Phone, string? Mobile, string? Email)[] contacts)
+        {
+            var organisation = await _organisationService.CreateAsync(
+                new SaveExternalOrganisationRequest { Name = name, Address = address, Email = email }, ct);
+            foreach (var c in contacts)
+            {
+                await _organisationContactService.AddAsync(organisation.Id, new SaveExternalOrganisationContactRequest
+                {
+                    Name = c.Name, Role = c.Role, Phone = c.Phone, Mobile = c.Mobile, Email = c.Email
+                }, ct);
+            }
+
+            ids[name] = organisation.Id;
+            return organisation.Id;
+        }
+
+        await AddAsync(CommunityHallCommittee, "12 River Street\nMaclean NSW 2463", "bookings@communityhall.example",
+            ("Margaret Lowe", "Bookings secretary", "02 6645 1234", "0412 345 678", "margaret@communityhall.example"),
+            ("Ken Walsh", "Caretaker", null, "0423 456 789", null));
+        await AddAsync(StageSupplies, "Unit 4, 88 Prince Street\nGrafton NSW 2460", "sales@cvstagesupplies.example",
+            ("Dean Foster", "Sales manager", "02 6642 9876", null, "dean@cvstagesupplies.example"));
+        await AddAsync(ApraAmcos, "16 Mountain Street\nUltimo NSW 2007", "licensing@apraamcos.example",
+            ("Licensing desk", "Community licences", "1300 852 388", null, null));
+        await AddAsync(SheetMusicPlus, null, "orders@sheetmusicplus.example");
+        await AddAsync(MacleanPrinting, "3 Wharf Street\nMaclean NSW 2463", "jobs@macleanprinting.example",
+            ("Tony Russo", "Owner", "02 6645 2211", "0433 221 100", "tony@macleanprinting.example"));
+        var insuranceId = await AddAsync(NfpInsurance, "Level 9, 1 Collins Street\nMelbourne VIC 3000", "claims@nfpinsurance.example",
+            ("Priya Nair", "Account manager", "03 9000 4455", "0400 112 233", "priya.nair@nfpinsurance.example"));
+        await AddAsync(EisteddfodCommittee, "PO Box 77\nMaclean NSW 2463", "entries@macleaneisteddfod.example",
+            ("Helen Brooks", "Entries secretary", null, "0455 667 788", "helen@macleaneisteddfod.example"));
+        await AddAsync(ValleyCouncil, "2 Prince Street\nGrafton NSW 2460", "council@clarence.example",
+            ("Sam Patel", "Community grants officer", "02 6643 0200", null, "grants@clarence.example"));
+        await AddAsync(BowlingClub, "Cnr Woodford & Grafton Streets\nMaclean NSW 2463", "manager@macleanbowls.example",
+            ("Rob Green", "Club manager", "02 6645 3300", "0466 778 899", "rob@macleanbowls.example"));
+        await AddAsync("Yamba Surf Club", "Marine Parade\nYamba NSW 2464", null,
+            ("Jess Carter", "Functions coordinator", null, "0477 889 900", "functions@yambasurf.example"));
+
+        // The insurer's previous broker moved on: removed, so hidden but kept in the data (FR-009).
+        var formerBroker = await _organisationContactService.AddAsync(insuranceId, new SaveExternalOrganisationContactRequest
+        {
+            Name = "Gary Holt", Role = "Broker (former)", Phone = "03 9000 4400"
+        }, ct);
+        await _organisationContactService.RemoveAsync(formerBroker.Id, ct);
+
+        return ids;
+    }
+
+    /// <summary>
+    /// A council community-arts grant each March and a bowling-club concert sponsorship each May,
+    /// both linked income entries, so organisations carry "Total received" history as well as
+    /// "Total paid" across both seeded years.
+    /// </summary>
+    private async Task SeedGrantsAndSponsorshipAsync(
+        int year, Account grantsIncomeAccount, Account bankAccount,
+        IReadOnlyDictionary<string, Guid> organisations, CancellationToken ct)
+    {
+        async Task ReceiveAsync(DateTime date, decimal amount, string organisation, string description)
+        {
+            if (date > SeedCurrentDate)
+                return; // not received yet
+
+            await _incomeEntryService.RecordIncomeAsync(new RecordIncomeRequest
+            {
+                Date = date,
+                Amount = amount,
+                AccountId = grantsIncomeAccount.Id,
+                DepositAccountId = bankAccount.Id,
+                Description = description,
+                ExternalOrganisationId = organisations[organisation]
+            }, ct);
+        }
+
+        await ReceiveAsync(Utc(year, 3, 16), year == 2025 ? 750m : 800m, ValleyCouncil, $"{year} community arts grant");
+        await ReceiveAsync(Utc(year, 5, 12), 300m, BowlingClub, $"{year} concert sponsorship");
+    }
+
+    // -------------------------------------------------------------------------
     // Operating expenses
     // -------------------------------------------------------------------------
 
@@ -932,6 +1053,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         Account insuranceExpense,
         Account musicalDirectorExpense,
         Account bankFeesExpense,
+        IReadOnlyDictionary<string, Guid> organisations,
         CancellationToken ct)
     {
         async Task PayAsync(DateTime date, decimal amount, Account account, string payee, string description)
@@ -939,6 +1061,8 @@ public class DebugDataSeeder : IDebugDataSeeder
             if (date > SeedCurrentDate)
                 return; // not paid yet
 
+            // A payee that is a registered organisation is linked to it (spec 032 FR-010); the
+            // bank and the musical director stay plain free-text payees, as unlinked entries.
             await _expensePaymentService.RecordExpenseAsync(new RecordExpenseRequest
             {
                 Date = date,
@@ -946,12 +1070,13 @@ public class DebugDataSeeder : IDebugDataSeeder
                 BankAccountId = bankAccount.Id,
                 ExpenseAccountId = account.Id,
                 Payee = payee,
-                Description = description
+                Description = description,
+                ExternalOrganisationId = organisations.TryGetValue(payee, out var organisationId) ? organisationId : null
             }, ct);
         }
 
         var termStarts = GetTermStartMondays(year);
-        for (var i = 0; i < termStarts.Count; i++)
+        for (var i = 0; i < termStarts.Length; i++)
             await PayAsync(termStarts[i].AddDays(-3), 150m, hallHireExpense, "Community Hall Committee", $"Term {i + 1} hall hire {year}");
 
         await PayAsync(Utc(year, 2, 15), 120m, costumesExpense, "Clarence Valley Stage Supplies", $"Costume repairs {year}");
@@ -989,7 +1114,7 @@ public class DebugDataSeeder : IDebugDataSeeder
     /// (each term run out to exactly 10 weekly rehearsals, with 1.5–2 week term breaks and
     /// a ~6-week end-of-year break).
     /// </summary>
-    private static IReadOnlyList<DateTime> GetTermStartMondays(int year) => year switch
+    private static DateTime[] GetTermStartMondays(int year) => year switch
     {
         2025 => (DateTime[])[Utc(2025, 2, 3), Utc(2025, 4, 28), Utc(2025, 7, 21), Utc(2025, 10, 13)],
         2026 => (DateTime[])[Utc(2026, 2, 2), Utc(2026, 4, 28), Utc(2026, 7, 21), Utc(2026, 10, 13)],

@@ -1,0 +1,77 @@
+@page "/organisations/{Id:guid}/contacts"
+
+<PageTitle>@L["Organisations_Contacts_PageTitle"]</PageTitle>
+
+@if (_loading)
+{
+    <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
+}
+else if (_organisation is null)
+{
+    <div class="alert alert-warning py-1 mb-2 small">@L["Organisations_Detail_NotFound"]</div>
+}
+else
+{
+    <div class="page-header d-flex align-items-center gap-2 mb-2">
+        <h1 class="h3 mb-0">@_organisation.Name</h1>
+        @if (_organisation.IsDeleted)
+        {
+            <span class="badge text-bg-secondary">@L["Organisations_Detail_ArchivedBadge"]</span>
+        }
+    </div>
+
+    <OrganisationTabs Id="Id" Active="@OrganisationTabs.ContactsTab" />
+
+    <div class="d-flex align-items-center justify-content-between mb-2">
+        <h2 class="h5 mb-0">@L["Organisations_Contacts_Heading"]</h2>
+        @if (CanEdit && !_editorOpen)
+        {
+            <button id="addContactButton" class="btn btn-primary btn-sm" @onclick="() => OpenEditor(null)">
+                @L["Organisations_Contacts_AddButton"]
+            </button>
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <div id="organisationContactsError" class="alert alert-danger py-1 mb-2 small" role="alert">@_error</div>
+    }
+
+    @if (_editorOpen)
+    {
+        <ContactEditor @key="_editorKey" OrganisationId="Id" Contact="_editing"
+                       OnSaved="OnContactSavedAsync" OnCancelled="CloseEditor" />
+    }
+
+    @if (_organisation.Contacts.Count == 0)
+    {
+        <p class="text-muted">@L["Organisations_Contacts_Empty"]</p>
+    }
+    else
+    {
+        <RadzenDataGrid Data="@_organisation.Contacts" TItem="ExternalOrganisationContact"
+                        AllowSorting="true" AllowPaging="true" PageSize="15" class="rz-shadow-0">
+            <Columns>
+                <RadzenDataGridColumn TItem="ExternalOrganisationContact" Property="Name" Title="@L["Organisations_Contacts_ColName"]"
+                                      SortOrder="SortOrder.Ascending" />
+                <RadzenDataGridColumn TItem="ExternalOrganisationContact" Property="Role" Title="@L["Organisations_Contacts_ColRole"]" />
+                <RadzenDataGridColumn TItem="ExternalOrganisationContact" Property="Phone" Title="@L["Organisations_Contacts_ColPhone"]" />
+                <RadzenDataGridColumn TItem="ExternalOrganisationContact" Property="Mobile" Title="@L["Organisations_Contacts_ColMobile"]" />
+                <RadzenDataGridColumn TItem="ExternalOrganisationContact" Property="Email" Title="@L["Organisations_Contacts_ColEmail"]" />
+                @if (CanEdit)
+                {
+                    <RadzenDataGridColumn TItem="ExternalOrganisationContact" Sortable="false" Width="170px">
+                        <Template Context="contact">
+                            <div class="d-flex gap-1">
+                                <button id="editContact-@contact.Id" class="btn btn-outline-secondary btn-sm"
+                                        @onclick="() => OpenEditor(contact)">@L["Organisations_Contacts_EditButton"]</button>
+                                <button id="removeContact-@contact.Id" class="btn btn-outline-danger btn-sm"
+                                        @onclick="() => RemoveAsync(contact)">@L["Organisations_Contacts_RemoveButton"]</button>
+                            </div>
+                        </Template>
+                    </RadzenDataGridColumn>
+                }
+            </Columns>
+        </RadzenDataGrid>
+    }
+}

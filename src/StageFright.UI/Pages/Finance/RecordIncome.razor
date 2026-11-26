@@ -98,6 +98,18 @@ else
                                 </div>
                             }
 
+                            <div class="col-md-4">
+                                <label class="form-label" for="incomeOrganisation">@L["Finance_Organisation_Label"]</label>
+                                <InputSelect id="incomeOrganisation" class="form-select form-select-sm"
+                                             @bind-Value="_form.ExternalOrganisationId">
+                                    <option value="">@L["Finance_Organisation_None"]</option>
+                                    @foreach (var organisation in _organisations)
+                                    {
+                                        <option value="@organisation.Id">@organisation.Name</option>
+                                    }
+                                </InputSelect>
+                            </div>
+
                             <div class="col-12">
                                 <label class="form-label" for="description">@L["Finance_Common_DescriptionLabel"]</label>
                                 <InputTextArea id="description" class="form-control form-control-sm" rows="2"

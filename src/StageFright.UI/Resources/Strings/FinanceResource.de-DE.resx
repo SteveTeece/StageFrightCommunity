@@ -243,4 +243,6 @@
   <data name="Finance_Reconciliation_ToggleError" xml:space="preserve"><value>Der Ausgleichsstatus konnte nicht aktualisiert werden: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Reconciliation_FinaliseError" xml:space="preserve"><value>Abschluss nicht möglich: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Reconciliation_DeleteError" xml:space="preserve"><value>Entwurf konnte nicht gelöscht werden: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Finance_Organisation_Label" xml:space="preserve"><value>Organisation</value><comment>Record Expense / Record Income — label on the optional external organisation picker.</comment></data>
+  <data name="Finance_Organisation_None" xml:space="preserve"><value>— Keine —</value><comment>First option in the organisation picker; leaves the entry unlinked.</comment></data>
 </root>

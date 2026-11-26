@@ -26,6 +26,7 @@ public class FinancePageTests : LocalizedTestContext
     private readonly IAccountService _accountService = Substitute.For<IAccountService>();
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
     private readonly IExpensePaymentService _expensePaymentService = Substitute.For<IExpensePaymentService>();
+    private readonly IExternalOrganisationService _organisationService = Substitute.For<IExternalOrganisationService>();
 
     public FinancePageTests()
     {
@@ -36,6 +37,7 @@ public class FinancePageTests : LocalizedTestContext
         Services.AddSingleton(_accountService);
         Services.AddSingleton(_settingsService);
         Services.AddSingleton(_expensePaymentService);
+        Services.AddSingleton(_organisationService);
 
         _memberBalanceService.GetAllMemberBalancesAsync(Arg.Any<CancellationToken>())
             .Returns(new List<MemberBalance>());

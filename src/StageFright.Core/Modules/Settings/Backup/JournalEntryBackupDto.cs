@@ -12,4 +12,5 @@ public class JournalEntryBackupDto
     [ProtoMember(3)] public DateTime Date { get; set; }
     [ProtoMember(4)] public string? Description { get; set; }
     [ProtoMember(5)] public DateTime CreatedAt { get; set; }
+    [ProtoMember(6)] public Guid? ExternalOrganisationId { get; set; }
 }

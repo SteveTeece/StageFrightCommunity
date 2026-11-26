@@ -104,6 +104,7 @@ public partial class ShellLayout : LayoutComponentBase, IDisposable
         {
             "dashboard" => "icon-dashboard",
             "members" => "icon-members",
+            "organisations" => "icon-organisations",
             "finance" => "icon-finance",
             "rehearsals" => "icon-rehearsals",
             "events" => "icon-events",

@@ -281,10 +281,10 @@ public sealed class ClosedPeriodLockTests : IAsyncLifetime
         new(new AccountRepository(_db), Gl(), new JournalEntryRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance);
 
     private ExpensePaymentService BuildExpenseService() =>
-        new(new AccountRepository(_db), Gl(), new JournalEntryRepository(_db), new SettingsRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance);
+        new(new AccountRepository(_db), Gl(), new JournalEntryRepository(_db), new SettingsRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance, new ExternalOrganisationRepository(_db));
 
     private IncomeEntryService BuildIncomeService() =>
-        new(new AccountRepository(_db), Gl(), new JournalEntryRepository(_db), new SettingsRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance);
+        new(new AccountRepository(_db), Gl(), new JournalEntryRepository(_db), new SettingsRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance, new ExternalOrganisationRepository(_db));
 
     private BankDepositService BuildBankDepositService() =>
         new(new AccountRepository(_db), Gl(), new JournalEntryRepository(_db), Audit(), new UnitOfWork(_db), RealLocalizer.Instance);

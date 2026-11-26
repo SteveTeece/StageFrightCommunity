@@ -26,7 +26,7 @@ user-facing string lives and how the pieces fit.
 
 ## 2. Where the resource files live
 
-Text is grouped into a dozen **area** files (not one file per screen). Each area has a marker
+Text is grouped into thirteen **area** files (not one file per screen). Each area has a marker
 class `<Name>Resource.cs` and, beside it, the neutral `<Name>Resource.resx` plus any
 `<Name>Resource.<culture>.resx` translations.
 
@@ -35,6 +35,7 @@ class `<Name>Resource.cs` and, beside it, the neutral `<Name>Resource.resx` plus
 | `SharedResource` | `src/StageFright.UI/Resources/Strings/` | Cross-cutting words used everywhere — Save, Cancel, Close, Yes, No, "Loading…", "Actions", "Status". |
 | `DashboardResource` | `src/StageFright.UI/Resources/Strings/` | The Dashboard page and every dashboard tile caption. |
 | `MembersResource` | `src/StageFright.UI/Resources/Strings/` | All Members screens and components. |
+| `OrganisationsResource` | `src/StageFright.UI/Resources/Strings/` | The external-organisations register: list, detail, contacts and financial-history screens (spec 032). |
 | `RehearsalsResource` | `src/StageFright.UI/Resources/Strings/` | All Rehearsals screens and the attendance grid. |
 | `EventsResource` | `src/StageFright.UI/Resources/Strings/` | Events and AGM screens. |
 | `FinanceResource` | `src/StageFright.UI/Resources/Strings/` | All Finance screens. |
@@ -66,7 +67,7 @@ language catalog and startup resolution live in `src/StageFright.Core/Modules/Lo
    `de-DE` (German). Region-specific is preferred when the number/date formatting differs.
 2. For **every** neutral `.resx` in the table above, make a copy in the **same folder** named
    `<Marker>.<culture>.resx`. For French that is `SharedResource.fr-FR.resx`,
-   `MembersResource.fr-FR.resx`, … `ReportsResource.fr-FR.resx` — twelve files.
+   `MembersResource.fr-FR.resx`, … `ReportsResource.fr-FR.resx` — thirteen files.
 3. In each copy, translate the **`<value>`** of every `<data name="…">` entry. Do **not** change
    the `name`, and keep the `<comment>` (it documents the placeholders — see §4.2).
 4. Rebuild the solution (`dotnet build`). The build compiles each `.resx` into a satellite

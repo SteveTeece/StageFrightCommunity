@@ -40,4 +40,26 @@ public class JournalEntryRepository : IJournalEntryRepository
     {
         return await _db.JournalEntries.AnyAsync(j => j.Type == type, ct);
     }
+
+    public async Task<IReadOnlyList<JournalEntry>> GetByExternalOrganisationAsync(
+        Guid externalOrganisationId, CancellationToken ct = default)
+    {
+        try
+        {
+            // Filtered on the FK column, never through an Include of the organisation, so an
+            // archived organisation's entries are still returned (data-model §3).
+            return await _db.JournalEntries
+                .AsNoTracking()
+                .Include(j => j.Transactions)
+                    .ThenInclude(t => t.Account)
+                .Where(j => j.ExternalOrganisationId == externalOrganisationId)
+                .OrderByDescending(j => j.Date)
+                .ThenByDescending(j => j.CreatedAt)
+                .ToListAsync(ct);
+        }
+        catch (Exception ex) when (ex is not DataAccessException and not OperationCanceledException)
+        {
+            throw new DataAccessException(ex.Message, nameof(JournalEntry), nameof(GetByExternalOrganisationAsync), null, ex);
+        }
+    }
 }

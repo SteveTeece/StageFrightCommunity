@@ -61,7 +61,7 @@ public class MenuItem
 }
 ```
 
-Rendering order: Dashboard (core, always first) → module items by provider DisplayOrder (Members=1, Rehearsals=2, Events=3, Finance=4, Reports=5) → plugin items → Settings (core, always last). Route prefixes are module-owned; conflicts are a registration error (logged, later registrant skipped).
+Rendering order: Dashboard (core, always first) → module items by provider DisplayOrder (Members=1, Organisations=2, Rehearsals=3, Events=4, Finance=5, Reports=6 — spec 032 inserted Organisations at 2 and shifted the rest up by one) → plugin items → Settings (core, always last). Route prefixes are module-owned; conflicts are a registration error (logged, later registrant skipped).
 
 ## IDataAccessProvider (FR-042/FR-043, NFR-017)
 

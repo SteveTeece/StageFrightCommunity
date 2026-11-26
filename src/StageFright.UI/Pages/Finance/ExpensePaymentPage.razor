@@ -111,6 +111,19 @@
                                     </div>
                                 }
 
+                                <div class="col-md-4">
+                                    <label class="form-label" for="expenseOrganisation">@L["Finance_Organisation_Label"]</label>
+                                    <InputSelect id="expenseOrganisation" class="form-select form-select-sm"
+                                                 @bind-Value="_form.ExternalOrganisationId"
+                                                 @bind-Value:after="OnOrganisationChanged">
+                                        <option value="">@L["Finance_Organisation_None"]</option>
+                                        @foreach (var organisation in _organisations)
+                                        {
+                                            <option value="@organisation.Id">@organisation.Name</option>
+                                        }
+                                    </InputSelect>
+                                </div>
+
                                 <div class="col-md-8">
                                     <label class="form-label" for="payee">@L["Finance_Expense_PayeeLabel"]</label>
                                     <InputText id="payee" class="form-control form-control-sm"

@@ -46,6 +46,7 @@ public class Us1LocalizationGuardTests
         ["Validation"] = "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx",
         ["Enum"] = "src/StageFright.Core/Modules/Localization/Resources/EnumsResource.resx",
         ["Members"] = "src/StageFright.UI/Resources/Strings/MembersResource.resx",
+        ["Organisations"] = "src/StageFright.UI/Resources/Strings/OrganisationsResource.resx",
         ["Shared"] = "src/StageFright.UI/Resources/Strings/SharedResource.resx",
     };
 

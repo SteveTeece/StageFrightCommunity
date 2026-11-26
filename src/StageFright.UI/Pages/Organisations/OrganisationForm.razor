@@ -1,0 +1,68 @@
+@page "/organisations/new"
+@page "/organisations/{Id:guid}/edit"
+
+<PageTitle>@Heading</PageTitle>
+
+<div class="page-header mb-2">
+    <h1 class="h3">@Heading</h1>
+</div>
+
+@if (_loading)
+{
+    <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
+}
+else if (_notFound)
+{
+    <div class="alert alert-warning py-1 mb-2 small">@L["Organisations_Detail_NotFound"]</div>
+}
+else
+{
+    <EditForm Model="_request" OnSubmit="SaveAsync">
+        <div class="row g-2 mb-2">
+
+            <div class="col-md-6">
+                <label class="form-label" for="organisationName">@L["Organisations_Form_NameLabel"] <span aria-hidden="true">*</span></label>
+                <InputText id="organisationName" class="@InputClass("Name")" @bind-Value="_request.Name" />
+                @if (_errors.TryGetValue("Name", out var nameError))
+                {
+                    <div class="invalid-feedback">@nameError</div>
+                }
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label" for="organisationEmail">@L["Organisations_Form_EmailLabel"]</label>
+                <InputText id="organisationEmail" type="email" class="@InputClass("Email")"
+                           aria-describedby="organisationEmailHelp" @bind-Value="_request.Email" />
+                @if (_errors.TryGetValue("Email", out var emailError))
+                {
+                    <div class="invalid-feedback">@emailError</div>
+                }
+                <div id="organisationEmailHelp" class="form-text">@L["Organisations_Form_EmailHelp"]</div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label" for="organisationAddress">@L["Organisations_Form_AddressLabel"]</label>
+                <InputTextArea id="organisationAddress" rows="4" class="@InputClass("Address")" @bind-Value="_request.Address" />
+                @if (_errors.TryGetValue("Address", out var addressError))
+                {
+                    <div class="invalid-feedback">@addressError</div>
+                }
+            </div>
+
+        </div>
+
+        @if (!string.IsNullOrEmpty(_formError))
+        {
+            <div id="organisationFormError" class="alert alert-danger py-1 mb-2 small" role="alert">@_formError</div>
+        }
+
+        <div class="d-flex gap-2">
+            <button id="saveOrganisationButton" type="submit" class="btn btn-primary btn-sm" disabled="@_saving">
+                @L["Organisations_Form_SaveButton"]
+            </button>
+            <button id="cancelOrganisationButton" type="button" class="btn btn-outline-secondary btn-sm" @onclick="Cancel">
+                @L["Organisations_Form_CancelButton"]
+            </button>
+        </div>
+    </EditForm>
+}

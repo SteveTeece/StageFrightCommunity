@@ -8,7 +8,7 @@ namespace StageFright.UI.Modules.Reports;
 /// <summary>
 /// Contributes the Reports navigation group. Each registered report is a
 /// sub-item, mirroring FinanceMenuItemProvider's expandable-group pattern.
-/// DisplayOrder=5 places Reports after Finance and before Settings.
+/// DisplayOrder=6 places Reports after Finance (5) and before Settings (999).
 /// Individual report names come from each provider's own <c>ReportName</c>
 /// (localized via <c>ReportsResource</c> — spec 027 T039); this provider only
 /// owns the group's own <c>Title</c>/<c>ShortLabel</c>.
@@ -25,7 +25,7 @@ public class ReportMenuItemProvider : IMenuItemProvider
     }
 
     public string ModuleName => "Reports";
-    public int DisplayOrder => 5;
+    public int DisplayOrder => 6;
 
     public IReadOnlyList<MenuItem> GetMenuItems()
     {

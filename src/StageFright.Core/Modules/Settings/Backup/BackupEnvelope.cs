@@ -51,6 +51,12 @@ public class BackupEnvelope
     /// <summary>Reconciliation cleared-line join rows. Added in schema 1.2.0; absent in older files.</summary>
     [ProtoMember(26)] public List<ReconciliationLineBackupDto>? ReconciliationLines { get; set; }
 
+    /// <summary>External organisations, archived included. Added in schema 1.3.0; absent in older files.</summary>
+    [ProtoMember(27)] public List<ExternalOrganisationBackupDto>? ExternalOrganisations { get; set; }
+
+    /// <summary>Organisation contacts, removed included. Added in schema 1.3.0; absent in older files.</summary>
+    [ProtoMember(28)] public List<ExternalOrganisationContactBackupDto>? ExternalOrganisationContacts { get; set; }
+
     /// <summary>Per-entity record counts for validation and display. Keys match collection property names.</summary>
     [ProtoMember(30)] public Dictionary<string, int> EntityCounts { get; set; } = new();
 }
