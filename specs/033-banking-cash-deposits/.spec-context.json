@@ -2,8 +2,8 @@
   "workflow": "companion",
   "specName": "Banking Rework — Undeposited Funds, Petty Cash, Deposits and Cash Withdrawals",
   "branch": "033-banking-cash-deposits",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -46,6 +46,27 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-26T02:36:13.686Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-26T02:36:59.440Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T02:41:36.771Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T02:41:37.456Z"
     }
   ],
   "telemetryInstanceId": "2d0602eb-ff2b-480e-bd3e-beb0b4a6e39a",
@@ -143,76 +164,223 @@
   ],
   "coverage": {
     "FR-001": {
-      "title": "Undeposited Funds system asset account, auto-created, not deletable, not a bank account"
+      "title": "Undeposited Funds system asset account, not deletable or a bank account",
+      "tasks": [
+        "T003",
+        "T006",
+        "T010",
+        "T013",
+        "T015",
+        "T019",
+        "T020"
+      ]
     },
     "FR-002": {
-      "title": "Cash on Hand renamed Petty Cash, keeping number, history and balance"
+      "title": "Cash on Hand renamed Petty Cash, keeps number, history, balance",
+      "tasks": [
+        "T006",
+        "T009",
+        "T013",
+        "T015",
+        "T026",
+        "T037"
+      ]
     },
     "FR-003": {
-      "title": "Member payments routed by method: cash to Petty Cash, cheque/other to Undeposited Funds, card/EFT to chosen bank"
+      "title": "Member payments route by payment method",
+      "tasks": [
+        "T008",
+        "T017",
+        "T027",
+        "T028",
+        "T032",
+        "T037"
+      ]
     },
     "FR-004": {
-      "title": "Income entry asks how money was received and routes by the same rules"
+      "title": "Income entry asks payment method and routes by FR-003 rules",
+      "tasks": [
+        "T008",
+        "T018",
+        "T027",
+        "T029",
+        "T033",
+        "T037"
+      ]
     },
     "FR-005": {
-      "title": "Rehearsal cash fee payments go to Petty Cash"
+      "title": "Rehearsal cash fees go to Petty Cash",
+      "tasks": [
+        "T026",
+        "T037"
+      ]
     },
     "FR-006": {
-      "title": "Optional cheque reference shown wherever the cheque is listed"
+      "title": "Optional cheque reference shown wherever the cheque is listed",
+      "tasks": [
+        "T002",
+        "T017",
+        "T018",
+        "T027",
+        "T028"
+      ]
     },
     "FR-007": {
-      "title": "Banking menu item replaces Record Bank Deposit, opening the Banking screen"
+      "title": "Banking menu item and screen replace Record Bank Deposit",
+      "tasks": [
+        "T009",
+        "T030",
+        "T031",
+        "T034",
+        "T035",
+        "T036"
+      ]
     },
     "FR-008": {
-      "title": "Awaiting-deposit list shows date, payer, reference, amount and total"
+      "title": "Awaiting list shows date, payer, reference, amount and total",
+      "tasks": [
+        "T014",
+        "T016",
+        "T027",
+        "T030",
+        "T034"
+      ]
     },
     "FR-009": {
-      "title": "Record a deposit of selected cheques plus optional cash into one bank account"
+      "title": "Record a deposit of selected cheques plus optional cash",
+      "tasks": [
+        "T021",
+        "T038",
+        "T043"
+      ]
     },
     "FR-010": {
-      "title": "Deposit validation: non-empty, cash within Petty Cash balance, cheques still awaiting, date not before receipt"
+      "title": "Deposit refusal rules incl. cash available",
+      "tasks": [
+        "T021",
+        "T038",
+        "T039"
+      ]
     },
     "FR-011": {
-      "title": "Running deposit total split into cash and cheques"
+      "title": "Running total split into cash and cheques",
+      "tasks": [
+        "T039",
+        "T040",
+        "T041",
+        "T043"
+      ]
     },
     "FR-012": {
-      "title": "Deposit posts one balanced all-or-nothing entry and marks cheques deposited"
+      "title": "Deposit posts in one balanced all-or-nothing entry",
+      "tasks": [
+        "T021",
+        "T038"
+      ]
     },
     "FR-013": {
-      "title": "Each deposit is a single reconciliation line for its full total"
+      "title": "Deposit is one reconciliation line",
+      "tasks": [
+        "T021",
+        "T038"
+      ]
     },
     "FR-014": {
-      "title": "Record a cash withdrawal from a bank account into Petty Cash"
+      "title": "Record a cash withdrawal into Petty Cash",
+      "tasks": [
+        "T021",
+        "T044",
+        "T045",
+        "T046"
+      ]
     },
     "FR-015": {
-      "title": "Banking history of deposits and withdrawals with deposit detail"
+      "title": "Banking history and deposit detail",
+      "tasks": [
+        "T021",
+        "T030",
+        "T034",
+        "T047",
+        "T048",
+        "T049"
+      ]
     },
     "FR-016": {
-      "title": "Reverse a deposit once: opposite entries, cheques back to awaiting, marked reversed"
+      "title": "Reverse a deposit once, with reconciliation rules",
+      "tasks": [
+        "T014",
+        "T021",
+        "T047",
+        "T048",
+        "T049"
+      ]
     },
     "FR-017": {
-      "title": "Mistaken withdrawal corrected by depositing the cash back"
+      "title": "Withdrawal corrected by depositing the cash back",
+      "tasks": [
+        "T044"
+      ]
     },
     "FR-018": {
-      "title": "Deposits, withdrawals and reversals respect closed financial periods"
+      "title": "Closed-period rule for deposits, withdrawals, reversals",
+      "tasks": [
+        "T021",
+        "T038",
+        "T044",
+        "T047"
+      ]
     },
     "FR-019": {
-      "title": "Audit trail entry for every deposit, withdrawal and reversal"
+      "title": "Audit entry for every banking posting",
+      "tasks": [
+        "T021",
+        "T038",
+        "T044",
+        "T047"
+      ]
     },
     "FR-020": {
-      "title": "Existing financial records are not changed or reclassified"
+      "title": "Existing records not changed or reclassified",
+      "tasks": [
+        "T015",
+        "T037"
+      ]
     },
     "FR-021": {
-      "title": "Historical bank deposit and transfer entries still report correctly"
+      "title": "Historical deposit and transfer entries still report correctly",
+      "tasks": [
+        "T005",
+        "T023"
+      ]
     },
     "FR-022": {
-      "title": "Backup includes and restores the new banking records; older backups still restore"
+      "title": "Backup 1.4.0 includes banking records; older backups restore",
+      "tasks": [
+        "T022"
+      ]
     },
     "FR-023": {
-      "title": "New text fully translated; amounts use configured currency"
+      "title": "All new text translated; amounts in configured currency",
+      "tasks": [
+        "T007",
+        "T009",
+        "T053",
+        "T054"
+      ]
     },
     "FR-024": {
-      "title": "Debug sample data covers 2+ years of the new banking flows, balanced"
+      "title": "Two years of banking seed data, balanced",
+      "tasks": [
+        "T025"
+      ]
+    },
+    "FR-025": {
+      "title": "Organisation link stays on the receipt only",
+      "tasks": [
+        "T018",
+        "T027",
+        "T047"
+      ]
     }
   },
   "classification": {
@@ -248,6 +416,9 @@
     "plan": {
       "summary": "Plan, research and data model written for the banking rework",
       "key_finding": "Restore upserts by id and never deletes, so an old backup reverts the Petty Cash name but keeps Undeposited Funds"
+    },
+    "tasks": {
+      "summary": "54 tasks: setup, a 6-wave foundational phase owning all back end, resx, DI and seed data, five story phases owning their pages and tests, and polish"
     }
   },
   "approach": "Route each receipt by payment method through a pure ReceiptRouting rule, track cheques as ReceivedItem rows, and post deposits, reversals and withdrawals as balanced journal entries through a new BankingService. One migration renames 1100 and seeds 1105, and backup moves to 1.4.0."
