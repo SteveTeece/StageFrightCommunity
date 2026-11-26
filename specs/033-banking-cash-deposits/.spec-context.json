@@ -1042,16 +1042,13 @@
     },
     {
       "what": "banking UI",
-      "command": "dotnet test tests/StageFright.UI.Tests/ --no-build --filter FullyQualifiedName~DepositPage|FullyQualifiedName~BankingPageTests",
+      "command": "dotnet test tests/StageFright.UI.Tests/ --no-build --filter \"FullyQualifiedName~DepositPage|FullyQualifiedName~BankingPageTests\"",
       "source": "derived",
-      "exitCode": 255,
-      "durationSeconds": 0.1,
-      "result": "'FullyQualifiedName~BankingPageTests' is not recognized as an internal or external command, · operable program or batch file.",
-      "warnings": [
-        "exited 255"
-      ],
-      "commit": "92f0773",
-      "tree": "09b40c076ae3cd5100ae104e8bc1a1d8569e4aa3"
+      "exitCode": 0,
+      "durationSeconds": 9.7,
+      "result": "Test run for c:\\SourceCode\\StageFrightCommunity\\tests\\StageFright.UI.Tests\\bin\\Debug\\net10.0\\StageFright.UI.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:    34, Skipped:     0, Total:    34, Duration: 5 s - StageFright.UI.Tests.dll (net10.0)",
+      "commit": "b0d0093",
+      "tree": "3a546cfe86a3d607bfcff606511e59896462d244"
     }
   ],
   "step_summaries": {
