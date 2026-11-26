@@ -2,8 +2,8 @@
   "workflow": "companion",
   "specName": "Banking Rework — Undeposited Funds, Petty Cash, Deposits and Cash Withdrawals",
   "branch": "033-banking-cash-deposits",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,34 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-26T01:36:08.360Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-26T02:25:24.294Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T02:34:58.009Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T02:36:12.395Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-26T02:36:13.686Z"
     }
   ],
   "telemetryInstanceId": "2d0602eb-ff2b-480e-bd3e-beb0b4a6e39a",
@@ -40,6 +68,55 @@
       "id": "spec-question-3",
       "by": "you",
       "at": "2026-11-26T01:33:40.309Z"
+    },
+    {
+      "decision": "Undeposited Funds is system account 1105 with id ...0008, not a bank account",
+      "why": "1101-1109 are never auto-assigned so the unique AccountNumber index cannot collide; IsSystem keeps it out of organisation history",
+      "rejected": "a number from 1110 up, which user bank accounts can already hold",
+      "by": "agent",
+      "at": "2026-11-26T02:36:12.904Z"
+    },
+    {
+      "decision": "A new ReceivedItem entity, one per payment or income entry, with derived awaiting state",
+      "why": "Payment and JournalEntry are immutable and payments write one GL line per fee",
+      "rejected": "status columns on Payment or JournalEntry",
+      "by": "agent",
+      "at": "2026-11-26T02:36:12.904Z"
+    },
+    {
+      "decision": "BankDeposit plus BankDepositLine entities; reversal is a BankDepositReversal journal entry linked once",
+      "why": "keeps the GL immutable and gives one bank line per deposit",
+      "rejected": "deriving deposit contents from GL lines alone",
+      "by": "agent",
+      "at": "2026-11-26T02:36:12.904Z"
+    },
+    {
+      "decision": "Cash withdrawal is only a CashWithdrawal journal entry",
+      "why": "it has no state beyond its entry and is corrected by a deposit",
+      "rejected": "a separate CashWithdrawal entity",
+      "by": "agent",
+      "at": "2026-11-26T02:36:12.904Z"
+    },
+    {
+      "decision": "Static pure ReceiptRouting function shared by PaymentService and IncomeEntryService",
+      "why": "a stateless rule with two callers needs no injected interface",
+      "rejected": "an injected router service with one implementation",
+      "by": "agent",
+      "at": "2026-11-26T02:36:12.904Z"
+    },
+    {
+      "decision": "Backup 1.4.0 uses envelope members 29, 31 and 32 and re-applies the Petty Cash name for older files",
+      "why": "27, 28 and 30 are taken and upsert restores the old Cash on Hand name",
+      "rejected": "always overwriting system account names on restore",
+      "by": "agent",
+      "at": "2026-11-26T02:36:12.904Z"
+    },
+    {
+      "decision": "BankingService replaces BankDepositService; old route kept as a second @page on BankingPage",
+      "why": "the typed-amount deposit no longer exists and a second route is the simplest redirect",
+      "rejected": "a stub redirect page or keeping both services",
+      "by": "agent",
+      "at": "2026-11-26T02:36:12.904Z"
     }
   ],
   "expectations": [
@@ -146,5 +223,32 @@
   },
   "intent": "Rework banking so cheques wait in Undeposited Funds, cash goes to Petty Cash, deposits clear selected items into the bank, and cash can be withdrawn as event floats",
   "size": "oversized",
-  "source": "#368"
+  "source": "#368",
+  "planBlocks": [
+    "calls",
+    "states",
+    "screens"
+  ],
+  "planBlocksPicked": [
+    "calls",
+    "states",
+    "screens"
+  ],
+  "verified": [
+    {
+      "what": "plan blocks check out",
+      "command": "python3 .specify/extensions/companion/scripts/check_plan.py --feature-dir specs/033-banking-cash-deposits --strict",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 0.1,
+      "result": "[plan-check] plan.md: 3 call paths, 14 lines, 2 screens, 22 parts, 2 state blocks (4 states). Every cited file and line checks out."
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Plan, research and data model written for the banking rework",
+      "key_finding": "Restore upserts by id and never deletes, so an old backup reverts the Petty Cash name but keeps Undeposited Funds"
+    }
+  },
+  "approach": "Route each receipt by payment method through a pure ReceiptRouting rule, track cheques as ReceivedItem rows, and post deposits, reversals and withdrawals as balanced journal entries through a new BankingService. One migration renames 1100 and seeds 1105, and backup moves to 1.4.0."
 }
