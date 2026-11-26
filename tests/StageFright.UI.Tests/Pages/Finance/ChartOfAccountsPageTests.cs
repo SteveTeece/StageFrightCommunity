@@ -88,7 +88,7 @@ public class ChartOfAccountsPageTests : LocalizedTestContext
 
         Assert.Contains("Membership Fees", cut.Markup);
         Assert.Contains("Operating Account", cut.Markup);
-        Assert.Contains("Cash on Hand", cut.Markup);
+        Assert.Contains("Petty Cash", cut.Markup);
     }
 
     [Fact]
@@ -179,7 +179,7 @@ public class ChartOfAccountsPageTests : LocalizedTestContext
         var cut = Render<ChartOfAccountsPage>();
         cut.Find("[role=switch]").Click();
 
-        Assert.Contains("$500.00", cut.Markup);   // Cash on Hand
+        Assert.Contains("$500.00", cut.Markup);   // Petty Cash
         Assert.Contains("$1,000.00", cut.Markup); // Operating Account
         Assert.Contains("$250.00", cut.Markup);   // Membership Fees
     }
@@ -412,7 +412,7 @@ public class ChartOfAccountsPageTests : LocalizedTestContext
         // The shared AddAccountForm's own ExistingNames check (fed from the page's active +
         // archived accounts) now catches an obvious duplicate before ever calling the service.
         var cut = Render<ChartOfAccountsPage>();
-        cut.Find("#account-name").Change("cash on hand"); // case-insensitive match on an existing account
+        cut.Find("#account-name").Change("petty cash"); // case-insensitive match on an existing account
         cut.Find("form").Submit();
 
         _accountService.DidNotReceive().CreateAsync(Arg.Any<string>(), Arg.Any<AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>());
@@ -509,7 +509,7 @@ public class ChartOfAccountsPageTests : LocalizedTestContext
     {
         new()
         {
-            Id = SystemAccountId, Name = "Cash on Hand", Type = AccountType.Asset,
+            Id = SystemAccountId, Name = "Petty Cash", Type = AccountType.Asset,
             AccountNumber = "1100", IsSystem = true, IsBankAccount = true,
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         },
@@ -531,7 +531,7 @@ public class ChartOfAccountsPageTests : LocalizedTestContext
     {
         new()
         {
-            AccountId = SystemAccountId, AccountNumber = "1100", Name = "Cash on Hand",
+            AccountId = SystemAccountId, AccountNumber = "1100", Name = "Petty Cash",
             Type = AccountType.Asset, IsSystem = true, IsBankAccount = true, Balance = 500m, HasError = false
         },
         new()

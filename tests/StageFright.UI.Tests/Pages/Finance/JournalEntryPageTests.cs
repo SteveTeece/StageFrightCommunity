@@ -31,7 +31,7 @@ public class JournalEntryPageTests : LocalizedTestContext
             {
                 new()
                 {
-                    Id = CashAccountId, Name = "Cash on Hand", Type = AccountType.Asset,
+                    Id = CashAccountId, Name = "Petty Cash", Type = AccountType.Asset,
                     AccountNumber = "1100", IsSystem = true, IsBankAccount = true,
                     CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
                 },

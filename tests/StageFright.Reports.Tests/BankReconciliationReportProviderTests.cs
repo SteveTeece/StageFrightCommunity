@@ -38,7 +38,7 @@ public class BankReconciliationReportProviderTests
         _accounts.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<Account>>(new List<Account>
             {
-                MakeBankAccount(CashId, "Cash on Hand", "1100"),
+                MakeBankAccount(CashId, "Petty Cash", "1100"),
                 MakeBankAccount(SavingsId, "Savings", "1110")
             }));
 
@@ -88,7 +88,7 @@ public class BankReconciliationReportProviderTests
         var result = await _sut.GenerateAsync(new ReportFilterValues(), TestContext.Current.CancellationToken);
 
         var section = Assert.Single(result.Sections);
-        Assert.Contains("Cash on Hand", section.Heading);
+        Assert.Contains("Petty Cash", section.Heading);
         Assert.Contains("1100", section.Heading);
     }
 
@@ -188,7 +188,7 @@ public class BankReconciliationReportProviderTests
         var result = await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         var section = Assert.Single(result.Sections);
-        Assert.Contains("Cash on Hand", section.Heading);
+        Assert.Contains("Petty Cash", section.Heading);
     }
 
     // --- Helpers ---

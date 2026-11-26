@@ -22,7 +22,7 @@ public sealed class GenericSalesTaxMigrationTests : IDisposable
     private static readonly Guid FeeId = new("77777777-0000-0000-0000-000000000004");
     private static readonly Guid TransactionId = new("77777777-0000-0000-0000-000000000005");
 
-    // Seeded by earlier migrations — Cash on Hand (1100), a valid FK target for the Transaction row.
+    // Seeded by earlier migrations — Petty Cash (1100), a valid FK target for the Transaction row.
     private static readonly Guid CashAccountId = new("00000000-0000-0000-0000-000000000001");
     private static readonly Guid TaxCollectedAccountId = new("00000000-0000-0000-0000-000000000004");
 

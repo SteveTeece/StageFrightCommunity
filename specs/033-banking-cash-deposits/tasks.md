@@ -83,8 +83,8 @@ Files: every source file in plan.md's Project Structure except the UI pages owne
 **⟶ Wait for Wave 5 to finish, then:**
 
 **Wave 6 — independent:**
-- [ ] **T024** [P] Register `IReceivedItemRepository`, `IBankDepositRepository` and `IBankingService`, and remove the `IBankDepositService` registration · src/StageFright.App/MauiProgram.cs
-- [ ] **T025** [P] Rewrite the seeder's banking flows per research §15, keeping the books balanced over two years (FR-024):
+- [x] **T024** [P] Register `IReceivedItemRepository`, `IBankDepositRepository` and `IBankingService`, and remove the `IBankDepositService` registration · src/StageFright.App/MauiProgram.cs
+- [x] **T025** [P] Rewrite the seeder's banking flows per research §15, keeping the books balanced over two years (FR-024):
   - cheque, card and EFT member payments;
   - the EFT council grant and the cheque bowling-club sponsorship;
   - periodic deposits of cheques plus cash above the float;
@@ -93,7 +93,7 @@ Files: every source file in plan.md's Project Structure except the UI pages owne
   - an Undeposited Funds opening balance.
 
   · src/StageFright.App/Seeding/DebugDataSeeder.cs
-- [ ] **T026** [P] Change "Cash on Hand" to "Petty Cash" in code comments, future GL descriptions and the test assertions and fixtures that name it. Leave out every test file a story phase owns (PaymentFormTests, RecordIncomeTests, FinanceMenuItemProviderTests, and the three US1 deletes); those phases fix their own assertions · src/**/*.cs comments (AttendanceService, Account, AccountNumberAssignmentService, SetupService, StageFrightDbContext summary), tests/**/*.cs
+- [x] **T026** [P] Change "Cash on Hand" to "Petty Cash" in code comments, future GL descriptions and the test assertions and fixtures that name it. Leave out every test file a story phase owns (PaymentFormTests, RecordIncomeTests, FinanceMenuItemProviderTests, and the three US1 deletes); those phases fix their own assertions · src/**/*.cs comments (AttendanceService, Account, AccountNumberAssignmentService, SetupService, StageFrightDbContext summary), tests/**/*.cs
 
 **Checkpoint:** the solution builds with every change to the back end, schema, backup, translated text and seed data in place, and all Phase 2 tests pass.
 

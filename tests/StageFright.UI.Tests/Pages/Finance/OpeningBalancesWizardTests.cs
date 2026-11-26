@@ -34,7 +34,7 @@ public class OpeningBalancesWizardTests : LocalizedTestContext
             {
                 new()
                 {
-                    Id = CashAccountId, Name = "Cash on Hand", Type = AccountType.Asset,
+                    Id = CashAccountId, Name = "Petty Cash", Type = AccountType.Asset,
                     AccountNumber = "1100", IsSystem = true, IsBankAccount = true,
                     CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
                 },
@@ -113,7 +113,7 @@ public class OpeningBalancesWizardTests : LocalizedTestContext
 
         Assert.Contains("Step 2", cut.Markup);
         Assert.Equal(2, cut.FindAll(".opening-balance-amount").Count);
-        Assert.Contains("Cash on Hand", cut.Markup);
+        Assert.Contains("Petty Cash", cut.Markup);
         Assert.Contains("Committee Loan", cut.Markup);
     }
 

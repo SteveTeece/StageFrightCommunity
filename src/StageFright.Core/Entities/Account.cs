@@ -25,7 +25,7 @@ public class Account
     /// Account number. Auto-assigned by AccountNumberAssignmentService at creation
     /// (max-in-range + 1): Assets 1000s (user bank accounts from 1110), Liabilities 2000s,
     /// Equity 3000s, Income 4000s, Expenses 6000s.
-    /// Fixed system accounts: Cash on Hand=1100, Member Receivable=1200, Bad Debt=6999,
+    /// Fixed system accounts: Petty Cash=1100, Undeposited Funds=1105, Member Receivable=1200, Bad Debt=6999,
     /// Tax Collected=2310 (Liability), Tax Receivable=2320 (Asset — recoverable input tax,
     /// kept in the 2000s as a documented exception), Opening Balance Equity=3100,
     /// Accumulated Surplus=3200.

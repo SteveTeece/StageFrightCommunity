@@ -32,7 +32,7 @@ public class OpeningBalancesTabTests : LocalizedTestContext
             {
                 new()
                 {
-                    Id = ExistingAccountId, Name = "Cash on Hand", Type = AccountType.Asset,
+                    Id = ExistingAccountId, Name = "Petty Cash", Type = AccountType.Asset,
                     AccountNumber = "1100", IsSystem = true, IsBankAccount = true,
                     CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
                 }
@@ -53,7 +53,7 @@ public class OpeningBalancesTabTests : LocalizedTestContext
     {
         var cut = RenderTab();
 
-        Assert.Contains("Cash on Hand", cut.Markup);
+        Assert.Contains("Petty Cash", cut.Markup);
         Assert.Single(cut.FindAll(".opening-balance-amount"));
     }
 
@@ -63,7 +63,7 @@ public class OpeningBalancesTabTests : LocalizedTestContext
         var queued = new[] { new QueuedAccountRequest(Guid.NewGuid(), "Petty Cash", AccountType.Asset, true) };
         var cut = RenderTab(queued: queued);
 
-        Assert.Contains("Cash on Hand", cut.Markup);
+        Assert.Contains("Petty Cash", cut.Markup);
         Assert.Contains("Petty Cash", cut.Markup);
         Assert.Equal(2, cut.FindAll(".opening-balance-amount").Count);
     }
@@ -199,7 +199,7 @@ public class OpeningBalancesTabTests : LocalizedTestContext
         var cut = RenderTab(queued: queued,
             onChange: EventCallback.Factory.Create<RecordOpeningBalancesRequest>(this, r => reported = r));
 
-        cut.FindAll(".opening-balance-amount")[0].Change("1000"); // Cash on Hand
+        cut.FindAll(".opening-balance-amount")[0].Change("1000"); // Petty Cash
         cut.FindAll(".opening-balance-amount")[1].Change("200");  // Grant Income
         cut.Render(p => p.Add(x => x.QueuedAccounts, Array.Empty<QueuedAccountRequest>()));
         cut.Find("#ob-tab-as-at-date").Change("2025-07-01");

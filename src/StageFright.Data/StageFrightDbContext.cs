@@ -8,7 +8,7 @@ namespace StageFright.Data;
 /// <summary>
 /// Central EF Core DbContext for the StageFright Community application.
 /// Applies global soft-delete query filters on all entities that carry IsDeleted.
-/// Seeds system accounts (Cash, MemberReceivable, BadDebtExpense) on first model creation.
+/// Seeds system accounts (Petty Cash, Undeposited Funds, MemberReceivable, BadDebtExpense) on first model creation.
 /// </summary>
 public class StageFrightDbContext : DbContext
 {

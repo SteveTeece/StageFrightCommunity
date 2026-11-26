@@ -58,13 +58,13 @@ public class BalanceSheetReportProviderTests
     public async Task GenerateAsync_AssetAccount_DisplaysDebitNormalBalance()
     {
         var cashId = Guid.NewGuid();
-        SetupAccounts(MakeAccount(cashId, "Cash on Hand", AccountType.Asset, "1100"));
+        SetupAccounts(MakeAccount(cashId, "Petty Cash", AccountType.Asset, "1100"));
         SetupBalance(cashId, 1000m);
 
         var result = await _sut.GenerateAsync(AsAtFilters(), TestContext.Current.CancellationToken);
 
         var assets = result.Sections.First(s => s.Heading == "Assets");
-        Assert.Contains(assets.Rows, r => r.Cells[0].Contains("Cash on Hand") && r.Cells[1] == MoneyFormatter.Format(1000m));
+        Assert.Contains(assets.Rows, r => r.Cells[0].Contains("Petty Cash") && r.Cells[1] == MoneyFormatter.Format(1000m));
     }
 
     [Fact]

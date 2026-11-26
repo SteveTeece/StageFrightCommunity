@@ -164,6 +164,9 @@ public static class MauiProgram
         services.AddScoped<IExternalOrganisationRepository, ExternalOrganisationRepository>();
         services.AddScoped<IExternalOrganisationContactRepository, ExternalOrganisationContactRepository>();
         services.AddScoped<IBankReconciliationRepository, BankReconciliationRepository>();
+        // Spec 033: received items awaiting deposit and the deposits that bank them.
+        services.AddScoped<IReceivedItemRepository, ReceivedItemRepository>();
+        services.AddScoped<IBankDepositRepository, BankDepositRepository>();
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<ISettingsRepository, SettingsRepository>();
         services.AddScoped<IAuditTrailRepository, AuditTrailRepository>();
@@ -251,7 +254,8 @@ public static class MauiProgram
         services.AddScoped<IExternalOrganisationService, ExternalOrganisationService>();
         services.AddScoped<IExternalOrganisationContactService, ExternalOrganisationContactService>();
         services.AddScoped<IOrganisationHistoryService, OrganisationHistoryService>();
-        services.AddScoped<IBankDepositService, BankDepositService>();
+        // Spec 033: deposits, cash withdrawals, reversals and the Banking history.
+        services.AddScoped<IBankingService, BankingService>();
         services.AddScoped<IGeneralJournalService, GeneralJournalService>();
         services.AddScoped<IOpeningBalanceService, OpeningBalanceService>();
 

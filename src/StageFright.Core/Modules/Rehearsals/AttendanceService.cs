@@ -12,7 +12,7 @@ namespace StageFright.Core.Modules.Rehearsals;
 /// Records batch attendance for a rehearsal in a single atomic transaction.
 /// GL pair logic:
 ///   Accrual: Debit MemberReceivable (1200) / Credit first-available Income account.
-///   Payment: Debit Cash (1100) / Credit MemberReceivable (1200) — only when PaidAtCreation=true.
+///   Payment: Debit Petty Cash (1100) / Credit MemberReceivable (1200) — only when PaidAtCreation=true.
 /// System account GUIDs are the seeded fixed values from StageFrightDbContext.
 /// </summary>
 public class AttendanceService : IAttendanceService
@@ -237,7 +237,7 @@ public class AttendanceService : IAttendanceService
                     };
                     var savedPayment = await _paymentRepo.AddAsync(payment, innerCt);
 
-                    // GL payment pair: Debit Cash / Credit MemberReceivable
+                    // GL payment pair: Debit Petty Cash / Credit MemberReceivable
                     await _glRepo.AddPairAsync(
                         new Transaction
                         {

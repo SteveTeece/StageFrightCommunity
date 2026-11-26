@@ -391,7 +391,7 @@ public class SetupWizardTests : LocalizedTestContext
         var cashId = Guid.NewGuid();
         _openingBalanceService.GetOpeningBalanceAccountsAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>
         {
-            new() { Id = cashId, Name = "Cash on Hand", AccountNumber = "1100", Type = Core.Enums.AccountType.Asset }
+            new() { Id = cashId, Name = "Petty Cash", AccountNumber = "1100", Type = Core.Enums.AccountType.Asset }
         });
         var cut = Render<SetupWizard>();
         AdvanceFromOrganisationSettings(cut); // -> Chart of Accounts
@@ -420,7 +420,7 @@ public class SetupWizardTests : LocalizedTestContext
         var cashId = Guid.NewGuid();
         _openingBalanceService.GetOpeningBalanceAccountsAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>
         {
-            new() { Id = cashId, Name = "Cash on Hand", AccountNumber = "1100", Type = Core.Enums.AccountType.Asset }
+            new() { Id = cashId, Name = "Petty Cash", AccountNumber = "1100", Type = Core.Enums.AccountType.Asset }
         });
         var cut = Render<SetupWizard>();
         AdvanceFromOrganisationSettings(cut); // -> Chart of Accounts

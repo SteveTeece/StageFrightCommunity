@@ -10,7 +10,8 @@ public interface IIncomeEntryService
 {
     /// <summary>
     /// Records an income entry with a matching GL pair under an Income journal entry:
-    /// Debit the chosen deposit bank account (default Cash on Hand 1100) / Credit the
+    /// Debit where the payment method routes it (cash to Petty Cash 1100, cheque and other to
+    /// Undeposited Funds 1105 as a received item, card and transfer to the chosen bank) / Credit the
     /// selected Income account. The account must be of type Income and must not be a
     /// system account.
     /// </summary>

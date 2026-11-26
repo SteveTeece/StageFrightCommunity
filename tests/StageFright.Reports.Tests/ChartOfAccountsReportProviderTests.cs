@@ -68,7 +68,7 @@ public class ChartOfAccountsReportProviderTests
     public async Task GenerateAsync_TypeWithNoAccounts_StillAppearsWithZeroRows()
     {
         // Only an Asset account exists — the other four sections must still appear, empty.
-        SetupBalances(MakeBalance("1100", "Cash on Hand", AccountType.Asset));
+        SetupBalances(MakeBalance("1100", "Petty Cash", AccountType.Asset));
 
         var result = await _sut.GenerateAsync(NoFilters(), TestContext.Current.CancellationToken);
 
@@ -92,12 +92,12 @@ public class ChartOfAccountsReportProviderTests
     [Fact]
     public async Task GenerateAsync_SystemAccount_NameHasSystemSuffix()
     {
-        SetupBalances(MakeBalance("1100", "Cash on Hand", AccountType.Asset, isSystem: true));
+        SetupBalances(MakeBalance("1100", "Petty Cash", AccountType.Asset, isSystem: true));
 
         var result = await _sut.GenerateAsync(NoFilters(), TestContext.Current.CancellationToken);
 
         var row = result.Sections.Single(s => s.Heading == "Assets").Rows.Single();
-        Assert.Equal("Cash on Hand (System)", row.Cells[1]);
+        Assert.Equal("Petty Cash (System)", row.Cells[1]);
     }
 
     [Fact]
@@ -114,12 +114,12 @@ public class ChartOfAccountsReportProviderTests
     [Fact]
     public async Task GenerateAsync_SystemAndBankAccount_NameHasCombinedSuffix()
     {
-        SetupBalances(MakeBalance("1100", "Cash on Hand", AccountType.Asset, isSystem: true, isBankAccount: true));
+        SetupBalances(MakeBalance("1100", "Petty Cash", AccountType.Asset, isSystem: true, isBankAccount: true));
 
         var result = await _sut.GenerateAsync(NoFilters(), TestContext.Current.CancellationToken);
 
         var row = result.Sections.Single(s => s.Heading == "Assets").Rows.Single();
-        Assert.Equal("Cash on Hand (System, Bank)", row.Cells[1]);
+        Assert.Equal("Petty Cash (System, Bank)", row.Cells[1]);
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class ChartOfAccountsReportProviderTests
     [Fact]
     public async Task GenerateAsync_EveryRow_HasTwoCells()
     {
-        SetupBalances(MakeBalance("1100", "Cash on Hand", AccountType.Asset));
+        SetupBalances(MakeBalance("1100", "Petty Cash", AccountType.Asset));
 
         var result = await _sut.GenerateAsync(NoFilters(), TestContext.Current.CancellationToken);
 
@@ -200,7 +200,7 @@ public class ChartOfAccountsReportProviderTests
     [Fact]
     public async Task GenerateAsync_IncludeBalancesUnset_TwoColumnShapeUnchanged()
     {
-        SetupBalances(MakeBalance("1100", "Cash on Hand", AccountType.Asset));
+        SetupBalances(MakeBalance("1100", "Petty Cash", AccountType.Asset));
 
         var result = await _sut.GenerateAsync(NoFilters(), TestContext.Current.CancellationToken);
 
@@ -212,7 +212,7 @@ public class ChartOfAccountsReportProviderTests
     [Fact]
     public async Task GenerateAsync_IncludeBalancesFalse_TwoColumnShapeUnchanged()
     {
-        SetupBalances(MakeBalance("1100", "Cash on Hand", AccountType.Asset));
+        SetupBalances(MakeBalance("1100", "Petty Cash", AccountType.Asset));
 
         var result = await _sut.GenerateAsync(FiltersWith("false"), TestContext.Current.CancellationToken);
 
@@ -224,7 +224,7 @@ public class ChartOfAccountsReportProviderTests
     [Fact]
     public async Task GenerateAsync_IncludeBalancesTrue_AddsBalanceColumn()
     {
-        SetupBalances(MakeBalance("1100", "Cash on Hand", AccountType.Asset));
+        SetupBalances(MakeBalance("1100", "Petty Cash", AccountType.Asset));
 
         var result = await _sut.GenerateAsync(FiltersWith("true"), TestContext.Current.CancellationToken);
 
@@ -234,7 +234,7 @@ public class ChartOfAccountsReportProviderTests
     [Fact]
     public async Task GenerateAsync_IncludeBalancesTrue_NoError_ShowsFormattedBalance()
     {
-        SetupBalances(MakeBalance("1100", "Cash on Hand", AccountType.Asset, balance: 500m));
+        SetupBalances(MakeBalance("1100", "Petty Cash", AccountType.Asset, balance: 500m));
 
         var result = await _sut.GenerateAsync(FiltersWith("true"), TestContext.Current.CancellationToken);
 
@@ -247,7 +247,7 @@ public class ChartOfAccountsReportProviderTests
     public async Task GenerateAsync_IncludeBalancesTrue_HasError_ShowsErrorText()
     {
         SetupBalances(
-            MakeBalance("1100", "Cash on Hand", AccountType.Asset, balance: 500m),
+            MakeBalance("1100", "Petty Cash", AccountType.Asset, balance: 500m),
             MakeBalance("1200", "Broken Asset", AccountType.Asset, balance: null, hasError: true));
 
         var result = await _sut.GenerateAsync(FiltersWith("true"), TestContext.Current.CancellationToken);
@@ -262,27 +262,27 @@ public class ChartOfAccountsReportProviderTests
     [Fact]
     public async Task GenerateAsync_ExportedViaCsv_IncludeBalancesFalse_HeaderAndDataMatchOutput()
     {
-        SetupBalances(MakeBalance("1100", "Cash on Hand", AccountType.Asset));
+        SetupBalances(MakeBalance("1100", "Petty Cash", AccountType.Asset));
 
         var report = await _sut.GenerateAsync(NoFilters(), TestContext.Current.CancellationToken);
         var csv = new CsvReportExporter().Export(report);
         var lines = csv.Split('\n').Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
 
         Assert.Equal("No.,Name", lines[0]);
-        Assert.Contains(lines, l => l == "1100,Cash on Hand");
+        Assert.Contains(lines, l => l == "1100,Petty Cash");
     }
 
     [Fact]
     public async Task GenerateAsync_ExportedViaCsv_IncludeBalancesTrue_HeaderAndDataMatchOutput()
     {
-        SetupBalances(MakeBalance("1100", "Cash on Hand", AccountType.Asset, balance: 500m));
+        SetupBalances(MakeBalance("1100", "Petty Cash", AccountType.Asset, balance: 500m));
 
         var report = await _sut.GenerateAsync(FiltersWith("true"), TestContext.Current.CancellationToken);
         var csv = new CsvReportExporter().Export(report);
         var lines = csv.Split('\n').Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
 
         Assert.Equal("No.,Name,Balance", lines[0]);
-        Assert.Contains(lines, l => l == "1100,Cash on Hand," + MoneyFormatter.Format(500m));
+        Assert.Contains(lines, l => l == "1100,Petty Cash," + MoneyFormatter.Format(500m));
     }
 
     // --- Helpers ---

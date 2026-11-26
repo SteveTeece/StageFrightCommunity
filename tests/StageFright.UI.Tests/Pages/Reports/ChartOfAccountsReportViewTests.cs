@@ -27,7 +27,7 @@ public class ChartOfAccountsReportViewTests : LocalizedTestContext
     {
         _accountBalanceService.GetActiveAccountBalancesAsync(Arg.Any<CancellationToken>()).Returns(new List<AccountBalance>
         {
-            new() { AccountId = Guid.NewGuid(), AccountNumber = "1100", Name = "Cash on Hand", Type = AccountType.Asset, Balance = 500m }
+            new() { AccountId = Guid.NewGuid(), AccountNumber = "1100", Name = "Petty Cash", Type = AccountType.Asset, Balance = 500m }
         });
 
         var cut = Render<ChartOfAccountsReportView>(p => p.Add(x => x.IncludeBalances, true));

@@ -44,7 +44,7 @@ public class GeneralLedgerReportProviderTests
     public async Task GenerateAsync_AccountWithMovement_ShowsOpeningLinesAndClosing()
     {
         var accountId = Guid.NewGuid();
-        SetupAccounts(MakeAccount(accountId, "Cash on Hand", AccountType.Asset, "1100"));
+        SetupAccounts(MakeAccount(accountId, "Petty Cash", AccountType.Asset, "1100"));
         SetupOpeningBalance(accountId, 100m);
         SetupTransactions(
             MakeTransaction(accountId, "Deposit", 50m, 0m, new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc)),
@@ -52,7 +52,7 @@ public class GeneralLedgerReportProviderTests
 
         var result = await _sut.GenerateAsync(CurrentYearFilters(), TestContext.Current.CancellationToken);
 
-        var section = result.Sections.First(s => s.Heading != null && s.Heading.Contains("Cash on Hand"));
+        var section = result.Sections.First(s => s.Heading != null && s.Heading.Contains("Petty Cash"));
         Assert.Equal("Opening Balance", section.Rows[0].Cells[1]);
         Assert.Equal(MoneyFormatter.Format(100m), section.Rows[0].Cells[4]);
         Assert.Equal(MoneyFormatter.Format(150m), section.Rows[1].Cells[4]); // 100 + 50
@@ -80,7 +80,7 @@ public class GeneralLedgerReportProviderTests
         var matchId = Guid.NewGuid();
         var otherId = Guid.NewGuid();
         SetupAccounts(
-            MakeAccount(matchId, "Cash on Hand", AccountType.Asset, "1100"),
+            MakeAccount(matchId, "Petty Cash", AccountType.Asset, "1100"),
             MakeAccount(otherId, "Hall Hire", AccountType.Expense, "6000"));
         SetupOpeningBalance(matchId, 10m);
         SetupOpeningBalance(otherId, 10m);
@@ -91,7 +91,7 @@ public class GeneralLedgerReportProviderTests
         var result = await _sut.GenerateAsync(filters, TestContext.Current.CancellationToken);
 
         Assert.Single(result.Sections);
-        Assert.Contains("Cash on Hand", result.Sections[0].Heading);
+        Assert.Contains("Petty Cash", result.Sections[0].Heading);
     }
 
     [Fact]

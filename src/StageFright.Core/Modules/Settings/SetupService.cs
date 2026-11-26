@@ -13,7 +13,7 @@ namespace StageFright.Core.Modules.Settings;
 /// <summary>
 /// Handles first-run initialization. Validates the setup request, creates the Settings singleton,
 /// seeds default event types, and audits the event.
-/// System accounts (Cash/MemberReceivable/BadDebtExpense) are seeded by EF migrations.
+/// System accounts (Petty Cash/Undeposited Funds/MemberReceivable/BadDebtExpense) are seeded by EF migrations.
 /// </summary>
 public class SetupService : ISetupService
 {

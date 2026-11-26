@@ -43,7 +43,7 @@ public class ReportsPageTests : LocalizedTestContext
         _provider.GenerateAsync(Arg.Any<ReportFilterValues>(), Arg.Any<CancellationToken>()).Returns(FlatReport);
         _accountBalanceService.GetActiveAccountBalancesAsync(Arg.Any<CancellationToken>()).Returns(new List<AccountBalance>
         {
-            new() { AccountId = Guid.NewGuid(), AccountNumber = "1100", Name = "Cash on Hand", Type = AccountType.Asset, Balance = 500m },
+            new() { AccountId = Guid.NewGuid(), AccountNumber = "1100", Name = "Petty Cash", Type = AccountType.Asset, Balance = 500m },
             new() { AccountId = Guid.NewGuid(), AccountNumber = "4000", Name = "Membership Fees", Type = AccountType.Income, Balance = 250m }
         });
     }

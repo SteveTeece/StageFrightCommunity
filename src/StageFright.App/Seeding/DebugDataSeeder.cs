@@ -21,7 +21,11 @@ namespace StageFright.App.Seeding;
 /// Maclean/Yamba concert weekend, an annual raffle, an AGM each year in late October with
 /// realistic (not full-house) attendance, a mid-term committee resignation and special
 /// election, and a spread of dated operating expenses (insurance, musical director, hall hire,
-/// costumes, licensing, printing, bank fees). The dataset's "as of" point is the real date the
+/// costumes, licensing, printing, bank fees). Receipts arrive as cash (into Petty Cash), cheques
+/// (held in Undeposited Funds) and card or bank transfer (straight to the bank); every third
+/// rehearsal week a deposit banks the waiting cheques plus the cash above the float, each concert
+/// weekend draws a change float that is banked back with the takings, and one 2025 deposit is
+/// reversed and recorded again (spec 033). The dataset's "as of" point is the real date the
 /// seeder runs (<see cref="SeedCurrentDate"/>): anything dated on or before it is fully settled
 /// — attendance taken, fees paid (bar the two deliberate non-payers), events held, expenses
 /// posted — while anything after it is only put on the calendar (future rehearsals and the
@@ -44,6 +48,7 @@ namespace StageFright.App.Seeding;
 public class DebugDataSeeder : IDebugDataSeeder
 {
     private const decimal PettyCashFloat = 50m;
+    private const decimal ConcertFloat = 200m;
 
     /// <summary>
     /// The dataset's "as of" point — the real date the seeder runs. Anything dated on or
@@ -71,7 +76,7 @@ public class DebugDataSeeder : IDebugDataSeeder
     private readonly IAccountService _accountService;
     private readonly IIncomeEntryService _incomeEntryService;
     private readonly IExpensePaymentService _expensePaymentService;
-    private readonly IBankDepositService _bankDepositService;
+    private readonly IBankingService _bankingService;
     private readonly IOpeningBalanceService _openingBalanceService;
     private readonly ISettingsService _settingsService;
     private readonly IExternalOrganisationService _organisationService;
@@ -96,7 +101,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         IAccountService accountService,
         IIncomeEntryService incomeEntryService,
         IExpensePaymentService expensePaymentService,
-        IBankDepositService bankDepositService,
+        IBankingService bankingService,
         IOpeningBalanceService openingBalanceService,
         ISettingsService settingsService,
         IExternalOrganisationService organisationService,
@@ -120,7 +125,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         _accountService = accountService;
         _incomeEntryService = incomeEntryService;
         _expensePaymentService = expensePaymentService;
-        _bankDepositService = bankDepositService;
+        _bankingService = bankingService;
         _openingBalanceService = openingBalanceService;
         _settingsService = settingsService;
         _organisationService = organisationService;
@@ -192,11 +197,14 @@ public class DebugDataSeeder : IDebugDataSeeder
         // whole-of-chart position, not just a single bank figure. Bad Debt Expense is
         // deliberately left at $0 — no historical bad debt is itself a legitimate
         // starting position. Tax Collected (2310) and Tax Receivable (2320) only get a
-        // balance when the coordinator actually enabled sales tax during setup.
+        // balance when the coordinator actually enabled sales tax during setup. The
+        // Undeposited Funds figure is a cheque received before the books started; it becomes
+        // one "opening balance" item that the first rehearsal deposit banks.
         var openingBalanceEntries = new List<OpeningBalanceEntry>
         {
             new() { AccountId = bankAccount.Id, Amount = 2000m },
             new() { AccountId = SystemAccounts.CashId, Amount = PettyCashFloat },
+            new() { AccountId = SystemAccounts.UndepositedFundsId, Amount = 85m },
             new() { AccountId = SystemAccounts.MemberReceivableId, Amount = 180m },
             new() { AccountId = SystemAccounts.AccumulatedSurplusId, Amount = 12500m }
         };
@@ -223,7 +231,7 @@ public class DebugDataSeeder : IDebugDataSeeder
             _logger.LogInformation("Seeding {Year}...", year);
 
             progress?.Report($"Seeding {year} annual fees…");
-            await SeedAnnualFeesAsync(year, activeMembers, membershipIncomeAccount, settings, random, ct);
+            await SeedAnnualFeesAsync(year, activeMembers, membershipIncomeAccount, bankAccount, settings, random, ct);
 
             progress?.Report($"Seeding {year} rehearsals & attendance…");
             await SeedRehearsalsAsync(year, activeMembers, attendanceProfile, bankAccount, random, ct);
@@ -235,7 +243,7 @@ public class DebugDataSeeder : IDebugDataSeeder
             await SeedConcertsAsync(year, activeMembers, performanceType, concertIncomeAccount, bankAccount, ct);
 
             progress?.Report($"Seeding {year} raffle…");
-            await SeedRaffleAsync(year, raffleIncomeAccount, ct);
+            await SeedRaffleAsync(year, raffleIncomeAccount, bankAccount, ct);
 
             progress?.Report($"Seeding {year} grants & sponsorship…");
             await SeedGrantsAndSponsorshipAsync(year, grantsIncomeAccount, bankAccount, organisations, ct);
@@ -254,6 +262,21 @@ public class DebugDataSeeder : IDebugDataSeeder
                 year, bankAccount, hallHireExpense, costumesExpense, musicLicensingExpense,
                 printingExpense, insuranceExpense, musicalDirectorExpense, bankFeesExpense, organisations, ct);
         }
+
+        // Two cheques received today are posted after every deposit, so they wait in
+        // Undeposited Funds and the Banking screen has something to bank.
+        await _incomeEntryService.RecordIncomeAsync(new RecordIncomeRequest
+        {
+            Date = SeedCurrentDate, Amount = 250m, AccountId = grantsIncomeAccount.Id,
+            PaymentMethod = PaymentMethod.Check, Reference = "006021",
+            Description = "End-of-year donation", ExternalOrganisationId = organisations[BowlingClub]
+        }, ct);
+        await _incomeEntryService.RecordIncomeAsync(new RecordIncomeRequest
+        {
+            Date = SeedCurrentDate, Amount = 40m, AccountId = grantsIncomeAccount.Id,
+            PaymentMethod = PaymentMethod.Check, Reference = "118734",
+            Description = "Donation from a concert patron"
+        }, ct);
 
         // The printer closed down: archiving keeps its two years of linked history viewable
         // from its History tab while hiding it from the register and the finance pickers.
@@ -533,17 +556,17 @@ public class DebugDataSeeder : IDebugDataSeeder
     // -------------------------------------------------------------------------
 
     /// <summary>
-    /// 90% of active members pay their annual subscription in cash by the 2nd week of
-    /// February; two members pay late in the year and two remain unpaid (exercises
-    /// aging/outstanding balance reporting). The same four members lag in both years.
-    /// Like attendance fees, the cash is handed over at a rehearsal and collected into
-    /// petty cash — it rides the same door-to-bank sweep as attendance fee cash rather
-    /// than being deposited on an arbitrary calendar date.
+    /// 90% of active members pay their annual subscription by the 2nd week of February; two
+    /// members pay late in the year and two remain unpaid (exercises aging/outstanding balance
+    /// reporting). The same four members lag in both years. Most pay cash at a rehearsal, which
+    /// goes into Petty Cash; one in five pays by cheque (held in Undeposited Funds until the next
+    /// rehearsal deposit) and a few pay by card or bank transfer, straight to the bank.
     /// </summary>
     private async Task SeedAnnualFeesAsync(
         int year,
         IReadOnlyList<Member> activeMembers,
         Account incomeAccount,
+        Account bankAccount,
         Settings settings,
         Random random,
         CancellationToken ct)
@@ -575,14 +598,24 @@ public class DebugDataSeeder : IDebugDataSeeder
             if (paymentDate > SeedCurrentDate)
                 continue; // the rehearsal night this payment would ride in on hasn't happened yet — stays outstanding
 
+            var method = (i % 10) switch
+            {
+                0 or 5 => PaymentMethod.Check,
+                3 => PaymentMethod.ElectronicTransfer,
+                7 => PaymentMethod.Card,
+                _ => PaymentMethod.Cash
+            };
+
             await _paymentService.RecordAsync(new RecordPaymentRequest
             {
                 MemberId = member.Id,
                 Date = paymentDate,
                 Amount = settings.AnnualFee,
-                PaymentMethod = PaymentMethod.Cash,
+                PaymentMethod = method,
+                BankAccountId = bankAccount.Id, // used for card and bank transfer only
+                Reference = method == PaymentMethod.Check ? $"{year % 100:00}{i:0000}" : null,
                 PaymentType = PaymentType.Annual,
-                Notes = $"{year} annual membership fee — paid in cash at rehearsal"
+                Notes = $"{year} annual membership fee — paid at rehearsal"
             }, ct);
         }
     }
@@ -667,8 +700,10 @@ public class DebugDataSeeder : IDebugDataSeeder
     /// One rehearsal per Monday across 40 term weeks — every one is put on the schedule, but
     /// attendance and door-cash banking are recorded only for those already held (dated on or
     /// before <see cref="SeedCurrentDate"/>). Attendance fees are collected at the door into
-    /// petty cash and, 2–3 days later, swept to the bank account above a small float retained
-    /// in the tin. The three most-recently-held 2026 rehearsals use a flat 65% per-member
+    /// petty cash. Every third rehearsal week, 2–3 days later, a deposit banks the cheques
+    /// waiting in Undeposited Funds plus the cash above a small float retained in the tin. One
+    /// 2025 deposit is reversed (a wrong slip total) and recorded again the next day. The
+    /// three most-recently-held 2026 rehearsals use a flat 65% per-member
     /// attendance chance — a recent turnout dip — instead of each member's usual 85–100%
     /// profile rate.
     /// </summary>
@@ -711,23 +746,47 @@ public class DebugDataSeeder : IDebugDataSeeder
 
             await _attendanceService.RecordBatchAsync(rehearsal.Id, items, ct);
 
-            var sweepDate = date.AddDays(random.Next(2, 4)); // 2 or 3 days later
-            var pettyCashBalance = await _glRepository.GetAccountBalanceAsync(SystemAccounts.CashId, sweepDate, ct);
-            if (pettyCashBalance > PettyCashFloat)
-            {
-                var depositAmount = Math.Round(pettyCashBalance - PettyCashFloat, 2);
-                // Most deposits include a description, but occasionally test default description handling
-                var shouldUseDefaultDescription = random.NextDouble() < 0.05; // 5% of deposits use default
+            if (i % 3 != 2)
+                continue; // banking happens every third rehearsal week
 
-                await _bankDepositService.RecordDepositAsync(new RecordBankDepositRequest
-                {
-                    Date = sweepDate,
-                    Amount = depositAmount,
-                    ToAccountId = bankAccount.Id,
-                    Description = shouldUseDefaultDescription ? null : "Banking of rehearsal attendance fees"
-                }, ct);
+            var depositDate = date.AddDays(random.Next(2, 4)); // 2 or 3 days later
+            if (depositDate > SeedCurrentDate)
+                continue; // the banking run hasn't happened yet — the cheques and cash still wait
+
+            var cashAmount = Math.Max(0m, await _bankingService.GetCashAvailableAsync(depositDate, ct) - PettyCashFloat);
+            // Most deposits include a description, but occasionally test default description handling
+            var description = random.NextDouble() < 0.05 ? null : "Banking of rehearsal takings and cheques";
+            var deposit = await DepositAwaitingAsync(depositDate, bankAccount, cashAmount, description, ct);
+
+            if (deposit is not null && year == 2025 && i == 11)
+            {
+                await _bankingService.ReverseDepositAsync(deposit.Id, ct);
+                await DepositAwaitingAsync(depositDate.AddDays(1), bankAccount, cashAmount,
+                    "Banking of rehearsal takings and cheques — re-recorded after a wrong slip total", ct);
             }
         }
+    }
+
+    /// <summary>
+    /// Banks every received item waiting on or before <paramref name="date"/> plus
+    /// <paramref name="cashAmount"/> of Petty Cash. Returns null when there is nothing to bank.
+    /// </summary>
+    private async Task<BankDeposit?> DepositAwaitingAsync(
+        DateTime date, Account bankAccount, decimal cashAmount, string? description, CancellationToken ct)
+    {
+        var overview = await _bankingService.GetOverviewAsync(ct);
+        var itemIds = overview.AwaitingItems.Where(item => item.ReceivedDate <= date).Select(item => item.Id).ToList();
+        if (itemIds.Count == 0 && cashAmount <= 0m)
+            return null;
+
+        return await _bankingService.RecordDepositAsync(new RecordDepositRequest
+        {
+            Date = date,
+            BankAccountId = bankAccount.Id,
+            ReceivedItemIds = itemIds,
+            CashAmount = cashAmount,
+            Description = description
+        }, ct);
     }
 
     // -------------------------------------------------------------------------
@@ -778,6 +837,10 @@ public class DebugDataSeeder : IDebugDataSeeder
     // Annual concert (Maclean Saturday / Yamba Sunday)
     // -------------------------------------------------------------------------
 
+    /// <summary>
+    /// A change float is withdrawn from the bank the day before the concert weekend, and the
+    /// Monday after it the float and both nights' cash takings are banked together.
+    /// </summary>
     private async Task SeedConcertsAsync(
         int year,
         IReadOnlyList<Member> activeMembers,
@@ -789,6 +852,18 @@ public class DebugDataSeeder : IDebugDataSeeder
         var (macleanDate, yambaDate) = GetConcertDates(year);
         var participationItems = activeMembers.Select(m => new ParticipationBatchItem { MemberId = m.Id, Participated = true }).ToList();
 
+        var floatDate = macleanDate.AddDays(-1);
+        if (floatDate <= SeedCurrentDate)
+        {
+            await _bankingService.RecordWithdrawalAsync(new RecordCashWithdrawalRequest
+            {
+                Date = floatDate,
+                BankAccountId = bankAccount.Id,
+                Amount = ConcertFloat,
+                Purpose = $"{year} concert change float"
+            }, ct);
+        }
+
         var macleanEvent = await _eventService.ScheduleAsync(new ScheduleEventRequest
         {
             Date = macleanDate,
@@ -797,7 +872,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         }, ct);
         if (macleanDate <= SeedCurrentDate)
             await _eventService.RecordParticipationAsync(macleanEvent.Id, participationItems, ct);
-        await RecordConcertTicketIncomeAsync(macleanDate, 560m, "Maclean", concertIncomeAccount, bankAccount, ct);
+        var macleanCash = await RecordConcertTicketIncomeAsync(macleanDate, 560m, "Maclean", concertIncomeAccount, bankAccount, ct);
 
         var yambaEvent = await _eventService.ScheduleAsync(new ScheduleEventRequest
         {
@@ -807,15 +882,27 @@ public class DebugDataSeeder : IDebugDataSeeder
         }, ct);
         if (yambaDate <= SeedCurrentDate)
             await _eventService.RecordParticipationAsync(yambaEvent.Id, participationItems, ct);
-        await RecordConcertTicketIncomeAsync(yambaDate, 860m, "Yamba", concertIncomeAccount, bankAccount, ct);
+        var yambaCash = await RecordConcertTicketIncomeAsync(yambaDate, 860m, "Yamba", concertIncomeAccount, bankAccount, ct);
+
+        var bankingDate = yambaDate.AddDays(1);
+        if (bankingDate <= SeedCurrentDate)
+        {
+            // Capped at the cash available so a back-dated deposit can never overdraw Petty Cash (FR-010).
+            var cashAmount = Math.Min(ConcertFloat + macleanCash + yambaCash,
+                await _bankingService.GetCashAvailableAsync(bankingDate, ct));
+            await DepositAwaitingAsync(bankingDate, bankAccount, cashAmount, $"{year} concert takings and float", ct);
+        }
     }
 
-    /// <summary>Ticket sales are 70% cash (banked like attendance fees) and 30% direct EFTPOS.</summary>
-    private async Task RecordConcertTicketIncomeAsync(
+    /// <summary>
+    /// Ticket sales are 70% cash (into Petty Cash) and 30% direct EFTPOS. Returns the cash
+    /// takings, or zero when the concert hasn't happened yet.
+    /// </summary>
+    private async Task<decimal> RecordConcertTicketIncomeAsync(
         DateTime date, decimal totalSales, string location, Account concertIncomeAccount, Account bankAccount, CancellationToken ct)
     {
         if (date > SeedCurrentDate)
-            return; // concert hasn't happened yet — no ticket sales to record
+            return 0m; // concert hasn't happened yet — no ticket sales to record
 
         var cashAmount = Math.Round(totalSales * 0.7m, 2);
         var eftposAmount = totalSales - cashAmount;
@@ -837,13 +924,16 @@ public class DebugDataSeeder : IDebugDataSeeder
             BankAccountId = bankAccount.Id,
             Description = $"{location} concert ticket sales — EFTPOS"
         }, ct);
+
+        return cashAmount;
     }
 
     // -------------------------------------------------------------------------
     // Raffle
     // -------------------------------------------------------------------------
 
-    private async Task SeedRaffleAsync(int year, Account raffleIncomeAccount, CancellationToken ct)
+    /// <summary>The raffle's cash ticket sales are banked in full on the Monday after the draw.</summary>
+    private async Task SeedRaffleAsync(int year, Account raffleIncomeAccount, Account bankAccount, CancellationToken ct)
     {
         var raffleDate = GetRaffleDate(year);
         if (raffleDate > SeedCurrentDate)
@@ -858,6 +948,13 @@ public class DebugDataSeeder : IDebugDataSeeder
             AccountId = raffleIncomeAccount.Id,
             Description = $"{year} annual raffle ticket sales"
         }, ct);
+
+        var bankingDate = raffleDate.AddDays(2);
+        if (bankingDate <= SeedCurrentDate)
+        {
+            var cashAmount = Math.Min(amount, await _bankingService.GetCashAvailableAsync(bankingDate, ct));
+            await DepositAwaitingAsync(bankingDate, bankAccount, cashAmount, $"{year} raffle takings", ct);
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -1012,15 +1109,17 @@ public class DebugDataSeeder : IDebugDataSeeder
     }
 
     /// <summary>
-    /// A council community-arts grant each March and a bowling-club concert sponsorship each May,
-    /// both linked income entries, so organisations carry "Total received" history as well as
-    /// "Total paid" across both seeded years.
+    /// A council community-arts grant each March (bank transfer) and a bowling-club concert
+    /// sponsorship each May (a cheque, banked on its own three days later), both linked income
+    /// entries, so organisations carry "Total received" history as well as "Total paid" across
+    /// both seeded years.
     /// </summary>
     private async Task SeedGrantsAndSponsorshipAsync(
         int year, Account grantsIncomeAccount, Account bankAccount,
         IReadOnlyDictionary<string, Guid> organisations, CancellationToken ct)
     {
-        async Task ReceiveAsync(DateTime date, decimal amount, string organisation, string description)
+        async Task ReceiveAsync(DateTime date, decimal amount, string organisation, string description,
+            PaymentMethod method, string? reference = null)
         {
             if (date > SeedCurrentDate)
                 return; // not received yet
@@ -1030,15 +1129,24 @@ public class DebugDataSeeder : IDebugDataSeeder
                 Date = date,
                 Amount = amount,
                 AccountId = grantsIncomeAccount.Id,
-                PaymentMethod = PaymentMethod.ElectronicTransfer,
-                BankAccountId = bankAccount.Id,
+                PaymentMethod = method,
+                BankAccountId = bankAccount.Id, // used for bank transfer only
+                Reference = reference,
                 Description = description,
                 ExternalOrganisationId = organisations[organisation]
             }, ct);
         }
 
-        await ReceiveAsync(Utc(year, 3, 16), year == 2025 ? 750m : 800m, ValleyCouncil, $"{year} community arts grant");
-        await ReceiveAsync(Utc(year, 5, 12), 300m, BowlingClub, $"{year} concert sponsorship");
+        await ReceiveAsync(Utc(year, 3, 16), year == 2025 ? 750m : 800m, ValleyCouncil, $"{year} community arts grant",
+            PaymentMethod.ElectronicTransfer);
+
+        var sponsorshipDate = Utc(year, 5, 12);
+        await ReceiveAsync(sponsorshipDate, 300m, BowlingClub, $"{year} concert sponsorship",
+            PaymentMethod.Check, year == 2025 ? "004417" : "005132");
+
+        var bankingDate = sponsorshipDate.AddDays(3);
+        if (bankingDate <= SeedCurrentDate)
+            await DepositAwaitingAsync(bankingDate, bankAccount, 0m, $"{year} sponsorship cheque", ct);
     }
 
     // -------------------------------------------------------------------------

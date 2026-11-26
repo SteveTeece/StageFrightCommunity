@@ -25,7 +25,7 @@ public class ChartOfAccountsTabTests : LocalizedTestContext
         Services.AddSingleton(_accountService);
         _accountService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>
         {
-            new() { Id = Guid.NewGuid(), Name = "Cash on Hand", Type = AccountType.Asset, AccountNumber = "1100", IsSystem = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+            new() { Id = Guid.NewGuid(), Name = "Petty Cash", Type = AccountType.Asset, AccountNumber = "1100", IsSystem = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
         });
         _accountService.GetArchivedAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>());
     }
@@ -45,13 +45,13 @@ public class ChartOfAccountsTabTests : LocalizedTestContext
         QueuedAccountRequest? added = null;
         var cut = RenderTab(onAdd: EventCallback.Factory.Create<QueuedAccountRequest>(this, a => added = a));
 
-        cut.Find("#account-name").Change("Petty Cash");
+        cut.Find("#account-name").Change("Cash Tin");
         cut.Find("#account-type").Change(nameof(AccountType.Asset));
         cut.Find("#account-is-bank").Change(true);
         await cut.Find("form").SubmitAsync();
 
         Assert.NotNull(added);
-        Assert.Equal("Petty Cash", added!.Name);
+        Assert.Equal("Cash Tin", added!.Name);
         Assert.Equal(AccountType.Asset, added.Type);
         Assert.True(added.IsBankAccount);
         Assert.NotEqual(Guid.Empty, added.ClientId);
@@ -74,7 +74,7 @@ public class ChartOfAccountsTabTests : LocalizedTestContext
         var invoked = false;
         var cut = RenderTab(onAdd: EventCallback.Factory.Create<QueuedAccountRequest>(this, _ => invoked = true));
 
-        cut.Find("#account-name").Change("cash on hand");
+        cut.Find("#account-name").Change("petty cash");
         await cut.Find("form").SubmitAsync();
 
         Assert.False(invoked);
@@ -149,7 +149,7 @@ public class ChartOfAccountsTabTests : LocalizedTestContext
         var cut = RenderTab();
 
         Assert.Contains("Existing Accounts", cut.Markup);
-        Assert.Contains("Cash on Hand", cut.Markup);
+        Assert.Contains("Petty Cash", cut.Markup);
         Assert.Contains("System", cut.Markup);
         // Read-only: no remove button for the existing-accounts list itself.
         Assert.Empty(cut.FindAll(".bordered-list-box-remove"));

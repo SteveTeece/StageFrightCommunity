@@ -14,7 +14,7 @@ namespace StageFright.UI.Tests.Shared;
 /// </summary>
 public class ChartOfAccountsGridTests : LocalizedTestContext
 {
-    private static readonly AccountBalance Cash = Make("1100", "Cash on Hand", AccountType.Asset, balance: 120m, isSystem: true);
+    private static readonly AccountBalance Cash = Make("1100", "Petty Cash", AccountType.Asset, balance: 120m, isSystem: true);
     private static readonly AccountBalance Bank = Make("1200", "Bank", AccountType.Asset, balance: 3400m, isBank: true);
     private static readonly AccountBalance Payable = Make("2100", "Accounts Payable", AccountType.Liability, balance: 0m);
     private static readonly AccountBalance Donations = Make("4100", "Donations", AccountType.Income, balance: 75m);
@@ -131,7 +131,7 @@ public class ChartOfAccountsGridTests : LocalizedTestContext
             .Add(x => x.EditTemplate, editor));
 
         Assert.Equal("Bank", Assert.Single(cut.FindAll(".rename-input")).GetAttribute("value"));
-        Assert.Contains("Cash on Hand", cut.Markup);
+        Assert.Contains("Petty Cash", cut.Markup);
     }
 
     [Fact]

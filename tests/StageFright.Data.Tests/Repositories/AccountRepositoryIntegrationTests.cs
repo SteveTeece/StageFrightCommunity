@@ -144,7 +144,7 @@ public class AccountRepositoryIntegrationTests : IDisposable
         using var db = _factory.CreateContext();
         var repo = new AccountRepository(db);
 
-        // Cash on Hand (1100) is a seeded system bank account; user bank accounts start at 1110.
+        // Petty Cash (1100) is a seeded system bank account; user bank accounts start at 1110.
         var result = await repo.GetNextAccountNumberAsync(AccountType.Asset, true, TestContext.Current.CancellationToken);
 
         Assert.Equal("1110", result);
