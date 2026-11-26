@@ -1,0 +1,150 @@
+{
+  "workflow": "companion",
+  "specName": "Banking Rework — Undeposited Funds, Petty Cash, Deposits and Cash Withdrawals",
+  "branch": "033-banking-cash-deposits",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-26T01:30:33.822Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-26T01:36:08.360Z"
+    }
+  ],
+  "telemetryInstanceId": "2d0602eb-ff2b-480e-bd3e-beb0b4a6e39a",
+  "request": "There needs to be some major changes made to the banking system. Create a new branch and spec to address this and refer to issue #368. Present the spec for approval before moving to the planning stage.",
+  "decisions": [
+    {
+      "decision": "Card and EFT receipts go straight to a bank account chosen at entry, not the holding account",
+      "id": "spec-question-1",
+      "by": "you",
+      "at": "2026-11-26T01:33:39.346Z"
+    },
+    {
+      "decision": "One cash account: the existing Cash on Hand system account is renamed Petty Cash; cash takings and float withdrawals both land in it",
+      "id": "spec-question-2",
+      "by": "you",
+      "at": "2026-11-26T01:33:39.814Z"
+    },
+    {
+      "decision": "A mistaken deposit is corrected by reversing the whole deposit, returning its cheques to awaiting deposit and its cash to Petty Cash",
+      "id": "spec-question-3",
+      "by": "you",
+      "at": "2026-11-26T01:33:40.309Z"
+    }
+  ],
+  "expectations": [
+    "Dishonoured (bounced) cheque handling",
+    "Card-terminal settlement batches and their fees",
+    "Printing a bank deposit slip",
+    "Linking a cash withdrawal or float to a specific event",
+    "Counting cash by denomination",
+    "Bank statement import",
+    "Reclassifying historical payments posted to Cash on Hand",
+    "A separate float account apart from Petty Cash"
+  ],
+  "context": [
+    "area: src/StageFright.Core/Modules/Finance (BankDepositService, PaymentService, IncomeEntryService, ExpensePaymentService, SystemAccounts)",
+    "area: src/StageFright.Core/Modules/Rehearsals/AttendanceService (cash fee payments post to Cash on Hand)",
+    "area: src/StageFright.UI/Pages/Finance (BankDepositPage, PaymentForm, RecordIncome) and FinanceMenuItemProvider",
+    "area: StageFrightDbContext seeded system accounts 1100 Cash on Hand (IsBankAccount) and 1200 Member Receivable",
+    "finding: every member payment currently debits Cash on Hand regardless of PaymentMethod",
+    "finding: spec 009 defines the current deposit flow (Cash on Hand to a chosen bank account, typed amount)",
+    "constraint: financial records immutable, GL balanced in one transaction, corrections by reversing pairs",
+    "constraint: every new neutral resx key translated into all 7 shipped cultures; money via MoneyFormatter",
+    "constraint: DebugDataSeeder must cover 2+ years after a schema change",
+    "constraint: backup protobuf members append-only; spec 032 also bumps the backup version"
+  ],
+  "coverage": {
+    "FR-001": {
+      "title": "Undeposited Funds system asset account, auto-created, not deletable, not a bank account"
+    },
+    "FR-002": {
+      "title": "Cash on Hand renamed Petty Cash, keeping number, history and balance"
+    },
+    "FR-003": {
+      "title": "Member payments routed by method: cash to Petty Cash, cheque/other to Undeposited Funds, card/EFT to chosen bank"
+    },
+    "FR-004": {
+      "title": "Income entry asks how money was received and routes by the same rules"
+    },
+    "FR-005": {
+      "title": "Rehearsal cash fee payments go to Petty Cash"
+    },
+    "FR-006": {
+      "title": "Optional cheque reference shown wherever the cheque is listed"
+    },
+    "FR-007": {
+      "title": "Banking menu item replaces Record Bank Deposit, opening the Banking screen"
+    },
+    "FR-008": {
+      "title": "Awaiting-deposit list shows date, payer, reference, amount and total"
+    },
+    "FR-009": {
+      "title": "Record a deposit of selected cheques plus optional cash into one bank account"
+    },
+    "FR-010": {
+      "title": "Deposit validation: non-empty, cash within Petty Cash balance, cheques still awaiting, date not before receipt"
+    },
+    "FR-011": {
+      "title": "Running deposit total split into cash and cheques"
+    },
+    "FR-012": {
+      "title": "Deposit posts one balanced all-or-nothing entry and marks cheques deposited"
+    },
+    "FR-013": {
+      "title": "Each deposit is a single reconciliation line for its full total"
+    },
+    "FR-014": {
+      "title": "Record a cash withdrawal from a bank account into Petty Cash"
+    },
+    "FR-015": {
+      "title": "Banking history of deposits and withdrawals with deposit detail"
+    },
+    "FR-016": {
+      "title": "Reverse a deposit once: opposite entries, cheques back to awaiting, marked reversed"
+    },
+    "FR-017": {
+      "title": "Mistaken withdrawal corrected by depositing the cash back"
+    },
+    "FR-018": {
+      "title": "Deposits, withdrawals and reversals respect closed financial periods"
+    },
+    "FR-019": {
+      "title": "Audit trail entry for every deposit, withdrawal and reversal"
+    },
+    "FR-020": {
+      "title": "Existing financial records are not changed or reclassified"
+    },
+    "FR-021": {
+      "title": "Historical bank deposit and transfer entries still report correctly"
+    },
+    "FR-022": {
+      "title": "Backup includes and restores the new banking records; older backups still restore"
+    },
+    "FR-023": {
+      "title": "New text fully translated; amounts use configured currency"
+    },
+    "FR-024": {
+      "title": "Debug sample data covers 2+ years of the new banking flows, balanced"
+    }
+  },
+  "classification": {
+    "projectedFiles": 45,
+    "projectedTasks": 60,
+    "scopeSignal": "larger",
+    "verdict": "oversized"
+  },
+  "intent": "Rework banking so cheques wait in Undeposited Funds, cash goes to Petty Cash, deposits clear selected items into the bank, and cash can be withdrawn as event floats",
+  "size": "oversized",
+  "source": "#368"
+}
