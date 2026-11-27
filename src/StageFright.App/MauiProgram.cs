@@ -302,6 +302,8 @@ public static class MauiProgram
         services.AddScoped<IReportProvider, MemberListReportProvider>();
         services.AddScoped<IReportProvider, CommitteeReportProvider>();
         services.AddScoped<IReportProvider, BankReconciliationReportProvider>();
+        services.AddScoped<IReportProvider, BankDepositsReportProvider>();
+        services.AddScoped<IBankDepositReportBuilder, BankDepositReportBuilder>();
         services.AddScoped<IReportProvider, TaxSummaryReportProvider>();
         services.AddScoped<IReportProvider, BalanceSheetReportProvider>();
         services.AddScoped<IReportProvider, GeneralLedgerReportProvider>();

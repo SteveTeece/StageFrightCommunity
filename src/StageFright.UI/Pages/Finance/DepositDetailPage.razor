@@ -31,44 +31,7 @@
         }
         else
         {
-            <div class="card mb-2">
-                <div class="card-body py-2">
-                    <dl class="row mb-0 small">
-                        <dt class="col-sm-3">@L["Finance_Banking_Col_Date"]</dt>
-                        <dd class="col-sm-9" id="depositDate">@_detail.Date.ToShortDateString()</dd>
-                        <dt class="col-sm-3">@L["Finance_Banking_Col_BankAccount"]</dt>
-                        <dd class="col-sm-9" id="depositBank">@_detail.BankAccountName</dd>
-                        <dt class="col-sm-3">@L["Finance_Banking_Col_Status"]</dt>
-                        <dd class="col-sm-9" id="depositStatus">@StatusText()</dd>
-                        <dt class="col-sm-3">@L["Finance_Banking_TotalCash"]</dt>
-                        <dd class="col-sm-9" id="depositCash">@MoneyFormatter.Format(_detail.CashAmount)</dd>
-                        <dt class="col-sm-3">@L["Finance_Banking_TotalDeposit"]</dt>
-                        <dd class="col-sm-9 fw-semibold" id="depositTotal">@MoneyFormatter.Format(_detail.Total)</dd>
-                    </dl>
-                </div>
-            </div>
-
-            @if (_detail.Items.Count > 0)
-            {
-                <h5>@L["Finance_Banking_ItemsHeading"]</h5>
-                <RadzenDataGrid Data="@_detail.Items" TItem="AwaitingDepositItem"
-                                AllowSorting="true" AllowPaging="true" PageSize="15"
-                                class="rz-shadow-0 mb-2">
-                    <Columns>
-                        <RadzenDataGridColumn TItem="AwaitingDepositItem" Property="ReceivedDate" Title="@L["Finance_Banking_Col_Received"]" Width="130px">
-                            <Template Context="item">@item.ReceivedDate.ToShortDateString()</Template>
-                        </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="AwaitingDepositItem" Property="PayerName" Title="@L["Finance_Banking_Col_Payer"]">
-                            <Template Context="item">@PayerText(item)</Template>
-                        </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="AwaitingDepositItem" Property="Reference" Title="@L["Finance_Banking_Col_Reference"]" />
-                        <RadzenDataGridColumn TItem="AwaitingDepositItem" Property="Amount" Title="@L["Finance_Banking_Col_Amount"]" Width="140px" TextAlign="TextAlign.Right">
-                            <Template Context="item">@MoneyFormatter.Format(item.Amount)</Template>
-                            <FooterTemplate><strong id="itemsTotal">@MoneyFormatter.Format(ItemsTotal)</strong></FooterTemplate>
-                        </RadzenDataGridColumn>
-                    </Columns>
-                </RadzenDataGrid>
-            }
+            <DepositDetailView Detail="_detail" />
 
             @if (_detail.IsLegacy)
             {

@@ -1,0 +1,44 @@
+@page "/reports/bank-deposits/{Id:guid}"
+
+<PageTitle>@L["Finance_Banking_DepositDetailTitle"]</PageTitle>
+
+<div class="page-header mb-2">
+    <h1 class="h3 mb-0">@Shared["Shared_ReportsPage_Heading"]</h1>
+</div>
+
+<div class="bank-deposit-report">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+        <h2 class="h5 mb-0">@L["Finance_Banking_DepositDetailTitle"]</h2>
+        @if (_detail is not null)
+        {
+            <button type="button" class="btn btn-outline-primary btn-sm" id="printDeposit" @onclick="PrintAsync">
+                @Shared["Shared_Report_PrintButton"]
+            </button>
+        }
+    </div>
+
+    @if (_loading)
+    {
+        <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+        }
+
+        @if (_detail is not null)
+        {
+            <DepositDetailView Detail="_detail" />
+        }
+        else if (!_loadFailed)
+        {
+            <p class="text-muted small" id="depositNotFound">@L["Finance_Banking_DepositNotFound"]</p>
+        }
+    }
+
+    <div>
+        <a href="/reports/bank-deposits" class="btn btn-outline-secondary btn-sm" id="backToDeposits">@L["Finance_Banking_BackToDepositsReport"]</a>
+    </div>
+</div>

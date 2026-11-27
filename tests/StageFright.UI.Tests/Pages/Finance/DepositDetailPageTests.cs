@@ -28,8 +28,8 @@ public class DepositDetailPageTests : LocalizedTestContext
 
     private static DepositDetail Recorded() => new()
     {
-        Id = DepositId, Date = new DateTime(2026, 3, 4), BankAccountName = "Community Bank", CashAmount = 40m, Total = 160m,
-        CanReverse = true,
+        Id = DepositId, Date = new DateTime(2026, 3, 4), Description = "March takings", BankAccountName = "Community Bank",
+        CashAmount = 40m, Total = 160m, CanReverse = true,
         Items =
         [
             Item("Alice Smith", "CHQ 1", 50m),
@@ -68,6 +68,7 @@ public class DepositDetailPageTests : LocalizedTestContext
     {
         var cut = RenderPage();
 
+        Assert.Equal("March takings", cut.Find("#depositDescription").TextContent);
         Assert.Equal("Community Bank", cut.Find("#depositBank").TextContent);
         Assert.Equal(MoneyFormatter.Format(40m), cut.Find("#depositCash").TextContent);
         Assert.Equal(MoneyFormatter.Format(160m), cut.Find("#depositTotal").TextContent);

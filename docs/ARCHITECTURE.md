@@ -183,9 +183,9 @@ See [Known Gotchas in `CLAUDE.md`](../CLAUDE.md#known-gotchas) for the MAUI WebV
 
 ## Reports Pipeline
 
-`IReportProvider` → `ReportData` (rows/columns/sections/subtotals) → `ReportViewer.razor` (modal "Generating…", synchronous; cancel appears after 5s) → `PdfReportRenderer` (QuestPDF) or `CsvReportExporter` (CsvHelper). `ReportViewer`'s optional `BodyTemplate` replaces only the on-screen table; Chart of Accounts uses it to render the shared `ChartOfAccountsGrid` that Finance → Chart of Accounts also uses (issue #367). All ten current reports follow this single pipeline:
+`IReportProvider` → `ReportData` (rows/columns/sections/subtotals) → `ReportViewer.razor` (modal "Generating…", synchronous; cancel appears after 5s) → `PdfReportRenderer` (QuestPDF) or `CsvReportExporter` (CsvHelper). `ReportViewer`'s optional `BodyTemplate` replaces only the on-screen table; Chart of Accounts uses it to render the shared `ChartOfAccountsGrid` that Finance → Chart of Accounts also uses (issue #367), and Bank Deposits uses it to render `BankDepositsReportView`, whose rows open `/reports/bank-deposits/{id}` (issue #399). All current menu reports follow this single pipeline:
 
-`IncomeStatement`, `TrialBalance`, `AccountRegister`, `MemberAccountSummary`, `MemberList`, `Committee`, `BalanceSheet`, `BankReconciliation`, `TaxSummary`, `GeneralLedger` — each is a class in `StageFright.Reports/Providers/` implementing `IReportProvider`, registered individually in `MauiProgram.RegisterCoreServices` and aggregated by `IReportProviderRegistry`.
+`IncomeStatement`, `TrialBalance`, `AccountRegister`, `MemberAccountSummary`, `MemberList`, `Committee`, `BalanceSheet`, `BankReconciliation`, `BankDeposits`, `TaxSummary`, `GeneralLedger` — each is a class in `StageFright.Reports/Providers/` implementing `IReportProvider`, registered individually in `MauiProgram.RegisterCoreServices` and aggregated by `IReportProviderRegistry`. A single deposit opened from Bank Deposits is not a menu report: `BankDepositReportPage` shows the read-only `DepositDetailView` and prints through `IBankDepositReportBuilder` → `ReportData` → `PdfReportRenderer`.
 
 In QuestPDF-rendered checkbox-style cells (e.g. `AttendanceRollPdfRenderer`), a checked box is a bordered `Container` with a centered "✓" glyph, never a solid filled box.
 

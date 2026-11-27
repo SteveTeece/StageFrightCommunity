@@ -16,6 +16,15 @@
         </BodyTemplate>
     </ReportViewer>
 }
+else if (_currentProvider != null && IsBankDeposits)
+{
+    @* Deposit list whose rows open each deposit (issue #399); Print/Export still use the provider. *@
+    <ReportViewer Provider="_currentProvider">
+        <BodyTemplate Context="filters">
+            <BankDepositsReportView />
+        </BodyTemplate>
+    </ReportViewer>
+}
 else if (_currentProvider != null)
 {
     <ReportViewer Provider="_currentProvider" />

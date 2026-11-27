@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
-using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
@@ -106,23 +105,6 @@ public partial class DepositDetailPage : ComponentBase
             _reversing = false;
         }
     }
-
-    private decimal ItemsTotal => _detail?.Items.Sum(i => i.Amount) ?? 0m;
-
-    private string StatusText()
-    {
-        if (_detail is not { IsReversed: true })
-            return L["Finance_Banking_Status_Recorded"];
-
-        return _detail.ReversedAt is { } reversedAt
-            ? $"{L["Finance_Banking_Status_Reversed"]} · {Loc.Get<FinanceResource>("Finance_Banking_ReversedOn", reversedAt.ToLocalTime().ToShortDateString())}"
-            : L["Finance_Banking_Status_Reversed"];
-    }
-
-    private string PayerText(AwaitingDepositItem item) =>
-        item.Source == ReceivedItemSource.OpeningBalance && string.IsNullOrEmpty(item.PayerName)
-            ? L["Finance_Banking_OpeningBalancePayer"].Value
-            : item.PayerName ?? string.Empty;
 
     private string Detail(Exception ex) => ErrorDetail.For(ex, L["Finance_Banking_UnexpectedErrorDetail"]);
 }

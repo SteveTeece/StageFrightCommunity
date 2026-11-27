@@ -144,4 +144,20 @@
   <data name="Reports_EventSheet_ParticipatedColumn" xml:space="preserve"><value>Teilgenommen</value></data>
   <data name="Reports_AgmSheet_Title" xml:space="preserve"><value>JHV-Anwesenheitsbericht</value></data>
   <data name="Reports_AgmSheet_AttendedColumn" xml:space="preserve"><value>Anwesend</value></data>
+  <data name="Reports_BankDeposits_Name" xml:space="preserve"><value>Bankeinzahlungen</value></data>
+  <data name="Reports_BankDeposits_SubTitle" xml:space="preserve"><value>Alle Einzahlungen, neueste zuerst, erstellt am {Date}</value><comment>{Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_BankDeposits_SubTitleNone" xml:space="preserve"><value>Es wurden keine Einzahlungen erfasst.</value></data>
+  <data name="Reports_BankDeposits_BankAccountColumn" xml:space="preserve"><value>Bankkonto</value></data>
+  <data name="Reports_BankDeposits_StatusColumn" xml:space="preserve"><value>Status</value></data>
+  <data name="Reports_BankDeposits_TotalColumn" xml:space="preserve"><value>Einzahlungssumme</value></data>
+  <data name="Reports_BankDeposits_Status_Recorded" xml:space="preserve"><value>Erfasst</value></data>
+  <data name="Reports_BankDeposits_Status_Reversed" xml:space="preserve"><value>Storniert</value></data>
+  <data name="Reports_BankDeposit_Title" xml:space="preserve"><value>Bankeinzahlung</value></data>
+  <data name="Reports_BankDeposit_SubTitle" xml:space="preserve"><value>{Description} — eingezahlt am {Date} auf {BankAccount} ({Status})</value><comment>{Description} deposit description (user data), {Date} deposit date formatted 'd MMMM yyyy', {BankAccount} bank account name (user data), {Status} Recorded/Reversed.</comment></data>
+  <data name="Reports_BankDeposit_ReceivedColumn" xml:space="preserve"><value>Erhalten</value></data>
+  <data name="Reports_BankDeposit_PayerColumn" xml:space="preserve"><value>Zahler</value></data>
+  <data name="Reports_BankDeposit_ReferenceColumn" xml:space="preserve"><value>Referenz</value></data>
+  <data name="Reports_BankDeposit_CashRow" xml:space="preserve"><value>Bargeld</value></data>
+  <data name="Reports_BankDeposit_Total" xml:space="preserve"><value>Einzahlungssumme</value></data>
+  <data name="Reports_BankDeposit_OpeningBalancePayer" xml:space="preserve"><value>Eröffnungssaldo</value></data>
 </root>

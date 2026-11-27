@@ -1,0 +1,37 @@
+@using StageFright.Core.Modules.Finance
+
+@if (_error is not null)
+{
+    <div class="alert alert-danger py-1 mb-2 small" role="alert">@_error</div>
+}
+else if (_deposits is not null)
+{
+    @if (_deposits.Count == 0)
+    {
+        <p class="text-muted small" id="noDeposits">@L["Finance_Banking_NoDeposits"]</p>
+    }
+    else
+    {
+        <RadzenDataGrid Data="@_deposits" TItem="BankingHistoryEntry"
+                        AllowSorting="true" AllowPaging="true" PageSize="15"
+                        class="rz-shadow-0 bank-deposits-grid">
+            <Columns>
+                <RadzenDataGridColumn TItem="BankingHistoryEntry" Property="Date" Title="@L["Finance_Banking_Col_Date"]" Width="130px">
+                    <Template Context="entry">@entry.Date.ToShortDateString()</Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="BankingHistoryEntry" Property="Description" Title="@L["Finance_Common_DescriptionLabel"]">
+                    <Template Context="entry">
+                        <a href="@DepositRoute(entry)" class="deposit-link">@LinkText(entry)</a>
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="BankingHistoryEntry" Property="BankAccountName" Title="@L["Finance_Banking_Col_BankAccount"]" />
+                <RadzenDataGridColumn TItem="BankingHistoryEntry" Property="IsReversed" Title="@L["Finance_Banking_Col_Status"]" Width="130px">
+                    <Template Context="entry">@StatusText(entry)</Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="BankingHistoryEntry" Property="Total" Title="@L["Finance_Banking_TotalDeposit"]" Width="150px" TextAlign="TextAlign.Right">
+                    <Template Context="entry">@MoneyFormatter.Format(entry.Total)</Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    }
+}

@@ -282,4 +282,6 @@
   <data name="Finance_OpeningBalances_RecordedIntro" xml:space="preserve"><value>これらの期首残高は{Date}時点で計上済みのためロックされています。勘定の残高を調整するには、仕訳を入力してください。</value><comment>Opening Balances page once balances are posted — read-only view. {Date} = as-at date, long format.</comment></data>
   <data name="Finance_OpeningBalances_JournalLink" xml:space="preserve"><value>仕訳を入力</value><comment>Opening Balances page — link to the Journal Entry page, the way to adjust a locked opening balance.</comment></data>
   <data name="Finance_OpeningBalances_NoneRecordedIntro" xml:space="preserve"><value>期首残高が記録されていないため、すべての勘定はゼロから開始されています。期首残高を訂正するには、仕訳を入力してください。</value><comment>Opening Balances page when a dataset never recorded opening balances (pre issue #398) — every account opened at zero.</comment></data>
+  <data name="Finance_Banking_NoDeposits" xml:space="preserve"><value>預入は記録されていません。</value><comment>Bank Deposits report: shown when no deposit has been recorded.</comment></data>
+  <data name="Finance_Banking_BackToDepositsReport" xml:space="preserve"><value>銀行預入一覧に戻る</value><comment>Bank deposit report page: link back to the Bank Deposits report.</comment></data>
 </root>

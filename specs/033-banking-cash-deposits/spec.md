@@ -103,6 +103,8 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 5. **Given** a deposit dated in a closed financial period, **When** the user tries to reverse it, **Then** the reversal is refused with the same message the app gives for other closed-period postings.
 6. **Given** a deposit whose bank line was cleared in a finalised bank reconciliation, **When** the user tries to reverse it, **Then** the reversal is refused and the user is told the deposit is part of a finalised reconciliation.
 7. **Given** a deposit whose bank line is cleared only in a draft reconciliation, **When** the user reverses it, **Then** the reversal succeeds and the line is no longer cleared in that draft.
+8. *(issue #399)* **Given** recorded deposits, **When** the user opens *Reports → Bank Deposits*, **Then** every deposit is listed newest first with its date, description, bank account, status and total, and withdrawals are not listed.
+9. *(issue #399)* **Given** the Bank Deposits report, **When** the user opens one deposit, **Then** a read-only view of the full deposit record is shown (no reverse action) and *Print* produces a PDF of its items, cash and total.
 
 ---
 
@@ -156,6 +158,7 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 **History and reversal**
 
 - **FR-015**: The Banking screen MUST list past deposits and withdrawals with their date, type, bank account, total and status. Opening a deposit MUST show its cash amount and each included cheque.
+- **FR-015a** *(issue #399)*: The Reports menu MUST offer a *Bank Deposits* report (Finance section) listing every deposit, including legacy deposits, newest first, with its date, description, bank account, status and total; its Print and Export CSV give the same list. Each listed deposit MUST open a read-only report page of the full deposit record (date, description, bank account, status, cash, each included item and the total) with a *Print* action that renders that deposit as a PDF. The page offers no reverse action; reversing stays on the Banking screen.
 - **FR-016**: The user MUST be able to reverse a recorded deposit after confirming. The reversal posts the exact opposite entries, dated on the original deposit's date, in one all-or-nothing posting, returns each included cheque to awaiting deposit, and marks the deposit as reversed. A deposit can be reversed only once. A reversal MUST be refused, with a message saying why, when the deposit's bank line has been cleared in a finalised bank reconciliation. When the line is cleared only in a draft reconciliation, the reversal is allowed and the line is removed from that draft.
 - **FR-017**: A withdrawal recorded by mistake MUST be correctable by recording its reverse: a deposit of that cash back into the same bank account. No separate withdrawal-reversal action is required.
 - **FR-018**: Deposits, withdrawals and reversals MUST respect the existing closed-financial-period rule and be refused when dated inside a closed period. Because a reversal takes the original deposit's date, a deposit dated in a closed period cannot be reversed.
@@ -194,7 +197,7 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 
 - Dishonoured (bounced) cheques. A cheque that bounces after it was banked is corrected with a journal entry.
 - Card-terminal settlement batches or bank fees deducted from them.
-- Printing a bank deposit slip.
+- Printing the bank's own deposit-slip form. A printable report of a recorded deposit exists (FR-015a, issue #399), but it is not a slip to hand in at the bank.
 - Linking a cash withdrawal or float to a specific event.
 - Counting a till by denomination (notes and coins).
 - Importing bank statements.

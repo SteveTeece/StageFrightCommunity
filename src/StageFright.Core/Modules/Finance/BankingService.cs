@@ -159,6 +159,7 @@ public class BankingService : IBankingService
         {
             Id = legacy.Id,
             Date = legacy.Date,
+            Description = legacy.Description,
             BankAccountName = legacy.Transactions.FirstOrDefault(t => t.DebitAmount > 0m)?.Account?.Name ?? string.Empty,
             CashAmount = total, // a legacy deposit banked Petty Cash only
             Total = total,
@@ -377,6 +378,7 @@ public class BankingService : IBankingService
         {
             Id = deposit.Id,
             Date = deposit.Date,
+            Description = deposit.JournalEntry?.Description,
             BankAccountName = deposit.BankAccount?.Name ?? string.Empty,
             CashAmount = deposit.CashAmount,
             Items = deposit.Lines

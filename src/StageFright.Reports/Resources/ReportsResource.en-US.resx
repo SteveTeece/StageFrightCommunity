@@ -612,4 +612,20 @@
   <data name="Reports_AgmSheet_AttendedColumn" xml:space="preserve">
     <value>Attended</value>
   </data>
+  <data name="Reports_BankDeposits_Name" xml:space="preserve"><value>Bank Deposits</value></data>
+  <data name="Reports_BankDeposits_SubTitle" xml:space="preserve"><value>All deposits, newest first, generated {Date}</value><comment>{Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_BankDeposits_SubTitleNone" xml:space="preserve"><value>No deposits have been recorded.</value></data>
+  <data name="Reports_BankDeposits_BankAccountColumn" xml:space="preserve"><value>Bank account</value></data>
+  <data name="Reports_BankDeposits_StatusColumn" xml:space="preserve"><value>Status</value></data>
+  <data name="Reports_BankDeposits_TotalColumn" xml:space="preserve"><value>Deposit total</value></data>
+  <data name="Reports_BankDeposits_Status_Recorded" xml:space="preserve"><value>Recorded</value></data>
+  <data name="Reports_BankDeposits_Status_Reversed" xml:space="preserve"><value>Reversed</value></data>
+  <data name="Reports_BankDeposit_Title" xml:space="preserve"><value>Bank Deposit</value></data>
+  <data name="Reports_BankDeposit_SubTitle" xml:space="preserve"><value>{Description} — deposited {Date} to {BankAccount} ({Status})</value><comment>{Description} deposit description (user data), {Date} deposit date formatted 'd MMMM yyyy', {BankAccount} bank account name (user data), {Status} Recorded/Reversed.</comment></data>
+  <data name="Reports_BankDeposit_ReceivedColumn" xml:space="preserve"><value>Received</value></data>
+  <data name="Reports_BankDeposit_PayerColumn" xml:space="preserve"><value>Payer</value></data>
+  <data name="Reports_BankDeposit_ReferenceColumn" xml:space="preserve"><value>Reference</value></data>
+  <data name="Reports_BankDeposit_CashRow" xml:space="preserve"><value>Cash</value></data>
+  <data name="Reports_BankDeposit_Total" xml:space="preserve"><value>Deposit total</value></data>
+  <data name="Reports_BankDeposit_OpeningBalancePayer" xml:space="preserve"><value>Opening balance</value></data>
 </root>

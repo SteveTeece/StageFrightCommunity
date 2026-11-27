@@ -18,6 +18,8 @@ public partial class ReportsPage : ComponentBase
 
     private bool IsChartOfAccounts => _currentProvider?.ReportId == "chart-of-accounts";
 
+    private bool IsBankDeposits => _currentProvider?.ReportId == "bank-deposits";
+
     private string NotFoundText() =>
         Loc.Get<SharedResource>("Shared_ReportsPage_NotFound", ReportId ?? string.Empty);
 

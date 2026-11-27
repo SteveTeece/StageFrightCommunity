@@ -144,4 +144,20 @@
   <data name="Reports_EventSheet_ParticipatedColumn" xml:space="preserve"><value>Uczestniczył</value></data>
   <data name="Reports_AgmSheet_Title" xml:space="preserve"><value>Raport obecności na walnym zgromadzeniu</value></data>
   <data name="Reports_AgmSheet_AttendedColumn" xml:space="preserve"><value>Obecny</value></data>
+  <data name="Reports_BankDeposits_Name" xml:space="preserve"><value>Wpłaty bankowe</value></data>
+  <data name="Reports_BankDeposits_SubTitle" xml:space="preserve"><value>Wszystkie wpłaty, od najnowszej, wygenerowano {Date}</value><comment>{Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_BankDeposits_SubTitleNone" xml:space="preserve"><value>Nie zarejestrowano żadnych wpłat.</value></data>
+  <data name="Reports_BankDeposits_BankAccountColumn" xml:space="preserve"><value>Konto bankowe</value></data>
+  <data name="Reports_BankDeposits_StatusColumn" xml:space="preserve"><value>Status</value></data>
+  <data name="Reports_BankDeposits_TotalColumn" xml:space="preserve"><value>Suma wpłaty</value></data>
+  <data name="Reports_BankDeposits_Status_Recorded" xml:space="preserve"><value>Zarejestrowano</value></data>
+  <data name="Reports_BankDeposits_Status_Reversed" xml:space="preserve"><value>Cofnięto</value></data>
+  <data name="Reports_BankDeposit_Title" xml:space="preserve"><value>Wpłata bankowa</value></data>
+  <data name="Reports_BankDeposit_SubTitle" xml:space="preserve"><value>{Description} — wpłacono {Date} na {BankAccount} ({Status})</value><comment>{Description} deposit description (user data), {Date} deposit date formatted 'd MMMM yyyy', {BankAccount} bank account name (user data), {Status} Recorded/Reversed.</comment></data>
+  <data name="Reports_BankDeposit_ReceivedColumn" xml:space="preserve"><value>Otrzymano</value></data>
+  <data name="Reports_BankDeposit_PayerColumn" xml:space="preserve"><value>Płatnik</value></data>
+  <data name="Reports_BankDeposit_ReferenceColumn" xml:space="preserve"><value>Odniesienie</value></data>
+  <data name="Reports_BankDeposit_CashRow" xml:space="preserve"><value>Gotówka</value></data>
+  <data name="Reports_BankDeposit_Total" xml:space="preserve"><value>Suma wpłaty</value></data>
+  <data name="Reports_BankDeposit_OpeningBalancePayer" xml:space="preserve"><value>Saldo początkowe</value></data>
 </root>

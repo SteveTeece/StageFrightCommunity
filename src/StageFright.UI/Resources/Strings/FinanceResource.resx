@@ -588,4 +588,6 @@
   <data name="Finance_OpeningBalances_RecordedIntro" xml:space="preserve"><value>These opening balances were posted as at {Date} and are locked. To adjust an account's balance, post a journal entry.</value><comment>Opening Balances page once balances are posted — read-only view. {Date} = as-at date, long format.</comment></data>
   <data name="Finance_OpeningBalances_JournalLink" xml:space="preserve"><value>Post a journal entry</value><comment>Opening Balances page — link to the Journal Entry page, the way to adjust a locked opening balance.</comment></data>
   <data name="Finance_OpeningBalances_NoneRecordedIntro" xml:space="preserve"><value>No opening balances were recorded, so every account opened at zero. To correct an opening balance, post a journal entry.</value><comment>Opening Balances page when a dataset never recorded opening balances (pre issue #398) — every account opened at zero.</comment></data>
+  <data name="Finance_Banking_NoDeposits" xml:space="preserve"><value>No deposits have been recorded.</value><comment>Bank Deposits report: shown when no deposit has been recorded.</comment></data>
+  <data name="Finance_Banking_BackToDepositsReport" xml:space="preserve"><value>Back to Bank Deposits</value><comment>Bank deposit report page: link back to the Bank Deposits report.</comment></data>
 </root>

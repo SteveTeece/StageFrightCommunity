@@ -144,4 +144,20 @@
   <data name="Reports_EventSheet_ParticipatedColumn" xml:space="preserve"><value>Participó</value></data>
   <data name="Reports_AgmSheet_Title" xml:space="preserve"><value>Informe de asistencia a la asamblea general</value></data>
   <data name="Reports_AgmSheet_AttendedColumn" xml:space="preserve"><value>Asistió</value></data>
+  <data name="Reports_BankDeposits_Name" xml:space="preserve"><value>Depósitos bancarios</value></data>
+  <data name="Reports_BankDeposits_SubTitle" xml:space="preserve"><value>Todos los depósitos, del más reciente al más antiguo, generado el {Date}</value><comment>{Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_BankDeposits_SubTitleNone" xml:space="preserve"><value>No se ha registrado ningún depósito.</value></data>
+  <data name="Reports_BankDeposits_BankAccountColumn" xml:space="preserve"><value>Cuenta bancaria</value></data>
+  <data name="Reports_BankDeposits_StatusColumn" xml:space="preserve"><value>Estado</value></data>
+  <data name="Reports_BankDeposits_TotalColumn" xml:space="preserve"><value>Total del depósito</value></data>
+  <data name="Reports_BankDeposits_Status_Recorded" xml:space="preserve"><value>Registrado</value></data>
+  <data name="Reports_BankDeposits_Status_Reversed" xml:space="preserve"><value>Revertido</value></data>
+  <data name="Reports_BankDeposit_Title" xml:space="preserve"><value>Depósito bancario</value></data>
+  <data name="Reports_BankDeposit_SubTitle" xml:space="preserve"><value>{Description} — depositado el {Date} en {BankAccount} ({Status})</value><comment>{Description} deposit description (user data), {Date} deposit date formatted 'd MMMM yyyy', {BankAccount} bank account name (user data), {Status} Recorded/Reversed.</comment></data>
+  <data name="Reports_BankDeposit_ReceivedColumn" xml:space="preserve"><value>Recibido</value></data>
+  <data name="Reports_BankDeposit_PayerColumn" xml:space="preserve"><value>Pagador</value></data>
+  <data name="Reports_BankDeposit_ReferenceColumn" xml:space="preserve"><value>Referencia</value></data>
+  <data name="Reports_BankDeposit_CashRow" xml:space="preserve"><value>Efectivo</value></data>
+  <data name="Reports_BankDeposit_Total" xml:space="preserve"><value>Total del depósito</value></data>
+  <data name="Reports_BankDeposit_OpeningBalancePayer" xml:space="preserve"><value>Saldo inicial</value></data>
 </root>

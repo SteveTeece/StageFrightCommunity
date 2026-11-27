@@ -23,6 +23,7 @@ public class ReportsPageTests : LocalizedTestContext
     private readonly IReportProviderRegistry _registry = Substitute.For<IReportProviderRegistry>();
     private readonly IAccountBalanceService _accountBalanceService = Substitute.For<IAccountBalanceService>();
     private readonly IReportProvider _provider = Substitute.For<IReportProvider>();
+    private readonly IBankingService _banking = Substitute.For<IBankingService>();
 
     private static readonly ReportData FlatReport = new()
     {
@@ -36,6 +37,7 @@ public class ReportsPageTests : LocalizedTestContext
     {
         Services.AddSingleton(_registry);
         Services.AddSingleton(_accountBalanceService);
+        Services.AddSingleton(_banking);
         Services.AddSingleton(Substitute.For<IPdfReportRenderer>());
         Services.AddSingleton(Substitute.For<ICsvReportExporter>());
         Services.AddSingleton(Substitute.For<ISettingsService>());
@@ -45,6 +47,10 @@ public class ReportsPageTests : LocalizedTestContext
         {
             new() { AccountId = Guid.NewGuid(), AccountNumber = "1100", Name = "Petty Cash", Type = AccountType.Asset, Balance = 500m },
             new() { AccountId = Guid.NewGuid(), AccountNumber = "4000", Name = "Membership Fees", Type = AccountType.Income, Balance = 250m }
+        });
+        _banking.GetHistoryAsync(Arg.Any<CancellationToken>()).Returns(new List<BankingHistoryEntry>
+        {
+            new() { Id = Guid.NewGuid(), Type = BankingHistoryEntryType.Deposit, Date = new DateTime(2026, 5, 10), Description = "May takings", BankAccountName = "Community Bank", Total = 250m }
         });
     }
 
@@ -89,5 +95,15 @@ public class ReportsPageTests : LocalizedTestContext
 
         cut.WaitForAssertion(() => Assert.Contains("Generic row", cut.Markup));
         Assert.Empty(cut.FindAll(".chart-of-accounts-section"));
+    }
+
+    [Fact]
+    public void Should_RenderLinkedDepositList_When_BankDepositsReportOpened()
+    {
+        var cut = RenderReport("bank-deposits");
+
+        cut.WaitForAssertion(() => Assert.Equal("May takings", cut.Find("a.deposit-link").TextContent.Trim()));
+        Assert.DoesNotContain("Generic row", cut.Markup);
+        Assert.Contains("Print", cut.Markup);
     }
 }

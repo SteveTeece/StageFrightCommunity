@@ -11,6 +11,9 @@ public class DepositDetail
     /// <summary>The deposit date.</summary>
     public DateTime Date { get; init; }
 
+    /// <summary>The deposit's journal description (its note, or the default "Bank deposit — {bank}").</summary>
+    public string? Description { get; init; }
+
     /// <summary>The bank account deposited into.</summary>
     public string BankAccountName { get; init; } = string.Empty;
 

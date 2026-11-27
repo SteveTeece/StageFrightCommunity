@@ -611,6 +611,7 @@ public class BankingServiceTests : TestBase
 
         Assert.NotNull(detail);
         Assert.Equal(deposit.Id, detail!.Id);
+        Assert.Equal("Bank deposit — Operating", detail.Description);
         Assert.Equal("Operating", detail.BankAccountName);
         Assert.Equal(25m, detail.CashAmount);
         Assert.Equal(85m, detail.Total);
@@ -672,6 +673,7 @@ public class BankingServiceTests : TestBase
 
         Assert.NotNull(detail);
         Assert.True(detail!.IsLegacy);
+        Assert.Equal("Old deposit", detail.Description);
         Assert.Equal("Operating", detail.BankAccountName);
         Assert.Equal(70m, detail.CashAmount);
         Assert.Equal(70m, detail.Total);

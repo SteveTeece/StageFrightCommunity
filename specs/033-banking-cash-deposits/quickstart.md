@@ -56,7 +56,8 @@ In a DEBUG build the seeder runs. The Banking screen should open with the last m
 5. **Finalised block**: deposit again, reconcile and **finalise**, then try to reverse. The reversal is refused with the finalised-reconciliation message.
 6. **Float**: record a $200 cash withdrawal ("Opening night float"). The bank falls by $200 and Petty Cash rises by $200. Then deposit $200 of cash back. Petty Cash ends where it started (verification item 4).
 7. **Edge cases**: archive every bank account except Petty Cash. *Record deposit*, *Record cash withdrawal* and the Card/EFT bank picker then show the "add a bank account" notice, while Cash and Cheque receipts still save. *Record expense* is still offered and can pay from Petty Cash (issue #400).
-8. **Legacy route**: navigating to `/finance/bank-deposit` shows the Banking screen.
-9. **Language and currency**: switch to each shipped language in *Settings → General*. Every Banking string is translated, and every amount uses the configured currency (verification item 5).
+8. **Deposit report** (issue #399): open *Reports → Bank Deposits*. Every deposit is listed newest first with its date, description, bank account, status and total, and the withdrawal is not. Open one: the full deposit is shown read-only with no *Reverse deposit* button, and *Print* opens a PDF of its items, cash and total. *Back to Bank Deposits* returns to the list.
+9. **Legacy route**: navigating to `/finance/bank-deposit` shows the Banking screen.
+10. **Language and currency**: switch to each shipped language in *Settings → General*. Every Banking string is translated, and every amount uses the configured currency (verification item 5).
 
 Report the build and test results (CLAUDE.md "Build & Test Verification") before marking the implementation done.

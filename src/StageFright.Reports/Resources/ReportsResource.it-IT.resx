@@ -144,4 +144,20 @@
   <data name="Reports_EventSheet_ParticipatedColumn" xml:space="preserve"><value>Ha partecipato</value></data>
   <data name="Reports_AgmSheet_Title" xml:space="preserve"><value>Report presenze assemblea generale</value></data>
   <data name="Reports_AgmSheet_AttendedColumn" xml:space="preserve"><value>Presente</value></data>
+  <data name="Reports_BankDeposits_Name" xml:space="preserve"><value>Versamenti bancari</value></data>
+  <data name="Reports_BankDeposits_SubTitle" xml:space="preserve"><value>Tutti i versamenti, dal più recente, generato il {Date}</value><comment>{Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_BankDeposits_SubTitleNone" xml:space="preserve"><value>Non è stato registrato alcun versamento.</value></data>
+  <data name="Reports_BankDeposits_BankAccountColumn" xml:space="preserve"><value>Conto bancario</value></data>
+  <data name="Reports_BankDeposits_StatusColumn" xml:space="preserve"><value>Stato</value></data>
+  <data name="Reports_BankDeposits_TotalColumn" xml:space="preserve"><value>Totale del versamento</value></data>
+  <data name="Reports_BankDeposits_Status_Recorded" xml:space="preserve"><value>Registrato</value></data>
+  <data name="Reports_BankDeposits_Status_Reversed" xml:space="preserve"><value>Stornato</value></data>
+  <data name="Reports_BankDeposit_Title" xml:space="preserve"><value>Versamento bancario</value></data>
+  <data name="Reports_BankDeposit_SubTitle" xml:space="preserve"><value>{Description} — versato il {Date} su {BankAccount} ({Status})</value><comment>{Description} deposit description (user data), {Date} deposit date formatted 'd MMMM yyyy', {BankAccount} bank account name (user data), {Status} Recorded/Reversed.</comment></data>
+  <data name="Reports_BankDeposit_ReceivedColumn" xml:space="preserve"><value>Ricevuto</value></data>
+  <data name="Reports_BankDeposit_PayerColumn" xml:space="preserve"><value>Pagatore</value></data>
+  <data name="Reports_BankDeposit_ReferenceColumn" xml:space="preserve"><value>Riferimento</value></data>
+  <data name="Reports_BankDeposit_CashRow" xml:space="preserve"><value>Contanti</value></data>
+  <data name="Reports_BankDeposit_Total" xml:space="preserve"><value>Totale del versamento</value></data>
+  <data name="Reports_BankDeposit_OpeningBalancePayer" xml:space="preserve"><value>Saldo di apertura</value></data>
 </root>

@@ -144,4 +144,20 @@
   <data name="Reports_EventSheet_ParticipatedColumn" xml:space="preserve"><value>A participé</value></data>
   <data name="Reports_AgmSheet_Title" xml:space="preserve"><value>Rapport de présence de l'AGA</value></data>
   <data name="Reports_AgmSheet_AttendedColumn" xml:space="preserve"><value>Présent</value></data>
+  <data name="Reports_BankDeposits_Name" xml:space="preserve"><value>Dépôts bancaires</value></data>
+  <data name="Reports_BankDeposits_SubTitle" xml:space="preserve"><value>Tous les dépôts, du plus récent au plus ancien, généré le {Date}</value><comment>{Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_BankDeposits_SubTitleNone" xml:space="preserve"><value>Aucun dépôt n'a été enregistré.</value></data>
+  <data name="Reports_BankDeposits_BankAccountColumn" xml:space="preserve"><value>Compte bancaire</value></data>
+  <data name="Reports_BankDeposits_StatusColumn" xml:space="preserve"><value>Statut</value></data>
+  <data name="Reports_BankDeposits_TotalColumn" xml:space="preserve"><value>Total du dépôt</value></data>
+  <data name="Reports_BankDeposits_Status_Recorded" xml:space="preserve"><value>Enregistré</value></data>
+  <data name="Reports_BankDeposits_Status_Reversed" xml:space="preserve"><value>Annulé</value></data>
+  <data name="Reports_BankDeposit_Title" xml:space="preserve"><value>Dépôt bancaire</value></data>
+  <data name="Reports_BankDeposit_SubTitle" xml:space="preserve"><value>{Description} — déposé le {Date} sur {BankAccount} ({Status})</value><comment>{Description} deposit description (user data), {Date} deposit date formatted 'd MMMM yyyy', {BankAccount} bank account name (user data), {Status} Recorded/Reversed.</comment></data>
+  <data name="Reports_BankDeposit_ReceivedColumn" xml:space="preserve"><value>Reçu le</value></data>
+  <data name="Reports_BankDeposit_PayerColumn" xml:space="preserve"><value>Payeur</value></data>
+  <data name="Reports_BankDeposit_ReferenceColumn" xml:space="preserve"><value>Référence</value></data>
+  <data name="Reports_BankDeposit_CashRow" xml:space="preserve"><value>Espèces</value></data>
+  <data name="Reports_BankDeposit_Total" xml:space="preserve"><value>Total du dépôt</value></data>
+  <data name="Reports_BankDeposit_OpeningBalancePayer" xml:space="preserve"><value>Solde d'ouverture</value></data>
 </root>

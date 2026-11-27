@@ -144,4 +144,20 @@
   <data name="Reports_EventSheet_ParticipatedColumn" xml:space="preserve"><value>⟦Pártíçípátéd—⟧</value></data>
   <data name="Reports_AgmSheet_Title" xml:space="preserve"><value>⟦ÁGM Áttéñdáñçé Répórt—⟧</value></data>
   <data name="Reports_AgmSheet_AttendedColumn" xml:space="preserve"><value>⟦Áttéñdéd—⟧</value></data>
+  <data name="Reports_BankDeposits_Name" xml:space="preserve"><value>⟦Báñk Dépósíts—⟧</value></data>
+  <data name="Reports_BankDeposits_SubTitle" xml:space="preserve"><value>⟦Áll dépósíts, ñéwést fírst, géñérátéd {Date}—⟧</value><comment>{Date} generation date formatted 'd MMMM yyyy'.</comment></data>
+  <data name="Reports_BankDeposits_SubTitleNone" xml:space="preserve"><value>⟦Ñó dépósíts hávé bééñ réçórdéd.—⟧</value></data>
+  <data name="Reports_BankDeposits_BankAccountColumn" xml:space="preserve"><value>⟦Báñk áççóúñt—⟧</value></data>
+  <data name="Reports_BankDeposits_StatusColumn" xml:space="preserve"><value>⟦Státús—⟧</value></data>
+  <data name="Reports_BankDeposits_TotalColumn" xml:space="preserve"><value>⟦Dépósít tótál—⟧</value></data>
+  <data name="Reports_BankDeposits_Status_Recorded" xml:space="preserve"><value>⟦Réçórdéd—⟧</value></data>
+  <data name="Reports_BankDeposits_Status_Reversed" xml:space="preserve"><value>⟦Révérséd—⟧</value></data>
+  <data name="Reports_BankDeposit_Title" xml:space="preserve"><value>⟦Báñk Dépósít—⟧</value></data>
+  <data name="Reports_BankDeposit_SubTitle" xml:space="preserve"><value>⟦{Description} — dépósítéd {Date} tó {BankAccount} ({Status})—⟧</value><comment>{Description} deposit description (user data), {Date} deposit date formatted 'd MMMM yyyy', {BankAccount} bank account name (user data), {Status} Recorded/Reversed.</comment></data>
+  <data name="Reports_BankDeposit_ReceivedColumn" xml:space="preserve"><value>⟦Réçéívéd—⟧</value></data>
+  <data name="Reports_BankDeposit_PayerColumn" xml:space="preserve"><value>⟦Páýér—⟧</value></data>
+  <data name="Reports_BankDeposit_ReferenceColumn" xml:space="preserve"><value>⟦Référéñçé—⟧</value></data>
+  <data name="Reports_BankDeposit_CashRow" xml:space="preserve"><value>⟦Çásh—⟧</value></data>
+  <data name="Reports_BankDeposit_Total" xml:space="preserve"><value>⟦Dépósít tótál—⟧</value></data>
+  <data name="Reports_BankDeposit_OpeningBalancePayer" xml:space="preserve"><value>⟦Ópéñíñg báláñçé—⟧</value></data>
 </root>
