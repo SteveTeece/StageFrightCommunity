@@ -25,7 +25,8 @@ namespace StageFright.App.Seeding;
 /// (held in Undeposited Funds) and card or bank transfer (straight to the bank); every third
 /// rehearsal week a deposit banks the waiting cheques plus the cash above the float, each concert
 /// weekend draws a change float that is banked back with the takings, and one 2025 deposit is
-/// reversed and recorded again (spec 033). The dataset's "as of" point is the real date the
+/// reversed and recorded again (spec 033). The bank account is reconciled to every
+/// month end before the current month and each reconciliation finalised (issue #397). The dataset's "as of" point is the real date the
 /// seeder runs (<see cref="SeedCurrentDate"/>): anything dated on or before it is fully settled
 /// — attendance taken, fees paid (bar the two deliberate non-payers), events held, expenses
 /// posted — while anything after it is only put on the calendar (future rehearsals and the
@@ -77,6 +78,7 @@ public class DebugDataSeeder : IDebugDataSeeder
     private readonly IIncomeEntryService _incomeEntryService;
     private readonly IExpensePaymentService _expensePaymentService;
     private readonly IBankingService _bankingService;
+    private readonly IBankReconciliationService _reconciliationService;
     private readonly IOpeningBalanceService _openingBalanceService;
     private readonly ISettingsService _settingsService;
     private readonly IExternalOrganisationService _organisationService;
@@ -102,6 +104,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         IIncomeEntryService incomeEntryService,
         IExpensePaymentService expensePaymentService,
         IBankingService bankingService,
+        IBankReconciliationService reconciliationService,
         IOpeningBalanceService openingBalanceService,
         ISettingsService settingsService,
         IExternalOrganisationService organisationService,
@@ -126,6 +129,7 @@ public class DebugDataSeeder : IDebugDataSeeder
         _incomeEntryService = incomeEntryService;
         _expensePaymentService = expensePaymentService;
         _bankingService = bankingService;
+        _reconciliationService = reconciliationService;
         _openingBalanceService = openingBalanceService;
         _settingsService = settingsService;
         _organisationService = organisationService;
@@ -278,6 +282,9 @@ public class DebugDataSeeder : IDebugDataSeeder
             Description = "Donation from a concert patron"
         }, ct);
 
+        progress?.Report("Reconciling monthly bank statements…");
+        await SeedMonthlyReconciliationsAsync(bankAccount, ct);
+
         // The printer closed down: archiving keeps its two years of linked history viewable
         // from its History tab while hiding it from the register and the finance pickers.
         await _organisationService.ArchiveAsync(organisations[MacleanPrinting], ct);
@@ -286,6 +293,45 @@ public class DebugDataSeeder : IDebugDataSeeder
         _logger.LogInformation(
             "Debug data seed complete — {Active} active, {Inactive} inactive, {Archived} archived members, 2 years.",
             activeMembers.Count, inactiveMembers.Count, archivedMembers.Count);
+    }
+
+    // -------------------------------------------------------------------------
+    // Monthly bank reconciliations (issue #397)
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Reconciles the bank account to every month end before the current month and finalises
+    /// each one, so Finance → Reconcile has a full history to open. Each statement balance is
+    /// the previous one plus the transactions it clears. Anything dated in a month's last two
+    /// days is still in transit and clears on the next month's statement, so most months show
+    /// an outstanding item or two. The current month is left unreconciled.
+    /// </summary>
+    private async Task SeedMonthlyReconciliationsAsync(Account bankAccount, CancellationToken ct)
+    {
+        var lastMonthEnd = Utc(SeedCurrentDate.Year, SeedCurrentDate.Month, 1).AddDays(-1);
+        var statementBalance = 0m;
+
+        for (var monthEnd = Utc(2025, 1, 31); monthEnd <= lastMonthEnd; monthEnd = monthEnd.AddDays(1).AddMonths(1).AddDays(-1))
+        {
+            var inTransitFrom = monthEnd.AddDays(-1);
+            var cleared = (await _glRepository.GetUnreconciledByAccountAsync(bankAccount.Id, monthEnd, ct))
+                .Where(t => t.Date < inTransitFrom)
+                .ToList();
+            statementBalance += cleared.Sum(t => t.DebitAmount - t.CreditAmount);
+
+            var draft = await _reconciliationService.StartDraftAsync(new StartReconciliationRequest
+            {
+                AccountId = bankAccount.Id,
+                StatementDate = monthEnd,
+                StatementClosingBalance = statementBalance,
+                Notes = $"Bank statement {monthEnd:MMMM yyyy}"
+            }, ct);
+
+            foreach (var transaction in cleared)
+                await _reconciliationService.ToggleClearAsync(draft.Id, transaction.Id, ct);
+
+            await _reconciliationService.FinaliseAsync(draft.Id, ct);
+        }
     }
 
     // -------------------------------------------------------------------------
