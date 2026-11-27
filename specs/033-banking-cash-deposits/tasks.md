@@ -291,7 +291,7 @@ Files: src/StageFright.UI/Pages/Finance/{DepositDetailPage.razor,DepositDetailPa
   - map SC-001, SC-002, SC-003, SC-005 and SC-006 to their passing tests.
 
   · (no file)
-- [ ] **T054** Verify in the running app with the seed data over CDP:
+- [x] **T054** Verify in the running app with the seed data over CDP:
   - verification steps 3 and 4;
   - a deposit of 5 cheques plus cash recorded in under a minute (SC-004);
   - step 5: a language switch, checking translated screens and configured-currency amounts.

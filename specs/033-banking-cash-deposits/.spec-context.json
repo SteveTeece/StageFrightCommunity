@@ -466,6 +466,14 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-27T07:20:10.246Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T054",
+      "kind": "complete",
+      "by": "user",
+      "at": "2026-11-27T08:40:06.243Z"
     }
   ],
   "telemetryInstanceId": "2d0602eb-ff2b-480e-bd3e-beb0b4a6e39a",
@@ -1186,7 +1194,7 @@
     }
   },
   "approach": "Route each receipt by payment method through a pure ReceiptRouting rule, track cheques as ReceivedItem rows, and post deposits, reversals and withdrawals as balanced journal entries through a new BankingService. One migration renames 1100 and seeds 1105, and backup moves to 1.4.0.",
-  "currentTask": "T049",
+  "currentTask": "T054",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -1683,6 +1691,10 @@
         "src/StageFright.UI/Pages/Finance/DepositDetailPage.razor.cs",
         "src/StageFright.UI/Resources/Strings/FinanceResource*.resx"
       ]
+    },
+    "T054": {
+      "status": "DONE",
+      "did": "Marked done on the user's instruction (2026-11-27); the live-app check itself was not run."
     }
   },
   "concerns": [

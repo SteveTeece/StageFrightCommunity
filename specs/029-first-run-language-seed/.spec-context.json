@@ -3,7 +3,7 @@
   "specName": "First-Run Language Selection & Optional Sample-Data Seeding",
   "branch": "029-first-run-language-seed",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -363,10 +363,25 @@
       "kind": "complete",
       "by": "user",
       "at": "2026-09-02T07:48:46.000Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "user",
+      "at": "2026-11-27T08:40:05.703Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "user",
+      "at": "2026-11-27T08:40:05.843Z"
     }
   ],
   "telemetryInstanceId": "95362f86-b658-4cf0-ae9b-0366f5523b43",
-  "currentTask": "T037",
+  "currentTask": null,
   "task_summaries": {
     "T001": {
       "status": "DONE"
@@ -609,9 +624,16 @@
     },
     "T037": {
       "status": "DONE",
-      "did": "Manual user-confirmed live verification of the Settings -> General display-language change in the real MAUI app: changing Display language and saving re-renders the running app in the new language immediately with no process restart, and no restart notice appears at any point (before the change / after the selection changes / after the save). Confirmed in both light and dark themes. Settings entry point (FR-009); the in-session CultureProvider.Switch re-render IS effective here because Settings renders inside the live cascaded CultureProvider. The separate T036 first-run /language-select -> /setup blocking concern is unaffected and remains open.",
+      "did": "Manual user-confirmed live verification of the Settings -> General display-language change in the real MAUI app: changing Display language and saving re-renders the running app in the new language immediately with no restart, and no restart notice appears at any point (before change / after selection change / after save). Confirmed in both light and dark themes. Settings entry point (FR-009) works in the real WebView2 host because it re-renders within the live cascaded CultureProvider; the separate T036 first-run-path blocking concern is unchanged and remains open.",
       "files": [
         "src/StageFright.UI/Pages/Settings/GeneralSettingsTab.razor"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "Marked done on the user's instruction (2026-11-27); the live-app check itself was not run.",
+      "files": [
+        "src/StageFright.UI/Layout/CultureProvider.razor.cs"
       ]
     }
   },

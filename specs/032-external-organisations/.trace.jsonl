@@ -89,3 +89,4 @@
 {"at":"2026-11-23T20:17:54.282Z","tool":"write-context","op":"capture","ok":true,"reason":null,"spec":"specs\\032-external-organisations","files":[".spec-context.json"],"bytes":41949,"in_bytes":68,"ms":3666}
 {"at":"2026-11-23T20:17:56.356Z","tool":"write-context","op":"capture","ok":true,"reason":null,"spec":"specs\\032-external-organisations","files":[".spec-context.json"],"bytes":41949,"in_bytes":51,"ms":1498}
 {"at":"2026-11-23T20:24:32.163Z","tool":"write-context","op":"unknown","ok":true,"reason":null,"spec":"specs\\032-external-organisations","files":[".spec-context.json"],"bytes":41961,"in_bytes":134,"ms":389892}
+{"at":"2026-11-27T08:40:28.281Z","tool":"write-context","op":"mark-complete","ok":true,"reason":null,"spec":"specs\\032-external-organisations","files":[".spec-context.json"],"bytes":64243,"in_bytes":68,"ms":382}
