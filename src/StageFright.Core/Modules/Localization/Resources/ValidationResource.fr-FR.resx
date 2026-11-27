@@ -116,4 +116,5 @@
   <data name="Validation_Receipt_ReferenceTooLong" xml:space="preserve"><value>La référence du chèque doit comporter 50 caractères au maximum.</value><comment>Cheque reference over 50 characters.</comment></data>
   <data name="Validation_Journal_NoUndepositedFunds" xml:space="preserve"><value>Les fonds non déposés ne peuvent pas être utilisés dans un journal général.</value><comment>Undeposited Funds used in a general journal line.</comment></data>
   <data name="Validation_OpeningBalance_UndepositedFundsNegative" xml:space="preserve"><value>Le solde d'ouverture des fonds non déposés ne peut pas être négatif.</value><comment>Negative opening balance on Undeposited Funds.</comment></data>
+  <data name="Validation_OpeningBalance_AlreadyPosted" xml:space="preserve"><value>Les soldes d'ouverture ont déjà été comptabilisés et sont verrouillés. Pour ajuster le solde d'un compte, saisissez une écriture de journal.</value><comment>Posting opening balances when they have already been posted — they are locked (issue #398).</comment></data>
 </root>

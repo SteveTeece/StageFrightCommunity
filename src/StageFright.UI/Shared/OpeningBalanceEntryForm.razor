@@ -1,13 +1,6 @@
 @using StageFright.Core.Entities
 
 <div class="opening-balance-entry-form">
-    @if (ShowAlreadyPostedWarning && HasExistingOpeningBalances)
-    {
-        <div class="alert alert-warning py-1 mb-2 small opening-balances-warning" role="alert">
-            @Shared["Shared_OpeningBalances_AlreadyPostedWarning"]
-        </div>
-    }
-
     <p class="small">@InstructionText()</p>
 
     <RadzenDataGrid Data="@_rows" TItem="OpeningBalanceRowModel"

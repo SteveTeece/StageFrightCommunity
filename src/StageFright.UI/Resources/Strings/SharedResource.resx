@@ -191,10 +191,6 @@
     <value>An account named '{AccountName}' already exists.</value>
     <comment>Shown when the entered account name matches an existing one. {AccountName} = the entered name.</comment>
   </data>
-  <data name="Shared_OpeningBalances_AlreadyPostedWarning" xml:space="preserve">
-    <value>Opening balances have already been posted. Posting again will add to the existing balances rather than replace them.</value>
-    <comment>Warning shown above the opening-balances entry table when balances already exist.</comment>
-  </data>
   <data name="Shared_OpeningBalances_Instruction" xml:space="preserve">
     <value>Enter each account's balance as at {AsAtDate}. Leave accounts you don't need at zero. Any difference is posted to Opening Balance Equity automatically.</value>
     <comment>Instruction above the opening-balances entry table. {AsAtDate} = the as-at date, long form.</comment>

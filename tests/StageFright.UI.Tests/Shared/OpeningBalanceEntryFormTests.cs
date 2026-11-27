@@ -119,32 +119,6 @@ public class OpeningBalanceEntryFormTests : LocalizedTestContext
     }
 
     [Fact]
-    public void AlreadyPostedWarning_Hidden_WhenShowAlreadyPostedWarningIsFalse()
-    {
-        var cut = Render<OpeningBalanceEntryForm>(p => p
-            .Add(x => x.Accounts, new[] { BankAccount })
-            .Add(x => x.AsAtDate, DateTime.Today)
-            .Add(x => x.OnSubmit, EventCallback.Factory.Create<RecordOpeningBalancesRequest>(this, _ => { }))
-            .Add(x => x.ShowAlreadyPostedWarning, false)
-            .Add(x => x.HasExistingOpeningBalances, true));
-
-        Assert.Empty(cut.FindAll(".opening-balances-warning"));
-    }
-
-    [Fact]
-    public void AlreadyPostedWarning_Shown_WhenBothFlagsTrue()
-    {
-        var cut = Render<OpeningBalanceEntryForm>(p => p
-            .Add(x => x.Accounts, new[] { BankAccount })
-            .Add(x => x.AsAtDate, DateTime.Today)
-            .Add(x => x.OnSubmit, EventCallback.Factory.Create<RecordOpeningBalancesRequest>(this, _ => { }))
-            .Add(x => x.ShowAlreadyPostedWarning, true)
-            .Add(x => x.HasExistingOpeningBalances, true));
-
-        cut.Find(".opening-balances-warning");
-    }
-
-    [Fact]
     public async Task OnSubmit_ReceivesBuiltRequest_WithAsAtDateAndNonZeroEntriesOnly()
     {
         var secondAccount = new Account { Id = Guid.NewGuid(), Name = "Petty Cash", AccountNumber = "1100", Type = AccountType.Asset };

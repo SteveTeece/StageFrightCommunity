@@ -116,4 +116,5 @@
   <data name="Validation_Receipt_ReferenceTooLong" xml:space="preserve"><value>Die Scheckreferenz darf höchstens 50 Zeichen lang sein.</value><comment>Cheque reference over 50 characters.</comment></data>
   <data name="Validation_Journal_NoUndepositedFunds" xml:space="preserve"><value>Nicht eingezahlte Gelder können in einem allgemeinen Journal nicht verwendet werden.</value><comment>Undeposited Funds used in a general journal line.</comment></data>
   <data name="Validation_OpeningBalance_UndepositedFundsNegative" xml:space="preserve"><value>Der Eröffnungssaldo für nicht eingezahlte Gelder darf nicht negativ sein.</value><comment>Negative opening balance on Undeposited Funds.</comment></data>
+  <data name="Validation_OpeningBalance_AlreadyPosted" xml:space="preserve"><value>Eröffnungssalden wurden bereits gebucht und sind gesperrt. Um den Saldo eines Kontos anzupassen, erfassen Sie eine Journalbuchung.</value><comment>Posting opening balances when they have already been posted — they are locked (issue #398).</comment></data>
 </root>

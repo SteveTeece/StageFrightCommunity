@@ -17,14 +17,14 @@ namespace StageFright.UI.Shared;
 /// reconciled against the row list on every parameter set, preserving already-entered
 /// amounts for accounts still present (FR-020: stays in sync as the caller's account set
 /// changes — e.g. the wizard's Chart of Accounts tab adding/removing a queued account).
+/// It is only ever shown while no opening balances are posted: once they are, they're
+/// locked and the standalone page shows them read-only instead (issue #398).
 /// </summary>
 public partial class OpeningBalanceEntryForm : ComponentBase
 {
     [Parameter, EditorRequired] public IReadOnlyList<Account> Accounts { get; set; } = Array.Empty<Account>();
     [Parameter, EditorRequired] public EventCallback<RecordOpeningBalancesRequest> OnSubmit { get; set; }
     [Parameter, EditorRequired] public DateTime AsAtDate { get; set; }
-    [Parameter] public bool ShowAlreadyPostedWarning { get; set; } = true;
-    [Parameter] public bool HasExistingOpeningBalances { get; set; }
 
     /// <summary>Submit button text; when unset, falls back to the shared default (spec 027).</summary>
     [Parameter] public string? SubmitButtonText { get; set; }

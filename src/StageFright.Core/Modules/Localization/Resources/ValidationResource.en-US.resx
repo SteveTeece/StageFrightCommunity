@@ -564,4 +564,5 @@
     <value>The opening balance for Undeposited Funds cannot be negative.</value>
     <comment>Negative opening balance on Undeposited Funds.</comment>
   </data>
+  <data name="Validation_OpeningBalance_AlreadyPosted" xml:space="preserve"><value>Opening balances have already been posted and are locked. To adjust an account's balance, post a journal entry.</value><comment>Posting opening balances when they have already been posted — they are locked (issue #398).</comment></data>
 </root>

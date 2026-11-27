@@ -44,7 +44,7 @@
 
 **Decision**: `DebugDataSeeder.SeedAsync` gains a call to `IOpeningBalanceService.RecordOpeningBalancesAsync` for the accounts it creates (at minimum the bank account, matching what a real coordinator would enter first), run before the historical-transaction simulation (`SeedHistoricalTransfersAsync` etc.) it already performs.
 
-**Rationale**: FR-026 requires seeded accounts to have opening balances specifically, and today's seeder only reaches realistic balances by simulating years of transactions — there is no explicit `OpeningBalance`-typed journal entry today. Posting one keeps the seeded ledger's starting point auditable the same way a real coordinator's would be, and gives `HasExistingOpeningBalancesAsync` a truthful answer if a coordinator later opens the standalone Opening Balances page.
+**Rationale**: FR-026 requires seeded accounts to have opening balances specifically, and today's seeder only reaches realistic balances by simulating years of transactions — there is no explicit `OpeningBalance`-typed journal entry today. Posting one keeps the seeded ledger's starting point auditable the same way a real coordinator's would be, and gives `HasExistingOpeningBalancesAsync` a truthful answer if a coordinator later opens the standalone Opening Balances page. (Issue #398 replaced that method with `GetRecordedOpeningBalancesAsync`: the standalone page now shows the seeded balances read-only, locked.)
 
 **Alternatives considered**: Treat the existing simulated transaction history as sufficient and leave the seeder unchanged. Rejected — explicitly contradicted by FR-026, and it would mean sample-data-seeded organisations never have an `OpeningBalance` journal entry, unlike every other org that completes setup normally.
 

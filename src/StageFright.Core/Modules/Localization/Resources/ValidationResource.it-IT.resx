@@ -116,4 +116,5 @@
   <data name="Validation_Receipt_ReferenceTooLong" xml:space="preserve"><value>Il riferimento dell'assegno deve contenere al massimo 50 caratteri.</value><comment>Cheque reference over 50 characters.</comment></data>
   <data name="Validation_Journal_NoUndepositedFunds" xml:space="preserve"><value>Fondi non versati non può essere utilizzato in un giornale generale.</value><comment>Undeposited Funds used in a general journal line.</comment></data>
   <data name="Validation_OpeningBalance_UndepositedFundsNegative" xml:space="preserve"><value>Il saldo di apertura di Fondi non versati non può essere negativo.</value><comment>Negative opening balance on Undeposited Funds.</comment></data>
+  <data name="Validation_OpeningBalance_AlreadyPosted" xml:space="preserve"><value>I saldi iniziali sono già stati registrati e sono bloccati. Per rettificare il saldo di un conto, registra una scrittura contabile.</value><comment>Posting opening balances when they have already been posted — they are locked (issue #398).</comment></data>
 </root>

@@ -13,18 +13,24 @@ public interface IOpeningBalanceService
     /// <summary>
     /// Posts the opening balances under an OpeningBalance journal entry.
     /// Zero entries are skipped; at least one non-zero entry is required.
+    /// Opening balances post once only: when an OpeningBalance journal entry already
+    /// exists they are locked and this throws (issue #398) — adjust with a general journal.
     /// Throws <see cref="Core.Exceptions.ValidationException"/> on bad input.
     /// </summary>
     Task RecordOpeningBalancesAsync(RecordOpeningBalancesRequest request, CancellationToken ct = default);
 
     /// <summary>
-    /// Returns all active accounts eligible for opening balances — excludes
-    /// Member Receivable, the GST clearing accounts, and Opening Balance Equity itself.
+    /// Returns all active accounts eligible for opening balances — every account
+    /// except Opening Balance Equity itself, the plug target.
     /// </summary>
     Task<IReadOnlyList<Account>> GetOpeningBalanceAccountsAsync(CancellationToken ct = default);
 
-    /// <summary>True when an OpeningBalance journal entry already exists (the wizard shows a warning).</summary>
-    Task<bool> HasExistingOpeningBalancesAsync(CancellationToken ct = default);
+    /// <summary>
+    /// The opening balances already posted, or null when none have been. Lines from more
+    /// than one OpeningBalance journal (possible only in data posted before issue #398)
+    /// are summed per account, and the as-at date is the earliest entry's date.
+    /// </summary>
+    Task<RecordedOpeningBalances?> GetRecordedOpeningBalancesAsync(CancellationToken ct = default);
 
     /// <summary>
     /// Computes the residual that would be plugged to Opening Balance Equity for the

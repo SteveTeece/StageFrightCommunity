@@ -1,5 +1,7 @@
 @page "/finance/opening-balances"
 @using StageFright.UI.Shared
+@using StageFright.Core.Localization
+@using StageFright.Core.Modules.Finance
 
 <PageTitle>@L["Finance_OpeningBalances_PageTitle"]</PageTitle>
 
@@ -21,7 +23,38 @@
         {
             <div class="alert alert-success py-1 mb-2 small" role="status">@_successMessage</div>
         }
-        else
+
+        @if (_recorded is not null)
+        {
+            @* Posted opening balances are locked (issue #398): shown read-only, adjusted by journal entry. *@
+            <div class="card mb-2">
+                <div class="card-body py-2">
+                    <p class="small mb-2 opening-balances-locked">@RecordedIntroText()</p>
+                    <RadzenDataGrid Data="@_recorded.Lines" TItem="RecordedOpeningBalanceLine"
+                                    AllowSorting="true" AllowPaging="true" PageSize="15"
+                                    class="rz-shadow-0 opening-balances-recorded">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="RecordedOpeningBalanceLine" Property="Account.AccountNumber" Title="@Shared["Shared_OpeningBalances_NumberColumn"]" Width="6rem" />
+                            <RadzenDataGridColumn TItem="RecordedOpeningBalanceLine" Property="Account.Name" Title="@Shared["Shared_OpeningBalances_AccountColumn"]">
+                                <FooterTemplate><strong>@Shared["Shared_OpeningBalances_PlugRow"]</strong></FooterTemplate>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="RecordedOpeningBalanceLine" Property="Account.Type" Title="@Shared["Shared_OpeningBalances_TypeColumn"]" Width="8rem">
+                                <Template Context="row">@row.Account.Type.LocalizeEnum()</Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="RecordedOpeningBalanceLine" Property="Amount" Title="@Shared["Shared_OpeningBalances_BalanceColumn"]"
+                                                  Width="10rem" TextAlign="TextAlign.Right">
+                                <Template Context="row"><span class="opening-balance-recorded-amount">@MoneyFormatter.Format(row.Amount)</span></Template>
+                                <FooterTemplate><strong class="opening-balances-plug">@MoneyFormatter.Format(_recorded.Plug)</strong></FooterTemplate>
+                            </RadzenDataGridColumn>
+                        </Columns>
+                    </RadzenDataGrid>
+                    <div class="d-flex gap-2 mt-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm opening-balances-journal-link" @onclick="GoToJournal">@L["Finance_OpeningBalances_JournalLink"]</button>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (_successMessage is null)
         {
             <div class="card mb-2">
                 <div class="card-body py-2">
@@ -48,9 +81,7 @@
                         <h6 class="card-title mb-2">@L["Finance_OpeningBalances_Step2Heading"]</h6>
                         <OpeningBalanceEntryForm Accounts="_accounts"
                                                   AsAtDate="_asAtDate"
-                                                  OnSubmit="PostAsync"
-                                                  ShowAlreadyPostedWarning="true"
-                                                  HasExistingOpeningBalances="_hasExistingOpeningBalances" />
+                                                  OnSubmit="PostAsync" />
                         <div class="d-flex gap-2 mt-2">
                             <button type="button" class="btn btn-outline-secondary btn-sm wizard-back" @onclick="() => GoToStep(1)">@L["Finance_OpeningBalances_BackButton"]</button>
                         </div>

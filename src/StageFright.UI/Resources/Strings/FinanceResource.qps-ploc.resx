@@ -287,4 +287,6 @@
   <data name="Finance_Banking_ReverseError" xml:space="preserve"><value>⟦Fáíléd tó révérsé dépósít: {Detail}—⟧</value><comment>Deposit detail reversal failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_UnexpectedErrorDetail" xml:space="preserve"><value>⟦áñ úñéxpéçtéd érrór óççúrréd. Thé détáíls hávé bééñ lóggéd.—⟧</value><comment>{Detail} text for Finance_Banking_LoadError / Finance_Banking_DepositSaveError when the failure is not a StageFright exception; the exception itself is logged.</comment></data>
   <data name="Finance_Validation_ReconciliationNotesTooLong" xml:space="preserve"><value>⟦Ñótés múst bé 500 çháráçtérs ór féwér.—⟧</value><comment>Start-reconciliation form validation: notes over 500 characters.</comment></data>
+  <data name="Finance_OpeningBalances_RecordedIntro" xml:space="preserve"><value>⟦Thésé ópéñíñg báláñçés wéré póstéd ás át {Date} áñd áré lóçkéd. Tó ádjúst áñ áççóúñt's báláñçé, póst á jóúrñál éñtrý.—⟧</value><comment>Opening Balances page once balances are posted — read-only view. {Date} = as-at date, long format.</comment></data>
+  <data name="Finance_OpeningBalances_JournalLink" xml:space="preserve"><value>⟦Póst á jóúrñál éñtrý—⟧</value><comment>Opening Balances page — link to the Journal Entry page, the way to adjust a locked opening balance.</comment></data>
 </root>

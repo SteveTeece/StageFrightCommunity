@@ -116,4 +116,5 @@
   <data name="Validation_Receipt_ReferenceTooLong" xml:space="preserve"><value>⟦Thé çhéqúé référéñçé múst bé 50 çháráçtérs ór féwér.—⟧</value><comment>Cheque reference over 50 characters.</comment></data>
   <data name="Validation_Journal_NoUndepositedFunds" xml:space="preserve"><value>⟦Úñdépósítéd Fúñds çáññót bé úséd íñ á géñérál jóúrñál.—⟧</value><comment>Undeposited Funds used in a general journal line.</comment></data>
   <data name="Validation_OpeningBalance_UndepositedFundsNegative" xml:space="preserve"><value>⟦Thé ópéñíñg báláñçé fór Úñdépósítéd Fúñds çáññót bé ñégátívé.—⟧</value><comment>Negative opening balance on Undeposited Funds.</comment></data>
+  <data name="Validation_OpeningBalance_AlreadyPosted" xml:space="preserve"><value>⟦Ópéñíñg báláñçés hávé álréádý bééñ póstéd áñd áré lóçkéd. Tó ádjúst áñ áççóúñt's báláñçé, póst á jóúrñál éñtrý.—⟧</value><comment>Posting opening balances when they have already been posted — they are locked (issue #398).</comment></data>
 </root>

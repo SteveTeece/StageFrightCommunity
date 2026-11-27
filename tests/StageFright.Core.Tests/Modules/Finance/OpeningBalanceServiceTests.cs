@@ -13,7 +13,7 @@ namespace StageFright.Core.Tests.Modules.Finance;
 /// Unit tests for OpeningBalanceService — normal-side posting, Opening Balance
 /// Equity plug, account eligibility (only the Opening Balance Equity plug account
 /// itself is excluded — Member Receivable and the tax clearing accounts are
-/// eligible), rerun detection, audit logging, and the Undeposited Funds opening-balance
+/// eligible), the lock once posted and the read-back of posted balances (issue #398), audit logging, and the Undeposited Funds opening-balance
 /// item (spec 033: positive becomes one item awaiting deposit, negative is refused).
 /// </summary>
 public class OpeningBalanceServiceTests : TestBase
@@ -73,16 +73,106 @@ public class OpeningBalanceServiceTests : TestBase
         Assert.DoesNotContain(result, a => a.Id == SystemAccounts.OpeningBalanceEquityId);
     }
 
-    // --- HasExistingOpeningBalancesAsync ---
+    // --- Lock once posted (issue #398) ---
 
     [Fact]
-    public async Task Should_ReportExistingOpeningBalances_When_OpeningBalanceJournalExists()
+    public async Task Should_RejectAndPostNothing_When_OpeningBalancesAlreadyPosted()
     {
         _journalRepo.AnyOfTypeAsync(JournalEntryType.OpeningBalance, Arg.Any<CancellationToken>())
             .Returns(true);
+        var request = new RecordOpeningBalancesRequest
+        {
+            AsAtDate = new DateTime(2026, 7, 1),
+            Entries = [new OpeningBalanceEntry { AccountId = CashAccountId, Amount = 500m }]
+        };
 
-        Assert.True(await _sut.HasExistingOpeningBalancesAsync(Ct));
+        var ex = await Assert.ThrowsAsync<ValidationException>(
+            () => _sut.RecordOpeningBalancesAsync(request, Ct));
+
+        Assert.Equal(RealLocalizer.Instance.Get<ValidationResource>("Validation_OpeningBalance_AlreadyPosted"), ex.Message);
+        await _journalRepo.DidNotReceive().AddAsync(Arg.Any<JournalEntry>(), Arg.Any<CancellationToken>());
+        await _glRepo.DidNotReceive().AddBalancedSetAsync(Arg.Any<IReadOnlyList<Transaction>>(), Arg.Any<CancellationToken>());
     }
+
+    // --- GetRecordedOpeningBalancesAsync ---
+
+    [Fact]
+    public async Task Should_ReturnNull_When_NoOpeningBalancesPosted()
+    {
+        _journalRepo.GetByTypesAsync(Arg.Any<IReadOnlyCollection<JournalEntryType>>(), Arg.Any<CancellationToken>())
+            .Returns(new List<JournalEntry>());
+
+        Assert.Null(await _sut.GetRecordedOpeningBalancesAsync(Ct));
+    }
+
+    [Fact]
+    public async Task Should_ReturnSignedBalancesAndPlug_When_OpeningBalancesPosted()
+    {
+        var cash = MakeAccount(CashAccountId, "Petty Cash", AccountType.Asset, "1100", isSystem: true, isBank: true);
+        var loan = MakeAccount(LoanAccountId, "Committee Loan", AccountType.Liability, "2000");
+        var equity = MakeAccount(SystemAccounts.OpeningBalanceEquityId, "Opening Balance Equity", AccountType.Equity, "3100", isSystem: true);
+        // Loan entered as −200: posted as a debit, the opposite of its credit-normal side.
+        var journal = MakeJournal(new DateTime(2026, 7, 1),
+            Line(loan, debit: 200m, credit: 0m),
+            Line(cash, debit: 500m, credit: 0m),
+            Line(equity, debit: 0m, credit: 700m));
+        _journalRepo.GetByTypesAsync(
+                Arg.Is<IReadOnlyCollection<JournalEntryType>>(t => t!.Single() == JournalEntryType.OpeningBalance),
+                Arg.Any<CancellationToken>())
+            .Returns(new List<JournalEntry> { journal });
+
+        var result = await _sut.GetRecordedOpeningBalancesAsync(Ct);
+
+        Assert.NotNull(result);
+        Assert.Equal(new DateTime(2026, 7, 1), result.AsAtDate);
+        Assert.Collection(result.Lines,
+            l => { Assert.Equal(CashAccountId, l.Account.Id); Assert.Equal(500m, l.Amount); },
+            l => { Assert.Equal(LoanAccountId, l.Account.Id); Assert.Equal(-200m, l.Amount); });
+        Assert.Equal(700m, result.Plug);
+    }
+
+    [Fact]
+    public async Task Should_SumPerAccountAndUseEarliestDate_When_MoreThanOneOpeningBalanceJournalExists()
+    {
+        // Data posted before issue #398 could hold more than one OpeningBalance journal.
+        var cash = MakeAccount(CashAccountId, "Petty Cash", AccountType.Asset, "1100", isSystem: true, isBank: true);
+        var equity = MakeAccount(SystemAccounts.OpeningBalanceEquityId, "Opening Balance Equity", AccountType.Equity, "3100", isSystem: true);
+        var later = MakeJournal(new DateTime(2026, 8, 1),
+            Line(cash, debit: 0m, credit: 50m), Line(equity, debit: 50m, credit: 0m));
+        var first = MakeJournal(new DateTime(2026, 7, 1),
+            Line(cash, debit: 300m, credit: 0m), Line(equity, debit: 0m, credit: 300m));
+        _journalRepo.GetByTypesAsync(Arg.Any<IReadOnlyCollection<JournalEntryType>>(), Arg.Any<CancellationToken>())
+            .Returns(new List<JournalEntry> { later, first });
+
+        var result = await _sut.GetRecordedOpeningBalancesAsync(Ct);
+
+        Assert.NotNull(result);
+        Assert.Equal(new DateTime(2026, 7, 1), result.AsAtDate);
+        var line = Assert.Single(result.Lines);
+        Assert.Equal(250m, line.Amount);
+        Assert.Equal(250m, result.Plug);
+    }
+
+    private static JournalEntry MakeJournal(DateTime date, params Transaction[] lines) => new()
+    {
+        Id = Guid.NewGuid(),
+        Type = JournalEntryType.OpeningBalance,
+        Date = date,
+        Description = "Opening balance",
+        CreatedAt = DateTime.UtcNow,
+        Transactions = lines.ToList()
+    };
+
+    private static Transaction Line(Account account, decimal debit, decimal credit) => new()
+    {
+        Id = Guid.NewGuid(),
+        AccountId = account.Id,
+        Account = account,
+        DebitAmount = debit,
+        CreditAmount = credit,
+        GLAccount = account.AccountNumber,
+        CreatedAt = DateTime.UtcNow
+    };
 
     // --- ComputePlug ---
 

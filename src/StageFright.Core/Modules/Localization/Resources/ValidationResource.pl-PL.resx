@@ -116,4 +116,5 @@
   <data name="Validation_Receipt_ReferenceTooLong" xml:space="preserve"><value>Numer czeku może mieć najwyżej 50 znaków.</value><comment>Cheque reference over 50 characters.</comment></data>
   <data name="Validation_Journal_NoUndepositedFunds" xml:space="preserve"><value>Środków niewpłaconych nie można używać w dzienniku ogólnym.</value><comment>Undeposited Funds used in a general journal line.</comment></data>
   <data name="Validation_OpeningBalance_UndepositedFundsNegative" xml:space="preserve"><value>Saldo początkowe środków niewpłaconych nie może być ujemne.</value><comment>Negative opening balance on Undeposited Funds.</comment></data>
+  <data name="Validation_OpeningBalance_AlreadyPosted" xml:space="preserve"><value>Salda otwarcia zostały już zaksięgowane i są zablokowane. Aby skorygować saldo konta, wprowadź zapis księgowy.</value><comment>Posting opening balances when they have already been posted — they are locked (issue #398).</comment></data>
 </root>

@@ -16,8 +16,8 @@ public interface IJournalEntryRepository
     Task<JournalEntry?> GetByIdAsync(Guid id, CancellationToken ct = default);
 
     /// <summary>
-    /// True when any journal entry of the given type exists — used to warn before
-    /// posting opening balances a second time.
+    /// True when any journal entry of the given type exists — used to refuse posting
+    /// opening balances a second time (they're locked once posted, issue #398).
     /// </summary>
     Task<bool> AnyOfTypeAsync(JournalEntryType type, CancellationToken ct = default);
 

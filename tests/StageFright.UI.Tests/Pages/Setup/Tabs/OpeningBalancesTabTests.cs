@@ -70,16 +70,6 @@ public class OpeningBalancesTabTests : LocalizedTestContext
     }
 
     [Fact]
-    public void NeverShowsAlreadyPostedWarning()
-    {
-        // ShowAlreadyPostedWarning is hard-wired to false — first-run setup can never have
-        // a prior OpeningBalance posting (research.md).
-        var cut = RenderTab();
-
-        Assert.Empty(cut.FindAll(".opening-balances-warning"));
-    }
-
-    [Fact]
     public void NegativeAmount_IsAccepted_UpdatesPlug()
     {
         var cut = RenderTab();

@@ -107,7 +107,7 @@ Phase 1: CoA foundation ──┬── Phase 2: workflows ──┬── Phase
 | Expense payment (`ExpensePaymentService`) | DR Expense / CR Bank (chosen account) |
 | Transfer (`AccountTransferService`; from≠to, both IsBankAccount) | DR To / CR From |
 | General journal (`GeneralJournalService`; N lines) | user lines verbatim; Member Receivable 1200 blocked in v1 (protects per-member balance integrity) |
-| Opening balances (`OpeningBalanceService`) | one line per account at its normal side; plug residual to 3100 Opening Balance Equity; excludes 1200 + GST accounts; warn if an OpeningBalance journal already exists |
+| Opening balances (`OpeningBalanceService`) | one line per account at its normal side; plug residual to 3100 Opening Balance Equity; excludes 1200 + GST accounts; ~~warn if an OpeningBalance journal already exists~~ refuse if one already exists — opening balances are locked once posted (issue #398) |
 
 `IncomeEntryService.RecordIncomeAsync` gains `DepositAccountId` (defaults 1100). `IGLRepository.AddBalancedSetAsync` + `IJournalEntryRepository`.
 

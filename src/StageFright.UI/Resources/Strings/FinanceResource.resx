@@ -593,4 +593,6 @@
   <data name="Finance_Banking_ReverseError" xml:space="preserve"><value>Failed to reverse deposit: {Detail}</value><comment>Deposit detail reversal failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_UnexpectedErrorDetail" xml:space="preserve"><value>an unexpected error occurred. The details have been logged.</value><comment>{Detail} text for Finance_Banking_LoadError / Finance_Banking_DepositSaveError when the failure is not a StageFright exception; the exception itself is logged.</comment></data>
   <data name="Finance_Validation_ReconciliationNotesTooLong" xml:space="preserve"><value>Notes must be 500 characters or fewer.</value><comment>Start-reconciliation form validation: notes over 500 characters.</comment></data>
+  <data name="Finance_OpeningBalances_RecordedIntro" xml:space="preserve"><value>These opening balances were posted as at {Date} and are locked. To adjust an account's balance, post a journal entry.</value><comment>Opening Balances page once balances are posted — read-only view. {Date} = as-at date, long format.</comment></data>
+  <data name="Finance_OpeningBalances_JournalLink" xml:space="preserve"><value>Post a journal entry</value><comment>Opening Balances page — link to the Journal Entry page, the way to adjust a locked opening balance.</comment></data>
 </root>

@@ -16,6 +16,7 @@ namespace StageFright.Core.Modules.Finance;
 /// Equity itself is excluded, since it's the plug target rather than an enterable row.
 /// A positive Undeposited Funds (1105) amount also becomes one "opening balance"
 /// <see cref="ReceivedItem"/> awaiting deposit; a negative one is refused (spec 033).
+/// Opening balances post once only and are then locked (issue #398).
 /// </summary>
 public class OpeningBalanceService : IOpeningBalanceService
 {
@@ -59,8 +60,38 @@ public class OpeningBalanceService : IOpeningBalanceService
             .ToList();
     }
 
-    public Task<bool> HasExistingOpeningBalancesAsync(CancellationToken ct = default) =>
-        _journalRepo.AnyOfTypeAsync(JournalEntryType.OpeningBalance, ct);
+    public async Task<RecordedOpeningBalances?> GetRecordedOpeningBalancesAsync(CancellationToken ct = default)
+    {
+        var journals = await _journalRepo.GetByTypesAsync([JournalEntryType.OpeningBalance], ct);
+        if (journals.Count == 0)
+            return null;
+
+        var transactions = journals.SelectMany(j => j.Transactions).ToList();
+
+        var lines = transactions
+            .Where(t => t.AccountId != SystemAccounts.OpeningBalanceEquityId)
+            .GroupBy(t => t.AccountId)
+            .Select(g => new RecordedOpeningBalanceLine
+            {
+                Account = g.First().Account,
+                Amount = g.Sum(t => FromNormalSide(t.Account.Type, t))
+            })
+            .OrderBy(l => l.Account.AccountNumber)
+            .ToList();
+
+        // Opening Balance Equity is credit-normal, so the plug is its credit minus debit —
+        // the same sign convention as ComputePlug.
+        var plug = transactions
+            .Where(t => t.AccountId == SystemAccounts.OpeningBalanceEquityId)
+            .Sum(t => t.CreditAmount - t.DebitAmount);
+
+        return new RecordedOpeningBalances
+        {
+            AsAtDate = journals.Min(j => j.Date),
+            Lines = lines,
+            Plug = plug
+        };
+    }
 
     public decimal ComputePlug(IReadOnlyList<OpeningBalanceEntry> entries, IReadOnlyList<Account> accounts)
     {
@@ -82,6 +113,13 @@ public class OpeningBalanceService : IOpeningBalanceService
 
     public async Task RecordOpeningBalancesAsync(RecordOpeningBalancesRequest request, CancellationToken ct = default)
     {
+        // Opening balances are locked once posted (issue #398): a second posting would add to
+        // the first rather than replace it, so an adjustment has to be a general journal.
+        if (await _journalRepo.AnyOfTypeAsync(JournalEntryType.OpeningBalance, ct))
+            throw new ValidationException(
+                _localizer.Get<ValidationResource>("Validation_OpeningBalance_AlreadyPosted"),
+                nameof(JournalEntry), nameof(RecordOpeningBalancesAsync));
+
         var entries = request.Entries.Where(e => e.Amount != 0m).ToList();
         if (entries.Count == 0)
             throw new ValidationException(
@@ -200,4 +238,10 @@ public class OpeningBalanceService : IOpeningBalanceService
 
         return debitNormal ? (amount, 0m) : (0m, amount);
     }
+
+    /// <summary>The inverse of <see cref="ToNormalSide"/>: a posted line as a signed balance.</summary>
+    private static decimal FromNormalSide(AccountType type, Transaction line) =>
+        type is AccountType.Asset or AccountType.Expense
+            ? line.DebitAmount - line.CreditAmount
+            : line.CreditAmount - line.DebitAmount;
 }

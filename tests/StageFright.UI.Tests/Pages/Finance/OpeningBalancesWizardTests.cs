@@ -1,10 +1,12 @@
 using Bunit;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.UI.Pages.Finance;
 using AppSettings = StageFright.Core.Entities.Settings;
@@ -14,7 +16,8 @@ namespace StageFright.UI.Tests.Pages.Finance;
 /// <summary>
 /// bUnit tests for OpeningBalancesWizard — 2-step flow (as-at date → the shared
 /// OpeningBalanceEntryForm, which folds entry, live plug preview, and posting into one
-/// step per spec 017's extraction), rerun warning, posting, and error handling.
+/// step per spec 017's extraction), posting, error handling, and the read-only view of
+/// already-posted balances, which are locked (issue #398).
 /// </summary>
 public class OpeningBalancesWizardTests : LocalizedTestContext
 {
@@ -46,8 +49,8 @@ public class OpeningBalancesWizardTests : LocalizedTestContext
                 }
             });
 
-        _openingService.HasExistingOpeningBalancesAsync(Arg.Any<CancellationToken>())
-            .Returns(false);
+        _openingService.GetRecordedOpeningBalancesAsync(Arg.Any<CancellationToken>())
+            .Returns((RecordedOpeningBalances?)null);
 
         _openingService.ComputePlug(Arg.Any<IReadOnlyList<OpeningBalanceEntry>>(), Arg.Any<IReadOnlyList<Account>>())
             .Returns(ci => ci.ArgAt<IReadOnlyList<OpeningBalanceEntry>>(0)
@@ -81,25 +84,45 @@ public class OpeningBalancesWizardTests : LocalizedTestContext
         Assert.Equal(expected.ToString("yyyy-MM-dd"), cut.Find("#asAtDate").GetAttribute("value"));
     }
 
+    // --- Locked once posted (issue #398) ---
+
     [Fact]
-    public void Should_ShowRerunWarning_When_OpeningBalancesAlreadyPosted()
+    public void Should_ShowRecordedBalancesReadOnly_When_OpeningBalancesAlreadyPosted()
     {
-        _openingService.HasExistingOpeningBalancesAsync(Arg.Any<CancellationToken>())
-            .Returns(true);
+        _openingService.GetRecordedOpeningBalancesAsync(Arg.Any<CancellationToken>())
+            .Returns(Recorded());
 
         var cut = Render<OpeningBalancesWizard>();
-        cut.Find(".wizard-next").Click();
 
-        Assert.NotNull(cut.Find(".opening-balances-warning"));
+        Assert.Contains("1 July 2026", cut.Find(".opening-balances-locked").TextContent);
+        var amounts = cut.FindAll(".opening-balance-recorded-amount").Select(a => a.TextContent).ToList();
+        Assert.Equal([MoneyFormatter.Format(5000m), MoneyFormatter.Format(-200m)], amounts);
+        Assert.Equal(MoneyFormatter.Format(4800m), cut.Find(".opening-balances-plug").TextContent);
+        Assert.Empty(cut.FindAll(".opening-balance-amount"));
+        Assert.Empty(cut.FindAll(".wizard-next"));
+        Assert.Empty(cut.FindAll(".wizard-post"));
     }
 
     [Fact]
-    public void Should_NotShowRerunWarning_When_NoOpeningBalancesExist()
+    public void Should_NavigateToJournalEntry_When_JournalLinkClicked()
+    {
+        _openingService.GetRecordedOpeningBalancesAsync(Arg.Any<CancellationToken>())
+            .Returns(Recorded());
+        var nav = Services.GetRequiredService<NavigationManager>();
+
+        var cut = Render<OpeningBalancesWizard>();
+        cut.Find(".opening-balances-journal-link").Click();
+
+        Assert.EndsWith("/finance/journal", nav.Uri);
+    }
+
+    [Fact]
+    public void Should_ShowEntryForm_When_NoOpeningBalancesPosted()
     {
         var cut = Render<OpeningBalancesWizard>();
-        cut.Find(".wizard-next").Click();
 
-        Assert.Empty(cut.FindAll(".opening-balances-warning"));
+        Assert.Empty(cut.FindAll(".opening-balances-recorded"));
+        Assert.NotNull(cut.Find(".wizard-next"));
     }
 
     // --- Step 2 (entry + live plug + post, folded from the old Step 2/3) ---
@@ -167,6 +190,54 @@ public class OpeningBalancesWizardTests : LocalizedTestContext
     }
 
     [Fact]
+    public void Should_ShowPostedBalancesReadOnly_When_PostSucceeds()
+    {
+        var cut = Render<OpeningBalancesWizard>();
+        cut.Find(".wizard-next").Click();
+        cut.FindAll(".opening-balance-amount")[0].Change("5000");
+        _openingService.GetRecordedOpeningBalancesAsync(Arg.Any<CancellationToken>())
+            .Returns(Recorded());
+
+        cut.Find(".wizard-post").Click();
+
+        Assert.Contains("posted successfully", cut.Markup);
+        Assert.NotNull(cut.Find(".opening-balances-recorded"));
+        Assert.Empty(cut.FindAll(".opening-balance-amount"));
+    }
+
+    [Fact]
+    public void Should_ShowLoadError_When_ReloadAfterPostFails()
+    {
+        var cut = Render<OpeningBalancesWizard>();
+        cut.Find(".wizard-next").Click();
+        cut.FindAll(".opening-balance-amount")[0].Change("5000");
+        _openingService.GetRecordedOpeningBalancesAsync(Arg.Any<CancellationToken>())
+            .Returns<Task<RecordedOpeningBalances?>>(_ => throw new InvalidOperationException("boom"));
+
+        cut.Find(".wizard-post").Click();
+
+        Assert.Contains("posted successfully", cut.Markup);
+        Assert.Contains("Failed to load accounts", cut.Markup);
+        Assert.DoesNotContain("Failed to post opening balances", cut.Markup);
+    }
+
+    [Fact]
+    public void Should_ShowClosedPeriodError_When_PostingDateIsInClosedPeriod()
+    {
+        _openingService.RecordOpeningBalancesAsync(Arg.Any<RecordOpeningBalancesRequest>(), Arg.Any<CancellationToken>())
+            .Returns<Task>(_ => throw new ClosedPeriodException("closed", "Settings", "EnsureOpen"));
+
+        var cut = Render<OpeningBalancesWizard>();
+        cut.Find(".wizard-next").Click();
+        cut.FindAll(".opening-balance-amount")[0].Change("5000");
+
+        cut.Find(".wizard-post").Click();
+
+        Assert.DoesNotContain("posted successfully", cut.Markup);
+        Assert.NotNull(cut.Find(".alert-danger"));
+    }
+
+    [Fact]
     public void Should_ShowError_When_PostingFails()
     {
         _openingService.RecordOpeningBalancesAsync(Arg.Any<RecordOpeningBalancesRequest>(), Arg.Any<CancellationToken>())
@@ -192,4 +263,23 @@ public class OpeningBalancesWizardTests : LocalizedTestContext
 
         Assert.Contains("Failed to load accounts", cut.Markup);
     }
+
+    private static RecordedOpeningBalances Recorded() => new()
+    {
+        AsAtDate = new DateTime(2026, 7, 1),
+        Lines =
+        [
+            new RecordedOpeningBalanceLine
+            {
+                Account = new Account { Id = CashAccountId, Name = "Petty Cash", Type = AccountType.Asset, AccountNumber = "1100" },
+                Amount = 5000m
+            },
+            new RecordedOpeningBalanceLine
+            {
+                Account = new Account { Id = LoanAccountId, Name = "Committee Loan", Type = AccountType.Liability, AccountNumber = "2000" },
+                Amount = -200m
+            }
+        ],
+        Plug = 4800m
+    };
 }
