@@ -281,5 +281,6 @@
   <data name="Finance_Banking_SelectAllAriaLabel" xml:space="preserve"><value>入金待ちの項目をすべて選択</value><comment>aria-label for the select-all checkbox on the deposit item grid.</comment></data>
   <data name="Finance_Banking_SelectRowAriaLabel" xml:space="preserve"><value>{Date} に受領した {Payer} の項目を選択</value><comment>aria-label for a deposit item checkbox. {Payer} = payer, {Date} = received date.</comment></data>
   <data name="Finance_Banking_DepositSaveError" xml:space="preserve"><value>入金の記録に失敗しました: {Detail}</value><comment>Deposit page save failure. {Detail} = error detail.</comment></data>
+  <data name="Finance_Banking_WithdrawalSaveError" xml:space="preserve"><value>引出の記録に失敗しました: {Detail}</value><comment>Cash withdrawal page save failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_UnexpectedErrorDetail" xml:space="preserve"><value>予期しないエラーが発生しました。詳細はログに記録されました。</value><comment>{Detail} text for Finance_Banking_LoadError / Finance_Banking_DepositSaveError when the failure is not a StageFright exception; the exception itself is logged.</comment></data>
 </root>

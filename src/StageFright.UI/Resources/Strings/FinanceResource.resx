@@ -587,5 +587,6 @@
   <data name="Finance_Banking_SelectAllAriaLabel" xml:space="preserve"><value>Select all items awaiting deposit</value><comment>aria-label for the select-all checkbox on the deposit item grid.</comment></data>
   <data name="Finance_Banking_SelectRowAriaLabel" xml:space="preserve"><value>Select item from {Payer} received {Date}</value><comment>aria-label for a deposit item checkbox. {Payer} = payer, {Date} = received date.</comment></data>
   <data name="Finance_Banking_DepositSaveError" xml:space="preserve"><value>Failed to record deposit: {Detail}</value><comment>Deposit page save failure. {Detail} = error detail.</comment></data>
+  <data name="Finance_Banking_WithdrawalSaveError" xml:space="preserve"><value>Failed to record withdrawal: {Detail}</value><comment>Cash withdrawal page save failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_UnexpectedErrorDetail" xml:space="preserve"><value>an unexpected error occurred. The details have been logged.</value><comment>{Detail} text for Finance_Banking_LoadError / Finance_Banking_DepositSaveError when the failure is not a StageFright exception; the exception itself is logged.</comment></data>
 </root>

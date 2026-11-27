@@ -170,13 +170,14 @@ public class BankingPageTests : LocalizedTestContext
             new() { Id = DepositId, Type = BankingHistoryEntryType.Deposit, Date = new DateTime(2026, 3, 9),
                     BankAccountName = "Community Bank", Total = 220m, IsReversed = true },
             new() { Id = Guid.NewGuid(), Type = BankingHistoryEntryType.Withdrawal, Date = new DateTime(2026, 3, 1),
-                    BankAccountName = "Community Bank", Total = 60m }
+                    BankAccountName = "Community Bank", Total = 60m, Description = "Opening night float" }
         });
 
         var cut = Render<BankingPage>();
 
         Assert.Contains("Deposit", cut.Markup);
         Assert.Contains("Withdrawal", cut.Markup);
+        Assert.Contains("Opening night float", cut.Markup);
         Assert.Contains("Reversed", cut.Markup);
         Assert.Contains(MoneyFormatter.Format(220m), cut.Markup);
         Assert.Single(cut.FindAll($"a[href='/finance/banking/deposits/{DepositId}']"));

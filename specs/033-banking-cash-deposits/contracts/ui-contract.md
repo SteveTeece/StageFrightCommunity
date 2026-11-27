@@ -19,7 +19,7 @@
 1. **Summary row**, three compact cards: *Undeposited Funds* (Σ awaiting), *Petty Cash* (the current balance, shown negative when negative) and *Cash available* (today's figure, FR-010).
 2. **Actions**: *Record deposit* and *Record cash withdrawal*. When `BankingOverview.DepositBankAccounts` is empty, `NoBankAccountNotice` (with a link to `/finance/accounts`) replaces both buttons (edge case "No bank account set up").
 3. **Awaiting deposit** `RadzenDataGrid<AwaitingDepositItem>` (`AllowSorting AllowPaging PageSize="15" class="rz-shadow-0"`). Columns: Received, Payer, Reference, Amount, with a footer total. Empty text: `Finance_Banking_NothingAwaiting`.
-4. **History** `RadzenDataGrid<BankingHistoryEntry>`. Columns: Date, Type (Deposit/Withdrawal), Bank account, Total, Status (Recorded/Reversed; withdrawals show "—"). A deposit row click opens its detail. Sorted newest first.
+4. **History** `RadzenDataGrid<BankingHistoryEntry>`. Columns: Date, Type (Deposit/Withdrawal), Bank account, Description (a withdrawal's purpose, US4), Total, Status (Recorded/Reversed; withdrawals show "—"). A deposit row click opens its detail. Sorted newest first.
 
 ### 2.2 DepositForm
 
@@ -40,6 +40,8 @@ The header shows Date, Bank account, Status and Total, then *Cash* `CashAmount`,
 ### 2.4 CashWithdrawalForm
 
 The fields are Bank account (a select, preselected when there is only one), Date, Amount and Purpose (optional, max 200 characters), followed by Save / Cancel.
+
+Save checks that a bank account is chosen and the amount is above zero, and shows the message under the field without calling the service. A blank purpose is sent as `Finance_Banking_WithdrawalDefaultDescription`, so the history shows a translated description. Service refusals and the closed-period message appear in an inline alert; any other failure shows `Finance_Banking_WithdrawalSaveError`. A successful save returns to `/finance/banking`. With no bank account, `NoBankAccountNotice` replaces the form.
 
 ### 2.5 PaymentForm (member payment) changes
 
@@ -162,6 +164,7 @@ Every neutral key ships translated into de-DE, en-US, es-ES, fr-FR, it-IT, ja-JP
 | `Finance_Banking_WithdrawalDefaultDescription` | Cash withdrawal |
 | `Finance_Banking_DepositSaved` / `_WithdrawalSaved` / `_DepositReversed` | Deposit recorded. / Withdrawal recorded. / Deposit reversed. |
 | `Finance_Banking_SelectAllAriaLabel` / `_SelectRowAriaLabel` / `_DepositSaveError` | Select all items awaiting deposit / Select item from {Payer} received {Date} / Failed to record deposit: {Detail} |
+| `Finance_Banking_WithdrawalSaveError` | Failed to record withdrawal: {Detail} |
 | `Finance_Payment_BankAccountLabel` | Bank account |
 | `Finance_Payment_ReferenceLabel` | Cheque reference |
 | `Finance_RecordIncome_PaymentMethodLabel` | Payment method |

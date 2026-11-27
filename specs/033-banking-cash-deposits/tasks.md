@@ -225,7 +225,7 @@ Files: src/StageFright.UI/Pages/Finance/{DepositPage.razor,DepositPage.razor.cs,
 Files: src/StageFright.UI/Pages/Finance/{CashWithdrawalPage.razor,CashWithdrawalPage.razor.cs,CashWithdrawalModel.cs}, tests named below.
 
 ### Tests
-- [ ] **T044** [P] [US4] On SQLite:
+- [x] **T044** [P] [US4] On SQLite:
   - A withdrawal lowers the bank and raises Petty Cash, and shows in history with its purpose (FR-014, US4-1).
   - A zero or negative amount, or no bank account, is refused (US4-2).
   - The withdrawal is one reconciliation line (US4-3).
@@ -233,10 +233,10 @@ Files: src/StageFright.UI/Pages/Finance/{CashWithdrawalPage.razor,CashWithdrawal
   - A float banked back through a deposit leaves Petty Cash where expected (FR-017, verification step 4).
 
   · tests/StageFright.Integration.Tests/Scenarios/V36_CashWithdrawalTests.cs
-- [ ] **T045** [P] [US4] bUnit, CashWithdrawalPage: required fields, a single bank account preselected, the no-bank message, and the success and error states · tests/StageFright.UI.Tests/Pages/Finance/CashWithdrawalPageTests.cs
+- [x] **T045** [P] [US4] bUnit, CashWithdrawalPage: required fields, a single bank account preselected, the no-bank message, and the success and error states · tests/StageFright.UI.Tests/Pages/Finance/CashWithdrawalPageTests.cs
 
 ### Implementation
-- [ ] **T046** [US4] Create CashWithdrawalPage at `/finance/banking/withdrawal` and its model · src/StageFright.UI/Pages/Finance/CashWithdrawalPage.razor, CashWithdrawalPage.razor.cs, CashWithdrawalModel.cs
+- [x] **T046** [US4] Create CashWithdrawalPage at `/finance/banking/withdrawal` and its model · src/StageFright.UI/Pages/Finance/CashWithdrawalPage.razor, CashWithdrawalPage.razor.cs, CashWithdrawalModel.cs
 
 **Checkpoint:** floats can be withdrawn and banked back.
 

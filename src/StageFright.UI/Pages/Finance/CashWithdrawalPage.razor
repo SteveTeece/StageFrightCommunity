@@ -1,0 +1,85 @@
+@page "/finance/banking/withdrawal"
+
+<PageTitle>@L["Finance_Banking_WithdrawalTitle"]</PageTitle>
+
+<div class="cash-withdrawal-page container-fluid py-2">
+    <h4 class="mb-2">@L["Finance_Banking_WithdrawalTitle"]</h4>
+
+    @if (_loading)
+    {
+        <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+        }
+
+        @if (_banks.Count == 0)
+        {
+            <div class="alert alert-warning py-1 mb-2 small" role="alert">
+                @((MarkupString)L["Finance_Banking_NoBankAccountHtml"].Value)
+            </div>
+        }
+        else
+        {
+            <div class="card mb-2">
+                <div class="card-body py-2">
+                    <EditForm Model="_form" OnValidSubmit="SaveAsync">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label class="form-label" for="withdrawalBank">@L["Finance_Payment_BankAccountLabel"] <span aria-hidden="true">*</span></label>
+                                <InputSelect id="withdrawalBank"
+                                             class="@(_errors.ContainsKey(BankField) ? "form-select form-select-sm is-invalid" : "form-select form-select-sm")"
+                                             @bind-Value="_form.BankAccountId">
+                                    <option value="@Guid.Empty">@L["Finance_Common_SelectOption"]</option>
+                                    @foreach (var bank in _banks)
+                                    {
+                                        <option value="@bank.Id">@bank.AccountNumber @bank.Name</option>
+                                    }
+                                </InputSelect>
+                                @if (_errors.TryGetValue(BankField, out var bankError))
+                                {
+                                    <div class="invalid-feedback d-block" id="withdrawalBankError">@bankError</div>
+                                }
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label" for="withdrawalDate">@L["Finance_Common_DateLabel"] <span aria-hidden="true">*</span></label>
+                                <InputDate id="withdrawalDate" class="form-control form-control-sm" @bind-Value="_form.Date" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label" for="withdrawalAmount">@L["Finance_Common_AmountLabel"] <span aria-hidden="true">*</span></label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">@MoneyFormatter.Symbol</span>
+                                    <input id="withdrawalAmount" type="number" step="any" min="0"
+                                           class="@(_errors.ContainsKey(AmountField) ? "form-control is-invalid" : "form-control")"
+                                           @bind="_form.Amount" @bind:event="oninput" />
+                                </div>
+                                @if (_errors.TryGetValue(AmountField, out var amountError))
+                                {
+                                    <div class="invalid-feedback d-block" id="withdrawalAmountError">@amountError</div>
+                                }
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label" for="withdrawalPurpose">@L["Finance_Banking_PurposeLabel"]</label>
+                                <InputText id="withdrawalPurpose" class="form-control form-control-sm" maxlength="200"
+                                           @bind-Value="_form.Purpose" />
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-2">
+                            <button type="submit" id="saveWithdrawal" class="btn btn-primary btn-sm" disabled="@_saving">
+                                @(_saving ? Shared["Shared_Action_Saving"] : Shared["Shared_Action_Save"])
+                            </button>
+                            <button type="button" id="cancelWithdrawal" class="btn btn-outline-secondary btn-sm" @onclick="Cancel">@Shared["Shared_Action_Cancel"]</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        }
+    }
+</div>

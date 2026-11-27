@@ -108,6 +108,7 @@
                             <Template Context="entry">@entry.Type.LocalizeEnum()</Template>
                         </RadzenDataGridColumn>
                         <RadzenDataGridColumn TItem="BankingHistoryEntry" Property="BankAccountName" Title="@L["Finance_Banking_Col_BankAccount"]" />
+                        <RadzenDataGridColumn TItem="BankingHistoryEntry" Property="Description" Title="@L["Finance_Common_DescriptionLabel"]" />
                         <RadzenDataGridColumn TItem="BankingHistoryEntry" Property="Total" Title="@L["Finance_Banking_Col_Total"]" Width="140px" TextAlign="TextAlign.Right">
                             <Template Context="entry">@MoneyFormatter.Format(entry.Total)</Template>
                         </RadzenDataGridColumn>
