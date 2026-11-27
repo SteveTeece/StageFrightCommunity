@@ -247,7 +247,7 @@ Files: src/StageFright.UI/Pages/Finance/{CashWithdrawalPage.razor,CashWithdrawal
 Files: src/StageFright.UI/Pages/Finance/{DepositDetailPage.razor,DepositDetailPage.razor.cs}, tests named below.
 
 ### Tests
-- [ ] **T047** [P] [US5] On SQLite:
+- [x] **T047** [P] [US5] On SQLite:
   - **History:** it lists date, type, bank, total and status (FR-015, US5-1).
   - **Detail:** its cash plus cheques equals the total (US5-2).
   - **Reversal (FR-016, SC-005, US5-3):** the bank, Undeposited Funds and Petty Cash return to their exact pre-deposit balances. The cheques are awaiting again, the reversal is dated on the deposit's date, and it is shown as reversed.
@@ -256,7 +256,7 @@ Files: src/StageFright.UI/Pages/Finance/{DepositDetailPage.razor,DepositDetailPa
   - **Integrity:** organisation history totals are unchanged by the deposit and the reversal (FR-025); the trial balance stays balanced; an audit entry is written.
 
   · tests/StageFright.Integration.Tests/Scenarios/V37_DepositReversalTests.cs
-- [ ] **T048** [P] [US5] bUnit, DepositDetailPage:
+- [x] **T048** [P] [US5] bUnit, DepositDetailPage:
   - Items and cash are listed with their total.
   - Reverse asks for confirmation in two steps.
   - No Reverse is offered once reversed.
@@ -265,7 +265,7 @@ Files: src/StageFright.UI/Pages/Finance/{DepositDetailPage.razor,DepositDetailPa
   · tests/StageFright.UI.Tests/Pages/Finance/DepositDetailPageTests.cs
 
 ### Implementation
-- [ ] **T049** [US5] Create DepositDetailPage at `/finance/banking/deposits/{id:guid}`, with the inline two-step reverse and a return to Banking · src/StageFright.UI/Pages/Finance/DepositDetailPage.razor, DepositDetailPage.razor.cs
+- [x] **T049** [US5] Create DepositDetailPage at `/finance/banking/deposits/{id:guid}`, with the inline two-step reverse and a return to Banking · src/StageFright.UI/Pages/Finance/DepositDetailPage.razor, DepositDetailPage.razor.cs
 
 **Checkpoint:** deposits can be reviewed and corrected without editing any financial record.
 

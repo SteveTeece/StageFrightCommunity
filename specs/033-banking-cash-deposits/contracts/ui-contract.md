@@ -35,7 +35,7 @@ Save is disabled while the total is 0. The cash box updates the totals on every 
 
 ### 2.3 DepositDetailPage
 
-The header shows Date, Bank account, Status and Total, then *Cash* `CashAmount`, then a grid of included items (Received, Payer, Reference, Amount) with its sum. When the deposit is not yet reversed and is not a legacy deposit, a *Reverse deposit* button opens a confirmation dialog (`Finance_Banking_ReverseConfirm`). On success the page reloads and shows the Reversed status with the reversal date. A legacy deposit shows `Finance_Banking_LegacyDepositNote` and has no button.
+The header shows Date, Bank account, Status, Cash (`CashAmount`) and Total, then a grid of included items (Received, Payer, Reference, Amount) with its sum. When `DepositDetail.CanReverse` is true, a *Reverse deposit* button asks for confirmation inline: it is replaced by `Finance_Banking_ReverseConfirm` with *Yes, reverse it* (`Finance_Banking_ReverseConfirmButton`) and *Cancel*. Nothing is posted until the second click. On success the page shows `Finance_Banking_DepositReversed`, reloads, and shows the Reversed status with the reversal date (`Finance_Banking_ReversedOn`). When the deposit cannot be reversed (already reversed, cleared in a finalised reconciliation, or in a closed period), there is no button and `CannotReverseReason` is shown instead. A legacy deposit shows `Finance_Banking_LegacyDepositNote` and has no button. A refusal at confirm time shows its message and reloads the page; any other failure shows `Finance_Banking_ReverseError`. Every state has a *Back to Banking* link (`Finance_Banking_BackToBanking`).
 
 ### 2.4 CashWithdrawalForm
 
@@ -165,6 +165,7 @@ Every neutral key ships translated into de-DE, en-US, es-ES, fr-FR, it-IT, ja-JP
 | `Finance_Banking_DepositSaved` / `_WithdrawalSaved` / `_DepositReversed` | Deposit recorded. / Withdrawal recorded. / Deposit reversed. |
 | `Finance_Banking_SelectAllAriaLabel` / `_SelectRowAriaLabel` / `_DepositSaveError` | Select all items awaiting deposit / Select item from {Payer} received {Date} / Failed to record deposit: {Detail} |
 | `Finance_Banking_WithdrawalSaveError` | Failed to record withdrawal: {Detail} |
+| `Finance_Banking_ReverseConfirmButton` / `_BackToBanking` / `_ReverseError` | Yes, reverse it / Back to Banking / Failed to reverse deposit: {Detail} |
 | `Finance_Payment_BankAccountLabel` | Bank account |
 | `Finance_Payment_ReferenceLabel` | Cheque reference |
 | `Finance_RecordIncome_PaymentMethodLabel` | Payment method |
@@ -181,7 +182,7 @@ Before deleting any key, the implementer greps for remaining uses.
 |---|---|---|
 | `ValidationException` | resolver, deposit, withdrawal, opening balance and journal services | Inline alert with the localized message. The form stays open. |
 | `EntityNotFoundException` | a missing account, item or deposit | Detail: the not-found message. Forms: an inline alert. |
-| `ReconciliationException` | reversal blocked by a finalised reconciliation | The confirmation dialog closes and an alert shows the message. |
+| `ValidationException` (`Validation_Deposit_ReversalBlockedByFinalisedReconciliation`) | reversal blocked by a finalised reconciliation | The inline confirmation closes, an alert shows the message, and the page reloads without the button. |
 | `ClosedPeriodException` | `ClosedPeriodGuard` through the GL | `Validation_ClosedPeriod_PostingRejected`, as on the other finance forms. |
 | `GLBalanceException` | the GL (a defensive check that should be unreachable) | A generic save-failed alert, logged. |
 | `DataIntegrityException` | `MarkReversedAsync` double stamp, which is a race | Treated as "already reversed": the page reloads. |

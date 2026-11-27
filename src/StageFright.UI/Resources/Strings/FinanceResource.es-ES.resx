@@ -282,5 +282,8 @@
   <data name="Finance_Banking_SelectRowAriaLabel" xml:space="preserve"><value>Seleccionar el elemento de {Payer} recibido el {Date}</value><comment>aria-label for a deposit item checkbox. {Payer} = payer, {Date} = received date.</comment></data>
   <data name="Finance_Banking_DepositSaveError" xml:space="preserve"><value>No se pudo registrar el depósito: {Detail}</value><comment>Deposit page save failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_WithdrawalSaveError" xml:space="preserve"><value>No se pudo registrar la retirada: {Detail}</value><comment>Cash withdrawal page save failure. {Detail} = error detail.</comment></data>
+  <data name="Finance_Banking_ReverseConfirmButton" xml:space="preserve"><value>Sí, revertir</value><comment>Deposit detail: second-step button that confirms the reversal.</comment></data>
+  <data name="Finance_Banking_BackToBanking" xml:space="preserve"><value>Volver a Banca</value><comment>Deposit detail: link back to the Banking page.</comment></data>
+  <data name="Finance_Banking_ReverseError" xml:space="preserve"><value>No se pudo revertir el depósito: {Detail}</value><comment>Deposit detail reversal failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_UnexpectedErrorDetail" xml:space="preserve"><value>se produjo un error inesperado. Los detalles se han registrado.</value><comment>{Detail} text for Finance_Banking_LoadError / Finance_Banking_DepositSaveError when the failure is not a StageFright exception; the exception itself is logged.</comment></data>
 </root>

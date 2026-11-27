@@ -1,0 +1,104 @@
+@page "/finance/banking/deposits/{Id:guid}"
+@using StageFright.Core.Modules.Finance
+
+<PageTitle>@L["Finance_Banking_DepositDetailTitle"]</PageTitle>
+
+<div class="deposit-detail-page container-fluid py-2">
+    <h4 class="mb-2">@L["Finance_Banking_DepositDetailTitle"]</h4>
+
+    @if (_loading)
+    {
+        <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+        }
+
+        @if (!string.IsNullOrEmpty(_successMessage))
+        {
+            <div class="alert alert-success py-1 mb-2 small" role="status" id="depositMessage">@_successMessage</div>
+        }
+
+        @if (_detail is null)
+        {
+            @if (!_loadFailed)
+            {
+                <p class="text-muted small" id="depositNotFound">@L["Finance_Banking_DepositNotFound"]</p>
+            }
+        }
+        else
+        {
+            <div class="card mb-2">
+                <div class="card-body py-2">
+                    <dl class="row mb-0 small">
+                        <dt class="col-sm-3">@L["Finance_Banking_Col_Date"]</dt>
+                        <dd class="col-sm-9" id="depositDate">@_detail.Date.ToShortDateString()</dd>
+                        <dt class="col-sm-3">@L["Finance_Banking_Col_BankAccount"]</dt>
+                        <dd class="col-sm-9" id="depositBank">@_detail.BankAccountName</dd>
+                        <dt class="col-sm-3">@L["Finance_Banking_Col_Status"]</dt>
+                        <dd class="col-sm-9" id="depositStatus">@StatusText()</dd>
+                        <dt class="col-sm-3">@L["Finance_Banking_TotalCash"]</dt>
+                        <dd class="col-sm-9" id="depositCash">@MoneyFormatter.Format(_detail.CashAmount)</dd>
+                        <dt class="col-sm-3">@L["Finance_Banking_TotalDeposit"]</dt>
+                        <dd class="col-sm-9 fw-semibold" id="depositTotal">@MoneyFormatter.Format(_detail.Total)</dd>
+                    </dl>
+                </div>
+            </div>
+
+            @if (_detail.Items.Count > 0)
+            {
+                <h5>@L["Finance_Banking_ItemsHeading"]</h5>
+                <RadzenDataGrid Data="@_detail.Items" TItem="AwaitingDepositItem"
+                                AllowSorting="true" AllowPaging="true" PageSize="15"
+                                class="rz-shadow-0 mb-2">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="AwaitingDepositItem" Property="ReceivedDate" Title="@L["Finance_Banking_Col_Received"]" Width="130px">
+                            <Template Context="item">@item.ReceivedDate.ToShortDateString()</Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="AwaitingDepositItem" Property="PayerName" Title="@L["Finance_Banking_Col_Payer"]">
+                            <Template Context="item">@PayerText(item)</Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="AwaitingDepositItem" Property="Reference" Title="@L["Finance_Banking_Col_Reference"]" />
+                        <RadzenDataGridColumn TItem="AwaitingDepositItem" Property="Amount" Title="@L["Finance_Banking_Col_Amount"]" Width="140px" TextAlign="TextAlign.Right">
+                            <Template Context="item">@MoneyFormatter.Format(item.Amount)</Template>
+                            <FooterTemplate><strong id="itemsTotal">@MoneyFormatter.Format(ItemsTotal)</strong></FooterTemplate>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            }
+
+            @if (_detail.IsLegacy)
+            {
+                <p class="text-muted small" id="legacyNote">@L["Finance_Banking_LegacyDepositNote"]</p>
+            }
+            else if (_detail.CanReverse)
+            {
+                @if (_confirming)
+                {
+                    <div class="alert alert-warning py-2 mb-2 small" role="alertdialog" aria-labelledby="reverseConfirmText">
+                        <p class="mb-2" id="reverseConfirmText">@L["Finance_Banking_ReverseConfirm"]</p>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-danger btn-sm" id="confirmReverse" disabled="@_reversing" @onclick="ConfirmReverseAsync">@L["Finance_Banking_ReverseConfirmButton"]</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="cancelReverse" disabled="@_reversing" @onclick="CancelReverse">@Shared["Shared_Action_Cancel"]</button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-outline-danger btn-sm mb-2" id="reverseDeposit" @onclick="StartReverse">@L["Finance_Banking_ReverseButton"]</button>
+                }
+            }
+            else if (!string.IsNullOrEmpty(_detail.CannotReverseReason))
+            {
+                <p class="text-muted small" id="cannotReverseReason">@_detail.CannotReverseReason</p>
+            }
+        }
+
+        <div>
+            <a href="/finance/banking" class="btn btn-outline-secondary btn-sm" id="backToBanking">@L["Finance_Banking_BackToBanking"]</a>
+        </div>
+    }
+</div>

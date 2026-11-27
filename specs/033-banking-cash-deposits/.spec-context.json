@@ -442,6 +442,30 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-27T01:55:26.980Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-27T07:20:09.724Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-27T07:20:09.726Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-27T07:20:10.246Z"
     }
   ],
   "telemetryInstanceId": "2d0602eb-ff2b-480e-bd3e-beb0b4a6e39a",
@@ -646,6 +670,27 @@
       "rejected": "purpose only in BankingHistoryEntry, not on screen",
       "by": "agent",
       "at": "2026-11-27T02:02:24.521Z"
+    },
+    {
+      "decision": "Inline two-step reverse (button replaced by confirm text plus Yes/Cancel) instead of a modal dialog",
+      "why": "tasks.md T049 asks for an inline two-step reverse; no modal plumbing needed",
+      "rejected": "BlazorBootstrap modal confirmation as ui-contract 2.3 first described (contract updated)",
+      "by": "agent",
+      "at": "2026-11-27T07:25:20.874Z"
+    },
+    {
+      "decision": "Show DepositDetail.CannotReverseReason in place of the button and reload after a refusal at confirm time",
+      "why": "the user sees why there is no Reverse action, and the page reflects the service as authority",
+      "rejected": "always showing the button and only reporting the refusal after a click",
+      "by": "agent",
+      "at": "2026-11-27T07:25:20.874Z"
+    },
+    {
+      "decision": "Added Finance_Banking_ReverseConfirmButton, _BackToBanking and _ReverseError, translated in all 7 cultures",
+      "why": "the contract key table had no confirm button, back link or reversal-failure text",
+      "rejected": "reusing Shared_Action_Apply or the deposit save error text",
+      "by": "agent",
+      "at": "2026-11-27T07:25:20.874Z"
     }
   ],
   "expectations": [
@@ -850,6 +895,9 @@
         "T047",
         "T048",
         "T049"
+      ],
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/V37_DepositReversalTests.cs::Should_ListDateTypeBankTotalAndStatus_When_DepositReversedAndWithdrawalRecorded_Integration; tests/StageFright.UI.Tests/Pages/Finance/DepositDetailPageTests.cs::Should_ListCashAndEachItemWithTotal_When_DepositOpened"
       ]
     },
     "FR-016": {
@@ -860,6 +908,13 @@
         "T047",
         "T048",
         "T049"
+      ],
+      "tests": [
+        "V37_DepositReversalTests.cs::Should_RestoreAllThreeBalancesAndReturnCheques_When_DepositReversed_Integration",
+        "::Should_RefuseSecondReversal_When_DepositAlreadyReversed_Integration",
+        "::Should_RefuseWithReason_When_DepositClearedInFinalisedReconciliation_Integration",
+        "::Should_ReverseAndUnclearDraftLine_When_DepositClearedOnlyInDraftReconciliation_Integration; DepositDetailPageTests.cs::Should_AskForConfirmationAndPostNothing_When_ReverseClickedOnce",
+        "::Should_ReverseAndShowReversedStatus_When_Confirmed"
       ]
     },
     "FR-017": {
@@ -880,7 +935,7 @@
         "T047"
       ],
       "tests": [
-        "V36_CashWithdrawalTests::Should_RefuseAndPostNothing_When_DatedInClosedPeriod_Integration; CashWithdrawalPageTests::Should_ShowClosedPeriodMessage_When_WithdrawalDatedInClosedPeriod"
+        "V37_DepositReversalTests.cs::Should_RefuseAndPostNothing_When_DepositDatedInClosedPeriod_Integration; DepositDetailPageTests.cs::Should_ShowClosedPeriodMessage_When_ReversalDatedInClosedPeriod"
       ]
     },
     "FR-019": {
@@ -892,7 +947,7 @@
         "T047"
       ],
       "tests": [
-        "V36_CashWithdrawalTests::Should_KeepBooksBalancedAndWriteAuditEntry_When_WithdrawalRecorded_Integration"
+        "V37_DepositReversalTests.cs::Should_KeepTrialBalanceBalancedAndWriteAuditEntry_When_DepositReversed_Integration"
       ]
     },
     "FR-020": {
@@ -939,7 +994,7 @@
         "T047"
       ],
       "tests": [
-        "V36_CashWithdrawalTests::Should_KeepBooksBalancedAndWriteAuditEntry_When_WithdrawalRecorded_Integration"
+        "V37_DepositReversalTests.cs::Should_LeaveOrganisationTotalsUnchanged_When_ChequeDepositedAndReversed_Integration"
       ],
       "assumes": "DepositModel/RecordDepositRequest have no organisation field; no direct test"
     },
@@ -951,6 +1006,11 @@
     "US4-3": {
       "tests": [
         "V36_CashWithdrawalTests::Should_ShowOneReconciliationLine_When_WithdrawalReconciled_Integration"
+      ]
+    },
+    "SC-005": {
+      "tests": [
+        "V37_DepositReversalTests.cs::Should_RestoreAllThreeBalancesAndReturnCheques_When_DepositReversed_Integration"
       ]
     }
   },
@@ -991,20 +1051,20 @@
       "command": "dotnet build",
       "source": "derived",
       "exitCode": 0,
-      "durationSeconds": 64.5,
-      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:01:03.65",
-      "commit": "fd14500",
-      "tree": "6355cb776c5ffc134e428837d8184560e61603c8"
+      "durationSeconds": 73.4,
+      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:01:12.10",
+      "commit": "060e81c",
+      "tree": "40d3283888357aab24e3bb6ef1827c8413885968"
     },
     {
       "what": "full test suite",
       "command": "dotnet test",
       "source": "derived",
       "exitCode": 0,
-      "durationSeconds": 363.4,
-      "result": "Passed!  - Failed:     0, Passed:    29, Skipped:     0, Total:    29, Duration: 6 s - StageFright.Localization.Tests.dll (net10.0) · Passed!  - Failed:     0, Passed:   299, Skipped:     0, Total:   299, Duration: 2 m 35 s - StageFright.Integration.Tests.dll (net10.0) ·   StageFright.App -> c:\\SourceCode\\StageFrightCommunity\\src\\StageFright.App\\bin\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\StageFright.App.dll",
-      "commit": "fd14500",
-      "tree": "6355cb776c5ffc134e428837d8184560e61603c8"
+      "durationSeconds": 302.0,
+      "result": "Passed!  - Failed:     0, Passed:   235, Skipped:     0, Total:   235, Duration: 2 m 13 s - StageFright.Data.Tests.dll (net10.0) · Passed!  - Failed:     0, Passed:   895, Skipped:     0, Total:   895, Duration: 1 m 21 s - StageFright.UI.Tests.dll (net10.0) · Passed!  - Failed:     0, Passed:   309, Skipped:     0, Total:   309, Duration: 3 m 16 s - StageFright.Integration.Tests.dll (net10.0)",
+      "commit": "060e81c",
+      "tree": "40d3283888357aab24e3bb6ef1827c8413885968"
     },
     {
       "what": "Independent FR check (fresh worker, FRs + diff + conventions only)",
@@ -1107,6 +1167,10 @@
     {
       "what": "Independent requirements check of the phase 6 diff (FR-007, 014, 015, 017, 018, 019, 025, no-bank edge, US4-1..3)",
       "result": "no missing; FR-017 at risk closed by V36 same-date correction test (passes)"
+    },
+    {
+      "what": "Independent requirements check (phase 7 diff vs FRs, US5-1..7, edge cases)",
+      "result": "No missing or at-risk verdicts; FR-015, FR-016, FR-018, FR-019, FR-023, FR-025 and US5-1..7 met with real-service V37 tests"
     }
   ],
   "step_summaries": {
@@ -1118,11 +1182,11 @@
       "summary": "54 tasks: setup, a 6-wave foundational phase owning all back end, resx, DI and seed data, five story phases owning their pages and tests, and polish"
     },
     "implement": {
-      "summary": "Phase 6 (US4): CashWithdrawalPage at /finance/banking/withdrawal, purpose column in Banking history, V36 + bUnit tests"
+      "summary": "Phase 7 (US5): DepositDetailPage with inline two-step reverse, V37 reversal scenarios and bUnit tests"
     }
   },
   "approach": "Route each receipt by payment method through a pure ReceiptRouting rule, track cheques as ReceivedItem rows, and post deposits, reversals and withdrawals as balanced journal entries through a new BankingService. One migration renames 1100 and seeds 1105, and backup moves to 1.4.0.",
-  "currentTask": "T046",
+  "currentTask": "T049",
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -1592,6 +1656,33 @@
         "src/StageFright.UI/Pages/Finance/BankingPage.razor",
         "src/StageFright.UI/Resources/Strings/FinanceResource*.resx"
       ]
+    },
+    "T047": {
+      "status": "DONE",
+      "did": "V37 SQLite reversal scenarios (10) and DepositDetailPage bUnit tests (16)",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V37_DepositReversalTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Finance/DepositDetailPageTests.cs"
+      ],
+      "wave": "T047-T048"
+    },
+    "T048": {
+      "status": "DONE",
+      "did": "V37 SQLite reversal scenarios (10) and DepositDetailPage bUnit tests (16)",
+      "files": [
+        "tests/StageFright.Integration.Tests/Scenarios/V37_DepositReversalTests.cs",
+        "tests/StageFright.UI.Tests/Pages/Finance/DepositDetailPageTests.cs"
+      ],
+      "wave": "T047-T048"
+    },
+    "T049": {
+      "status": "DONE",
+      "did": "DepositDetailPage with inline two-step reverse, refusal reasons and back link; 3 new translated keys",
+      "files": [
+        "src/StageFright.UI/Pages/Finance/DepositDetailPage.razor",
+        "src/StageFright.UI/Pages/Finance/DepositDetailPage.razor.cs",
+        "src/StageFright.UI/Resources/Strings/FinanceResource*.resx"
+      ]
     }
   },
   "concerns": [
@@ -1670,9 +1761,17 @@
     {
       "note": "FR-015 lists a status per history row; withdrawals show a dash by contract (they have no reversal). Left as designed.",
       "step": "implement"
+    },
+    {
+      "note": "Edge case 'a reversal would leave Petty Cash negative' cannot occur as written: a reversal debits Petty Cash, raising it. V37 tests the reachable case instead: the reversal is allowed when the deposited money was already spent from the bank, leaving the bank negative.",
+      "step": "implement"
+    },
+    {
+      "note": "US5's Independent Test says both the deposit and its reversal are listed; the history shows one Deposit row with status Reversed, not a separate reversal row, as ui-contract 2.1 designs.",
+      "step": "implement"
     }
   ],
-  "last_action": "phase 6 closed (T044-T046); phases 7-8 remain",
+  "last_action": "Phase 7 verified; full build and suite recorded",
   "risk": {
     "tier": "high",
     "computed": "high",
