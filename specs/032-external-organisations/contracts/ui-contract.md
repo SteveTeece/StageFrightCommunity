@@ -348,9 +348,9 @@ public interface IOrganisationHistoryService
 
 Payee fill (FR-010, US3 scenarios 6 and 7), on the expense screen only. When `ExternalOrganisationId` changes to a non-null value and `string.IsNullOrWhiteSpace(_form.Payee)`, set `_form.Payee` to that organisation's `Name`. A payee that is not blank is never overwritten. Clearing or changing the organisation never clears or rewrites a payee. `#payee` stays editable.
 
-After a successful save, both screens reset `ExternalOrganisationId` to null along with the rest of the form. Bank deposit, general journal, member fee and member payment screens get no picker.
+After a successful save, both screens reset `ExternalOrganisationId` to null along with the rest of the form. The Banking screens (deposit, cash withdrawal, deposit detail), general journal, member fee and member payment screens get no picker.
 
-> *Pending spec 033 (banking rework):* on Record income, the deposit-account picker is replaced by a payment method, followed by a conditional bank-account picker and cheque reference. `#incomeOrganisation` stays directly above `#description` (spec 033 FR-004). The bank deposit screen becomes the Banking screen, which also gets no picker (spec 033 FR-025).
+> *Since spec 033 (banking rework):* on Record income, the deposit-account picker is replaced by a payment method, followed by a bank-account picker for card or electronic transfer and a cheque reference for cheque or "other". `#incomeOrganisation` stays directly above `#description` (spec 033 FR-004). The bank deposit screen is now the Banking screen (`/finance/banking`), and none of its screens offers a picker (spec 033 FR-025).
 
 ## 6. Backup (schema 1.3.0)
 

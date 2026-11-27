@@ -2,8 +2,8 @@
   "workflow": "companion",
   "specName": "Banking Rework — Undeposited Funds, Petty Cash, Deposits and Cash Withdrawals",
   "branch": "033-banking-cash-deposits",
-  "currentStep": "implement",
-  "status": "implementing",
+  "currentStep": "converge",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -474,6 +474,59 @@
       "kind": "complete",
       "by": "user",
       "at": "2026-11-27T08:40:06.243Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T050",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-27T10:02:25.418Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-27T10:02:25.421Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-27T10:02:25.423Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T053",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-27T10:06:34.598Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-27T10:06:34.694Z"
+    },
+    {
+      "step": "converge",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-27T10:07:19.712Z"
+    },
+    {
+      "step": "converge",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-27T10:09:20.978Z"
     }
   ],
   "telemetryInstanceId": "2d0602eb-ff2b-480e-bd3e-beb0b4a6e39a",
@@ -1018,8 +1071,32 @@
     },
     "SC-005": {
       "tests": [
-        "V37_DepositReversalTests.cs::Should_RestoreAllThreeBalancesAndReturnCheques_When_DepositReversed_Integration"
+        "tests/StageFright.Integration.Tests/Scenarios/V37_DepositReversalTests.cs::Should_RestoreAllThreeBalancesAndReturnCheques_When_DepositReversed_Integration"
       ]
+    },
+    "SC-001": {
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/V33_ChequesAwaitingDepositTests.cs::Should_DropMemberBalanceAndRaiseUndepositedFundsAndLeaveBankUntouched_When_MemberPaysByCheque_Integration"
+      ]
+    },
+    "SC-002": {
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/V35_BankDepositTests.cs::Should_KeepTrialBalanceBalancedAndWriteAuditEntry_When_DepositRecorded_Integration"
+      ]
+    },
+    "SC-003": {
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/V35_BankDepositTests.cs::Should_ShowOneReconciliationLineForFullTotal_When_DepositOfTenReceiptsReconciled_Integration"
+      ]
+    },
+    "SC-006": {
+      "tests": [
+        "tests/StageFright.Integration.Tests/Scenarios/V9_BackupRestoreTests.cs::Should_RoundTripBankingRecords_When_Version140FileRestoredIntoFreshDatabase_Integration",
+        "::Should_RestoreWithNoBankingRecordsAndRenamePettyCash_When_FileOlderThan140_Integration"
+      ]
+    },
+    "SC-004": {
+      "assumes": "Timed by hand in the live app (T054, marked done by the user); no automated timing test"
     }
   },
   "classification": {
@@ -1066,13 +1143,13 @@
     },
     {
       "what": "full test suite",
-      "command": "dotnet test",
+      "command": "dotnet test StageFrightCommunity.slnx",
       "source": "derived",
       "exitCode": 0,
-      "durationSeconds": 302.0,
-      "result": "Passed!  - Failed:     0, Passed:   235, Skipped:     0, Total:   235, Duration: 2 m 13 s - StageFright.Data.Tests.dll (net10.0) · Passed!  - Failed:     0, Passed:   895, Skipped:     0, Total:   895, Duration: 1 m 21 s - StageFright.UI.Tests.dll (net10.0) · Passed!  - Failed:     0, Passed:   309, Skipped:     0, Total:   309, Duration: 3 m 16 s - StageFright.Integration.Tests.dll (net10.0)",
-      "commit": "060e81c",
-      "tree": "40d3283888357aab24e3bb6ef1827c8413885968"
+      "durationSeconds": 107.1,
+      "result": "Passed!  - Failed:     0, Passed:   906, Skipped:     0, Total:   906, Duration: 35 s - StageFright.UI.Tests.dll (net10.0) · Passed!  - Failed:     0, Passed:   309, Skipped:     0, Total:   309, Duration: 1 m 5 s - StageFright.Integration.Tests.dll (net10.0) ·   StageFright.App -> C:\\SourceCode\\StageFrightCommunity\\src\\StageFright.App\\bin\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\StageFright.App.dll",
+      "commit": "49cf934",
+      "tree": "cd14230e520373da80e746b43ef45488c8323bcb"
     },
     {
       "what": "Independent FR check (fresh worker, FRs + diff + conventions only)",
@@ -1091,10 +1168,10 @@
       "command": "dotnet build -t:Rebuild StageFrightCommunity.slnx",
       "source": "derived",
       "exitCode": 0,
-      "durationSeconds": 49.0,
-      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:48.38",
-      "commit": "d82de56",
-      "tree": "5975a9cbefb57135efc766dbcac80acf04b02fef"
+      "durationSeconds": 82.8,
+      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:01:21.97",
+      "commit": "49cf934",
+      "tree": "539b7ccf62c231dedf07f8cb00204ab635484e7c"
     },
     {
       "what": "Independent FR check (FR-002..FR-005, US2 acceptance) by a fresh reviewer against the code",
@@ -1179,6 +1256,18 @@
     {
       "what": "Independent requirements check (phase 7 diff vs FRs, US5-1..7, edge cases)",
       "result": "No missing or at-risk verdicts; FR-015, FR-016, FR-018, FR-019, FR-023, FR-025 and US5-1..7 met with real-service V37 tests"
+    },
+    {
+      "what": "Live-app run of Phases 1-7 (setup, foundational, US1-US5) by the user",
+      "result": "done by user 2026-11-27; follow-up changes raised as issues #396-#400 (back buttons on deposit/withdrawal, deposit report, expenses from Banking, opening balances locked after setup, monthly reconciliations in seed data)"
+    },
+    {
+      "what": "Requirements check for Phase 8 (ran inline)",
+      "result": "This run's diff is documentation only (CLAUDE.md, specs 032 and 009), so no FR can be met or undone by it; FR verdicts stand from the independent per-phase checks. Doc claims checked against code instead: one wrong claim fixed (OpeningBalanceService does not call ReceiptRouting); backup member numbers 29/31/32 and EntityCounts 30 confirmed in BackupEnvelope; org-history account skip confirmed in OrganisationHistoryService"
+    },
+    {
+      "what": "Spec 030 1.4.0 note (T052)",
+      "result": "already written in fc44a85 during T022; verified accurate against BackupEnvelope and JournalEntryBackupDto, left unchanged"
     }
   ],
   "step_summaries": {
@@ -1190,11 +1279,11 @@
       "summary": "54 tasks: setup, a 6-wave foundational phase owning all back end, resx, DI and seed data, five story phases owning their pages and tests, and polish"
     },
     "implement": {
-      "summary": "Phase 7 (US5): DepositDetailPage with inline two-step reverse, V37 reversal scenarios and bUnit tests"
+      "summary": "Phase 8 polish: CLAUDE.md, spec 032 and spec 009 docs updated for banking; full rebuild 0 warnings and full suite green"
     }
   },
   "approach": "Route each receipt by payment method through a pure ReceiptRouting rule, track cheques as ReceivedItem rows, and post deposits, reversals and withdrawals as balanced journal entries through a new BankingService. One migration renames 1100 and seeds 1105, and backup moves to 1.4.0.",
-  "currentTask": "T054",
+  "currentTask": null,
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -1695,6 +1784,49 @@
     "T054": {
       "status": "DONE",
       "did": "Marked done on the user's instruction (2026-11-27); the live-app check itself was not run."
+    },
+    "T050": {
+      "status": "DONE",
+      "did": "CLAUDE.md gains 25 entities, banking flow, backup 1.4.0 and org-link types; spec 032 pending notes made final; spec 009 FR-001-003/006 marked superseded (spec 030 1.4.0 note already present, verified against BackupEnvelope)",
+      "files": [
+        "CLAUDE.md",
+        "specs/032-external-organisations/spec.md",
+        "specs/032-external-organisations/data-model.md",
+        "specs/032-external-organisations/contracts/ui-contract.md",
+        "specs/009-bank-deposit-transfers/spec.md"
+      ],
+      "wave": "T050-T052"
+    },
+    "T051": {
+      "status": "DONE",
+      "did": "CLAUDE.md gains 25 entities, banking flow, backup 1.4.0 and org-link types; spec 032 pending notes made final; spec 009 FR-001-003/006 marked superseded (spec 030 1.4.0 note already present, verified against BackupEnvelope)",
+      "files": [
+        "CLAUDE.md",
+        "specs/032-external-organisations/spec.md",
+        "specs/032-external-organisations/data-model.md",
+        "specs/032-external-organisations/contracts/ui-contract.md",
+        "specs/009-bank-deposit-transfers/spec.md"
+      ],
+      "wave": "T050-T052"
+    },
+    "T052": {
+      "status": "DONE",
+      "did": "CLAUDE.md gains 25 entities, banking flow, backup 1.4.0 and org-link types; spec 032 pending notes made final; spec 009 FR-001-003/006 marked superseded (spec 030 1.4.0 note already present, verified against BackupEnvelope)",
+      "files": [
+        "CLAUDE.md",
+        "specs/032-external-organisations/spec.md",
+        "specs/032-external-organisations/data-model.md",
+        "specs/032-external-organisations/contracts/ui-contract.md",
+        "specs/009-bank-deposit-transfers/spec.md"
+      ],
+      "wave": "T050-T052"
+    },
+    "T053": {
+      "status": "DONE",
+      "did": "Full rebuild 0 warnings (= T001 baseline); full dotnet test exit 0, no failures incl. Localization guards; SC-001/002/003/005/006 mapped to passing tests",
+      "files": [
+        "(none)"
+      ]
     }
   },
   "concerns": [
@@ -1781,14 +1913,28 @@
     {
       "note": "US5's Independent Test says both the deposit and its reversal are listed; the history shows one Deposit row with status Reversed, not a separate reversal row, as ui-contract 2.1 designs.",
       "step": "implement"
+    },
+    {
+      "note": "T054 live-app check and SC-004 timing were marked done by the user; this run did not drive the app itself",
+      "step": "implement"
     }
   ],
-  "last_action": "Phase 7 verified; full build and suite recorded",
+  "last_action": "T053 closed; all 54 tasks done",
   "risk": {
     "tier": "high",
     "computed": "high",
     "reasons": [
       "touches .github/workflows/debug-pre-release.yml, src/StageFright.Data/Migrations/20261119195813_AddExternalOrganisations.Designer.cs, src/StageFright.Data/Migrations/20261119195813_AddExternalOrganisations.cs and 7 more"
     ]
-  }
+  },
+  "convergeStartedAt": "2026-11-27T10:07:19.918Z",
+  "convergePasses": [
+    {
+      "startedAt": "2026-11-27T10:07:20.151Z",
+      "by": "extension",
+      "finishedAt": "2026-11-27T10:09:21.373Z",
+      "added": [],
+      "completed": true
+    }
+  ]
 }

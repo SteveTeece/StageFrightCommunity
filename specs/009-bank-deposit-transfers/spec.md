@@ -72,12 +72,12 @@ A treasurer or auditor reviewing historical financial reports (e.g., Account Reg
 
 ### Functional Requirements
 
-- **FR-001**: System MUST provide a dedicated bank-deposit workflow that records cash collected as deposited into a nominated bank account.
-- **FR-002**: System MUST always source deposited funds from the club's designated Cash on Hand balance; users MUST NOT be able to choose an arbitrary source account for this workflow.
-- **FR-003**: Users MUST be able to select which bank account receives the deposit, from the set of accounts designated as bank accounts, excluding Cash on Hand itself.
+- ~~**FR-001**~~ *(Superseded by spec 033: a deposit now banks selected cheques and "other" receipts from Undeposited Funds plus cash from Petty Cash (spec 033 FR-009).)* System MUST provide a dedicated bank-deposit workflow that records cash collected as deposited into a nominated bank account.
+- ~~**FR-002**~~ *(Superseded by spec 033: deposited funds come from Undeposited Funds and/or Petty Cash, the renamed Cash on Hand (spec 033 FR-002, FR-009).)* System MUST always source deposited funds from the club's designated Cash on Hand balance; users MUST NOT be able to choose an arbitrary source account for this workflow.
+- ~~**FR-003**~~ *(Superseded by spec 033: the bank account is still chosen from bank accounts other than Petty Cash, now on the Banking screen's deposit form (spec 033 FR-009).)* Users MUST be able to select which bank account receives the deposit, from the set of accounts designated as bank accounts, excluding Cash on Hand itself.
 - **FR-004**: System MUST require a deposit date and a positive deposit amount before a deposit can be recorded.
 - **FR-005**: System MUST allow an optional description for each deposit, defaulting to a standard label when left blank.
-- **FR-006**: Upon recording a deposit, system MUST decrease the Cash on Hand balance and increase the selected bank account balance by the exact deposit amount, keeping the books balanced (total debits equal total credits).
+- ~~**FR-006**~~ *(Superseded by spec 033: a deposit raises the bank by its total, lowers Undeposited Funds by the included cheques and Petty Cash by the cash, as one bank line (spec 033 FR-012, FR-013).)* Upon recording a deposit, system MUST decrease the Cash on Hand balance and increase the selected bank account balance by the exact deposit amount, keeping the books balanced (total debits equal total credits).
 - **FR-007**: System MUST prevent recording a deposit when no eligible bank account (other than Cash on Hand) exists, and MUST direct the user to add one before proceeding.
 - **FR-008**: System MUST retire the prior generic "transfer between any two accounts" workflow from the page previously labeled "Transfer" — now titled "Record Bank Deposit" — so that moving funds between two accounts for reasons other than depositing collected cash continues to be handled through the existing Journal Entry workflow.
 - **FR-009**: System MUST preserve all previously recorded transfer transactions and continue to display them accurately in existing financial reports after this change ships.

@@ -274,18 +274,18 @@ Files: src/StageFright.UI/Pages/Finance/{DepositDetailPage.razor,DepositDetailPa
 ## Phase 8: Polish
 
 **Wave 1 — independent:**
-- [ ] **T050** [P] Update CLAUDE.md:
+- [x] **T050** [P] Update CLAUDE.md:
   - the entity count goes from 22 to 25, plus the new entities and their financial exemption;
   - Finance / GL integrity gains Petty Cash 1100 and Undeposited Funds 1105, and describes the Banking flow;
   - the backup version becomes `1.4.0`;
   - the spec 032 line on organisation links lists the new types.
 
   · CLAUDE.md
-- [ ] **T051** [P] Replace spec 032's "pending spec 033" notes with the final wording: FR-012 and SC-003, data-model §2 and §3, ui-contract §5.3 · specs/032-external-organisations/spec.md, data-model.md, contracts/ui-contract.md
-- [ ] **T052** [P] Write spec 030's `1.4.0` note and mark spec 009's FR-001 to FR-003 and FR-006 as superseded by spec 033 · specs/030-backup-restore/contracts/backup-envelope-schema.md, specs/009-bank-deposit-transfers/spec.md
+- [x] **T051** [P] Replace spec 032's "pending spec 033" notes with the final wording: FR-012 and SC-003, data-model §2 and §3, ui-contract §5.3 · specs/032-external-organisations/spec.md, data-model.md, contracts/ui-contract.md
+- [x] **T052** [P] Write spec 030's `1.4.0` note and mark spec 009's FR-001 to FR-003 and FR-006 as superseded by spec 033 · specs/030-backup-restore/contracts/backup-envelope-schema.md, specs/009-bank-deposit-transfers/spec.md
 
 **⟶ Wait for Wave 1 to finish, then:**
-- [ ] **T053** Validate against the Success Criteria:
+- [x] **T053** Validate against the Success Criteria:
   - run a full `dotnet build -t:Rebuild`, with no new warnings over T001;
   - run the full `dotnet test`, including the Localization guard tests (FR-023);
   - map SC-001, SC-002, SC-003, SC-005 and SC-006 to their passing tests.
