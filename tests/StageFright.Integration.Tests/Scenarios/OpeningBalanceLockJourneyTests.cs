@@ -71,7 +71,7 @@ public sealed class OpeningBalanceLockJourneyTests : IAsyncLifetime
     {
         var ct = TestContext.Current.CancellationToken;
         var service = BuildService();
-        Assert.Null(await service.GetRecordedOpeningBalancesAsync(ct));
+        Assert.Null((await service.GetRecordedOpeningBalancesAsync(ct)).AsAtDate);
 
         await service.RecordOpeningBalancesAsync(new RecordOpeningBalancesRequest
         {
@@ -85,12 +85,31 @@ public sealed class OpeningBalanceLockJourneyTests : IAsyncLifetime
 
         var recorded = await service.GetRecordedOpeningBalancesAsync(ct);
 
-        Assert.NotNull(recorded);
         Assert.Equal(AsAt, recorded.AsAtDate);
-        Assert.Collection(recorded.Lines,
-            cash => { Assert.Equal(SystemAccounts.CashId, cash.Account.Id); Assert.Equal(500m, cash.Amount); },
-            loan => { Assert.Equal(LoanId, loan.Account.Id); Assert.Equal(200m, loan.Amount); });
+        Assert.Equal(500m, recorded.Lines.Single(l => l.Account.Id == SystemAccounts.CashId).Amount);
+        Assert.Equal(200m, recorded.Lines.Single(l => l.Account.Id == LoanId).Amount);
+        Assert.All(recorded.Lines.Where(l => l.Account.Id != SystemAccounts.CashId && l.Account.Id != LoanId),
+            l => Assert.Equal(0m, l.Amount));
+        Assert.DoesNotContain(recorded.Lines, l => l.Account.Id == SystemAccounts.OpeningBalanceEquityId);
         Assert.Equal(300m, recorded.Plug);   // 500 DR asset − 200 CR liability = 300 CR to Opening Balance Equity
+    }
+
+    [Fact]
+    public async Task Should_RecordZeroAndLock_When_NoOpeningBalanceEntered_Integration()
+    {
+        // Setup finished with nothing entered (issue #398): recorded as zero, with no ledger lines.
+        var ct = TestContext.Current.CancellationToken;
+        var service = BuildService();
+
+        await service.RecordOpeningBalancesAsync(new RecordOpeningBalancesRequest { AsAtDate = AsAt }, ct);
+
+        Assert.Equal(1, await _db.JournalEntries.CountAsync(j => j.Type == JournalEntryType.OpeningBalance, ct));
+        Assert.Equal(0, await _db.Transactions.CountAsync(ct));
+        var recorded = await service.GetRecordedOpeningBalancesAsync(ct);
+        Assert.Equal(AsAt, recorded.AsAtDate);
+        Assert.All(recorded.Lines, l => Assert.Equal(0m, l.Amount));
+        await Assert.ThrowsAsync<ValidationException>(
+            () => service.RecordOpeningBalancesAsync(Request(SystemAccounts.CashId, 250m), ct));
     }
 
     private static RecordOpeningBalancesRequest Request(Guid accountId, decimal amount) => new()

@@ -175,16 +175,7 @@
   <data name="Finance_Journal_PostError" xml:space="preserve"><value>Échec de la comptabilisation du journal : {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_OpeningBalances_PageTitle" xml:space="preserve"><value>Soldes d'ouverture</value><comment>Browser tab title — Opening Balances wizard.</comment></data>
   <data name="Finance_OpeningBalances_Heading" xml:space="preserve"><value>Soldes d'ouverture</value><comment>Opening Balances wizard heading.</comment></data>
-  <data name="Finance_OpeningBalances_StepOf" xml:space="preserve"><value>Étape {Step} sur 2</value><comment>Wizard progress. {Step} = current step number.</comment></data>
-  <data name="Finance_OpeningBalances_Step1Heading" xml:space="preserve"><value>Étape 1 — Date de référence</value><comment>Opening Balances wizard — step 1 heading.</comment></data>
-  <data name="Finance_OpeningBalances_Step1Intro" xml:space="preserve"><value>Choisissez la date à partir de laquelle les soldes d'ouverture s'appliquent — généralement le premier jour de votre exercice comptable.</value><comment>Opening Balances wizard — step 1 explanation.</comment></data>
-  <data name="Finance_OpeningBalances_AsAtLabel" xml:space="preserve"><value>À la date du</value><comment>Opening Balances wizard — as-at date field label.</comment></data>
-  <data name="Finance_OpeningBalances_NextButton" xml:space="preserve"><value>Suivant</value><comment>Opening Balances wizard — advance to step 2.</comment></data>
-  <data name="Finance_OpeningBalances_Step2Heading" xml:space="preserve"><value>Étape 2 — Saisir les soldes</value><comment>Opening Balances wizard — step 2 heading.</comment></data>
-  <data name="Finance_OpeningBalances_BackButton" xml:space="preserve"><value>Retour</value><comment>Opening Balances wizard — return to step 1.</comment></data>
   <data name="Finance_OpeningBalances_LoadError" xml:space="preserve"><value>Échec du chargement des comptes : {Detail}</value><comment>{Detail} = error detail.</comment></data>
-  <data name="Finance_OpeningBalances_SuccessMessage" xml:space="preserve"><value>Soldes d'ouverture à la date du {Date} comptabilisés avec succès.</value><comment>{Date} = as-at date, long format.</comment></data>
-  <data name="Finance_OpeningBalances_PostError" xml:space="preserve"><value>Échec de la comptabilisation des soldes d'ouverture : {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Reconciliation_ListPageTitle" xml:space="preserve"><value>Rapprochement bancaire</value><comment>Browser tab title — Bank Reconciliation list.</comment></data>
   <data name="Finance_Reconciliation_ListHeading" xml:space="preserve"><value>Rapprochement bancaire</value><comment>Bank Reconciliation list heading.</comment></data>
   <data name="Finance_Reconciliation_NoAccountsHtml" xml:space="preserve"><value>Aucun compte bancaire ou de caisse n'existe encore. Créez-en un d'abord sur la page &lt;a href="/finance/accounts"&gt;plan comptable&lt;/a&gt;.</value><comment>Warning (contains a link to the Chart of Accounts) shown when no bank/cash account exists.</comment></data>
@@ -289,4 +280,5 @@
   <data name="Finance_Validation_ReconciliationNotesTooLong" xml:space="preserve"><value>Les notes ne doivent pas dépasser 500 caractères.</value><comment>Start-reconciliation form validation: notes over 500 characters.</comment></data>
   <data name="Finance_OpeningBalances_RecordedIntro" xml:space="preserve"><value>Ces soldes d'ouverture ont été comptabilisés au {Date} et sont verrouillés. Pour ajuster le solde d'un compte, saisissez une écriture de journal.</value><comment>Opening Balances page once balances are posted — read-only view. {Date} = as-at date, long format.</comment></data>
   <data name="Finance_OpeningBalances_JournalLink" xml:space="preserve"><value>Saisir une écriture de journal</value><comment>Opening Balances page — link to the Journal Entry page, the way to adjust a locked opening balance.</comment></data>
+  <data name="Finance_OpeningBalances_NoneRecordedIntro" xml:space="preserve"><value>Aucun solde d'ouverture n'a été enregistré : chaque compte a donc été ouvert à zéro. Pour corriger un solde d'ouverture, saisissez une écriture de journal.</value><comment>Opening Balances page when a dataset never recorded opening balances (pre issue #398) — every account opened at zero.</comment></data>
 </root>

@@ -175,16 +175,7 @@
   <data name="Finance_Journal_PostError" xml:space="preserve"><value>Journal konnte nicht gebucht werden: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_OpeningBalances_PageTitle" xml:space="preserve"><value>Eröffnungssalden</value><comment>Browser tab title — Opening Balances wizard.</comment></data>
   <data name="Finance_OpeningBalances_Heading" xml:space="preserve"><value>Eröffnungssalden</value><comment>Opening Balances wizard heading.</comment></data>
-  <data name="Finance_OpeningBalances_StepOf" xml:space="preserve"><value>Schritt {Step} von 2</value><comment>Wizard progress. {Step} = current step number.</comment></data>
-  <data name="Finance_OpeningBalances_Step1Heading" xml:space="preserve"><value>Schritt 1 — Stichtag</value><comment>Opening Balances wizard — step 1 heading.</comment></data>
-  <data name="Finance_OpeningBalances_Step1Intro" xml:space="preserve"><value>Wählen Sie das Datum, ab dem die Eröffnungssalden gelten — normalerweise der erste Tag Ihres Geschäftsjahres.</value><comment>Opening Balances wizard — step 1 explanation.</comment></data>
-  <data name="Finance_OpeningBalances_AsAtLabel" xml:space="preserve"><value>Stichtag</value><comment>Opening Balances wizard — as-at date field label.</comment></data>
-  <data name="Finance_OpeningBalances_NextButton" xml:space="preserve"><value>Weiter</value><comment>Opening Balances wizard — advance to step 2.</comment></data>
-  <data name="Finance_OpeningBalances_Step2Heading" xml:space="preserve"><value>Schritt 2 — Salden eingeben</value><comment>Opening Balances wizard — step 2 heading.</comment></data>
-  <data name="Finance_OpeningBalances_BackButton" xml:space="preserve"><value>Zurück</value><comment>Opening Balances wizard — return to step 1.</comment></data>
   <data name="Finance_OpeningBalances_LoadError" xml:space="preserve"><value>Konten konnten nicht geladen werden: {Detail}</value><comment>{Detail} = error detail.</comment></data>
-  <data name="Finance_OpeningBalances_SuccessMessage" xml:space="preserve"><value>Eröffnungssalden zum {Date} erfolgreich gebucht.</value><comment>{Date} = as-at date, long format.</comment></data>
-  <data name="Finance_OpeningBalances_PostError" xml:space="preserve"><value>Eröffnungssalden konnten nicht gebucht werden: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Reconciliation_ListPageTitle" xml:space="preserve"><value>Bankabstimmung</value><comment>Browser tab title — Bank Reconciliation list.</comment></data>
   <data name="Finance_Reconciliation_ListHeading" xml:space="preserve"><value>Bankabstimmung</value><comment>Bank Reconciliation list heading.</comment></data>
   <data name="Finance_Reconciliation_NoAccountsHtml" xml:space="preserve"><value>Es sind noch keine Bank- oder Kassenkonten vorhanden. Erstellen Sie zuerst eines auf der Seite &lt;a href="/finance/accounts"&gt;Kontenplan&lt;/a&gt;.</value><comment>Warning (contains a link to the Chart of Accounts) shown when no bank/cash account exists.</comment></data>
@@ -289,4 +280,5 @@
   <data name="Finance_Validation_ReconciliationNotesTooLong" xml:space="preserve"><value>Notizen dürfen höchstens 500 Zeichen lang sein.</value><comment>Start-reconciliation form validation: notes over 500 characters.</comment></data>
   <data name="Finance_OpeningBalances_RecordedIntro" xml:space="preserve"><value>Diese Eröffnungssalden wurden zum {Date} gebucht und sind gesperrt. Um den Saldo eines Kontos anzupassen, erfassen Sie eine Journalbuchung.</value><comment>Opening Balances page once balances are posted — read-only view. {Date} = as-at date, long format.</comment></data>
   <data name="Finance_OpeningBalances_JournalLink" xml:space="preserve"><value>Journalbuchung erfassen</value><comment>Opening Balances page — link to the Journal Entry page, the way to adjust a locked opening balance.</comment></data>
+  <data name="Finance_OpeningBalances_NoneRecordedIntro" xml:space="preserve"><value>Es wurden keine Eröffnungssalden erfasst, daher wurde jedes Konto mit null eröffnet. Um einen Eröffnungssaldo zu korrigieren, erfassen Sie eine Journalbuchung.</value><comment>Opening Balances page when a dataset never recorded opening balances (pre issue #398) — every account opened at zero.</comment></data>
 </root>

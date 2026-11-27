@@ -23,7 +23,6 @@
   <data name="Setup_Nav_FinishButton" xml:space="preserve"><value>Fine</value><comment>Setup Wizard — complete setup.</comment></data>
   <data name="Setup_Seeding_Message" xml:space="preserve"><value>Preparazione dei dati di esempio: potrebbe richiedere alcuni minuti. Non chiudere l'applicazione.</value><comment>Overlay message while sample data is being seeded.</comment></data>
   <data name="Setup_Error_InvalidSubmit" xml:space="preserve"><value>Alcuni campi obbligatori sono incompleti: controlla tutte le schede prima di terminare.</value><comment>Shown when Finish is clicked with an invalid field somewhere.</comment></data>
-  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>Inserisci almeno un saldo iniziale nella scheda Saldi iniziali prima di terminare.</value><comment>Shown when Finish is attempted with no opening balance entered.</comment></data>
   <data name="Setup_Error_Unexpected" xml:space="preserve"><value>Si è verificato un errore imprevisto. Riprova.</value><comment>Generic setup failure message.</comment></data>
   <data name="Setup_General_OrgNameLabel" xml:space="preserve"><value>Nome dell'organizzazione</value><comment>General tab — organisation name label.</comment></data>
   <data name="Setup_General_OrgNamePlaceholder" xml:space="preserve"><value>es. Società Corale di Springfield</value><comment>Placeholder for the organisation name field.</comment></data>

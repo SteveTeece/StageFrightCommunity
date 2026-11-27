@@ -97,12 +97,51 @@ public class OpeningBalanceServiceTests : TestBase
     // --- GetRecordedOpeningBalancesAsync ---
 
     [Fact]
-    public async Task Should_ReturnNull_When_NoOpeningBalancesPosted()
+    public async Task Should_ListEveryAccountAtZeroWithNoDate_When_NoOpeningBalancesEverRecorded()
     {
         _journalRepo.GetByTypesAsync(Arg.Any<IReadOnlyCollection<JournalEntryType>>(), Arg.Any<CancellationToken>())
             .Returns(new List<JournalEntry>());
 
-        Assert.Null(await _sut.GetRecordedOpeningBalancesAsync(Ct));
+        var result = await _sut.GetRecordedOpeningBalancesAsync(Ct);
+
+        Assert.Null(result.AsAtDate);
+        Assert.Equal(7, result.Lines.Count);   // every eligible account — all but Opening Balance Equity
+        Assert.All(result.Lines, l => Assert.Equal(0m, l.Amount));
+        Assert.Equal(0m, result.Plug);
+    }
+
+    [Fact]
+    public async Task Should_ListEveryAccountAtZeroWithDate_When_RecordedAsZero()
+    {
+        _journalRepo.GetByTypesAsync(Arg.Any<IReadOnlyCollection<JournalEntryType>>(), Arg.Any<CancellationToken>())
+            .Returns(new List<JournalEntry> { MakeJournal(new DateTime(2026, 7, 1)) });
+
+        var result = await _sut.GetRecordedOpeningBalancesAsync(Ct);
+
+        Assert.Equal(new DateTime(2026, 7, 1), result.AsAtDate);
+        Assert.Equal(7, result.Lines.Count);
+        Assert.All(result.Lines, l => Assert.Equal(0m, l.Amount));
+        Assert.Equal(0m, result.Plug);
+    }
+
+    [Fact]
+    public async Task Should_ListPostedAccount_When_ItIsNoLongerEligible()
+    {
+        var archived = MakeAccount(Guid.NewGuid(), "Old Float", AccountType.Asset, "1150");
+        var equity = MakeAccount(SystemAccounts.OpeningBalanceEquityId, "Opening Balance Equity", AccountType.Equity, "3100", isSystem: true);
+        _journalRepo.GetByTypesAsync(Arg.Any<IReadOnlyCollection<JournalEntryType>>(), Arg.Any<CancellationToken>())
+            .Returns(new List<JournalEntry>
+            {
+                MakeJournal(new DateTime(2026, 7, 1),
+                    Line(archived, debit: 40m, credit: 0m), Line(equity, debit: 0m, credit: 40m))
+            });
+
+        var result = await _sut.GetRecordedOpeningBalancesAsync(Ct);
+
+        Assert.Equal(8, result.Lines.Count);
+        Assert.Equal(40m, result.Lines.Single(l => l.Account.Id == archived.Id).Amount);
+        Assert.Equal(result.Lines.OrderBy(l => l.Account.AccountNumber).Select(l => l.Account.Id),
+            result.Lines.Select(l => l.Account.Id));
     }
 
     [Fact]
@@ -123,11 +162,12 @@ public class OpeningBalanceServiceTests : TestBase
 
         var result = await _sut.GetRecordedOpeningBalancesAsync(Ct);
 
-        Assert.NotNull(result);
         Assert.Equal(new DateTime(2026, 7, 1), result.AsAtDate);
-        Assert.Collection(result.Lines,
-            l => { Assert.Equal(CashAccountId, l.Account.Id); Assert.Equal(500m, l.Amount); },
-            l => { Assert.Equal(LoanAccountId, l.Account.Id); Assert.Equal(-200m, l.Amount); });
+        Assert.Equal(7, result.Lines.Count);
+        Assert.Equal(500m, result.Lines.Single(l => l.Account.Id == CashAccountId).Amount);
+        Assert.Equal(-200m, result.Lines.Single(l => l.Account.Id == LoanAccountId).Amount);
+        Assert.All(result.Lines.Where(l => l.Account.Id != CashAccountId && l.Account.Id != LoanAccountId),
+            l => Assert.Equal(0m, l.Amount));
         Assert.Equal(700m, result.Plug);
     }
 
@@ -146,10 +186,8 @@ public class OpeningBalanceServiceTests : TestBase
 
         var result = await _sut.GetRecordedOpeningBalancesAsync(Ct);
 
-        Assert.NotNull(result);
         Assert.Equal(new DateTime(2026, 7, 1), result.AsAtDate);
-        var line = Assert.Single(result.Lines);
-        Assert.Equal(250m, line.Amount);
+        Assert.Equal(250m, result.Lines.Single(l => l.Account.Id == CashAccountId).Amount);
         Assert.Equal(250m, result.Plug);
     }
 
@@ -217,13 +255,27 @@ public class OpeningBalanceServiceTests : TestBase
 
     // --- Validation ---
 
-    [Fact]
-    public async Task Should_ThrowValidation_When_AllEntriesAreZero()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Should_RecordJournalWithNoLines_When_NoNonZeroEntry(bool withZeroEntry)
     {
-        var request = MakeRequest(new OpeningBalanceEntry { AccountId = CashAccountId, Amount = 0m });
+        // Setup finished with no opening balance entered: recorded as zero, and so locked (issue #398).
+        var request = withZeroEntry
+            ? MakeRequest(new OpeningBalanceEntry { AccountId = CashAccountId, Amount = 0m })
+            : MakeRequest();
 
-        await Assert.ThrowsAsync<ValidationException>(
-            () => _sut.RecordOpeningBalancesAsync(request, Ct));
+        await _sut.RecordOpeningBalancesAsync(request, Ct);
+
+        await _journalRepo.Received(1).AddAsync(
+            Arg.Is<JournalEntry>(j => j!.Type == JournalEntryType.OpeningBalance && j.Date == request.AsAtDate),
+            Arg.Any<CancellationToken>());
+        await _glRepo.DidNotReceive().AddBalancedSetAsync(Arg.Any<IReadOnlyList<Transaction>>(), Arg.Any<CancellationToken>());
+        await _receivedItemRepo.DidNotReceive().AddAsync(Arg.Any<ReceivedItem>(), Arg.Any<CancellationToken>());
+        await _audit.Received(1).LogAsync(
+            nameof(JournalEntry), Arg.Any<Guid>(), AuditAction.Create,
+            Arg.Any<string?>(), Arg.Any<string?>(),
+            ct: Arg.Any<CancellationToken>());
     }
 
     [Fact]

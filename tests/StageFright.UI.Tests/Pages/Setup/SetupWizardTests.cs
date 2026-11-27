@@ -373,15 +373,17 @@ public class SetupWizardTests : LocalizedTestContext
     }
 
     [Fact]
-    public async Task Finish_Blocked_When_NoBalanceEntered()
+    public async Task Should_FinishWithNoOpeningBalances_When_NoBalanceEntered()
     {
+        // Issue #398: no balance entered is a valid Finish — SetupService records them as zero.
         var cut = Render<SetupWizard>();
         AdvanceToReview(cut);
 
         await cut.Find("form").SubmitAsync();
 
-        Assert.Contains("opening balance", cut.Markup, StringComparison.OrdinalIgnoreCase);
-        await _setupService.DidNotReceive().InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>());
+        await _setupService.Received(1).InitializeAsync(
+            Arg.Is<SetupRequest>(r => r!.QueuedOpeningBalances!.Count == 0 && !r.OpeningBalancesFromSampleData),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]

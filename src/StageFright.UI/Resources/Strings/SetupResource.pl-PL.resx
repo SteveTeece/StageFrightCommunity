@@ -23,7 +23,6 @@
   <data name="Setup_Nav_FinishButton" xml:space="preserve"><value>Zakończ</value><comment>Setup Wizard — complete setup.</comment></data>
   <data name="Setup_Seeding_Message" xml:space="preserve"><value>Przygotowywanie danych przykładowych — może to potrwać kilka minut. Nie zamykaj aplikacji.</value><comment>Overlay message while sample data is being seeded.</comment></data>
   <data name="Setup_Error_InvalidSubmit" xml:space="preserve"><value>Niektóre wymagane pola są niekompletne — sprawdź wszystkie karty przed zakończeniem.</value><comment>Shown when Finish is clicked with an invalid field somewhere.</comment></data>
-  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>Przed zakończeniem wprowadź co najmniej jedno saldo otwarcia na karcie Salda początkowe.</value><comment>Shown when Finish is attempted with no opening balance entered.</comment></data>
   <data name="Setup_Error_Unexpected" xml:space="preserve"><value>Wystąpił nieoczekiwany błąd. Spróbuj ponownie.</value><comment>Generic setup failure message.</comment></data>
   <data name="Setup_General_OrgNameLabel" xml:space="preserve"><value>Nazwa organizacji</value><comment>General tab — organisation name label.</comment></data>
   <data name="Setup_General_OrgNamePlaceholder" xml:space="preserve"><value>np. Springfield Choral Society</value><comment>Placeholder for the organisation name field.</comment></data>

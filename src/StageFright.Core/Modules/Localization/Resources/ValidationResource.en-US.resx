@@ -408,10 +408,6 @@
     <value>System accounts cannot be used for manual income entries.</value>
     <comment>Shown when an other-income entry targets a system account.</comment>
   </data>
-  <data name="Validation_OpeningBalance_AtLeastOneNonZero" xml:space="preserve">
-    <value>At least one non-zero opening balance is required.</value>
-    <comment>Shown when recording opening balances with no non-zero entry.</comment>
-  </data>
   <data name="Validation_OpeningBalance_AccountOncePerBatch" xml:space="preserve">
     <value>Each account may only appear once in the opening balances.</value>
     <comment>Shown when an account is entered more than once in one opening-balances batch.</comment>

@@ -77,7 +77,6 @@
   <data name="Validation_Income_AmountPositive" xml:space="preserve"><value>収入の金額は0より大きい値である必要があります。</value><comment>Shown when recording other income with a non-positive amount.</comment></data>
   <data name="Validation_Income_AccountNotIncome" xml:space="preserve"><value>選択した勘定は収益勘定ではありません。</value><comment>Shown when an other-income entry's target account is not an Income account.</comment></data>
   <data name="Validation_Income_SystemAccountNotAllowed" xml:space="preserve"><value>システム勘定は手動の収入入力には使用できません。</value><comment>Shown when an other-income entry targets a system account.</comment></data>
-  <data name="Validation_OpeningBalance_AtLeastOneNonZero" xml:space="preserve"><value>0以外の期首残高を少なくとも1件入力してください。</value><comment>Shown when recording opening balances with no non-zero entry.</comment></data>
   <data name="Validation_OpeningBalance_AccountOncePerBatch" xml:space="preserve"><value>各勘定は期首残高に一度だけ入力できます。</value><comment>Shown when an account is entered more than once in one opening-balances batch.</comment></data>
   <data name="Validation_OpeningBalance_AccountNotEligible" xml:space="preserve"><value>1つ以上の勘定が期首残高の対象ではありません。</value><comment>Shown when an opening-balances entry targets an account not eligible for opening balances.</comment></data>
   <data name="Validation_Setup_CurrencyUnknown" xml:space="preserve"><value>選択した通貨はこのアプリケーションでサポートされていません。</value><comment>Shown when first-run setup is submitted with a currency code not in CurrencyCatalog.All (spec 028, FR-001).</comment></data>

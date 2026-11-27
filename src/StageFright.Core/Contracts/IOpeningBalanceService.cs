@@ -11,10 +11,11 @@ namespace StageFright.Core.Contracts;
 public interface IOpeningBalanceService
 {
     /// <summary>
-    /// Posts the opening balances under an OpeningBalance journal entry.
-    /// Zero entries are skipped; at least one non-zero entry is required.
-    /// Opening balances post once only: when an OpeningBalance journal entry already
-    /// exists they are locked and this throws (issue #398) — adjust with a general journal.
+    /// Records the opening balances under an OpeningBalance journal entry — called once, at
+    /// setup (and by the debug seeder). Zero entries are skipped; with no non-zero entry the
+    /// journal is still recorded, with no lines, meaning every account opened at zero.
+    /// Opening balances are recorded once only: when an OpeningBalance journal entry already
+    /// exists they are locked and this throws (issue #398) — corrections are journal entries.
     /// Throws <see cref="Core.Exceptions.ValidationException"/> on bad input.
     /// </summary>
     Task RecordOpeningBalancesAsync(RecordOpeningBalancesRequest request, CancellationToken ct = default);
@@ -26,11 +27,12 @@ public interface IOpeningBalanceService
     Task<IReadOnlyList<Account>> GetOpeningBalanceAccountsAsync(CancellationToken ct = default);
 
     /// <summary>
-    /// The opening balances already posted, or null when none have been. Lines from more
-    /// than one OpeningBalance journal (possible only in data posted before issue #398)
-    /// are summed per account, and the as-at date is the earliest entry's date.
+    /// The recorded opening balances: every eligible account, at zero where it had none.
+    /// Lines from more than one OpeningBalance journal (possible only in data posted before
+    /// issue #398) are summed per account, and the as-at date is the earliest entry's date
+    /// (null when none was ever recorded).
     /// </summary>
-    Task<RecordedOpeningBalances?> GetRecordedOpeningBalancesAsync(CancellationToken ct = default);
+    Task<RecordedOpeningBalances> GetRecordedOpeningBalancesAsync(CancellationToken ct = default);
 
     /// <summary>
     /// Computes the residual that would be plugged to Opening Balance Equity for the

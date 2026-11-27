@@ -75,10 +75,10 @@ face (screen, PDF, and CSV), worded so a reader who did not build the system can
   zero (Σ debits = Σ credits) or the whole operation is rejected and rolled back.
 - A correction to a previously posted amount is made **only by posting new, offsetting ledger lines**
   — a reversing entry or a write-off — never by editing or deleting the original record.
-- **Opening balances are posted once and then locked.** Whether they were posted in the first-run
-  setup wizard or on Finance → Opening Balances, that page afterwards shows the recorded balances
-  read-only and refuses a second posting; an account's opening position is adjusted by a journal
-  entry.
+- **Opening balances are recorded once, at first-run setup, and then locked.** Any account left
+  blank opens at zero; if none is entered at all, every account is recorded as opening at zero.
+  Finance → Opening Balances shows the recorded balances read-only, and a correction to an opening
+  balance is made by journal entry.
 
 ## Period locking
 

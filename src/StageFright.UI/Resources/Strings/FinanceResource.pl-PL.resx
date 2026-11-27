@@ -175,16 +175,7 @@
   <data name="Finance_Journal_PostError" xml:space="preserve"><value>Nie udało się zaksięgować zapisu: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_OpeningBalances_PageTitle" xml:space="preserve"><value>Salda otwarcia</value><comment>Browser tab title — Opening Balances wizard.</comment></data>
   <data name="Finance_OpeningBalances_Heading" xml:space="preserve"><value>Salda otwarcia</value><comment>Opening Balances wizard heading.</comment></data>
-  <data name="Finance_OpeningBalances_StepOf" xml:space="preserve"><value>Krok {Step} z 2</value><comment>Wizard progress. {Step} = current step number.</comment></data>
-  <data name="Finance_OpeningBalances_Step1Heading" xml:space="preserve"><value>Krok 1 — Data odniesienia</value><comment>Opening Balances wizard — step 1 heading.</comment></data>
-  <data name="Finance_OpeningBalances_Step1Intro" xml:space="preserve"><value>Wybierz datę, od której obowiązują salda otwarcia — zwykle pierwszy dzień roku obrotowego.</value><comment>Opening Balances wizard — step 1 explanation.</comment></data>
-  <data name="Finance_OpeningBalances_AsAtLabel" xml:space="preserve"><value>Na dzień</value><comment>Opening Balances wizard — as-at date field label.</comment></data>
-  <data name="Finance_OpeningBalances_NextButton" xml:space="preserve"><value>Dalej</value><comment>Opening Balances wizard — advance to step 2.</comment></data>
-  <data name="Finance_OpeningBalances_Step2Heading" xml:space="preserve"><value>Krok 2 — Wprowadź salda</value><comment>Opening Balances wizard — step 2 heading.</comment></data>
-  <data name="Finance_OpeningBalances_BackButton" xml:space="preserve"><value>Wstecz</value><comment>Opening Balances wizard — return to step 1.</comment></data>
   <data name="Finance_OpeningBalances_LoadError" xml:space="preserve"><value>Nie udało się załadować kont: {Detail}</value><comment>{Detail} = error detail.</comment></data>
-  <data name="Finance_OpeningBalances_SuccessMessage" xml:space="preserve"><value>Salda otwarcia na dzień {Date} zaksięgowano pomyślnie.</value><comment>{Date} = as-at date, long format.</comment></data>
-  <data name="Finance_OpeningBalances_PostError" xml:space="preserve"><value>Nie udało się zaksięgować sald otwarcia: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Reconciliation_ListPageTitle" xml:space="preserve"><value>Uzgodnienie bankowe</value><comment>Browser tab title — Bank Reconciliation list.</comment></data>
   <data name="Finance_Reconciliation_ListHeading" xml:space="preserve"><value>Uzgodnienie bankowe</value><comment>Bank Reconciliation list heading.</comment></data>
   <data name="Finance_Reconciliation_NoAccountsHtml" xml:space="preserve"><value>Nie istnieją jeszcze żadne konta bankowe ani gotówkowe. Najpierw utwórz jedno na stronie &lt;a href="/finance/accounts"&gt;Plan kont&lt;/a&gt;.</value><comment>Warning (contains a link to the Chart of Accounts) shown when no bank/cash account exists.</comment></data>
@@ -289,4 +280,5 @@
   <data name="Finance_Validation_ReconciliationNotesTooLong" xml:space="preserve"><value>Notatki nie mogą przekraczać 500 znaków.</value><comment>Start-reconciliation form validation: notes over 500 characters.</comment></data>
   <data name="Finance_OpeningBalances_RecordedIntro" xml:space="preserve"><value>Te salda otwarcia zaksięgowano na dzień {Date} i są zablokowane. Aby skorygować saldo konta, wprowadź zapis księgowy.</value><comment>Opening Balances page once balances are posted — read-only view. {Date} = as-at date, long format.</comment></data>
   <data name="Finance_OpeningBalances_JournalLink" xml:space="preserve"><value>Wprowadź zapis księgowy</value><comment>Opening Balances page — link to the Journal Entry page, the way to adjust a locked opening balance.</comment></data>
+  <data name="Finance_OpeningBalances_NoneRecordedIntro" xml:space="preserve"><value>Nie zarejestrowano sald otwarcia, więc każde konto otwarto z saldem zerowym. Aby skorygować saldo otwarcia, wprowadź zapis księgowy.</value><comment>Opening Balances page when a dataset never recorded opening balances (pre issue #398) — every account opened at zero.</comment></data>
 </root>

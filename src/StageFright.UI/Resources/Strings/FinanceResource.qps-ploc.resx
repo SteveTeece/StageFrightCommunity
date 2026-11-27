@@ -175,16 +175,7 @@
   <data name="Finance_Journal_PostError" xml:space="preserve"><value>⟦Fáíléd tó póst jóúrñál: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_OpeningBalances_PageTitle" xml:space="preserve"><value>⟦Ópéñíñg Báláñçés—⟧</value><comment>Browser tab title — Opening Balances wizard.</comment></data>
   <data name="Finance_OpeningBalances_Heading" xml:space="preserve"><value>⟦Ópéñíñg Báláñçés—⟧</value><comment>Opening Balances wizard heading.</comment></data>
-  <data name="Finance_OpeningBalances_StepOf" xml:space="preserve"><value>⟦Stép {Step} óf 2—⟧</value><comment>Wizard progress. {Step} = current step number.</comment></data>
-  <data name="Finance_OpeningBalances_Step1Heading" xml:space="preserve"><value>⟦Stép 1 — Ás-át dáté—⟧</value><comment>Opening Balances wizard — step 1 heading.</comment></data>
-  <data name="Finance_OpeningBalances_Step1Intro" xml:space="preserve"><value>⟦Çhóósé thé dáté thé ópéñíñg báláñçés ápplý fróm — úsúállý thé fírst dáý óf ýóúr fíñáñçíál ýéár.—⟧</value><comment>Opening Balances wizard — step 1 explanation.</comment></data>
-  <data name="Finance_OpeningBalances_AsAtLabel" xml:space="preserve"><value>⟦Ás át—⟧</value><comment>Opening Balances wizard — as-at date field label.</comment></data>
-  <data name="Finance_OpeningBalances_NextButton" xml:space="preserve"><value>⟦Ñéxt—⟧</value><comment>Opening Balances wizard — advance to step 2.</comment></data>
-  <data name="Finance_OpeningBalances_Step2Heading" xml:space="preserve"><value>⟦Stép 2 — Éñtér báláñçés—⟧</value><comment>Opening Balances wizard — step 2 heading.</comment></data>
-  <data name="Finance_OpeningBalances_BackButton" xml:space="preserve"><value>⟦Báçk—⟧</value><comment>Opening Balances wizard — return to step 1.</comment></data>
   <data name="Finance_OpeningBalances_LoadError" xml:space="preserve"><value>⟦Fáíléd tó lóád áççóúñts: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
-  <data name="Finance_OpeningBalances_SuccessMessage" xml:space="preserve"><value>⟦Ópéñíñg báláñçés ás át {Date} póstéd súççéssfúllý.—⟧</value><comment>{Date} = as-at date, long format.</comment></data>
-  <data name="Finance_OpeningBalances_PostError" xml:space="preserve"><value>⟦Fáíléd tó póst ópéñíñg báláñçés: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Reconciliation_ListPageTitle" xml:space="preserve"><value>⟦Báñk Réçóñçílíátíóñ—⟧</value><comment>Browser tab title — Bank Reconciliation list.</comment></data>
   <data name="Finance_Reconciliation_ListHeading" xml:space="preserve"><value>⟦Báñk Réçóñçílíátíóñ—⟧</value><comment>Bank Reconciliation list heading.</comment></data>
   <data name="Finance_Reconciliation_NoAccountsHtml" xml:space="preserve"><value>⟦Ñó báñk ór çásh áççóúñts éxíst ýét. Çréáté óñé óñ thé &lt;á hréf="/fíñáñçé/áççóúñts"&gt;Çhárt óf Áççóúñts&lt;/á&gt; págé fírst.—⟧</value><comment>Warning (contains a link to the Chart of Accounts) shown when no bank/cash account exists.</comment></data>
@@ -289,4 +280,5 @@
   <data name="Finance_Validation_ReconciliationNotesTooLong" xml:space="preserve"><value>⟦Ñótés múst bé 500 çháráçtérs ór féwér.—⟧</value><comment>Start-reconciliation form validation: notes over 500 characters.</comment></data>
   <data name="Finance_OpeningBalances_RecordedIntro" xml:space="preserve"><value>⟦Thésé ópéñíñg báláñçés wéré póstéd ás át {Date} áñd áré lóçkéd. Tó ádjúst áñ áççóúñt's báláñçé, póst á jóúrñál éñtrý.—⟧</value><comment>Opening Balances page once balances are posted — read-only view. {Date} = as-at date, long format.</comment></data>
   <data name="Finance_OpeningBalances_JournalLink" xml:space="preserve"><value>⟦Póst á jóúrñál éñtrý—⟧</value><comment>Opening Balances page — link to the Journal Entry page, the way to adjust a locked opening balance.</comment></data>
+  <data name="Finance_OpeningBalances_NoneRecordedIntro" xml:space="preserve"><value>⟦Ñó ópéñíñg báláñçés wéré réçórdéd, só évérý áççóúñt ópéñéd át zéró. Tó çórréçt áñ ópéñíñg báláñçé, póst á jóúrñál éñtrý.—⟧</value><comment>Opening Balances page when a dataset never recorded opening balances (pre issue #398) — every account opened at zero.</comment></data>
 </root>

@@ -23,7 +23,6 @@
   <data name="Setup_Nav_FinishButton" xml:space="preserve"><value>完了</value><comment>Setup Wizard — complete setup.</comment></data>
   <data name="Setup_Seeding_Message" xml:space="preserve"><value>サンプルデータを設定しています。数分かかる場合があります。アプリを閉じないでください。</value><comment>Overlay message while sample data is being seeded.</comment></data>
   <data name="Setup_Error_InvalidSubmit" xml:space="preserve"><value>必須項目に未入力があります。完了する前にすべてのタブを確認してください。</value><comment>Shown when Finish is clicked with an invalid field somewhere.</comment></data>
-  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>完了する前に、期首残高タブで期首残高を少なくとも1件入力してください。</value><comment>Shown when Finish is attempted with no opening balance entered.</comment></data>
   <data name="Setup_Error_Unexpected" xml:space="preserve"><value>予期しないエラーが発生しました。もう一度お試しください。</value><comment>Generic setup failure message.</comment></data>
   <data name="Setup_General_OrgNameLabel" xml:space="preserve"><value>組織名</value><comment>General tab — organisation name label.</comment></data>
   <data name="Setup_General_OrgNamePlaceholder" xml:space="preserve"><value>例: スプリングフィールド合唱協会</value><comment>Placeholder for the organisation name field.</comment></data>

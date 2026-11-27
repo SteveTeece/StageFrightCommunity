@@ -157,7 +157,9 @@ public class FirstRunLanguageScreenTests : LocalizedTestContext
                 && r.FinancialYearStartDay >= 1 && r.FinancialYearStartDay <= 28
                 && r.MembershipRenewalMonth >= 1 && r.MembershipRenewalMonth <= 12
                 && r.AuditRetentionYears >= 1 && r.AuditRetentionYears <= 7
-                && !r.IsTaxApplicable),
+                && !r.IsTaxApplicable
+                // The seeder posts the sample opening balances itself (issue #398's lock would refuse a second set).
+                && r.OpeningBalancesFromSampleData),
             Arg.Any<CancellationToken>());
     }
 

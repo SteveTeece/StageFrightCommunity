@@ -1,0 +1,49 @@
+@page "/finance/opening-balances"
+@using StageFright.Core.Localization
+@using StageFright.Core.Modules.Finance
+
+<PageTitle>@L["Finance_OpeningBalances_PageTitle"]</PageTitle>
+
+<div class="opening-balances-page container-fluid py-2">
+    <h4 class="mb-2">@L["Finance_OpeningBalances_Heading"]</h4>
+
+    @if (_loading)
+    {
+        <p role="status" aria-live="polite">@Shared["Shared_Common_Loading"]</p>
+    }
+    else if (_recorded is null)
+    {
+        <div class="alert alert-danger py-1 mb-2 small" role="alert">@_errorMessage</div>
+    }
+    else
+    {
+        @* Opening balances are recorded once, at setup, and locked (issue #398): read-only here,
+           corrected by journal entry. *@
+        <div class="card mb-2">
+            <div class="card-body py-2">
+                <p class="small mb-2 opening-balances-locked">@IntroText()</p>
+                <RadzenDataGrid Data="@_recorded.Lines" TItem="RecordedOpeningBalanceLine"
+                                AllowSorting="true" AllowPaging="true" PageSize="15"
+                                class="rz-shadow-0 opening-balances-recorded">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="RecordedOpeningBalanceLine" Property="Account.AccountNumber" Title="@Shared["Shared_OpeningBalances_NumberColumn"]" Width="6rem" />
+                        <RadzenDataGridColumn TItem="RecordedOpeningBalanceLine" Property="Account.Name" Title="@Shared["Shared_OpeningBalances_AccountColumn"]">
+                            <FooterTemplate><strong>@Shared["Shared_OpeningBalances_PlugRow"]</strong></FooterTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="RecordedOpeningBalanceLine" Property="Account.Type" Title="@Shared["Shared_OpeningBalances_TypeColumn"]" Width="8rem">
+                            <Template Context="row">@row.Account.Type.LocalizeEnum()</Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="RecordedOpeningBalanceLine" Property="Amount" Title="@Shared["Shared_OpeningBalances_BalanceColumn"]"
+                                              Width="10rem" TextAlign="TextAlign.Right">
+                            <Template Context="row"><span class="opening-balance-recorded-amount">@MoneyFormatter.Format(row.Amount)</span></Template>
+                            <FooterTemplate><strong class="opening-balances-plug">@MoneyFormatter.Format(_recorded.Plug)</strong></FooterTemplate>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+                <div class="d-flex gap-2 mt-2">
+                    <button type="button" class="btn btn-outline-primary btn-sm opening-balances-journal-link" @onclick="GoToJournal">@L["Finance_OpeningBalances_JournalLink"]</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>

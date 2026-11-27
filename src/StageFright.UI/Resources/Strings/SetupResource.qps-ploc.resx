@@ -23,7 +23,6 @@
   <data name="Setup_Nav_FinishButton" xml:space="preserve"><value>⟦Fíñísh—⟧</value><comment>Setup Wizard — complete setup.</comment></data>
   <data name="Setup_Seeding_Message" xml:space="preserve"><value>⟦Séttíñg úp ýóúr sámplé dátá — thís máý táké á féw míñútés. Pléásé dóñ't çlósé thé ápp.—⟧</value><comment>Overlay message while sample data is being seeded.</comment></data>
   <data name="Setup_Error_InvalidSubmit" xml:space="preserve"><value>⟦Sómé réqúíréd fíélds áré íñçómplété — çhéçk évérý táb béfóré fíñíshíñg.—⟧</value><comment>Shown when Finish is clicked with an invalid field somewhere.</comment></data>
-  <data name="Setup_Error_NoOpeningBalance" xml:space="preserve"><value>⟦Éñtér át léást óñé ópéñíñg báláñçé óñ thé Ópéñíñg Báláñçés táb béfóré fíñíshíñg.—⟧</value><comment>Shown when Finish is attempted with no opening balance entered.</comment></data>
   <data name="Setup_Error_Unexpected" xml:space="preserve"><value>⟦Áñ úñéxpéçtéd érrór óççúrréd. Pléásé trý ágáíñ.—⟧</value><comment>Generic setup failure message.</comment></data>
   <data name="Setup_General_OrgNameLabel" xml:space="preserve"><value>⟦Órgáñísátíóñ Ñámé—⟧</value><comment>General tab — organisation name label.</comment></data>
   <data name="Setup_General_OrgNamePlaceholder" xml:space="preserve"><value>⟦é.g. Spríñgfíéld Çhórál Sóçíétý—⟧</value><comment>Placeholder for the organisation name field.</comment></data>

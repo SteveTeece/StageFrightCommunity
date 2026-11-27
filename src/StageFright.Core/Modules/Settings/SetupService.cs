@@ -117,9 +117,11 @@ public class SetupService : ISetupService
 
         // Opening balances queued during setup (FR-018) post together as one journal entry,
         // after any queued accounts above so a queued account's ClientId can already resolve.
-        if (request.QueuedOpeningBalances is { Count: > 0 })
+        // None entered still records them — as zero — so they're locked from setup on and any
+        // correction is a journal entry (issue #398). The sample-data seeder posts its own.
+        if (!request.OpeningBalancesFromSampleData)
         {
-            var resolvedEntries = request.QueuedOpeningBalances
+            var resolvedEntries = (request.QueuedOpeningBalances ?? [])
                 .Select(entry => new OpeningBalanceEntry
                 {
                     AccountId = clientIdToAccountId.TryGetValue(entry.AccountId, out var realId)

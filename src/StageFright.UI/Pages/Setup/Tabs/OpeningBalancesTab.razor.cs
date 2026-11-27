@@ -31,7 +31,7 @@ public partial class OpeningBalancesTab : ComponentBase
     private List<OpeningBalanceEntry> _entries = new();
 
     // Defaults to today (research.md — no FinancialYearStartMonth exists yet during setup,
-    // unlike the standalone OpeningBalancesWizard which reads it once Settings exists).
+    // unlike the old standalone Opening Balances wizard, which read it once Settings existed).
     private DateTime _asAtDate = DateTime.Today;
 
     /// <summary>Real accounts eligible for an opening balance, plus a placeholder Account

@@ -139,17 +139,9 @@ public partial class SetupWizard : ComponentBase
         _submitting = true;
         _errorMessage = null;
 
-        // FR-021: Finish requires a real opening balance — checked before any orchestration
-        // starts so a rejected Finish leaves every queue untouched (Edge Cases), same as an
-        // EditContext failure. Sample data is no longer a substitute (spec 029 FR-017): it is
-        // reachable only from the first-run screen now, never from this wizard.
-        if (_queuedOpeningBalances.Count == 0)
-        {
-            _errorMessage = L["Setup_Error_NoOpeningBalance"];
-            _submitting = false;
-            return;
-        }
-
+        // No opening balance entered is a valid Finish: SetupService then records the opening
+        // balances as zero, and a later correction is a journal entry (issue #398, replacing the
+        // old FR-021 gate that blocked Finish without one).
         try
         {
             var request = new SetupRequest(
@@ -167,7 +159,7 @@ public partial class SetupWizard : ComponentBase
                 GeneralCommitteeSeatCountTarget: _model.GeneralCommitteeSeatCountTarget,
                 AuditRetentionYears: _model.AuditRetentionYears,
                 QueuedAccounts: _queuedAccounts.Count > 0 ? _queuedAccounts : null,
-                QueuedOpeningBalances: _queuedOpeningBalances.Count > 0 ? _queuedOpeningBalances : null,
+                QueuedOpeningBalances: _queuedOpeningBalances,
                 OpeningBalanceAsAtDate: _openingBalanceAsAtDate,
                 LanguageCode: CultureProvider?.CurrentCulture.Name,
                 CurrencyCode: _model.CurrencyCode,

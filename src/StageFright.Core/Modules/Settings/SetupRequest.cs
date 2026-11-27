@@ -25,8 +25,8 @@ public record SetupRequest(
     // entry's AccountId is either a real existing account or a QueuedAccountRequest.ClientId
     // that SetupService resolves to the real id it assigns.
     IReadOnlyList<OpeningBalanceEntry>? QueuedOpeningBalances = null,
-    // OpeningBalanceAsAtDate: the date queued opening balances are recorded as at. Ignored
-    // when QueuedOpeningBalances is empty.
+    // OpeningBalanceAsAtDate: the date the opening balances are recorded as at — also when none
+    // were entered and they're recorded as zero (issue #398).
     DateTime OpeningBalanceAsAtDate = default,
     // LanguageCode: chosen display language as a BCP-47 culture id (spec 027, US3 / FR-013).
     // Null keeps Settings.LanguageCode null ("follow the OS display language").
@@ -46,4 +46,9 @@ public record SetupRequest(
     // TaxEntryMode: how a newly entered taxable amount is interpreted (spec 028, issue #354) —
     // Inclusive (the default, entered figure is the gross) or Exclusive (entered figure is the
     // net, tax added on top). Forced to Inclusive at Finish when IsTaxApplicable is false.
-    TaxEntryMode TaxEntryMode = TaxEntryMode.Inclusive);
+    TaxEntryMode TaxEntryMode = TaxEntryMode.Inclusive,
+    // OpeningBalancesFromSampleData: true only on the first-run "load sample data" path, whose
+    // debug seeder posts its own opening balances straight after setup. Otherwise setup always
+    // records the opening balances — as zero when none were entered — and they're locked from
+    // then on (issue #398).
+    bool OpeningBalancesFromSampleData = false);

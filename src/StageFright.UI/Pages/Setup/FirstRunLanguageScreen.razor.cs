@@ -131,7 +131,9 @@ public partial class FirstRunLanguageScreen : ComponentBase
                     AttendanceFeeTaxCode: null,
                     Theme: ThemeProvider?.CurrentTheme ?? Theme.Dark,
                     LanguageCode: _selectedLanguageCode,
-                    CurrencyCode: "AUD");
+                    CurrencyCode: "AUD",
+                    // DebugDataSeeder posts the sample opening balances itself, right after this.
+                    OpeningBalancesFromSampleData: true);
 
                 await SetupService.InitializeAsync(request);
             }

@@ -405,14 +405,31 @@ public class SetupServiceTests : TestBase
     }
 
     [Fact]
-    public async Task InitializeAsync_PostsNoOpeningBalances_WhenQueuedOpeningBalancesEmpty()
+    public async Task InitializeAsync_RecordsZeroOpeningBalances_WhenNoneQueued()
+    {
+        // Issue #398: none entered is recorded as zero, so the balances are locked from setup on.
+        _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
+        _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns("4000");
+        var svc = CreateService();
+        var asAt = new DateTime(2026, 7, 1);
+
+        await svc.InitializeAsync(ValidRequest() with { OpeningBalanceAsAtDate = asAt }, Ct);
+
+        await _openingBalanceService.Received(1).RecordOpeningBalancesAsync(
+            Arg.Is<RecordOpeningBalancesRequest>(r => r!.AsAtDate == asAt && r.Entries.Count == 0),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitializeAsync_RecordsNoOpeningBalances_WhenSampleDataSuppliesThem()
     {
         _settingsRepo.GetAsync(Arg.Any<CancellationToken>()).Returns((Settings?)null);
         _accountRepo.GetNextAccountNumberAsync(Arg.Any<Core.Enums.AccountType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
             .Returns("4000");
         var svc = CreateService();
 
-        await svc.InitializeAsync(ValidRequest(), Ct);
+        await svc.InitializeAsync(ValidRequest() with { OpeningBalancesFromSampleData = true }, Ct);
 
         await _openingBalanceService.DidNotReceive().RecordOpeningBalancesAsync(
             Arg.Any<RecordOpeningBalancesRequest>(), Arg.Any<CancellationToken>());

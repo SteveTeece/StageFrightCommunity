@@ -344,16 +344,7 @@
   <!-- ===== Opening Balances wizard (OpeningBalancesWizard.razor) ===== -->
   <data name="Finance_OpeningBalances_PageTitle" xml:space="preserve"><value>Opening Balances</value><comment>Browser tab title — Opening Balances wizard.</comment></data>
   <data name="Finance_OpeningBalances_Heading" xml:space="preserve"><value>Opening Balances</value><comment>Opening Balances wizard heading.</comment></data>
-  <data name="Finance_OpeningBalances_StepOf" xml:space="preserve"><value>Step {Step} of 2</value><comment>Wizard progress. {Step} = current step number.</comment></data>
-  <data name="Finance_OpeningBalances_Step1Heading" xml:space="preserve"><value>Step 1 — As-at date</value><comment>Opening Balances wizard — step 1 heading.</comment></data>
-  <data name="Finance_OpeningBalances_Step1Intro" xml:space="preserve"><value>Choose the date the opening balances apply from — usually the first day of your financial year.</value><comment>Opening Balances wizard — step 1 explanation.</comment></data>
-  <data name="Finance_OpeningBalances_AsAtLabel" xml:space="preserve"><value>As at</value><comment>Opening Balances wizard — as-at date field label.</comment></data>
-  <data name="Finance_OpeningBalances_NextButton" xml:space="preserve"><value>Next</value><comment>Opening Balances wizard — advance to step 2.</comment></data>
-  <data name="Finance_OpeningBalances_Step2Heading" xml:space="preserve"><value>Step 2 — Enter balances</value><comment>Opening Balances wizard — step 2 heading.</comment></data>
-  <data name="Finance_OpeningBalances_BackButton" xml:space="preserve"><value>Back</value><comment>Opening Balances wizard — return to step 1.</comment></data>
   <data name="Finance_OpeningBalances_LoadError" xml:space="preserve"><value>Failed to load accounts: {Detail}</value><comment>{Detail} = error detail.</comment></data>
-  <data name="Finance_OpeningBalances_SuccessMessage" xml:space="preserve"><value>Opening balances as at {Date} posted successfully.</value><comment>{Date} = as-at date, long format.</comment></data>
-  <data name="Finance_OpeningBalances_PostError" xml:space="preserve"><value>Failed to post opening balances: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <!-- ===== Bank Reconciliation list (ReconciliationListPage.razor) ===== -->
   <data name="Finance_Reconciliation_ListPageTitle" xml:space="preserve"><value>Bank Reconciliation</value><comment>Browser tab title — Bank Reconciliation list.</comment></data>
   <data name="Finance_Reconciliation_ListHeading" xml:space="preserve"><value>Bank Reconciliation</value><comment>Bank Reconciliation list heading.</comment></data>
@@ -595,4 +586,5 @@
   <data name="Finance_Validation_ReconciliationNotesTooLong" xml:space="preserve"><value>Notes must be 500 characters or fewer.</value><comment>Start-reconciliation form validation: notes over 500 characters.</comment></data>
   <data name="Finance_OpeningBalances_RecordedIntro" xml:space="preserve"><value>These opening balances were posted as at {Date} and are locked. To adjust an account's balance, post a journal entry.</value><comment>Opening Balances page once balances are posted — read-only view. {Date} = as-at date, long format.</comment></data>
   <data name="Finance_OpeningBalances_JournalLink" xml:space="preserve"><value>Post a journal entry</value><comment>Opening Balances page — link to the Journal Entry page, the way to adjust a locked opening balance.</comment></data>
+  <data name="Finance_OpeningBalances_NoneRecordedIntro" xml:space="preserve"><value>No opening balances were recorded, so every account opened at zero. To correct an opening balance, post a journal entry.</value><comment>Opening Balances page when a dataset never recorded opening balances (pre issue #398) — every account opened at zero.</comment></data>
 </root>

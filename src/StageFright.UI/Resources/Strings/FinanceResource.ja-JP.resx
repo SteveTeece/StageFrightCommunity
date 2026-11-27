@@ -175,16 +175,7 @@
   <data name="Finance_Journal_PostError" xml:space="preserve"><value>仕訳の計上に失敗しました: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_OpeningBalances_PageTitle" xml:space="preserve"><value>期首残高</value><comment>Browser tab title — Opening Balances wizard.</comment></data>
   <data name="Finance_OpeningBalances_Heading" xml:space="preserve"><value>期首残高</value><comment>Opening Balances wizard heading.</comment></data>
-  <data name="Finance_OpeningBalances_StepOf" xml:space="preserve"><value>ステップ {Step} / 2</value><comment>Wizard progress. {Step} = current step number.</comment></data>
-  <data name="Finance_OpeningBalances_Step1Heading" xml:space="preserve"><value>ステップ 1 — 基準日</value><comment>Opening Balances wizard — step 1 heading.</comment></data>
-  <data name="Finance_OpeningBalances_Step1Intro" xml:space="preserve"><value>期首残高が適用される日付を選択します。通常は会計年度の初日です。</value><comment>Opening Balances wizard — step 1 explanation.</comment></data>
-  <data name="Finance_OpeningBalances_AsAtLabel" xml:space="preserve"><value>基準日</value><comment>Opening Balances wizard — as-at date field label.</comment></data>
-  <data name="Finance_OpeningBalances_NextButton" xml:space="preserve"><value>次へ</value><comment>Opening Balances wizard — advance to step 2.</comment></data>
-  <data name="Finance_OpeningBalances_Step2Heading" xml:space="preserve"><value>ステップ 2 — 残高を入力</value><comment>Opening Balances wizard — step 2 heading.</comment></data>
-  <data name="Finance_OpeningBalances_BackButton" xml:space="preserve"><value>戻る</value><comment>Opening Balances wizard — return to step 1.</comment></data>
   <data name="Finance_OpeningBalances_LoadError" xml:space="preserve"><value>勘定の読み込みに失敗しました: {Detail}</value><comment>{Detail} = error detail.</comment></data>
-  <data name="Finance_OpeningBalances_SuccessMessage" xml:space="preserve"><value>{Date} 時点の期首残高を計上しました。</value><comment>{Date} = as-at date, long format.</comment></data>
-  <data name="Finance_OpeningBalances_PostError" xml:space="preserve"><value>期首残高の計上に失敗しました: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Finance_Reconciliation_ListPageTitle" xml:space="preserve"><value>銀行照合</value><comment>Browser tab title — Bank Reconciliation list.</comment></data>
   <data name="Finance_Reconciliation_ListHeading" xml:space="preserve"><value>銀行照合</value><comment>Bank Reconciliation list heading.</comment></data>
   <data name="Finance_Reconciliation_NoAccountsHtml" xml:space="preserve"><value>銀行または現金の勘定がまだありません。まず &lt;a href="/finance/accounts"&gt;勘定科目一覧&lt;/a&gt;ページで作成してください。</value><comment>Warning (contains a link to the Chart of Accounts) shown when no bank/cash account exists.</comment></data>
@@ -289,4 +280,5 @@
   <data name="Finance_Validation_ReconciliationNotesTooLong" xml:space="preserve"><value>メモは500文字以内で入力してください。</value><comment>Start-reconciliation form validation: notes over 500 characters.</comment></data>
   <data name="Finance_OpeningBalances_RecordedIntro" xml:space="preserve"><value>これらの期首残高は{Date}時点で計上済みのためロックされています。勘定の残高を調整するには、仕訳を入力してください。</value><comment>Opening Balances page once balances are posted — read-only view. {Date} = as-at date, long format.</comment></data>
   <data name="Finance_OpeningBalances_JournalLink" xml:space="preserve"><value>仕訳を入力</value><comment>Opening Balances page — link to the Journal Entry page, the way to adjust a locked opening balance.</comment></data>
+  <data name="Finance_OpeningBalances_NoneRecordedIntro" xml:space="preserve"><value>期首残高が記録されていないため、すべての勘定はゼロから開始されています。期首残高を訂正するには、仕訳を入力してください。</value><comment>Opening Balances page when a dataset never recorded opening balances (pre issue #398) — every account opened at zero.</comment></data>
 </root>

@@ -60,22 +60,30 @@ public class OpeningBalanceService : IOpeningBalanceService
             .ToList();
     }
 
-    public async Task<RecordedOpeningBalances?> GetRecordedOpeningBalancesAsync(CancellationToken ct = default)
+    public async Task<RecordedOpeningBalances> GetRecordedOpeningBalancesAsync(CancellationToken ct = default)
     {
         var journals = await _journalRepo.GetByTypesAsync([JournalEntryType.OpeningBalance], ct);
-        if (journals.Count == 0)
-            return null;
-
         var transactions = journals.SelectMany(j => j.Transactions).ToList();
 
-        var lines = transactions
+        var posted = transactions
             .Where(t => t.AccountId != SystemAccounts.OpeningBalanceEquityId)
             .GroupBy(t => t.AccountId)
-            .Select(g => new RecordedOpeningBalanceLine
+            .ToDictionary(g => g.Key, g => (
+                g.First().Account,
+                Amount: g.Sum(t => FromNormalSide(t.Account.Type, t))));
+
+        // Every eligible account is listed — at zero when it had no opening balance — plus any
+        // account posted to that is no longer eligible (e.g. archived since).
+        var eligible = await GetOpeningBalanceAccountsAsync(ct);
+        var lines = eligible
+            .Select(a => new RecordedOpeningBalanceLine
             {
-                Account = g.First().Account,
-                Amount = g.Sum(t => FromNormalSide(t.Account.Type, t))
+                Account = a,
+                Amount = posted.TryGetValue(a.Id, out var p) ? p.Amount : 0m
             })
+            .Concat(posted.Values
+                .Where(p => eligible.All(a => a.Id != p.Account.Id))
+                .Select(p => new RecordedOpeningBalanceLine { Account = p.Account, Amount = p.Amount }))
             .OrderBy(l => l.Account.AccountNumber)
             .ToList();
 
@@ -87,7 +95,7 @@ public class OpeningBalanceService : IOpeningBalanceService
 
         return new RecordedOpeningBalances
         {
-            AsAtDate = journals.Min(j => j.Date),
+            AsAtDate = journals.Count > 0 ? journals.Min(j => j.Date) : null,
             Lines = lines,
             Plug = plug
         };
@@ -120,11 +128,9 @@ public class OpeningBalanceService : IOpeningBalanceService
                 _localizer.Get<ValidationResource>("Validation_OpeningBalance_AlreadyPosted"),
                 nameof(JournalEntry), nameof(RecordOpeningBalancesAsync));
 
+        // No non-zero entry is valid: the journal is still recorded, with no lines, meaning every
+        // account opened at zero — so the balances are locked all the same (issue #398).
         var entries = request.Entries.Where(e => e.Amount != 0m).ToList();
-        if (entries.Count == 0)
-            throw new ValidationException(
-                _localizer.Get<ValidationResource>("Validation_OpeningBalance_AtLeastOneNonZero"),
-                nameof(JournalEntry), nameof(RecordOpeningBalancesAsync));
 
         if (entries.GroupBy(e => e.AccountId).Any(g => g.Count() > 1))
             throw new ValidationException(
@@ -198,7 +204,8 @@ public class OpeningBalanceService : IOpeningBalanceService
                 });
             }
 
-            await _glRepo.AddBalancedSetAsync(lines, innerCt);
+            if (lines.Count > 0)
+                await _glRepo.AddBalancedSetAsync(lines, innerCt);
 
             if (undepositedFunds is not null)
             {
