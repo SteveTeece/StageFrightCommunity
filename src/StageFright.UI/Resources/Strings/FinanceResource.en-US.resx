@@ -443,6 +443,7 @@
     <value>Record cash withdrawal</value>
     <comment>Banking page button: record a cash withdrawal.</comment>
   </data>
+  <data name="Finance_Banking_RecordExpense" xml:space="preserve"><value>Record expense</value><comment>Banking page button: record an expense already paid from a bank account or petty cash, such as a bank fee (issue #400).</comment></data>
   <data name="Finance_Banking_Col_Received" xml:space="preserve">
     <value>Received</value>
     <comment>Grid column: date received.</comment>
@@ -589,7 +590,7 @@
   <data name="Finance_Banking_DepositSaveError" xml:space="preserve"><value>Failed to record deposit: {Detail}</value><comment>Deposit page save failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_WithdrawalSaveError" xml:space="preserve"><value>Failed to record withdrawal: {Detail}</value><comment>Cash withdrawal page save failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_ReverseConfirmButton" xml:space="preserve"><value>Yes, reverse it</value><comment>Deposit detail: second-step button that confirms the reversal.</comment></data>
-  <data name="Finance_Banking_BackToBanking" xml:space="preserve"><value>Back to Banking</value><comment>Deposit, deposit detail and cash withdrawal pages: link back to the Banking page.</comment></data>
+  <data name="Finance_Banking_BackToBanking" xml:space="preserve"><value>Back to Banking</value><comment>Deposit, deposit detail, cash withdrawal and banking expense pages: link back to the Banking page.</comment></data>
   <data name="Finance_Banking_ReverseError" xml:space="preserve"><value>Failed to reverse deposit: {Detail}</value><comment>Deposit detail reversal failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_UnexpectedErrorDetail" xml:space="preserve"><value>an unexpected error occurred. The details have been logged.</value><comment>{Detail} text for Finance_Banking_LoadError / Finance_Banking_DepositSaveError when the failure is not a StageFright exception; the exception itself is logged.</comment></data>
   <data name="Finance_Validation_ReconciliationNotesTooLong" xml:space="preserve"><value>Notes must be 500 characters or fewer.</value><comment>Start-reconciliation form validation: notes over 500 characters.</comment></data>

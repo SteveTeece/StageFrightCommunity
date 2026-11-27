@@ -47,13 +47,16 @@
                     @((MarkupString)L["Finance_Banking_NoBankAccountHtml"].Value)
                 </div>
             }
-            else
-            {
-                <div class="d-flex gap-2 mb-3">
+
+            @* Record expense stays available without a bank account: Petty Cash can always pay one (issue #400). *@
+            <div class="d-flex gap-2 mb-3">
+                @if (_overview.DepositBankAccounts.Count > 0)
+                {
                     <button type="button" class="btn btn-primary btn-sm" id="recordDeposit" @onclick="GoToDeposit">@L["Finance_Banking_RecordDeposit"]</button>
                     <button type="button" class="btn btn-outline-primary btn-sm" id="recordWithdrawal" @onclick="GoToWithdrawal">@L["Finance_Banking_RecordWithdrawal"]</button>
-                </div>
-            }
+                }
+                <button type="button" class="btn btn-outline-primary btn-sm" id="recordExpense" @onclick="GoToExpense">@L["Finance_Banking_RecordExpense"]</button>
+            </div>
 
             <h5>@L["Finance_Banking_AwaitingHeading"]</h5>
             @if (_overview.AwaitingItems.Count == 0)

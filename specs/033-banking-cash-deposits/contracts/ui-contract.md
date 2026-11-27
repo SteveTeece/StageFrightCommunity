@@ -9,6 +9,7 @@
 | `/finance/banking/deposit` | `DepositPage` | Save → `/finance/banking`. Cancel → `/finance/banking`. A *Back to Banking* link (`Finance_Banking_BackToBanking`) is shown in every state (issue #396). |
 | `/finance/banking/deposits/{id:guid}` | `DepositDetailPage` | Unknown Id → `Finance_Banking_DepositNotFound` message plus a back link. |
 | `/finance/banking/withdrawal` | `CashWithdrawalPage` | Save or Cancel → `/finance/banking`. A *Back to Banking* link (`Finance_Banking_BackToBanking`) is shown in every state (issue #396). |
+| `/finance/banking/expense` | `BankingExpensePage` | Issue #400 (FR-007a). Renders the unchanged `ExpensePaymentPage` form (the one at `/finance/expenses`) with a *Back to Banking* link (`Finance_Banking_BackToBanking`) below it in every state. Save shows the form's own success message with *Record another*. |
 
 `BankDepositPage.razor`, `BankDepositPage.razor.cs` and `BankDepositModel.cs` are deleted.
 
@@ -17,7 +18,7 @@
 ### 2.1 BankingPage
 
 1. **Summary row**, three compact cards: *Undeposited Funds* (Σ awaiting), *Petty Cash* (the current balance, shown negative when negative) and *Cash available* (today's figure, FR-010).
-2. **Actions**: *Record deposit* and *Record cash withdrawal*. When `BankingOverview.DepositBankAccounts` is empty, `NoBankAccountNotice` (with a link to `/finance/accounts`) replaces both buttons (edge case "No bank account set up").
+2. **Actions**: *Record deposit*, *Record cash withdrawal* and *Record expense* (`Finance_Banking_RecordExpense`, → `/finance/banking/expense`, issue #400). When `BankingOverview.DepositBankAccounts` is empty, `NoBankAccountNotice` (with a link to `/finance/accounts`) replaces the deposit and withdrawal buttons (edge case "No bank account set up"). *Record expense* stays, because Petty Cash can always pay an expense.
 3. **Awaiting deposit** `RadzenDataGrid<AwaitingDepositItem>` (`AllowSorting AllowPaging PageSize="15" class="rz-shadow-0"`). Columns: Received, Payer, Reference, Amount, with a footer total. Empty text: `Finance_Banking_NothingAwaiting`.
 4. **History** `RadzenDataGrid<BankingHistoryEntry>`. Columns: Date, Type (Deposit/Withdrawal), Bank account, Description (a withdrawal's purpose, US4), Total, Status (Recorded/Reversed; withdrawals show "—"). A deposit row click opens its detail. Sorted newest first.
 
@@ -145,6 +146,7 @@ Every neutral key ships translated into de-DE, en-US, es-ES, fr-FR, it-IT, ja-JP
 | `Finance_Banking_NoHistory` | No deposits or withdrawals have been recorded. |
 | `Finance_Banking_RecordDeposit` | Record deposit |
 | `Finance_Banking_RecordWithdrawal` | Record cash withdrawal |
+| `Finance_Banking_RecordExpense` | Record expense (issue #400) |
 | `Finance_Banking_Col_Received` / `_Payer` / `_Reference` / `_Amount` / `_Date` / `_Type` / `_BankAccount` / `_Total` / `_Status` | Received / Payer / Reference / Amount / Date / Type / Bank account / Total / Status |
 | `Finance_Banking_Status_Recorded` / `_Reversed` | Recorded / Reversed |
 | `Finance_Banking_NoBankAccountHtml` | This needs a bank account other than Petty Cash. Add one in the `<a href="/finance/accounts">`Chart of Accounts`</a>` first. |

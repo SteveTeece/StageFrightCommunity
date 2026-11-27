@@ -233,6 +233,7 @@
   <data name="Finance_Banking_NoHistory" xml:space="preserve"><value>Aucun dépôt ni retrait n'a été enregistré.</value><comment>Empty text of the history grid.</comment></data>
   <data name="Finance_Banking_RecordDeposit" xml:space="preserve"><value>Enregistrer un dépôt</value><comment>Banking page button: record a deposit.</comment></data>
   <data name="Finance_Banking_RecordWithdrawal" xml:space="preserve"><value>Enregistrer un retrait d'espèces</value><comment>Banking page button: record a cash withdrawal.</comment></data>
+  <data name="Finance_Banking_RecordExpense" xml:space="preserve"><value>Saisir une dépense</value><comment>Banking page button: record an expense already paid from a bank account or petty cash, such as a bank fee (issue #400).</comment></data>
   <data name="Finance_Banking_Col_Received" xml:space="preserve"><value>Reçu le</value><comment>Grid column: date received.</comment></data>
   <data name="Finance_Banking_Col_Payer" xml:space="preserve"><value>Payeur</value><comment>Grid column: payer.</comment></data>
   <data name="Finance_Banking_Col_Reference" xml:space="preserve"><value>Référence</value><comment>Grid column: cheque reference.</comment></data>
@@ -274,7 +275,7 @@
   <data name="Finance_Banking_DepositSaveError" xml:space="preserve"><value>Échec de l'enregistrement du dépôt : {Detail}</value><comment>Deposit page save failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_WithdrawalSaveError" xml:space="preserve"><value>Échec de l'enregistrement du retrait : {Detail}</value><comment>Cash withdrawal page save failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_ReverseConfirmButton" xml:space="preserve"><value>Oui, annuler</value><comment>Deposit detail: second-step button that confirms the reversal.</comment></data>
-  <data name="Finance_Banking_BackToBanking" xml:space="preserve"><value>Retour à Banque</value><comment>Deposit, deposit detail and cash withdrawal pages: link back to the Banking page.</comment></data>
+  <data name="Finance_Banking_BackToBanking" xml:space="preserve"><value>Retour à Banque</value><comment>Deposit, deposit detail, cash withdrawal and banking expense pages: link back to the Banking page.</comment></data>
   <data name="Finance_Banking_ReverseError" xml:space="preserve"><value>Échec de l'annulation du dépôt : {Detail}</value><comment>Deposit detail reversal failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_UnexpectedErrorDetail" xml:space="preserve"><value>une erreur inattendue s'est produite. Les détails ont été consignés dans le journal.</value><comment>{Detail} text for Finance_Banking_LoadError / Finance_Banking_DepositSaveError when the failure is not a StageFright exception; the exception itself is logged.</comment></data>
   <data name="Finance_Validation_ReconciliationNotesTooLong" xml:space="preserve"><value>Les notes ne doivent pas dépasser 500 caractères.</value><comment>Start-reconciliation form validation: notes over 500 characters.</comment></data>

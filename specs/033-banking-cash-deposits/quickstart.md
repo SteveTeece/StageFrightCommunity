@@ -55,7 +55,7 @@ In a DEBUG build the seeder runs. The Banking screen should open with the last m
 4. **Reverse**: open the deposit from the history, choose *Reverse deposit*, and confirm. All three balances are back to their step-1 values. The $50 cheque is awaiting again. The draft reconciliation no longer has the line ticked. The history shows the deposit as Reversed (SC-005).
 5. **Finalised block**: deposit again, reconcile and **finalise**, then try to reverse. The reversal is refused with the finalised-reconciliation message.
 6. **Float**: record a $200 cash withdrawal ("Opening night float"). The bank falls by $200 and Petty Cash rises by $200. Then deposit $200 of cash back. Petty Cash ends where it started (verification item 4).
-7. **Edge cases**: archive every bank account except Petty Cash. *Record deposit*, *Record cash withdrawal* and the Card/EFT bank picker then show the "add a bank account" notice, while Cash and Cheque receipts still save.
+7. **Edge cases**: archive every bank account except Petty Cash. *Record deposit*, *Record cash withdrawal* and the Card/EFT bank picker then show the "add a bank account" notice, while Cash and Cheque receipts still save. *Record expense* is still offered and can pay from Petty Cash (issue #400).
 8. **Legacy route**: navigating to `/finance/bank-deposit` shows the Banking screen.
 9. **Language and currency**: switch to each shipped language in *Settings → General*. Every Banking string is translated, and every amount uses the configured currency (verification item 5).
 

@@ -60,4 +60,6 @@ public partial class BankingPage : ComponentBase
     private void GoToDeposit() => Nav.NavigateTo("/finance/banking/deposit");
 
     private void GoToWithdrawal() => Nav.NavigateTo("/finance/banking/withdrawal");
+
+    private void GoToExpense() => Nav.NavigateTo("/finance/banking/expense");
 }

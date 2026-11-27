@@ -137,7 +137,8 @@ The treasurer can list past deposits and withdrawals and open a deposit to see e
 
 **Banking screen**
 
-- **FR-007**: The "Record Bank Deposit" item on the Finance menu MUST be replaced by a single "Banking" item. It opens a screen showing the cheques awaiting deposit, the Petty Cash balance, and actions to record a deposit and a cash withdrawal.
+- **FR-007**: The "Record Bank Deposit" item on the Finance menu MUST be replaced by a single "Banking" item. It opens a screen showing the cheques awaiting deposit, the Petty Cash balance, and actions to record a deposit, a cash withdrawal and an expense.
+- **FR-007a** *(issue #400)*: The Banking screen's *Record expense* action MUST open the standard expense form (the same form as Finance → Record Expense) for an expense already incurred and paid: a fee on a bank statement (bank fees, interest charged, EFTPOS charges) or a receipted payment out of petty cash. It is not an accounts-payable feature: nothing is recorded as owed. The money can come from any bank-type account, Petty Cash included, so the action is offered even when no other bank account exists. The posting is the existing expense posting (debit expense, plus recoverable tax when it applies, and credit the chosen account), with no new journal type.
 - **FR-008**: The list of cheques awaiting deposit MUST show each item's received date, payer, reference and amount, and the total of all items. The payer is the member's name for a member payment. For an income entry it is the linked organisation's name (spec 032) when one was chosen, otherwise the entry's description. An organisation archived after the cheque was received is still shown by name.
 
 **Deposits**

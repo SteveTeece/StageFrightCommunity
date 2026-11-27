@@ -130,6 +130,28 @@ public class BankingPageTests : LocalizedTestContext
     }
 
     [Fact]
+    public void Should_StillOfferRecordExpense_When_NoBankAccountExists()
+    {
+        // Petty Cash can always pay an expense, so the action is not tied to a bank account (issue #400).
+        SetOverview(40m, []);
+
+        var cut = Render<BankingPage>();
+
+        Assert.Equal("Record expense", cut.Find("#recordExpense").TextContent);
+    }
+
+    [Fact]
+    public void Should_NavigateToBankingExpense_When_RecordExpenseClicked()
+    {
+        var cut = Render<BankingPage>();
+        var nav = Services.GetRequiredService<NavigationManager>();
+
+        cut.Find("#recordExpense").Click();
+
+        Assert.EndsWith("/finance/banking/expense", nav.Uri);
+    }
+
+    [Fact]
     public void Should_ShowActionButtons_When_BankAccountExists()
     {
         var cut = Render<BankingPage>();

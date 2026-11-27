@@ -1,0 +1,9 @@
+@page "/finance/banking/expense"
+
+@* Issue #400: the Banking screen's Record expense action. It is the same expense form as
+   /finance/expenses (bank fees, EFTPOS charges, receipted petty-cash spending), with a way back. *@
+<ExpensePaymentPage />
+
+<div class="container-fluid pb-2">
+    <a href="/finance/banking" class="btn btn-outline-secondary btn-sm" id="backToBanking">@L["Finance_Banking_BackToBanking"]</a>
+</div>

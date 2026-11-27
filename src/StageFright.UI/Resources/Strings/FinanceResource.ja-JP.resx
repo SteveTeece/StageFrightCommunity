@@ -233,6 +233,7 @@
   <data name="Finance_Banking_NoHistory" xml:space="preserve"><value>預入や引出は記録されていません。</value><comment>Empty text of the history grid.</comment></data>
   <data name="Finance_Banking_RecordDeposit" xml:space="preserve"><value>預入を記録</value><comment>Banking page button: record a deposit.</comment></data>
   <data name="Finance_Banking_RecordWithdrawal" xml:space="preserve"><value>現金の引出を記録</value><comment>Banking page button: record a cash withdrawal.</comment></data>
+  <data name="Finance_Banking_RecordExpense" xml:space="preserve"><value>支出を記録</value><comment>Banking page button: record an expense already paid from a bank account or petty cash, such as a bank fee (issue #400).</comment></data>
   <data name="Finance_Banking_Col_Received" xml:space="preserve"><value>受領日</value><comment>Grid column: date received.</comment></data>
   <data name="Finance_Banking_Col_Payer" xml:space="preserve"><value>支払者</value><comment>Grid column: payer.</comment></data>
   <data name="Finance_Banking_Col_Reference" xml:space="preserve"><value>参照</value><comment>Grid column: cheque reference.</comment></data>
@@ -274,7 +275,7 @@
   <data name="Finance_Banking_DepositSaveError" xml:space="preserve"><value>入金の記録に失敗しました: {Detail}</value><comment>Deposit page save failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_WithdrawalSaveError" xml:space="preserve"><value>引出の記録に失敗しました: {Detail}</value><comment>Cash withdrawal page save failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_ReverseConfirmButton" xml:space="preserve"><value>はい、取り消します</value><comment>Deposit detail: second-step button that confirms the reversal.</comment></data>
-  <data name="Finance_Banking_BackToBanking" xml:space="preserve"><value>銀行業務に戻る</value><comment>Deposit, deposit detail and cash withdrawal pages: link back to the Banking page.</comment></data>
+  <data name="Finance_Banking_BackToBanking" xml:space="preserve"><value>銀行業務に戻る</value><comment>Deposit, deposit detail, cash withdrawal and banking expense pages: link back to the Banking page.</comment></data>
   <data name="Finance_Banking_ReverseError" xml:space="preserve"><value>預入の取り消しに失敗しました: {Detail}</value><comment>Deposit detail reversal failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_UnexpectedErrorDetail" xml:space="preserve"><value>予期しないエラーが発生しました。詳細はログに記録されました。</value><comment>{Detail} text for Finance_Banking_LoadError / Finance_Banking_DepositSaveError when the failure is not a StageFright exception; the exception itself is logged.</comment></data>
   <data name="Finance_Validation_ReconciliationNotesTooLong" xml:space="preserve"><value>メモは500文字以内で入力してください。</value><comment>Start-reconciliation form validation: notes over 500 characters.</comment></data>
