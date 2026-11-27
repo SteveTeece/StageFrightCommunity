@@ -209,4 +209,35 @@ public class CashWithdrawalPageTests : LocalizedTestContext
 
         Assert.EndsWith("/finance/banking", nav.Uri);
     }
+
+    [Fact]
+    public void Should_ShowBackToBankingLink_When_FormShown()
+    {
+        var cut = Render<CashWithdrawalPage>();
+
+        var link = cut.Find("#backToBanking");
+        Assert.Equal("/finance/banking", link.GetAttribute("href"));
+        Assert.Equal("Back to Banking", link.TextContent);
+    }
+
+    [Fact]
+    public void Should_ShowBackToBankingLink_When_NoBankAccountExists()
+    {
+        SetBanks();
+
+        var cut = Render<CashWithdrawalPage>();
+
+        Assert.Equal("/finance/banking", cut.Find("#backToBanking").GetAttribute("href"));
+    }
+
+    [Fact]
+    public void Should_ShowBackToBankingLink_When_OverviewFailsToLoad()
+    {
+        _banking.GetOverviewAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<BankingOverview>(new DataAccessException("disk unavailable", "Account", "GetOverview")));
+
+        var cut = Render<CashWithdrawalPage>();
+
+        Assert.Equal("/finance/banking", cut.Find("#backToBanking").GetAttribute("href"));
+    }
 }

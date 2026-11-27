@@ -274,7 +274,7 @@
   <data name="Finance_Banking_DepositSaveError" xml:space="preserve"><value>⟦Fáíléd tó réçórd dépósít: {Detail}—⟧</value><comment>Deposit page save failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_WithdrawalSaveError" xml:space="preserve"><value>⟦Fáíléd tó réçórd wíthdráwál: {Detail}—⟧</value><comment>Cash withdrawal page save failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_ReverseConfirmButton" xml:space="preserve"><value>⟦Ýés, révérsé ít—⟧</value><comment>Deposit detail: second-step button that confirms the reversal.</comment></data>
-  <data name="Finance_Banking_BackToBanking" xml:space="preserve"><value>⟦Báçk tó Báñkíñg—⟧</value><comment>Deposit detail: link back to the Banking page.</comment></data>
+  <data name="Finance_Banking_BackToBanking" xml:space="preserve"><value>⟦Báçk tó Báñkíñg—⟧</value><comment>Deposit, deposit detail and cash withdrawal pages: link back to the Banking page.</comment></data>
   <data name="Finance_Banking_ReverseError" xml:space="preserve"><value>⟦Fáíléd tó révérsé dépósít: {Detail}—⟧</value><comment>Deposit detail reversal failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_UnexpectedErrorDetail" xml:space="preserve"><value>⟦áñ úñéxpéçtéd érrór óççúrréd. Thé détáíls hávé bééñ lóggéd.—⟧</value><comment>{Detail} text for Finance_Banking_LoadError / Finance_Banking_DepositSaveError when the failure is not a StageFright exception; the exception itself is logged.</comment></data>
   <data name="Finance_Validation_ReconciliationNotesTooLong" xml:space="preserve"><value>⟦Ñótés múst bé 500 çháráçtérs ór féwér.—⟧</value><comment>Start-reconciliation form validation: notes over 500 characters.</comment></data>

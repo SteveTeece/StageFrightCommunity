@@ -6,9 +6,9 @@
 |---|---|---|
 | `/finance/banking` | `Pages/Finance/BankingPage` | Replaces the old screen. Finance menu item `Nav_Finance_Banking` at DisplayOrder 3, in the slot of the old `Nav_Finance_RecordBankDeposit` item. |
 | `/finance/bank-deposit` | `BankingPage` (second `@page`) | Legacy address kept so bookmarks keep working (spec assumption). |
-| `/finance/banking/deposit` | `DepositPage` | Save → `/finance/banking`. Cancel → `/finance/banking`. |
+| `/finance/banking/deposit` | `DepositPage` | Save → `/finance/banking`. Cancel → `/finance/banking`. A *Back to Banking* link (`Finance_Banking_BackToBanking`) is shown in every state (issue #396). |
 | `/finance/banking/deposits/{id:guid}` | `DepositDetailPage` | Unknown Id → `Finance_Banking_DepositNotFound` message plus a back link. |
-| `/finance/banking/withdrawal` | `CashWithdrawalPage` | Save or Cancel → `/finance/banking`. |
+| `/finance/banking/withdrawal` | `CashWithdrawalPage` | Save or Cancel → `/finance/banking`. A *Back to Banking* link (`Finance_Banking_BackToBanking`) is shown in every state (issue #396). |
 
 `BankDepositPage.razor`, `BankDepositPage.razor.cs` and `BankDepositModel.cs` are deleted.
 
@@ -31,7 +31,7 @@ The fields run top to bottom:
 - **Totals panel**: Cash, Cheques, Deposit total (FR-011).
 - **Save / Cancel**.
 
-Save is disabled while the total is 0. The cash box updates the totals on every keystroke. Service errors are shown inline in an alert; the page does not pre-check the cash against the cash available, the service is the authority.
+Save is disabled while the total is 0. The cash box updates the totals on every keystroke. Service errors are shown inline in an alert; the page does not pre-check the cash against the cash available, the service is the authority. Below the form, every state (including the no-bank notice and a load error) has a *Back to Banking* link (`Finance_Banking_BackToBanking`), as on DepositDetailPage (issue #396).
 
 ### 2.3 DepositDetailPage
 
@@ -41,7 +41,7 @@ The header shows Date, Bank account, Status, Cash (`CashAmount`) and Total, then
 
 The fields are Bank account (a select, preselected when there is only one), Date, Amount and Purpose (optional, max 200 characters), followed by Save / Cancel.
 
-Save checks that a bank account is chosen and the amount is above zero, and shows the message under the field without calling the service. A blank purpose is sent as `Finance_Banking_WithdrawalDefaultDescription`, so the history shows a translated description. Service refusals and the closed-period message appear in an inline alert; any other failure shows `Finance_Banking_WithdrawalSaveError`. A successful save returns to `/finance/banking`. With no bank account, `NoBankAccountNotice` replaces the form.
+Save checks that a bank account is chosen and the amount is above zero, and shows the message under the field without calling the service. A blank purpose is sent as `Finance_Banking_WithdrawalDefaultDescription`, so the history shows a translated description. Service refusals and the closed-period message appear in an inline alert; any other failure shows `Finance_Banking_WithdrawalSaveError`. A successful save returns to `/finance/banking`. With no bank account, `NoBankAccountNotice` replaces the form. Every state has a *Back to Banking* link (`Finance_Banking_BackToBanking`) below the form (issue #396).
 
 ### 2.5 PaymentForm (member payment) changes
 

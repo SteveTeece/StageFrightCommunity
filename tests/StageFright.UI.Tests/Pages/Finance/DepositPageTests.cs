@@ -270,4 +270,35 @@ public class DepositPageTests : LocalizedTestContext
 
         Assert.Equal("Failed to load banking: down", cut.Find("[role=alert]").TextContent.Trim());
     }
+
+    [Fact]
+    public void Should_ShowBackToBankingLink_When_FormShown()
+    {
+        var cut = Render<DepositPage>();
+
+        var link = cut.Find("#backToBanking");
+        Assert.Equal("/finance/banking", link.GetAttribute("href"));
+        Assert.Equal("Back to Banking", link.TextContent);
+    }
+
+    [Fact]
+    public void Should_ShowBackToBankingLink_When_NoBankAccountExists()
+    {
+        SetOverview(80m, []);
+
+        var cut = Render<DepositPage>();
+
+        Assert.Equal("/finance/banking", cut.Find("#backToBanking").GetAttribute("href"));
+    }
+
+    [Fact]
+    public void Should_ShowBackToBankingLink_When_OverviewFails()
+    {
+        _banking.GetOverviewAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<BankingOverview>(new DataAccessException("down", "Account", "GetOverview")));
+
+        var cut = Render<DepositPage>();
+
+        Assert.Equal("/finance/banking", cut.Find("#backToBanking").GetAttribute("href"));
+    }
 }
