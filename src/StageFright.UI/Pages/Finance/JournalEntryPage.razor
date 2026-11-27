@@ -46,68 +46,62 @@
                         </div>
                     </div>
 
-                    <div class="table-responsive">
-                        <table class="table table-sm align-middle journal-lines-table">
-                            <thead>
-                                <tr>
-                                    <th style="min-width: 16rem;">@L["Finance_Journal_AccountColumn"]</th>
-                                    <th class="text-end" style="width: 10rem;">@L["Finance_Journal_DebitColumn"]</th>
-                                    <th class="text-end" style="width: 10rem;">@L["Finance_Journal_CreditColumn"]</th>
-                                    <th style="width: 3rem;"><span class="visually-hidden">@Shared["Shared_Action_Remove"]</span></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var line in _lines)
-                                {
-                                    <tr>
-                                        <td>
-                                            <select class="form-select form-select-sm journal-account"
-                                                    value="@line.AccountId"
-                                                    @onchange="e => SetAccount(line, e)"
-                                                    aria-label="@L["Finance_Journal_AccountAriaLabel"]">
-                                                <option value="@Guid.Empty">@L["Finance_Common_SelectOption"]</option>
-                                                @foreach (var acc in _accounts)
-                                                {
-                                                    <option value="@acc.Id">@acc.AccountNumber @acc.Name</option>
-                                                }
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input type="number" step="0.01" min="0"
-                                                   class="form-control form-control-sm text-end journal-debit"
-                                                   value="@(line.Debit == 0m ? null : line.Debit)"
-                                                   @onchange="e => SetDebit(line, e)"
-                                                   aria-label="@L["Finance_Journal_DebitAriaLabel"]" />
-                                        </td>
-                                        <td>
-                                            <input type="number" step="0.01" min="0"
-                                                   class="form-control form-control-sm text-end journal-credit"
-                                                   value="@(line.Credit == 0m ? null : line.Credit)"
-                                                   @onchange="e => SetCredit(line, e)"
-                                                   aria-label="@L["Finance_Journal_CreditAriaLabel"]" />
-                                        </td>
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-sm btn-outline-danger journal-remove-line"
-                                                    @onclick="() => RemoveLine(line)"
-                                                    disabled="@(_lines.Count <= 2)"
-                                                    aria-label="@L["Finance_Journal_RemoveLineAriaLabel"]">&times;</button>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                            <tfoot>
-                                <tr class="fw-semibold">
-                                    <td>@L["Finance_Journal_TotalsLabel"]</td>
-                                    <td class="text-end journal-total-debits">@MoneyFormatter.Format(TotalDebits)</td>
-                                    <td class="text-end journal-total-credits">@MoneyFormatter.Format(TotalCredits)</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+                    <RadzenDataGrid @ref="_linesGrid" Data="@_lines" TItem="JournalLineModel"
+                                    AllowSorting="true" AllowPaging="true" PageSize="15"
+                                    class="rz-shadow-0 journal-lines-table">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="JournalLineModel" Property="AccountId" Title="@L["Finance_Journal_AccountColumn"]"
+                                                  MinWidth="16rem" Sortable="false">
+                                <Template Context="line">
+                                    <select class="form-select form-select-sm journal-account"
+                                            value="@line.AccountId"
+                                            @onchange="e => SetAccount(line, e)"
+                                            aria-label="@L["Finance_Journal_AccountAriaLabel"]">
+                                        <option value="@Guid.Empty">@L["Finance_Common_SelectOption"]</option>
+                                        @foreach (var acc in _accounts)
+                                        {
+                                            <option value="@acc.Id">@acc.AccountNumber @acc.Name</option>
+                                        }
+                                    </select>
+                                </Template>
+                                <FooterTemplate><strong>@L["Finance_Journal_TotalsLabel"]</strong></FooterTemplate>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="JournalLineModel" Property="Debit" Title="@L["Finance_Journal_DebitColumn"]"
+                                                  Width="10rem" TextAlign="TextAlign.Right" Sortable="false">
+                                <Template Context="line">
+                                    <input type="number" step="0.01" min="0"
+                                           class="form-control form-control-sm text-end journal-debit"
+                                           value="@(line.Debit == 0m ? null : line.Debit)"
+                                           @onchange="e => SetDebit(line, e)"
+                                           aria-label="@L["Finance_Journal_DebitAriaLabel"]" />
+                                </Template>
+                                <FooterTemplate><strong class="journal-total-debits">@MoneyFormatter.Format(TotalDebits)</strong></FooterTemplate>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="JournalLineModel" Property="Credit" Title="@L["Finance_Journal_CreditColumn"]"
+                                                  Width="10rem" TextAlign="TextAlign.Right" Sortable="false">
+                                <Template Context="line">
+                                    <input type="number" step="0.01" min="0"
+                                           class="form-control form-control-sm text-end journal-credit"
+                                           value="@(line.Credit == 0m ? null : line.Credit)"
+                                           @onchange="e => SetCredit(line, e)"
+                                           aria-label="@L["Finance_Journal_CreditAriaLabel"]" />
+                                </Template>
+                                <FooterTemplate><strong class="journal-total-credits">@MoneyFormatter.Format(TotalCredits)</strong></FooterTemplate>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="JournalLineModel" Width="3rem" TextAlign="TextAlign.Center" Sortable="false">
+                                <HeaderTemplate><span class="visually-hidden">@Shared["Shared_Action_Remove"]</span></HeaderTemplate>
+                                <Template Context="line">
+                                    <button type="button" class="btn btn-sm btn-outline-danger journal-remove-line"
+                                            @onclick="() => RemoveLineAsync(line)"
+                                            disabled="@(_lines.Count <= 2)"
+                                            aria-label="@L["Finance_Journal_RemoveLineAriaLabel"]">&times;</button>
+                                </Template>
+                            </RadzenDataGridColumn>
+                        </Columns>
+                    </RadzenDataGrid>
 
                     <div class="d-flex align-items-center gap-2 mt-2">
-                        <button type="button" class="btn btn-outline-secondary btn-sm journal-add-line" @onclick="AddLine">@L["Finance_Journal_AddLineButton"]</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm journal-add-line" @onclick="AddLineAsync">@L["Finance_Journal_AddLineButton"]</button>
 
                         @if (IsBalanced)
                         {

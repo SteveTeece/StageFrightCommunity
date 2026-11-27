@@ -1,5 +1,6 @@
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
@@ -545,4 +546,32 @@ public class ChartOfAccountsPageTests : LocalizedTestContext
             Type = AccountType.Income, Balance = 250m, HasError = false
         }
     };
+
+    [Fact]
+    public void Should_ShowGenericTextAndLogException_When_LoadFailsWithFrameworkException()
+    {
+        var logger = Substitute.For<ILogger<ChartOfAccountsPage>>();
+        Services.AddSingleton(logger);
+        var failure = new InvalidOperationException("SQLite Error 5: database is locked");
+        _accountBalanceService.GetActiveAccountBalancesAsync(Arg.Any<CancellationToken>()).Returns(Task.FromException<IReadOnlyList<AccountBalance>>(failure));
+
+        var cut = Render<ChartOfAccountsPage>();
+
+        Assert.Equal("Failed to load accounts: an unexpected error occurred. The details have been logged.",
+            cut.Find("[role=alert]").TextContent.Trim());
+        Assert.DoesNotContain("SQLite", cut.Markup);
+        Assert.Contains(logger.ReceivedCalls(), c => c.GetMethodInfo().Name == nameof(ILogger.Log)
+            && (LogLevel)c.GetArguments()[0]! == LogLevel.Error && ReferenceEquals(c.GetArguments()[3], failure));
+    }
+
+    [Fact]
+    public void Should_ShowServiceMessage_When_LoadFailsWithStageFrightException()
+    {
+        _accountBalanceService.GetActiveAccountBalancesAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<IReadOnlyList<AccountBalance>>(new DataAccessException("disk unavailable", "Account", "GetAll")));
+
+        var cut = Render<ChartOfAccountsPage>();
+
+        Assert.Equal("Failed to load accounts: disk unavailable", cut.Find("[role=alert]").TextContent.Trim());
+    }
 }

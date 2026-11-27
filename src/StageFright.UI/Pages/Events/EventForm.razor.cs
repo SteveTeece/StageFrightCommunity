@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Localization;
 using StageFright.Core.Modules.Events;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 using DomainValidationException = StageFright.Core.Exceptions.ValidationException;
 
 namespace StageFright.UI.Pages.Events;
@@ -18,6 +20,7 @@ public partial class EventForm
     [Inject] private IStringLocalizer<EventsResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<EventForm> Logger { get; set; } = null!;
 
     private readonly EventFormModel _model = new();
     private bool _saving;
@@ -34,7 +37,8 @@ public partial class EventForm
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<EventsResource>("Events_Form_LoadTypesError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "EventForm.OnInitializedAsync");
+            _errorMessage = Loc.Get<EventsResource>("Events_Form_LoadTypesError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -64,7 +68,8 @@ public partial class EventForm
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<EventsResource>("Events_Form_SaveError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "EventForm.HandleSubmit");
+            _errorMessage = Loc.Get<EventsResource>("Events_Form_SaveError", ErrorDetail.For(ex, Loc));
         }
         finally
         {

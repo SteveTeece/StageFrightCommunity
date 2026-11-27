@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Localization;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages;
 
@@ -12,6 +14,7 @@ public partial class StartupError : ComponentBase
     [Inject] private NavigationManager Nav { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> L { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<StartupError> Logger { get; set; } = null!;
 
     private string? _errorDetail;
     private string? _dbPath;
@@ -41,7 +44,8 @@ public partial class StartupError : ComponentBase
         }
         catch (Exception ex)
         {
-            _actionError = Loc.Get<SharedResource>("Shared_StartupError_OpenFolderError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "StartupError.OpenFolderAsync");
+            _actionError = Loc.Get<SharedResource>("Shared_StartupError_OpenFolderError", ErrorDetail.For(ex, Loc));
         }
 
         return Task.CompletedTask;
@@ -65,7 +69,8 @@ public partial class StartupError : ComponentBase
         }
         catch (Exception ex)
         {
-            _actionError = Loc.Get<SharedResource>("Shared_StartupError_DeleteError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "StartupError.RecreateAsync");
+            _actionError = Loc.Get<SharedResource>("Shared_StartupError_DeleteError", ErrorDetail.For(ex, Loc));
         }
         finally
         {

@@ -34,6 +34,8 @@ namespace StageFright.Integration.Tests.Scenarios;
 /// </summary>
 public sealed class FirstRunRestoreJourneyTests : IAsyncLifetime
 {
+    private readonly TempRecoveryCopyStore _recovery = new();
+
     private readonly ITestOutputHelper _output;
     private StageFrightDbContext _target = null!; // the clean install being restored into
 
@@ -219,10 +221,10 @@ public sealed class FirstRunRestoreJourneyTests : IAsyncLifetime
         return db;
     }
 
-    private static BackupService BuildService(StageFrightDbContext db) =>
+    private BackupService BuildService(StageFrightDbContext db) =>
         new(new BackupRepository(db), new UnitOfWork(db), BuildAudit(db),
-            NullLogger<BackupService>.Instance, RealLocalizer.Instance, new TempRecoveryCopyStore(),
-            new TempBackupDestinationPicker());
+            NullLogger<BackupService>.Instance, RealLocalizer.Instance, _recovery,
+            new TempBackupDestinationPicker(_recovery.GetRecoveryDirectory()));
 
     private static AuditTrailService BuildAudit(StageFrightDbContext db) =>
         new(new AuditTrailRepository(db), NullLogger<AuditTrailService>.Instance);
@@ -230,15 +232,19 @@ public sealed class FirstRunRestoreJourneyTests : IAsyncLifetime
     /// <summary>Writes the pre-restore recovery copy into the system temp directory for the test.</summary>
     private sealed class TempRecoveryCopyStore : IRecoveryCopyStore
     {
-        public string GetRecoveryDirectory() => Path.GetTempPath();
+        // Its own folder, so parallel test runs never see or delete each other's recovery copies.
+        private readonly string _directory = Directory.CreateDirectory(
+            Path.Combine(Path.GetTempPath(), "StageFright-Tests", Guid.NewGuid().ToString("N"))).FullName;
+
+        public string GetRecoveryDirectory() => _directory;
     }
 
     /// <summary>Stands in for the native Save dialog — writes the backup straight to the temp directory.</summary>
-    private sealed class TempBackupDestinationPicker : IBackupDestinationPicker
+    private sealed class TempBackupDestinationPicker(string directory) : IBackupDestinationPicker
     {
         public async Task<BackupDestinationResult> SaveAsync(string suggestedFileName, Stream content, CancellationToken ct = default)
         {
-            var path = Path.Combine(Path.GetTempPath(), $"sf_dest_{Guid.NewGuid()}.sfbak");
+            var path = Path.Combine(directory, $"sf_dest_{Guid.NewGuid()}.sfbak");
             await using var dest = File.Create(path);
             await content.CopyToAsync(dest, ct);
             return BackupDestinationResult.Saved(path);
@@ -316,11 +322,9 @@ public sealed class FirstRunRestoreJourneyTests : IAsyncLifetime
         ProtoBuf.Serializer.Serialize(fs, envelope);
     }
 
-    private static void CleanupFiles(string primaryPath)
+    private void CleanupFiles(string primaryPath)
     {
         if (File.Exists(primaryPath)) File.Delete(primaryPath);
-        var dir = Path.GetDirectoryName(primaryPath) ?? Path.GetTempPath();
-        foreach (var f in Directory.GetFiles(dir, "StageFright-Recovery-*.sfbak"))
-            try { File.Delete(f); } catch { /* best-effort */ }
+        try { Directory.Delete(_recovery.GetRecoveryDirectory(), recursive: true); } catch { /* best-effort */ }
     }
 }

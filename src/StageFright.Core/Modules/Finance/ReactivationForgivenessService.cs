@@ -145,7 +145,7 @@ public class ReactivationForgivenessService : IReactivationForgivenessService
                 await _audit.LogAsync(
                     nameof(Fee), feeId, AuditAction.Forgiveness,
                     oldValue: null,
-                    newValue: $"Forgiveness write-off {fee.Amount:C} for member {memberId}",
+                    newValue: $"Forgiveness write-off {MoneyFormatter.Format(fee.Amount)} for member {memberId}",
                     ct: innerCt);
             }
         }, ct);

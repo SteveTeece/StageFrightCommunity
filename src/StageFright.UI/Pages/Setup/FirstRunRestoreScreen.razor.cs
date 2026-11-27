@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Localization;
 using StageFright.Core.Modules.Settings.Backup;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Setup;
 
@@ -26,6 +28,7 @@ public partial class FirstRunRestoreScreen : ComponentBase
     [Inject] private NavigationManager Nav { get; set; } = null!;
     [Inject] private IStringLocalizer<SetupResource> L { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<FirstRunRestoreScreen> Logger { get; set; } = null!;
 
     private bool _restoreFromBackup;
     private bool _restoring;
@@ -72,7 +75,8 @@ public partial class FirstRunRestoreScreen : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<SetupResource>("Setup_FirstRunRestore_ReadFileError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "FirstRunRestoreScreen.OnFileSelectedAsync");
+            _errorMessage = Loc.Get<SetupResource>("Setup_FirstRunRestore_ReadFileError", ErrorDetail.For(ex, Loc));
             _manifest = null;
             CleanupTempFile();
         }
@@ -117,7 +121,8 @@ public partial class FirstRunRestoreScreen : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<SetupResource>("Setup_FirstRunRestore_ReadFileError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "FirstRunRestoreScreen.HandleConfirmRestoreAsync");
+            _errorMessage = Loc.Get<SetupResource>("Setup_FirstRunRestore_ReadFileError", ErrorDetail.For(ex, Loc));
         }
         finally
         {

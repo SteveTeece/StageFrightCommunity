@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Exceptions;
@@ -7,6 +8,7 @@ using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Localization.Resources;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -17,6 +19,7 @@ public partial class OpeningBalancesWizard : ComponentBase
     [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<OpeningBalancesWizard> Logger { get; set; } = null!;
 
     private IReadOnlyList<Account> _accounts = [];
     private int _step = 1;
@@ -46,7 +49,8 @@ public partial class OpeningBalancesWizard : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_OpeningBalances_LoadError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "OpeningBalancesWizard.OnInitializedAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_OpeningBalances_LoadError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -71,7 +75,8 @@ public partial class OpeningBalancesWizard : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_OpeningBalances_PostError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "OpeningBalancesWizard.PostAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_OpeningBalances_PostError", ErrorDetail.For(ex, Loc));
         }
     }
 }

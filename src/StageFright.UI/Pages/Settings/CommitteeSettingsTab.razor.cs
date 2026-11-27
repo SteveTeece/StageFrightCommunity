@@ -6,6 +6,7 @@ using StageFright.Core.Entities;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Localization;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 using AppSettings = StageFright.Core.Entities.Settings;
 
 namespace StageFright.UI.Pages.Settings;
@@ -60,7 +61,8 @@ public partial class CommitteeSettingsTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<SettingsResource>("Settings_Committee_LoadError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "CommitteeSettingsTab.LoadAsync");
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Committee_LoadError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -87,7 +89,8 @@ public partial class CommitteeSettingsTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<SettingsResource>("Settings_Committee_CreateError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "CommitteeSettingsTab.HandleCreateAsync");
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Committee_CreateError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -112,7 +115,8 @@ public partial class CommitteeSettingsTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<SettingsResource>("Settings_Committee_ArchiveError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "CommitteeSettingsTab.ArchiveAsync");
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Committee_ArchiveError", ErrorDetail.For(ex, Loc));
         }
     }
 
@@ -140,7 +144,8 @@ public partial class CommitteeSettingsTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<SettingsResource>("Settings_Committee_SeatTargetError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "CommitteeSettingsTab.HandleSaveSeatCountAsync");
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Committee_SeatTargetError", ErrorDetail.For(ex, Loc));
         }
         finally
         {

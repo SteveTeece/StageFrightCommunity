@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Localization;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 using CoreValidationException = StageFright.Core.Exceptions.ValidationException;
 
 namespace StageFright.UI.Pages.Settings;
@@ -15,6 +17,7 @@ public partial class EventTypesTab : ComponentBase
     [Inject] private IStringLocalizer<SettingsResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<EventTypesTab> Logger { get; set; } = null!;
 
     private bool _loading = true;
     private bool _creating;
@@ -49,7 +52,8 @@ public partial class EventTypesTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<SettingsResource>("Settings_EventTypes_LoadError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "EventTypesTab.LoadAsync");
+            _errorMessage = Loc.Get<SettingsResource>("Settings_EventTypes_LoadError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -76,7 +80,8 @@ public partial class EventTypesTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<SettingsResource>("Settings_EventTypes_CreateError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "EventTypesTab.HandleCreateAsync");
+            _errorMessage = Loc.Get<SettingsResource>("Settings_EventTypes_CreateError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -101,7 +106,8 @@ public partial class EventTypesTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<SettingsResource>("Settings_EventTypes_ArchiveError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "EventTypesTab.ArchiveAsync");
+            _errorMessage = Loc.Get<SettingsResource>("Settings_EventTypes_ArchiveError", ErrorDetail.For(ex, Loc));
         }
     }
 
@@ -118,14 +124,15 @@ public partial class EventTypesTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<SettingsResource>("Settings_EventTypes_RestoreError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "EventTypesTab.RestoreAsync");
+            _errorMessage = Loc.Get<SettingsResource>("Settings_EventTypes_RestoreError", ErrorDetail.For(ex, Loc));
         }
     }
 
     private sealed class NewEventTypeModel
     {
-        [Required(ErrorMessage = "Event type name is required.")]
-        [MaxLength(100, ErrorMessage = "Event type name must be 100 characters or fewer.")]
+        [Required(ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Validation_EventType_NameRequired))]
+        [MaxLength(100, ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Settings_Validation_EventTypeNameTooLong))]
         public string? Name { get; set; }
     }
 }

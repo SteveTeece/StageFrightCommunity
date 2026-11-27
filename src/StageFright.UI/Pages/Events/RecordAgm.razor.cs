@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
@@ -7,6 +8,7 @@ using StageFright.Core.Exceptions;
 using StageFright.Core.Localization;
 using StageFright.Core.Modules.Agm;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Events;
 
@@ -22,6 +24,7 @@ public partial class RecordAgm : ComponentBase
     [Inject] private IStringLocalizer<EventsResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<RecordAgm> Logger { get; set; } = null!;
 
     private AgmAttendanceGrid? _attendanceGrid;
     private AnnualGeneralMeeting? _agm;
@@ -132,7 +135,8 @@ public partial class RecordAgm : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<EventsResource>("Events_Agm_RecordSaveError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "RecordAgm.SaveAsync");
+            _errorMessage = Loc.Get<EventsResource>("Events_Agm_RecordSaveError", ErrorDetail.For(ex, Loc));
         }
         finally
         {

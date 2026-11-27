@@ -18,6 +18,8 @@ Two facts that the 2026-08-27 Clarifications turn into concrete work items:
 
 **Alternatives considered**:
 - *Strongly-typed `.resx` designer classes only* (`ResXFileCodeGenerator` → `Strings.Designer.cs`, `Strings.Title`). Rejected as the primary mechanism: the generated accessor throws or returns `""`/key on a missing culture entry rather than transparently falling back, and gives no hook to *record* the miss (FR-009). Kept as an optional convenience layer only if the team wants compile-time key checking, generated over the same `.resx`.
+
+> **Superseded for validation attributes (2026-11-27).** DataAnnotations messages were first left as English literals (the "§7 carve-out" in `docs/localization/adding-a-language.md`). They now point at `StageFright.UI/Shared/FormValidationMessages`, whose static properties read the area `.resx` through `ResourceManager`, so they follow the UI culture. The missing-key gap this decision feared is closed by `FormValidationMessagesTests`, which fails if any property's key is missing. `IStringLocalizer` remains the mechanism everywhere else.
 - *JSON resource files + custom loader*. Rejected: reinvents `IStringLocalizer`, adds a bespoke framework (against §3.1 "simple over clever"), and needs custom parsing/caching/fallback code that must itself be fully tested.
 - *Database-stored strings*. Rejected: makes translation a data-migration problem, complicates backups, and offers no offline translator workflow.
 

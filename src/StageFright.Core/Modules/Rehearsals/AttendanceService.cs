@@ -218,7 +218,7 @@ public class AttendanceService : IAttendanceService
                 await _audit.LogAsync(
                     nameof(Fee), savedFee.Id, AuditAction.Create,
                     oldValue: null,
-                    newValue: $"Attendance fee {settings.AttendanceFee:C} accrued for member {item.MemberId} (rehearsal {rehearsalId})",
+                    newValue: $"Attendance fee {MoneyFormatter.Format(settings.AttendanceFee)} accrued for member {item.MemberId} (rehearsal {rehearsalId})",
                     ct: innerCt);
 
                 if (paidAtCreation)
@@ -273,7 +273,7 @@ public class AttendanceService : IAttendanceService
                     await _audit.LogAsync(
                         nameof(Payment), savedPayment.Id, AuditAction.Create,
                         oldValue: null,
-                        newValue: $"Attendance fee payment {settings.AttendanceFee:C} from member {item.MemberId} on {rehearsal.Date:yyyy-MM-dd}",
+                        newValue: $"Attendance fee payment {MoneyFormatter.Format(settings.AttendanceFee)} from member {item.MemberId} on {rehearsal.Date:yyyy-MM-dd}",
                         ct: innerCt);
                 }
             }

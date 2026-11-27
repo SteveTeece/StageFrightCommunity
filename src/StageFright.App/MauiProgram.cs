@@ -10,6 +10,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Events;
+using StageFright.Core;
 using StageFright.App.Seeding;
 using StageFright.Core.Contracts;
 using StageFright.Core.Localization;
@@ -356,7 +357,7 @@ public static class MauiProgram
         try
         {
             var languageProvider = scope.ServiceProvider.GetRequiredService<ILanguageProvider>();
-            var culture = languageProvider.ResolveStartupCultureAsync().GetAwaiter().GetResult();
+            var culture = BlockingRunner.Run(() => languageProvider.ResolveStartupCultureAsync());
             CultureInfo.DefaultThreadCurrentCulture = culture;
             CultureInfo.DefaultThreadCurrentUICulture = culture;
             Log.Information("Display culture resolved to {Culture}", culture.Name);
@@ -372,7 +373,7 @@ public static class MauiProgram
         try
         {
             var settingsService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
-            var settings = settingsService.GetAsync().GetAwaiter().GetResult();
+            var settings = BlockingRunner.Run(() => settingsService.GetAsync());
             MoneyFormatter.Configure(CurrencyCatalog.Get(settings?.CurrencyCode ?? "AUD"));
             Log.Information("Money formatting configured for {Currency}", settings?.CurrencyCode ?? "AUD");
         }
@@ -383,7 +384,7 @@ public static class MauiProgram
 
         // Run plugin migrations
         var migrationRunner = scope.ServiceProvider.GetRequiredService<PluginMigrationRunner>();
-        migrationRunner.RunAsync().GetAwaiter().GetResult();
+        BlockingRunner.Run(() => migrationRunner.RunAsync());
 
         // Audit trail startup purge (FR-022): startup always continues, but a failure is now both
         // logged AND surfaced into the startup-diagnostic state as a non-fatal warning so it is
@@ -395,10 +396,10 @@ public static class MauiProgram
         {
             var auditService = scope.ServiceProvider.GetRequiredService<IAuditTrailService>();
             var settingsService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
-            var settings = settingsService.GetAsync().GetAwaiter().GetResult();
+            var settings = BlockingRunner.Run(() => settingsService.GetAsync());
             var retentionYears = settings?.AuditRetentionYears ?? 5;
 
-            auditService.PurgeOlderThanAsync(DateTime.UtcNow.AddYears(-retentionYears)).GetAwaiter().GetResult();
+            BlockingRunner.Run(() => auditService.PurgeOlderThanAsync(DateTime.UtcNow.AddYears(-retentionYears)));
             Log.Information("Audit trail startup purge complete (retention: {RetentionYears} year(s))", retentionYears);
         }
         catch (Exception ex)

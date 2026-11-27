@@ -17,6 +17,8 @@ namespace StageFright.Data.Tests;
 /// </summary>
 public class BackupImportTests_Integration : IDisposable
 {
+    private readonly TempRecoveryCopyStore _recovery = new();
+
     private readonly DbContextFactory _factory = new();
 
     // --- Pre-import checkpoint ---
@@ -51,7 +53,7 @@ public class BackupImportTests_Integration : IDisposable
             await svc.ImportAsync(exportPath, TestContext.Current.CancellationToken);
 
             // At least one checkpoint file should exist in the same directory
-            var checkpoints = Directory.GetFiles(dir, "StageFright-Recovery-*.sfbak");
+            var checkpoints = Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak");
             Assert.NotEmpty(checkpoints);
         }
         finally
@@ -405,28 +407,32 @@ public class BackupImportTests_Integration : IDisposable
 
     // --- Helpers ---
 
-    private static BackupService BuildBackupService(StageFrightDbContext db)
+    private BackupService BuildBackupService(StageFrightDbContext db)
     {
         var backupRepo = new BackupRepository(db);
         var uow = new UnitOfWork(db);
         var auditRepo = new AuditTrailRepository(db);
         var auditService = new AuditTrailService(auditRepo, NullLogger<AuditTrailService>.Instance);
         return new BackupService(backupRepo, uow, auditService, NullLogger<BackupService>.Instance, RealLocalizer.Instance,
-            new TempRecoveryCopyStore(), new TempBackupDestinationPicker());
+            _recovery, new TempBackupDestinationPicker(_recovery.GetRecoveryDirectory()));
     }
 
     /// <summary>Writes the pre-restore recovery copy into the system temp directory for the test.</summary>
     private sealed class TempRecoveryCopyStore : IRecoveryCopyStore
     {
-        public string GetRecoveryDirectory() => Path.GetTempPath();
+        // Its own folder, so parallel test runs never see or delete each other's recovery copies.
+        private readonly string _directory = Directory.CreateDirectory(
+            Path.Combine(Path.GetTempPath(), "StageFright-Tests", Guid.NewGuid().ToString("N"))).FullName;
+
+        public string GetRecoveryDirectory() => _directory;
     }
 
     /// <summary>Stands in for the native Save dialog — writes the backup straight to the temp directory.</summary>
-    private sealed class TempBackupDestinationPicker : IBackupDestinationPicker
+    private sealed class TempBackupDestinationPicker(string directory) : IBackupDestinationPicker
     {
         public async Task<BackupDestinationResult> SaveAsync(string suggestedFileName, Stream content, CancellationToken ct = default)
         {
-            var path = Path.Combine(Path.GetTempPath(), $"sf_dest_{Guid.NewGuid()}.sfbak");
+            var path = Path.Combine(directory, $"sf_dest_{Guid.NewGuid()}.sfbak");
             await using var dest = File.Create(path);
             await content.CopyToAsync(dest, ct);
             return BackupDestinationResult.Saved(path);
@@ -436,12 +442,10 @@ public class BackupImportTests_Integration : IDisposable
     private static string TempFile() =>
         Path.Combine(Path.GetTempPath(), $"sftest_{Guid.NewGuid()}.sfbak");
 
-    private static void CleanupTempFiles(string primaryPath)
+    private void CleanupTempFiles(string primaryPath)
     {
         if (File.Exists(primaryPath)) File.Delete(primaryPath);
-        var dir = Path.GetDirectoryName(primaryPath) ?? Path.GetTempPath();
-        foreach (var f in Directory.GetFiles(dir, "StageFright-Recovery-*.sfbak"))
-            try { File.Delete(f); } catch { /* best-effort */ }
+        try { Directory.Delete(_recovery.GetRecoveryDirectory(), recursive: true); } catch { /* best-effort */ }
     }
 
     public void Dispose() => _factory.Dispose();

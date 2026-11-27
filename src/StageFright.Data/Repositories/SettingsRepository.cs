@@ -40,6 +40,12 @@ public class SettingsRepository : ISettingsRepository
                 existing.Theme = settings.Theme;
                 existing.ShowParticipationGraphs = settings.ShowParticipationGraphs;
                 existing.FinancialYearStartMonth = settings.FinancialYearStartMonth;
+                existing.FinancialYearStartDay = settings.FinancialYearStartDay;
+                existing.CurrencyCode = settings.CurrencyCode;
+                existing.InceptionDate = settings.InceptionDate;
+                existing.TaxEntryMode = settings.TaxEntryMode;
+                existing.LanguageCode = settings.LanguageCode;
+                existing.AuditRetentionYears = settings.AuditRetentionYears;
                 existing.ClosedThroughDate = settings.ClosedThroughDate;
                 existing.IsTaxApplicable = settings.IsTaxApplicable;
                 existing.TaxRate = settings.TaxRate;

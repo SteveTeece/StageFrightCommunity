@@ -64,7 +64,8 @@ public partial class ChartOfAccountsPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Coa_LoadError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "ChartOfAccountsPage.LoadAccountsAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Coa_LoadError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -98,7 +99,8 @@ public partial class ChartOfAccountsPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Coa_CreateError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "ChartOfAccountsPage.HandleCreateAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Coa_CreateError", ErrorDetail.For(ex, Loc));
         }
     }
 
@@ -133,7 +135,8 @@ public partial class ChartOfAccountsPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Coa_RenameError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "ChartOfAccountsPage.SaveRenameAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Coa_RenameError", ErrorDetail.For(ex, Loc));
         }
     }
 
@@ -154,7 +157,8 @@ public partial class ChartOfAccountsPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Coa_ArchiveError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "ChartOfAccountsPage.ArchiveAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Coa_ArchiveError", ErrorDetail.For(ex, Loc));
         }
     }
 
@@ -171,7 +175,8 @@ public partial class ChartOfAccountsPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Coa_RestoreError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "ChartOfAccountsPage.RestoreAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Coa_RestoreError", ErrorDetail.For(ex, Loc));
         }
     }
 

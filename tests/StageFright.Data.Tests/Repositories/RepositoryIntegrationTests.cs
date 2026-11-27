@@ -212,6 +212,43 @@ public class RepositoryIntegrationTests : IDisposable
         Assert.Equal("New Name", retrieved!.OrganizationName);
     }
 
+    [Fact]
+    public async Task Should_PersistEveryEditableField_When_DetachedSettingsSaved_Integration()
+    {
+        var id = Guid.NewGuid();
+        using (var db = _factory.CreateContext())
+        {
+            await new SettingsRepository(db).SaveAsync(new Settings
+            {
+                Id = id, OrganizationName = "Choir", AnnualFee = 50m, AttendanceFee = 5m, MembershipRenewalMonth = 1,
+                SchemaVersion = "1.0.0", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+            }, TestContext.Current.CancellationToken);
+        }
+
+        // A second context sees a new, untracked object, so the update must copy each field across.
+        using (var db = _factory.CreateContext())
+        {
+            await new SettingsRepository(db).SaveAsync(new Settings
+            {
+                Id = id, OrganizationName = "Choir", AnnualFee = 50m, AttendanceFee = 5m, MembershipRenewalMonth = 1,
+                SchemaVersion = "1.0.0", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow,
+                FinancialYearStartDay = 15, CurrencyCode = "NZD", InceptionDate = new DateTime(2024, 7, 15),
+                TaxEntryMode = TaxEntryMode.Exclusive, LanguageCode = "de-DE", AuditRetentionYears = 7
+            }, TestContext.Current.CancellationToken);
+        }
+
+        using var read = _factory.CreateContext();
+        var saved = await new SettingsRepository(read).GetAsync(TestContext.Current.CancellationToken);
+
+        Assert.NotNull(saved);
+        Assert.Equal(15, saved.FinancialYearStartDay);
+        Assert.Equal("NZD", saved.CurrencyCode);
+        Assert.Equal(new DateTime(2024, 7, 15), saved.InceptionDate);
+        Assert.Equal(TaxEntryMode.Exclusive, saved.TaxEntryMode);
+        Assert.Equal("de-DE", saved.LanguageCode);
+        Assert.Equal(7, saved.AuditRetentionYears);
+    }
+
     // --- GL repository (append-only) ---
 
     [Fact]

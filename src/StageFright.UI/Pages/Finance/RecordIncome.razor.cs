@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
@@ -8,6 +9,7 @@ using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Localization.Resources;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -21,6 +23,7 @@ public partial class RecordIncome : ComponentBase
     [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<RecordIncome> Logger { get; set; } = null!;
 
     private readonly RecordIncomeModel _form = new();
     private readonly Dictionary<string, string> _errors = new();
@@ -83,7 +86,8 @@ public partial class RecordIncome : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_RecordIncome_LoadAccountsError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "RecordIncome.OnInitializedAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_RecordIncome_LoadAccountsError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -140,7 +144,8 @@ public partial class RecordIncome : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_RecordIncome_RecordError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "RecordIncome.SaveAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_RecordIncome_RecordError", ErrorDetail.For(ex, Loc));
         }
         finally
         {

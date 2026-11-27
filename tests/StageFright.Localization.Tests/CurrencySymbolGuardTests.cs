@@ -34,6 +34,7 @@ public class CurrencySymbolGuardTests
     [
         "src/StageFright.Reports/Providers",
         "src/StageFright.UI",
+        "src/StageFright.Core/Modules", // audit trail text records amounts too
     ];
 
     /// <summary>
@@ -43,7 +44,7 @@ public class CurrencySymbolGuardTests
     /// </summary>
     private static readonly Regex BakedMoneyFormat = new(
         """
-        ToString\(\s*"C\d?"\s*[,)]|"\{0:C\d?\}"|FormatString\s*=\s*"\{0:C|:C\d?\}"|ToString\(\s*"F2"\s*[,)]|:F2\}"
+        ToString\(\s*"C\d?"\s*[,)]|"\{0:C\d?\}"|FormatString\s*=\s*"\{0:C|:C\d?\}|ToString\(\s*"F2"\s*[,)]|:F2\}"
         """,
         RegexOptions.Compiled);
 

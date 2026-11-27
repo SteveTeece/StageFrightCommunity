@@ -367,4 +367,6 @@
   <data name="Shared_App_NotFoundReturnLink" xml:space="preserve"><value>Return to dashboard</value><comment>Hyperlink caption on the "page not found" screen — navigates to the dashboard.</comment></data>
   <data name="Shared_StartupWarning_AuditPurgeFailed" xml:space="preserve"><value>The startup cleanup of expired audit-trail entries did not complete. Your records are intact; the cleanup will be retried the next time the app starts.</value><comment>Non-fatal dashboard banner shown when the startup audit-trail purge failed (spec 028, FR-025).</comment></data>
   <data name="Shared_StartupWarning_DismissLabel" xml:space="preserve"><value>Dismiss</value><comment>Button that hides the non-fatal startup-warning banner for the current session.</comment></data>
+  <data name="Shared_Error_UnexpectedDetail" xml:space="preserve"><value>an unexpected error occurred. The details have been logged.</value><comment>{Detail} text of a load or save error when the failure is not a StageFright exception; the exception itself is logged and its text is never shown.</comment></data>
+  <data name="Shared_Validation_AccountNameTooLong" xml:space="preserve"><value>Account name must be 100 characters or fewer.</value><comment>Add-account form validation: account name over 100 characters.</comment></data>
 </root>

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using StageFright.Core.Enums;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Setup;
 
@@ -7,17 +8,17 @@ namespace StageFright.UI.Pages.Setup;
 // (StageFright.UI.Pages.Setup.Tabs), and Blazor component parameters must be public.
 public sealed class SetupFormModel : IValidatableObject
 {
-    [Required(ErrorMessage = "Organisation name is required.")]
-    [StringLength(255, ErrorMessage = "Organisation name must not exceed 255 characters.")]
+    [Required(ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Setup_Validation_OrgNameRequired))]
+    [StringLength(255, ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Setup_Validation_OrgNameTooLong))]
     public string? OrganizationName { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Annual fee must be zero or greater.")]
+    [Range(0, double.MaxValue, ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Setup_Validation_AnnualFeeNotNegative))]
     public decimal AnnualFee { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Attendance fee must be zero or greater.")]
+    [Range(0, double.MaxValue, ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Setup_Validation_AttendanceFeeNotNegative))]
     public decimal AttendanceFee { get; set; }
 
-    [Range(1, 12, ErrorMessage = "Renewal month must be between 1 and 12.")]
+    [Range(1, 12, ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Setup_Validation_RenewalMonthRange))]
     public int MembershipRenewalMonth { get; set; } = 1;
 
     /// <summary>
@@ -25,14 +26,14 @@ public sealed class SetupFormModel : IValidatableObject
     /// Mandatory, always-visible picker; defaults to <c>"AUD"</c>. Fixed for the life of the
     /// dataset once setup completes (FR-002).
     /// </summary>
-    [Required(ErrorMessage = "Currency is required.")]
+    [Required(ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Setup_Validation_CurrencyRequired))]
     public string CurrencyCode { get; set; } = "AUD";
 
     /// <summary>
     /// Month (1–12) the financial year starts on (spec 028, US7 / FR-019). Mandatory,
     /// always-visible picker; defaults to July (Australian FY).
     /// </summary>
-    [Range(1, 12, ErrorMessage = "Financial year start month must be between 1 and 12.")]
+    [Range(1, 12, ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Setup_Validation_FinancialYearStartMonthRange))]
     public int FinancialYearStartMonth { get; set; } = 7;
 
     /// <summary>
@@ -40,7 +41,7 @@ public sealed class SetupFormModel : IValidatableObject
     /// (spec 028, US7 / FR-020). Mandatory picker; defaults to the 1st. The 28 upper bound
     /// avoids month-length edge cases.
     /// </summary>
-    [Range(1, 28, ErrorMessage = "Financial year start day must be between 1 and 28.")]
+    [Range(1, 28, ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Setup_Validation_FinancialYearStartDayRange))]
     public int FinancialYearStartDay { get; set; } = 1;
 
     /// <summary>
@@ -65,12 +66,12 @@ public sealed class SetupFormModel : IValidatableObject
     /// </summary>
     public TaxEntryMode TaxEntryMode { get; set; } = TaxEntryMode.Inclusive;
 
-    [Range(1, 12, ErrorMessage = "AGM month must be between 1 and 12.")]
+    [Range(1, 12, ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Setup_Validation_AgmMonthRange))]
     public int CommitteeRenewalMonth { get; set; } = 1;
 
     public int? GeneralCommitteeSeatCountTarget { get; set; }
 
-    [Range(1, 7, ErrorMessage = "Audit retention period must be between 1 and 7 years.")]
+    [Range(1, 7, ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Validation_Settings_AuditRetentionRange))]
     public int AuditRetentionYears { get; set; } = 5;
 
     /// <summary>
@@ -83,7 +84,7 @@ public sealed class SetupFormModel : IValidatableObject
         if (IsTaxApplicable && TaxRate is not (> 0))
         {
             yield return new ValidationResult(
-                "Tax rate must be greater than zero.",
+                FormValidationMessages.Setup_Validation_TaxRatePositive,
                 [nameof(TaxRate)]);
         }
     }

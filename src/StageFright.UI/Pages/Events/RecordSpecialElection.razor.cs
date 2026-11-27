@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
@@ -7,6 +8,7 @@ using StageFright.Core.Exceptions;
 using StageFright.Core.Localization;
 using StageFright.Core.Modules.Agm;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Events;
 
@@ -24,6 +26,7 @@ public partial class RecordSpecialElection : ComponentBase
     [Inject] private IStringLocalizer<EventsResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<RecordSpecialElection> Logger { get; set; } = null!;
 
     private List<CommitteePositionRecord> _currentPositions = [];
     private List<Member> _activeMembers = [];
@@ -90,7 +93,8 @@ public partial class RecordSpecialElection : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<EventsResource>("Events_SpecialElection_SaveError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "RecordSpecialElection.SaveAsync");
+            _errorMessage = Loc.Get<EventsResource>("Events_SpecialElection_SaveError", ErrorDetail.For(ex, Loc));
         }
         finally
         {

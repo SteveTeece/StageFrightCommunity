@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Localization;
 using StageFright.Core.Modules.Agm;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Events;
 
@@ -15,6 +17,7 @@ public partial class ScheduleAgm : ComponentBase
     [Inject] private IStringLocalizer<EventsResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<ScheduleAgm> Logger { get; set; } = null!;
 
     private DateTime _date = DateTime.Today;
     private string? _notes;
@@ -36,7 +39,8 @@ public partial class ScheduleAgm : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<EventsResource>("Events_Agm_ScheduleError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "ScheduleAgm.SaveAsync");
+            _errorMessage = Loc.Get<EventsResource>("Events_Agm_ScheduleError", ErrorDetail.For(ex, Loc));
         }
         finally
         {

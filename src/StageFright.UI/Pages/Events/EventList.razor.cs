@@ -6,6 +6,7 @@ using StageFright.Core.Localization;
 using StageFright.Core.Modules.Events;
 using StageFright.Reports.Rendering;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Events;
 
@@ -57,7 +58,8 @@ public partial class EventList
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<EventsResource>("Events_List_LoadError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "EventList.OnInitializedAsync");
+            _errorMessage = Loc.Get<EventsResource>("Events_List_LoadError", ErrorDetail.For(ex, Loc));
         }
         finally
         {

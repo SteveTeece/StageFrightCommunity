@@ -118,4 +118,5 @@
   <data name="Settings_Restore_ReadFileError" xml:space="preserve"><value>⟦Fáíléd tó réád báçkúp fílé: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
   <data name="Settings_Restore_FailedNoChanges" xml:space="preserve"><value>⟦Réstóré fáíléd; ñó çháñgés wéré mádé. {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
   <data name="Settings_Restore_Error" xml:space="preserve"><value>⟦Réstóré fáíléd: {Detail}—⟧</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Validation_EventTypeNameTooLong" xml:space="preserve"><value>⟦Évéñt týpé ñámé múst bé 100 çháráçtérs ór féwér.—⟧</value><comment>Event types tab validation: name over 100 characters.</comment></data>
 </root>

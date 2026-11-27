@@ -178,7 +178,7 @@ public class OpeningBalanceService : IOpeningBalanceService
             await _audit.LogAsync(
                 nameof(JournalEntry), journalEntry.Id, AuditAction.Create,
                 oldValue: null,
-                newValue: $"Opening balances ({entries.Count} accounts, plug {plug:C} to Opening Balance Equity) as at {request.AsAtDate:yyyy-MM-dd}",
+                newValue: $"Opening balances ({entries.Count} accounts, plug {MoneyFormatter.Format(plug)} to Opening Balance Equity) as at {request.AsAtDate:yyyy-MM-dd}",
                 ct: innerCt);
 
         }, ct);

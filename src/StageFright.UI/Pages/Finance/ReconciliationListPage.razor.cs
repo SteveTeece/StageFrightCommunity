@@ -1,12 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 using CoreValidationException = StageFright.Core.Exceptions.ValidationException;
 
 namespace StageFright.UI.Pages.Finance;
@@ -19,6 +21,7 @@ public partial class ReconciliationListPage : ComponentBase
     [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<ReconciliationListPage> Logger { get; set; } = null!;
 
     private bool _loading = true;
     private bool _starting;
@@ -44,7 +47,8 @@ public partial class ReconciliationListPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_LoadAccountsError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "ReconciliationListPage.OnInitializedAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_LoadAccountsError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -75,7 +79,8 @@ public partial class ReconciliationListPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_LoadError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "ReconciliationListPage.LoadAccountAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_LoadError", ErrorDetail.For(ex, Loc));
         }
     }
 
@@ -104,7 +109,8 @@ public partial class ReconciliationListPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_StartError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "ReconciliationListPage.StartDraftAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_StartError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -131,7 +137,7 @@ public partial class ReconciliationListPage : ComponentBase
         [Required]
         public decimal StatementClosingBalance { get; set; }
 
-        [MaxLength(500, ErrorMessage = "Notes must be 500 characters or fewer.")]
+        [MaxLength(500, ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Finance_Validation_ReconciliationNotesTooLong))]
         public string? Notes { get; set; }
     }
 }

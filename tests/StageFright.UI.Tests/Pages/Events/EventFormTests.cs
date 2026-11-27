@@ -58,13 +58,20 @@ public class EventFormTests : LocalizedTestContext
     }
 
     [Fact]
-    public void DoesNotRender_FeeOrPaidFields()
+    public void Should_ShowNoFeeOrPaidFields_When_Rendered()
     {
         var cut = Render<EventForm>();
 
-        Assert.DoesNotContain("fee", cut.Markup, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("paid", cut.Markup, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("unpaid", cut.Markup, StringComparison.OrdinalIgnoreCase);
+        // Only text a user sees or hears: random hex ids in the markup can contain "fee".
+        var visible = string.Join(" ", cut.Nodes.Select(n => n.TextContent)
+            .Concat(cut.FindAll("[aria-label],[title],[placeholder]")
+                .SelectMany(e => new[] { e.GetAttribute("aria-label"), e.GetAttribute("title"), e.GetAttribute("placeholder") }))
+            .Where(s => !string.IsNullOrEmpty(s)));
+
+        Assert.Contains("Schedule", visible); // the scan reads the real form
+        Assert.DoesNotContain("fee", visible, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("paid", visible, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("unpaid", visible, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

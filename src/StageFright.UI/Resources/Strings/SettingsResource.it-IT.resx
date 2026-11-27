@@ -118,4 +118,5 @@
   <data name="Settings_Restore_ReadFileError" xml:space="preserve"><value>Impossibile leggere il file di backup: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Settings_Restore_FailedNoChanges" xml:space="preserve"><value>Ripristino non riuscito; nessuna modifica effettuata. {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Settings_Restore_Error" xml:space="preserve"><value>Ripristino non riuscito: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Validation_EventTypeNameTooLong" xml:space="preserve"><value>Il nome del tipo di evento non può superare i 100 caratteri.</value><comment>Event types tab validation: name over 100 characters.</comment></data>
 </root>

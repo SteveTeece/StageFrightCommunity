@@ -10,41 +10,30 @@
 
     <p class="small">@InstructionText()</p>
 
-    <div class="table-responsive">
-        <table class="table table-sm align-middle opening-balances-table">
-            <thead>
-                <tr>
-                    <th style="width: 6rem;">@Shared["Shared_OpeningBalances_NumberColumn"]</th>
-                    <th>@Shared["Shared_OpeningBalances_AccountColumn"]</th>
-                    <th style="width: 8rem;">@Shared["Shared_OpeningBalances_TypeColumn"]</th>
-                    <th class="text-end" style="width: 10rem;">@Shared["Shared_OpeningBalances_BalanceColumn"]</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var row in _rows)
-                {
-                    <tr>
-                        <td>@row.Account.AccountNumber</td>
-                        <td>@row.Account.Name</td>
-                        <td>@row.Account.Type.LocalizeEnum()</td>
-                        <td>
-                            <input type="number" step="0.01"
-                                   class="form-control form-control-sm text-end opening-balance-amount"
-                                   value="@(row.Amount == 0m ? null : row.Amount)"
-                                   @onchange="e => SetAmountAsync(row, e)"
-                                   aria-label="@BalanceAriaLabel(row.Account.Name)" />
-                        </td>
-                    </tr>
-                }
-            </tbody>
-            <tfoot>
-                <tr class="fw-semibold">
-                    <td colspan="3">@Shared["Shared_OpeningBalances_PlugRow"]</td>
-                    <td class="text-end opening-balances-plug">@Plug.ToString("N2")</td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
+    <RadzenDataGrid Data="@_rows" TItem="OpeningBalanceRowModel"
+                    AllowSorting="true" AllowPaging="true" PageSize="15"
+                    class="rz-shadow-0 opening-balances-table">
+        <Columns>
+            <RadzenDataGridColumn TItem="OpeningBalanceRowModel" Property="Account.AccountNumber" Title="@Shared["Shared_OpeningBalances_NumberColumn"]" Width="6rem" />
+            <RadzenDataGridColumn TItem="OpeningBalanceRowModel" Property="Account.Name" Title="@Shared["Shared_OpeningBalances_AccountColumn"]">
+                <FooterTemplate><strong>@Shared["Shared_OpeningBalances_PlugRow"]</strong></FooterTemplate>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="OpeningBalanceRowModel" Property="Account.Type" Title="@Shared["Shared_OpeningBalances_TypeColumn"]" Width="8rem">
+                <Template Context="row">@row.Account.Type.LocalizeEnum()</Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="OpeningBalanceRowModel" Property="Amount" Title="@Shared["Shared_OpeningBalances_BalanceColumn"]"
+                                  Width="10rem" TextAlign="TextAlign.Right" Sortable="false">
+                <Template Context="row">
+                    <input type="number" step="0.01"
+                           class="form-control form-control-sm text-end opening-balance-amount"
+                           value="@(row.Amount == 0m ? null : row.Amount)"
+                           @onchange="e => SetAmountAsync(row, e)"
+                           aria-label="@BalanceAriaLabel(row.Account.Name)" />
+                </Template>
+                <FooterTemplate><strong class="opening-balances-plug">@MoneyFormatter.Format(Plug)</strong></FooterTemplate>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
 
     @if (!SubmitOnChange)
     {

@@ -118,4 +118,5 @@
   <data name="Settings_Restore_ReadFileError" xml:space="preserve"><value>Nie udało się odczytać pliku kopii zapasowej: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Settings_Restore_FailedNoChanges" xml:space="preserve"><value>Przywracanie nie powiodło się; nie wprowadzono żadnych zmian. {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Settings_Restore_Error" xml:space="preserve"><value>Przywracanie nie powiodło się: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Validation_EventTypeNameTooLong" xml:space="preserve"><value>Nazwa typu wydarzenia nie może przekraczać 100 znaków.</value><comment>Event types tab validation: name over 100 characters.</comment></data>
 </root>

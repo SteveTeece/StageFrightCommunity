@@ -37,4 +37,9 @@
     <ProjectReference Include="..\StageFright.TestPlugin\StageFright.TestPlugin.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Runs every test in en-AU (the neutral resources), so assertions on English text pass on a machine in any language. -->
+    <Content Include="../xunit.runner.json" Link="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

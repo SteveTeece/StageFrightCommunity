@@ -134,7 +134,7 @@ public class GeneralJournalService : IGeneralJournalService
             await _audit.LogAsync(
                 nameof(JournalEntry), entry.Id, AuditAction.Create,
                 oldValue: null,
-                newValue: $"General journal {request.Lines.Sum(l => l.DebitAmount):C} ({request.Lines.Count} lines) on {request.Date:yyyy-MM-dd}: {description}",
+                newValue: $"General journal {MoneyFormatter.Format(request.Lines.Sum(l => l.DebitAmount))} ({request.Lines.Count} lines) on {request.Date:yyyy-MM-dd}: {description}",
                 ct: innerCt);
 
         }, ct);

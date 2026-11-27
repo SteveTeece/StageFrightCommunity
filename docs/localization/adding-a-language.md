@@ -158,7 +158,6 @@ identity and are never touched.
 | The currency symbol / code. | Money is always Australian dollars: `"$"` / `"AUD"` is **fixed** in every language. Only the decimal separator, digit grouping and symbol placement follow the region — handled by `MoneyFormatter`, not a resource string (**FR-015 / FR-016**). Never introduce a `.resx` entry for a currency symbol. |
 | Enum storage tokens, report-filter option **values**, routes (`/members`), CSS classes, format tokens (`"N2"`, `"dd/MM/yyyy"`), `data-*` attributes, resource keys themselves. | Culture-invariant identities, not display text. |
 | Decorative / empty accessibility attributes — `alt=""`, content inside `aria-hidden`. | They carry no translatable text (**FR-001**). |
-| DataAnnotations `[Required(ErrorMessage = "…")]` / `ValidationResult` strings. | See §7 — a small, documented, permanent carve-out. |
 
 ---
 
@@ -177,16 +176,19 @@ neutral files change, re-run the script.
 
 ---
 
-## 7. Known carve-out — validation attribute messages
+## 7. Validation attribute messages
 
-Twelve validation messages are declared as .NET **DataAnnotations attribute arguments**
-(`[Required(ErrorMessage = "Organisation name is required.")]` and similar, in a handful of
-Setup/Settings/Reconciliation form models). An attribute argument must be a compile-time
-constant, so it cannot call the runtime resource lookup that every other string uses, and the
-strongly-typed-`.resx`-designer alternative was rejected during design (it bypasses the
-missing-key logging — research Decision 1). These messages therefore stay Australian English in
-every language. This is a deliberate, final decision, not an oversight; the residual-literal
-guard (`Us2LocalizationGuardTests`) explicitly exempts them and nothing else.
+A form model's DataAnnotations messages are ordinary resource keys like every other string. An
+attribute argument must be a compile-time constant, so the attribute names a property instead:
+`[Required(ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Setup_Validation_OrgNameRequired))]`.
+`FormValidationMessages` (`StageFright.UI/Shared/`) has one static property per message, named
+after its key, which reads the area's `.resx` in the current UI culture when the form validates.
+To add a message, add the key to the area's neutral file and every shipped culture, then add the
+matching property. Translate these keys like any others; there is no exception for them.
+
+These lookups go through `ResourceManager`, not `IStringLocalizer`, so a missing neutral key is not
+logged at run time. `FormValidationMessagesTests` covers that instead: it fails if any property's
+key is missing.
 
 ---
 
@@ -202,7 +204,9 @@ guard (`Us2LocalizationGuardTests`) explicitly exempts them and nothing else.
   `.ToString()` — **enum coverage / no raw enum display**;
 * a user-facing literal remains anywhere on the app surface (all of `StageFright.UI` plus every
   user-facing exception message in `StageFright.Core`) — **residual-literal scan**, repo-wide
-  since T060, with the §7 carve-out the only exception;
+  since T060, including DataAnnotations `ErrorMessage` / `ValidationResult` literals (§7);
+* a catch-all UI error handler shows the exception's own text instead of `ErrorDetail.For`, or
+  shows an error without logging what it caught — **no raw exception text** (`UiErrorTextGuardTests`);
 * a money amount is formatted with `"C"` / `{0:C}` / `FormatString="{0:C}"` — **no culture
   currency symbol**; use `MoneyFormatter`;
 * a deliberately-omitted `qps-ploc` key does not fall back to `en-AU` with a logged `Warning` —

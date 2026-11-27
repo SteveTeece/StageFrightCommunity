@@ -58,6 +58,12 @@ public class PaymentService : IPaymentService
                 _localizer.Get<ValidationResource>("Validation_Payment_AmountPositive"),
                 nameof(Payment), nameof(RecordAsync));
 
+        // Refused rather than cut short, as income entries do, so a cheque is never banked under a clipped reference.
+        if (ReceiptRouting.CreatesReceivedItem(request.PaymentMethod) && NormaliseReference(request.Reference) is { Length: > ReferenceMaxLength })
+            throw new ValidationException(
+                _localizer.Get<ValidationResource>("Validation_Receipt_ReferenceTooLong"),
+                nameof(ReceivedItem), nameof(RecordAsync));
+
         var moneyAccountNumber = await ResolveMoneyAccountNumberAsync(request, ct);
         var moneyAccountId = ReceiptRouting.Destination(request.PaymentMethod, request.BankAccountId);
 
@@ -231,7 +237,7 @@ public class PaymentService : IPaymentService
             await _audit.LogAsync(
                 nameof(Payment), savedPayment.Id, AuditAction.Create,
                 oldValue: null,
-                newValue: $"Payment {request.Amount:C} by {request.PaymentMethod} from member {request.MemberId} on {request.Date:yyyy-MM-dd}",
+                newValue: $"Payment {MoneyFormatter.Format(request.Amount)} by {request.PaymentMethod} from member {request.MemberId} on {request.Date:yyyy-MM-dd}",
                 ct: innerCt);
 
         }, ct);
@@ -277,7 +283,6 @@ public class PaymentService : IPaymentService
         if (string.IsNullOrWhiteSpace(reference))
             return null;
 
-        var trimmed = reference.Trim();
-        return trimmed.Length > ReferenceMaxLength ? trimmed[..ReferenceMaxLength] : trimmed;
+        return reference.Trim();
     }
 }

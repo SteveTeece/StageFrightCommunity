@@ -84,4 +84,6 @@
   <data name="Shared_App_NotFoundReturnLink" xml:space="preserve"><value>Torna alla dashboard</value><comment>Hyperlink caption on the "page not found" screen — navigates to the dashboard.</comment></data>
   <data name="Shared_StartupWarning_AuditPurgeFailed" xml:space="preserve"><value>La pulizia all'avvio delle voci scadute del registro di controllo non è stata completata. I tuoi record sono intatti; la pulizia verrà ritentata al successivo avvio dell'applicazione.</value><comment>Non-fatal dashboard banner shown when the startup audit-trail purge failed (spec 028, FR-025).</comment></data>
   <data name="Shared_StartupWarning_DismissLabel" xml:space="preserve"><value>Ignora</value><comment>Button that hides the non-fatal startup-warning banner for the current session.</comment></data>
+  <data name="Shared_Error_UnexpectedDetail" xml:space="preserve"><value>si è verificato un errore imprevisto. I dettagli sono stati registrati.</value><comment>{Detail} text of a load or save error when the failure is not a StageFright exception; the exception itself is logged and its text is never shown.</comment></data>
+  <data name="Shared_Validation_AccountNameTooLong" xml:space="preserve"><value>Il nome del conto non può superare i 100 caratteri.</value><comment>Add-account form validation: account name over 100 characters.</comment></data>
 </root>

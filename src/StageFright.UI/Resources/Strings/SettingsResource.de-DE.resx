@@ -118,4 +118,5 @@
   <data name="Settings_Restore_ReadFileError" xml:space="preserve"><value>Sicherungsdatei konnte nicht gelesen werden: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Settings_Restore_FailedNoChanges" xml:space="preserve"><value>Wiederherstellung fehlgeschlagen; es wurden keine Änderungen vorgenommen. {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Settings_Restore_Error" xml:space="preserve"><value>Wiederherstellung fehlgeschlagen: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Validation_EventTypeNameTooLong" xml:space="preserve"><value>Der Name der Veranstaltungsart darf höchstens 100 Zeichen lang sein.</value><comment>Event types tab validation: name over 100 characters.</comment></data>
 </root>

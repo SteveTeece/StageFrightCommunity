@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
@@ -7,6 +8,7 @@ using StageFright.Core.Localization;
 using StageFright.Core.Modules.Events;
 using StageFright.Core.Exceptions;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Events;
 
@@ -20,6 +22,7 @@ public partial class ParticipationGrid
     [Inject] private IStringLocalizer<EventsResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<ParticipationGrid> Logger { get; set; } = null!;
 
     private bool _loading = true;
     private bool _saving;
@@ -80,7 +83,8 @@ public partial class ParticipationGrid
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<EventsResource>("Events_Participation_LoadError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "ParticipationGrid.OnInitializedAsync");
+            _errorMessage = Loc.Get<EventsResource>("Events_Participation_LoadError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -123,7 +127,8 @@ public partial class ParticipationGrid
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<EventsResource>("Events_Participation_SaveError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "ParticipationGrid.SaveParticipation");
+            _errorMessage = Loc.Get<EventsResource>("Events_Participation_SaveError", ErrorDetail.For(ex, Loc));
         }
         finally
         {

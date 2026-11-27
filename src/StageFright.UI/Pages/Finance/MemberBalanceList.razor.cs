@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -14,6 +16,7 @@ public partial class MemberBalanceList : ComponentBase
     [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<MemberBalanceList> Logger { get; set; } = null!;
 
     private List<MemberBalance> _balances = new();
     private HashSet<Guid> _expanded = new();
@@ -29,7 +32,8 @@ public partial class MemberBalanceList : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Balances_LoadError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "MemberBalanceList.OnInitializedAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Balances_LoadError", ErrorDetail.For(ex, Loc));
         }
         finally
         {

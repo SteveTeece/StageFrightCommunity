@@ -17,6 +17,8 @@ namespace StageFright.Core.Tests.Backup;
 /// </summary>
 public class BackupServiceTests : TestBase
 {
+    private readonly TempRecoveryCopyStore _recovery = new();
+
     private readonly IBackupRepository _backupRepo = Substitute.For<IBackupRepository>();
     private readonly IUnitOfWork _uow = Substitute.For<IUnitOfWork>();
     private readonly IAuditTrailService _audit = Substitute.For<IAuditTrailService>();
@@ -24,12 +26,16 @@ public class BackupServiceTests : TestBase
 
     private BackupService CreateService() =>
         new(_backupRepo, _uow, _audit, NullLogger<BackupService>.Instance, RealLocalizer.Instance,
-            new TempRecoveryCopyStore(), _picker);
+            _recovery, _picker);
 
     /// <summary>Writes the pre-restore recovery copy into the system temp directory for the test.</summary>
     private sealed class TempRecoveryCopyStore : IRecoveryCopyStore
     {
-        public string GetRecoveryDirectory() => Path.GetTempPath();
+        // Its own folder, so parallel test runs never see or delete each other's recovery copies.
+        private readonly string _directory = Directory.CreateDirectory(
+            Path.Combine(Path.GetTempPath(), "StageFright-Tests", Guid.NewGuid().ToString("N"))).FullName;
+
+        public string GetRecoveryDirectory() => _directory;
     }
 
     /// <summary>
@@ -308,7 +314,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+            foreach (var f in Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -343,7 +349,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+            foreach (var f in Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -438,7 +444,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+            foreach (var f in Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -473,7 +479,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+            foreach (var f in Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -599,7 +605,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+            foreach (var f in Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -642,7 +648,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+            foreach (var f in Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -739,7 +745,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+            foreach (var f in Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -781,7 +787,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+            foreach (var f in Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -845,7 +851,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+            foreach (var f in Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -895,7 +901,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+            foreach (var f in Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -927,7 +933,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+            foreach (var f in Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -1114,7 +1120,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+            foreach (var f in Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -1163,7 +1169,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+            foreach (var f in Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -1219,7 +1225,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+            foreach (var f in Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }
@@ -1260,7 +1266,7 @@ public class BackupServiceTests : TestBase
         finally
         {
             if (File.Exists(path)) File.Delete(path);
-            foreach (var f in Directory.GetFiles(Path.GetTempPath(), "StageFright-Recovery-*.sfbak"))
+            foreach (var f in Directory.GetFiles(_recovery.GetRecoveryDirectory(), "StageFright-Recovery-*.sfbak"))
                 File.Delete(f);
         }
     }

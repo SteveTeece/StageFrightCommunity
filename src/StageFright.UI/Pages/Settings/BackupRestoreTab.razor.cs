@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Localization;
 using StageFright.Core.Modules.Settings.Backup;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Settings;
 
@@ -23,6 +25,7 @@ public partial class BackupRestoreTab : ComponentBase
     [Inject] private IStringLocalizer<SettingsResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<BackupRestoreTab> Logger { get; set; } = null!;
 
     private bool _busy;
     private string _operation = string.Empty;
@@ -63,7 +66,8 @@ public partial class BackupRestoreTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<SettingsResource>("Settings_Backup_Error", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "BackupRestoreTab.HandleBackupAsync");
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Backup_Error", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -100,7 +104,8 @@ public partial class BackupRestoreTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<SettingsResource>("Settings_Restore_ReadFileError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "BackupRestoreTab.OnFileSelected");
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Restore_ReadFileError", ErrorDetail.For(ex, Loc));
             _manifest = null;
             CleanupTempFile();
         }
@@ -148,7 +153,8 @@ public partial class BackupRestoreTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<SettingsResource>("Settings_Restore_Error", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "BackupRestoreTab.HandleRestoreAsync");
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Restore_Error", ErrorDetail.For(ex, Loc));
         }
         finally
         {

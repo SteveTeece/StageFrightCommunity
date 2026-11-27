@@ -118,4 +118,5 @@
   <data name="Settings_Restore_ReadFileError" xml:space="preserve"><value>Échec de la lecture du fichier de sauvegarde : {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Settings_Restore_FailedNoChanges" xml:space="preserve"><value>Échec de la restauration ; aucune modification n'a été effectuée. {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Settings_Restore_Error" xml:space="preserve"><value>Échec de la restauration : {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Validation_EventTypeNameTooLong" xml:space="preserve"><value>Le nom du type d'événement ne doit pas dépasser 100 caractères.</value><comment>Event types tab validation: name over 100 characters.</comment></data>
 </root>

@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Localization;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -15,6 +17,7 @@ public partial class AnnualFeeApplication
     [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<AnnualFeeApplication> Logger { get; set; } = null!;
 
     private bool _loading = true;
     private bool _confirmed;
@@ -42,7 +45,8 @@ public partial class AnnualFeeApplication
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_AnnualFees_LoadError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "AnnualFeeApplication.OnInitializedAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_AnnualFees_LoadError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -67,7 +71,8 @@ public partial class AnnualFeeApplication
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_AnnualFees_ApplyError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "AnnualFeeApplication.ConfirmApply");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_AnnualFees_ApplyError", ErrorDetail.For(ex, Loc));
         }
         finally
         {

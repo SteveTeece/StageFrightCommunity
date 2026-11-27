@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Enums;
 using StageFright.Core.Exceptions;
 using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 using CoreValidationException = StageFright.Core.Exceptions.ValidationException;
 
 namespace StageFright.UI.Pages.Finance;
@@ -18,6 +20,7 @@ public partial class ReconciliationWorkspace : ComponentBase
     [Inject] private NavigationManager Navigation { get; set; } = null!;
     [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<ReconciliationWorkspace> Logger { get; set; } = null!;
 
     private bool _loading = true;
     private bool _busy;
@@ -52,7 +55,8 @@ public partial class ReconciliationWorkspace : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_WorkspaceLoadError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "ReconciliationWorkspace.LoadAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_WorkspaceLoadError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -76,7 +80,8 @@ public partial class ReconciliationWorkspace : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_ToggleError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "ReconciliationWorkspace.ToggleAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_ToggleError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -100,7 +105,8 @@ public partial class ReconciliationWorkspace : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_FinaliseError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "ReconciliationWorkspace.FinaliseAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_FinaliseError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -125,7 +131,8 @@ public partial class ReconciliationWorkspace : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_DeleteError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "ReconciliationWorkspace.DeleteDraftAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Reconciliation_DeleteError", ErrorDetail.For(ex, Loc));
             _busy = false;
         }
     }

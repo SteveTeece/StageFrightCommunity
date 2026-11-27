@@ -399,22 +399,6 @@
     <value>System accounts cannot be used for manual income entries.</value>
     <comment>Shown when an other-income entry targets a system account.</comment>
   </data>
-  <data name="Validation_Income_DepositAccountMustBeBank" xml:space="preserve">
-    <value>The deposit account must be a bank/cash account.</value>
-    <comment>Shown when an other-income entry's deposit account is not a bank/cash account.</comment>
-  </data>
-  <data name="Validation_BankDeposit_AmountPositive" xml:space="preserve">
-    <value>Deposit amount must be greater than zero.</value>
-    <comment>Shown when recording a bank deposit with a non-positive amount.</comment>
-  </data>
-  <data name="Validation_BankDeposit_TargetMustBeBank" xml:space="preserve">
-    <value>Deposits are only permitted into a bank account.</value>
-    <comment>Shown when a bank deposit's destination account is not a bank account.</comment>
-  </data>
-  <data name="Validation_BankDeposit_TargetNotCashOnHand" xml:space="preserve">
-    <value>The destination account must differ from Petty Cash.</value>
-    <comment>Shown when a bank deposit's destination account is Petty Cash.</comment>
-  </data>
   <data name="Validation_OpeningBalance_AtLeastOneNonZero" xml:space="preserve">
     <value>At least one non-zero opening balance is required.</value>
     <comment>Shown when recording opening balances with no non-zero entry.</comment>

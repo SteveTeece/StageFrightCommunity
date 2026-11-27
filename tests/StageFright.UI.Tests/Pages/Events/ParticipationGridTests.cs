@@ -94,13 +94,20 @@ public class ParticipationGridTests : LocalizedTestContext
     }
 
     [Fact]
-    public void DoesNotRender_FeeColumns()
+    public void Should_ShowNoFeeColumns_When_Rendered()
     {
         var cut = RenderWithId();
 
-        Assert.DoesNotContain("Fee", cut.Markup, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Unpaid", cut.Markup, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Mark as", cut.Markup, StringComparison.OrdinalIgnoreCase);
+        // Only text a user sees or hears: random hex ids in the markup can contain "fee".
+        var visible = string.Join(" ", cut.Nodes.Select(n => n.TextContent)
+            .Concat(cut.FindAll("[aria-label],[title],[placeholder]")
+                .SelectMany(e => new[] { e.GetAttribute("aria-label"), e.GetAttribute("title"), e.GetAttribute("placeholder") }))
+            .Where(s => !string.IsNullOrEmpty(s)));
+
+        Assert.Contains("Participated", visible); // the scan reads the real columns
+        Assert.DoesNotContain("Fee", visible, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Unpaid", visible, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Mark as", visible, StringComparison.OrdinalIgnoreCase);
     }
 
     // --- Select All ---

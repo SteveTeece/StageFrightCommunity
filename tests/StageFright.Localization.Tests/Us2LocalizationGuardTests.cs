@@ -194,13 +194,29 @@ public class Us2LocalizationGuardTests
 
     // --- Residual literals ------------------------------------------------------------
 
+    // Text between a tag's '>' and the next '<'. The '>' of a C# lambda arrow ('=>') inside a Razor
+    // expression is not a tag, so it never starts a text node.
+    private static readonly Regex RazorTextNode = new(@"(?<!=)>\s*([A-Za-z][A-Za-z ,.'!?()\-]{2,})\s*<", RegexOptions.Compiled);
+
+    [Theory]
+    [InlineData("<p>Hello world</p>", "Hello world")]
+    [InlineData("<button class=\"btn\">Save changes</button>", "Save changes")]
+    [InlineData("<strong>@MoneyFormatter.Format(_rows.Sum(i => i.Amount))</strong>", null)]
+    [InlineData("<td>@string.Join(\", \", _items.Select(x => x.Name))</td>", null)]
+    public void Should_FlagTextNodeButNotLambdaArrow_When_RazorLineScanned(string line, string? expected)
+    {
+        var match = RazorTextNode.Match(line);
+
+        Assert.Equal(expected, match.Success ? match.Groups[1].Value.Trim() : null);
+    }
+
     [Fact]
     public void Should_HaveNoUserFacingLiteral_When_AppSurfaceScanned()
     {
         // Same heuristics the per-module interim guards were converted against, applied to the
         // whole US1 + US2 surface: a text node with 2+ letters that is not a Razor expression;
         // an aria-label / alt / title / placeholder literal; a Capitalised multi-word C# string.
-        var razorText = new Regex(@">\s*([A-Za-z][A-Za-z ,.'!?()\-]{2,})\s*<", RegexOptions.Compiled);
+        var razorText = RazorTextNode;
         var attrLiteral = new Regex(
             @"\b(aria-label|alt|title|placeholder)\s*=\s*""([^""@]*[A-Za-z]{3,}[^""]*)""",
             RegexOptions.Compiled);
@@ -236,10 +252,6 @@ public class Us2LocalizationGuardTests
                     if (trimmed.StartsWith("//", StringComparison.Ordinal)) continue;      // line comment
                     if (line.Contains("Logger.Log", StringComparison.Ordinal)) continue;   // diagnostic log text (FR-007)
                     if (line.Contains("nameof(", StringComparison.Ordinal)) continue;      // symbol name, not display text
-                    if (line.Contains("ErrorMessage", StringComparison.Ordinal)) continue; // DataAnnotations attr arg — compile-time constant; runtime IStringLocalizer lookup impossible here (research Decision 1). Permanent documented carve-out — docs/localization/adding-a-language.md.
-                    // IValidatableObject ctor message (may sit on the line after `new ValidationResult(`) — same category.
-                    if (line.Contains("new ValidationResult(", StringComparison.Ordinal)
-                        || (i > 0 && lines[i - 1].TrimEnd().EndsWith("new ValidationResult(", StringComparison.Ordinal))) continue;
 
                     foreach (Match m in csPhrase.Matches(line))
                     {

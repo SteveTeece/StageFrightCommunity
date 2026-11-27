@@ -118,4 +118,5 @@
   <data name="Settings_Restore_ReadFileError" xml:space="preserve"><value>No se pudo leer el archivo de copia de seguridad: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Settings_Restore_FailedNoChanges" xml:space="preserve"><value>Error en la restauración; no se realizaron cambios. {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Settings_Restore_Error" xml:space="preserve"><value>Error en la restauración: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Validation_EventTypeNameTooLong" xml:space="preserve"><value>El nombre del tipo de evento no puede superar los 100 caracteres.</value><comment>Event types tab validation: name over 100 characters.</comment></data>
 </root>

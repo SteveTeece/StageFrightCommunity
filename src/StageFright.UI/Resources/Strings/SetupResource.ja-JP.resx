@@ -121,4 +121,14 @@
   <data name="Setup_RestartRequired_PageTitle" xml:space="preserve"><value>再起動が必要です — StageFright Community</value><comment>Browser tab title — terminal post-restore restart screen (spec 030, US1 / FR-007).</comment></data>
   <data name="Setup_RestartRequired_Heading" xml:space="preserve"><value>あと少しです。再起動してください</value><comment>Restart-required screen heading (spec 030, US1 / FR-007).</comment></data>
   <data name="Setup_RestartRequired_Instruction" xml:space="preserve"><value>バックアップを復元しました。アプリケーションを閉じてから再度開くと、復元したデータを使用できます。</value><comment>Restart-required screen — the single close-and-reopen instruction; the screen has no continue control (spec 030, FR-007).</comment></data>
+  <data name="Setup_Validation_OrgNameRequired" xml:space="preserve"><value>組織名は必須です。</value><comment>Setup wizard validation: organisation name missing.</comment></data>
+  <data name="Setup_Validation_OrgNameTooLong" xml:space="preserve"><value>組織名は255文字以内で入力してください。</value><comment>Setup wizard validation: organisation name over 255 characters.</comment></data>
+  <data name="Setup_Validation_AnnualFeeNotNegative" xml:space="preserve"><value>年会費は0以上にしてください。</value><comment>Setup wizard validation: negative annual fee.</comment></data>
+  <data name="Setup_Validation_AttendanceFeeNotNegative" xml:space="preserve"><value>出席料は0以上にしてください。</value><comment>Setup wizard validation: negative attendance fee.</comment></data>
+  <data name="Setup_Validation_RenewalMonthRange" xml:space="preserve"><value>更新月は1から12の間で指定してください。</value><comment>Setup wizard validation: renewal month outside 1-12.</comment></data>
+  <data name="Setup_Validation_CurrencyRequired" xml:space="preserve"><value>通貨は必須です。</value><comment>Setup wizard validation: no currency chosen.</comment></data>
+  <data name="Setup_Validation_FinancialYearStartMonthRange" xml:space="preserve"><value>会計年度の開始月は1から12の間で指定してください。</value><comment>Setup wizard validation: financial year start month outside 1-12.</comment></data>
+  <data name="Setup_Validation_FinancialYearStartDayRange" xml:space="preserve"><value>会計年度の開始日は1から28の間で指定してください。</value><comment>Setup wizard validation: financial year start day outside 1-28.</comment></data>
+  <data name="Setup_Validation_AgmMonthRange" xml:space="preserve"><value>総会の月は1から12の間で指定してください。</value><comment>Setup wizard validation: AGM month outside 1-12.</comment></data>
+  <data name="Setup_Validation_TaxRatePositive" xml:space="preserve"><value>税率は0より大きくしてください。</value><comment>Setup wizard validation: tax applies but the rate is not above zero.</comment></data>
 </root>

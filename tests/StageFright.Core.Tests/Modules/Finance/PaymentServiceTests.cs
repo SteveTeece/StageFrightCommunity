@@ -434,16 +434,40 @@ public class PaymentServiceTests : TestBase
     }
 
     [Fact]
-    public async Task Should_CutReferenceToFiftyCharacters_When_ChequeReferenceIsLonger()
+    public async Task Should_RefuseAndPostNothing_When_ChequeReferenceIsOverFiftyCharacters()
     {
         var request = MakeRequest(30m, PaymentMethod.Check);
-        request.Reference = new string('9', 60);
+        request.Reference = new string('9', 51);
+
+        var ex = await Assert.ThrowsAsync<Core.Exceptions.ValidationException>(() => _sut.RecordAsync(request, Ct));
+
+        Assert.Equal("The cheque reference must be 50 characters or fewer.", ex.Message);
+        await _paymentRepo.DidNotReceive().AddAsync(Arg.Any<Payment>(), Arg.Any<CancellationToken>());
+        await _receivedItemRepo.DidNotReceive().AddAsync(Arg.Any<ReceivedItem>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_KeepWholeReference_When_ChequeReferenceIsExactlyFiftyCharacters()
+    {
+        var request = MakeRequest(30m, PaymentMethod.Check);
+        request.Reference = "  " + new string('9', 50) + "  ";
 
         await _sut.RecordAsync(request, Ct);
 
         await _receivedItemRepo.Received(1).AddAsync(
             Arg.Is<ReceivedItem>(i => i!.Reference == new string('9', 50)),
             Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_IgnoreLongReference_When_MethodIsCash()
+    {
+        var request = MakeRequest(30m, PaymentMethod.Cash);
+        request.Reference = new string('9', 60);
+
+        await _sut.RecordAsync(request, Ct);
+
+        await _receivedItemRepo.DidNotReceive().AddAsync(Arg.Any<ReceivedItem>(), Arg.Any<CancellationToken>());
     }
 
     [Theory]

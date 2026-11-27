@@ -71,7 +71,7 @@ public class BankReconciliationService : IBankReconciliationService
 
         await _audit.LogAsync(nameof(BankReconciliation), draft.Id, AuditAction.Create,
             oldValue: null,
-            newValue: $"Draft reconciliation for '{account.Name}' to {request.StatementDate:yyyy-MM-dd}, closing balance {request.StatementClosingBalance:C}",
+            newValue: $"Draft reconciliation for '{account.Name}' to {request.StatementDate:yyyy-MM-dd}, closing balance {MoneyFormatter.Format(request.StatementClosingBalance)}",
             ct: ct);
 
         return draft;

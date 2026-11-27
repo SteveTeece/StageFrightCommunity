@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using Radzen.Blazor;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Exceptions;
@@ -7,6 +9,7 @@ using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Localization.Resources;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -16,8 +19,10 @@ public partial class JournalEntryPage : ComponentBase
     [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<JournalEntryPage> Logger { get; set; } = null!;
 
     private readonly List<JournalLineModel> _lines = new();
+    private RadzenDataGrid<JournalLineModel> _linesGrid = null!;
     private IReadOnlyList<Account> _accounts = [];
     private DateTime _date = DateTime.Today;
     private string? _description;
@@ -51,7 +56,8 @@ public partial class JournalEntryPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Journal_LoadError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "JournalEntryPage.OnInitializedAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Journal_LoadError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -59,9 +65,18 @@ public partial class JournalEntryPage : ComponentBase
         }
     }
 
-    private void AddLine() => _lines.Add(new JournalLineModel());
+    // The grid caches its rows, so it is reloaded after the list changes.
+    private async Task AddLineAsync()
+    {
+        _lines.Add(new JournalLineModel());
+        await _linesGrid.Reload();
+    }
 
-    private void RemoveLine(JournalLineModel line) => _lines.Remove(line);
+    private async Task RemoveLineAsync(JournalLineModel line)
+    {
+        _lines.Remove(line);
+        await _linesGrid.Reload();
+    }
 
     private void SetDebit(JournalLineModel line, ChangeEventArgs args)
     {
@@ -115,7 +130,8 @@ public partial class JournalEntryPage : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Journal_PostError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "JournalEntryPage.SaveAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Journal_PostError", ErrorDetail.For(ex, Loc));
         }
         finally
         {

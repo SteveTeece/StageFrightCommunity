@@ -11,8 +11,8 @@ namespace StageFright.UI.Shared;
 /// </summary>
 public sealed class NewAccountModel
 {
-    [Required(ErrorMessage = "Account name is required.")]
-    [MaxLength(100, ErrorMessage = "Account name must be 100 characters or fewer.")]
+    [Required(ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Validation_Account_NameRequired))]
+    [MaxLength(100, ErrorMessageResourceType = typeof(FormValidationMessages), ErrorMessageResourceName = nameof(FormValidationMessages.Shared_Validation_AccountNameTooLong))]
     public string? Name { get; set; }
 
     [Required]

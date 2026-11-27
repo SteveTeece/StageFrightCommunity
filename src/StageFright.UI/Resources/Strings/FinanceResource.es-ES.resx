@@ -286,4 +286,5 @@
   <data name="Finance_Banking_BackToBanking" xml:space="preserve"><value>Volver a Banca</value><comment>Deposit detail: link back to the Banking page.</comment></data>
   <data name="Finance_Banking_ReverseError" xml:space="preserve"><value>No se pudo revertir el depósito: {Detail}</value><comment>Deposit detail reversal failure. {Detail} = error detail.</comment></data>
   <data name="Finance_Banking_UnexpectedErrorDetail" xml:space="preserve"><value>se produjo un error inesperado. Los detalles se han registrado.</value><comment>{Detail} text for Finance_Banking_LoadError / Finance_Banking_DepositSaveError when the failure is not a StageFright exception; the exception itself is logged.</comment></data>
+  <data name="Finance_Validation_ReconciliationNotesTooLong" xml:space="preserve"><value>Las notas no pueden superar los 500 caracteres.</value><comment>Start-reconciliation form validation: notes over 500 characters.</comment></data>
 </root>

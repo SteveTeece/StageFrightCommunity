@@ -118,4 +118,5 @@
   <data name="Settings_Restore_ReadFileError" xml:space="preserve"><value>バックアップファイルの読み込みに失敗しました: {Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Settings_Restore_FailedNoChanges" xml:space="preserve"><value>復元に失敗しました。変更は行われていません。{Detail}</value><comment>{Detail} = error detail.</comment></data>
   <data name="Settings_Restore_Error" xml:space="preserve"><value>復元に失敗しました: {Detail}</value><comment>{Detail} = error detail.</comment></data>
+  <data name="Settings_Validation_EventTypeNameTooLong" xml:space="preserve"><value>イベントの種類の名前は100文字以内で入力してください。</value><comment>Event types tab validation: name over 100 characters.</comment></data>
 </root>

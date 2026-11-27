@@ -9,6 +9,7 @@ using StageFright.Core.Localization;
 using StageFright.Core.Modules.Localization;
 using StageFright.UI.Layout;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 using AppSettings = StageFright.Core.Entities.Settings;
 
 namespace StageFright.UI.Pages.Settings;
@@ -72,7 +73,7 @@ public partial class GeneralSettingsTab : ComponentBase
         catch (Exception ex)
         {
             Logger.LogError(ex, "GeneralSettingsTab: SettingsService.GetAsync failed");
-            _errorMessage = Loc.Get<SettingsResource>("Settings_Common_LoadError", ex.Message);
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Common_LoadError", ErrorDetail.For(ex, Loc));
             return;
         }
 
@@ -135,7 +136,8 @@ public partial class GeneralSettingsTab : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<SettingsResource>("Settings_Common_SaveError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "GeneralSettingsTab.HandleSaveAsync");
+            _errorMessage = Loc.Get<SettingsResource>("Settings_Common_SaveError", ErrorDetail.For(ex, Loc));
         }
         finally
         {

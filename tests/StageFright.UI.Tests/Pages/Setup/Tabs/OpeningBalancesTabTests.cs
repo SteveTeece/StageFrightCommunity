@@ -5,6 +5,7 @@ using NSubstitute;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
+using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Settings;
 using StageFright.UI.Pages.Setup.Tabs;
@@ -85,7 +86,7 @@ public class OpeningBalancesTabTests : LocalizedTestContext
 
         cut.FindAll(".opening-balance-amount")[0].Change("-250");
 
-        Assert.Contains("-250.00", cut.Find(".opening-balances-plug").TextContent);
+        Assert.Equal(MoneyFormatter.Format(-250m), cut.Find(".opening-balances-plug").TextContent);
     }
 
     [Fact]

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using StageFright.Core.Contracts;
 using StageFright.Core.Entities;
 using StageFright.Core.Enums;
@@ -8,6 +9,7 @@ using StageFright.Core.Localization;
 using StageFright.Core.Modules.Finance;
 using StageFright.Core.Modules.Localization.Resources;
 using StageFright.UI.Resources.Strings;
+using StageFright.UI.Shared;
 
 namespace StageFright.UI.Pages.Finance;
 
@@ -23,6 +25,7 @@ public partial class PaymentForm : ComponentBase
     [Inject] private IStringLocalizer<FinanceResource> L { get; set; } = null!;
     [Inject] private IStringLocalizer<SharedResource> Shared { get; set; } = null!;
     [Inject] private ILocalizer Loc { get; set; } = null!;
+    [Inject] private ILogger<PaymentForm> Logger { get; set; } = null!;
 
     private readonly PaymentFormModel _form = new();
     private readonly Dictionary<string, string> _errors = new();
@@ -56,7 +59,8 @@ public partial class PaymentForm : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Payment_LoadError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "PaymentForm.OnInitializedAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Payment_LoadError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -138,7 +142,8 @@ public partial class PaymentForm : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Payment_RecordError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "PaymentForm.SaveAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Payment_RecordError", ErrorDetail.For(ex, Loc));
         }
         finally
         {
@@ -159,7 +164,8 @@ public partial class PaymentForm : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = Loc.Get<FinanceResource>("Finance_Payment_UpdateNotesError", ex.Message);
+            Logger.LogError(ex, "Unexpected error in {Operation}", "PaymentForm.UpdateNotesAsync");
+            _errorMessage = Loc.Get<FinanceResource>("Finance_Payment_UpdateNotesError", ErrorDetail.For(ex, Loc));
         }
         finally
         {

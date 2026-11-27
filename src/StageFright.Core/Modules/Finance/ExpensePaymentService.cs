@@ -179,7 +179,7 @@ public class ExpensePaymentService : IExpensePaymentService
             await _audit.LogAsync(
                 nameof(JournalEntry), entry.Id, AuditAction.Create,
                 oldValue: null,
-                newValue: $"Expense {request.Amount:C} from '{bankAccount.Name}' to '{expenseAccount.Name}' on {request.Date:yyyy-MM-dd}",
+                newValue: $"Expense {MoneyFormatter.Format(request.Amount)} from '{bankAccount.Name}' to '{expenseAccount.Name}' on {request.Date:yyyy-MM-dd}",
                 ct: innerCt);
 
         }, ct);

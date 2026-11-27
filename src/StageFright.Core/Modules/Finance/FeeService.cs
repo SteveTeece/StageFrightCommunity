@@ -169,7 +169,7 @@ public class FeeService : IFeeService
                 await _audit.LogAsync(
                     nameof(Fee), savedFee.Id, AuditAction.Create,
                     oldValue: null,
-                    newValue: $"Annual fee {settings.AnnualFee:C} for member {memberId} ({currentYear})",
+                    newValue: $"Annual fee {MoneyFormatter.Format(settings.AnnualFee)} for member {memberId} ({currentYear})",
                     ct: innerCt);
 
                 count++;
