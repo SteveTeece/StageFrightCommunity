@@ -54,7 +54,7 @@
   <data name="Settings_Committee_LoadingText" xml:space="preserve"><value>Ładowanie ustawień komitetu…</value><comment>Status text while the Committee tab loads.</comment></data>
   <data name="Settings_Committee_SeatTargetHeading" xml:space="preserve"><value>Docelowa liczba miejsc w komitecie ogólnym</value><comment>Committee tab — seat-target card heading.</comment></data>
   <data name="Settings_Committee_TargetSeatsLabel" xml:space="preserve"><value>Docelowa liczba miejsc</value><comment>Committee tab — target-seats field label.</comment></data>
-  <data name="Settings_Committee_SeatTargetHelp" xml:space="preserve"><value>Tylko wskazówka — przy zapisywaniu walnego zgromadzenia nie jest egzekwowany żaden sztywny limit.</value><comment>Help text under the seat-target field.</comment></data>
+  <data name="Settings_Committee_SeatTargetHelp" xml:space="preserve"><value>Opcjonalne. Liczba miejsc w komitecie ogólnym, oprócz funkcji zarządu i wszelkich dodatkowych tytułów funkcyjnych. Tylko wskazówka — przy zapisywaniu walnego zgromadzenia nie jest egzekwowany żaden sztywny limit.</value><comment>Help text under the seat-target field.</comment></data>
   <data name="Settings_Committee_AddTitleHeading" xml:space="preserve"><value>Dodaj tytuł funkcyjny</value><comment>Committee tab — add-title card heading.</comment></data>
   <data name="Settings_Committee_TitleNamePlaceholder" xml:space="preserve"><value>Nazwa tytułu funkcyjnego</value><comment>Placeholder / aria-label for the office-holder title name field.</comment></data>
   <data name="Settings_Committee_AddTitleButton" xml:space="preserve"><value>Dodaj tytuł</value><comment>Committee tab — add-title submit button.</comment></data>

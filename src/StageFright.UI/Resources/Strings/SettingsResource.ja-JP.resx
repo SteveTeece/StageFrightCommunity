@@ -54,7 +54,7 @@
   <data name="Settings_Committee_LoadingText" xml:space="preserve"><value>委員会設定を読み込み中…</value><comment>Status text while the Committee tab loads.</comment></data>
   <data name="Settings_Committee_SeatTargetHeading" xml:space="preserve"><value>一般委員の目標人数</value><comment>Committee tab — seat-target card heading.</comment></data>
   <data name="Settings_Committee_TargetSeatsLabel" xml:space="preserve"><value>目標人数</value><comment>Committee tab — target-seats field label.</comment></data>
-  <data name="Settings_Committee_SeatTargetHelp" xml:space="preserve"><value>目安のみです。総会の記録時に上限は強制されません。</value><comment>Help text under the seat-target field.</comment></data>
+  <data name="Settings_Committee_SeatTargetHelp" xml:space="preserve"><value>任意。役員職および追加の役職名とは別の、一般委員の議席数です。目安のみで、総会の記録時に上限は強制されません。</value><comment>Help text under the seat-target field.</comment></data>
   <data name="Settings_Committee_AddTitleHeading" xml:space="preserve"><value>役員の役職名を追加</value><comment>Committee tab — add-title card heading.</comment></data>
   <data name="Settings_Committee_TitleNamePlaceholder" xml:space="preserve"><value>役員の役職名</value><comment>Placeholder / aria-label for the office-holder title name field.</comment></data>
   <data name="Settings_Committee_AddTitleButton" xml:space="preserve"><value>役職名を追加</value><comment>Committee tab — add-title submit button.</comment></data>

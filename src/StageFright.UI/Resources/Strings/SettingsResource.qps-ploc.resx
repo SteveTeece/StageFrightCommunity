@@ -54,7 +54,7 @@
   <data name="Settings_Committee_LoadingText" xml:space="preserve"><value>⟦Lóádíñg çómmíttéé séttíñgs…—⟧</value><comment>Status text while the Committee tab loads.</comment></data>
   <data name="Settings_Committee_SeatTargetHeading" xml:space="preserve"><value>⟦Géñérál Çómmíttéé Séát Çóúñt Tárgét—⟧</value><comment>Committee tab — seat-target card heading.</comment></data>
   <data name="Settings_Committee_TargetSeatsLabel" xml:space="preserve"><value>⟦Tárgét séáts—⟧</value><comment>Committee tab — target-seats field label.</comment></data>
-  <data name="Settings_Committee_SeatTargetHelp" xml:space="preserve"><value>⟦Gúídáñçé óñlý — ñó hárd çáp ís éñfórçéd whéñ réçórdíñg áñ ÁGM.—⟧</value><comment>Help text under the seat-target field.</comment></data>
+  <data name="Settings_Committee_SeatTargetHelp" xml:space="preserve"><value>⟦Óptíóñál. Thé ñúmbér óf géñérál çómmíttéé séáts, íñ áddítíóñ tó thé éxéçútívé rólés áñd áñý áddítíóñál óffíçé-hóldér títlés. Gúídáñçé óñlý — ñó hárd çáp ís éñfórçéd whéñ réçórdíñg áñ ÁGM.—⟧</value><comment>Help text under the seat-target field.</comment></data>
   <data name="Settings_Committee_AddTitleHeading" xml:space="preserve"><value>⟦Ádd Óffíçé-Hóldér Títlé—⟧</value><comment>Committee tab — add-title card heading.</comment></data>
   <data name="Settings_Committee_TitleNamePlaceholder" xml:space="preserve"><value>⟦Óffíçé-hóldér títlé ñámé—⟧</value><comment>Placeholder / aria-label for the office-holder title name field.</comment></data>
   <data name="Settings_Committee_AddTitleButton" xml:space="preserve"><value>⟦Ádd Títlé—⟧</value><comment>Committee tab — add-title submit button.</comment></data>

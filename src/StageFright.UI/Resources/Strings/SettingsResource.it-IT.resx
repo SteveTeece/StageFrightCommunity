@@ -54,7 +54,7 @@
   <data name="Settings_Committee_LoadingText" xml:space="preserve"><value>Caricamento impostazioni del comitato…</value><comment>Status text while the Committee tab loads.</comment></data>
   <data name="Settings_Committee_SeatTargetHeading" xml:space="preserve"><value>Numero obiettivo di seggi del comitato generale</value><comment>Committee tab — seat-target card heading.</comment></data>
   <data name="Settings_Committee_TargetSeatsLabel" xml:space="preserve"><value>Seggi obiettivo</value><comment>Committee tab — target-seats field label.</comment></data>
-  <data name="Settings_Committee_SeatTargetHelp" xml:space="preserve"><value>Solo indicativo: non viene applicato alcun limite rigido durante la registrazione di un'assemblea generale.</value><comment>Help text under the seat-target field.</comment></data>
+  <data name="Settings_Committee_SeatTargetHelp" xml:space="preserve"><value>Facoltativo. Il numero di seggi del comitato generale, in aggiunta alle cariche esecutive e a eventuali cariche aggiuntive. Solo indicativo: non viene applicato alcun limite rigido durante la registrazione di un'assemblea generale.</value><comment>Help text under the seat-target field.</comment></data>
   <data name="Settings_Committee_AddTitleHeading" xml:space="preserve"><value>Aggiungi incarico</value><comment>Committee tab — add-title card heading.</comment></data>
   <data name="Settings_Committee_TitleNamePlaceholder" xml:space="preserve"><value>Nome dell'incarico</value><comment>Placeholder / aria-label for the office-holder title name field.</comment></data>
   <data name="Settings_Committee_AddTitleButton" xml:space="preserve"><value>Aggiungi incarico</value><comment>Committee tab — add-title submit button.</comment></data>

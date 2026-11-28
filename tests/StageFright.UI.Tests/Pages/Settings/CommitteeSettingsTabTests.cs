@@ -60,6 +60,15 @@ public class CommitteeSettingsTabTests : LocalizedTestContext
     }
 
     [Fact]
+    public void Should_ExplainSeatTargetExcludesNamedRoles_When_Rendered()
+    {
+        var cut = Render<CommitteeSettingsTab>();
+
+        Assert.Contains(cut.FindAll("p.small.text-muted"),
+            p => p.TextContent.Contains("in addition to the executive roles"));
+    }
+
+    [Fact]
     public void BuiltInTitle_ShowsReadOnly_NotArchiveButton()
     {
         var cut = Render<CommitteeSettingsTab>();

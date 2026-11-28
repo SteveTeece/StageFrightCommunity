@@ -54,7 +54,7 @@
   <data name="Settings_Committee_LoadingText" xml:space="preserve"><value>Cargando configuración del comité…</value><comment>Status text while the Committee tab loads.</comment></data>
   <data name="Settings_Committee_SeatTargetHeading" xml:space="preserve"><value>Número objetivo de puestos del comité general</value><comment>Committee tab — seat-target card heading.</comment></data>
   <data name="Settings_Committee_TargetSeatsLabel" xml:space="preserve"><value>Puestos objetivo</value><comment>Committee tab — target-seats field label.</comment></data>
-  <data name="Settings_Committee_SeatTargetHelp" xml:space="preserve"><value>Solo orientativo: no se aplica ningún límite estricto al registrar una asamblea general.</value><comment>Help text under the seat-target field.</comment></data>
+  <data name="Settings_Committee_SeatTargetHelp" xml:space="preserve"><value>Opcional. El número de puestos del comité general, además de los cargos ejecutivos y de cualquier título de cargo adicional. Solo orientativo: no se aplica ningún límite estricto al registrar una asamblea general.</value><comment>Help text under the seat-target field.</comment></data>
   <data name="Settings_Committee_AddTitleHeading" xml:space="preserve"><value>Añadir cargo</value><comment>Committee tab — add-title card heading.</comment></data>
   <data name="Settings_Committee_TitleNamePlaceholder" xml:space="preserve"><value>Nombre del cargo</value><comment>Placeholder / aria-label for the office-holder title name field.</comment></data>
   <data name="Settings_Committee_AddTitleButton" xml:space="preserve"><value>Añadir cargo</value><comment>Committee tab — add-title submit button.</comment></data>

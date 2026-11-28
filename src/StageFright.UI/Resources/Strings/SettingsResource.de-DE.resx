@@ -54,7 +54,7 @@
   <data name="Settings_Committee_LoadingText" xml:space="preserve"><value>Vorstandseinstellungen werden geladen…</value><comment>Status text while the Committee tab loads.</comment></data>
   <data name="Settings_Committee_SeatTargetHeading" xml:space="preserve"><value>Zielanzahl der allgemeinen Vorstandssitze</value><comment>Committee tab — seat-target card heading.</comment></data>
   <data name="Settings_Committee_TargetSeatsLabel" xml:space="preserve"><value>Zielsitze</value><comment>Committee tab — target-seats field label.</comment></data>
-  <data name="Settings_Committee_SeatTargetHelp" xml:space="preserve"><value>Nur als Orientierung — bei der Erfassung einer JHV wird keine feste Obergrenze durchgesetzt.</value><comment>Help text under the seat-target field.</comment></data>
+  <data name="Settings_Committee_SeatTargetHelp" xml:space="preserve"><value>Optional. Die Anzahl der allgemeinen Vorstandssitze, zusätzlich zu den geschäftsführenden Ämtern und allen zusätzlichen Amtsträger-Bezeichnungen. Nur als Orientierung — bei der Erfassung einer JHV wird keine feste Obergrenze durchgesetzt.</value><comment>Help text under the seat-target field.</comment></data>
   <data name="Settings_Committee_AddTitleHeading" xml:space="preserve"><value>Amtsträger-Bezeichnung hinzufügen</value><comment>Committee tab — add-title card heading.</comment></data>
   <data name="Settings_Committee_TitleNamePlaceholder" xml:space="preserve"><value>Name der Amtsträger-Bezeichnung</value><comment>Placeholder / aria-label for the office-holder title name field.</comment></data>
   <data name="Settings_Committee_AddTitleButton" xml:space="preserve"><value>Bezeichnung hinzufügen</value><comment>Committee tab — add-title submit button.</comment></data>

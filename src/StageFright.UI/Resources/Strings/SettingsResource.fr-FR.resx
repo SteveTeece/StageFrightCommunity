@@ -54,7 +54,7 @@
   <data name="Settings_Committee_LoadingText" xml:space="preserve"><value>Chargement des paramètres du comité…</value><comment>Status text while the Committee tab loads.</comment></data>
   <data name="Settings_Committee_SeatTargetHeading" xml:space="preserve"><value>Objectif de sièges au comité général</value><comment>Committee tab — seat-target card heading.</comment></data>
   <data name="Settings_Committee_TargetSeatsLabel" xml:space="preserve"><value>Sièges visés</value><comment>Committee tab — target-seats field label.</comment></data>
-  <data name="Settings_Committee_SeatTargetHelp" xml:space="preserve"><value>À titre indicatif uniquement — aucune limite stricte n'est appliquée lors de la saisie d'une AGA.</value><comment>Help text under the seat-target field.</comment></data>
+  <data name="Settings_Committee_SeatTargetHelp" xml:space="preserve"><value>Facultatif. Le nombre de sièges au comité général, en plus des fonctions exécutives et des éventuels intitulés de fonction supplémentaires. À titre indicatif uniquement — aucune limite stricte n'est appliquée lors de la saisie d'une AGA.</value><comment>Help text under the seat-target field.</comment></data>
   <data name="Settings_Committee_AddTitleHeading" xml:space="preserve"><value>Ajouter un intitulé de fonction</value><comment>Committee tab — add-title card heading.</comment></data>
   <data name="Settings_Committee_TitleNamePlaceholder" xml:space="preserve"><value>Intitulé de la fonction</value><comment>Placeholder / aria-label for the office-holder title name field.</comment></data>
   <data name="Settings_Committee_AddTitleButton" xml:space="preserve"><value>Ajouter l'intitulé</value><comment>Committee tab — add-title submit button.</comment></data>
