@@ -26,12 +26,15 @@ public class SetupWizardTests : LocalizedTestContext
     private readonly ISetupService _setupService = Substitute.For<ISetupService>();
     private readonly IAccountService _accountService = Substitute.For<IAccountService>();
     private readonly IOpeningBalanceService _openingBalanceService = Substitute.For<IOpeningBalanceService>();
+    private readonly ICommitteeOfficeHolderTypeService _officeHolderTypeService = Substitute.For<ICommitteeOfficeHolderTypeService>();
 
     public SetupWizardTests()
     {
         Services.AddSingleton(_setupService);
         Services.AddSingleton(_accountService);
         Services.AddSingleton(_openingBalanceService);
+        Services.AddSingleton(_officeHolderTypeService);
+        _officeHolderTypeService.GetActiveAsync(Arg.Any<CancellationToken>()).Returns(new List<CommitteeOfficeHolderType>());
         _setupService.InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
         _accountService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<Account>());

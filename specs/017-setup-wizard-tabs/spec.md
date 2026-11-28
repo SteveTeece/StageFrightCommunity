@@ -228,7 +228,7 @@ Setup MUST finish whether or not any opening balance has been queued. With none 
 - **THEN** setup completes normally
 
 ### Committee office-holder titles are added one at a time, not typed as a delimited list
-Setup MUST let the coordinator add optional committee office-holder titles one at a time (reject blank/whitespace and case-insensitive duplicates without adding) and remove any previously added title, composing the final list from whatever remains queued at Finish.
+Setup MUST let the coordinator add optional committee office-holder titles one at a time (reject blank/whitespace and case-insensitive duplicates without adding) and remove any previously added title, composing the final list from whatever remains queued at Finish. *(Amended by issue #401: the Committee tab also lists the built-in executive roles — President, Secretary, Treasurer — read-only beside the queued titles, rejects a title matching one of them case-insensitively, and explains that the general committee seat target is in addition to those named roles.)*
 
 #### Scenario: coordinator adds and removes titles before finishing
 - **WHEN** the coordinator adds several titles and removes one of them before Finish

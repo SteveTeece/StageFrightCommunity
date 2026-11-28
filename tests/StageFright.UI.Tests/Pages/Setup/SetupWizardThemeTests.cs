@@ -24,6 +24,7 @@ public class SetupWizardThemeTests : LocalizedTestContext
     private readonly IDeviceThemePreferenceProvider _deviceThemeProvider = Substitute.For<IDeviceThemePreferenceProvider>();
     private readonly IAccountService _accountService = Substitute.For<IAccountService>();
     private readonly IOpeningBalanceService _openingBalanceService = Substitute.For<IOpeningBalanceService>();
+    private readonly ICommitteeOfficeHolderTypeService _officeHolderTypeService = Substitute.For<ICommitteeOfficeHolderTypeService>();
 
     public SetupWizardThemeTests()
     {
@@ -32,6 +33,8 @@ public class SetupWizardThemeTests : LocalizedTestContext
         Services.AddSingleton(_deviceThemeProvider);
         Services.AddSingleton(_accountService);
         Services.AddSingleton(_openingBalanceService);
+        Services.AddSingleton(_officeHolderTypeService);
+        _officeHolderTypeService.GetActiveAsync(Arg.Any<CancellationToken>()).Returns(new List<CommitteeOfficeHolderType>());
         _setupService.InitializeAsync(Arg.Any<SetupRequest>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
         _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns((Core.Entities.Settings?)null);

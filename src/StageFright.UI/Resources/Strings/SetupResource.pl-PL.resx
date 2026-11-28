@@ -64,15 +64,18 @@
   <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>Miesiąc walnego zgromadzenia</value><comment>Committee tab — AGM month label.</comment></data>
   <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>Miesiąc, w którym zwykle odbywa się walne zgromadzenie. Wyznacza granice kadencji komitetu.</value><comment>Help text under the AGM month field.</comment></data>
   <data name="Setup_Committee_SeatTargetLabel" xml:space="preserve"><value>Docelowa liczba miejsc w komitecie ogólnym</value><comment>Committee tab — seat target label.</comment></data>
-  <data name="Setup_Committee_SeatTargetHelp" xml:space="preserve"><value>Opcjonalne — tylko wskazówka, przy zapisywaniu walnego zgromadzenia nie jest egzekwowany żaden sztywny limit.</value><comment>Help text under the seat target field.</comment></data>
+  <data name="Setup_Committee_SeatTargetHelp" xml:space="preserve"><value>Opcjonalne. Liczba miejsc w komitecie ogólnym, oprócz funkcji zarządu i wszelkich dodatkowych tytułów funkcyjnych. Tylko wskazówka — przy zapisywaniu walnego zgromadzenia nie jest egzekwowany żaden sztywny limit.</value><comment>Help text under the seat target field.</comment></data>
   <data name="Setup_Committee_TitlesLabel" xml:space="preserve"><value>Dodatkowe tytuły funkcyjne</value><comment>Committee tab — additional titles input label.</comment></data>
   <data name="Setup_Committee_TitlesPlaceholder" xml:space="preserve"><value>np. Rzecznik prasowy</value><comment>Placeholder for the additional-title input.</comment></data>
   <data name="Setup_Committee_AddTitleAriaLabel" xml:space="preserve"><value>Dodaj tytuł</value><comment>aria-label on the add-title arrow button.</comment></data>
-  <data name="Setup_Committee_TitlesHelp" xml:space="preserve"><value>Opcjonalnie, pojedynczo. Przewodniczący/Sekretarz/Skarbnik są zawsze uwzględnieni. Można to również skonfigurować później w Ustawieniach.</value><comment>Help text under the additional-titles input.</comment></data>
+  <data name="Setup_Committee_TitlesHelp" xml:space="preserve"><value>Opcjonalnie, pojedynczo, oprócz funkcji zarządu. Można to również skonfigurować później w Ustawieniach.</value><comment>Help text under the additional-titles input.</comment></data>
   <data name="Setup_Committee_TitlesListLabel" xml:space="preserve"><value>Dodatkowe tytuły</value><comment>Committee tab — queued titles list label.</comment></data>
   <data name="Setup_Committee_TitlesListEmpty" xml:space="preserve"><value>Nie dodano jeszcze dodatkowych tytułów.</value><comment>Empty text for the queued titles list.</comment></data>
   <data name="Setup_Committee_ErrorBlank" xml:space="preserve"><value>Wprowadź tytuł przed dodaniem.</value><comment>Validation — the title input was blank.</comment></data>
   <data name="Setup_Committee_ErrorDuplicate" xml:space="preserve"><value>„{Title}” został już dodany.</value><comment>Validation — the title is already queued. {Title} = the entered title.</comment></data>
+  <data name="Setup_Committee_BuiltInListLabel" xml:space="preserve"><value>Funkcje zarządu</value><comment>Committee tab — read-only list of the built-in executive roles (President/Secretary/Treasurer).</comment></data>
+  <data name="Setup_Committee_BuiltInHelp" xml:space="preserve"><value>Wbudowane i zawsze uwzględnione. Tych funkcji nie można zmieniać ani usuwać.</value><comment>Help text under the built-in executive roles list.</comment></data>
+  <data name="Setup_Committee_ErrorBuiltIn" xml:space="preserve"><value>„{Title}” jest już wbudowaną funkcją zarządu.</value><comment>Validation — the entered title matches a built-in executive role. {Title} = the entered title.</comment></data>
   <data name="Setup_Review_Heading" xml:space="preserve"><value>Przegląd</value><comment>Review tab heading.</comment></data>
   <data name="Setup_Review_OrgNameTerm" xml:space="preserve"><value>Nazwa organizacji</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_ThemeTerm" xml:space="preserve"><value>Motyw</value><comment>Review tab term.</comment></data>

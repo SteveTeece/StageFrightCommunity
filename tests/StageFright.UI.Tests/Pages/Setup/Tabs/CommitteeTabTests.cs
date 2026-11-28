@@ -1,6 +1,10 @@
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
+using StageFright.Core.Contracts;
+using StageFright.Core.Entities;
 using StageFright.UI.Pages.Setup;
 using StageFright.UI.Pages.Setup.Tabs;
 
@@ -13,6 +17,22 @@ namespace StageFright.UI.Tests.Pages.Setup.Tabs;
 /// needing a cascaded EditContext (built manually — EditForm.ChildContent is generic).</summary>
 public class CommitteeTabTests : LocalizedTestContext
 {
+    private readonly ICommitteeOfficeHolderTypeService _officeHolderTypeService = Substitute.For<ICommitteeOfficeHolderTypeService>();
+
+    public CommitteeTabTests()
+    {
+        Services.AddSingleton(_officeHolderTypeService);
+        // Deliberately out of display order, with one custom title, so the tests prove the
+        // tab shows built-ins only and orders them itself.
+        _officeHolderTypeService.GetActiveAsync(Arg.Any<CancellationToken>()).Returns(new List<CommitteeOfficeHolderType>
+        {
+            new() { Id = Guid.NewGuid(), Name = "Treasurer", DisplayOrder = 2, IsBuiltIn = true },
+            new() { Id = Guid.NewGuid(), Name = "Vice President", DisplayOrder = 3, IsBuiltIn = false },
+            new() { Id = Guid.NewGuid(), Name = "President", DisplayOrder = 0, IsBuiltIn = true },
+            new() { Id = Guid.NewGuid(), Name = "Secretary", DisplayOrder = 1, IsBuiltIn = true },
+        });
+    }
+
     private IRenderedComponent<EditForm> RenderInForm(
         SetupFormModel model,
         IReadOnlyList<string>? queuedTitles = null,
@@ -92,6 +112,73 @@ public class CommitteeTabTests : LocalizedTestContext
 
         Assert.False(invoked);
         Assert.Contains("already been added", cut.Markup);
+    }
+
+    [Fact]
+    public void Should_ListBuiltInExecutiveRolesInDisplayOrder_When_Rendered()
+    {
+        var cut = RenderInForm(new SetupFormModel());
+
+        var rows = cut.FindAll("#committee-builtin-roles .bordered-list-box-row")
+            .Select(r => r.TextContent.Trim())
+            .ToList();
+
+        Assert.Equal(new[] { "President", "Secretary", "Treasurer" }, rows);
+        Assert.Contains("Executive Roles", cut.Find("#committee-builtin-roles").TextContent);
+    }
+
+    [Fact]
+    public void Should_RenderBuiltInRolesReadOnly_When_Rendered()
+    {
+        var cut = RenderInForm(new SetupFormModel());
+
+        Assert.Empty(cut.FindAll("#committee-builtin-roles .bordered-list-box-remove"));
+    }
+
+    [Fact]
+    public void Should_ShowDefaultEmptyText_When_NoBuiltInRolesExist()
+    {
+        _officeHolderTypeService.GetActiveAsync(Arg.Any<CancellationToken>()).Returns(new List<CommitteeOfficeHolderType>());
+
+        var cut = RenderInForm(new SetupFormModel());
+
+        Assert.Empty(cut.FindAll("#committee-builtin-roles .bordered-list-box-row"));
+        Assert.Single(cut.FindAll("#committee-builtin-roles .bordered-list-box-empty"));
+    }
+
+    [Fact]
+    public void Should_RejectTitle_When_ItMatchesABuiltInRoleCaseInsensitively()
+    {
+        var invoked = false;
+        var cut = RenderInForm(new SetupFormModel(),
+            onAdd: EventCallback.Factory.Create<string>(this, _ => invoked = true));
+
+        cut.Find("#committee-role-input").Input("  president ");
+        cut.Find("#committee-role-add-btn").Click();
+
+        Assert.False(invoked);
+        Assert.Contains("\"president\" is already a built-in executive role.", cut.Find(".text-danger").TextContent);
+    }
+
+    [Fact]
+    public void Should_AcceptTitle_When_ItMatchesOnlyANonBuiltInActiveTitle()
+    {
+        string? added = null;
+        var cut = RenderInForm(new SetupFormModel(),
+            onAdd: EventCallback.Factory.Create<string>(this, t => added = t));
+
+        cut.Find("#committee-role-input").Input("Vice President");
+        cut.Find("#committee-role-add-btn").Click();
+
+        Assert.Equal("Vice President", added);
+    }
+
+    [Fact]
+    public void Should_ExplainSeatTargetExcludesNamedRoles_When_Rendered()
+    {
+        var cut = RenderInForm(new SetupFormModel());
+
+        Assert.Contains("in addition to the executive roles", cut.Find("#seatCountTarget").ParentElement!.TextContent);
     }
 
     [Fact]

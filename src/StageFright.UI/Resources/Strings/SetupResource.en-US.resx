@@ -176,15 +176,18 @@
   <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>AGM Month</value><comment>Committee tab — AGM month label.</comment></data>
   <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>The month your AGM is normally held. Drives committee term boundaries.</value><comment>Help text under the AGM month field.</comment></data>
   <data name="Setup_Committee_SeatTargetLabel" xml:space="preserve"><value>General Committee Seat Count Target</value><comment>Committee tab — seat target label.</comment></data>
-  <data name="Setup_Committee_SeatTargetHelp" xml:space="preserve"><value>Optional — guidance only, no hard cap is enforced when recording an AGM.</value><comment>Help text under the seat target field.</comment></data>
+  <data name="Setup_Committee_SeatTargetHelp" xml:space="preserve"><value>Optional. The number of general committee seats, in addition to the executive roles and any additional office-holder titles. Guidance only — no hard cap is enforced when recording an AGM.</value><comment>Help text under the seat target field.</comment></data>
   <data name="Setup_Committee_TitlesLabel" xml:space="preserve"><value>Additional Office-Holder Titles</value><comment>Committee tab — additional titles input label.</comment></data>
   <data name="Setup_Committee_TitlesPlaceholder" xml:space="preserve"><value>e.g. Publicity Officer</value><comment>Placeholder for the additional-title input.</comment></data>
   <data name="Setup_Committee_AddTitleAriaLabel" xml:space="preserve"><value>Add title</value><comment>aria-label on the add-title arrow button.</comment></data>
-  <data name="Setup_Committee_TitlesHelp" xml:space="preserve"><value>Optional, one at a time. President/Secretary/Treasurer are always included. Can also be configured later from Settings.</value><comment>Help text under the additional-titles input.</comment></data>
+  <data name="Setup_Committee_TitlesHelp" xml:space="preserve"><value>Optional, one at a time, in addition to the executive roles. Can also be configured later from Settings.</value><comment>Help text under the additional-titles input.</comment></data>
   <data name="Setup_Committee_TitlesListLabel" xml:space="preserve"><value>Additional Titles</value><comment>Committee tab — queued titles list label.</comment></data>
   <data name="Setup_Committee_TitlesListEmpty" xml:space="preserve"><value>No additional titles added yet.</value><comment>Empty text for the queued titles list.</comment></data>
   <data name="Setup_Committee_ErrorBlank" xml:space="preserve"><value>Enter a title before adding.</value><comment>Validation — the title input was blank.</comment></data>
   <data name="Setup_Committee_ErrorDuplicate" xml:space="preserve"><value>"{Title}" has already been added.</value><comment>Validation — the title is already queued. {Title} = the entered title.</comment></data>
+  <data name="Setup_Committee_BuiltInListLabel" xml:space="preserve"><value>Executive Roles</value><comment>Committee tab — read-only list of the built-in executive roles (President/Secretary/Treasurer).</comment></data>
+  <data name="Setup_Committee_BuiltInHelp" xml:space="preserve"><value>Built in and always included. These roles can't be renamed or removed.</value><comment>Help text under the built-in executive roles list.</comment></data>
+  <data name="Setup_Committee_ErrorBuiltIn" xml:space="preserve"><value>"{Title}" is already a built-in executive role.</value><comment>Validation — the entered title matches a built-in executive role. {Title} = the entered title.</comment></data>
   <data name="Setup_Review_Heading" xml:space="preserve"><value>Review</value><comment>Review tab heading.</comment></data>
   <data name="Setup_Review_OrgNameTerm" xml:space="preserve"><value>Organization Name</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_ThemeTerm" xml:space="preserve"><value>Theme</value><comment>Review tab term.</comment></data>

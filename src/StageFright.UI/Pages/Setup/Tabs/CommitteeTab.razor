@@ -19,7 +19,7 @@
     </div>
 </div>
 
-<div class="row g-3">
+<div class="row g-3 mb-3">
     <div class="col-md-6">
         <label for="committee-role-input" class="form-label">@L["Setup_Committee_TitlesLabel"]</label>
         <div class="input-group input-group-sm">
@@ -35,6 +35,18 @@
         <div class="form-text small">
             @L["Setup_Committee_TitlesHelp"]
         </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6" id="committee-builtin-roles">
+        <label class="form-label">@L["Setup_Committee_BuiltInListLabel"]</label>
+        <BorderedListBox TItem="string" Items="_builtInTitles">
+            <RowTemplate Context="title">
+                <span>@title</span>
+            </RowTemplate>
+        </BorderedListBox>
+        <div class="form-text small">@L["Setup_Committee_BuiltInHelp"]</div>
     </div>
     <div class="col-md-6">
         <label class="form-label">@L["Setup_Committee_TitlesListLabel"]</label>

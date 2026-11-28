@@ -64,15 +64,18 @@
   <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>Mes de la asamblea general</value><comment>Committee tab — AGM month label.</comment></data>
   <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>El mes en que normalmente se celebra tu asamblea general. Determina los límites de los mandatos del comité.</value><comment>Help text under the AGM month field.</comment></data>
   <data name="Setup_Committee_SeatTargetLabel" xml:space="preserve"><value>Número objetivo de puestos del comité general</value><comment>Committee tab — seat target label.</comment></data>
-  <data name="Setup_Committee_SeatTargetHelp" xml:space="preserve"><value>Opcional: solo orientativo, no se aplica ningún límite estricto al registrar una asamblea general.</value><comment>Help text under the seat target field.</comment></data>
+  <data name="Setup_Committee_SeatTargetHelp" xml:space="preserve"><value>Opcional. El número de puestos del comité general, además de los cargos ejecutivos y de cualquier título de cargo adicional. Solo orientativo: no se aplica ningún límite estricto al registrar una asamblea general.</value><comment>Help text under the seat target field.</comment></data>
   <data name="Setup_Committee_TitlesLabel" xml:space="preserve"><value>Títulos de cargo adicionales</value><comment>Committee tab — additional titles input label.</comment></data>
   <data name="Setup_Committee_TitlesPlaceholder" xml:space="preserve"><value>p. ej. Responsable de comunicación</value><comment>Placeholder for the additional-title input.</comment></data>
   <data name="Setup_Committee_AddTitleAriaLabel" xml:space="preserve"><value>Añadir título</value><comment>aria-label on the add-title arrow button.</comment></data>
-  <data name="Setup_Committee_TitlesHelp" xml:space="preserve"><value>Opcional, de uno en uno. Presidente/Secretario/Tesorero siempre se incluyen. También se puede configurar más tarde desde Configuración.</value><comment>Help text under the additional-titles input.</comment></data>
+  <data name="Setup_Committee_TitlesHelp" xml:space="preserve"><value>Opcional, de uno en uno, además de los cargos ejecutivos. También se puede configurar más tarde desde Configuración.</value><comment>Help text under the additional-titles input.</comment></data>
   <data name="Setup_Committee_TitlesListLabel" xml:space="preserve"><value>Títulos adicionales</value><comment>Committee tab — queued titles list label.</comment></data>
   <data name="Setup_Committee_TitlesListEmpty" xml:space="preserve"><value>Aún no se han añadido títulos adicionales.</value><comment>Empty text for the queued titles list.</comment></data>
   <data name="Setup_Committee_ErrorBlank" xml:space="preserve"><value>Introduce un título antes de añadirlo.</value><comment>Validation — the title input was blank.</comment></data>
   <data name="Setup_Committee_ErrorDuplicate" xml:space="preserve"><value>«{Title}» ya se ha añadido.</value><comment>Validation — the title is already queued. {Title} = the entered title.</comment></data>
+  <data name="Setup_Committee_BuiltInListLabel" xml:space="preserve"><value>Cargos ejecutivos</value><comment>Committee tab — read-only list of the built-in executive roles (President/Secretary/Treasurer).</comment></data>
+  <data name="Setup_Committee_BuiltInHelp" xml:space="preserve"><value>Integrados y siempre incluidos. Estos cargos no se pueden renombrar ni eliminar.</value><comment>Help text under the built-in executive roles list.</comment></data>
+  <data name="Setup_Committee_ErrorBuiltIn" xml:space="preserve"><value>«{Title}» ya es un cargo ejecutivo integrado.</value><comment>Validation — the entered title matches a built-in executive role. {Title} = the entered title.</comment></data>
   <data name="Setup_Review_Heading" xml:space="preserve"><value>Revisión</value><comment>Review tab heading.</comment></data>
   <data name="Setup_Review_OrgNameTerm" xml:space="preserve"><value>Nombre de la organización</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_ThemeTerm" xml:space="preserve"><value>Tema</value><comment>Review tab term.</comment></data>

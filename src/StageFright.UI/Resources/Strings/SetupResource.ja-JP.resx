@@ -64,15 +64,18 @@
   <data name="Setup_Committee_AgmMonthLabel" xml:space="preserve"><value>総会の月</value><comment>Committee tab — AGM month label.</comment></data>
   <data name="Setup_Committee_AgmMonthHelp" xml:space="preserve"><value>通常、総会が開催される月です。委員会の任期の区切りを決定します。</value><comment>Help text under the AGM month field.</comment></data>
   <data name="Setup_Committee_SeatTargetLabel" xml:space="preserve"><value>一般委員の目標人数</value><comment>Committee tab — seat target label.</comment></data>
-  <data name="Setup_Committee_SeatTargetHelp" xml:space="preserve"><value>任意 — 目安のみで、総会の記録時に上限は強制されません。</value><comment>Help text under the seat target field.</comment></data>
+  <data name="Setup_Committee_SeatTargetHelp" xml:space="preserve"><value>任意。役員職および追加の役職名とは別の、一般委員の議席数です。目安のみで、総会の記録時に上限は強制されません。</value><comment>Help text under the seat target field.</comment></data>
   <data name="Setup_Committee_TitlesLabel" xml:space="preserve"><value>追加の役員の役職名</value><comment>Committee tab — additional titles input label.</comment></data>
   <data name="Setup_Committee_TitlesPlaceholder" xml:space="preserve"><value>例: 広報担当</value><comment>Placeholder for the additional-title input.</comment></data>
   <data name="Setup_Committee_AddTitleAriaLabel" xml:space="preserve"><value>役職名を追加</value><comment>aria-label on the add-title arrow button.</comment></data>
-  <data name="Setup_Committee_TitlesHelp" xml:space="preserve"><value>任意、1件ずつ入力します。会長・書記・会計は常に含まれます。後から設定でも構成できます。</value><comment>Help text under the additional-titles input.</comment></data>
+  <data name="Setup_Committee_TitlesHelp" xml:space="preserve"><value>任意、1件ずつ入力します。役員職に追加されます。後から設定でも構成できます。</value><comment>Help text under the additional-titles input.</comment></data>
   <data name="Setup_Committee_TitlesListLabel" xml:space="preserve"><value>追加の役職名</value><comment>Committee tab — queued titles list label.</comment></data>
   <data name="Setup_Committee_TitlesListEmpty" xml:space="preserve"><value>まだ追加の役職名はありません。</value><comment>Empty text for the queued titles list.</comment></data>
   <data name="Setup_Committee_ErrorBlank" xml:space="preserve"><value>追加する前に役職名を入力してください。</value><comment>Validation — the title input was blank.</comment></data>
   <data name="Setup_Committee_ErrorDuplicate" xml:space="preserve"><value>「{Title}」はすでに追加されています。</value><comment>Validation — the title is already queued. {Title} = the entered title.</comment></data>
+  <data name="Setup_Committee_BuiltInListLabel" xml:space="preserve"><value>役員職</value><comment>Committee tab — read-only list of the built-in executive roles (President/Secretary/Treasurer).</comment></data>
+  <data name="Setup_Committee_BuiltInHelp" xml:space="preserve"><value>組み込みで常に含まれます。これらの役職は名前の変更や削除ができません。</value><comment>Help text under the built-in executive roles list.</comment></data>
+  <data name="Setup_Committee_ErrorBuiltIn" xml:space="preserve"><value>「{Title}」はすでに組み込みの役員職です。</value><comment>Validation — the entered title matches a built-in executive role. {Title} = the entered title.</comment></data>
   <data name="Setup_Review_Heading" xml:space="preserve"><value>確認</value><comment>Review tab heading.</comment></data>
   <data name="Setup_Review_OrgNameTerm" xml:space="preserve"><value>組織名</value><comment>Review tab term.</comment></data>
   <data name="Setup_Review_ThemeTerm" xml:space="preserve"><value>テーマ</value><comment>Review tab term.</comment></data>
