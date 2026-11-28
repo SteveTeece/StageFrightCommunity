@@ -26,6 +26,7 @@ NEUTRAL_RESX = [
     "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.resx",
     "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx",
     "src/StageFright.Core/Modules/Localization/Resources/EnumsResource.resx",
+    "src/StageFright.Core/Modules/Localization/Resources/SystemAccountsResource.resx",
     "src/StageFright.Reports/Resources/ReportsResource.resx",
     "src/StageFright.UI/Resources/Strings/SharedResource.resx",
     "src/StageFright.UI/Resources/Strings/DashboardResource.resx",

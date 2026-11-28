@@ -21,11 +21,13 @@ public class GeneralSettingsTabTests : LocalizedTestContext
 {
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
     private readonly ILanguagePreferenceStore _languagePreferenceStore = Substitute.For<ILanguagePreferenceStore>();
+    private readonly ISystemAccountNameService _systemAccountNames = Substitute.For<ISystemAccountNameService>();
 
     public GeneralSettingsTabTests()
     {
         Services.AddSingleton(_settingsService);
         Services.AddSingleton(_languagePreferenceStore);
+        Services.AddSingleton(_systemAccountNames);
     }
 
     private IRenderedComponent<CultureProvider> RenderTabUnderCulture() =>
@@ -197,6 +199,36 @@ public class GeneralSettingsTabTests : LocalizedTestContext
         await cut.Find("form").SubmitAsync();
 
         _languagePreferenceStore.DidNotReceive().Set(Arg.Any<string>());
+    }
+
+    // --- issue #394: built-in account names follow the language ---
+
+    [Fact]
+    public async Task Should_ApplySystemAccountNames_When_SavedWithChangedLanguage()
+    {
+        using var _ = new CultureRestorer();
+        _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings());
+        _settingsService.SaveAsync(Arg.Any<AppSettings>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+
+        var cut = RenderTabUnderCulture();
+        var tab = cut.FindComponent<GeneralSettingsTab>();
+        tab.Find("#languageCode").Change("fr-FR");
+
+        await tab.Find("form").SubmitAsync();
+
+        await _systemAccountNames.Received(1).ApplyAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_NotApplySystemAccountNames_When_SavedWithoutChangingLanguage()
+    {
+        _settingsService.GetAsync(Arg.Any<CancellationToken>()).Returns(MakeSettings());
+        _settingsService.SaveAsync(Arg.Any<AppSettings>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+
+        var cut = Render<GeneralSettingsTab>();
+        await cut.Find("form").SubmitAsync();
+
+        await _systemAccountNames.DidNotReceive().ApplyAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]

@@ -37,6 +37,7 @@ public abstract class LocalizedTestContext : RadzenGridTestContext
         Services.AddSingleton<ILanguagePreferenceStore, NullLanguagePreferenceStore>();
         Services.AddScoped<ISettingsService, NullSettingsService>();
         Services.AddScoped<ILanguageProvider, LanguageProvider>();
+        Services.AddScoped<ISystemAccountNameService, NullSystemAccountNameService>();
 
         var factory = Services.BuildServiceProvider().GetRequiredService<IStringLocalizerFactory>();
         EnumLocalizationExtensions.UseFactory(factory);
@@ -64,5 +65,11 @@ public abstract class LocalizedTestContext : RadzenGridTestContext
         public void Set(string cultureCode)
         {
         }
+    }
+
+    /// <summary>Stand-in for tests that do not register their own <see cref="ISystemAccountNameService"/> — renames nothing.</summary>
+    private sealed class NullSystemAccountNameService : ISystemAccountNameService
+    {
+        public Task ApplyAsync(CancellationToken ct = default) => Task.CompletedTask;
     }
 }

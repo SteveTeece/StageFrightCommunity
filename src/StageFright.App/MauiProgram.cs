@@ -266,6 +266,7 @@ public static class MauiProgram
         // Account management module (Phase 7)
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IAccountBalanceService, AccountBalanceService>();
+        services.AddScoped<ISystemAccountNameService, SystemAccountNameService>();
 
         // Dashboard service (Phase 8)
         services.AddScoped<IDashboardService, DashboardService>();
@@ -368,6 +369,12 @@ public static class MauiProgram
         {
             Log.Error(ex, "Failed to resolve/apply the display culture; continuing on the default culture");
         }
+
+        // Name the built-in system accounts in the display language just applied (issue #394).
+        // Also re-applies them after a restore, whose backup may come from another language.
+        // The service never throws; a failure leaves the names as they were.
+        var systemAccountNames = scope.ServiceProvider.GetRequiredService<ISystemAccountNameService>();
+        BlockingRunner.Run(() => systemAccountNames.ApplyAsync());
 
         // Configure money formatting for the organisation's currency (spec 028, FR-003), mirroring
         // the culture application above — set once here, before the BlazorWebView renders. Any

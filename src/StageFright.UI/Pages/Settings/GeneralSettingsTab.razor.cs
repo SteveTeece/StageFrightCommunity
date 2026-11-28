@@ -23,6 +23,7 @@ public partial class GeneralSettingsTab : ComponentBase
     [Inject] private ILocalizer Loc { get; set; } = null!;
     [Inject] private ISupportedLanguagesCatalog Languages { get; set; } = null!;
     [Inject] private ILanguagePreferenceStore LanguagePreferenceStore { get; set; } = null!;
+    [Inject] private ISystemAccountNameService SystemAccountNames { get; set; } = null!;
 
     [CascadingParameter] private ThemeProvider? ThemeProvider { get; set; }
 
@@ -126,6 +127,9 @@ public partial class GeneralSettingsTab : ComponentBase
             {
                 LanguagePreferenceStore.Set(_selectedLanguageCode);
                 CultureProvider?.Switch(CultureInfo.GetCultureInfo(_selectedLanguageCode));
+
+                // Built-in account names follow the new language too (issue #394).
+                await SystemAccountNames.ApplyAsync();
             }
 
             _successMessage = Loc.Get<SettingsResource>("Settings_Common_SaveSuccess");

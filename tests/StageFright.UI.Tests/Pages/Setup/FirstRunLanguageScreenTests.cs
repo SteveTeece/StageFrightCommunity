@@ -84,6 +84,20 @@ public class FirstRunLanguageScreenTests : LocalizedTestContext
     }
 
     [Fact]
+    public async Task Should_ApplySystemAccountNames_When_LanguageConfirmed()
+    {
+        using var _ = new CultureRestorer();
+        var systemAccountNames = Substitute.For<ISystemAccountNameService>();
+        Services.AddSingleton(systemAccountNames);
+        var cut = RenderScreen();
+        cut.Find("#languageSelect").Change("fr-FR");
+
+        await cut.Find("#btn-confirm-language").ClickAsync(new MouseEventArgs());
+
+        await systemAccountNames.Received(1).ApplyAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public void Confirm_SwitchesTheRunningSessionCulture()
     {
         using var _ = new CultureRestorer();

@@ -37,6 +37,7 @@ StageFright.Core/Modules/Localization/Resources/
     NavigationResource.cs            NavigationResource.resx            NavigationResource.qps-ploc.resx
     ValidationResource.cs            ValidationResource.resx            ValidationResource.qps-ploc.resx
     EnumsResource.cs                 EnumsResource.resx                 EnumsResource.qps-ploc.resx    (shared enum display labels, FR-024)
+    SystemAccountsResource.cs        SystemAccountsResource.resx        SystemAccountsResource.qps-ploc.resx    (built-in system account names, SystemAccount_Name_*, issue #394)
 StageFright.Reports/Resources/
     ReportsResource.cs               ReportsResource.resx               ReportsResource.qps-ploc.resx
 StageFright.UI/Resources/Strings/

@@ -80,6 +80,7 @@ public class Us2LocalizationGuardTests
         ["Nav"] = "src/StageFright.Core/Modules/Localization/Resources/NavigationResource.resx",
         ["Validation"] = "src/StageFright.Core/Modules/Localization/Resources/ValidationResource.resx",
         ["Enum"] = "src/StageFright.Core/Modules/Localization/Resources/EnumsResource.resx",
+        ["SystemAccount"] = "src/StageFright.Core/Modules/Localization/Resources/SystemAccountsResource.resx",
         ["Reports"] = "src/StageFright.Reports/Resources/ReportsResource.resx",
         ["Shared"] = "src/StageFright.UI/Resources/Strings/SharedResource.resx",
         ["Dashboard"] = "src/StageFright.UI/Resources/Strings/DashboardResource.resx",

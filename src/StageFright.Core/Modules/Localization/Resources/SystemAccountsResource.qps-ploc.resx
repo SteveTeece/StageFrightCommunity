@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="SystemAccount_Name_PettyCash" xml:space="preserve"><value>⟦Péttý Çásh—⟧</value><comment>System account 1100 — the cash float held on hand.</comment></data>
+  <data name="SystemAccount_Name_UndepositedFunds" xml:space="preserve"><value>⟦Úñdépósítéd Fúñds—⟧</value><comment>System account 1105 — cheques and other receipts awaiting banking.</comment></data>
+  <data name="SystemAccount_Name_MemberReceivable" xml:space="preserve"><value>⟦Mémbér Réçéíváblé—⟧</value><comment>System account 1200 — amounts members owe.</comment></data>
+  <data name="SystemAccount_Name_TaxCollected" xml:space="preserve"><value>⟦Táx Çólléçtéd—⟧</value><comment>System account 2310 — sales tax collected, owed to the tax authority.</comment></data>
+  <data name="SystemAccount_Name_TaxReceivable" xml:space="preserve"><value>⟦Táx Réçéíváblé—⟧</value><comment>System account 2320 — tax paid on purchases, recoverable from the tax authority.</comment></data>
+  <data name="SystemAccount_Name_OpeningBalanceEquity" xml:space="preserve"><value>⟦Ópéñíñg Báláñçé Éqúítý—⟧</value><comment>System account 3100 — balancing account for opening balances.</comment></data>
+  <data name="SystemAccount_Name_AccumulatedSurplus" xml:space="preserve"><value>⟦Áççúmúlátéd Súrplús—⟧</value><comment>System account 3200 — retained surplus.</comment></data>
+  <data name="SystemAccount_Name_BadDebtExpense" xml:space="preserve"><value>⟦Bád Débt Éxpéñsé—⟧</value><comment>System account 6999 — debts written off.</comment></data>
+</root>

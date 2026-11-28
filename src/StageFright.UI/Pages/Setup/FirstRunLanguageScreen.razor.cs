@@ -27,6 +27,7 @@ public partial class FirstRunLanguageScreen : ComponentBase
     [Inject] private ILanguageProvider LanguageProvider { get; set; } = null!;
     [Inject] private ILanguagePreferenceStore LanguagePreferenceStore { get; set; } = null!;
     [Inject] private ISetupService SetupService { get; set; } = null!;
+    [Inject] private ISystemAccountNameService SystemAccountNames { get; set; } = null!;
     [Inject] private IServiceProvider ServiceProvider { get; set; } = null!;
     [Inject] private IStringLocalizer<SetupResource> L { get; set; } = null!;
 
@@ -89,6 +90,10 @@ public partial class FirstRunLanguageScreen : ComponentBase
         {
             LanguagePreferenceStore.Set(_selectedLanguageCode);
             CultureProvider?.Switch(CultureInfo.GetCultureInfo(_selectedLanguageCode));
+
+            // The database is already migrated, so the system accounts exist: name them in the
+            // chosen language before the wizard's Chart of Accounts step shows them (issue #394).
+            await SystemAccountNames.ApplyAsync();
 
             if (_seedWithTestData && _debugSeeder is not null)
             {

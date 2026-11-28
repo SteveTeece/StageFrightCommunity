@@ -26,7 +26,7 @@ user-facing string lives and how the pieces fit.
 
 ## 2. Where the resource files live
 
-Text is grouped into thirteen **area** files (not one file per screen). Each area has a marker
+Text is grouped into fourteen **area** files (not one file per screen). Each area has a marker
 class `<Name>Resource.cs` and, beside it, the neutral `<Name>Resource.resx` plus any
 `<Name>Resource.<culture>.resx` translations.
 
@@ -44,6 +44,7 @@ class `<Name>Resource.cs` and, beside it, the neutral `<Name>Resource.resx` plus
 | `NavigationResource` | `src/StageFright.Core/Modules/Localization/Resources/` | Navigation-bar item titles and short labels, and the app shell chrome. |
 | `ValidationResource` | `src/StageFright.Core/Modules/Localization/Resources/` | User-facing validation and domain-error message text. |
 | `EnumsResource` | `src/StageFright.Core/Modules/Localization/Resources/` | The display text of every user-facing enumeration value (see §4.4). Shared so a status reads the same on a screen and in a printed report. |
+| `SystemAccountsResource` | `src/StageFright.Core/Modules/Localization/Resources/` | The names of the built-in system accounts (Petty Cash, Undeposited Funds, Member Receivable, Tax Collected, Tax Receivable, Opening Balance Equity, Accumulated Surplus, Bad Debt Expense). The app renames those accounts whenever a language is applied, so screens, reports and exports all show the translated names. |
 | `ReportsResource` | `src/StageFright.Reports/Resources/` | PDF/CSV report titles, column headers, section labels, subtotal/total labels and fixed annotations. |
 
 Each owning project sets `<NeutralLanguage>en-AU</NeutralLanguage>` in its `.csproj`, which is
@@ -67,7 +68,7 @@ language catalog and startup resolution live in `src/StageFright.Core/Modules/Lo
    `de-DE` (German). Region-specific is preferred when the number/date formatting differs.
 2. For **every** neutral `.resx` in the table above, make a copy in the **same folder** named
    `<Marker>.<culture>.resx`. For French that is `SharedResource.fr-FR.resx`,
-   `MembersResource.fr-FR.resx`, … `ReportsResource.fr-FR.resx` — thirteen files.
+   `MembersResource.fr-FR.resx`, … `ReportsResource.fr-FR.resx` — fourteen files.
 3. In each copy, translate the **`<value>`** of every `<data name="…">` entry. Do **not** change
    the `name`, and keep the `<comment>` (it documents the placeholders — see §4.2).
 4. Rebuild the solution (`dotnet build`). The build compiles each `.resx` into a satellite
